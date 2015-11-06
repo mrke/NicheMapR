@@ -1,4 +1,4 @@
-#' micro_global
+#' Global implementation of the microclimate model.
 #'
 #' An implementation of the Niche Mapper microclimate model that uses the global climate database
 #' derived from "New, M., Lister, D., Hulme, M. and Makin, I., 2002: A high-resolution data
@@ -17,6 +17,7 @@
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
 #' @param soiltype Soil type: Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, based on Campbell and Norman 1990 Table 9.1.
 #' @usage micro_global(loc, timeinterval, nyears, soiltype, REFL, slope, aspect, DEP, ...)
+#' @details
 #' @examples
 #'micro<-micro_global() # run the model with default location and settings
 #'
