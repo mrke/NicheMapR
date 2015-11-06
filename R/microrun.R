@@ -2,7 +2,6 @@
 #'
 #' R wrapper for Fortran binary of Niche Mapper microclimate model
 #' @param micro A vector of input variables for the microclimate model
-#' @param arch The architecture of the binary to be used
 #' @return metout The above ground micrometeorological conditions under the minimum specified shade
 #' @return shadmet The above ground micrometeorological conditions under the maximum specified shade
 #' @return soil Hourly predictions of the soil temperatures under the minimum specified shade

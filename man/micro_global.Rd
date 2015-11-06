@@ -4,7 +4,7 @@
 \alias{micro_global}
 \title{micro_global}
 \usage{
-micro_global(loc, timeinterval, nyears, ...)
+micro_global(loc, timeinterval, nyears, soiltype, REFL, slope, aspect, DEP, ...)
 }
 \arguments{
 \item{loc}{Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth}
@@ -26,7 +26,7 @@ micro_global(loc, timeinterval, nyears, ...)
 \item{Usrhyt}{Local height at which air temperature, relative humidity and wind speed are to be computed (cm)}
 }
 \description{
-An implementation of the Niche Mapper microcliate model that uses the global climate database
+An implementation of the Niche Mapper microclimate model that uses the global climate database
 derived from "New, M., Lister, D., Hulme, M. and Makin, I., 2002: A high-resolution data
 set of surface climate over global land areas. Climate Research 21:1-25"
 It also optionally uses a global monthly soil moisture estimate from NOAA CPC Soil Moisture http://140.172.38.100/psd/thredds/catalog/Datasets/cpcsoil/catalog.html
