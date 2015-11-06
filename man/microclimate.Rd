@@ -8,8 +8,6 @@ microclimate(micro)
 }
 \arguments{
 \item{micro}{A vector of input variables for the microclimate model}
-
-\item{arch}{The architecture of the binary to be used}
 }
 \value{
 metout The above ground micrometeorological conditions under the minimum specified shade

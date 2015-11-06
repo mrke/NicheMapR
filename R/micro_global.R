@@ -1,6 +1,6 @@
 #' micro_global
 #'
-#' An implementation of the Niche Mapper microcliate model that uses the global climate database
+#' An implementation of the Niche Mapper microclimate model that uses the global climate database
 #' derived from "New, M., Lister, D., Hulme, M. and Makin, I., 2002: A high-resolution data
 #' set of surface climate over global land areas. Climate Research 21:1-25"
 #' It also optionally uses a global monthly soil moisture estimate from NOAA CPC Soil Moisture http://140.172.38.100/psd/thredds/catalog/Datasets/cpcsoil/catalog.html
@@ -16,7 +16,7 @@
 #' @param Usrhyt Local height at which air temperature, relative humidity and wind speed are to be computed (cm)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
 #' @param soiltype Soil type: Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, based on Campbell and Norman 1990 Table 9.1.
-#' @usage micro_global(loc, timeinterval, nyears, ...)
+#' @usage micro_global(loc, timeinterval, nyears, soiltype, REFL, slope, aspect, DEP, ...)
 #' @export
 micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.),
   timezone=0,EC=0.0167238,rainfrac=0.5,densfun=c(0,0),writecsv=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),shore=0,
@@ -763,8 +763,8 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
 
     # write all input to csv files in their own folder
     if(write_input==1){
-      if(dir.exists("csv input")==FALSE){
-        dir.create("csv input")
+      if(dir.exists("micro csv input")==FALSE){
+        dir.create("micro csv input")
       }
       write.table(as.matrix(microinput), file = "csv input/microinput.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(julday, file = "csv input/julday.csv", sep = ",", col.names = NA, qmethod = "double")
@@ -860,7 +860,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     # 2 TIME - time of day (mins)
     # 3-12 D0cm ... - soil temperatures at each of the 10 specified depths
 
-    return(list(dim=dim,soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,RAINFALL=RAINFALL,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade))
+    return(list(dim=dim,soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,RAINFALL=RAINFALL,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
 
   } # end error trapping
 } # end of NicheMapR_Setup_micro function
