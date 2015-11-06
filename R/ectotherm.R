@@ -1,6 +1,13 @@
-#' ectotherm
+#' Ectotherm model.
 #'
-#' An implementation of the Niche Mapper ectotherm model
+#' An implementation of the Niche Mapper ectotherm model that computes body temperature, water loss,
+#' activity and microhabitat selection. It optionally runs the Dynamic Energy Budget (DEB) model for
+#' computing mass budgets (inc. water budgets) and growth, development, reproduction trajectories
+#' as constrained by food, activity and temperature (see Details). When not running the DEB model
+#' a user-specified mass is used as well as a allometric (mass and body temperature) function to
+#' compute metabolic rate.
+#'
+#' The microclimate model, e.g. micro_global(), must be run prior to running the ectotherm model
 #' @param amass Mass of animal (g), note this model is 'steady state' so no lags in heating/cooling due to mass
 #' @param lometry Organism shape, 0-4 (see details)
 #' @param ABSMAX Maximum solar absorptivity, decimal percent
@@ -24,6 +31,9 @@
 #' @param MR_1 Metabolic rate parameter MR=MR_1*M^MR_2*10^(MR_3*Tb) based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231
 #' @param MR_2 Metabolic rate parameter
 #' @param MR_3 Metabolic rate parameter
+#' @param skinwet Percentage of surface area acting as a free-water exchanger, for computing cutaneous water loss
+#' @param extref Percent oxygen extraction efficiency, for respiratory water loss
+#' @param DELTAR Temperature difference (deg C) between expired and inspired air, , for respiratory water loss
 #' @usage ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax, ctmin,
 #'  tpref, dayact, nocturn, crepus, CkGrShad, burrow, climb, shdburrow, mindepth, maxdepth,
 #'  MR_1, MR_2, MR_3, ...)
@@ -79,7 +89,7 @@
 ectotherm<-function(amass=5,lometry=3,ABSMAX=0.85,ABSMIN=0.85,
 TMAXPR=35,TMINPR=25,TBASK=20,TEMERGE=10,ctmax=40,ctmin=5,TPREF=30,
 dayact=1,nocturn=0,crepus=0,CkGrShad=1,burrow=1,climb=0,shdburrow=0,mindepth=2,maxdepth=10,
-MR_1=0.013,MR_2=0.8,MR_3=0.038,
+MR_1=0.013,MR_2=0.8,MR_3=0.038,skinwet=0.2,extref=20.,DELTAR=0.1,
 microin="none",write_input=0,enberr=0.0002,minshade=0.,maxshade=micro$MAXSHADES[1],
 timeinterval=micro$timeinterval,nyears=length(RAINFALL)/timeinterval,
 live=1,ctminthresh=12,ctkill=0,FLTYPE=0.0,SUBTK=2.79,soilnode=4.,REFL=micro$REFL,rinsul=0.,
@@ -90,7 +100,7 @@ wings=0,rho1_3=0.2,trans1=0.00,aref=0.26,bref=2.04,cref=1.47,phi=179.,phimax= ph
 flyer=0,flyspeed=5,flymetab=0.1035,
 container=0,conth=10,contw=100.,contype=1,rainmult=1,continit=0,conthole=0,contonly=1,contwet=80,
 wetmod=0,soilmoisture1=0,breedactthresh=1,
-skinwet=0.229,extref=20.,PFEWAT=73,PTUREA=0,FoodWater=82,minwater=15,raindrink=0.,gutfill=75.,DELTAR=0.1,
+PFEWAT=73,PTUREA=0,FoodWater=82,minwater=15,raindrink=0.,gutfill=75.,
 thermal_stages=matrix(data = c(rep(ctmin,8),rep(ctmax,8),rep(TMINPR,8),rep(TMAXPR,8),rep(TBASK,8),rep(TPREF,8)), nrow = 8, ncol = 6),
 behav_stages=matrix(data = c(rep(dayact,8),rep(nocturn,8),rep(crepus,8),rep(burrow,8),rep(shdburrow,8),rep(mindepth,8),rep(maxdepth,8),rep(CkGrShad,8),rep(climb,8),rep(fosorial,8),rep(rainact,8),rep(actrainthresh,8),rep(breedactthresh,8),rep(flyer,8)), nrow = 8, ncol = 14),
 water_stages=matrix(data = c(rep(skinwet,8),rep(extref,8),rep(PFEWAT,8),rep(PTUREA,8),rep(FoodWater,8),rep(minwater,8),rep(raindrink,8),rep(gutfill,8)), nrow = 8, ncol = 8),
