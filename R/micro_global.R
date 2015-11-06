@@ -18,7 +18,7 @@
 #' @param soiltype Soil type: Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, based on Campbell and Norman 1990 Table 9.1.
 #' @usage micro_global(loc, timeinterval, nyears, ...)
 #' @export
-micro_global <- function(loc="Bendigo Australia",timeinterval=12,nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.),
+micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.),
   timezone=0,EC=0.0167238,rainfrac=0.5,densfun=c(0,0),writecsv=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),shore=0,
   L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,0,0)*10000,
   LAI=0.1,evenrain=0,runmoist=0,maxpool=10000,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),
@@ -860,7 +860,7 @@ micro_global <- function(loc="Bendigo Australia",timeinterval=12,nyears=1,soilty
     # 2 TIME - time of day (mins)
     # 3-12 D0cm ... - soil temperatures at each of the 10 specified depths
 
-    return(list(dim=dim,soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,RAINFALL=RAINFALL,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears))
+    return(list(dim=dim,soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,RAINFALL=RAINFALL,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade))
 
   } # end error trapping
 } # end of NicheMapR_Setup_micro function
