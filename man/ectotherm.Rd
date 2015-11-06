@@ -58,4 +58,53 @@ ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax,
 \description{
 An implementation of the Niche Mapper ectotherm model
 }
+\examples{
+# run the microclimate model
+micro<-micro_global(loc="Paluma, Queensland")
+
+# run the ectotherm model
+ecto<-ectotherm(TMAXPR=35,TMINPR=30,TPREF=33,TBASK=20,TEMERGE=10)
+
+# retrieve output
+metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
+shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
+soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
+shadsoil<-as.data.frame(micro$shadsoil) # soil temperatures, maximum shade
+environ<-as.data.frame(ecto$environ) # activity, Tb and environment
+enbal<-as.data.frame(ecto$enbal) # energy balance values
+masbal<-as.data.frame(ecto$masbal) # mass balance value (note most missing if DEB model not running)
+
+# append dates
+days<-rep(seq(1,12),24)
+days<-days[order(days)]
+dates<-days+metout$TIME/60/24-1 # dates for hourly output
+dates2<-seq(1,12,1) # dates for daily output
+metout<-cbind(dates,metout)
+soil<-cbind(dates,soil)
+shadmet<-cbind(dates,shadmet)
+shadsoil<-cbind(dates,shadsoil)
+environ<-cbind(dates,environ)
+masbal<-cbind(dates,masbal)
+enbal<-cbind(dates,enbal)
+
+############### plot results ######################
+
+# Hourly Tb (black), activity (orange, 5=bask, 10=forage), depth (brown, m) and shade (green, \%/10)
+with(environ, plot(TC~dates,ylab="Tb, depth, activity and shade", xlab="month of year",ylim=c(-20,70),type = "l"))
+with(environ, points(ACT*5~dates,type = "l",col="orange"))
+with(environ, points(SHADE/10~dates,type = "l",col="green"))
+with(environ, points(DEP/10~dates,type = "l",col="brown"))
+#with(metout, points(TAREF~dates,type = "l",col="light blue"))
+abline(ecto$TMAXPR,0,lty=2,col='red')
+abline(ecto$TMINPR,0,lty=2,col='blue')
+
+# seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)
+forage<-subset(environ,ACT==2)
+bask<-subset(environ,ACT==1)
+night<-subset(metout,ZEN==90)
+day<-subset(metout,ZEN!=90)
+with(night,plot(TIME/60~JULDAY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col='dark blue')) # nighttime hours
+with(forage,points((TIME-1)~JULDAY,pch=15,cex=2,col='orange')) # foraging Tbs
+with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
+}
 
