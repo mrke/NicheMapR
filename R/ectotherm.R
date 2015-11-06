@@ -27,6 +27,54 @@
 #' @usage ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax, ctmin,
 #'  tpref, dayact, nocturn, crepus, CkGrShad, burrow, climb, shdburrow, mindepth, maxdepth,
 #'  MR_1, MR_2, MR_3, ...)
+#' @examples
+#' # run the microclimate model
+#' micro<-micro_global(loc="Paluma, Queensland")
+#'
+#' # run the ectotherm model
+#' ecto<-ectotherm(TMAXPR=35,TMINPR=30,TPREF=33,TBASK=20,TEMERGE=10)
+#'
+#' # retrieve output
+#' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
+#' shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
+#' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
+#' shadsoil<-as.data.frame(micro$shadsoil) # soil temperatures, maximum shade
+#' environ<-as.data.frame(ecto$environ) # activity, Tb and environment
+#' enbal<-as.data.frame(ecto$enbal) # energy balance values
+#' masbal<-as.data.frame(ecto$masbal) # mass balance value (note most missing if DEB model not running)
+#'
+#' # append dates
+#' days<-rep(seq(1,12),24)
+#'days<-days[order(days)]
+#'dates<-days+metout$TIME/60/24-1 # dates for hourly output
+#'dates2<-seq(1,12,1) # dates for daily output
+#'metout<-cbind(dates,metout)
+#'soil<-cbind(dates,soil)
+#'shadmet<-cbind(dates,shadmet)
+#'shadsoil<-cbind(dates,shadsoil)
+#'environ<-cbind(dates,environ)
+#'masbal<-cbind(dates,masbal)
+#'enbal<-cbind(dates,enbal)
+#'
+#'############### plot results ######################
+#'
+#'# Hourly Tb (black), activity (orange, 5=bask, 10=forage), depth (brown, m) and shade (green, %/10)
+#'with(environ, plot(TC~dates,ylab="Tb, depth, activity and shade", xlab="month of year",ylim=c(-20,70),type = "l"))
+#'with(environ, points(ACT*5~dates,type = "l",col="orange"))
+#'with(environ, points(SHADE/10~dates,type = "l",col="green"))
+#'with(environ, points(DEP/10~dates,type = "l",col="brown"))
+#'#with(metout, points(TAREF~dates,type = "l",col="light blue"))
+#'abline(ecto$TMAXPR,0,lty=2,col='red')
+#'abline(ecto$TMINPR,0,lty=2,col='blue')
+#'
+#'# seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)
+#'forage<-subset(environ,ACT==2)
+#'bask<-subset(environ,ACT==1)
+#'night<-subset(metout,ZEN==90)
+#'day<-subset(metout,ZEN!=90)
+#'with(night,plot(TIME/60~JULDAY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col='dark blue')) # nighttime hours
+#'with(forage,points((TIME-1)~JULDAY,pch=15,cex=2,col='orange')) # foraging Tbs
+#'with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
 #' @export
 ectotherm<-function(amass=5,lometry=3,ABSMAX=0.85,ABSMIN=0.85,
 TMAXPR=35,TMINPR=25,TBASK=20,TEMERGE=10,ctmax=40,ctmin=5,TPREF=30,
@@ -57,7 +105,12 @@ kappa_X_P=0.1,nX=c(1,1.8,0.5,.15),nE=c(1,1.8,0.5,.15),nV=c(1,1.8,0.5,.15),nP=c(1
 N_waste=c(1,4/5,3/5,4/5),clutchsize=2.,clutch_ab=c(0,0),viviparous=0,minclutch=0,batch=1,breedrainthresh=0,
 photostart=3,photofinish=1,daylengthstart=12.5,daylengthfinish=13.,photodirs = 1,photodirf = 0,
 startday=1,breedtempthresh=200,breedtempcum=24*7,reset=0,frogbreed=0,frogstage=0,aestivate=0,depress=0.3,
-v_init=(7.063^3)*fract^3*0.85,E_init=E_m,E_H_init=E_Hp+1,stage=3,ma=1e-4,mi=0,mh=0.5,wilting=1,ystrt=0,grasshade=0){
+v_init=(7.063^3)*fract^3*0.85,E_init=E_m,E_H_init=E_Hp+1,stage=3,ma=1e-4,mi=0,mh=0.5,wilting=1,ystrt=0,grasshade=0,
+wetlandTemps=matrix(data = 0., nrow = 24*dim, ncol = 1),wetlandDepths=matrix(data = 0., nrow = 24*dim, ncol = 1),
+DEP=micro$DEP,ectoin=rbind(as.numeric(micro$ALTT),as.numeric(micro$REFL)[1],micro$longlat[1],micro$longlat[2],0,0,1990,1990),RAINFALL=micro$RAINFALL,
+metout=micro$metout,shadmet=micro$shadmet,soil=micro$soil,shadsoil=micro$shadsoil,soilmoist=micro$soilmoist,
+shadmoist=micro$shadmoist,humid=micro$humid,shadhumid=micro$shadhumid,soilpot=micro$soilpot,
+shadpot=micro$shadpot,MAXSHADES=micro$MAXSHADES){
 
 # amass=5
 # lometry=3
@@ -670,9 +723,9 @@ v_init=(7.063^3)*fract^3*0.85,E_init=E_m,E_H_init=E_Hp+1,stage=3,ma=1e-4,mi=0,mh
   yearsout<-ectout$yearsout[1:nyears,]
 
   if(DEB==0){
-    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,RAINFALL=RAINFALL,enbal=enbal,environ=environ,masbal=masbal,yearout=yearout,yearsout=yearsout,grassgrowths=grassgrowths,grasstsdms=grasstsdms))
+    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,RAINFALL=RAINFALL,enbal=enbal,environ=environ,masbal=masbal,yearout=yearout,yearsout=yearsout,grassgrowths=grassgrowths,grasstsdms=grasstsdms,TMAXPR=TMAXPR,TMINPR=TMINPR,ctmax=ctmax,ctmin=ctmin,TBASK=TBASK,TEMERGE=TEMERGE))
   }else{
-    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,RAINFALL=RAINFALL,enbal=enbal,masbal=masbal,environ=environ,debout=debout,yearout=yearout,yearsout=yearsout,grassgrowths=grassgrowths,grasstsdms=grasstsdms))
+    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,RAINFALL=RAINFALL,enbal=enbal,masbal=masbal,environ=environ,debout=debout,yearout=yearout,yearsout=yearsout,grassgrowths=grassgrowths,grasstsdms=grasstsdms,TMAXPR=TMAXPR,TMINPR=TMINPR,ctmax=ctmax,ctmin=ctmin,TBASK=TBASK,TEMERGE=TEMERGE))
   }
 
 }

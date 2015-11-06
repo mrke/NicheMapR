@@ -17,6 +17,65 @@
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
 #' @param soiltype Soil type: Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, based on Campbell and Norman 1990 Table 9.1.
 #' @usage micro_global(loc, timeinterval, nyears, soiltype, REFL, slope, aspect, DEP, ...)
+#' @examples
+#'micro<-micro_global() # run the model with default location and settings
+#'
+#'metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
+#'shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
+#'soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
+#'shadsoil<-as.data.frame(micro$shadsoil) # soil temperatures, maximum shade
+#'
+#'library(lattice)
+#'
+#'# append dates
+#'days<-rep(seq(1,12),24)
+#'days<-days[order(days)]
+#'dates<-days+metout$TIME/60/24-1 # dates for hourly output
+#'dates2<-seq(1,12,1) # dates for daily output
+#'
+#'plotmetout<-cbind(dates,metout)
+#'plotsoil<-cbind(dates,soil)
+#'plotshadmet<-cbind(dates,shadmet)
+#'plotshadsoil<-cbind(dates,shadsoil)
+#'
+#'minshade<-micro$minshade
+#'maxshade<-micro$maxshade
+#'
+#'# plotting above-ground conditions in minimum shade
+#'with(plotmetout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)", type = "l",main=paste("air temperature, ",minshade,"% shade",sep=""))})
+#'with(plotmetout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)", type = "l",lty=2,col='blue')})
+#'with(plotmetout,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)", type = "l",ylim=c(0,100),main=paste("humidity, ",minshade,"% shade",sep=""))})
+#'with(plotmetout,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)", type = "l",col='blue',lty=2,ylim=c(0,100))})
+#'with(plotmetout,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (deg C)",  type = "l",main=paste("sky temperature, ",minshade,"% shade",sep=""))})
+#'with(plotmetout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)",  type = "l",main="wind speed")})
+#'with(plotmetout,{points(VLOC ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)",  type = "l",lty=2,col='blue')})
+#'with(plotmetout,{plot(ZEN ~ dates,xlab = "Date and Time", ylab = "Zenith Angle of Sun (deg)",  type = "l",main="solar angle, sun")})
+#'with(plotmetout,{plot(SOLR ~ dates,xlab = "Date and Time", ylab = "Solar Radiation (W/m2)",  type = "l",main="solar radiation")})
+#'
+#'# plotting soil temperature for minimum shade
+#'for(i in 1:10){
+#'  if(i==1){
+#'    plot(plotsoil[,i+3]~plotsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature (deg C)",col=i,type = "l",main=paste("soil temperature ",minshade,"% shade",sep=""))
+#'  }else{
+#'    points(plotsoil[,i+3]~plotsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature (deg C)",col=i,type = "l")
+#'  }
+#'}
+#'
+#'# plotting above-ground conditions in maximum shade
+#'with(plotshadmet,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)", type = "l",main="air temperature, sun")})
+#'with(plotshadmet,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)", type = "l",lty=2,col='blue')})
+#'with(plotshadmet,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)", type = "l",ylim=c(0,100),main="humidity, shade")})
+#'with(plotshadmet,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)", type = "l",col='blue',lty=2,ylim=c(0,100))})
+#'with(plotshadmet,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (deg C)",  type = "l",main="sky temperature, shade")})
+#'
+#'# plotting soil temperature for maximum shade
+#'for(i in 1:10){
+#'  if(i==1){
+#'    plot(plotshadsoil[,i+3]~plotshadsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature (deg C)",col=i,type = "l",main=paste("soil temperature ",maxshade,"% shade",sep=""))
+#'  }else{
+#'    points(plotshadsoil[,i+3]~plotshadsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature (deg C)",col=i,type = "l")
+#'  }
+#'}
 #' @export
 micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.),
   timezone=0,EC=0.0167238,rainfrac=0.5,densfun=c(0,0),writecsv=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),shore=0,
