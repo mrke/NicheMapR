@@ -10,13 +10,13 @@
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param nyears The number of years to run
-#' @param REFL Soil solar reflectance, decimal percent
+#' @param REFL Soil solar reflectance, decimal \%
 #' @param slope Slope in degrees
 #' @param aspect Aspect in degrees (0 = north)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
 #' @param soiltype Soil type: Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, based on Campbell and Norman 1990 Table 9.1.
-#' @param minshade Minimum shade level to use (percent)
-#' @param maxshade Maximum shade level to us (percent)
+#' @param minshade Minimum shade level to use (\%)
+#' @param maxshade Maximum shade level to us (\%)
 #' @param Usrhyt Local height (cm) at which air temperature, wind speed and humidity are to be computed for organism of interest
 #' @return metout The above ground micrometeorological conditions under the minimum specified shade
 #' @return shadmet The above ground micrometeorological conditions under the maximum specified shade
@@ -37,13 +37,13 @@
 #' \item 2 TIME - time of day (mins)
 #' \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
 #' \item 4 TAREF - air temperature (deg C) at reference height (1.2m)
-#' \item 5 RHLOC - relative humidity (percent) at local height (specified by 'Usrhyt' variable)
-#' \item 6 RH  - relative humidity (percent) at reference height (1.2m)
+#' \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
+#' \item 6 RH  - relative humidity (\%) at reference height (1.2m)
 #' \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
 #' \item 8 VREF - wind speed (m/s) at reference height (1.2m)
 #' \item 9 SNOWMELT - snowmelt (mm)
 #' \item 10 POOLDEP - water pooling on surface (mm)
-#' \item 11 PCTWET - soil surface wetness (percent)
+#' \item 11 PCTWET - soil surface wetness (\%)
 #' \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
 #' \item 13 SOLR - solar radiation (W/m2)
 #' \item 14 TSKYC - sky radiant temperature (deg C)
@@ -77,7 +77,7 @@
 #' \itemize{
 #' \item  1 JULDAY - day of year
 #' \item  2 TIME - time of day (mins)
-#' \item  3-12 RH0cm ... - soil relative humidity (decimal percent), at each of the 10 specified depths
+#' \item  3-12 RH0cm ... - soil relative humidity (decimal \%), at each of the 10 specified depths
 #' }
 #' }
 #' @examples
@@ -514,6 +514,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     RHMAXX <- CLIMATE[,85:96]
     if(soiltype==0){
       BulkDensity<-Density
+      cap=0
       runmoist<-0
       PE<-rep(CampNormTbl9_1[1,4],19) #air entry potential J/kg
       KS<-rep(CampNormTbl9_1[1,6],19) #saturated conductivity, kg s/m3
@@ -703,8 +704,8 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     soilprops[2,1]<-BulkDensity # insert soil bulk density to profile 2
     soilprops[1,2]<-min(0.26,1-BulkDensity/Density) # insert saturated water content to profile 1
     soilprops[2,2]<-min(0.26,1-BulkDensity/Density) # insert saturated water content to profile 2
-    soilprops[1,3]<-Clay     # insert percent clay to profile 1
-    soilprops[2,3]<-Clay     # insertpercent clay to profile 2
+    soilprops[1,3]<-Clay     # insert \% clay to profile 1
+    soilprops[2,3]<-Clay     # insert\% clay to profile 2
     if(cap==1){ # insert thermal conductivity to profile 1, and see if 'organic cap' added on top
       soilprops[1,4]<-0.2 # mineral thermal conductivity
     }else{

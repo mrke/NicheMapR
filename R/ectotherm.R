@@ -31,8 +31,8 @@
 #' @param MR_1 Metabolic rate parameter MR=MR_1*M^MR_2*10^(MR_3*Tb) based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231
 #' @param MR_2 Metabolic rate parameter
 #' @param MR_3 Metabolic rate parameter
-#' @param skinwet Percentage of surface area acting as a free-water exchanger, for computing cutaneous water loss
-#' @param extref Percent oxygen extraction efficiency, for respiratory water loss
+#' @param skinwet \% of surface area acting as a free-water exchanger, for computing cutaneous water loss
+#' @param extref \% oxygen extraction efficiency, for respiratory water loss
 #' @param DELTAR Temperature difference (deg C) between expired and inspired air, , for respiratory water loss
 #' @usage ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax, ctmin,
 #'  tpref, dayact, nocturn, crepus, CkGrShad, burrow, climb, shdburrow, mindepth, maxdepth,
