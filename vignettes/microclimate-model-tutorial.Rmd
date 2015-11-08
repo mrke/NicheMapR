@@ -1,0 +1,159 @@
+---
+title: "Tutorial for the NicheMapR microclimate model"
+author: "Michael Kearney"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{"Tutorial for the NicheMapR microclimate model"}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette provides a detailed tutorial of the Niche Mapper microclimate model as implemented in the package NicheMapR. See (ref to vignette) for details on the underlying theory and equations.
+
+## Getting started: working with the micro_global() function
+
+The NicheMapR package includes data and functions for using a global monthly climate database for computing microclimates. This tutorial starts by illustrating the different capabilities of the microclimate model using this database. For details on setting the model up to run with your own environmental data, see ...
+
+### Basic operation: modelling microclimates for the average day of each month
+
+This first example involves the most basic case of running the model to produce 12 days of output, one for each month of the year, without involking the soil moisture or snow subroutines. In this mode of operation, the model does three iterations of each day, the first one starting with a uniform soil temperature profile and the first two acting as 'burn-in' runs prior to the third and final run which is provided as the final output.
+
+Try running the model for a place of interest to you, as follows:
+```{r, echo=FALSE}
+library(GADS)
+```
+```{r}
+library(NicheMapR)
+
+#micro<-micro_global(loc="Melbourne, Australia")
+```
+
+The results are stored as a list in the variable *micro*. The main ones to focus on for now are
+
+* **metout** The above ground micrometeorological conditions under the minimum specified shade
+* **shadmet** The above ground micrometeorological conditions under the maximum specified shade
+* **soil** Hourly predictions of the soil temperatures under the minimum specified shade
+* **shadsoil** Hourly predictions of the soil temperatures under the maximum specified shade
+
+The first two rows of the output tables **metout** and **shadmet** look like this
+
+```{r, echo=FALSE, results='asis'}
+#knitr::kable(head(micro$metout[,1:9], 2))
+#knitr::kable(head(micro$metout[,10:18], 2))
+```
+
+and show, for each day of the year and for each hour of the day, a series of aboveground microclimatic conditions as follows:
+
+1. JULDAY - day of year
+1. TIME - time of day (mins)
+1. TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
+1. TAREF - air temperature (deg C) at reference height (1.2m)
+1. RHLOC - relative humidity (percent) at local height (specified by 'Usrhyt' variable)
+1. RH  - relative humidity (percent) at reference height (1.2m)
+1. VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
+1. VREF - wind speed (m/s) at reference height (1.2m)
+1. SNOWMELT - snowmelt (mm)
+1. POOLDEP - water pooling on surface (mm)
+1. PCTWET - soil surface wetness (percent)
+1. ZEN - zenith angle of sun (degrees - 90 = below the horizon)
+1. SOLR - solar radiation (W/m2)
+1. TSKYC - sky radiant temperature (deg C)
+1. DEW - dew presence (0 or 1)
+1. FROST - frost presence (0 or 1)
+1. SNOWFALL - snow predicted to have fallen (mm)
+1. SNOWDEP - predicted snow depth (cm)
+
+Note that for air temperature, relative humidity and wind speed, there's a 'reference height' value and a 'local height' value. The reference height value is the height at which the meteorological observations were made that were given to the model as input. The local height values are the microclimatic values at a height determined by the variable *Usrhyt*, which you can set to be relevant to the organism you are interested in (by default it is 1cm). It should be at the midpoint of the animal or plant's height.
+
+Check what you got with:
+```
+metout<-micro$metout # put the metout result into a variable 'metout'
+head(metout,24) # show the first 24 rows, i.e. the first day
+
+shadmet<-micro$shadmet # put the shadmet result into a variable 'shadmet'
+head(shadmet,24) # show the first 24 rows, i.e. the first day
+```
+
+Because the snow model wasn't flagged to run, there will be zeros in all the snow-related columns.
+
+The first two rows of the output tables **soil** and **shadsoil** look like this 
+
+```{r, echo=FALSE, results='asis'}
+#knitr::kable(head(micro$soil, 2))
+```
+
+and show, for each day of the year and for each hour of the day, the soil temperatures as follows:
+
+1. JULDAY - day of year
+1. TIME - time of day (mins)
+1. Columns 3-12 D0cm ... - soil temperatures at each of the 10 specified depths
+
+Have a look at yours:
+```
+soil<-micro$soil # put the soil result into a variable 'soil'
+head(soil,24) # show the first 24 rows, i.e. the first day
+
+shadsoil<-micro$shadsoil # put the metout result into a variable 'shadsoil'
+head(shadsoil,24) # show the first 24 rows, i.e. the first day
+```
+
+### Running at finer time intervals and for longer time periods
+
+It is possible to run the model for more frequent intervals than once per month by changing the parameter *timeinterval*. If *timeinterval* is set to something less than 365, then the model runs as described in the previous section with three iterations per day, and uses the 'spline' function to interpolate the climate data from monthly to the chosen time interval. If 'timeinterval' is set to the maximum value of 365, it will apply the three iterations to the first day of the simulation to get started and then, from that day on, use the previous day's conditions as the initial state for the next day's conditions.
+
+It is also possible to run the model for multiple years by changing the *nyears* parameter. This can be useful when running the soil moisture and snow subroutines (described below) to allow annual cycles to stabilise.
+
+### Simulating shading by vegetation
+
+### Simulating terrain effects - slope, aspect, hillshade
+
+### Changing the soil properties
+
+Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+
+- Never uses retina figures
+- Has a smaller default figure size
+- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+
+## Vignette Info
+
+Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+
+## Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))

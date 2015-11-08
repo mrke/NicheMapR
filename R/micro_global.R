@@ -13,11 +13,73 @@
 #' @param REFL Soil solar reflectance, decimal percent
 #' @param slope Slope in degrees
 #' @param aspect Aspect in degrees (0 = north)
-#' @param Usrhyt Local height at which air temperature, relative humidity and wind speed are to be computed (cm)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
 #' @param soiltype Soil type: Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, based on Campbell and Norman 1990 Table 9.1.
-#' @usage micro_global(loc, timeinterval, nyears, soiltype, REFL, slope, aspect, DEP, ...)
+#' @param minshade Minimum shade level to use (percent)
+#' @param maxshade Maximum shade level to us (percent)
+#' @param Usrhyt Local height (cm) at which air temperature, wind speed and humidity are to be computed for organism of interest
+#' @return metout The above ground micrometeorological conditions under the minimum specified shade
+#' @return shadmet The above ground micrometeorological conditions under the maximum specified shade
+#' @return soil Hourly predictions of the soil temperatures under the minimum specified shade
+#' @return shadsoil Hourly predictions of the soil temperatures under the maximum specified shade
+#' @return soilmoist Hourly predictions of the soil moisture under the minimum specified shade
+#' @return shadmoist Hourly predictions of the soil moisture under the maximum specified shade
+#' @return soilpot Hourly predictions of the soil water potential under the minimum specified shade
+#' @return shadpot Hourly predictions of the soil water potential under the maximum specified shade
+#' @return humid Hourly predictions of the soil humidity under the minimum specified shade
+#' @return shadhumid Hourly predictions of the soil humidity under the maximum specified shade
+#' @usage micro_global(loc, timeinterval, nyears, soiltype, REFL, slope, aspect, DEP, minshade, maxshade, Usrhyt, ...)
+#' @export
 #' @details
+#' metout/shadmet variables:
+#' \itemize{
+#' \item 1 JULDAY - day of year
+#' \item 2 TIME - time of day (mins)
+#' \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
+#' \item 4 TAREF - air temperature (deg C) at reference height (1.2m)
+#' \item 5 RHLOC - relative humidity (percent) at local height (specified by 'Usrhyt' variable)
+#' \item 6 RH  - relative humidity (percent) at reference height (1.2m)
+#' \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
+#' \item 8 VREF - wind speed (m/s) at reference height (1.2m)
+#' \item 9 SNOWMELT - snowmelt (mm)
+#' \item 10 POOLDEP - water pooling on surface (mm)
+#' \item 11 PCTWET - soil surface wetness (percent)
+#' \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
+#' \item 13 SOLR - solar radiation (W/m2)
+#' \item 14 TSKYC - sky radiant temperature (deg C)
+#' \item 15 DEW - dew presence (0 or 1)
+#' \item 16 FROST - frost presence (0 or 1)
+#' \item 17 SNOWFALL - snow predicted to have fallen (mm)
+#' \item 18 SNOWDEP - predicted snow depth (cm)
+#'}
+#' soil and shadsoil variables:
+#' \itemize{
+#' \item 1 JULDAY - day of year
+#' \item 2 TIME - time of day (mins)
+#' \item 3-12 D0cm ... - soil temperatures at each of the 10 specified depths
+#'
+#' if soil moisture model is run i.e. parameter runmoist = 1\cr
+#'
+#' soilmoist and shadmoist variables:
+#' \itemize{
+#' \item 1 JULDAY - day of year
+#' \item 2 TIME - time of day (mins)
+#' \item 3-12 WC0cm ... - soil temperatures at each of the 10 specified depths
+#'}
+#' soilpot and shadpot variables:
+#' \itemize{
+#' \item 1 JULDAY - day of year
+#' \item 2 TIME - time of day (mins)
+#' \item 3-12 PT0cm ... - soil water potential (J/kg = kpa = bar/100) at each of the 10 specified depths
+#' }
+#'
+#' humid and shadhumid variables:
+#' \itemize{
+#' \item  1 JULDAY - day of year
+#' \item  2 TIME - time of day (mins)
+#' \item  3-12 RH0cm ... - soil relative humidity (decimal percent), at each of the 10 specified depths
+#' }
+#' }
 #' @examples
 #'micro<-micro_global() # run the model with default location and settings
 #'
@@ -25,8 +87,6 @@
 #'shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
 #'soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
 #'shadsoil<-as.data.frame(micro$shadsoil) # soil temperatures, maximum shade
-#'
-#'library(lattice)
 #'
 #'# append dates
 #'days<-rep(seq(1,12),24)
@@ -79,13 +139,13 @@
 #'}
 #' @export
 micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.),
-  timezone=0,EC=0.0167238,rainfrac=0.5,densfun=c(0,0),writecsv=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),shore=0,
+  minshade=0,maxshade=90,Usrhyt=1,timezone=0,EC=0.0167238,rainfrac=0.5,densfun=c(0,0),writecsv=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),shore=0,
   L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,0,0)*10000,
   LAI=0.1,evenrain=0,runmoist=0,maxpool=10000,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),
   BD=rep(1.3,19),RUF=0.004,SLE=0.95,ERR=1.5,  Thcond=2.5,Density=2560,SpecHeat=870,BulkDensity=1300,Clay=20,CMH2O=1.,
-  TIMAXS=c(1.0, 1.0, 0.0, 0.0),TIMINS=c(0.0, 0.0, 1.0, 1.0),minshade=0,maxshade=90,Usrhyt=1,
+  TIMAXS=c(1.0, 1.0, 0.0, 0.0),TIMINS=c(0.0, 0.0, 1.0, 1.0),
   hori=rep(0,24),rungads=1,cap=1,write_input=0,snowmodel=0,snowtemp=1.5,snowdens=0.375,snowmelt=0.9,undercatch=1,rainmult=1,
-  rainmelt=0.0125,runshade=1,mac=0,PCTWET=0,  SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3), ...) {
+  rainmelt=0.0125,runshade=1,mac=0,PCTWET=0,SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3), ...) {
   # loc="134,-19"
   #loc="Madison Wisconsin"
   #if(as.numeric(unlist(strsplit(loc, ",")))==TRUE){
@@ -321,132 +381,35 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
 
   if(errors==0){ # continue
 
-    ################## loading packages ###################################
-
-    if(require("GADS")){
-      print("GADS is loaded correctly")
+    if(requireNamespace("GADS",quietly = TRUE)){
+      #print("GADS is loaded correctly")
     }else{
-      if(require(devtools)){
-        print("devtools installed and loaded")
-        print("trying to install GADS")
-        install_github('mrke/GADS', args="--no-multiarch")
+      if(requireNamespace(devtools,quietly = TRUE)){
+        #print("devtools installed and loaded")
+        #print("trying to install GADS")
+        devtools::install_github('mrke/GADS', args="--no-multiarch")
         if(require(GADS)){
-          print("GADS installed and loaded")
+          #print("GADS installed and loaded")
         }else{
           stop("could not install GADS")
         }
       }else{
-        print("trying to install devtools")
+        #print("trying to install devtools")
         install.packages("devtools")
-        if(require(devtools)){
-          print("devtools installed and loaded")
-          print("trying to install GADS")
-          install_github('mrke/GADS', args="--no-multiarch")
-          if(require(GADS)){
-            print("GADS installed and loaded")
+        if(requireNamespace(devtools,quietly = TRUE)){
+          #print("devtools installed and loaded")
+          #print("trying to install GADS")
+          devtools::install_github('mrke/GADS', args="--no-multiarch")
+          if(requireNamespace("GADS",quietly = TRUE)){
+            #print("GADS installed and loaded")
           }else{
             stop("could not install GADS")
           }
         }else{
-          stop("could not install devtools")
+          stop("could not install devtools or GADS")
         }
       }
     }
-    if(require("zoo")){
-      print("zoo is loaded correctly")
-    } else {
-      print("trying to install zoo")
-      install.packages("zoo")
-      if(require(zoo)){
-        print("zoo installed and loaded")
-      } else {
-        stop("could not install zoo")
-      }
-    }
-    if(require("seem")){
-      print("seem is loaded correctly")
-    } else {
-      print("trying to install seem")
-      install.packages("seem")
-      if(require(seem)){
-        print("seem installed and loaded")
-      } else {
-        stop("could not install seem")
-      }
-    }
-    if(require("ncdf")){
-      print("ncdf is loaded correctly")
-    } else {
-      print("trying to install ncdf")
-      install.packages("ncdf")
-      if(require(ncdf)){
-        print("ncdf installed and loaded")
-      } else {
-        stop("could not install ncdf")
-      }
-    }
-
-    if(require("XML")){
-      print("XML is loaded correctly")
-    } else {
-      print("trying to install XML")
-      install.packages("XML")
-      if(require(XML)){
-        print("XML installed and loaded")
-      } else {
-        stop("could not install XML")
-      }
-    }
-
-    if(require("dismo")){
-      print("dismo is loaded correctly")
-    } else {
-      print("trying to install dismo")
-      install.packages("dismo")
-      if(require(dismo)){
-        print("dismo installed and loaded")
-      } else {
-        stop("could not install dismo")
-      }
-    }
-
-    if(require("chron")){
-      print("chron is loaded correctly")
-    } else {
-      print("trying to install chron")
-      install.packages("chron")
-      if(require(chron)){
-        print("chron installed and loaded")
-      } else {
-        stop("could not install chron")
-      }
-    }
-
-    if(require("rgdal")){
-      print("rgdal is loaded correctly")
-    } else {
-      print("trying to install rgdal")
-      install.packages("rgdal")
-      if(require(rgdal)){
-        print("rgdal installed and loaded")
-      } else {
-        stop("could not install rgdal")
-      }
-    }
-
-    if(require("raster")){
-      print("raster is loaded correctly")
-    } else {
-      print("trying to install raster")
-      install.packages("raster")
-      if(require(raster)){
-        print("raster installed and loaded")
-      } else {
-        stop("could not install raster")
-      }
-    }
-    ################## end loading packages ###################################
-
     ################## time related variables #################################
 
     juldays12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
@@ -479,7 +442,15 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     ################## location and terrain #################################
 
     if(is.numeric(loc)==FALSE){ # use geocode to get location from site name via googlemaps
-      longlat <- geocode(loc)[3:4] # assumes first geocode match is correct
+      if (!requireNamespace("dismo", quietly = TRUE)) {
+        stop("dismo needed for the place name geocode function to work. Please install it.",
+          call. = FALSE)
+      }
+      if (!requireNamespace("XML", quietly = TRUE)) {
+        stop("XML needed for the place name geocode function to work. Please install it.",
+          call. = FALSE)
+      }
+      longlat <- dismo::geocode(loc)[3:4] # assumes first geocode match is correct
       if(nrow(longlat>1)){longlat<-longlat[1,]}
       x <- t(as.matrix(as.numeric(c(longlat[1,1],longlat[1,2]))))
     }else{
@@ -489,10 +460,10 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
 
     # get the local timezone reference longitude
     if(timezone==1){ # this now requires registration
-      if(!require(geonames)){
-        stop('package "geonames" is required.')
+      if(!require(geonames, quietly = TRUE)){
+        stop('package "geonames" is required to do a specific time zone (timezone=1). Please install it.')
       }
-      ALREF<-(GNtimezone(longlat[2],longlat[1])[4])*-15
+      ALREF<-(geonames::GNtimezone(longlat[2],longlat[1])[4])*-15
     }else{  # just use local solar noon
       ALREF <- abs(trunc(x[1]))
     }
@@ -519,13 +490,14 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     #devtools::use_data(elev)
     #devtools::use_data(soilmoisture)
 
-    ALTT<-as.numeric(extract(elev,x)*1000) # convert from km to m
+    ALTT<-as.numeric(raster::extract(elev,x)*1000) # convert from km to m
     cat("extracting climate data", '\n')
-    global_climate2 <- crop(global_climate[[1:96]],c(x[1]-0.6,x[1]+0.6,x[2]-0.6,x[2]+0.6))
-    CLIMATE <- extract(global_climate2[[1:96]],x)
+    # first crop to roughly the right area, to speed up extraction (faster when doing it from raw ncdf file, but .rda file is much smaller, so sticking with the latter)
+    global_climate2 <- raster::crop(global_climate[[1:96]],c(x[1]-0.6,x[1]+0.6,x[2]-0.6,x[2]+0.6))
+    CLIMATE <- raster::extract(global_climate2[[1:96]],x)
 
     rain<-global_climate[[1:12]]
-    RAINFALL <-extract(rain,x)
+    RAINFALL <-raster::extract(rain,x)
 
     RAINFALL <- CLIMATE[,1:12]
     WNMAXX <- CLIMATE[,13:24]
@@ -566,8 +538,8 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
         xx<-t(cbind(longlat1))
       }
       xx2<-as.numeric(xx)
-      soilmoisture2<-crop(soilmoisture[[1:12]],c(xx2[1]-0.6,xx2[1]+0.6,xx2[2]-0.6,xx2[2]+0.6))
-      SoilMoist<-extract(soilmoisture2[[1:12]],xx)/1000 # this is originally in mm/m
+      soilmoisture2<-raster::crop(soilmoisture[[1:12]],c(xx2[1]-0.6,xx2[1]+0.6,xx2[2]-0.6,xx2[2]+0.6))
+      SoilMoist<-raster::extract(soilmoisture2[[1:12]],xx)/1000 # this is originally in mm/m
       if(nrow(SoilMoist)>1){SoilMoist<-SoilMoist[1,]}
     }
     # correct for fact that wind is measured at 10 m height
@@ -639,7 +611,6 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       daymon<-c(31.,28.,31.,30.,31.,30.,31.,31.,30.,31.,30.,31.) # days in each month
       m<-1
       b<-0
-      #RAINYDAYS<-RAINYDAYS*0+2 # force all rain to fall on one day
       for (i in 1:12){ #begin loop throught 12 months of year
         ndays=daymon[i]
         for (k in 1:ndays){
@@ -671,21 +642,6 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       if(TMINN[1]<snowtemp){
         RAINFALL[1]<-0 # this is needed in some cases to allow the integrator to get started
       }
-      #       for(j in 1:nyears){
-      #         for(i in 1:12){
-      #           ratio<-RAINYDAYS[i]/daymon[i]
-      #           amount.param=list(mu=RAINFALL[i]/daymon[i],std=8,skew=2, shape=1.3, model.pdf ="w")
-      #           P <- matrix(c((1-ratio)/2,(1-ratio)/2,ratio/2,ratio/2), ncol=2, byrow=T)
-      #           rainy1 <- markov.rain(P, daymon[i], amount.param, plot.out = F)
-      #           RAINFALL2<-rainy1$x
-      #           if(j==1 & i==1){
-      #             RAINFALL1<-RAINFALL2
-      #           }else{
-      #             RAINFALL1<-c(RAINFALL1,RAINFALL2)
-      #           }
-      #         }
-      #       }
-      #       RAINFALL<-RAINFALL1
     }else{
       if(timeinterval!=12){
         RAINFALL<-rep(rep(sum(RAINFALL)/timeinterval,timeinterval),nyears) # just spread evenly across every day
@@ -696,8 +652,8 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       ####### get solar attenuation due to aerosols with program GADS #####################
       relhum<-1.
       season<-0.
-      optdep.summer<-as.data.frame(get.gads(longlat[2],longlat[1],relhum,0))
-      optdep.winter<-as.data.frame(get.gads(longlat[2],longlat[1],relhum,1))
+      optdep.summer<-as.data.frame(GADS::get.gads(longlat[2],longlat[1],relhum,0))
+      optdep.winter<-as.data.frame(GADS::get.gads(longlat[2],longlat[1],relhum,1))
       optdep<-cbind(optdep.winter[,1],rowMeans(cbind(optdep.summer[,2],optdep.winter[,2])))
       optdep<-as.data.frame(optdep)
       colnames(optdep)<-c("LAMBDA","OPTDEPTH")
@@ -826,54 +782,47 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       if(dir.exists("micro csv input")==FALSE){
         dir.create("micro csv input")
       }
-      write.table(as.matrix(microinput), file = "csv input/microinput.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(julday, file = "csv input/julday.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(SLES, file = "csv input/SLES.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(DEP, file = "csv input/DEP.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(Intrvls, file = "csv input/Intrvls.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(Nodes, file = "csv input/Nodes.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(MAXSHADES, file = "csv input/Maxshades.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(MINSHADES, file = "csv input/Minshades.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(TIMAXS, file = "csv input/TIMAXS.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(TIMINS, file = "csv input/TIMINS.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(TMAXX, file = "csv input/TMAXX.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(TMINN, file = "csv input/TMINN.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(RHMAXX, file = "csv input/RHMAXX.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(RHMINN, file = "csv input/RHMINN.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(CCMAXX, file = "csv input/CCMAXX.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(CCMINN, file = "csv input/CCMINN.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(WNMAXX, file = "csv input/WNMAXX.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(WNMINN, file = "csv input/WNMINN.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(SNOW, file = "csv input/SNOW.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(REFLS, file = "csv input/REFLS.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(PCTWET, file = "csv input/PCTWET.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(soilinit, file = "csv input/soilinit.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(hori, file = "csv input/hori.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(TAI, file = "csv input/TAI.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(soilprops, file="csv input/soilprop.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(moists,file="csv input/moists.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(RAINFALL,file="csv input/rain.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(tannulrun,file="csv input/tannulrun.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(PE,file="csv input/PE.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(BD,file="csv input/BD.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(BB,file="csv input/BB.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(KS,file="csv input/KS.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(L,file="csv input/L.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(LAI,file="csv input/LAI.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(tides,file="csv input/tides.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(as.matrix(microinput), file = "micro csv input/microinput.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(julday, file = "micro csv input/julday.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(SLES, file = "micro csv input/SLES.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(DEP, file = "micro csv input/DEP.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(Intrvls, file = "micro csv input/Intrvls.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(Nodes, file = "micro csv input/Nodes.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(MAXSHADES, file = "micro csv input/Maxshades.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(MINSHADES, file = "micro csv input/Minshades.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(TIMAXS, file = "micro csv input/TIMAXS.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(TIMINS, file = "micro csv input/TIMINS.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(TMAXX, file = "micro csv input/TMAXX.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(TMINN, file = "micro csv input/TMINN.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(RHMAXX, file = "micro csv input/RHMAXX.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(RHMINN, file = "micro csv input/RHMINN.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(CCMAXX, file = "micro csv input/CCMAXX.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(CCMINN, file = "micro csv input/CCMINN.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(WNMAXX, file = "micro csv input/WNMAXX.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(WNMINN, file = "micro csv input/WNMINN.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(SNOW, file = "micro csv input/SNOW.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(REFLS, file = "micro csv input/REFLS.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(PCTWET, file = "micro csv input/PCTWET.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(soilinit, file = "micro csv input/soilinit.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(hori, file = "micro csv input/hori.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(TAI, file = "micro csv input/TAI.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(soilprops, file="micro csv input/soilprop.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(moists,file="micro csv input/moists.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(RAINFALL,file="micro csv input/rain.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(tannulrun,file="micro csv input/tannulrun.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(PE,file="micro csv input/PE.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(BD,file="micro csv input/BD.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(BB,file="micro csv input/BB.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(KS,file="micro csv input/KS.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(L,file="micro csv input/L.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(LAI,file="micro csv input/LAI.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(tides,file="micro csv input/tides.csv", sep = ",", col.names = NA, qmethod = "double")
     }
 
-    cat('running microclimate model ... \n')
+    cat(paste('running microclimate model for',timeinterval,'days by',nyears,'years \n at site',loc,'\n'))
     ptm <- proc.time() # Start timing
     microut<-microclimate(micro)
     print(proc.time() - ptm) # Stop the clock
-
-
-    #a<-getLoadedDLLs()[grep(pattern = "gads", x = getLoadedDLLs())]
-    #dyn.unload(a$gads[2]$path)
-
-    #a<-getLoadedDLLs()[grep(pattern = "MICROCLIMATE", x = getLoadedDLLs())]
-    #dyn.unload(a$MICROCLIMATE[2]$path)
 
     metout<-microut$metout # retrieve above ground microclimatic conditions, min shade
     shadmet<-microut$shadmet # retrieve above ground microclimatic conditions, max shade
@@ -900,27 +849,8 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       humid[,3:12]<-0.99
       shadhumid[,3:12]<-0.99
     }
-    # metout/shadmet variables:
-    # 1 JULDAY - day of year
-    # 2 TIME - time of day (mins)
-    # 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-    # 4 TAREF - air temperature (deg C) at reference height (1.2m)
-    # 5 RHLOC - relative humidity (%) at local height (specified by 'Usrhyt' variable)
-    # 6 RH  - relative humidity (%) at reference height (1.2m)
-    # 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
-    # 8 VREF - wind speed (m/s) at reference height (1.2m)
-    # 9 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
-    # 10 SOLR - solar radiation (W/m2)
-    # 11 TSKYC - sky radiant temperature (deg C)
-    # 12 SNOWFALL - snow predicted to have fallen (mm)
-    # 13 SNOWDEP - predicted snow depth (cm)
 
-    # soil and shadsoil variables:
-    # 1 JULDAY - day of year
-    # 2 TIME - time of day (mins)
-    # 3-12 D0cm ... - soil temperatures at each of the 10 specified depths
-
-    return(list(dim=dim,soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,RAINFALL=RAINFALL,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
+    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
 
   } # end error trapping
 } # end of NicheMapR_Setup_micro function
