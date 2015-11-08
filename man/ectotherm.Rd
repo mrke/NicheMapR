@@ -53,9 +53,9 @@ ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax,
 
 \item{MR_3}{Metabolic rate parameter}
 
-\item{skinwet}{Percentage of surface area acting as a free-water exchanger, for computing cutaneous water loss}
+\item{skinwet}{\% of surface area acting as a free-water exchanger, for computing cutaneous water loss}
 
-\item{extref}{Percent oxygen extraction efficiency, for respiratory water loss}
+\item{extref}{\% oxygen extraction efficiency, for respiratory water loss}
 
 \item{DELTAR}{Temperature difference (deg C) between expired and inspired air, , for respiratory water loss}
 
