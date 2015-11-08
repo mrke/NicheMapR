@@ -15,7 +15,7 @@ micro_global(loc, timeinterval, nyears, soiltype, REFL, slope, aspect, DEP, mins
 
 \item{soiltype}{Soil type: Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, based on Campbell and Norman 1990 Table 9.1.}
 
-\item{REFL}{Soil solar reflectance, decimal percent}
+\item{REFL}{Soil solar reflectance, decimal \%}
 
 \item{slope}{Slope in degrees}
 
@@ -23,9 +23,9 @@ micro_global(loc, timeinterval, nyears, soiltype, REFL, slope, aspect, DEP, mins
 
 \item{DEP}{Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface}
 
-\item{minshade}{Minimum shade level to use (percent)}
+\item{minshade}{Minimum shade level to use (\%)}
 
-\item{maxshade}{Maximum shade level to us (percent)}
+\item{maxshade}{Maximum shade level to us (\%)}
 
 \item{Usrhyt}{Local height (cm) at which air temperature, wind speed and humidity are to be computed for organism of interest}
 }
@@ -66,13 +66,13 @@ metout/shadmet variables:
 \item 2 TIME - time of day (mins)
 \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
 \item 4 TAREF - air temperature (deg C) at reference height (1.2m)
-\item 5 RHLOC - relative humidity (percent) at local height (specified by 'Usrhyt' variable)
-\item 6 RH  - relative humidity (percent) at reference height (1.2m)
+\item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
+\item 6 RH  - relative humidity (\%) at reference height (1.2m)
 \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
 \item 8 VREF - wind speed (m/s) at reference height (1.2m)
 \item 9 SNOWMELT - snowmelt (mm)
 \item 10 POOLDEP - water pooling on surface (mm)
-\item 11 PCTWET - soil surface wetness (percent)
+\item 11 PCTWET - soil surface wetness (\%)
 \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
 \item 13 SOLR - solar radiation (W/m2)
 \item 14 TSKYC - sky radiant temperature (deg C)
@@ -85,7 +85,7 @@ soil and shadsoil variables:
 \itemize{
 \item 1 JULDAY - day of year
 \item 2 TIME - time of day (mins)
-\item 3-12 WC0cm ... - soil temperatures at each of the 10 specified depths
+\item 3-12 D0cm ... - soil temperatures at each of the 10 specified depths
 
 if soil moisture model is run i.e. parameter runmoist = 1\cr
 
@@ -93,6 +93,7 @@ soilmoist and shadmoist variables:
 \itemize{
 \item 1 JULDAY - day of year
 \item 2 TIME - time of day (mins)
+\item 3-12 WC0cm ... - soil temperatures at each of the 10 specified depths
 }
 soilpot and shadpot variables:
 \itemize{
@@ -105,7 +106,7 @@ humid and shadhumid variables:
 \itemize{
 \item  1 JULDAY - day of year
 \item  2 TIME - time of day (mins)
-\item  3-12 RH0cm ... - soil relative humidity (decimal percent), at each of the 10 specified depths
+\item  3-12 RH0cm ... - soil relative humidity (decimal \%), at each of the 10 specified depths
 }
 }
 }

@@ -10,7 +10,7 @@
 
 <meta name="author" content="Michael Kearney" />
 
-<meta name="date" content="2015-11-08" />
+<meta name="date" content="2015-11-09" />
 
 <title>Tutorial for the NicheMapR microclimate model</title>
 
@@ -54,268 +54,151 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="header">
 <h1 class="title">Tutorial for the NicheMapR microclimate model</h1>
 <h4 class="author"><em>Michael Kearney</em></h4>
-<h4 class="date"><em>2015-11-08</em></h4>
+<h4 class="date"><em>2015-11-09</em></h4>
 </div>
 
 
-<p>This vignette provides a detailed tutorial of the Niche Mapper microclimate model as implemented in the package NicheMapR. See (ref to vignette) for details on the underlying theory and equations.</p>
+<p>This vignette provides a detailed tutorial of the Niche Mapper microclimate model as implemented in the package <em>NicheMapR</em>. See the <em>microclimate</em> vignette for details on the underlying theory and equations.</p>
 <div id="getting-started-working-with-the-micro_global-function" class="section level2">
 <h2>Getting started: working with the micro_global() function</h2>
-<p>The NicheMapR package includes data and functions for using a global monthly climate database for computing microclimates. This tutorial starts by illustrating the different capabilities of the microclimate model using this database. For details on setting the model up to run with your own environmental data, see …</p>
+<p>The <em>NicheMapR</em> package includes data and functions for using a global monthly climate database for computing microclimates. This tutorial starts by illustrating the different capabilities of the microclimate model using this database. For details on setting the model up to run with your own environmental data, see (refer to section below).</p>
 <div id="basic-operation-modelling-microclimates-for-the-average-day-of-each-month" class="section level3">
 <h3>Basic operation: modelling microclimates for the average day of each month</h3>
 <p>This first example involves the most basic case of running the model to produce 12 days of output, one for each month of the year, without involking the soil moisture or snow subroutines. In this mode of operation, the model does three iterations of each day, the first one starting with a uniform soil temperature profile and the first two acting as ‘burn-in’ runs prior to the third and final run which is provided as the final output.</p>
 <p>Try running the model for a place of interest to you, as follows:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(NicheMapR)
-<span class="kw">library</span>(GADS)
-<span class="kw">get.gads</span>(-<span class="dv">35</span>,<span class="dv">145</span>,<span class="dv">1</span>,<span class="dv">1</span>)</code></pre>
-<pre><code>##       LAMBDA    OPTDEPTH
-##  [1,]    250 0.088799283
-##  [2,]    300 0.077783436
-##  [3,]    350 0.067639537
-##  [4,]    400 0.058944426
-##  [5,]    450 0.051635340
-##  [6,]    500 0.045520868
-##  [7,]    550 0.040335275
-##  [8,]    600 0.035911411
-##  [9,]    650 0.032241296
-## [10,]    700 0.029011669
-## [11,]    750 0.026354419
-## [12,]    800 0.023661962
-## [13,]    900 0.020022327
-## [14,]   1000 0.017187890
-## [15,]   1250 0.012321059
-## [16,]   1500 0.009656740
-## [17,]   1750 0.007432728
-## [18,]   2000 0.005692690
-## [19,]   2500 0.004064234
-## [20,]   3000 0.004935181
-## [21,]   3200 0.004263259
-## [22,]   3390 0.004015789
-## [23,]   3500 0.003974102
-## [24,]   3750 0.003581458
-## [25,]   4000 0.003321708</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co">#micro&lt;-micro_global(loc=&quot;Melbourne, Australia&quot;)</span></code></pre>
-<p>The results are stored as a list in the variable ‘micro’. The main ones to focus on for now are</p>
-<p>metout The above ground micrometeorological conditions under the minimum specified shade shadmet The above ground micrometeorological conditions under the maximum specified shade soil Hourly predictions of the soil temperatures under the minimum specified shade shadsoil Hourly predictions of the soil temperatures under the maximum specified shade</p>
-</div>
-<div id="running-at-finer-time-intervals-and-for-longer-time-periods" class="section level3">
-<h3>Running at finer time intervals and for longer time periods</h3>
-<p>It is possible to run the model for more frequent intervals than once per month by changing the parameter ‘timeinterval’. If ‘timeinterval’ is set to something less than 365, then the model runs as described in the previous section with three iterations per day, and uses the ‘spline’ function to interpolate the climate data from monthly to the chosen time interval. If ‘timeinterval’ is set to the maximum value of 365, it will apply the three iterations to the first day of the simulation to get started and then, from that day on, use the previous day’s conditions as the initial state for the next day’s conditions.</p>
-<p>It is also possible to run the model for multiple years by changing the ‘nyears’ parameter. This can be useful when running the soil moisture and snow subroutines (described below) to allow annual cycles to stabilise.</p>
+
+micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc=</span><span class="st">&quot;Madison, Wisconsin, USA&quot;</span>)</code></pre>
+<p>The results are stored as a list in the variable <em>micro</em>. The main ones to focus on for now are</p>
+<ul>
+<li><strong>metout</strong> The above ground micrometeorological conditions under the minimum specified shade</li>
+<li><strong>shadmet</strong> The above ground micrometeorological conditions under the maximum specified shade</li>
+<li><strong>soil</strong> Hourly predictions of the soil temperatures under the minimum specified shade</li>
+<li><strong>shadsoil</strong> Hourly predictions of the soil temperatures under the maximum specified shade</li>
+</ul>
+<p>The first two rows of the output tables <strong>metout</strong> and <strong>shadmet</strong> look like this</p>
+<p>and show, for each day of the year and for each hour of the day, a series of aboveground microclimatic conditions as follows:</p>
+<ol style="list-style-type: decimal">
+<li>JULDAY - day of year</li>
+<li>TIME - time of day (mins)</li>
+<li>TALOC - air temperature (deg C) at local height (specified by ‘Usrhyt’ variable)</li>
+<li>TAREF - air temperature (deg C) at reference height (1.2m)</li>
+<li>RHLOC - relative humidity (%) at local height (specified by ‘Usrhyt’ variable)</li>
+<li>RH - relative humidity (%) at reference height (1.2m)</li>
+<li>VLOC - wind speed (m/s) at local height (specified by ‘Usrhyt’ variable)</li>
+<li>VREF - wind speed (m/s) at reference height (1.2m)</li>
+<li>SNOWMELT - snowmelt (mm)</li>
+<li>POOLDEP - water pooling on surface (mm)</li>
+<li>PCTWET - soil surface wetness (%)</li>
+<li>ZEN - zenith angle of sun (degrees - 90 = below the horizon)</li>
+<li>SOLR - solar radiation (W/m2)</li>
+<li>TSKYC - sky radiant temperature (deg C)</li>
+<li>DEW - dew presence (0 or 1)</li>
+<li>FROST - frost presence (0 or 1)</li>
+<li>SNOWFALL - snow predicted to have fallen (mm)</li>
+<li>SNOWDEP - predicted snow depth (cm)</li>
+</ol>
+<p>Note that for air temperature, relative humidity and wind speed, there’s a ‘reference height’ value and a ‘local height’ value. The reference height value is the height at which the meteorological observations were made that were given to the model as input. The local height values are the microclimatic values at a height determined by the variable <em>Usrhyt</em>, which you can set to be relevant to the organism you are interested in (by default it is 1cm). It should be at the midpoint of the animal or plant’s height.</p>
+<p>Check what you got with:</p>
+<pre><code>metout&lt;-micro$metout # put the metout result into a variable 'metout'
+head(metout,24) # show the first 24 rows, i.e. the first day
+
+shadmet&lt;-micro$shadmet # put the shadmet result into a variable 'shadmet'
+head(shadmet,24) # show the first 24 rows, i.e. the first day</code></pre>
+<p>Because the snow model wasn’t flagged to run, there will be zeros in all the snow-related columns.</p>
+<p>The first two rows of the output tables <strong>soil</strong> and <strong>shadsoil</strong> look like this</p>
+<p>and show, for each day of the year and for each hour of the day, the soil temperatures as follows:</p>
+<ol style="list-style-type: decimal">
+<li>JULDAY - day of year</li>
+<li>TIME - time of day (mins)</li>
+<li>Columns 3-12 D0cm … - soil temperatures at each of the 10 specified depths</li>
+</ol>
+<p>Have a look at yours:</p>
+<pre><code>soil&lt;-micro$soil # put the soil result into a variable 'soil'
+head(soil,24) # show the first 24 rows, i.e. the first day
+
+shadsoil&lt;-micro$shadsoil # put the metout result into a variable 'shadsoil'
+head(shadsoil,24) # show the first 24 rows, i.e. the first day</code></pre>
+<p>The 10 different depths used by the model are specified with <em>DEP</em> and by default are <code>DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)</code>.</p>
+<p>There are some example plots of all the variables in the help for the <em>micro_global</em> function. Here is a plot for all the soil temperatures in Madison, Wisconsin in July and December:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">require</span>(lattice,<span class="dt">quietly =</span> <span class="ot">TRUE</span>)
+soil&lt;-<span class="kw">as.data.frame</span>(micro$soil) <span class="co"># get the soil data</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="kw">with</span>(<span class="kw">subset</span>(soil,JULDAY==<span class="dv">196</span> |<span class="st"> </span>JULDAY==<span class="dv">349</span>),{<span class="kw">xyplot</span>(D0cm +<span class="st"> </span>D2.5cm +<span class="st"> </span>D5cm +<span class="st"> </span>D10cm +<span class="st"> </span>D15cm +<span class="st"> </span>D20cm
+  +<span class="st"> </span>D30cm +<span class="st"> </span>D50cm +<span class="st"> </span>D100cm +<span class="st"> </span>D200cm ~<span class="st"> </span>TIME |<span class="st"> </span><span class="kw">as.factor</span>(JULDAY),<span class="dt">ylim=</span><span class="kw">c</span>(-<span class="dv">20</span>,<span class="dv">70</span>),<span class="dt">xlab =</span> <span class="st">&quot;Time of Day</span>
+<span class="st">  (min)&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Temperature (deg C)&quot;</span>, <span class="dt">auto.key=</span><span class="kw">list</span>(<span class="dt">columns =</span> <span class="dv">5</span>), <span class="dt">as.table =</span> <span class="ot">TRUE</span>, <span class="dt">type =</span>
+    <span class="st">&quot;b&quot;</span>, <span class="dt">main=</span><span class="kw">paste</span>(minshade,<span class="st">&quot;% shade&quot;</span>))})</code></pre>
+<p>Notice how the deeper one goes into the soil, the lower the amplitude of the fluctuations but also that the maximum temperature is reached later in the day. The daily fluctuations have largely disappeared by 50cm and at 200cm the temperature is stable year round. In fact the model assumes the deep soil temperature is the annual mean of the air temperatures, and this is a ‘boundary condition’ in the solution of the soil heat budget.</p>
 </div>
 <div id="simulating-shading-by-vegetation" class="section level3">
 <h3>Simulating shading by vegetation</h3>
+<p>By default the model runs twice, for two different levels of shading by vegetation. The particular shade levels can be selected with the parameters <em>maxshade</em> and <em>minshade</em>. Also, the second shade level simulation can be turned off if only one shade level is required with the parameter <em>runshade</em>. The code below runs the model for one shade level only, 50%:</p>
+<pre class="sourceCode r"><code class="sourceCode r">micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc =</span> <span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runshade =</span> <span class="dv">0</span>, <span class="dt">minshade =</span> <span class="dv">50</span>)
+
+soil&lt;-<span class="kw">as.data.frame</span>(micro$soil) <span class="co"># get the soil data</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="kw">with</span>(<span class="kw">subset</span>(soil,JULDAY==<span class="dv">196</span> |<span class="st"> </span>JULDAY==<span class="dv">349</span>),{<span class="kw">xyplot</span>(D0cm +<span class="st"> </span>D2.5cm +<span class="st"> </span>D5cm +<span class="st"> </span>D10cm +<span class="st"> </span>D15cm +<span class="st"> </span>D20cm
+  +<span class="st"> </span>D30cm +<span class="st"> </span>D50cm +<span class="st"> </span>D100cm +<span class="st"> </span>D200cm ~<span class="st"> </span>TIME |<span class="st"> </span><span class="kw">as.factor</span>(JULDAY),<span class="dt">ylim=</span><span class="kw">c</span>(-<span class="dv">20</span>,<span class="dv">70</span>),<span class="dt">xlab =</span> <span class="st">&quot;Time of Day</span>
+<span class="st">  (min)&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Temperature (deg C)&quot;</span>, <span class="dt">auto.key=</span><span class="kw">list</span>(<span class="dt">columns =</span> <span class="dv">5</span>), <span class="dt">as.table =</span> <span class="ot">TRUE</span>, <span class="dt">type =</span>
+    <span class="st">&quot;b&quot;</span>, <span class="dt">main=</span><span class="kw">paste</span>(minshade,<span class="st">&quot;% shade&quot;</span>))})</code></pre>
+<p>Notice how, the effect of shade is to not only reduce the daytime soil temperatures, but also to increase the nighttime temperatures. This is due to the increased levels of infrared radiation reaching the ground surface because the shading vegetation is assumed to be at the reference height air temperature while the ‘sky temperature’ is typically much colder, depending on the level of cloud cover (have a look at the variable <em>Tsky</em> in the <strong>metout</strong> and <strong>shadmet</strong> outputs).</p>
 </div>
 <div id="simulating-terrain-effects---slope-aspect-hillshade" class="section level3">
 <h3>Simulating terrain effects - slope, aspect, hillshade</h3>
+<p>Slope and aspect have strong effects on microclimates through the effects of direct solar radiation. The default setting is flat ground in the <em>NicheMapR</em> microclimate model. Here is the effect of a 45 degree southerly slope on the 0% shade simulation:</p>
+<pre class="sourceCode r"><code class="sourceCode r">micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc =</span> <span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runshade =</span> <span class="dv">0</span>, <span class="dt">minshade =</span> <span class="dv">0</span>, <span class="dt">slope =</span> <span class="dv">45</span>, aspect
+  =<span class="st"> </span><span class="dv">180</span>)
+
+soil&lt;-<span class="kw">as.data.frame</span>(micro$soil) <span class="co"># get the soil data</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="kw">with</span>(<span class="kw">subset</span>(soil,JULDAY==<span class="dv">196</span> |<span class="st"> </span>JULDAY==<span class="dv">349</span>),{<span class="kw">xyplot</span>(D0cm +<span class="st"> </span>D2.5cm +<span class="st"> </span>D5cm +<span class="st"> </span>D10cm +<span class="st"> </span>D15cm +<span class="st"> </span>D20cm
+  +<span class="st"> </span>D30cm +<span class="st"> </span>D50cm +<span class="st"> </span>D100cm +<span class="st"> </span>D200cm ~<span class="st"> </span>TIME |<span class="st"> </span><span class="kw">as.factor</span>(JULDAY),<span class="dt">ylim=</span><span class="kw">c</span>(-<span class="dv">20</span>,<span class="dv">70</span>),<span class="dt">xlab =</span> <span class="st">&quot;Time of Day</span>
+<span class="st">  (min)&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Temperature (deg C)&quot;</span>, <span class="dt">auto.key=</span><span class="kw">list</span>(<span class="dt">columns =</span> <span class="dv">5</span>), <span class="dt">as.table =</span> <span class="ot">TRUE</span>, <span class="dt">type =</span>
+    <span class="st">&quot;b&quot;</span>, <span class="dt">main=</span><span class="kw">paste</span>(minshade,<span class="st">&quot;% shade, 45 degree slope, 180 degrees aspect&quot;</span>))})</code></pre>
+<p>The strongest effect is on the December soil temperatures.</p>
+<p>Hillshade also has a strong effect on microclimates. Gullies and gorges receive a shorter window of direct solar radiation and have a smaller ‘view’ of the sky, and so don’t cool down as much at night. Horizon angles can be specified to simulated these kinds of effects by supplying in the parameter <em>hori</em> a vector of 24 horizon angles (angle to nearest hill/cliff) starting due north and continuing clockwise in 15 degree intervals. Here is an example for a steep-sided gully running north-south:</p>
+<pre class="sourceCode r"><code class="sourceCode r">micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc=</span><span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runshade =</span> <span class="dv">0</span>, <span class="dt">minshade =</span> <span class="dv">0</span>, <span class="dt">hori =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">65</span>,
+  <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>))
+
+soil&lt;-<span class="kw">as.data.frame</span>(micro$soil) <span class="co"># get the soil data</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="kw">with</span>(<span class="kw">subset</span>(soil,JULDAY==<span class="dv">196</span> |<span class="st"> </span>JULDAY==<span class="dv">349</span>),{<span class="kw">xyplot</span>(D0cm +<span class="st"> </span>D2.5cm +<span class="st"> </span>D5cm +<span class="st"> </span>D10cm +<span class="st"> </span>D15cm +<span class="st"> </span>D20cm
+  +<span class="st"> </span>D30cm +<span class="st"> </span>D50cm +<span class="st"> </span>D100cm +<span class="st"> </span>D200cm ~<span class="st"> </span>TIME |<span class="st"> </span><span class="kw">as.factor</span>(JULDAY),<span class="dt">ylim=</span><span class="kw">c</span>(-<span class="dv">20</span>,<span class="dv">70</span>),<span class="dt">xlab =</span> <span class="st">&quot;Time of Day</span>
+<span class="st">  (min)&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Temperature (deg C)&quot;</span>, <span class="dt">auto.key=</span><span class="kw">list</span>(<span class="dt">columns =</span> <span class="dv">5</span>), <span class="dt">as.table =</span> <span class="ot">TRUE</span>, <span class="dt">type =</span>
+    <span class="st">&quot;b&quot;</span>, <span class="dt">main=</span><span class="kw">paste</span>(minshade,<span class="st">&quot;% shade, north-south gully&quot;</span>))})</code></pre>
 </div>
 <div id="changing-the-soil-properties" class="section level3">
 <h3>Changing the soil properties</h3>
-<p>Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The <code>html_vignette</code> output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The <code>html_vignette</code> format:</p>
-<ul>
-<li>Never uses retina figures</li>
-<li>Has a smaller default figure size</li>
-<li>Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style</li>
-</ul>
+<p>Another important influence on microclimatic conditions is the substrate type. The substrate solar reflectivity can be changed with the parameter <em>REFL</em> and the emissivity with the parameter <em>SLE</em> (both range from 0-1).</p>
+<p>Soil thermal properties are also importance. Soil comprises a mixture of minerals, air and water. The density (kg/m3), thermal conductivity (W/mK) and specific heat capacity (J/kg-K) of the mineral component are specified by the parameters <em>Density</em>, <em>Thcond</em> and <em>SpecHeat</em>, respectively. The bulk density determines the proportion of the soil volume that is air, parameter <em>BulkDensity</em> (kg/m3).</p>
+<p>The default values are typical for soil minerals as described in Campbell and Norman (1998) Table 8.2, but an ‘A-horizon’ layer for the first node, reflecting properties of organic matter, is also simulated (see Kearney et al. 2014). This can be turned off by specifying <code>cap = 0</code>.</p>
+<p>For simulating rock, <em>BulkDensity</em> should be set the same as <em>Density</em> and this can be easily set in <em>micro_global</em> by setting <em>soiltype</em> to value 0 (which also sets cap = 0):</p>
+<pre class="sourceCode r"><code class="sourceCode r">micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc=</span><span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runshade =</span> <span class="dv">0</span>, <span class="dt">minshade =</span> <span class="dv">0</span>, <span class="dt">soiltype =</span> <span class="dv">0</span>)
+
+soil&lt;-<span class="kw">as.data.frame</span>(micro$soil) <span class="co"># get the soil data</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="kw">with</span>(<span class="kw">subset</span>(soil,JULDAY==<span class="dv">196</span> |<span class="st"> </span>JULDAY==<span class="dv">349</span>),{<span class="kw">xyplot</span>(D0cm +<span class="st"> </span>D2.5cm +<span class="st"> </span>D5cm +<span class="st"> </span>D10cm +<span class="st"> </span>D15cm +<span class="st"> </span>D20cm
+  +<span class="st"> </span>D30cm +<span class="st"> </span>D50cm +<span class="st"> </span>D100cm +<span class="st"> </span>D200cm ~<span class="st"> </span>TIME |<span class="st"> </span><span class="kw">as.factor</span>(JULDAY),<span class="dt">ylim=</span><span class="kw">c</span>(-<span class="dv">20</span>,<span class="dv">70</span>),<span class="dt">xlab =</span> <span class="st">&quot;Time of Day</span>
+<span class="st">  (min)&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Temperature (deg C)&quot;</span>, <span class="dt">auto.key=</span><span class="kw">list</span>(<span class="dt">columns =</span> <span class="dv">5</span>), <span class="dt">as.table =</span> <span class="ot">TRUE</span>, <span class="dt">type =</span>
+    <span class="st">&quot;b&quot;</span>, <span class="dt">main=</span><span class="kw">paste</span>(minshade,<span class="st">&quot;% shade, rock substrate&quot;</span>))})</code></pre>
+<p>Notice how the heat penetrates more deeply into the rock, producing a gentler temperature gradient with depth, cooler near-surface temperatures during the day and warmer near-surface temperatures at night.</p>
+<p>The texture of the soil, i.e. the proportion of silt, sand and clay and associated particle size distributions, has a powerful influence on soil moisture and is discussed further in the next section.</p>
 </div>
+<div id="soil-moisture" class="section level3">
+<h3>Soil moisture</h3>
 </div>
-<div id="vignette-info" class="section level2">
-<h2>Vignette Info</h2>
-<p>Note the various macros within the <code>vignette</code> section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the <code>title</code> field and the <code>\VignetteIndexEntry</code> to match the title of your vignette.</p>
+<div id="running-at-finer-time-intervals-and-for-longer-time-periods" class="section level3">
+<h3>Running at finer time intervals and for longer time periods</h3>
+<p>It is possible to run the model for more frequent intervals than once per month by changing the parameter <em>timeinterval</em>. If <em>timeinterval</em> is set to something less than 365, then the model runs as described in the previous section with three iterations per day, and uses the ‘spline’ function to interpolate the climate data from monthly to the chosen time interval. If ‘timeinterval’ is set to the maximum value of 365, it will apply the three iterations to the first day of the simulation to get started and then, from that day on, use the previous day’s conditions as the initial state for the next day’s conditions.</p>
+<p>It is also possible to run the model for multiple years by changing the <em>nyears</em> parameter. This can be useful when running the soil moisture and snow subroutines (described below) to allow annual cycles to stabilise.</p>
 </div>
-<div id="styles" class="section level2">
-<h2>Styles</h2>
-<p>The <code>html_vignette</code> template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:</p>
-<pre><code>output: 
-  rmarkdown::html_vignette:
-    css: mystyles.css</code></pre>
+<div id="snow" class="section level3">
+<h3>Snow</h3>
 </div>
-<div id="figures" class="section level2">
-<h2>Figures</h2>
-<p>The figure sizes have been customised so that you can easily put two images side-by-side.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(<span class="dv">1</span>:<span class="dv">10</span>)
-<span class="kw">plot</span>(<span class="dv">10</span>:<span class="dv">1</span>)</code></pre>
-<p><img src="data:image/png;base64,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" /> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAWlBMVEUAAAAAADoAAGYAOjoAOpAAZrY6AAA6ADo6AGY6kNtmAABmADpmZmZmtrZmtv+QOgCQZgCQkGaQ2/+2ZgC2/7a2///bkDrb/9vb////tmb/25D//7b//9v////Y4K3VAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAGd0lEQVR4nO2dDVPjNhQADQVa0pZcyZ2LSfL//2bjjwQoWGvHkq2Q3Rlu5u7EU7KRnxTrRSn2EqRY+gHkjoIABQEKAhQEKAhQEKAgQEGAggAFAQoCFAQoCFAQoCBAQYCCAAUBCgIUBCgIUBCgIEBBgIIABQEKAhQEKAhQEKAgQEGAggAFAQoCFAQoCFAQoCBAQYCCAAUBCgIUBCgIUBCgIEBBgIIABQEKAhQEKAhQEKAgQEGAggAFAQoCFAQoCFAQoCBAQYCCAAUBCgIUBCgIUBCgIEBBgIIABQEKAhQERBZUXAxLCeosxY2agCUFHX+yZkFBRYq40ZlZ0PtLW0EQTkEUzhxE4ZzFZguXDgUBCgIUBCgIyExQfvNaXoIyXBllJSjHtbWCAAUBWQkyB2E4Z7FE4dKhIEBBgIKARII2RXG/Wx9S7tPEcItn7TSCyruXg6P7/X67epwUbvl5P4mg3fqgpbp53reqzg+XwcoxiaDt6nBlVbe/9sc/36KM29H9roIcQcQpBzWqJoT7pjnIWWzGfpdGQYCCAAUBCgIuT9DM89rFCZp7ZXRpgmZfWytoUIcxG6YNp6Ahv2gOCv6ms1hWjBS0Xb3d8vp4KyxVv0szdgTt1pO8jO93aUZfYrv1/az9Ls34HFT13gR7x+Ywzl4fiqK57TqpXyZt1k6TpBs/vz93t+8nhwuSeN5PtKvxeJDUXIrTbtoPIPXKMdm2T3e7ftq2z+DHdWGCmtFTXusIOu4ml4H5fru6/fVuc2xKv4Me2KXloH091zX0LgmufBabPVw6zlgoRnij8Y0FlUW3l1wVPZvKkftdmpGC3u21981PkftdmtHv5k8r48p38180vIgRFHVaG5+DuiGUbw6KuzAaPYsdb5lNGj/pl76RV+oxGy4S7lNkBUFkBYVDL5iD5u73nNgLzmLualBDdzWoobsa1HDQrka8fpcmaZJ+feh1Oa+gCWk70U17TOWzFyBMq7eJ2bCme6OWyQiatHRMdIltV/V7tc+C4m/7DCBHQfv95ubZERSkLB4zEZRhDmp4ffgtE0HZzWIdu3X/ksl10Lzh0qEgQEGAgoArFTR8WrtOQSMWRlcpaMzSWkGD2sZsuEi4czpXULh3c1Cwe2exWCgIUBCgICCRoPJ4Mk5fuXl2gvrSdhpB5c3zfruqt2AvRVDvxJ9EUFvJuFvfvVyKoP6lY6KNw/ZW6+bupUz9aZ84zCzoVAu7uXcEfclRy3aVxdbzAObNQW/Vwr3lRLkJmnkWmz1cOhQEKAhQEKCgPrqsraAein1g7u/7hcj958xp5aigr1EQoCDCHEQ4iw1jMUEXw0KCJnTDTaIEGfuMFRS3+bkoaHo3CprcREFzBFFQhCYTmp+LgqZ3c92CLhcFAQoCFAQoCFAQoCBAQYCCAAUBCgIUBCgImEFQc1Q1H4C6CR8CWn+dB5widvocQG+MP5rKyirwxSCfSC9otz48mpKe3OFRBwVVh/9ti/x7qT8HEDxorD6Sf98eyN97KP8n0gtqz4oJfZdAzXYVFNSWaAeDtMfUbfodVu25WW2oQLuPzJWD6CUr736EBDXfBxOGBFXFY3NW9rAX7MRcgjbhB3QQEMxB1e3PFSUyvMTaw8Rb14PPFZ9JEBxTXQ/7oKCyvjrorEdMvo2VdiwPTkLzCKogRzdfZB8UdMMve/vVVaEXIltBdMx5M+rDgho1gbPBBuWWXC+xklZBZVeS0v/02+cTTNUDRkamSbocdghqcAS1H1ULvuztEw82qbKc5sNp4Y3wSrrOUu++u+HLAMNyUHYLxe76wUcEbzUqfr+yoSbd8Crzeqtx4SgIUBCgIEBBgIIABQEKAhQEKAhQEKAgQEGAggAFAQoCFAQoCFAQoCBAQYCCAAUBCgIUBCgIUBCQn6BPdQXDCw1SoCBAQUCWgrarv1dtvVldqfJPLahsS1vqwrDtaljBURwyFVQX5x9+6pqoquj+UhdH1TVUZbiQKDKZCnpsSuraqrpN9w9N/VN1+/PPWa+4TAU9NWWJp5K5Ng01vjb4qY+4ZC2oPAl6K4MN19LHJ2tB/xtBNbv1X0MLeOOQtaCupLn7h4by7t9wrWtsshbUfT6lm8XabP00vEg+CnkL+rgOOojZNOXSc6bp/ARlhoIABQEKAhQEKAhQEKAgQEGAggAFAQoCFAQoCFAQoCBAQYCCAAUBCgIUBCgIUBCgIOA/QwIfBMPupjoAAAAASUVORK5CYII=" /></p>
-<p>You can enable figure captions by <code>fig_caption: yes</code> in YAML:</p>
-<pre><code>output:
-  rmarkdown::html_vignette:
-    fig_caption: yes</code></pre>
-<p>Then you can use the chunk option <code>fig.cap = &quot;Your figure caption.&quot;</code> in <strong>knitr</strong>.</p>
 </div>
 <div id="more-examples" class="section level2">
 <h2>More Examples</h2>
-<p>You can write math expressions, e.g. <span class="math">\(Y = X\beta + \epsilon\)</span>, footnotes<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>, and tables, e.g. using <code>knitr::kable()</code>.</p>
-<table>
-<thead>
-<tr class="header">
-<th align="left"></th>
-<th align="right">mpg</th>
-<th align="right">cyl</th>
-<th align="right">disp</th>
-<th align="right">hp</th>
-<th align="right">drat</th>
-<th align="right">wt</th>
-<th align="right">qsec</th>
-<th align="right">vs</th>
-<th align="right">am</th>
-<th align="right">gear</th>
-<th align="right">carb</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Mazda RX4</td>
-<td align="right">21.0</td>
-<td align="right">6</td>
-<td align="right">160.0</td>
-<td align="right">110</td>
-<td align="right">3.90</td>
-<td align="right">2.620</td>
-<td align="right">16.46</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">4</td>
-</tr>
-<tr class="even">
-<td align="left">Mazda RX4 Wag</td>
-<td align="right">21.0</td>
-<td align="right">6</td>
-<td align="right">160.0</td>
-<td align="right">110</td>
-<td align="right">3.90</td>
-<td align="right">2.875</td>
-<td align="right">17.02</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">4</td>
-</tr>
-<tr class="odd">
-<td align="left">Datsun 710</td>
-<td align="right">22.8</td>
-<td align="right">4</td>
-<td align="right">108.0</td>
-<td align="right">93</td>
-<td align="right">3.85</td>
-<td align="right">2.320</td>
-<td align="right">18.61</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="left">Hornet 4 Drive</td>
-<td align="right">21.4</td>
-<td align="right">6</td>
-<td align="right">258.0</td>
-<td align="right">110</td>
-<td align="right">3.08</td>
-<td align="right">3.215</td>
-<td align="right">19.44</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="left">Hornet Sportabout</td>
-<td align="right">18.7</td>
-<td align="right">8</td>
-<td align="right">360.0</td>
-<td align="right">175</td>
-<td align="right">3.15</td>
-<td align="right">3.440</td>
-<td align="right">17.02</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="left">Valiant</td>
-<td align="right">18.1</td>
-<td align="right">6</td>
-<td align="right">225.0</td>
-<td align="right">105</td>
-<td align="right">2.76</td>
-<td align="right">3.460</td>
-<td align="right">20.22</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="left">Duster 360</td>
-<td align="right">14.3</td>
-<td align="right">8</td>
-<td align="right">360.0</td>
-<td align="right">245</td>
-<td align="right">3.21</td>
-<td align="right">3.570</td>
-<td align="right">15.84</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">4</td>
-</tr>
-<tr class="even">
-<td align="left">Merc 240D</td>
-<td align="right">24.4</td>
-<td align="right">4</td>
-<td align="right">146.7</td>
-<td align="right">62</td>
-<td align="right">3.69</td>
-<td align="right">3.190</td>
-<td align="right">20.00</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">2</td>
-</tr>
-<tr class="odd">
-<td align="left">Merc 230</td>
-<td align="right">22.8</td>
-<td align="right">4</td>
-<td align="right">140.8</td>
-<td align="right">95</td>
-<td align="right">3.92</td>
-<td align="right">3.150</td>
-<td align="right">22.90</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="left">Merc 280</td>
-<td align="right">19.2</td>
-<td align="right">6</td>
-<td align="right">167.6</td>
-<td align="right">123</td>
-<td align="right">3.92</td>
-<td align="right">3.440</td>
-<td align="right">18.30</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">4</td>
-</tr>
-</tbody>
-</table>
-<p>Also a quote using <code>&gt;</code>:</p>
-<blockquote>
-<p>“He who gives up [code] safety for [code] speed deserves neither.” (<a href="https://twitter.com/hadleywickham/status/504368538874703872">via</a>)</p>
-</blockquote>
-</div>
-<div class="footnotes">
-<hr />
-<ol>
-<li id="fn1"><p>A footnote here.<a href="#fnref1">↩</a></p></li>
-</ol>
+<p>You can write math expressions, e.g. <span class="math">\(Y = X\beta + \epsilon\)</span></p>
 </div>
 
 
