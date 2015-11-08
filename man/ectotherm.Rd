@@ -2,7 +2,7 @@
 % Please edit documentation in R/ectotherm.R
 \name{ectotherm}
 \alias{ectotherm}
-\title{ectotherm}
+\title{Ectotherm model.}
 \usage{
 ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax, ctmin,
  tpref, dayact, nocturn, crepus, CkGrShad, burrow, climb, shdburrow, mindepth, maxdepth,
@@ -53,10 +53,24 @@ ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax,
 
 \item{MR_3}{Metabolic rate parameter}
 
+\item{skinwet}{Percentage of surface area acting as a free-water exchanger, for computing cutaneous water loss}
+
+\item{extref}{Percent oxygen extraction efficiency, for respiratory water loss}
+
+\item{DELTAR}{Temperature difference (deg C) between expired and inspired air, , for respiratory water loss}
+
 \item{tpref}{Preferred body temperature, degrees C}
 }
 \description{
-An implementation of the Niche Mapper ectotherm model
+An implementation of the Niche Mapper ectotherm model that computes body temperature, water loss,
+activity and microhabitat selection. It optionally runs the Dynamic Energy Budget (DEB) model for
+computing mass budgets (inc. water budgets) and growth, development, reproduction trajectories
+as constrained by food, activity and temperature (see Details). When not running the DEB model
+a user-specified mass is used as well as a allometric (mass and body temperature) function to
+compute metabolic rate.
+}
+\details{
+The microclimate model, e.g. micro_global(), must be run prior to running the ectotherm model
 }
 \examples{
 # run the microclimate model

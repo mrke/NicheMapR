@@ -6,6 +6,15 @@ Maintainer: Michael Kearney <mrke@unimelb.edu.au>
 Description: This packages provides an interface to a suite of biophysical modelling algorithims including the Niche Mapper system.
 Depends:
     R (>= 3.2.2)
+Imports:
+   raster
 License: MIT
 LazyData: true
 RoxygenNote: 5.0.0
+Suggests:
+    dismo,
+    knitr,
+    rmarkdown,
+    geonames,
+    XML
+VignetteBuilder: knitr

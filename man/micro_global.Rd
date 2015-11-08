@@ -2,9 +2,9 @@
 % Please edit documentation in R/micro_global.R
 \name{micro_global}
 \alias{micro_global}
-\title{micro_global}
+\title{Global implementation of the microclimate model.}
 \usage{
-micro_global(loc, timeinterval, nyears, soiltype, REFL, slope, aspect, DEP, ...)
+micro_global(loc, timeinterval, nyears, soiltype, REFL, slope, aspect, DEP, minshade, maxshade, Usrhyt, ...)
 }
 \arguments{
 \item{loc}{Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth}
@@ -23,7 +23,32 @@ micro_global(loc, timeinterval, nyears, soiltype, REFL, slope, aspect, DEP, ...)
 
 \item{DEP}{Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface}
 
-\item{Usrhyt}{Local height at which air temperature, relative humidity and wind speed are to be computed (cm)}
+\item{minshade}{Minimum shade level to use (percent)}
+
+\item{maxshade}{Maximum shade level to us (percent)}
+
+\item{Usrhyt}{Local height (cm) at which air temperature, wind speed and humidity are to be computed for organism of interest}
+}
+\value{
+metout The above ground micrometeorological conditions under the minimum specified shade
+
+shadmet The above ground micrometeorological conditions under the maximum specified shade
+
+soil Hourly predictions of the soil temperatures under the minimum specified shade
+
+shadsoil Hourly predictions of the soil temperatures under the maximum specified shade
+
+soilmoist Hourly predictions of the soil moisture under the minimum specified shade
+
+shadmoist Hourly predictions of the soil moisture under the maximum specified shade
+
+soilpot Hourly predictions of the soil water potential under the minimum specified shade
+
+shadpot Hourly predictions of the soil water potential under the maximum specified shade
+
+humid Hourly predictions of the soil humidity under the minimum specified shade
+
+shadhumid Hourly predictions of the soil humidity under the maximum specified shade
 }
 \description{
 An implementation of the Niche Mapper microclimate model that uses the global climate database
@@ -34,6 +59,56 @@ Aerosol attenuation can also be computed based on the Global Aerosol Data Set (G
 Koepke, P., M. Hess, I. Schult, and E. P. Shettle. 1997. Global Aerosol Data Set. Max-Planck-Institut for Meteorologie, Hamburg
 by choosing the option 'rungads<-1'
 }
+\details{
+metout/shadmet variables:
+\itemize{
+\item 1 JULDAY - day of year
+\item 2 TIME - time of day (mins)
+\item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
+\item 4 TAREF - air temperature (deg C) at reference height (1.2m)
+\item 5 RHLOC - relative humidity (percent) at local height (specified by 'Usrhyt' variable)
+\item 6 RH  - relative humidity (percent) at reference height (1.2m)
+\item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
+\item 8 VREF - wind speed (m/s) at reference height (1.2m)
+\item 9 SNOWMELT - snowmelt (mm)
+\item 10 POOLDEP - water pooling on surface (mm)
+\item 11 PCTWET - soil surface wetness (percent)
+\item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
+\item 13 SOLR - solar radiation (W/m2)
+\item 14 TSKYC - sky radiant temperature (deg C)
+\item 15 DEW - dew presence (0 or 1)
+\item 16 FROST - frost presence (0 or 1)
+\item 17 SNOWFALL - snow predicted to have fallen (mm)
+\item 18 SNOWDEP - predicted snow depth (cm)
+}
+soil and shadsoil variables:
+\itemize{
+\item 1 JULDAY - day of year
+\item 2 TIME - time of day (mins)
+\item 3-12 WC0cm ... - soil temperatures at each of the 10 specified depths
+
+if soil moisture model is run i.e. parameter runmoist = 1\cr
+
+soilmoist and shadmoist variables:
+\itemize{
+\item 1 JULDAY - day of year
+\item 2 TIME - time of day (mins)
+}
+soilpot and shadpot variables:
+\itemize{
+\item 1 JULDAY - day of year
+\item 2 TIME - time of day (mins)
+\item 3-12 PT0cm ... - soil water potential (J/kg = kpa = bar/100) at each of the 10 specified depths
+}
+
+humid and shadhumid variables:
+\itemize{
+\item  1 JULDAY - day of year
+\item  2 TIME - time of day (mins)
+\item  3-12 RH0cm ... - soil relative humidity (decimal percent), at each of the 10 specified depths
+}
+}
+}
 \examples{
 micro<-micro_global() # run the model with default location and settings
 
@@ -41,8 +116,6 @@ metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min
 shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
 soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
 shadsoil<-as.data.frame(micro$shadsoil) # soil temperatures, maximum shade
-
-library(lattice)
 
 # append dates
 days<-rep(seq(1,12),24)

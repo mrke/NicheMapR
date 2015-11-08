@@ -550,8 +550,8 @@ shadpot=micro$shadpot,MAXSHADES=micro$MAXSHADES){
 
   grassgrowths<-as.data.frame(soilpotb)
   soilmoist2b<-as.data.frame(soilmoistb)
-  soilmoist2b<-subset(soilmoist2b,TIME==720)
-  grassgrowths<-subset(grassgrowths,TIME==720)
+  soilmoist2b<-subset(soilmoist2b,soilmoist2b$TIME==720)
+  grassgrowths<-subset(grassgrowths,soilmoist2b$TIME==720)
   grassgrowths<-grassgrowths$PT5cm # assume plant growth driven by 5cm depth
 
     grow<-grassgrowths
@@ -586,7 +586,7 @@ shadpot=micro$shadpot,MAXSHADES=micro$MAXSHADES){
   potmult<-grassgrowths$pot
   potmult[potmult!=82]<-0
   potmult[potmult!=0]<-1
-  wilting<-subset(grassgrowths,pot==FoodWater) # find soil moisture range corresponding to values above the wilting point
+  wilting<-subset(grassgrowths,grassgrowths$pot==FoodWater) # find soil moisture range corresponding to values above the wilting point
   wilting<-min(wilting$moist) # get the min soil moisture at which plants aren't wilting
   grassgrowths<-grassgrowths$moist
   grassgrowths[grassgrowths>wilting]<-FoodWater # now have vector of either max plant water content or soil moisture content - need to convert the latter into a smooth decline to zero from max value
@@ -663,6 +663,9 @@ shadpot=micro$shadpot,MAXSHADES=micro$MAXSHADES){
   # code to determine wet periods for activity in a pond
 
   if(wetmod==1){
+  wet_thresh<-10*24 # threshold pond duration
+  wet_depth<-100 # threshold pond depth (mm)
+  wet_temp<-28 # threshold exit temp (deg C)
   b<-cbind(as.data.frame(wetlandDepths),as.data.frame(wetlandTemps))
   colnames(b)<-c('depth','temp')
   b$depth[b$temp>wet_temp]<-0
@@ -690,31 +693,31 @@ shadpot=micro$shadpot,MAXSHADES=micro$MAXSHADES){
         dir.create("ecto csv input")
       }
     cat('writing input csv files \n')
-    write.csv(ectoinput, file = "csv input/ectoinput.csv")
-    write.csv(debmod, file = "csv input/debmod.csv")
-    write.csv(deblast, file = "csv input/deblast.csv")
-    write.csv(RAINFALL, file = "csv input/rainfall.csv")
-    write.csv(DEP, file = "csv input/dep.csv")
-    write.csv(grassgrowths, file = "csv input/grassgrowths.csv")
-    write.csv(grasstsdms, file = "csv input/grasstsdms.csv")
-    write.csv(wetlandTemps, file = "csv input/wetlandTemps.csv")
-    write.csv(wetlandDepths, file = "csv input/wetlandDepths.csv")
-    write.csv(arrhenius, file = "csv input/arrhenius.csv")
-    write.csv(thermal_stages, file = "csv input/thermal_stages.csv")
-    write.csv(behav_stages, file = "csv input/behav_stages.csv")
-    write.csv(water_stages, file = "csv input/water_stages.csv")
-    write.csv(MAXSHADES, file = "csv input/Maxshades.csv")
-    write.csv(S_instar, file = "csv input/S_instar.csv")
-    write.table(metout[(seq(1,dim*24)),], file = "csv input/metout.csv",sep=",",row.names=FALSE)
-    write.table(shadmet[(seq(1,dim*24)),], file = "csv input/shadmet.csv",sep=",",row.names=FALSE)
-    write.table(soil[(seq(1,dim*24)),], file = "csv input/soil.csv",sep=",",row.names=FALSE)
-    write.table(shadsoil[(seq(1,dim*24)),], file = "csv input/shadsoil.csv",sep=",",row.names=FALSE)
-    write.table(soilmoist[(seq(1,dim*24)),], file = "csv input/soilmoist.csv",sep=",",row.names=FALSE)
-    write.table(shadmoist[(seq(1,dim*24)),], file = "csv input/shadmoist.csv",sep=",",row.names=FALSE)
-    write.table(soilpot[(seq(1,dim*24)),], file = "csv input/soilpot.csv",sep=",",row.names=FALSE)
-    write.table(shadpot[(seq(1,dim*24)),], file = "csv input/shadpot.csv",sep=",",row.names=FALSE)
-    write.table(humid[(seq(1,dim*24)),], file = "csv input/humid.csv",sep=",",row.names=FALSE)
-    write.table(shadhumid[(seq(1,dim*24)),], file = "csv input/shadhumid.csv",sep=",",row.names=FALSE)
+    write.csv(ectoinput, file = "ecto csv input/ectoinput.csv")
+    write.csv(debmod, file = "ecto csv input/debmod.csv")
+    write.csv(deblast, file = "ecto csv input/deblast.csv")
+    write.csv(RAINFALL, file = "ecto csv input/rainfall.csv")
+    write.csv(DEP, file = "ecto csv input/dep.csv")
+    write.csv(grassgrowths, file = "ecto csv input/grassgrowths.csv")
+    write.csv(grasstsdms, file = "ecto csv input/grasstsdms.csv")
+    write.csv(wetlandTemps, file = "ecto csv input/wetlandTemps.csv")
+    write.csv(wetlandDepths, file = "ecto csv input/wetlandDepths.csv")
+    write.csv(arrhenius, file = "ecto csv input/arrhenius.csv")
+    write.csv(thermal_stages, file = "ecto csv input/thermal_stages.csv")
+    write.csv(behav_stages, file = "ecto csv input/behav_stages.csv")
+    write.csv(water_stages, file = "ecto csv input/water_stages.csv")
+    write.csv(MAXSHADES, file = "ecto csv input/Maxshades.csv")
+    write.csv(S_instar, file = "ecto csv input/S_instar.csv")
+    write.table(metout[(seq(1,dim*24)),], file = "ecto csv input/metout.csv",sep=",",row.names=FALSE)
+    write.table(shadmet[(seq(1,dim*24)),], file = "ecto csv input/shadmet.csv",sep=",",row.names=FALSE)
+    write.table(soil[(seq(1,dim*24)),], file = "ecto csv input/soil.csv",sep=",",row.names=FALSE)
+    write.table(shadsoil[(seq(1,dim*24)),], file = "ecto csv input/shadsoil.csv",sep=",",row.names=FALSE)
+    write.table(soilmoist[(seq(1,dim*24)),], file = "ecto csv input/soilmoist.csv",sep=",",row.names=FALSE)
+    write.table(shadmoist[(seq(1,dim*24)),], file = "ecto csv input/shadmoist.csv",sep=",",row.names=FALSE)
+    write.table(soilpot[(seq(1,dim*24)),], file = "ecto csv input/soilpot.csv",sep=",",row.names=FALSE)
+    write.table(shadpot[(seq(1,dim*24)),], file = "ecto csv input/shadpot.csv",sep=",",row.names=FALSE)
+    write.table(humid[(seq(1,dim*24)),], file = "ecto csv input/humid.csv",sep=",",row.names=FALSE)
+    write.table(shadhumid[(seq(1,dim*24)),], file = "ecto csv input/shadhumid.csv",sep=",",row.names=FALSE)
   }
   ecto<-list(dim=dim,ectoinput=ectoinput,metout=metout,shadmet=shadmet,soil=soil,shadsoil=shadsoil,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,DEP=DEP,RAINFALL=RAINFALL,iyear=iyear,countday=countday,debmod=debmod,deblast=deblast,grassgrowths=grassgrowths,grasstsdms=grasstsdms,wetlandTemps=wetlandTemps,wetlandDepths=wetlandDepths,arrhenius=arrhenius,thermal_stages=thermal_stages,behav_stages=behav_stages,water_stages=water_stages,MAXSHADES=MAXSHADES,S_instar=S_instar)
 
