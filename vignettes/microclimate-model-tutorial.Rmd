@@ -9,11 +9,16 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette provides a detailed tutorial of the Niche Mapper microclimate model as implemented in the package NicheMapR. See (ref to vignette) for details on the underlying theory and equations.
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+ eval = FALSE
+)
+```
+This vignette provides a detailed tutorial of the Niche Mapper microclimate model as implemented in the package *NicheMapR*. See the *microclimate* vignette for details on the underlying theory and equations.
 
 ## Getting started: working with the micro_global() function
 
-The NicheMapR package includes data and functions for using a global monthly climate database for computing microclimates. This tutorial starts by illustrating the different capabilities of the microclimate model using this database. For details on setting the model up to run with your own environmental data, see ...
+The *NicheMapR* package includes data and functions for using a global monthly climate database for computing microclimates. This tutorial starts by illustrating the different capabilities of the microclimate model using this database. For details on setting the model up to run with your own environmental data, see (refer to section below).
 
 ### Basic operation: modelling microclimates for the average day of each month
 
@@ -21,12 +26,12 @@ This first example involves the most basic case of running the model to produce 
 
 Try running the model for a place of interest to you, as follows:
 ```{r, echo=FALSE}
-library(GADS)
+library(GADS) # for some reason it won't automatically load GADS via the require statement
 ```
 ```{r}
 library(NicheMapR)
 
-#micro<-micro_global(loc="Melbourne, Australia")
+micro<-micro_global(loc="Madison, Wisconsin, USA")
 ```
 
 The results are stored as a list in the variable *micro*. The main ones to focus on for now are
@@ -39,8 +44,8 @@ The results are stored as a list in the variable *micro*. The main ones to focus
 The first two rows of the output tables **metout** and **shadmet** look like this
 
 ```{r, echo=FALSE, results='asis'}
-#knitr::kable(head(micro$metout[,1:9], 2))
-#knitr::kable(head(micro$metout[,10:18], 2))
+knitr::kable(head(micro$metout[,1:9], 2))
+knitr::kable(head(micro$metout[,10:18], 2))
 ```
 
 and show, for each day of the year and for each hour of the day, a series of aboveground microclimatic conditions as follows:
@@ -49,13 +54,13 @@ and show, for each day of the year and for each hour of the day, a series of abo
 1. TIME - time of day (mins)
 1. TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
 1. TAREF - air temperature (deg C) at reference height (1.2m)
-1. RHLOC - relative humidity (percent) at local height (specified by 'Usrhyt' variable)
-1. RH  - relative humidity (percent) at reference height (1.2m)
+1. RHLOC - relative humidity (%) at local height (specified by 'Usrhyt' variable)
+1. RH  - relative humidity (%) at reference height (1.2m)
 1. VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
 1. VREF - wind speed (m/s) at reference height (1.2m)
 1. SNOWMELT - snowmelt (mm)
 1. POOLDEP - water pooling on surface (mm)
-1. PCTWET - soil surface wetness (percent)
+1. PCTWET - soil surface wetness (%)
 1. ZEN - zenith angle of sun (degrees - 90 = below the horizon)
 1. SOLR - solar radiation (W/m2)
 1. TSKYC - sky radiant temperature (deg C)
@@ -80,7 +85,8 @@ Because the snow model wasn't flagged to run, there will be zeros in all the sno
 The first two rows of the output tables **soil** and **shadsoil** look like this 
 
 ```{r, echo=FALSE, results='asis'}
-#knitr::kable(head(micro$soil, 2))
+knitr::kable(head(micro$soil[,1:9], 2))
+knitr::kable(head(micro$soil[,10:12], 2))
 ```
 
 and show, for each day of the year and for each hour of the day, the soil temperatures as follows:
@@ -97,6 +103,99 @@ head(soil,24) # show the first 24 rows, i.e. the first day
 shadsoil<-micro$shadsoil # put the metout result into a variable 'shadsoil'
 head(shadsoil,24) # show the first 24 rows, i.e. the first day
 ```
+The 10 different depths used by the model are specified with *DEP* and by default are `DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)`.
+
+There are some example plots of all the variables in the help for the *micro_global* function. Here is a plot for all the soil temperatures in Madison, Wisconsin in July and December:
+
+```{r, fig.width=7, fig.height=6}
+require(lattice,quietly = TRUE)
+soil<-as.data.frame(micro$soil) # get the soil data
+minshade<-micro$minshade # get the value for minimum shade
+with(subset(soil,JULDAY==196 | JULDAY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
+  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(JULDAY),ylim=c(-20,70),xlab = "Time of Day
+  (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type =
+    "b", main=paste(minshade,"% shade"))})
+```
+
+Notice how the deeper one goes into the soil, the lower the amplitude of the fluctuations but also that the maximum temperature is reached later in the day. The daily fluctuations have largely disappeared by 50cm and at 200cm the temperature is stable year round. In fact the model assumes the deep soil temperature is the annual mean of the air temperatures, and this is a 'boundary condition' in the solution of the soil heat budget.
+
+### Simulating shading by vegetation
+
+By default the model runs twice, for two different levels of shading by vegetation. The particular shade levels can be selected with the parameters *maxshade* and *minshade*. Also, the second shade level simulation can be turned off if only one shade level is required with the parameter *runshade*. The code below runs the model for one shade level only, 50%:
+
+```{r, fig.width=7, fig.height=6}
+micro<-micro_global(loc = "Madison, Wisconsin, USA", runshade = 0, minshade = 50)
+
+soil<-as.data.frame(micro$soil) # get the soil data
+minshade<-micro$minshade # get the value for minimum shade
+with(subset(soil,JULDAY==196 | JULDAY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
+  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(JULDAY),ylim=c(-20,70),xlab = "Time of Day
+  (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type =
+    "b", main=paste(minshade,"% shade"))})
+```
+
+Notice how, the effect of shade is to not only reduce the daytime soil temperatures, but also to increase the nighttime temperatures. This is due to the increased levels of infrared radiation reaching the ground surface because the shading vegetation is assumed to be at the reference height air temperature while the 'sky temperature' is typically much colder, depending on the level of cloud cover (have a look at the variable *Tsky* in the **metout** and **shadmet** outputs).
+
+### Simulating terrain effects - slope, aspect, hillshade
+
+Slope and aspect have strong effects on microclimates through the effects of direct solar radiation. The default setting is flat ground in the *NicheMapR* microclimate model. Here is the effect of a 45 degree southerly slope on the 0% shade simulation:
+
+```{r, fig.width=7, fig.height=6}
+micro<-micro_global(loc = "Madison, Wisconsin, USA", runshade = 0, minshade = 0, slope = 45, aspect
+  = 180)
+
+soil<-as.data.frame(micro$soil) # get the soil data
+minshade<-micro$minshade # get the value for minimum shade
+with(subset(soil,JULDAY==196 | JULDAY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
+  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(JULDAY),ylim=c(-20,70),xlab = "Time of Day
+  (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type =
+    "b", main=paste(minshade,"% shade, 45 degree slope, 180 degrees aspect"))})
+```
+
+The strongest effect is on the December soil temperatures.
+
+Hillshade also has a strong effect on microclimates. Gullies and gorges receive a shorter window of direct solar radiation and have a smaller 'view' of the sky, and so don't cool down as much at night. Horizon angles can be specified to simulated these kinds of effects by supplying in the parameter *hori* a vector of 24 horizon angles (angle to nearest hill/cliff) starting due north and continuing clockwise in 15 degree intervals. Here is an example for a steep-sided gully running north-south:
+
+```{r, fig.width=7, fig.height=6}
+micro<-micro_global(loc="Madison, Wisconsin, USA", runshade = 0, minshade = 0, hori = c(0, 0, 65,
+  65, 65, 65, 65, 65, 65, 65, 65, 65, 0, 0, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65))
+
+soil<-as.data.frame(micro$soil) # get the soil data
+minshade<-micro$minshade # get the value for minimum shade
+with(subset(soil,JULDAY==196 | JULDAY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
+  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(JULDAY),ylim=c(-20,70),xlab = "Time of Day
+  (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type =
+    "b", main=paste(minshade,"% shade, north-south gully"))})
+```
+
+### Changing the soil properties
+
+Another important influence on microclimatic conditions is the substrate type. The substrate solar reflectivity can be changed with the parameter *REFL* and the emissivity with the parameter *SLE* (both range from 0-1).
+
+Soil thermal properties are also importance. Soil comprises a mixture of minerals, air and water. The density (kg/m3), thermal conductivity (W/mK) and specific heat capacity (J/kg-K) of the mineral component are specified by the parameters *Density*, *Thcond* and *SpecHeat*, respectively. The bulk density determines the proportion of the soil volume that is air, parameter *BulkDensity* (kg/m3). 
+
+The default values are typical for soil minerals as described in Campbell and Norman (1998) Table 8.2, but  an 'A-horizon' layer for the first node, reflecting properties of organic matter, is also simulated (see Kearney et al. 2014). This can be turned off by specifying `cap = 0`. 
+
+For simulating rock, *BulkDensity* should be set the same as *Density* and this can be easily set in *micro_global* by setting *soiltype* to value 0 (which also sets cap = 0):
+
+```{r, fig.width=7, fig.height=6}
+micro<-micro_global(loc="Madison, Wisconsin, USA", runshade = 0, minshade = 0, soiltype = 0)
+
+soil<-as.data.frame(micro$soil) # get the soil data
+minshade<-micro$minshade # get the value for minimum shade
+with(subset(soil,JULDAY==196 | JULDAY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
+  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(JULDAY),ylim=c(-20,70),xlab = "Time of Day
+  (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type =
+    "b", main=paste(minshade,"% shade, rock substrate"))})
+```
+
+Notice how the heat penetrates more deeply into the rock, producing a gentler temperature gradient with depth, cooler near-surface temperatures during the day and warmer near-surface temperatures at night. 
+
+The texture of the soil, i.e. the proportion of silt, sand and clay and associated particle size distributions, has a powerful influence on soil moisture and is discussed further in the next section.
+
+### Soil moisture
+
+
 
 ### Running at finer time intervals and for longer time periods
 
@@ -104,56 +203,11 @@ It is possible to run the model for more frequent intervals than once per month 
 
 It is also possible to run the model for multiple years by changing the *nyears* parameter. This can be useful when running the soil moisture and snow subroutines (described below) to allow annual cycles to stabilise.
 
-### Simulating shading by vegetation
 
-### Simulating terrain effects - slope, aspect, hillshade
+### Snow
 
-### Changing the soil properties
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
-
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
-
-## Vignette Info
-
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
-
-## Styles
-
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
-
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
-```
-
-You can enable figure captions by `fig_caption: yes` in YAML:
-
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
-
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
 
 ## More Examples
 
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
-```
-
-Also a quote using `>`:
-
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+You can write math expressions, e.g. $Y = X\beta + \epsilon$
