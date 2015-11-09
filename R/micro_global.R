@@ -483,6 +483,14 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     MAXSHADES <- rep(0,(timeinterval*nyears))+maxshade # daily max shade (%)
     MINSHADES <- rep(0,(timeinterval*nyears))+minshade # daily min shade (%)
 
+    # now extract climatic data from grids
+    global_climate<-brick("c:/global climate/global_climate.nc")
+    elev<-raster("c:/global climate/elev.nc")
+    soilmoisture<-suppressWarnings(brick("c:/global climate/soilw.mon.ltm.v2.nc"))
+    #devtools::use_data(global_climate)
+    #devtools::use_data(elev)
+    #devtools::use_data(soilmoisture)
+
     ALTT<-as.numeric(raster::extract(elev,x)*1000) # convert from km to m
     cat("extracting climate data", '\n')
     # first crop to roughly the right area, to speed up extraction (faster when doing it from raw ncdf file, but .rda file is much smaller, so sticking with the latter)
