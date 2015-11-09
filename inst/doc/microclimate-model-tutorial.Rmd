@@ -1,0 +1,214 @@
+---
+title: "Tutorial for the NicheMapR microclimate model"
+author: "Michael Kearney"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Tutorial for the NicheMapR microclimate model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+ eval = TRUE
+)
+```
+This vignette provides a detailed tutorial of the Niche Mapper microclimate model as implemented in the package *NicheMapR*. See the *microclimate* vignette for details on the underlying theory and equations.
+
+## Getting started: working with the micro_global() function
+
+The *NicheMapR* package includes data and functions for using a global monthly climate database for computing microclimates. This tutorial starts by illustrating the different capabilities of the microclimate model using this database. For details on setting the model up to run with your own environmental data, see (refer to section below).
+
+### Basic operation: modelling microclimates for the average day of each month
+
+This first example involves the most basic case of running the model to produce 12 days of output, one for each month of the year, without involking the soil moisture or snow subroutines. In this mode of operation, the model does three iterations of each day, the first one starting with a uniform soil temperature profile and the first two acting as 'burn-in' runs prior to the third and final run which is provided as the final output.
+
+Try running the model for a place of interest to you, as follows:
+```{r, echo=FALSE}
+#dyn.load(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/microclimate.dll',sep=""))
+#library(GADS) # for some reason it won't automatically load GADS via the require statement
+```
+```{r}
+library(NicheMapR)
+
+micro<-micro_global(loc="Madison, Wisconsin, USA")
+```
+
+The results are stored as a list in the variable *micro*. The main ones to focus on for now are
+
+* **metout** The above ground micrometeorological conditions under the minimum specified shade
+* **shadmet** The above ground micrometeorological conditions under the maximum specified shade
+* **soil** Hourly predictions of the soil temperatures under the minimum specified shade
+* **shadsoil** Hourly predictions of the soil temperatures under the maximum specified shade
+
+The first two rows of the output tables **metout** and **shadmet** look like this
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(micro$metout[,1:9], 2))
+knitr::kable(head(micro$metout[,10:18], 2))
+```
+
+and show, for each day of the year and for each hour of the day, a series of aboveground microclimatic conditions as follows:
+
+1. JULDAY - day of year
+1. TIME - time of day (mins)
+1. TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
+1. TAREF - air temperature (deg C) at reference height (1.2m)
+1. RHLOC - relative humidity (%) at local height (specified by 'Usrhyt' variable)
+1. RH  - relative humidity (%) at reference height (1.2m)
+1. VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
+1. VREF - wind speed (m/s) at reference height (1.2m)
+1. SNOWMELT - snowmelt (mm)
+1. POOLDEP - water pooling on surface (mm)
+1. PCTWET - soil surface wetness (%)
+1. ZEN - zenith angle of sun (degrees - 90 = below the horizon)
+1. SOLR - solar radiation (W/m2)
+1. TSKYC - sky radiant temperature (deg C)
+1. DEW - dew presence (0 or 1)
+1. FROST - frost presence (0 or 1)
+1. SNOWFALL - snow predicted to have fallen (mm)
+1. SNOWDEP - predicted snow depth (cm)
+
+Note that for air temperature, relative humidity and wind speed, there's a 'reference height' value and a 'local height' value. The reference height value is the height at which the meteorological observations were made that were given to the model as input. The local height values are the microclimatic values at a height determined by the variable *Usrhyt*, which you can set to be relevant to the organism you are interested in (by default it is 1cm). It should be at the midpoint of the animal or plant's height.
+
+Check what you got with:
+```
+metout<-micro$metout # put the metout result into a variable 'metout'
+head(metout,24) # show the first 24 rows, i.e. the first day
+
+shadmet<-micro$shadmet # put the shadmet result into a variable 'shadmet'
+head(shadmet,24) # show the first 24 rows, i.e. the first day
+```
+
+Because the snow model wasn't flagged to run, there will be zeros in all the snow-related columns.
+
+The first two rows of the output tables **soil** and **shadsoil** look like this 
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(micro$soil[,1:9], 2))
+knitr::kable(head(micro$soil[,10:12], 2))
+```
+
+and show, for each day of the year and for each hour of the day, the soil temperatures as follows:
+
+1. JULDAY - day of year
+1. TIME - time of day (mins)
+1. Columns 3-12 D0cm ... - soil temperatures at each of the 10 specified depths
+
+Have a look at yours:
+```
+soil<-micro$soil # put the soil result into a variable 'soil'
+head(soil,24) # show the first 24 rows, i.e. the first day
+
+shadsoil<-micro$shadsoil # put the metout result into a variable 'shadsoil'
+head(shadsoil,24) # show the first 24 rows, i.e. the first day
+```
+The 10 different depths used by the model are specified with *DEP* and by default are `DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)`.
+
+There are some example plots of all the variables in the help for the *micro_global* function. Here is a plot for all the soil temperatures in Madison, Wisconsin in July and December:
+
+```{r, fig.width=7, fig.height=6}
+require(lattice,quietly = TRUE)
+soil<-as.data.frame(micro$soil) # get the soil data
+minshade<-micro$minshade # get the value for minimum shade
+with(subset(soil,JULDAY==196 | JULDAY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
+  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(JULDAY),ylim=c(-20,70),xlab = "Time of Day
+  (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type =
+    "b", main=paste(minshade,"% shade"))})
+```
+
+Notice how the deeper one goes into the soil, the lower the amplitude of the fluctuations but also that the maximum temperature is reached later in the day. The daily fluctuations have largely disappeared by 50cm and at 200cm the temperature is stable year round. In fact the model assumes the deep soil temperature is the annual mean of the air temperatures, and this is a 'boundary condition' in the solution of the soil heat budget.
+
+### Simulating shading by vegetation
+
+By default the model runs twice, for two different levels of shading by vegetation. The particular shade levels can be selected with the parameters *maxshade* and *minshade*. Also, the second shade level simulation can be turned off if only one shade level is required with the parameter *runshade*. The code below runs the model for one shade level only, 50%:
+
+```{r, fig.width=7, fig.height=6}
+micro<-micro_global(loc = "Madison, Wisconsin, USA", runshade = 0, minshade = 50)
+
+soil<-as.data.frame(micro$soil) # get the soil data
+minshade<-micro$minshade # get the value for minimum shade
+with(subset(soil,JULDAY==196 | JULDAY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
+  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(JULDAY),ylim=c(-20,70),xlab = "Time of Day
+  (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type =
+    "b", main=paste(minshade,"% shade"))})
+```
+
+Notice how, the effect of shade is to not only reduce the daytime soil temperatures, but also to increase the nighttime temperatures. This is due to the increased levels of infrared radiation reaching the ground surface because the shading vegetation is assumed to be at the reference height air temperature while the 'sky temperature' is typically much colder, depending on the level of cloud cover (have a look at the variable *Tsky* in the **metout** and **shadmet** outputs).
+
+### Simulating terrain effects - slope, aspect, hillshade
+
+Slope and aspect have strong effects on microclimates through the effects of direct solar radiation. The default setting is flat ground in the *NicheMapR* microclimate model. Here is the effect of a 45 degree southerly slope on the 0% shade simulation:
+
+```{r, fig.width=7, fig.height=6}
+micro<-micro_global(loc = "Madison, Wisconsin, USA", runshade = 0, minshade = 0, slope = 45, aspect
+  = 180)
+
+soil<-as.data.frame(micro$soil) # get the soil data
+minshade<-micro$minshade # get the value for minimum shade
+with(subset(soil,JULDAY==196 | JULDAY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
+  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(JULDAY),ylim=c(-20,70),xlab = "Time of Day
+  (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type =
+    "b", main=paste(minshade,"% shade, 45 degree slope, 180 degrees aspect"))})
+```
+
+The strongest effect is on the December soil temperatures.
+
+Hillshade also has a strong effect on microclimates. Gullies and gorges receive a shorter window of direct solar radiation and have a smaller 'view' of the sky, and so don't cool down as much at night. Horizon angles can be specified to simulated these kinds of effects by supplying in the parameter *hori* a vector of 24 horizon angles (angle to nearest hill/cliff) starting due north and continuing clockwise in 15 degree intervals. Here is an example for a steep-sided gully running north-south:
+
+```{r, fig.width=7, fig.height=6}
+micro<-micro_global(loc="Madison, Wisconsin, USA", runshade = 0, minshade = 0, hori = c(0, 0, 65,
+  65, 65, 65, 65, 65, 65, 65, 65, 65, 0, 0, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65))
+
+soil<-as.data.frame(micro$soil) # get the soil data
+minshade<-micro$minshade # get the value for minimum shade
+with(subset(soil,JULDAY==196 | JULDAY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
+  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(JULDAY),ylim=c(-20,70),xlab = "Time of Day
+  (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type =
+    "b", main=paste(minshade,"% shade, north-south gully"))})
+```
+
+### Changing the soil properties
+
+Another important influence on microclimatic conditions is the substrate type. The substrate solar reflectivity can be changed with the parameter *REFL* and the emissivity with the parameter *SLE* (both range from 0-1).
+
+Soil thermal properties are also importance. Soil comprises a mixture of minerals, air and water. The density (kg/m3), thermal conductivity (W/mK) and specific heat capacity (J/kg-K) of the mineral component are specified by the parameters *Density*, *Thcond* and *SpecHeat*, respectively. The bulk density determines the proportion of the soil volume that is air, parameter *BulkDensity* (kg/m3). 
+
+The default values are typical for soil minerals as described in Campbell and Norman (1998) Table 8.2, but  an 'A-horizon' layer for the first node, reflecting properties of organic matter, is also simulated (see Kearney et al. 2014). This can be turned off by specifying `cap = 0`. 
+
+For simulating rock, *BulkDensity* should be set the same as *Density* and this can be easily set in *micro_global* by setting *soiltype* to value 0 (which also sets cap = 0):
+
+```{r, fig.width=7, fig.height=6}
+micro<-micro_global(loc="Madison, Wisconsin, USA", runshade = 0, minshade = 0, soiltype = 0)
+
+soil<-as.data.frame(micro$soil) # get the soil data
+minshade<-micro$minshade # get the value for minimum shade
+with(subset(soil,JULDAY==196 | JULDAY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
+  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(JULDAY),ylim=c(-20,70),xlab = "Time of Day
+  (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type =
+    "b", main=paste(minshade,"% shade, rock substrate"))})
+```
+
+Notice how the heat penetrates more deeply into the rock, producing a gentler temperature gradient with depth, cooler near-surface temperatures during the day and warmer near-surface temperatures at night. 
+
+The texture of the soil, i.e. the proportion of silt, sand and clay and associated particle size distributions, has a powerful influence on soil moisture and is discussed further in the next section.
+
+### Soil moisture
+
+
+
+### Running at finer time intervals and for longer time periods
+
+It is possible to run the model for more frequent intervals than once per month by changing the parameter *timeinterval*. If *timeinterval* is set to something less than 365, then the model runs as described in the previous section with three iterations per day, and uses the 'spline' function to interpolate the climate data from monthly to the chosen time interval. If 'timeinterval' is set to the maximum value of 365, it will apply the three iterations to the first day of the simulation to get started and then, from that day on, use the previous day's conditions as the initial state for the next day's conditions.
+
+It is also possible to run the model for multiple years by changing the *nyears* parameter. This can be useful when running the soil moisture and snow subroutines (described below) to allow annual cycles to stabilise.
+
+
+### Snow
+
+
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$
