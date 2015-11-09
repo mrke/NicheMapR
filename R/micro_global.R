@@ -381,7 +381,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
 
   if(errors==0){ # continue
 
-    if(requireNamespace("GADS",quietly = TRUE)){
+    if(require("GADS",quietly = TRUE)){
       #print("GADS is loaded correctly")
     }else{
       if(requireNamespace(devtools,quietly = TRUE)){
