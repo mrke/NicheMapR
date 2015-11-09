@@ -380,7 +380,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
   # end error trapping
 
   if(errors==0){ # continue
-
+   if(rungads==1){
     if(require("GADS",quietly = TRUE)){
       #print("GADS is loaded correctly")
     }else{
@@ -410,6 +410,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
         }
       }
     }
+   }
     ################## time related variables #################################
 
     juldays12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
