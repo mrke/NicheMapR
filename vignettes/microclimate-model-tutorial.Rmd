@@ -4,14 +4,14 @@ author: "Michael Kearney"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{"Tutorial for the NicheMapR microclimate model"}
+  %\VignetteIndexEntry{Tutorial for the NicheMapR microclimate model}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
- eval = FALSE
+ eval = TRUE
 )
 ```
 This vignette provides a detailed tutorial of the Niche Mapper microclimate model as implemented in the package *NicheMapR*. See the *microclimate* vignette for details on the underlying theory and equations.
@@ -26,7 +26,8 @@ This first example involves the most basic case of running the model to produce 
 
 Try running the model for a place of interest to you, as follows:
 ```{r, echo=FALSE}
-library(GADS) # for some reason it won't automatically load GADS via the require statement
+#dyn.load(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/microclimate.dll',sep=""))
+#library(GADS) # for some reason it won't automatically load GADS via the require statement
 ```
 ```{r}
 library(NicheMapR)
