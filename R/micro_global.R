@@ -484,9 +484,9 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     MINSHADES <- rep(0,(timeinterval*nyears))+minshade # daily min shade (%)
 
     # now extract climatic data from grids
-    global_climate<-brick("c:/global climate/global_climate.nc")
-    elev<-raster("c:/global climate/elev.nc")
-    soilmoisture<-suppressWarnings(brick("c:/global climate/soilw.mon.ltm.v2.nc"))
+    global_climate<-raster::brick("c:/global climate/global_climate.nc")
+    elev<-raster::raster("c:/global climate/elev.nc")
+    soilmoisture<-suppressWarnings(raster::brick("c:/global climate/soilw.mon.ltm.v2.nc"))
     #devtools::use_data(global_climate)
     #devtools::use_data(elev)
     #devtools::use_data(soilmoisture)
