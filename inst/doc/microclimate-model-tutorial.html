@@ -10,7 +10,7 @@
 
 <meta name="author" content="Michael Kearney" />
 
-<meta name="date" content="2015-11-09" />
+<meta name="date" content="2015-11-10" />
 
 <title>Tutorial for the NicheMapR microclimate model</title>
 
@@ -72,7 +72,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="header">
 <h1 class="title">Tutorial for the NicheMapR microclimate model</h1>
 <h4 class="author"><em>Michael Kearney</em></h4>
-<h4 class="date"><em>2015-11-09</em></h4>
+<h4 class="date"><em>2015-11-10</em></h4>
 </div>
 
 
@@ -88,10 +88,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc=</span><span class="st">&quot;Madison, Wisconsin, USA&quot;</span>)</code></pre></div>
 <pre><code>## extracting climate data 
+## extracting soil moisture data 
 ## running microclimate model for 12 days by 1 years 
 ##  at site Madison, Wisconsin, USA 
 ##    user  system elapsed 
-##    0.16    0.00    0.16</code></pre>
+##    0.16    0.00    0.15</code></pre>
 <p>The results are stored as a list in the variable <em>micro</em>. The main ones to focus on for now are</p>
 <ul>
 <li><strong>metout</strong> The above ground micrometeorological conditions under the minimum specified shade</li>
@@ -297,10 +298,11 @@ minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</
 <p>By default the model runs twice, for two different levels of shading by vegetation. The particular shade levels can be selected with the parameters <em>maxshade</em> and <em>minshade</em>. Also, the second shade level simulation can be turned off if only one shade level is required with the parameter <em>runshade</em>. The code below runs the model for one shade level only, 50%:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc =</span> <span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runshade =</span> <span class="dv">0</span>, <span class="dt">minshade =</span> <span class="dv">50</span>)</code></pre></div>
 <pre><code>## extracting climate data 
+## extracting soil moisture data 
 ## running microclimate model for 12 days by 1 years 
 ##  at site Madison, Wisconsin, USA 
 ##    user  system elapsed 
-##    0.09    0.00    0.10</code></pre>
+##    0.08    0.00    0.08</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">soil&lt;-<span class="kw">as.data.frame</span>(micro$soil) <span class="co"># get the soil data</span>
 minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
 <span class="kw">with</span>(<span class="kw">subset</span>(soil,JULDAY==<span class="dv">196</span> |<span class="st"> </span>JULDAY==<span class="dv">349</span>),{<span class="kw">xyplot</span>(D0cm +<span class="st"> </span>D2.5cm +<span class="st"> </span>D5cm +<span class="st"> </span>D10cm +<span class="st"> </span>D15cm +<span class="st"> </span>D20cm
@@ -316,10 +318,11 @@ minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc =</span> <span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runshade =</span> <span class="dv">0</span>, <span class="dt">minshade =</span> <span class="dv">0</span>, <span class="dt">slope =</span> <span class="dv">45</span>, aspect
   =<span class="st"> </span><span class="dv">180</span>)</code></pre></div>
 <pre><code>## extracting climate data 
+## extracting soil moisture data 
 ## running microclimate model for 12 days by 1 years 
 ##  at site Madison, Wisconsin, USA 
 ##    user  system elapsed 
-##    0.11    0.00    0.11</code></pre>
+##    0.09    0.01    0.11</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">soil&lt;-<span class="kw">as.data.frame</span>(micro$soil) <span class="co"># get the soil data</span>
 minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
 <span class="kw">with</span>(<span class="kw">subset</span>(soil,JULDAY==<span class="dv">196</span> |<span class="st"> </span>JULDAY==<span class="dv">349</span>),{<span class="kw">xyplot</span>(D0cm +<span class="st"> </span>D2.5cm +<span class="st"> </span>D5cm +<span class="st"> </span>D10cm +<span class="st"> </span>D15cm +<span class="st"> </span>D20cm
@@ -332,10 +335,11 @@ minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc=</span><span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runshade =</span> <span class="dv">0</span>, <span class="dt">minshade =</span> <span class="dv">0</span>, <span class="dt">hori =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">65</span>,
   <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>))</code></pre></div>
 <pre><code>## extracting climate data 
+## extracting soil moisture data 
 ## running microclimate model for 12 days by 1 years 
 ##  at site Madison, Wisconsin, USA 
 ##    user  system elapsed 
-##    0.09    0.00    0.09</code></pre>
+##    0.09    0.00    0.10</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">soil&lt;-<span class="kw">as.data.frame</span>(micro$soil) <span class="co"># get the soil data</span>
 minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
 <span class="kw">with</span>(<span class="kw">subset</span>(soil,JULDAY==<span class="dv">196</span> |<span class="st"> </span>JULDAY==<span class="dv">349</span>),{<span class="kw">xyplot</span>(D0cm +<span class="st"> </span>D2.5cm +<span class="st"> </span>D5cm +<span class="st"> </span>D10cm +<span class="st"> </span>D15cm +<span class="st"> </span>D20cm
@@ -352,6 +356,7 @@ minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</
 <p>For simulating rock, <em>BulkDensity</em> should be set the same as <em>Density</em> and this can be easily set in <em>micro_global</em> by setting <em>soiltype</em> to value 0 (which also sets cap = 0):</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc=</span><span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runshade =</span> <span class="dv">0</span>, <span class="dt">minshade =</span> <span class="dv">0</span>, <span class="dt">soiltype =</span> <span class="dv">0</span>)</code></pre></div>
 <pre><code>## extracting climate data 
+## extracting soil moisture data 
 ## running microclimate model for 12 days by 1 years 
 ##  at site Madison, Wisconsin, USA 
 ##    user  system elapsed 
