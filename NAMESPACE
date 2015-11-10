@@ -2,6 +2,7 @@
 
 export(ectorun)
 export(ectotherm)
+export(get.global.climate)
 export(micro_global)
 export(microclimate)
 useDynLib("ECTOTHERM")

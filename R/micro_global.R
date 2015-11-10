@@ -137,7 +137,6 @@
 #'    points(plotshadsoil[,i+3]~plotshadsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature (deg C)",col=i,type = "l")
 #'  }
 #'}
-#' @export
 micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.),
   minshade=0,maxshade=90,Usrhyt=1,timezone=0,EC=0.0167238,rainfrac=0.5,densfun=c(0,0),writecsv=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),shore=0,
   L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,0,0)*10000,
@@ -483,22 +482,22 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     MAXSHADES <- rep(0,(timeinterval*nyears))+maxshade # daily max shade (%)
     MINSHADES <- rep(0,(timeinterval*nyears))+minshade # daily min shade (%)
 
-    # now extract climatic data from grids
-    global_climate<-raster::brick("c:/global climate/global_climate.nc")
-    elev<-raster::raster("c:/global climate/elev.nc")
-    soilmoisture<-suppressWarnings(raster::brick("c:/global climate/soilw.mon.ltm.v2.nc"))
-    #devtools::use_data(global_climate)
-    #devtools::use_data(elev)
-    #devtools::use_data(soilmoisture)
+    # load global climate files
+    gcfolder<-paste(.libPaths()[1],"/gcfolder.rda",sep="")
+    if(file.exists(gcfolder)==FALSE){
+     cat("You don't appear to have the global climate data set - \n run function get.global.climate(folder = 'folder you want to put it in') .....\n exiting function micro_global")
+     opt <- options(show.error.messages=FALSE)
+     on.exit(options(opt))
+     stop()
+    }
+    load(gcfolder)
+    global_climate<-raster::brick(paste(folder,"/global_climate.nc",sep=""))
+    elev<-raster::raster(paste(folder,"/elev.nc",sep=""))
+    soilmoisture<-suppressWarnings(raster::brick(paste(folder,"/soilw.mon.ltm.v2.nc",sep="")))
 
     ALTT<-as.numeric(raster::extract(elev,x)*1000) # convert from km to m
     cat("extracting climate data", '\n')
-    # first crop to roughly the right area, to speed up extraction (faster when doing it from raw ncdf file, but .rda file is much smaller, so sticking with the latter)
-    global_climate2 <- raster::crop(global_climate[[1:96]],c(x[1]-0.6,x[1]+0.6,x[2]-0.6,x[2]+0.6))
-    CLIMATE <- raster::extract(global_climate2[[1:96]],x)
-
-    rain<-global_climate[[1:12]]
-    RAINFALL <-raster::extract(rain,x)
+    CLIMATE <- raster::extract(global_climate,x)
 
     RAINFALL <- CLIMATE[,1:12]
     WNMAXX <- CLIMATE[,13:24]
@@ -540,8 +539,8 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
         xx<-t(cbind(longlat1))
       }
       xx2<-as.numeric(xx)
-      soilmoisture2<-raster::crop(soilmoisture[[1:12]],c(xx2[1]-0.6,xx2[1]+0.6,xx2[2]-0.6,xx2[2]+0.6))
-      SoilMoist<-raster::extract(soilmoisture2[[1:12]],xx)/1000 # this is originally in mm/m
+      cat("extracting soil moisture data", '\n')
+      SoilMoist<-raster::extract(soilmoisture,xx)/1000 # this is originally in mm/m
       if(nrow(SoilMoist)>1){SoilMoist<-SoilMoist[1,]}
     }
     # correct for fact that wind is measured at 10 m height
