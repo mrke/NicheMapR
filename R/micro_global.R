@@ -424,20 +424,19 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
 
   if(errors==0){ # continue
     if(rungads==1){
-      if(require("GADS",quietly = TRUE)){
+      if(library(GADS,quietly = TRUE,logical.return = TRUE)){
       }else{
-        if(requireNamespace(devtools,quietly = TRUE)){
+        if(library(devtools, quietly = TRUE, logical.return = TRUE)){
           devtools::install_github('mrke/GADS', args="--no-multiarch")
-          if(require(GADS)){
+          if(library(GADS,quietly = TRUE,logical.return = TRUE)){
           }else{
             stop("could not install GADS")
           }
         }else{
-          #print("trying to install devtools")
           install.packages("devtools")
-          if(requireNamespace(devtools,quietly = TRUE)){
+          if(library(devtools, quietly = TRUE, logical.return = TRUE)){
             devtools::install_github('mrke/GADS', args="--no-multiarch")
-            if(requireNamespace("GADS",quietly = TRUE)){
+            if(library(GADS,quietly = TRUE,logical.return = TRUE)){
             }else{
               stop("could not install GADS")
             }
