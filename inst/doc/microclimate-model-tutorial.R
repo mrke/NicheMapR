@@ -3,10 +3,6 @@ knitr::opts_chunk$set(
  eval = TRUE
 )
 
-## ---- echo=FALSE---------------------------------------------------------
-#dyn.load(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/microclimate.dll',sep=""))
-#library(GADS) # for some reason it won't automatically load GADS via the require statement
-
 ## ------------------------------------------------------------------------
 library(NicheMapR)
 
@@ -70,4 +66,104 @@ with(subset(soil,JULDAY==196 | JULDAY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm
   + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(JULDAY),ylim=c(-20,70),xlab = "Time of Day
   (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type =
     "b", main=paste(minshade,"% shade, rock substrate"))})
+
+## ------------------------------------------------------------------------
+micro<-micro_global(loc="Madison, Wisconsin, USA", runmoist = 1)
+
+## ---- echo=FALSE, results='asis'-----------------------------------------
+knitr::kable(head(micro$soilmoist[,1:9], 2))
+knitr::kable(head(micro$shadmoist[,10:12], 2))
+
+## ---- echo=FALSE, results='asis'-----------------------------------------
+knitr::kable(head(micro$soilpot[,1:9], 2))
+knitr::kable(head(micro$shadpot[,10:12], 2))
+
+## ---- echo=FALSE, results='asis'-----------------------------------------
+knitr::kable(head(micro$humid[,1:9], 2))
+knitr::kable(head(micro$shadhumid[,10:12], 2))
+
+## ---- fig.width=7, fig.height=6------------------------------------------
+soilmoist<-as.data.frame(micro$soilmoist) # get the minimum shade soil moisture output
+minshade<-micro$minshade # get the value for minimum shade
+# append dates
+days<-rep(seq(1,12),24)
+days<-days[order(days)]
+dates<-days+soilmoist$TIME/60/24-1 # dates for hourly output
+soilmoist<-cbind(dates,soilmoist)
+for(i in 1:10){
+  if(i==1){
+    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Month", ylab = "Soil Moisture (% vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
+  }else{
+    points(soilmoist[,i+3]~soilmoist[,1], col=i,type = "l")
+  }
+}
+
+## ---- fig.width=7, fig.height=6------------------------------------------
+micro<-micro_global(loc="Madison, Wisconsin, USA", runmoist = 1, soiltype = 11)
+soilmoist<-as.data.frame(micro$soilmoist) # get the minimum shade soil moisture output
+minshade<-micro$minshade # get the value for minimum shade
+# append dates
+days<-rep(seq(1,12),24)
+days<-days[order(days)]
+dates<-days+soilmoist$TIME/60/24-1 # dates for hourly output
+soilmoist<-cbind(dates,soilmoist)
+for(i in 1:10){
+  if(i==1){
+    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Month", ylab = "Soil Moisture (% vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
+  }else{
+    points(soilmoist[,i+3]~soilmoist[,1] ,col=i,type = "l")
+  }
+}
+
+## ---- fig.width=7, fig.height=6------------------------------------------
+nyears<-5
+micro<-micro_global(loc="Madison, Wisconsin, USA", runmoist = 1, soiltype = 11, nyears = nyears)
+soilmoist<-as.data.frame(micro$soilmoist) # get the minimum shade soil moisture output
+minshade<-micro$minshade # get the value for minimum shade
+# append dates
+days<-rep(seq(1,12*nyears)/12,24)
+days<-days[order(days)]
+dates<-days+soilmoist$TIME/60/24/(12) # dates for hourly output
+soilmoist<-cbind(dates,soilmoist)
+for(i in 1:10){
+  if(i==1){
+    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Year", ylab = "Soil Moisture (% vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
+  }else{
+    points(soilmoist[,i+3]~soilmoist[,1],col=i,type = "l")
+  }
+}
+
+## ---- fig.width=7, fig.height=6------------------------------------------
+timeinterval<-365
+micro<-micro_global(loc="Madison, Wisconsin, USA", runmoist = 1, soiltype = 11, timeinterval = timeinterval)
+soilmoist<-as.data.frame(micro$soilmoist) # get the minimum shade soil moisture output
+minshade<-micro$minshade # get the value for minimum shade
+# append dates
+days<-rep(seq(1,timeinterval),24)
+days<-days[order(days)]
+dates<-days+soilmoist$TIME/60/24-1 # dates for hourly output
+soilmoist<-cbind(dates,soilmoist)
+for(i in 1:10){
+  if(i==1){
+    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Day of Year", ylab = "Soil Moisture (% vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
+  }else{
+    points(soilmoist[,i+3]~soilmoist[,1] ,col=i,type = "l")
+  }
+}
+
+## ---- fig.width=7, fig.height=6------------------------------------------
+soil<-as.data.frame(micro$soil) # get the minimum shade soil temperature output
+minshade<-micro$minshade # get the value for minimum shade
+# append dates
+days<-rep(seq(1,timeinterval),24)
+days<-days[order(days)]
+dates<-days+soil$TIME/60/24-1 # dates for hourly output
+soil<-cbind(dates,soil)
+for(i in 1:10){
+  if(i==1){
+    plot(soil[,i+3]~soil[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg C)",col=i,type = "l",main=paste("soil temperature, ",minshade,"% shade"))
+  }else{
+    points(soil[,i+3]~soil[,1], col=i,type = "l")
+  }
+}
 

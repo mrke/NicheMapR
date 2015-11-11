@@ -104,7 +104,8 @@ enbal<-cbind(dates,enbal)
 ############### plot results ######################
 
 # Hourly Tb (black), activity (orange, 5=bask, 10=forage), depth (brown, m) and shade (green, \%/10)
-with(environ, plot(TC~dates,ylab="Tb, depth, activity and shade", xlab="month of year",ylim=c(-20,70),type = "l"))
+with(environ, plot(TC~dates,ylab="Tb, depth, activity and shade", xlab="month of year",
+ylim=c(-20,70),type = "l"))
 with(environ, points(ACT*5~dates,type = "l",col="orange"))
 with(environ, points(SHADE/10~dates,type = "l",col="green"))
 with(environ, points(DEP/10~dates,type = "l",col="brown"))
@@ -117,7 +118,8 @@ forage<-subset(environ,ACT==2)
 bask<-subset(environ,ACT==1)
 night<-subset(metout,ZEN==90)
 day<-subset(metout,ZEN!=90)
-with(night,plot(TIME/60~JULDAY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col='dark blue')) # nighttime hours
+with(night,plot(TIME/60~JULDAY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col='dark blue'))
+# nighttime hours
 with(forage,points((TIME-1)~JULDAY,pch=15,cex=2,col='orange')) # foraging Tbs
 with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
 }
