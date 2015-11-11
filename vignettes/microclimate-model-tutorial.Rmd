@@ -234,7 +234,8 @@ dates<-days+soilmoist$TIME/60/24-1 # dates for hourly output
 soilmoist<-cbind(dates,soilmoist)
 for(i in 1:10){
   if(i==1){
-    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Month", ylab = "Soil Moisture (% vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
+    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Month", ylab = "Soil Moisture (%
+      vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
   }else{
     points(soilmoist[,i+3]~soilmoist[,1], col=i,type = "l")
   }
@@ -255,7 +256,8 @@ dates<-days+soilmoist$TIME/60/24-1 # dates for hourly output
 soilmoist<-cbind(dates,soilmoist)
 for(i in 1:10){
   if(i==1){
-    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Month", ylab = "Soil Moisture (% vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
+    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Month", ylab = "Soil Moisture (%
+      vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
   }else{
     points(soilmoist[,i+3]~soilmoist[,1] ,col=i,type = "l")
   }
@@ -280,7 +282,8 @@ dates<-days+soilmoist$TIME/60/24/(12) # dates for hourly output
 soilmoist<-cbind(dates,soilmoist)
 for(i in 1:10){
   if(i==1){
-    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Year", ylab = "Soil Moisture (% vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
+    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Year", ylab = "Soil Moisture (%
+      vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
   }else{
     points(soilmoist[,i+3]~soilmoist[,1],col=i,type = "l")
   }
@@ -302,7 +305,8 @@ dates<-days+soilmoist$TIME/60/24-1 # dates for hourly output
 soilmoist<-cbind(dates,soilmoist)
 for(i in 1:10){
   if(i==1){
-    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Day of Year", ylab = "Soil Moisture (% vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
+    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Day of Year", ylab = "Soil Moisture
+      (% vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
   }else{
     points(soilmoist[,i+3]~soilmoist[,1] ,col=i,type = "l")
   }
@@ -320,7 +324,8 @@ dates<-days+soil$TIME/60/24-1 # dates for hourly output
 soil<-cbind(dates,soil)
 for(i in 1:10){
   if(i==1){
-    plot(soil[,i+3]~soil[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg C)",col=i,type = "l",main=paste("soil temperature, ",minshade,"% shade"))
+    plot(soil[,i+3]~soil[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg
+      C)",col=i,type = "l",main=paste("soil temperature, ",minshade,"% shade"))
   }else{
     points(soil[,i+3]~soil[,1], col=i,type = "l")
   }
@@ -329,7 +334,7 @@ for(i in 1:10){
 
 ### Snow
 
-Snow has a powerful influence on soil temperatures and can be simulated in the NicheMapR microclimate model by setting the parameter *snowmodel* = 1. This invokes an algorithm that builds up to 8 phantom nodes of snow above the surface as a function of incoming precipitation and losses due to melting. The model incorporates a declining albedo with time since snow and has five user-controlled parameters: *snowtemp* - the air temperature (deg C) at which rain falls as snow, *snowdens* (Mg/m3) - the density of the snow, *snowmelt* (-) - the proportion of calculated snow melt that doesn't refreeze into the snowpack,  *rainmelt* (-) a parameter in an equation from x that melts snow with rainfall as a function of air temperature. The snow density can also be made to vary as a linear function of day of year by providing a slope and intercept as the variable *densfun*, which is only used if non-zero. There is also a parameter *rainfrac* which controls the fraction of rain that falls on the first day of the month, with 0 meaning rain falls evenly. This parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data. This snow model has been tested with favourable results in the Australian Alps and through the USA (Kearney et al. in prep).
+Snow has a powerful influence on soil temperatures and can be simulated in the NicheMapR microclimate model by setting the parameter *snowmodel* = 1. This invokes an algorithm that builds up to 8 phantom nodes of snow above the surface as a function of incoming precipitation and losses due to melting. The model incorporates a declining albedo with time since snow and has five user-controlled parameters: *snowtemp* - the air temperature (deg C) at which rain falls as snow, *snowdens* (Mg/m3) - the density of the snow, *snowmelt* (-) - the proportion of calculated snow melt that doesn't refreeze into the snowpack,  *rainmelt* (-) a parameter in an equation from Anderson's SNOW17 model (<http://www.nws.noaa.gov/oh/hrl/nwsrfs/users_manual/part2/_pdf/22snow17.pdf>) that melts snow with rainfall as a function of air temperature. The snow density can also be made to vary as a linear function of day of year by providing a slope and intercept as the variable *densfun*, which is only used if non-zero. There is also a parameter *rainfrac* which controls the fraction of rain that falls on the first day of the month, with 0 meaning rain falls evenly. This parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data. This snow model has been tested with favourable results in the Australian Alps and through the USA (Kearney et al. in prep).
 
 Here is the consequence of invoking the snow model for soil temperature predictions at Madison, Wisconsin as well as the snow depth and snowfall predictions (running for 2 years to get a steady periodic and plotting only the 2nd year):
 
@@ -348,18 +353,20 @@ soil<-cbind(dates,soil)
 metout<-cbind(dates,metout)
 for(i in 1:10){
   if(i==1){
-    plot(soil[,i+3]~soil[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg C)",col=i,type = "l",main=paste("soil temperature, ",minshade,"% shade"))
+    plot(soil[,i+3]~soil[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg
+      C)",col=i,type = "l",main=paste("soil temperature, ",minshade,"% shade"))
   }else{
     points(soil[,i+3]~soil[,1], col=i,type = "l")
   }
 }
-with(metout,{plot(SNOWDEP ~ dates ,xlab = "Time of Day (min)", ylab = "snow depth, cm / snow fall , mm", type = "h", main=paste("snow depth (cm) and snow fall (mm) ",minshade,"% shade",sep=""), col = "light blue")})
+with(metout,{plot(SNOWDEP ~ dates ,xlab = "Time of Day (min)", ylab = "snow depth, cm / snow fall
+  , mm", type = "h", main=paste("snow depth (cm) and snow fall (mm) ",minshade,"% shade",sep=""), col = "light blue")})
 with(metout,{points(SNOWFALL ~ dates ,xlab = "Time of Day (min)", type = "h", col = "blue")})
 ```
 
 ## The intertidal zone
 
-The final application illustrated in this vignette is in predicting the complex environment of the intertidal zone, where tidal influences impose strong effects on intertidal zones in a manner out of phase with the diurnal cycle. When the argument *shore* = 1, the microclimate model attempts to simulate such influences through a user-specified matrix *tides* of hourly values for 1) tide presence, 2) sea water temperature and 3) presence of wave splash. If the tide is present in a given hour, the model simplifies to heat exchange only by convection and conduction, with an arbitrarily large 'wind speed' imposed to strengthen the coupling of the sea water to the substrate. The effect of the wave splash vector is to make the surface wet and so exchange heat by evaporation.
+The final application illustrated in this vignette concerns predicting the complex environment of the intertidal zone, where tidal influences impose strong effects on intertidal zones in a manner out of phase with the diurnal cycle. When the argument *shore* = 1, the microclimate model attempts to simulate such influences through a user-specified matrix *tides* of hourly values for 1) tide presence, 2) sea water temperature and 3) presence of wave splash. If the tide is present in a given hour, the model simplifies to heat exchange only by convection and conduction, with an arbitrarily large 'wind speed' imposed to strengthen the coupling of the sea water to the substrate. The effect of the wave splash vector is to make the surface wet and so exchange heat by evaporation.
 
 This module is currently untested. An example of what is possible is provided below, and illustrates what might happen on a rocky section of the shore of Lake Mendota in Madison:
 
@@ -384,7 +391,8 @@ dates<-days+soil$TIME/60/24-1 # dates for hourly output
 soil<-cbind(dates,soil)
 for(i in 1:10){
   if(i==1){
-    plot(soil[,i+3]~soil[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg C)",col=i,type = "l",main=paste("soil temperature, ",minshade,"% shade"))
+    plot(soil[,i+3]~soil[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg
+      C)",col=i,type = "l",main=paste("soil temperature, ",minshade,"% shade"))
   }else{
     points(soil[,i+3]~soil[,1], col=i,type = "l")
   }
