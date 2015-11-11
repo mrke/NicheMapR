@@ -92,7 +92,8 @@ dates<-days+soilmoist$TIME/60/24-1 # dates for hourly output
 soilmoist<-cbind(dates,soilmoist)
 for(i in 1:10){
   if(i==1){
-    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Month", ylab = "Soil Moisture (% vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
+    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Month", ylab = "Soil Moisture (%
+      vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
   }else{
     points(soilmoist[,i+3]~soilmoist[,1], col=i,type = "l")
   }
@@ -109,7 +110,8 @@ dates<-days+soilmoist$TIME/60/24-1 # dates for hourly output
 soilmoist<-cbind(dates,soilmoist)
 for(i in 1:10){
   if(i==1){
-    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Month", ylab = "Soil Moisture (% vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
+    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Month", ylab = "Soil Moisture (%
+      vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
   }else{
     points(soilmoist[,i+3]~soilmoist[,1] ,col=i,type = "l")
   }
@@ -127,7 +129,8 @@ dates<-days+soilmoist$TIME/60/24/(12) # dates for hourly output
 soilmoist<-cbind(dates,soilmoist)
 for(i in 1:10){
   if(i==1){
-    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Year", ylab = "Soil Moisture (% vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
+    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Year", ylab = "Soil Moisture (%
+      vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
   }else{
     points(soilmoist[,i+3]~soilmoist[,1],col=i,type = "l")
   }
@@ -145,7 +148,8 @@ dates<-days+soilmoist$TIME/60/24-1 # dates for hourly output
 soilmoist<-cbind(dates,soilmoist)
 for(i in 1:10){
   if(i==1){
-    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Day of Year", ylab = "Soil Moisture (% vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
+    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Day of Year", ylab = "Soil Moisture
+      (% vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
   }else{
     points(soilmoist[,i+3]~soilmoist[,1] ,col=i,type = "l")
   }
@@ -161,7 +165,8 @@ dates<-days+soil$TIME/60/24-1 # dates for hourly output
 soil<-cbind(dates,soil)
 for(i in 1:10){
   if(i==1){
-    plot(soil[,i+3]~soil[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg C)",col=i,type = "l",main=paste("soil temperature, ",minshade,"% shade"))
+    plot(soil[,i+3]~soil[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg
+      C)",col=i,type = "l",main=paste("soil temperature, ",minshade,"% shade"))
   }else{
     points(soil[,i+3]~soil[,1], col=i,type = "l")
   }
@@ -182,12 +187,14 @@ soil<-cbind(dates,soil)
 metout<-cbind(dates,metout)
 for(i in 1:10){
   if(i==1){
-    plot(soil[,i+3]~soil[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg C)",col=i,type = "l",main=paste("soil temperature, ",minshade,"% shade"))
+    plot(soil[,i+3]~soil[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg
+      C)",col=i,type = "l",main=paste("soil temperature, ",minshade,"% shade"))
   }else{
     points(soil[,i+3]~soil[,1], col=i,type = "l")
   }
 }
-with(metout,{plot(SNOWDEP ~ dates ,xlab = "Time of Day (min)", ylab = "snow depth, cm / snow fall , mm", type = "h", main=paste("snow depth (cm) and snow fall (mm) ",minshade,"% shade",sep=""), col = "light blue")})
+with(metout,{plot(SNOWDEP ~ dates ,xlab = "Time of Day (min)", ylab = "snow depth, cm / snow fall
+  , mm", type = "h", main=paste("snow depth (cm) and snow fall (mm) ",minshade,"% shade",sep=""), col = "light blue")})
 with(metout,{points(SNOWFALL ~ dates ,xlab = "Time of Day (min)", type = "h", col = "blue")})
 
 ## ---- fig.width=7, fig.height=6------------------------------------------
@@ -211,7 +218,8 @@ dates<-days+soil$TIME/60/24-1 # dates for hourly output
 soil<-cbind(dates,soil)
 for(i in 1:10){
   if(i==1){
-    plot(soil[,i+3]~soil[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg C)",col=i,type = "l",main=paste("soil temperature, ",minshade,"% shade"))
+    plot(soil[,i+3]~soil[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg
+      C)",col=i,type = "l",main=paste("soil temperature, ",minshade,"% shade"))
   }else{
     points(soil[,i+3]~soil[,1], col=i,type = "l")
   }
