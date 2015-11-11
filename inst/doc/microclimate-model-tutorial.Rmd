@@ -1,10 +1,10 @@
 ---
-title: "Tutorial for the NicheMapR microclimate model"
+title: "Introduction to the NicheMapR microclimate model"
 author: "Michael Kearney"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Tutorial for the NicheMapR microclimate model}
+  %\VignetteIndexEntry{Introduction to the NicheMapR microclimate model}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,7 +18,7 @@ This vignette provides a detailed tutorial of the Niche Mapper microclimate mode
 
 ## Getting started: working with the micro_global() function
 
-The *NicheMapR* package includes data and functions for using a global monthly climate database for computing microclimates. This tutorial starts by illustrating the different capabilities of the microclimate model using this database. For details on setting the model up to run with your own environmental data, see (refer to section below).
+The *NicheMapR* package includes data and functions for using a global monthly climate database for computing microclimates. This tutorial illustrates the different capabilities of the microclimate model using this database. For details on setting the model up to run with your own environmental data, see the vignette "xxxx".
 
 ### Basic operation: modelling microclimates for the average day of each month
 
@@ -196,7 +196,7 @@ The microclimate model has the option of either specifing soil moisture or model
 
 The model will compute soil moisture when the *runmoist* parameter = 1. This invokes an implementation of Campbell’s (1985) Program 11.1 for simulating depth-specific soil moisture, water potential and humidity gradients in the presence of vegetation. It uses matric potential as the dependent variable (rather than matric flux potential) and as a consequence is most computationally efficient when soil is relatively dry (it may significantly extend run times in wet environments). 
 
-The soil moisture calculations are made at the 10 user-specified nodes (parameter *DEP*) and also at the midpoints between them, but are only reported for the 10 nodes in *DEP*. The user input variables specific to this module include, for each of these 19 nodes, the Campbell (or Clapp and Hornberger) b exponent (*BB*), the air entry potential *PE* (J/kg), the hydraulic conductivity *KS* (kg s m-3), the bulk density *BD* (kg m-3), the root density *L* (m m-3) and the leaf area index LAI. All other model parameters are fixed at those suggested by Campbell (1985).
+The soil moisture calculations are made at the 10 user-specified nodes (parameter *DEP*) and also at the midpoints between them, but are only reported for the 10 nodes in *DEP*. The user input variables specific to this module include, for each of these 19 nodes, the Campbell (or Clapp and Hornberger) b exponent (*BB*), the air entry potential *PE* (J/kg), the hydraulic conductivity *KS* (kg s m-3), the bulk density *BD* (kg m-3), the root density *L* (m m-3) and the leaf area index LAI. All other model parameters are fixed at those suggested by Campbell (1985). The model has been tested against detailed observations across Australia with favourable results (Kearney et al. in prep).
 
 Try running the model for your site with the soil moisture model turned on:
 ```{r}
@@ -329,13 +329,75 @@ for(i in 1:10){
 
 ### Snow
 
-Snow has a powerful influence on soil temperatures and can be simulated in the NicheMapR microclimate model by setting the parameter *snowmodel* = 1. This invokes an algorithm that builds up to 8 phantom nodes of snow above the surface as a function of incoming precipitation and losses due to melting. The model incorporates a declining albedo with time since snow and has five user-controlled parameters: *snowtemp* - the air temperature (deg C) at which rain falls as snow, *snowdens* (Mg/m3) - the density of the snow, *snowmelt* (-) - the proportion of calculated snow melt that doesn't refreeze into the snowpack,  *rainmelt* (-) a parameter in an equation from x that melts snow with rainfall as a function of air temperature. The snow density can also be made to vary as a linear function of day of year by providing a slope and intercept as the variable *densfun*, which is only used if non-zero. There is also a parameter *rainfrac* which controls the fraction of rain that falls on the first day of the month, with 0 meaning rain falls evenly. This parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data.
+Snow has a powerful influence on soil temperatures and can be simulated in the NicheMapR microclimate model by setting the parameter *snowmodel* = 1. This invokes an algorithm that builds up to 8 phantom nodes of snow above the surface as a function of incoming precipitation and losses due to melting. The model incorporates a declining albedo with time since snow and has five user-controlled parameters: *snowtemp* - the air temperature (deg C) at which rain falls as snow, *snowdens* (Mg/m3) - the density of the snow, *snowmelt* (-) - the proportion of calculated snow melt that doesn't refreeze into the snowpack,  *rainmelt* (-) a parameter in an equation from x that melts snow with rainfall as a function of air temperature. The snow density can also be made to vary as a linear function of day of year by providing a slope and intercept as the variable *densfun*, which is only used if non-zero. There is also a parameter *rainfrac* which controls the fraction of rain that falls on the first day of the month, with 0 meaning rain falls evenly. This parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data. This snow model has been tested with favourable results in the Australian Alps and through the USA (Kearney et al. in prep).
+
+Here is the consequence of invoking the snow model for soil temperature predictions at Madison, Wisconsin as well as the snow depth and snowfall predictions (running for 2 years to get a steady periodic and plotting only the 2nd year):
+
+```{r, fig.width=7, fig.height=6}
+timeinterval<-365
+nyears<-2 # running two years, first one acting as a 'burn in' year and discarded
+micro<-micro_global(loc="Madison, Wisconsin, USA", runmoist = 1, snowmodel = 1, timeinterval = timeinterval, nyears = 2)
+soil<-as.data.frame(micro$soil)[(365*24+1):(365*24*nyears),] # get the minimum shade soil temperature output, discarding the first year
+metout<-as.data.frame(micro$metout)[(365*24+1):(365*24*nyears),] # get the minimum shade above ground conditions, discarding the first year
+minshade<-micro$minshade # get the value for minimum shade
+# append dates
+days<-rep(seq(366,timeinterval*nyears),24)
+days<-days[order(days)]
+dates<-days+soil$TIME/60/24-1 # dates for hourly output
+soil<-cbind(dates,soil)
+metout<-cbind(dates,metout)
+for(i in 1:10){
+  if(i==1){
+    plot(soil[,i+3]~soil[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg C)",col=i,type = "l",main=paste("soil temperature, ",minshade,"% shade"))
+  }else{
+    points(soil[,i+3]~soil[,1], col=i,type = "l")
+  }
+}
+with(metout,{plot(SNOWDEP ~ dates ,xlab = "Time of Day (min)", ylab = "snow depth, cm / snow fall , mm", type = "h", main=paste("snow depth (cm) and snow fall (mm) ",minshade,"% shade",sep=""), col = "light blue")})
+with(metout,{points(SNOWFALL ~ dates ,xlab = "Time of Day (min)", type = "h", col = "blue")})
+```
 
 ## The intertidal zone
 
-Math expressions, e.g. $Y = X\beta + \epsilon$
+The final application illustrated in this vignette is in predicting the complex environment of the intertidal zone, where tidal influences impose strong effects on intertidal zones in a manner out of phase with the diurnal cycle. When the argument *shore* = 1, the microclimate model attempts to simulate such influences through a user-specified matrix *tides* of hourly values for 1) tide presence, 2) sea water temperature and 3) presence of wave splash. If the tide is present in a given hour, the model simplifies to heat exchange only by convection and conduction, with an arbitrarily large 'wind speed' imposed to strengthen the coupling of the sea water to the substrate. The effect of the wave splash vector is to make the surface wet and so exchange heat by evaporation.
 
-*References:*
+This module is currently untested. An example of what is possible is provided below, and illustrates what might happen on a rocky section of the shore of Lake Mendota in Madison:
+
+```{r, fig.width=7, fig.height=6}
+nyears<-1
+timeinterval<-365
+# if you have data on tides for a shoreline, use the code below to specify the hours the tide is in, the water temperature and wave splash
+  tides<-matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3) # make an empty matrix
+  tides[,2]<-5 # set a constant sea water temperature
+  tides[,3]<-0 # zero the wave splash column
+  tides[12,3]<-90 # make the 12th value (hour 12 on 1st day) get a spash, resulting in the rock evaporating as if it is 90% wetted
+  mocktides<-rep(c(rep(0,12),rep(1,13)),timeinterval*nyears) # made a sequence of tides, where 1 means tide is in and 2 means out, and offset it to 24 hour cycle
+  mocktides<-mocktides[1:8760] # subset it to a year long of 24 hour tides
+  tides[1:(timeinterval*nyears*24),1]<-mocktides # put the mock tides in the tides vector, column 1
+micro<-micro_global(loc="Madison, Wisconsin, USA", shore = 1, soiltype = 0, timeinterval = timeinterval, nyears = nyears, tides = tides)
+soil<-as.data.frame(micro$soil) # get the minimum shade soil temperature output first year
+minshade<-micro$minshade # get the value for minimum shade
+# append dates
+days<-rep(seq(1,timeinterval),24)
+days<-days[order(days)]
+dates<-days+soil$TIME/60/24-1 # dates for hourly output
+soil<-cbind(dates,soil)
+for(i in 1:10){
+  if(i==1){
+    plot(soil[,i+3]~soil[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg C)",col=i,type = "l",main=paste("soil temperature, ",minshade,"% shade"))
+  }else{
+    points(soil[,i+3]~soil[,1], col=i,type = "l")
+  }
+}  
+```
+
+**NOTE** specifying too disparate a sea water temperature from the substrate temperature may result in the model crashing!
+
+## Other parameters
+
+In the help for the **micro_global** function you'll find information on a number of other parameters that may be of use for your application. These allow control of the eccentricity of the earth's orbit *EC* (if you want to go way back into the past), changes in the timing of daily maxima and minima for air temperature, cloud cover, wind speed and relative humidity *TIMINS* and *TIMAXS*, the optical effects of the amount of water in the upper atmosphere *CMH2O*, whether to apply the Global Aerosol Data Set (package **GADS**) to determine solar attenuation due to dust etc. in the atmosphere *rungads*, whether the model outputs csv files *writecsv* or csv files of all inputs *writeinput* (mainly used for the maintainers of the program when testing the Fortran code).
+
+##References
 
 Campbell, G. S. 1985. Soil Physics with Basic: Transport Models for Soil-Plant Systems. Elsevier, Amsterdam.
 
