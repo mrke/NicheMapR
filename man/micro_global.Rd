@@ -4,7 +4,10 @@
 \alias{micro_global}
 \title{Global implementation of the microclimate model.}
 \usage{
-micro_global(loc, timeinterval, nyears, soiltype, REFL, slope, aspect, DEP, minshade, maxshade, Usrhyt, ...)
+micro_global(loc = "Madison, Wisconsin USA", timeinterval = 12, nyears = 1, soiltype = 4,
+REFL = 0.15, slope = 0, aspect = 0,
+DEP = c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.), minshade = 0, maxshade = 90,
+Usrhyt = 1, ...)
 }
 \arguments{
 \item{loc}{Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth}
@@ -13,7 +16,7 @@ micro_global(loc, timeinterval, nyears, soiltype, REFL, slope, aspect, DEP, mins
 
 \item{nyears}{The number of years to run}
 
-\item{soiltype}{Soil type: Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, based on Campbell and Norman 1990 Table 9.1.}
+\item{soiltype}{Soil type: Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, user-defined = 12, based on Campbell and Norman 1990 Table 9.1.}
 
 \item{REFL}{Soil solar reflectance, decimal \%}
 
@@ -28,6 +31,8 @@ micro_global(loc, timeinterval, nyears, soiltype, REFL, slope, aspect, DEP, mins
 \item{maxshade}{Maximum shade level to us (\%)}
 
 \item{Usrhyt}{Local height (cm) at which air temperature, wind speed and humidity are to be computed for organism of interest}
+
+\item{...}{Additional arguments, see Details}
 }
 \value{
 metout The above ground micrometeorological conditions under the minimum specified shade
@@ -60,6 +65,76 @@ Koepke, P., M. Hess, I. Schult, and E. P. Shettle. 1997. Global Aerosol Data Set
 by choosing the option 'rungads<-1'
 }
 \details{
+\strong{ Parameters controling how the model runs:}
+
+\code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1)
+or just once for the minimum shade (0)?}\cr\cr
+\code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+\code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
+\code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
+
+\strong{ General additional parameters:}\cr\cr
+\code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
+\code{RUF}{ = 0.004, Roughness height (m), e.g. sand is 0.05, grass may be 2.0, current allowed range: 0.001 (snow) - 2.0 cm.}\cr\cr
+\code{EC}{ = 0.0167238, Eccenricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)}\cr\cr
+\code{SLE}{ = 0.95, Substrate longwave IR emissivity (decimal \%), typically close to 1}\cr\cr
+\code{Thcond}{ = 2.5, Soil minerals thermal conductivity (W/mK)}\cr\cr
+\code{Density}{ = 2560, Soil minerals density (kg/m3)}\cr\cr
+\code{SpecHeat}{ = 870, Soil minerals specific heat (J/kg-K)}\cr\cr
+\code{BulkDensity}{ = 1300, Soil bulk density (kg/m3)}\cr\cr
+\code{PCTWET}{ = 0, \% of ground surface area acting as a free water surface}\cr\cr
+\code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
+\code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
+\code{hori}{ = rep(0,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
+\code{TIMAXS}{ = c(1.0, 1.0, 0.0, 0.0), Time of Maximums for Air Wind RelHum Cloud (h), air & Wind max's relative to solar noon, humidity and cloud cover max's relative to sunrise}\cr\cr
+\code{TIMINS}{ = c(0.0, 0.0, 1.0, 1.0), Time of Minimums for Air Wind RelHum Cloud (h), air & Wind min's relative to sunrise, humidity and cloud cover min's relative to solar noon}\cr\cr
+\code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr
+
+\strong{ Soil moisture mode parameters:}
+
+\code{runmoist}{ = 0, Run soil moisture model? 1=yes, 0=no  1=yes, 0=no (note that this may cause slower runs)}\cr\cr
+\code{PE}{ = rep(1.1,19), Air entry potential (J/kg) (19 values descending through soil for specified soil nodes in parameter}
+\code{DEP}
+{ and points half way between)}\cr\cr
+\code{KS}{ = rep(0.0037,19), Saturated conductivity, (kg s/m3) (19 values descending through soil for specified soil nodes in parameter}
+\code{DEP}
+{ and points half way between)}\cr\cr
+\code{BB}{ = rep(4.5,19), Campbell's soil 'b' parameter (-) (19 values descending through soil for specified soil nodes in parameter}
+\code{DEP}
+{ and points half way between)}\cr\cr
+\code{BD}{ = rep(1.3,19), Soil bulk density (kg/m3)  (19 values descending through soil for specified soil nodes in parameter}
+\code{DEP}
+{ and points half way between)}\cr\cr
+\code{Clay}{ = 20, Clay content for matric potential calculations (\%)}\cr\cr
+\code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
+\code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
+\code{evenrain}{ = 0, Spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)}\cr\cr
+\code{SoilMoist_Init}{ = c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3), initial soil water content at each soil node, m3/m3}\cr\cr
+\code{L}{ = c(0,0,8.2,8.0,7.8,7.4,7.1,6.4,5.8,4.8,4.0,1.8,0.9,0.6,0.8,0.4,0.4,0,0)*10000, root density (m/m3), (19 values descending through soil for specified soil nodes in parameter}
+\code{DEP}
+{ and points half way between)}\cr\cr
+\code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET}\cr\cr
+
+\strong{ Snow mode parameters:}
+
+\code{snowmodel}{ = 0, run the snow model 1=yes, 0=no (note that this may cause slower runs)}\cr\cr
+\code{snowtemp}{ = 1.5, Temperature (deg C) at which precipitation falls as snow}\cr\cr
+\code{snowdens}{ = 0.375, snow density (mg/m3), overridden by }
+\code{densfun}\cr\cr
+\code{densfun}{ = c(0,0), slope and intercept of linear model of snow density as a function of day of year - if it is c(0,0) then fixed density used}\cr\cr
+\code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
+\code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
+\code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
+\code{rainfrac}{ = 0.5, fraction of rain that falls on the first day of the month (decimal \% with 0 meaning rain falls evenly) - this parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data)}\cr\cr
+
+\strong{ Intertidal mode parameters:}
+
+\code{shore}{ Include tide effects? If 1, the matrix}
+\code{tides}
+{ is used to specify tide presence, sea water temperature and presence of wavesplash}\cr\cr
+\code{tides}{ = matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (deg C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
+
+\strong{Outputs:}
 metout/shadmet variables:
 \itemize{
 \item 1 JULDAY - day of year
@@ -93,7 +168,7 @@ soilmoist and shadmoist variables:
 \itemize{
 \item 1 JULDAY - day of year
 \item 2 TIME - time of day (mins)
-\item 3-12 WC0cm ... - soil temperatures at each of the 10 specified depths
+\item 3-12 WC0cm ... - soil moisuture (m3/m3) at each of the 10 specified depths
 }
 soilpot and shadpot variables:
 \itemize{
@@ -133,38 +208,56 @@ minshade<-micro$minshade
 maxshade<-micro$maxshade
 
 # plotting above-ground conditions in minimum shade
-with(plotmetout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)", type = "l",main=paste("air temperature, ",minshade,"\% shade",sep=""))})
-with(plotmetout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)", type = "l",lty=2,col='blue')})
-with(plotmetout,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)", type = "l",ylim=c(0,100),main=paste("humidity, ",minshade,"\% shade",sep=""))})
-with(plotmetout,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)", type = "l",col='blue',lty=2,ylim=c(0,100))})
-with(plotmetout,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (deg C)",  type = "l",main=paste("sky temperature, ",minshade,"\% shade",sep=""))})
-with(plotmetout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)",  type = "l",main="wind speed")})
-with(plotmetout,{points(VLOC ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)",  type = "l",lty=2,col='blue')})
-with(plotmetout,{plot(ZEN ~ dates,xlab = "Date and Time", ylab = "Zenith Angle of Sun (deg)",  type = "l",main="solar angle, sun")})
-with(plotmetout,{plot(SOLR ~ dates,xlab = "Date and Time", ylab = "Solar Radiation (W/m2)",  type = "l",main="solar radiation")})
+with(plotmetout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)"
+, type = "l",main=paste("air temperature, ",minshade,"\% shade",sep=""))})
+with(plotmetout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)"
+, type = "l",lty=2,col='blue')})
+with(plotmetout,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
+, type = "l",ylim=c(0,100),main=paste("humidity, ",minshade,"\% shade",sep=""))})
+with(plotmetout,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
+, type = "l",col='blue',lty=2,ylim=c(0,100))})
+with(plotmetout,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (deg C)"
+,  type = "l",main=paste("sky temperature, ",minshade,"\% shade",sep=""))})
+with(plotmetout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
+,  type = "l",main="wind speed")})
+with(plotmetout,{points(VLOC ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
+,  type = "l",lty=2,col='blue')})
+with(plotmetout,{plot(ZEN ~ dates,xlab = "Date and Time", ylab = "Zenith Angle of Sun (deg)"
+,  type = "l",main="solar angle, sun")})
+with(plotmetout,{plot(SOLR ~ dates,xlab = "Date and Time", ylab = "Solar Radiation (W/m2)"
+,  type = "l",main="solar radiation")})
 
 # plotting soil temperature for minimum shade
 for(i in 1:10){
  if(i==1){
-   plot(plotsoil[,i+3]~plotsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature (deg C)",col=i,type = "l",main=paste("soil temperature ",minshade,"\% shade",sep=""))
+   plot(plotsoil[,i+3]~plotsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature (deg C)"
+   ,col=i,type = "l",main=paste("soil temperature ",minshade,"\% shade",sep=""))
  }else{
-   points(plotsoil[,i+3]~plotsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature (deg C)",col=i,type = "l")
+   points(plotsoil[,i+3]~plotsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature
+    (deg C)",col=i,type = "l")
  }
 }
 
 # plotting above-ground conditions in maximum shade
-with(plotshadmet,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)", type = "l",main="air temperature, sun")})
-with(plotshadmet,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)", type = "l",lty=2,col='blue')})
-with(plotshadmet,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)", type = "l",ylim=c(0,100),main="humidity, shade")})
-with(plotshadmet,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)", type = "l",col='blue',lty=2,ylim=c(0,100))})
-with(plotshadmet,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (deg C)",  type = "l",main="sky temperature, shade")})
+with(plotshadmet,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)"
+, type = "l",main="air temperature, sun")})
+with(plotshadmet,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)"
+, type = "l",lty=2,col='blue')})
+with(plotshadmet,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
+, type = "l",ylim=c(0,100),main="humidity, shade")})
+with(plotshadmet,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
+, type = "l",col='blue',lty=2,ylim=c(0,100))})
+with(plotshadmet,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (deg C)",
+ type = "l",main="sky temperature, shade")})
 
 # plotting soil temperature for maximum shade
 for(i in 1:10){
  if(i==1){
-   plot(plotshadsoil[,i+3]~plotshadsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature (deg C)",col=i,type = "l",main=paste("soil temperature ",maxshade,"\% shade",sep=""))
+   plot(plotshadsoil[,i+3]~plotshadsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature
+    (deg C)",col=i,type = "l",main=paste("soil temperature ",maxshade,"\% shade",sep=""))
  }else{
-   points(plotshadsoil[,i+3]~plotshadsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature (deg C)",col=i,type = "l")
+   points(plotshadsoil[,i+3]~plotshadsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature
+    (deg C)",col=i,type = "l")
  }
 }
 }

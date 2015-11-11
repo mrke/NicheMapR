@@ -8,13 +8,18 @@ Depends:
     R (>= 3.2.2)
 Imports:
    raster
-License: MIT
+License: TBA
 LazyData: true
 RoxygenNote: 5.0.0
 Suggests:
+    devtools,
     dismo,
+    GADS,
+    geonames,
     knitr,
     lattice,
+    MICROCLIMATE,
+    microclimate,
     rmarkdown,
     geonames,
     XML
