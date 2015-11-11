@@ -860,7 +860,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       write.table(tides,file="micro csv input/tides.csv", sep = ",", col.names = NA, qmethod = "double")
     }
 
-    cat(paste('running microclimate model for',timeinterval,'days by',nyears,'years \n at site',loc,'\n'))
+    cat(paste('running microclimate model for',timeinterval,'days by',nyears,'years at site',loc,'\n'))
     ptm <- proc.time() # Start timing
     microut<-microclimate(micro)
     print(proc.time() - ptm) # Stop the clock
