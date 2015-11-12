@@ -5,13 +5,13 @@
 \title{Ectotherm model.}
 \usage{
 ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax, ctmin,
- tpref, dayact, nocturn, crepus, CkGrShad, burrow, climb, shdburrow, mindepth, maxdepth,
+ TPREF, dayact, nocturn, crepus, CkGrShad, burrow, climb, shdburrow, mindepth, maxdepth,
  MR_1, MR_2, MR_3, skinwet, extref, DELTAR, ...)
 }
 \arguments{
 \item{amass}{Mass of animal (g), note this model is 'steady state' so no lags in heating/cooling due to mass}
 
-\item{lometry}{Organism shape, 0-4 (see details)}
+\item{lometry}{Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)}
 
 \item{ABSMAX}{Maximum solar absorptivity, decimal percent}
 
@@ -25,21 +25,23 @@ ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax,
 
 \item{TEMERGE}{Temperature at which animal will move to a basking site, degrees C}
 
-\item{ctmax}{Critical thermal maximum, degrees C (affects burrow selection)}
+\item{TPREF}{Preferred body temperature, degrees C}
 
-\item{ctmin}{Critical thermal minimum, degrees C (affects burrow selection)}
+\item{ctmax}{Critical thermal maximum, degrees C (affects burrow depth selection)}
 
-\item{dayact}{Diurnal activity allowed (1) or not (0)?}
+\item{ctmin}{Critical thermal minimum, degrees C (affects burrow depth selection)}
 
-\item{nocturn}{Nocturnal activity allowed (1) or not (0)?}
+\item{dayact}{Diurnal activity allowed?  1=yes, 0=no}
 
-\item{crepus}{Crepuscular activity allowed (1) or not (0)?}
+\item{nocturn}{Nocturnal activity allowed?  1=yes, 0=no}
 
-\item{CkGrShad}{shade seeking allowed (1) or not (0)?}
+\item{crepus}{Crepuscular activity allowed?  1=yes, 0=no}
 
-\item{burrow}{Shelter in burrow allowed (1) or not (0)?}
+\item{CkGrShad}{shade seeking allowed?  1=yes, 0=no}
 
-\item{climb}{climbing to seek cooler habitats allowed (1) or not (0)?}
+\item{burrow}{Shelter in burrow allowed?  1=yes, 0=no}
+
+\item{climb}{climbing to seek cooler habitats allowed?  1=yes, 0=no}
 
 \item{shdburrow}{choose if the animal's retreat is in the shade (1) or in the open (0)}
 
@@ -57,9 +59,7 @@ ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax,
 
 \item{extref}{\% oxygen extraction efficiency, for respiratory water loss}
 
-\item{DELTAR}{Temperature difference (deg C) between expired and inspired air, , for respiratory water loss}
-
-\item{tpref}{Preferred body temperature, degrees C}
+\item{DELTAR}{Temperature difference (deg C) between expired and inspired air, for computing respiratory water loss}
 }
 \description{
 An implementation of the Niche Mapper ectotherm model that computes body temperature, water loss,
@@ -67,23 +67,231 @@ activity and microhabitat selection. It optionally runs the Dynamic Energy Budge
 computing mass budgets (inc. water budgets) and growth, development, reproduction trajectories
 as constrained by food, activity and temperature (see Details). When not running the DEB model
 a user-specified mass is used as well as a allometric (mass and body temperature) function to
-compute metabolic rate.
+compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. micro_global(), must be run prior to running the ectotherm model
 }
 \details{
-The microclimate model, e.g. micro_global(), must be run prior to running the ectotherm model
-
-
 \strong{ Parameters controling how the model runs:}
-\strong{ Parameters controling how the model runs:}
+\itemize{
+\item{\code{microin}{ = "none", Directory where precomputed microclimate outputs (.csv files) are saved - if "none", assumes results are in list 'micro'}\cr}
+\item{\code{nyears}{ = micro$nyears, Number of years the simulation runs for - must be consistent with dimensions of environmental input data}\cr}
+\item{\code{ystrt}{ = 0, Year of the simulation to start at - will loop back over earlier periods at the end, useful for exploring cohort effects when running a life cycle with the DEB model}\cr}
+\item{\code{enberr}{ = 0.0002, Factor by which the mass is multiplied to obtain a tolerance level for the heat budget solution}\cr}
+\item{\code{live=}{ = 1, Live (metabolism/behaviour) or dead animal?}\cr}
+\item{\code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr}
+\item{\code{startday}{ = 1, Julian day of year at which simulation starts}\cr}
+}
+\strong{ Environmental inputs:}
 
-\code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1)
-or just once for the minimum shade (0)?}\cr\cr
-\code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
-\code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
-\code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
+\itemize{
+\item{\code{minshade}{ = 0., Minimum shade (\%) available to the animal}\cr}
+\item{\code{maxshade}{ = micro$MAXSHADES[1], Maximum shade (\%) available to the animal}\cr}
+\item{\code{FLTYPE}{ = 0.0, Fluid type 0=air, 1=water }\cr}
+\item{\code{SUBTK}{ = 2.79, Substrate thermal conductivity (W/mC)}\cr}
+\item{\code{REFL}{ = micro$REFL, Vector of daily substrate reflectances (\%)}\cr}
+\item{\code{DEP}{ = micro$DEP,}\cr}
+\item{\code{metout}{ = micro$metout, Microclimate model output for above ground, minimum shade conditions}\cr}
+\item{\code{shadmet}{ = micro$shadmet, Microclimate model output for above ground, maximum shade conditions}\cr}
+\item{\code{soil}{ = micro$soil, Microclimate model output for soil temperature, minimum shade conditions}\cr}
+\item{\code{shadsoil}{ = micro$shadsoil, Microclimate model output for soil temperature, maximum shade conditions}\cr}
+\item{\code{soilmoist}{ = micro$soilmoist, Microclimate model output for soil moisture, minimum shade conditions}\cr}
+\item{\code{shadmoist}{ = micro$shadmoist, Microclimate model output for soil moisture, maximum shade conditions}\cr}
+\item{\code{humid}{ = micro$humid, Microclimate model output for soil humidity, minimum shade conditions}\cr}
+\item{\code{shadhumid}{ = micro$shadhumid, Microclimate model output for soil humidity, maximum shade conditions}\cr}
+\item{\code{soilpot}{ = micro$soilpot, Microclimate model output for soil water potential, minimum shade conditions}\cr}
+\item{\code{shadpot}{ = micro$shadpot, Microclimate model output for soil water potential, maximum shade conditions}\cr}
+\item{\code{RAINFALL}{ = micro$RAINFALL, Vector of daily rainfall}\cr}
+\item{\code{MAXSHADES}{ = micro$MAXSHADES, Vector of daily maximum shade values}\cr}
+\item{\code{ectoin}{ = rbind(as.numeric(micro$ALTT),as.numeric(micro$REFL)[1],micro$longlat[1],micro$longlat[2],0,0,1990,1990), Other items needed by the model - this needs to be tidied up}\cr}
+}
+\strong{ Morphological parameters:}
 
+\itemize{
+\item{\code{customallom}{ = c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom allometry coefficients. Operates if lometry=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}\cr}
+\item{\code{shape_a}{ = 1., Proportionality factor (-) for going from volume to area, keep this 1 (redundant parameter that should be removed)}\cr}
+\item{\code{shape_b}{ = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid }\cr}
+\item{\code{shape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
+\item{\code{FATOSK}{ = 0.4, Configuration factor to sky (-) for infrared calculations}\cr}
+\item{\code{FATOSB}{ = 0.4, Configuration factor to subsrate for infrared calculations}\cr}
+\item{\code{rinsul}{ = 0., Insulative fat layer thickness (m)}\cr}
+\item{\code{ptcond}{ = 0.25, Fraction of surface contacting the substrate}\cr}
+\item{\code{Spheat}{ = 4185, Specific heat of flesh J/(kg-K)}\cr}
+\item{\code{Flshcond}{ = 0.5, Thermal conductivity of flesh (W/mC, range: 0.412-2.8)}\cr}
+\item{\code{Andens}{ = 1000, Density of flesh (kg/m3)}\cr}
+\item{\code{EMISAN}{ = 0.95, Emissivity of animal (0-1)}\cr}
+}
+\strong{ Behavioural parameters:}
+
+\itemize{
+\item{\code{fosorial}{ = 0, Fossorial activity? 1=yes, 0=no (this option hasn't been tested)}\cr}
+\item{\code{rainact}{ = 0, Activity is limited by rainfall? 1=yes, 0=no, threshold rainfall for activity set by \code{actrainthresh}}\cr}
+\item{\code{actrainthresh}{ = 0.1, Threshold (mm) of rain causing activity if \code{rainact}=1}\cr}
+\item{\code{soilnode}{ = 4., Soil node (1-10, corresponding to values in \code{DEP}) at which eggs are laid (overridden if \code{frogbreed}=1)}\cr}
+}
+\strong{ Thermal physiological parameters:}
+
+\itemize{
+\item{\code{ctminthresh}{ = 12, Number of consecutive hours below CTmin that leads to death - simulation will terminate beyond this threshold if \code{ctkill}=1}\cr}
+\item{\code{ctkill}{ = 0, Animal dies when it hits critical thermal limits? 1=yes, 0=no}\cr}
+}
+\strong{ Water and food budget parameters (only relevant if \code{DEB}=1):}
+
+\itemize{
+\item{\code{PFEWAT}{ = 73, Fecal water content (\%)}\cr}
+\item{\code{PTUREA}{ = 0, Water in excreted nitrogenous waste (\%)}\cr}
+\item{\code{FoodWater}{ = 82, Wwater content of food (\%)}\cr}
+\item{\code{minwater}{ = 15, Minimum tolerated dehydration (\% of wet mass) - prohibits foraging if greater than this}\cr}
+\item{\code{gutfill}{ = 75.,}\cr}
+\item{\code{soilmoisture1}{ = 0,}\cr}
+\item{\code{raindrink}{ = 0., Gut fill (\%) at which satiation occurs - if greater than 100\%, animal always tries to forage}\cr}
+}
+\strong{ Dynamic Energy Budget (DEB) model parameters:}
+\itemize{
+\item{\code{DEB}{ = 0, Run the DEB model (1) or just heat balance (0). Latter uses allometrically predicted respiration base on \code{MR_1}, \code{MR_2} and \code{MR_3}}\cr}
+\item{\code{fract}{ = 1, Scaling factor for DEB body-size covariation relationships - use it to make a metabolically scaled larger or smaller version of your animal}\cr}
+}
+\strong{ Core DEB parameters:}
+\itemize{
+\item{\code{z}{ = 7.174*fract, Zoom factor (cm)}\cr}
+\item{\code{delta}{ =  0.217, Shape coefficient (-)}\cr}
+\item{\code{p_Xm}{ = 13290, Surface area-specific maximum feeding rate J/cm2/h}\cr}
+\item{\code{kappa_X}{ = 0.85, Digestive efficiency (decimal \%)}\cr}
+\item{\code{v_dotref}{ = 0.05591/24., Energy conductance (cm/h)}\cr}
+\item{\code{kappa}{ = 0.8501, fraction of mobilised reserve allocated to soma}\cr}
+\item{\code{p_Mref}{ = 45.14/24., Volume-specific somatic maintenance (J/cm3/h)}\cr}
+\item{\code{E_G}{ = 7189, Cost of structure (J/cm3)}\cr}
+\item{\code{k_R}{ = 0.95, Fraction of reproduction energy fixed in eggs}\cr}
+\item{\code{k_J}{ = 0.00628/24., Maturity maintenance rate coefficient (1/h)}\cr}
+\item{\code{E_Hb}{ = 6.533e+04*fract^3, Maturity at birth (J)}\cr}
+\item{\code{E_Hj}{ = E_Hb*fract^3, Maturity at metamorphosis (J)}\cr}
+\item{\code{E_Hp}{ = 1.375e+05*fract^3, Maturity at puberty}\cr}
+\item{\code{h_aref}{ = 3.61e-13/(24.^2), Weibull ageing acceleration (1/h2)}\cr}
+\item{\code{s_G}{ = 0.01, Gompertz stress coefficient (-)}\cr}
+}
+\strong{ Thermal DEB parameters:}
+\itemize{
+\item{\code{T_REF}{ = 20, Reference temperature for rate correction (deg C)}\cr}
+\item{\code{TA}{ = 7130, Arhhenius temperature}\cr}
+\item{\code{TAL}{ = 5.305e+04, Arrhenius temperature for decrease below lower boundary of tolerance range \code{TL}}\cr}
+\item{\code{TAH}{ = 9.076e+04, Arrhenius temperature for decrease above upper boundary of tolerance range \code{TH}}\cr}
+\item{\code{TL}{ = 288., Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
+\item{\code{TH}{ = 315., Upper boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
+}
+\strong{ Compound/derived DEB parameters:}
+\itemize{
+\item{\code{E_Egg}{ = 1.04e+06*fract^4, Energy content of the egg (J)}\cr}
+\item{\code{E_m}{ = (p_Mref*z/kappa)/v_dotref, Maximum reserve density (J/cm3)}\cr}
+}
+\strong{ Food-related axilliary DEB parameters:}
+\itemize{
+\item{\code{f}{ = 1, functional response (-), usually kept at 1 because gut model controls food availability such that f=0 when gut empty}\cr}
+\item{\code{MsM}{ = 186.03*6, Maximum volume-specific energy density of stomach (J/cm3)}\cr}
+\item{\code{K}{ = 1, Half saturation constant (#/cm2)}\cr}
+\item{\code{X}{ = 10, Food density (J/cm2)}\cr}
+}
+\strong{ Composition-related axilliary DEB parameters:}
+\itemize{
+\item{\code{andens_deb}{ = Andens/1000, Animal density (g/cm3)}\cr}
+\item{\code{d_V}{ = 0.3, Dry mass fraction of structure}\cr}
+\item{\code{d_E}{ = 0.3, Dry mass fraction of reserve}\cr}
+\item{\code{eggdryfrac}{ = 0.3, Dry mass fraction of egg}\cr}
+\item{\code{mu_X}{ = 525000, Molar Gibbs energy (chemical potential) of food (J/mol)}\cr}
+\item{\code{mu_E}{ = 585000, Molar Gibbs energy (chemical potential) of reserve (J/mol)}\cr}
+\item{\code{mu_V}{ = 500000, Molar Gibbs energy (chemical potential) of structure (J/mol)}\cr}
+\item{\code{mu_P}{ = 480000, Molar Gibbs energy (chemical potential) of faeces (J/mol)}\cr}
+\item{\code{kappa_X_P}{ = 0.1, Faecation efficiency of food to faeces (-)}\cr}
+\item{\code{nX}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in food}\cr}
+\item{\code{nE}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in reserve}\cr}
+\item{\code{nV}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in structure}\cr}
+\item{\code{nP}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in faeces}\cr}
+\item{\code{N_waste}{ = c(1,4/5,3/5,4/5), chem. indices of C, O, H and N in nitrogenous waste}\cr}
+}
+\strong{ Insect DEB model parameters (not yet in operation):}
+\itemize{
+\item{\code{metab_mode}{ = 0, Run insect model? 0 = no, 1 = hemimetabolus model (to do), 2 = holometabolous model}\cr}
+\item{\code{stages}{ = 7, number of stages (max = 8) = number of instars plus 1 for egg + 1 for pupa + 1 for imago}\cr}
+\item{\code{y_EV_l}{ = 0.95, yield of imago reserve on larval structure (mol/mol)}\cr}
+\item{\code{S_instar}{ = c(2.660,2.310,1.916,0), stress at instar n: L_n^2/ L_n-1^2 (-)}\cr}
+\item{\code{s_j}{ = 0.999, Reprod buffer/structure ratio at pupation as fraction of max}\cr}
+}
+\strong{ Inital conditions for DEB model:}
+\itemize{
+\item{\code{v_init}{ = 3e-9, Initial structural volume (cm3)}\cr}
+\item{\code{E_init}{ = E_Egg/v_init, Initial reserve density (J/cm3)}\cr}
+\item{\code{E_H_init}{ = 0, Initial maturity (J)}\cr}
+\item{\code{stage}{ = 0, Initial stage (0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction)}\cr}
+}
+\strong{ Metabolic depression parameters (not yet functional):}
+\itemize{
+\item{\code{aestivate}{ = 0, Does the animal aestivate/go into torpor? 1=yes, 0=no}\cr}
+\item{\code{depress}{ = 0.3, Fraction by which \code{p_Mref}, \code{k_J} and \code{v_dotref} are reduced during torpor}\cr}
+}
+\strong{ Reproductive phenology model parameters:}
+\itemize{
+\item{\code{clutchsize}{ = 2., Clutch size (#), overridden by \code{clutch_ab}}\cr}
+\item{\code{clutch_ab}{ = c(0,0), # paramters for relationship between length (cm) and clutch size: clutch size = a*SVL-b, make a and b zero if fixed clutch size}\cr}
+\item{\code{viviparous}{ = 0, Viviparous reproduction? 1=yes, 0=no (if yes, animal will be held in adult-sided female's body for duration of development and will experience her body temperature}\cr}
+\item{\code{minclutch}{ = 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate}\cr}
+\item{\code{batch}{ = 1, Invoke Pequerie et al.'s batch laying model?}\cr}
+\item{\code{photostart}{ = 3, Photoperiod response triggering ovulation, none (0), summer solstice (1), autumnal equinox (2), winter solstice (3), vernal equinox (4), specified daylength thresholds (5 - uses \code{daylengthstart} and \code{daylengthfinish})}\cr}
+\item{\code{photofinish}{ = 1, Photoperiod terminating ovulation, none (0), summer solstice (1), autumnal equinox (2), winter solstice (3), vernal equinox (4), specified daylength thresholds (5 - uses \code{daylengthstart} and \code{daylengthfinish})}\cr}
+\item{\code{daylengthstart}{ = 12.5, Threshold daylength (h) for initiating breeding}\cr}
+\item{\code{daylengthfinish}{ = 13., Threshold daylength (h) for terminating breeding}\cr}
+\item{\code{photodirs }{ =  1, Is the start daylength trigger during a decrease (0) or increase (1) in day length?}\cr}
+\item{\code{photodirf }{ =  0, Is the finish daylength trigger during a decrease (0) or increase (1) in day length?}\cr}
+\item{\code{frogbreed}{ = 0, Amphibious animal breeding mode: 0 is off, 1 is exotrophic aquatic (eggs start when water present in container and within breeding season), 2 is exotrophic terrestrial/aquatic (eggs start at specified soil node within breeding season, diapause at birth threshold, start larval phase if water present in container), 3 endotrophic terrestrial (eggs start at specified soil node within breeding season and continue to metamorphosis on land), 4 turtle mode (eggs start at specified soil node within breeding season, hatch and animals enter water and stay there for the rest of their life, but leave the water if no water is present)}\cr}
+\item{\code{frogstage}{ = 0, Life cycle control for amphibious animal: 0 is whole life cycle, 1 is just to metamorphosis (then reset and start again)}\cr}
+\item{\code{reset}{ = 0, Life cycle reset options, 0=quit simulation upon death, 1=restart at emergence, 2=restart at first egg laid, 3=restart at end of breeding season, 4=reset at death}\cr}
+\item{\code{breedactthresh}{ = 1, Threshold numbers of hours active after start of breeding season before eggs can be laid (simulating movement to the breeding site)}\cr}
+\item{\code{breedrainthresh}{ = 0, Rain dependent breeder? 0 means no, otherwise enter rainfall threshold in mm}\cr}
+\item{\code{breedtempthresh}{ = 200, Body temperature threshold below which breeding will occur}\cr}
+\item{\code{breedtempcum}{ = 24*7, Cumulative time below temperature threshold for breeding \code{breedtempthresh} that will trigger breeding}\cr}
+}
+\strong{ Mortality rate parameters:}
+\itemize{
+\item{\code{ma}{ = 1e-4, Hourly active mortality rate (probability of mortality per hour)}\cr}
+\item{\code{mi}{ = 0, Hourly inactive mortality rate (probability of mortality per hour)}\cr}
+\item{\code{mh}{ = 0.5, Survivorship of hatchling in first year}\cr}
+}
+\strong{ Water body model parameters:}
+\itemize{
+\item{\code{container}{ = 0, Run the water body/container model? (aquatic start of life cycle, e.g. frog or mosquito)}\cr}
+\item{\code{wetmod}{ = 0, Use precomputed wetland temperature \code{wetlandTemps} and depths \code{wetlandDepthds}?}\cr}
+\item{\code{conth}{ = 10, Cylindrical container/pond height (cm)}\cr}
+\item{\code{contw}{ = 100., Cylindrical container/pond diameter (cm)}\cr}
+\item{\code{contype}{ = 1, Is 'containter' sitting on the surface, like a bucket (0) or sunk into the ground like a pond (1)}\cr}
+\item{\code{rainmult}{ = 1, Rainfall multiplier to reflect catchment (don't make this zero unless you want a drought!)}\cr}
+\item{\code{continit}{ = 0, Initial container water level (cm)}\cr}
+\item{\code{conthole}{ = 0, Daily loss of height (mm) due to 'hole' in container (e.g. infiltration to soil, drawdown from water tank)}\cr}
+\item{\code{contonly}{ = 1, Just run the container model and quit?}\cr}
+\item{\code{contwet}{ = 80, \% of container surface acting as a free water exchanger}\cr}
+\item{\code{wetlandTemps}{ = matrix(data = 0., nrow = 24*dim, ncol = 1), Matrix of hourly wetland temperaures (deg C)}\cr}
+\item{\code{wetlandDepths}{ = matrix(data = 0., nrow = 24*dim, ncol = 1), Matrix of hourly wetland depths (cm)}\cr}
+}
+\strong{ Life stage-specific parameter allocation:}
+\itemize{
+\item{\code{thermal_stages}{ = matrix(data = c(rep(ctmin,8),rep(ctmax,8),rep(TMINPR,8),rep(TMAXPR,8),rep(TBASK,8),rep(TPREF,8)), nrow = 8, ncol = 6), Stage specific thermal thresholds (ctmin,ctmax,TMINPR,TMAXPR,TBASK,TPREF)}\cr}
+\item{\code{behav_stages}{ = matrix(data = c(rep(dayact,8),rep(nocturn,8),rep(crepus,8),rep(burrow,8),rep(shdburrow,8),rep(mindepth,8),rep(maxdepth,8),rep(CkGrShad,8),rep(climb,8),rep(fosorial,8),rep(rainact,8),rep(actrainthresh,8),rep(breedactthresh,8),rep(flyer,8)), nrow = 8, ncol = 14), Stage specific behaviour dayact,nocturn,crepus,burrow,shdburrow,mindepth,maxdepth,CkGrShad,climb,fosorial,rainact,actrainthresh,breedactthresh,flyer)}\cr}
+\item{\code{water_stages}{ = matrix(data = c(rep(skinwet,8),rep(extref,8),rep(PFEWAT,8),rep(PTUREA,8),rep(FoodWater,8),rep(minwater,8),rep(raindrink,8),rep(gutfill,8)), nrow = 8, ncol = 8), Stage-specific water budget parameters (skinwet,extref,PFEWAT,PTUREA,FoodWater,minwater,raindrink,gutfill)}\cr}
+\item{\code{arrhenius}{ = matrix(data = matrix(data = c(rep(TA,8),rep(TAL,8),rep(TAH,8),rep(TL,8),rep(TH,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (TA,TAL,TAH,TL,TH)}\cr}
+}
+\strong{ Butterfly model parameters (not yet tested):}
+\itemize{
+\item{\code{wings}{ = 0, Turn wing model on? 1=yes, 0=no}\cr}
+\item{\code{rho1_3}{ = 0.2, Wing reflectance (dec \%)}\cr}
+\item{\code{trans1}{ = 0.00, Wing transmissivity (dec \%)}\cr}
+\item{\code{aref}{ = 0.26, Width of surface #2 (cm) (back or horizontal or reference surface)}\cr}
+\item{\code{bref}{ = 2.04, Common length (cm) where the two rectangles join}\cr}
+\item{\code{cref}{ = 1.47, Width of surface #1 (cm) (wing)}\cr}
+\item{\code{phi}{ = 179., Initial wing angle (degrees) (90 = vertical relative to body)}\cr}
+\item{\code{phimax}{ =  phi, Maximum wing angle (degrees) (90 = vertical relative to body)}\cr}
+\item{\code{phimin}{ =  phi, Minimum wing angle (degrees) (90 = vertical relative to body)}\cr}
+\item{\code{flyer}{ = 0, Does the animal fly? 1=yes, 0=no}\cr}
+\item{\code{flyspeed}{ = 5, Flying speed (m/s)}\cr}
+\item{\code{flymetab}{ = 0.1035, Flight metabolic excess (W/g)}\cr}
+}
 \strong{Outputs:}
-metout/shadmet variables:
+
+environ variables:
 \itemize{
 \item 1 JULDAY - day of year
 \item 2 TIME - time of day (mins)
@@ -104,33 +312,110 @@ metout/shadmet variables:
 \item 17 SNOWFALL - snow predicted to have fallen (mm)
 \item 18 SNOWDEP - predicted snow depth (cm)
 }
-soil and shadsoil variables:
+enbal variables:
 \itemize{
 \item 1 JULDAY - day of year
 \item 2 TIME - time of day (mins)
-\item 3-12 D0cm ... - soil temperatures at each of the 10 specified depths
-
-if soil moisture model is run i.e. parameter runmoist = 1\cr
-
-soilmoist and shadmoist variables:
+\item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
+\item 4 TAREF - air temperature (deg C) at reference height (1.2m)
+\item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
+\item 6 RH  - relative humidity (\%) at reference height (1.2m)
+\item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
+\item 8 VREF - wind speed (m/s) at reference height (1.2m)
+\item 9 SNOWMELT - snowmelt (mm)
+\item 10 POOLDEP - water pooling on surface (mm)
+\item 11 PCTWET - soil surface wetness (\%)
+\item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
+\item 13 SOLR - solar radiation (W/m2)
+\item 14 TSKYC - sky radiant temperature (deg C)
+\item 15 DEW - dew presence (0 or 1)
+\item 16 FROST - frost presence (0 or 1)
+\item 17 SNOWFALL - snow predicted to have fallen (mm)
+\item 18 SNOWDEP - predicted snow depth (cm)
+}
+masbal variables:
 \itemize{
 \item 1 JULDAY - day of year
 \item 2 TIME - time of day (mins)
-\item 3-12 WC0cm ... - soil moisuture (m3/m3) at each of the 10 specified depths
+\item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
+\item 4 TAREF - air temperature (deg C) at reference height (1.2m)
+\item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
+\item 6 RH  - relative humidity (\%) at reference height (1.2m)
+\item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
+\item 8 VREF - wind speed (m/s) at reference height (1.2m)
+\item 9 SNOWMELT - snowmelt (mm)
+\item 10 POOLDEP - water pooling on surface (mm)
+\item 11 PCTWET - soil surface wetness (\%)
+\item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
+\item 13 SOLR - solar radiation (W/m2)
+\item 14 TSKYC - sky radiant temperature (deg C)
+\item 15 DEW - dew presence (0 or 1)
+\item 16 FROST - frost presence (0 or 1)
+\item 17 SNOWFALL - snow predicted to have fallen (mm)
+\item 18 SNOWDEP - predicted snow depth (cm)
 }
-soilpot and shadpot variables:
+debout variables:
 \itemize{
 \item 1 JULDAY - day of year
 \item 2 TIME - time of day (mins)
-\item 3-12 PT0cm ... - soil water potential (J/kg = kpa = bar/100) at each of the 10 specified depths
+\item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
+\item 4 TAREF - air temperature (deg C) at reference height (1.2m)
+\item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
+\item 6 RH  - relative humidity (\%) at reference height (1.2m)
+\item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
+\item 8 VREF - wind speed (m/s) at reference height (1.2m)
+\item 9 SNOWMELT - snowmelt (mm)
+\item 10 POOLDEP - water pooling on surface (mm)
+\item 11 PCTWET - soil surface wetness (\%)
+\item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
+\item 13 SOLR - solar radiation (W/m2)
+\item 14 TSKYC - sky radiant temperature (deg C)
+\item 15 DEW - dew presence (0 or 1)
+\item 16 FROST - frost presence (0 or 1)
+\item 17 SNOWFALL - snow predicted to have fallen (mm)
+\item 18 SNOWDEP - predicted snow depth (cm)
 }
-
-humid and shadhumid variables:
+yearout variables:
 \itemize{
-\item  1 JULDAY - day of year
-\item  2 TIME - time of day (mins)
-\item  3-12 RH0cm ... - soil relative humidity (decimal \%), at each of the 10 specified depths
+\item 1 JULDAY - day of year
+\item 2 TIME - time of day (mins)
+\item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
+\item 4 TAREF - air temperature (deg C) at reference height (1.2m)
+\item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
+\item 6 RH  - relative humidity (\%) at reference height (1.2m)
+\item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
+\item 8 VREF - wind speed (m/s) at reference height (1.2m)
+\item 9 SNOWMELT - snowmelt (mm)
+\item 10 POOLDEP - water pooling on surface (mm)
+\item 11 PCTWET - soil surface wetness (\%)
+\item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
+\item 13 SOLR - solar radiation (W/m2)
+\item 14 TSKYC - sky radiant temperature (deg C)
+\item 15 DEW - dew presence (0 or 1)
+\item 16 FROST - frost presence (0 or 1)
+\item 17 SNOWFALL - snow predicted to have fallen (mm)
+\item 18 SNOWDEP - predicted snow depth (cm)
 }
+yearsout variables:
+\itemize{
+\item 1 JULDAY - day of year
+\item 2 TIME - time of day (mins)
+\item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
+\item 4 TAREF - air temperature (deg C) at reference height (1.2m)
+\item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
+\item 6 RH  - relative humidity (\%) at reference height (1.2m)
+\item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
+\item 8 VREF - wind speed (m/s) at reference height (1.2m)
+\item 9 SNOWMELT - snowmelt (mm)
+\item 10 POOLDEP - water pooling on surface (mm)
+\item 11 PCTWET - soil surface wetness (\%)
+\item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
+\item 13 SOLR - solar radiation (W/m2)
+\item 14 TSKYC - sky radiant temperature (deg C)
+\item 15 DEW - dew presence (0 or 1)
+\item 16 FROST - frost presence (0 or 1)
+\item 17 SNOWFALL - snow predicted to have fallen (mm)
+\item 18 SNOWDEP - predicted snow depth (cm)
 }
 }
 \examples{
