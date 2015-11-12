@@ -6,7 +6,7 @@
 \usage{
 ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax, ctmin,
  tpref, dayact, nocturn, crepus, CkGrShad, burrow, climb, shdburrow, mindepth, maxdepth,
- MR_1, MR_2, MR_3, ...)
+ MR_1, MR_2, MR_3, skinwet, extref, DELTAR, ...)
 }
 \arguments{
 \item{amass}{Mass of animal (g), note this model is 'steady state' so no lags in heating/cooling due to mass}
@@ -71,22 +71,77 @@ compute metabolic rate.
 }
 \details{
 The microclimate model, e.g. micro_global(), must be run prior to running the ectotherm model
+
+
+\strong{ Parameters controling how the model runs:}
+\strong{ Parameters controling how the model runs:}
+
+\code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1)
+or just once for the minimum shade (0)?}\cr\cr
+\code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+\code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
+\code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
+
+\strong{Outputs:}
+metout/shadmet variables:
+\itemize{
+\item 1 JULDAY - day of year
+\item 2 TIME - time of day (mins)
+\item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
+\item 4 TAREF - air temperature (deg C) at reference height (1.2m)
+\item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
+\item 6 RH  - relative humidity (\%) at reference height (1.2m)
+\item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
+\item 8 VREF - wind speed (m/s) at reference height (1.2m)
+\item 9 SNOWMELT - snowmelt (mm)
+\item 10 POOLDEP - water pooling on surface (mm)
+\item 11 PCTWET - soil surface wetness (\%)
+\item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
+\item 13 SOLR - solar radiation (W/m2)
+\item 14 TSKYC - sky radiant temperature (deg C)
+\item 15 DEW - dew presence (0 or 1)
+\item 16 FROST - frost presence (0 or 1)
+\item 17 SNOWFALL - snow predicted to have fallen (mm)
+\item 18 SNOWDEP - predicted snow depth (cm)
+}
+soil and shadsoil variables:
+\itemize{
+\item 1 JULDAY - day of year
+\item 2 TIME - time of day (mins)
+\item 3-12 D0cm ... - soil temperatures at each of the 10 specified depths
+
+if soil moisture model is run i.e. parameter runmoist = 1\cr
+
+soilmoist and shadmoist variables:
+\itemize{
+\item 1 JULDAY - day of year
+\item 2 TIME - time of day (mins)
+\item 3-12 WC0cm ... - soil moisuture (m3/m3) at each of the 10 specified depths
+}
+soilpot and shadpot variables:
+\itemize{
+\item 1 JULDAY - day of year
+\item 2 TIME - time of day (mins)
+\item 3-12 PT0cm ... - soil water potential (J/kg = kpa = bar/100) at each of the 10 specified depths
+}
+
+humid and shadhumid variables:
+\itemize{
+\item  1 JULDAY - day of year
+\item  2 TIME - time of day (mins)
+\item  3-12 RH0cm ... - soil relative humidity (decimal \%), at each of the 10 specified depths
+}
+}
 }
 \examples{
 # run the microclimate model
-micro<-micro_global(loc="Paluma, Queensland")
-
-# run the ectotherm model
-ecto<-ectotherm(TMAXPR=35,TMINPR=30,TPREF=33,TBASK=20,TEMERGE=10)
+micro<-micro_global(loc="Kuranda, Queensland")
 
 # retrieve output
 metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
 soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
 shadsoil<-as.data.frame(micro$shadsoil) # soil temperatures, maximum shade
-environ<-as.data.frame(ecto$environ) # activity, Tb and environment
-enbal<-as.data.frame(ecto$enbal) # energy balance values
-masbal<-as.data.frame(ecto$masbal) # mass balance value (note most missing if DEB model not running)
 
 # append dates
 days<-rep(seq(1,12),24)
@@ -97,6 +152,16 @@ metout<-cbind(dates,metout)
 soil<-cbind(dates,soil)
 shadmet<-cbind(dates,shadmet)
 shadsoil<-cbind(dates,shadsoil)
+
+# run the ectotherm model
+ecto<-ectotherm(TMAXPR=35,TMINPR=30,TPREF=33,TBASK=20,TEMERGE=10)
+
+# retrieve output
+environ<-as.data.frame(ecto$environ) # activity, Tb and environment
+enbal<-as.data.frame(ecto$enbal) # energy balance values
+masbal<-as.data.frame(ecto$masbal) # mass balance value (note most missing if DEB model not running)
+
+# append dates
 environ<-cbind(dates,environ)
 masbal<-cbind(dates,masbal)
 enbal<-cbind(dates,enbal)

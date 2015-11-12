@@ -36,25 +36,273 @@
 #' @param DELTAR Temperature difference (deg C) between expired and inspired air, , for respiratory water loss
 #' @usage ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax, ctmin,
 #'  tpref, dayact, nocturn, crepus, CkGrShad, burrow, climb, shdburrow, mindepth, maxdepth,
-#'  MR_1, MR_2, MR_3, ...)
+#'  MR_1, MR_2, MR_3, skinwet, extref, DELTAR, ...)
+#' @details
+#' \strong{ Parameters controling how the model runs:}
+# microin="none",
+# timeinterval=micro$timeinterval,
+# nyears=length(RAINFALL)/timeinterval,
+# ystrt=0,
+# enberr=0.0002,
+# live=1,
+# write_input=0,
+#
+# #' \strong{ Environmental inputs:}
+# minshade=0.,
+# maxshade=micro$MAXSHADES[1],
+# FLTYPE=0.0,
+# SUBTK=2.79,
+# REFL=micro$REFL,
+# DEP=micro$DEP,
+# metout=micro$metout,
+# shadmet=micro$shadmet,
+# soil=micro$soil,
+# shadsoil=micro$shadsoil,
+# soilmoist=micro$soilmoist,
+# shadmoist=micro$shadmoist,
+# humid=micro$humid,
+# shadhumid=micro$shadhumid,
+# soilpot=micro$soilpot,
+# shadpot=micro$shadpot,
+# RAINFALL=micro$RAINFALL,
+# MAXSHADES=micro$MAXSHADES,
+# ectoin=rbind(as.numeric(micro$ALTT),as.numeric(micro$REFL)[1],micro$longlat[1],micro$longlat[2],0,0,1990,1990),
+#
+# #' \strong{ Morphological parameters:}
+# customallom=c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743),
+# shape_a=1.,
+# shape_b=3,
+# shape_c=0.6666666667,
+# FATOSK=0.4,
+# FATOSB=0.4,
+# rinsul=0.,
+# ptcond=0.25,
+# Spheat=4185,
+# Andens=1000,
+# EMISAN=0.95,
+#
+# #' \strong{ Behavioural parameters:}
+# fosorial=0,
+# rainact=0,
+# actrainthresh=0.1,
+# soilnode=4.,
+#
+# #' \strong{ Thermal physiological parameters:}
+# ctminthresh=12,
+# ctkill=0,
+# Flshcond=0.5,
+#
+# #' \strong{ Water and food budget parameters:}
+# PFEWAT=73,
+# PTUREA=0,
+# FoodWater=82,
+# minwater=15,
+# gutfill=75.,
+# soilmoisture1=0,
+# raindrink=0.,
+#
+# #' \strong{ Dynamic Energy Budget (DEB) model parameters:}
+# DEB=0,
+# fract=1,
+#
+# #' \strong{ Core DEB parameters:}
+# z=7.174*fract,
+# delta= 0.217,
+# p_Xm=13290,
+# kappa_X=0.85,
+# v_dotref=0.05591/24.,
+# kappa=0.8501,
+# p_Mref=45.14/24.,
+# E_G=7189,
+# k_R=0.95,
+# k_J=0.00628/24.,
+# E_Hb=6.533e+04*fract^3,
+# E_Hj=E_Hb*fract^3,
+# E_Hp=1.375e+05*fract^3,
+# h_aref=3.61e-13/(24.^2),
+# s_G=0.01,
+#
+# #' \strong{ Thermal DEB parameters:}
+# T_REF=20,
+# TA=7130,
+# TAL=5.305e+04,
+# TAH=9.076e+04,
+# TL=288.,
+# TH=315.,
+#
+# #' \strong{ Compound/derived DEB parameters:}
+# E_Egg=1.04e+06*fract^4,
+# E_m=(p_Mref*z/kappa)/v_dotref,
+#
+# #' \strong{ Food-related axilliary DEB parameters:}
+# f=1.,
+# MsM=186.03*6.,
+# K=1,
+# X=10,
+#
+# #' \strong{ Composition-related axilliary DEB parameters:}
+# andens_deb=1.,
+# d_V=0.3,
+# d_E=0.3,
+# eggdryfrac=0.3,
+# mu_X=525000,
+# mu_E=585000,
+# mu_V=500000,
+# mu_P=480000,
+# kappa_X_P=0.1,
+# nX=c(1,1.8,0.5,.15),
+# nE=c(1,1.8,0.5,.15),
+# nV=c(1,1.8,0.5,.15),
+# nP=c(1,1.8,0.5,.15),
+# N_waste=c(1,4/5,3/5,4/5),
+#
+# #' \strong{ Holometabolous insect DEB model parameters:}
+# metab_mode=0,
+# stages=7,
+# y_EV_l=0.95,
+# S_instar=c(2.660,2.310,1.916,0),
+# s_j=0.999,
+#
+# #' \strong{ Inital conditions for DEB model:}
+# v_init=3e-9,
+# E_init=E_Egg/v_init,
+# E_H_init=0,
+# stage=0,
+#
+# #' \strong{ Metabolic depression parameters:}
+# aestivate=0,
+# depress=0.3,
+#
+# #' \strong{ Butterfly model parameters:}
+# wings=0,
+# rho1_3=0.2,
+# trans1=0.00,
+# aref=0.26,
+# bref=2.04,
+# cref=1.47,
+# phi=179.,
+# phimax= phi,
+# phimin= phi,
+# flyer=0,
+# flyspeed=5,
+# flymetab=0.1035,
+#
+# #' \strong{ Reproductive phenology model parameters:}
+# clutchsize=2.,
+# clutch_ab=c(0,0),
+# viviparous=0,
+# minclutch=0,
+# batch=1,
+# photostart=3,
+# photofinish=1,
+# daylengthstart=12.5,
+# daylengthfinish=13.,
+# photodirs = 1,
+# photodirf = 0,
+# startday=1,
+# frogbreed=0,
+# frogstage=0,
+# reset=0,
+# breedactthresh=1,
+# breedrainthresh=0,
+# breedtempthresh=200,
+# breedtempcum=24*7,
+#
+# #' \strong{ Mortality rate parameters:}
+# ma=1e-4,
+# mi=0,
+# mh=0.5,
+#
+# #' \strong{ Water body model parameters:}
+# container=0,
+# wetmod=0,
+# conth=10,
+# contw=100.,
+# contype=1,
+# rainmult=1,
+# continit=0,
+# conthole=0,
+# contonly=1,
+# contwet=80,
+# wetlandTemps=matrix(data = 0., nrow = 24*dim, ncol = 1),
+# wetlandDepths=matrix(data = 0., nrow = 24*dim, ncol = 1),
+#
+# #' \strong{ Life stage-specific parameter allocation:}
+# thermal_stages=matrix(data = c(rep(ctmin,8),rep(ctmax,8),rep(TMINPR,8),rep(TMAXPR,8),rep(TBASK,8),rep(TPREF,8)), nrow = 8, ncol = 6),
+# behav_stages=matrix(data = c(rep(dayact,8),rep(nocturn,8),rep(crepus,8),rep(burrow,8),rep(shdburrow,8),rep(mindepth,8),rep(maxdepth,8),rep(CkGrShad,8),rep(climb,8),rep(fosorial,8),rep(rainact,8),rep(actrainthresh,8),rep(breedactthresh,8),rep(flyer,8)), nrow = 8, ncol = 14),
+# water_stages=matrix(data = c(rep(skinwet,8),rep(extref,8),rep(PFEWAT,8),rep(PTUREA,8),rep(FoodWater,8),rep(minwater,8),rep(raindrink,8),rep(gutfill,8)), nrow = 8, ncol = 8),
+# arrhenius=matrix(data = matrix(data = c(rep(TA,8),rep(TAL,8),rep(TAH,8),rep(TL,8),rep(TH,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5),
+#
+#' \strong{ Parameters controling how the model runs:}
+#'
+#' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1)
+#' or just once for the minimum shade (0)?}\cr\cr
+#' \code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+#' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
+#' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
+#'
+#' \strong{Outputs:}
+#' metout/shadmet variables:
+#' \itemize{
+#' \item 1 JULDAY - day of year
+#' \item 2 TIME - time of day (mins)
+#' \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
+#' \item 4 TAREF - air temperature (deg C) at reference height (1.2m)
+#' \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
+#' \item 6 RH  - relative humidity (\%) at reference height (1.2m)
+#' \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
+#' \item 8 VREF - wind speed (m/s) at reference height (1.2m)
+#' \item 9 SNOWMELT - snowmelt (mm)
+#' \item 10 POOLDEP - water pooling on surface (mm)
+#' \item 11 PCTWET - soil surface wetness (\%)
+#' \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
+#' \item 13 SOLR - solar radiation (W/m2)
+#' \item 14 TSKYC - sky radiant temperature (deg C)
+#' \item 15 DEW - dew presence (0 or 1)
+#' \item 16 FROST - frost presence (0 or 1)
+#' \item 17 SNOWFALL - snow predicted to have fallen (mm)
+#' \item 18 SNOWDEP - predicted snow depth (cm)
+#'}
+#' soil and shadsoil variables:
+#' \itemize{
+#' \item 1 JULDAY - day of year
+#' \item 2 TIME - time of day (mins)
+#' \item 3-12 D0cm ... - soil temperatures at each of the 10 specified depths
+#'
+#' if soil moisture model is run i.e. parameter runmoist = 1\cr
+#'
+#' soilmoist and shadmoist variables:
+#' \itemize{
+#' \item 1 JULDAY - day of year
+#' \item 2 TIME - time of day (mins)
+#' \item 3-12 WC0cm ... - soil moisuture (m3/m3) at each of the 10 specified depths
+#'}
+#' soilpot and shadpot variables:
+#' \itemize{
+#' \item 1 JULDAY - day of year
+#' \item 2 TIME - time of day (mins)
+#' \item 3-12 PT0cm ... - soil water potential (J/kg = kpa = bar/100) at each of the 10 specified depths
+#' }
+#'
+#' humid and shadhumid variables:
+#' \itemize{
+#' \item  1 JULDAY - day of year
+#' \item  2 TIME - time of day (mins)
+#' \item  3-12 RH0cm ... - soil relative humidity (decimal \%), at each of the 10 specified depths
+#' }
+#' }
 #' @examples
-#' # run the microclimate model
-#' micro<-micro_global(loc="Paluma, Queensland")
+#'# run the microclimate model
+#'micro<-micro_global(loc="Kuranda, Queensland")
 #'
-#' # run the ectotherm model
-#' ecto<-ectotherm(TMAXPR=35,TMINPR=30,TPREF=33,TBASK=20,TEMERGE=10)
+#'# retrieve output
+#'metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
+#'shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
+#'soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
+#'shadsoil<-as.data.frame(micro$shadsoil) # soil temperatures, maximum shade
 #'
-#' # retrieve output
-#' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
-#' shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
-#' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
-#' shadsoil<-as.data.frame(micro$shadsoil) # soil temperatures, maximum shade
-#' environ<-as.data.frame(ecto$environ) # activity, Tb and environment
-#' enbal<-as.data.frame(ecto$enbal) # energy balance values
-#' masbal<-as.data.frame(ecto$masbal) # mass balance value (note most missing if DEB model not running)
-#'
-#' # append dates
-#' days<-rep(seq(1,12),24)
+#'# append dates
+#'days<-rep(seq(1,12),24)
 #'days<-days[order(days)]
 #'dates<-days+metout$TIME/60/24-1 # dates for hourly output
 #'dates2<-seq(1,12,1) # dates for daily output
@@ -62,6 +310,16 @@
 #'soil<-cbind(dates,soil)
 #'shadmet<-cbind(dates,shadmet)
 #'shadsoil<-cbind(dates,shadsoil)
+#'
+#'# run the ectotherm model
+#'ecto<-ectotherm(TMAXPR=35,TMINPR=30,TPREF=33,TBASK=20,TEMERGE=10)
+#'
+#'# retrieve output
+#'environ<-as.data.frame(ecto$environ) # activity, Tb and environment
+#'enbal<-as.data.frame(ecto$enbal) # energy balance values
+#'masbal<-as.data.frame(ecto$masbal) # mass balance value (note most missing if DEB model not running)
+#'
+#'# append dates
 #'environ<-cbind(dates,environ)
 #'masbal<-cbind(dates,masbal)
 #'enbal<-cbind(dates,enbal)
@@ -88,226 +346,50 @@
 #'with(forage,points((TIME-1)~JULDAY,pch=15,cex=2,col='orange')) # foraging Tbs
 #'with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
 #' @export
-ectotherm<-function(amass=5,lometry=3,ABSMAX=0.85,ABSMIN=0.85,
-TMAXPR=35,TMINPR=25,TBASK=20,TEMERGE=10,ctmax=40,ctmin=5,TPREF=30,
-dayact=1,nocturn=0,crepus=0,CkGrShad=1,burrow=1,climb=0,shdburrow=0,mindepth=2,maxdepth=10,
-MR_1=0.013,MR_2=0.8,MR_3=0.038,skinwet=0.2,extref=20.,DELTAR=0.1,
-microin="none",write_input=0,enberr=0.0002,minshade=0.,maxshade=micro$MAXSHADES[1],
-timeinterval=micro$timeinterval,nyears=length(RAINFALL)/timeinterval,
-live=1,ctminthresh=12,ctkill=0,FLTYPE=0.0,SUBTK=2.79,soilnode=4.,REFL=micro$REFL,rinsul=0.,
-ptcond=0.25,customallom=c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743),
-shape_a=1.,shape_b=3,shape_c=0.6666666667,Flshcond=0.5,Spheat=4185,Andens=1000,
-EMISAN=0.95,FATOSK=0.4,FATOSB=0.4,fosorial=0,rainact=0,actrainthresh=0.1,
-wings=0,rho1_3=0.2,trans1=0.00,aref=0.26,bref=2.04,cref=1.47,phi=179.,phimax= phi,phimin= phi,
-flyer=0,flyspeed=5,flymetab=0.1035,
-container=0,conth=10,contw=100.,contype=1,rainmult=1,continit=0,conthole=0,contonly=1,contwet=80,
-wetmod=0,soilmoisture1=0,breedactthresh=1,
-PFEWAT=73,PTUREA=0,FoodWater=82,minwater=15,raindrink=0.,gutfill=75.,
-thermal_stages=matrix(data = c(rep(ctmin,8),rep(ctmax,8),rep(TMINPR,8),rep(TMAXPR,8),rep(TBASK,8),rep(TPREF,8)), nrow = 8, ncol = 6),
-behav_stages=matrix(data = c(rep(dayact,8),rep(nocturn,8),rep(crepus,8),rep(burrow,8),rep(shdburrow,8),rep(mindepth,8),rep(maxdepth,8),rep(CkGrShad,8),rep(climb,8),rep(fosorial,8),rep(rainact,8),rep(actrainthresh,8),rep(breedactthresh,8),rep(flyer,8)), nrow = 8, ncol = 14),
-water_stages=matrix(data = c(rep(skinwet,8),rep(extref,8),rep(PFEWAT,8),rep(PTUREA,8),rep(FoodWater,8),rep(minwater,8),rep(raindrink,8),rep(gutfill,8)), nrow = 8, ncol = 8),
-DEB=0,fract=1,f=1.,MsM=186.03*6.,z=7.174*fract,delta= 0.217,kappa_X=0.85,v_dotref=0.05591/24.,
-kappa=0.8501,p_Mref=45.14/24.,E_G=7189,k_R=0.95,k_J=0.00628/24.,E_Hb=6.533e+04*fract^3,E_Hj=E_Hb*fract^3,
-E_Hp=1.375e+05*fract^3,h_aref=3.61e-13/(24.^2),s_G=0.01,E_Egg=1.04e+06*fract^3,E_m=(p_Mref*z/kappa)/v_dotref,
-p_Xm=13290,K=1,X=10,metab_mode=2,stages=7,y_EV_l=0.95,S_instar=c(2.660,2.310,1.916,0),
-s_j=0.999,T_REF=20,TA=7130,TAL=5.305e+04,TAH=9.076e+04,TL=288.,TH=315.,
-arrhenius=matrix(data = matrix(data = c(rep(TA,8),rep(TAL,8),rep(TAH,8),rep(TL,8),rep(TH,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5),
+ectotherm<-function(amass=5,lometry=3,ABSMAX=0.85,ABSMIN=0.85,TMAXPR=35,TMINPR=25,TBASK=20,TEMERGE=10,
+ctmax=40,ctmin=5,TPREF=30,dayact=1,nocturn=0,crepus=0,CkGrShad=1,burrow=1,climb=0,shdburrow=0,
+mindepth=2,maxdepth=10,MR_1=0.013,MR_2=0.8,MR_3=0.038,skinwet=0.2,extref=20.,DELTAR=0.1,
+microin="none",timeinterval=micro$timeinterval,nyears=length(RAINFALL)/timeinterval,
+ystrt=0,enberr=0.0002,live=1,write_input=0,
+minshade=0.,maxshade=micro$MAXSHADES[1],FLTYPE=0.0,SUBTK=2.79,REFL=micro$REFL,
+DEP=micro$DEP,metout=micro$metout,shadmet=micro$shadmet,soil=micro$soil,shadsoil=micro$shadsoil,
+soilmoist=micro$soilmoist,shadmoist=micro$shadmoist,humid=micro$humid,shadhumid=micro$shadhumid,
+soilpot=micro$soilpot,shadpot=micro$shadpot,RAINFALL=micro$RAINFALL,MAXSHADES=micro$MAXSHADES,
+ectoin=rbind(as.numeric(micro$ALTT),as.numeric(micro$REFL)[1],micro$longlat[1],micro$longlat[2]
+  ,0,0,1990,1990),customallom=c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743),
+shape_a=1.,shape_b=3,shape_c=0.6666666667,FATOSK=0.4,FATOSB=0.4,rinsul=0.,ptcond=0.25,
+Spheat=4185,Andens=1000,EMISAN=0.95,
+fosorial=0,rainact=0,actrainthresh=0.1,soilnode=4.,
+ctminthresh=12,ctkill=0,Flshcond=0.5,
+PFEWAT=73,PTUREA=0,FoodWater=82,minwater=15,gutfill=75.,soilmoisture1=0,raindrink=0.,
+DEB=0,fract=1,z=7.174*fract,delta= 0.217,p_Xm=13290,kappa_X=0.85,v_dotref=0.05591/24.,
+kappa=0.8501,p_Mref=45.14/24.,E_G=7189,k_R=0.95,k_J=0.00628/24.,E_Hb=6.533e+04*fract^3,
+E_Hj=E_Hb*fract^3,E_Hp=1.375e+05*fract^3,h_aref=3.61e-13/(24.^2),s_G=0.01,
+T_REF=20,TA=7130,TAL=5.305e+04,TAH=9.076e+04,TL=288.,TH=315.,
+E_Egg=1.04e+06*fract^4,E_m=(p_Mref*z/kappa)/v_dotref,f=1.,MsM=186.03*6.,K=1,X=10,
 andens_deb=1.,d_V=0.3,d_E=0.3,eggdryfrac=0.3,mu_X=525000,mu_E=585000,mu_V=500000,mu_P=480000,
 kappa_X_P=0.1,nX=c(1,1.8,0.5,.15),nE=c(1,1.8,0.5,.15),nV=c(1,1.8,0.5,.15),nP=c(1,1.8,0.5,.15),
-N_waste=c(1,4/5,3/5,4/5),clutchsize=2.,clutch_ab=c(0,0),viviparous=0,minclutch=0,batch=1,breedrainthresh=0,
-photostart=3,photofinish=1,daylengthstart=12.5,daylengthfinish=13.,photodirs = 1,photodirf = 0,
-startday=1,breedtempthresh=200,breedtempcum=24*7,reset=0,frogbreed=0,frogstage=0,aestivate=0,depress=0.3,
-v_init=(7.063^3)*fract^3*0.85,E_init=E_m,E_H_init=E_Hp+1,stage=3,ma=1e-4,mi=0,mh=0.5,wilting=1,ystrt=0,grasshade=0,
-wetlandTemps=matrix(data = 0., nrow = 24*dim, ncol = 1),wetlandDepths=matrix(data = 0., nrow = 24*dim, ncol = 1),
-DEP=micro$DEP,ectoin=rbind(as.numeric(micro$ALTT),as.numeric(micro$REFL)[1],micro$longlat[1],micro$longlat[2],0,0,1990,1990),RAINFALL=micro$RAINFALL,
-metout=micro$metout,shadmet=micro$shadmet,soil=micro$soil,shadsoil=micro$shadsoil,soilmoist=micro$soilmoist,
-shadmoist=micro$shadmoist,humid=micro$humid,shadhumid=micro$shadhumid,soilpot=micro$soilpot,
-shadpot=micro$shadpot,MAXSHADES=micro$MAXSHADES){
-
-# amass=5
-# lometry=3
-# ABSMAX=0.85
-# ABSMIN=0.85
-# TMAXPR=35
-# TMINPR=25
-# TBASK=20
-# TEMERGE=10
-# ctmax=40
-# ctmin=5
-# TPREF=30
+N_waste=c(1,4/5,3/5,4/5),
+metab_mode=0,stages=7,y_EV_l=0.95,S_instar=c(2.660,2.310,1.916,0),s_j=0.999,
+v_init=3e-9,E_init=E_Egg/v_init,E_H_init=0,stage=0,aestivate=0,depress=0.3,
+clutchsize=2.,clutch_ab=c(0,0),viviparous=0,minclutch=0,batch=1,photostart=3,photofinish=1,
+daylengthstart=12.5,daylengthfinish=13.,photodirs=1,photodirf=0,startday=1,frogbreed=0,frogstage=0,
+reset=0,breedactthresh=1,breedrainthresh=0,breedtempthresh=200,breedtempcum=24*7,ma=1e-4,mi=0,mh=0.5,
+container=0,wetmod=0,conth=10,contw=100,contype=1,rainmult=1,continit=0,conthole=0,contonly=1,
+contwet=80,wetlandTemps=matrix(data = 0., nrow = 24*dim, ncol = 1),
+wetlandDepths=matrix(data = 0., nrow = 24*dim, ncol = 1),
+thermal_stages=matrix(data = c(rep(ctmin,8),rep(ctmax,8),rep(TMINPR,8),rep(TMAXPR,8),rep(TBASK,8),
+  rep(TPREF,8)), nrow = 8, ncol = 6),
+behav_stages=matrix(data = c(rep(dayact,8),rep(nocturn,8),rep(crepus,8),rep(burrow,8),
+  rep(shdburrow,8),rep(mindepth,8),rep(maxdepth,8),rep(CkGrShad,8),rep(climb,8),rep(fosorial,8),
+  rep(rainact,8),rep(actrainthresh,8),rep(breedactthresh,8),rep(flyer,8)), nrow = 8, ncol = 14),
+water_stages=matrix(data = c(rep(skinwet,8),rep(extref,8),rep(PFEWAT,8),rep(PTUREA,8),
+  rep(FoodWater,8),rep(minwater,8),rep(raindrink,8),rep(gutfill,8)), nrow = 8, ncol = 8),
+arrhenius=matrix(data = matrix(data = c(rep(TA,8),rep(TAL,8),rep(TAH,8),rep(TL,8),rep(TH,8)),
+  nrow = 8, ncol = 5), nrow = 8, ncol = 5),
+wings=0,rho1_3=0.2,trans1=0.00,aref=0.26,bref=2.04,cref=1.47,phi=179.,phimax=phi,phimin= phi,
+flyer=0,flyspeed=5,flymetab=0.1035){
 #
-# dayact=1
-# nocturn=0
-# crepus=0
-# CkGrShad=1
-# burrow=1
-# climb=0
-# shdburrow=0
-# mindepth=2
-# maxdepth=10
-#
-# MR_1=0.013
-# MR_2=0.8
-# MR_3=0.038
-#
-# microin="none"
-# write_input=0
-# timeinterval=micro$timeinterval
-# nyears=length(RAINFALL)/timeinterval
-# enberr=0.0002
-# minshade=0.
-# maxshade=micro$MAXSHADES[1]
-#
-# live=1
-# ctminthresh=12
-# ctkill=0
-#
-#
-# grasshade=0
-# FLTYPE=0.0
-# SUBTK=2.79
-# soilnode=4.
-#
-# REFL=micro$REFL
-# rinsul=0.
-#
-# ptcond=0.25
-# customallom=c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743)
-# shape_a=1.
-# shape_b=3
-# shape_c=0.6666666667
-# Flshcond=0.5
-# Spheat=4185
-# Andens=1000
-#
-# EMISAN=0.95
-# ptcond=0.25
-# FATOSK=0.4
-# FATOSB=0.4
-#
-# wings=0
-# rho1_3=0.2
-# trans1=0.00
-# aref=0.26
-# bref=2.04
-# cref=1.47
-# phi=179.
-# phimax= phi
-# phimin= phi
-# fosorial=0
-# rainact=0
-# actrainthresh=0.1
-#
-#
-# flyer=0
-# flyspeed=5
-# flymetab=0.1035
-#
-# container=0
-# conth=10
-# contw=100.
-# contype=1
-# rainmult=1
-# continit=0
-# conthole= 0
-# contonly=1
-# contwet=80
-# wetmod=0
-# soilmoisture1=0
-# breedactthresh=1
-#
-# skinwet=0.229
-# extref=20.
-# PFEWAT=73
-# PTUREA=0
-# FoodWater=82
-# minwater=15
-# raindrink=0.
-# gutfill=75.
-# DELTAR=0.1
-#
-# thermal_stages=matrix(data = c(rep(ctmin,8),rep(ctmax,8),rep(TMINPR,8),rep(TMAXPR,8),rep(TBASK,8),rep(TPREF,8)), nrow = 8, ncol = 6)
-# behav_stages=matrix(data = c(rep(dayact,8),rep(nocturn,8),rep(crepus,8),rep(burrow,8),rep(shdburrow,8),rep(mindepth,8),rep(maxdepth,8),rep(CkGrShad,8),rep(climb,8),rep(fosorial,8),rep(rainact,8),rep(actrainthresh,8),rep(breedactthresh,8),rep(flyer,8)), nrow = 8, ncol = 14)
-# water_stages=matrix(data = c(rep(skinwet,8),rep(extref,8),rep(PFEWAT,8),rep(PTUREA,8),rep(FoodWater,8),rep(minwater,8),rep(raindrink,8),rep(gutfill,8)), nrow = 8, ncol = 8)
-#
-# DEB=0
-# fract=1
-# f=1.
-# MsM=186.03*6.
-# z=7.174*fract
-# delta= 0.217
-# kappa_X=0.85
-# v_dotref=0.05591/24.
-# kappa=0.8501
-# p_Mref=45.14/24.
-# E_G=7189
-# k_R=0.95
-# k_J=0.00628/24.
-# E_Hb=6.533e+04*fract^3
-# E_Hj=E_Hb*fract^3
-# E_Hp=1.375e+05*fract^3
-# h_aref=3.61e-13/(24.^2)
-# s_G=0.01
-# E_Egg=1.04e+06*fract^3
-# E_m=(p_Mref*z/kappa)/v_dotref
-# p_Xm=13290
-# K=1
-# X=10
-# metab_mode=2
-# stages=7
-# y_EV_l=0.95
-# S_instar=c(2.660,2.310,1.916,0)
-# s_j=0.999
-# T_REF=20
-# TA=7130
-# TAL=5.305e+04
-# TAH=9.076e+04
-# TL=288.
-# TH=315.
-# arrhenius=matrix(data = matrix(data = c(rep(TA,8),rep(TAL,8),rep(TAH,8),rep(TL,8),rep(TH,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5)
-# andens_deb=1.
-# d_V=0.3
-# d_E=0.3
-# eggdryfrac=0.3
-# mu_X=525000
-# mu_E=585000
-# mu_V=500000
-# mu_P=480000
-# kappa_X_P=0.1
-# nX=c(1,1.8,0.5,.15)
-# nE=c(1,1.8,0.5,.15)
-# nV=c(1,1.8,0.5,.15)
-# nP=c(1,1.8,0.5,.15)
-# N_waste=c(1,4/5,3/5,4/5)
-# clutchsize=2.
-# clutch_ab=c(0,0)
-# viviparous=0
-# minclutch=0
-# batch=1
-# breedrainthresh=0
-# photostart= 3
-# photofinish= 1
-# daylengthstart= 12.5
-# daylengthfinish= 13.
-# photodirs = 1
-# photodirf = 0
-# startday=1
-# breedtempthresh=200
-# breedtempcum=24*7
-# reset=0
-# frogbreed=0
-# frogstage=0
-# aestivate=0
-# depress=0.3
-# v_init=(7.063^3)*fract^3*0.85
-# E_init=E_m
-# E_H_init=E_Hp+1
-# stage=3
-# ma=1e-4
-# mi=0
-# mh=0.5
-# wilting=1
-# ystrt=0
 
   if(lometry==3){
     shape_a<-1.
@@ -627,7 +709,8 @@ shadpot=micro$shadpot,MAXSHADES=micro$MAXSHADES){
     conthole<-0#2.8 # daily loss of height (mm) due to 'hole' in container (e.g. infiltration to soil, drawdown from water tank)
     contwet<- 2 # percent wet value for container
   }
-
+  wilting<-0 # remove this parameter
+  grasshade<-0 # remove this parameter
   ectoinput<-as.matrix(c(ALT,FLTYPE,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,AMASS,EMISAN,absan,RQ,rinsul,lometry,live,TIMBAS,Flshcond,Spheat,Andens,ABSMAX,ABSMIN,FATOSK,FATOSB,FATOBJ,TMAXPR,TMINPR,DELTAR,SKINW,spec,xbas,extref,TPREF,ptcond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,tdigpr,maxshd,minshd,ctmax,ctmin,behav,julday,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,julstart,monthly,customallom,MR_1,MR_2,MR_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,minwater,microyear,container,flyer,flyspeed,dim,maxdepth,ctminthresh,ctkill,gutfill,mindepth,TBASK,TEMERGE,p_Xm,SUBTK,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,breedtempthresh,breedtempcum,contwet,fieldcap,wilting,soilmoisture1,grasshade))
   debmod<-c(clutchsize,andens_deb,d_V,eggdryfrac,mu_X,mu_E,mu_V,mu_P,T_REF,z,kappa,kappa_X,p_Mref,v_dotref,E_G,k_R,MsM,delta,h_aref,V_init_baby,E_init_baby,k_J,E_Hb,E_Hj,E_Hp,clutch_ab[2],batch,breedrainthresh,photostart,photofinish,daylengthstart,daylengthfinish,photodirs,photodirf,clutch_ab[1],frogbreed,frogstage,etaO,JM_JO,E_Egg,kappa_X_P,PTUREA1,PFEWAT1,wO,w_N,FoodWater1,f,s_G,K,X,metab_mode,stages,y_EV_l,s_j,startday,raindrink,reset,ma,mi,mh,aestivate,depress,minclutch)
   deblast<-c(iyear,countday,v_init,E_init,ms_init,cumrepro_init,q_init,hs_init,cumbatch_init,V_baby_init,E_baby_init,E_H_init,stage)
