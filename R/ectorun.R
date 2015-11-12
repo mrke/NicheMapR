@@ -88,7 +88,7 @@ ectorun <- function(ecto) {
   debout<-a$debout
   yearout<-a$yearout
   yearsout<-a$yearsout
-  environ.names<-c("JULDAY","YEAR","DAY","TIME","TC","SHADE","ORIENT","DEP","ACT","TA","VEL","RELHUM","ZEN","CONDEP","WATERTEMP","DAYLENGTH","WINGANGLE","WINGTEMP","FLYING","FLYTIME")
+  environ.names<-c("JULDAY","YEAR","DAY","TIME","TC","SHADE","SOLAR","DEP","ACT","TA","VEL","RELHUM","ZEN","CONDEP","WATERTEMP","DAYLENGTH","WINGANGLE","WINGTEMP","FLYING","FLYTIME")
   enbal.names<-c("JULDAY","YEAR","DAY","TIME","TC","QSOL","QIRIN","QMET","QEVAP","QIROUT","QCONV","QCOND","ENB","NTRY")
   masbal.names<-c("JULDAY","YEAR","DAY","TIME","TC","O2_ml","CO2_ml","NWASTE_g","H2OFree_g","H2OMet_g","DryFood_g","WetFood_g","DryFaeces_g","WetFaeces_G","Urine_g","H2OResp_g","H2OCut_g","H2OEvap_g","H2OBal_g","H2OCumBal_g","GutFreeMass_g")
   debout.names<-c("JULDAY","YEAR","DAY","TIME","WETMASS","RESERVE_DENS","CUMREPRO","HS","MASS_GUT","SVL","V","E_H","CUMBATCH","V_baby","E_baby","Pregnant","Stage","WETMASS_STD","Body_cond","Surviv_Prob","Breeding")
