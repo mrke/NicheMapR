@@ -258,131 +258,161 @@
 #'}
 #' \strong{Outputs:}
 #'
-#' environ variables:
+#' environ variables: !add solar
 #' \itemize{
 #' \item 1 JULDAY - day of year
-#' \item 2 TIME - time of day (mins)
-#' \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-#' \item 4 TAREF - air temperature (deg C) at reference height (1.2m)
-#' \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
-#' \item 6 RH  - relative humidity (\%) at reference height (1.2m)
-#' \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
-#' \item 8 VREF - wind speed (m/s) at reference height (1.2m)
-#' \item 9 SNOWMELT - snowmelt (mm)
-#' \item 10 POOLDEP - water pooling on surface (mm)
-#' \item 11 PCTWET - soil surface wetness (\%)
-#' \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
-#' \item 13 SOLR - solar radiation (W/m2)
-#' \item 14 TSKYC - sky radiant temperature (deg C)
-#' \item 15 DEW - dew presence (0 or 1)
-#' \item 16 FROST - frost presence (0 or 1)
-#' \item 17 SNOWFALL - snow predicted to have fallen (mm)
-#' \item 18 SNOWDEP - predicted snow depth (cm)
+#' \item 2 YEAR - year of simulation
+#' \item 3 DAY - day of simulation
+#' \item 4 TIME - time of day (hours)
+#' \item 5 TC - body temperature (deg C)
+#' \item 6 SHADE - shade selected (\%)
+#' \item 7 ORIENT  - orientation to sun (1=normal, 0=parallel) (currently fixed at 1 in code)
+#' \item 8 DEP - depth below ground (cm)
+#' \item 9 ACT - activity state (0=inactive, 1=basking, 2=foraging)
+#' \item 10 TA - air temperature (deg C) at animal location
+#' \item 11 VEL - wind speed (m/s) at animal location
+#' \item 12 RELHUM - relative humidity (\%) at animal location
+#' \item 13 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
+#' \item 14 CONDEP - depth of water body (cm) (may not be simulated or supplied)
+#' \item 15 WATERTEMP - temperature of water body (deg C) (may not be simulated or supplied)
+#' \item 16 DAYLENGTH - day length (hours)
+#' \item 17 WINGANGLE - wing angle (degrees) for butterfly model
+#' \item 18 WINGTEMP - wing temperature (degrees C) for butterfly model
+#' \item 19 FLYING - flying state (1=flying, 0=not flying) for butterfly model
+#' \item 20 FLYTIME - flying time (hours) for butterfly model
 #'}
 #' enbal variables:
 #' \itemize{
 #' \item 1 JULDAY - day of year
-#' \item 2 TIME - time of day (mins)
-#' \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-#' \item 4 TAREF - air temperature (deg C) at reference height (1.2m)
-#' \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
-#' \item 6 RH  - relative humidity (\%) at reference height (1.2m)
-#' \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
-#' \item 8 VREF - wind speed (m/s) at reference height (1.2m)
-#' \item 9 SNOWMELT - snowmelt (mm)
-#' \item 10 POOLDEP - water pooling on surface (mm)
-#' \item 11 PCTWET - soil surface wetness (\%)
-#' \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
-#' \item 13 SOLR - solar radiation (W/m2)
-#' \item 14 TSKYC - sky radiant temperature (deg C)
-#' \item 15 DEW - dew presence (0 or 1)
-#' \item 16 FROST - frost presence (0 or 1)
-#' \item 17 SNOWFALL - snow predicted to have fallen (mm)
-#' \item 18 SNOWDEP - predicted snow depth (cm)
+#' \item 2 YEAR - year of simulation
+#' \item 3 DAY - day of simulation
+#' \item 4 TIME - time of day (hours)
+#' \item 5 TC - body temperature (deg C) ! redundant
+#' \item 6 QSOL - solar radiation absorbed (W)
+#' \item 7 QIRIN  - infrared radiation absorbed (W)
+#' \item 8 QMET - metabolic heat production (W)
+#' \item 9 QEVAP - evaporative heat loss (W)
+#' \item 10 QIROUT - infrared radiation lost (W)
+#' \item 11 QCONV - heat lost by convection (W)
+#' \item 12 QCOND - heat lost by conduction (W)
+#' \item 13 ENB - energy balance (degrees C)
+#' \item 14 NTRY - iterations required for solution to heat balance equation
 #'}
 #' masbal variables:
 #' \itemize{
 #' \item 1 JULDAY - day of year
-#' \item 2 TIME - time of day (mins)
-#' \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-#' \item 4 TAREF - air temperature (deg C) at reference height (1.2m)
-#' \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
-#' \item 6 RH  - relative humidity (\%) at reference height (1.2m)
-#' \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
-#' \item 8 VREF - wind speed (m/s) at reference height (1.2m)
-#' \item 9 SNOWMELT - snowmelt (mm)
-#' \item 10 POOLDEP - water pooling on surface (mm)
-#' \item 11 PCTWET - soil surface wetness (\%)
-#' \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
-#' \item 13 SOLR - solar radiation (W/m2)
-#' \item 14 TSKYC - sky radiant temperature (deg C)
-#' \item 15 DEW - dew presence (0 or 1)
-#' \item 16 FROST - frost presence (0 or 1)
-#' \item 17 SNOWFALL - snow predicted to have fallen (mm)
-#' \item 18 SNOWDEP - predicted snow depth (cm)
+#' \item 2 YEAR - year of simulation
+#' \item 3 DAY - day of simulation
+#' \item 4 TIME - time of day (hours)
+#' \item 5 TC - body temperature (deg C) ! redundant
+#' \item 6 O2_ml - oxygen consumption rate (ml/h)
+#' \item 7 CO2_ml - carbon dioxide production rate (ml/h)
+#' \item 8 NWASTE_g - nitrogenous waste production (g/h)
+#' \item 9 H2OFree_g - water from food (g/h)
+#' \item 10 H2OMet_g - metabolic water production (g/h)
+#' \item 11 DryFood_g - dry food intake (g/h)
+#' \item 12 WetFood_g - wet foood intake (g/h)
+#' \item 13 DryFaeces_g - dry faeces production (g/h)
+#' \item 14 WetFaeces_G - wet faeces production (g/h)
+#' \item 15 Urine_g - urine production (g/h)
+#' \item 16 H2OResp_g - respiratory water loss (g/h)
+#' \item 17 H2OCut_g - cutaneous water loss (g/h)
+#' \item 18 H2OEvap_g - evaporative water loss (cutaneous plus respiratory) (g/h) !redundant
+#' \item 19 H2OBal_g - instantaneous water balance (g/h)
+#' \item 20 H2OCumBal_g - cumulative water balance (g)
+#' \item 21 GutFreeMass_g - gut-free wet mass (g)
 #'}
 #' debout variables:
 #' \itemize{
 #' \item 1 JULDAY - day of year
-#' \item 2 TIME - time of day (mins)
-#' \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-#' \item 4 TAREF - air temperature (deg C) at reference height (1.2m)
-#' \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
-#' \item 6 RH  - relative humidity (\%) at reference height (1.2m)
-#' \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
-#' \item 8 VREF - wind speed (m/s) at reference height (1.2m)
-#' \item 9 SNOWMELT - snowmelt (mm)
-#' \item 10 POOLDEP - water pooling on surface (mm)
-#' \item 11 PCTWET - soil surface wetness (\%)
-#' \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
-#' \item 13 SOLR - solar radiation (W/m2)
-#' \item 14 TSKYC - sky radiant temperature (deg C)
-#' \item 15 DEW - dew presence (0 or 1)
-#' \item 16 FROST - frost presence (0 or 1)
-#' \item 17 SNOWFALL - snow predicted to have fallen (mm)
-#' \item 18 SNOWDEP - predicted snow depth (cm)
+#' \item 2 YEAR - year of simulation
+#' \item 3 DAY - day of simulation
+#' \item 4 TIME - time of day (hours)
+#' \item 5 WETMASS - wet mass (g)
+#' \item 6 RESERVE_DENS  - reserve density (J/cm3)
+#' \item 7 CUMREPRO - energy in reproduction buffer (J)
+#' \item 8 HS - hazard rate (1/h)
+#' \item 9 MASS_GUT - wet gut contents (g)
+#' \item 10 SVL - length (mm) (might be Snout Vent Length but depends on choice of length measure for DEB paramter fitting)
+#' \item 11 V - structural volume (cm3)
+#' \item 12 E_H - maturity state (J)
+#' \item 13 CUMBATCH - energy in batch for egg production (J)
+#' \item 14 V_baby - structure of baby (cm3) (only if viviparous and pregnant
+#' \item 15 E_baby - reserve density of baby (J/cm3) (only if viviparous and pregnant)
+#' \item 16 Pregnant - pregnant? (only if viviparous) (0 or 1)
+#' \item 17 Stage - life cycle stage (0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction)
+#' \item 18 WETMASS_STD - wet mass (g) excluding stomach contents
+#' \item 19 Body_cond - \% desiccated
+#' \item 20 Surviv_Prob - survival probability due to joint influence of ageing and mortality rates
+#' \item 21 Breeding - breeding state (1=breeding, 0=not breeding)
 #'}
 #' yearout variables:
 #' \itemize{
-#' \item 1 JULDAY - day of year
-#' \item 2 TIME - time of day (mins)
-#' \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-#' \item 4 TAREF - air temperature (deg C) at reference height (1.2m)
-#' \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
-#' \item 6 RH  - relative humidity (\%) at reference height (1.2m)
-#' \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
-#' \item 8 VREF - wind speed (m/s) at reference height (1.2m)
-#' \item 9 SNOWMELT - snowmelt (mm)
-#' \item 10 POOLDEP - water pooling on surface (mm)
-#' \item 11 PCTWET - soil surface wetness (\%)
-#' \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
-#' \item 13 SOLR - solar radiation (W/m2)
-#' \item 14 TSKYC - sky radiant temperature (deg C)
-#' \item 15 DEW - dew presence (0 or 1)
-#' \item 16 FROST - frost presence (0 or 1)
-#' \item 17 SNOWFALL - snow predicted to have fallen (mm)
-#' \item 18 SNOWDEP - predicted snow depth (cm)
+#' \item 1 DEVTIME - development time (days)
+#' \item 2 BIRTHDAY - birth day (day of year)
+#' \item 3 BIRTHMASS - mass at birth (g)
+#' \item 4 MONMATURE - months to maturity
+#' \item 5 SVLREPRO - length (mm) at first reproduction
+#' \item 6 FECUNDITY  - total fecundity
+#' \item 7 CLUTCHES - total clutches
+#' \item 8 MINRESERVE - minimum reserve density (J/cm3)
+#' \item 9 LASTFOOD - food in last year (kg)
+#' \item 10 TOTFOOD - total food eaten (kg)
+#' \item 11 MINTB - minimum body temperature (deg C)
+#' \item 12 MAXTB - maxmium body temperature (deg C)
+#' \item 13 Pct_Dess - maximum level of desiccation (/%)
+#' \item 14 LifeSpan - maximum life span (days)
+#' \item 15 GenTime - generation time (years)
+#' \item 16 R0 - net reproductive rate
+#' \item 17 rmax - intrinsic rate of increase
+#' \item 18 SVL - maximum length (mm)
 #'}
 #' yearsout variables:
 #' \itemize{
-#' \item 1 JULDAY - day of year
-#' \item 2 TIME - time of day (mins)
-#' \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-#' \item 4 TAREF - air temperature (deg C) at reference height (1.2m)
-#' \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
-#' \item 6 RH  - relative humidity (\%) at reference height (1.2m)
-#' \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
-#' \item 8 VREF - wind speed (m/s) at reference height (1.2m)
-#' \item 9 SNOWMELT - snowmelt (mm)
-#' \item 10 POOLDEP - water pooling on surface (mm)
-#' \item 11 PCTWET - soil surface wetness (\%)
-#' \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
-#' \item 13 SOLR - solar radiation (W/m2)
-#' \item 14 TSKYC - sky radiant temperature (deg C)
-#' \item 15 DEW - dew presence (0 or 1)
-#' \item 16 FROST - frost presence (0 or 1)
-#' \item 17 SNOWFALL - snow predicted to have fallen (mm)
-#' \item 18 SNOWDEP - predicted snow depth (cm)
+#' \item 1 YEAR - year of simulation
+#' \item 2 MaxStg - maximum stage reached in the year
+#' \item 3 MaxWgt - maximum weight reached in the year (g)
+#' \item 4 MaxLen - maximum length in the year (mm)
+#' \item 5 Tmax - maximum annual body temperature (deg C)
+#' \item 6 Tmin  - minimum annual body temperature (deg C)
+#' \item 7 MinRes - minimum annual reserve density (J/cm3)
+#' \item 8 MaxDess - maximum annual desiccation level (% of normal wet body mass)
+#' \item 9 MinShade - minimum annual shade selected
+#' \item 10 MaxShade - maximum annual shade selected
+#' \item 11 MinDep - minimum annual depth selected (cm)
+#' \item 12 MaxDep - maximum annual depth selected (cm)
+#' \item 13 Bsk - annual basking hours
+#' \item 14 Forage - annual foraging hours
+#' \item 15 Dist - annual distance travelled (km)
+#' \item 16 Food - annual food eaten (g)
+#' \item 17 Drink - annual water drunk (g)
+#' \item 18 NWaste - annual nitrogenous waste (g)
+#' \item 19 O2 - annual O2 production (ml)
+#' \item 20 Clutch - annual clutches (#)
+#' \item 21 Fec - annual fecundity (#)
+#' \item 22 CauseDeath - cause of death, 0=no death, 1=cold, 2=heat, 3=desiccation, 4=starvation, 5=ageing
+#' \item 23 tLay - day of year at which eggs laid
+#' \item 24 tEgg - day of year entering egg stage
+#' \item 25 tStg1 - day of year entering life cycle stage 1
+#' \item 26 tStg2 - day of year entering life cycle stage 2
+#' \item 27 tStg3 - day of year entering life cycle stage 3
+#' \item 28 tStg4 - day of year entering life cycle stage 4
+#' \item 29 tStg5 - day of year entering life cycle stage 5
+#' \item 30 tStg6 - day of year entering life cycle stage 6
+#' \item 31 tStg7 - day of year entering life cycle stage 7
+#' \item 32 tStg8 - day of year entering life cycle stage 8
+#' \item 33 mStg1 - mass entering life cycle stage 1 (g)
+#' \item 34 mStg2 - mass entering life cycle stage 2 (g)
+#' \item 35 mStg3 - mass entering life cycle stage 3 (g)
+#' \item 36 mStg4 - mass entering life cycle stage 4 (g)
+#' \item 37 mStg5 - mass entering life cycle stage 5 (g)
+#' \item 38 mStg6 - mass entering life cycle stage 6 (g)
+#' \item 39 mStg7 - mass entering life cycle stage 7 (g)
+#' \item 40 mStg8 - mass entering life cycle stage 8 (g)
+#' \item 41 surviv - survival probability at end of given year
+#' \item 42 ovip_surviv - breeding state (1=breeding, 0=not breeding)
+#' \item 43 fitness - fecundity by survival probability at end of given year
+#' \item 44 deathstage - life stage at which death occurred
 #'}
 #' @examples
 #'# run the microclimate model
@@ -442,7 +472,7 @@
 ectotherm<-function(amass=5,lometry=3,ABSMAX=0.85,ABSMIN=0.85,TMAXPR=35,TMINPR=25,TBASK=20,TEMERGE=10,
 TPREF=30,ctmax=40,ctmin=5,dayact=1,nocturn=0,crepus=0,CkGrShad=1,burrow=1,climb=0,shdburrow=0,
 mindepth=2,maxdepth=10,MR_1=0.013,MR_2=0.8,MR_3=0.038,skinwet=0.2,extref=20.,DELTAR=0.1,
-microin="none",nyears=length(RAINFALL)/timeinterval,ystrt=0,enberr=0.0002,live=1,write_input=0,
+microin="none",nyears=micro$nyears,ystrt=0,enberr=0.0002,live=1,write_input=0,
 startday=1,minshade=0.,maxshade=micro$MAXSHADES[1],FLTYPE=0.0,SUBTK=2.79,REFL=micro$REFL,
 DEP=micro$DEP,metout=micro$metout,shadmet=micro$shadmet,soil=micro$soil,shadsoil=micro$shadsoil,
 soilmoist=micro$soilmoist,shadmoist=micro$shadmoist,humid=micro$humid,shadhumid=micro$shadhumid,
@@ -712,8 +742,6 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   etaO<-matrix(c(yXE/mu_E*-1,0,1/mu_E,yPE/mu_E,0,0,-1/mu_E,0,0,yVE/mu_E,-1/mu_E,0),nrow=4)
   w_N<-CHON%*%N_waste
 
-    #wilting<-ectoin[6] # %vol, water content at 15ba = 1500kPa (wiki for thresholds)
-
   lat<-ectoin[4]
   if(soilmoisture1==1){
   humid[,3:9]<-metout[,5]/100 # assume ambient humidity down to 30cm
@@ -790,9 +818,7 @@ flyer=0,flyspeed=5,flymetab=0.1035){
     conthole<-0#2.8 # daily loss of height (mm) due to 'hole' in container (e.g. infiltration to soil, drawdown from water tank)
     contwet<- 2 # percent wet value for container
   }
-  wilting<-0 # remove this parameter
-  grasshade<-0 # remove this parameter
-  ectoinput<-as.matrix(c(ALT,FLTYPE,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,AMASS,EMISAN,absan,RQ,rinsul,lometry,live,TIMBAS,Flshcond,Spheat,Andens,ABSMAX,ABSMIN,FATOSK,FATOSB,FATOBJ,TMAXPR,TMINPR,DELTAR,SKINW,spec,xbas,extref,TPREF,ptcond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,tdigpr,maxshd,minshd,ctmax,ctmin,behav,julday,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,julstart,monthly,customallom,MR_1,MR_2,MR_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,minwater,microyear,container,flyer,flyspeed,dim,maxdepth,ctminthresh,ctkill,gutfill,mindepth,TBASK,TEMERGE,p_Xm,SUBTK,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,breedtempthresh,breedtempcum,contwet,fieldcap,wilting,soilmoisture1,grasshade))
+  ectoinput<-as.matrix(c(ALT,FLTYPE,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,AMASS,EMISAN,absan,RQ,rinsul,lometry,live,TIMBAS,Flshcond,Spheat,Andens,ABSMAX,ABSMIN,FATOSK,FATOSB,FATOBJ,TMAXPR,TMINPR,DELTAR,SKINW,spec,xbas,extref,TPREF,ptcond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,tdigpr,maxshd,minshd,ctmax,ctmin,behav,julday,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,julstart,monthly,customallom,MR_1,MR_2,MR_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,minwater,microyear,container,flyer,flyspeed,dim,maxdepth,ctminthresh,ctkill,gutfill,mindepth,TBASK,TEMERGE,p_Xm,SUBTK,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,breedtempthresh,breedtempcum,contwet))
   debmod<-c(clutchsize,andens_deb,d_V,eggdryfrac,mu_X,mu_E,mu_V,mu_P,T_REF,z,kappa,kappa_X,p_Mref,v_dotref,E_G,k_R,MsM,delta,h_aref,V_init_baby,E_init_baby,k_J,E_Hb,E_Hj,E_Hp,clutch_ab[2],batch,breedrainthresh,photostart,photofinish,daylengthstart,daylengthfinish,photodirs,photodirf,clutch_ab[1],frogbreed,frogstage,etaO,JM_JO,E_Egg,kappa_X_P,PTUREA1,PFEWAT1,wO,w_N,FoodWater1,f,s_G,K,X,metab_mode,stages,y_EV_l,s_j,startday,raindrink,reset,ma,mi,mh,aestivate,depress,minclutch)
   deblast<-c(iyear,countday,v_init,E_init,ms_init,cumrepro_init,q_init,hs_init,cumbatch_init,V_baby_init,E_baby_init,E_H_init,stage)
 
