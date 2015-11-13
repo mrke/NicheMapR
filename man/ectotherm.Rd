@@ -9,57 +9,59 @@ ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax,
  MR_1, MR_2, MR_3, skinwet, extref, DELTAR, ...)
 }
 \arguments{
-\item{amass}{Mass of animal (g), note this model is 'steady state' so no lags in heating/cooling due to mass}
+\item{amass}{= 40, Mass of animal (g), note this model is 'steady state' so no lags in heating/cooling due to mass}
 
-\item{lometry}{Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)}
+\item{lometry}{= 3, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)}
 
-\item{ABSMAX}{Maximum solar absorptivity, decimal percent}
+\item{ABSMAX}{= 0.85, Maximum solar absorptivity, decimal percent}
 
-\item{ABSMIN}{Maximum solar absorptivity, decimal percent}
+\item{ABSMIN}{= 0.85, Maximum solar absorptivity, decimal percent}
 
-\item{TMAXPR}{Voluntary thermal maximum, degrees C (upper body temperature for foraging and also affects burrow depth selection)}
+\item{TMAXPR}{= 34, Voluntary thermal maximum, degrees C (upper body temperature for foraging and also affects burrow depth selection)}
 
-\item{TMINPR}{Voluntary thermal minimum, degrees C (lower body temperature for foraging)}
+\item{TMINPR}{= 24, Voluntary thermal minimum, degrees C (lower body temperature for foraging)}
 
-\item{TBASK}{Minimum basking temperature, degrees C}
+\item{TBASK}{= 17.5, Minimum basking temperature, degrees C}
 
-\item{TEMERGE}{Temperature at which animal will move to a basking site, degrees C}
+\item{TEMERGE}{= 17.5, Temperature at which animal will move to a basking site, degrees C}
 
-\item{TPREF}{Preferred body temperature, degrees C}
+\item{TPREF}{= 30, Preferred body temperature, degrees C}
 
-\item{ctmax}{Critical thermal maximum, degrees C (affects burrow depth selection)}
+\item{ctmax}{= 40, Critical thermal maximum, degrees C (affects burrow depth selection)}
 
-\item{ctmin}{Critical thermal minimum, degrees C (affects burrow depth selection)}
+\item{ctmin}{= 6, Critical thermal minimum, degrees C (affects burrow depth selection)}
 
-\item{dayact}{Diurnal activity allowed?  1=yes, 0=no}
+\item{dayact}{= 1, Diurnal activity allowed?  1=yes, 0=no}
 
-\item{nocturn}{Nocturnal activity allowed?  1=yes, 0=no}
+\item{nocturn}{= 0, Nocturnal activity allowed?  1=yes, 0=no}
 
-\item{crepus}{Crepuscular activity allowed?  1=yes, 0=no}
+\item{crepus}{= 0, Crepuscular activity allowed?  1=yes, 0=no}
 
-\item{CkGrShad}{shade seeking allowed?  1=yes, 0=no}
+\item{CkGrShad}{= 1, shade seeking allowed?  1=yes, 0=no}
 
-\item{burrow}{Shelter in burrow allowed?  1=yes, 0=no}
+\item{burrow}{= 1 Shelter in burrow allowed?  1=yes, 0=no}
 
-\item{climb}{climbing to seek cooler habitats allowed?  1=yes, 0=no}
+\item{climb}{= 0, climbing to seek cooler habitats allowed?  1=yes, 0=no}
 
-\item{shdburrow}{choose if the animal's retreat is in the shade (1) or in the open (0)}
+\item{shdburrow}{= 0, choose if the animal's retreat is in the shade (1) or in the open (0)}
 
-\item{mindepth}{Minimum depth (soil node #) to which animal can retreat if burrowing}
+\item{mindepth}{= 2, Minimum depth (soil node #) to which animal can retreat if burrowing}
 
-\item{maxdepth}{Maximum depth (soil node #) to which animal can retreat if burrowing}
+\item{maxdepth}{= 10, Maximum depth (soil node #) to which animal can retreat if burrowing}
 
-\item{MR_1}{Metabolic rate parameter MR=MR_1*M^MR_2*10^(MR_3*Tb) based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231}
+\item{MR_1}{= 0.013, Metabolic rate parameter 1 MR=MR_1*M^MR_2*10^(MR_3*Tb) based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231}
 
-\item{MR_2}{Metabolic rate parameter}
+\item{MR_2}{= 0.800, Metabolic rate parameter 2}
 
-\item{MR_3}{Metabolic rate parameter}
+\item{MR_3}{= 0.038, Metabolic rate parameter 3}
 
-\item{skinwet}{\% of surface area acting as a free-water exchanger, for computing cutaneous water loss}
+\item{skinwet}{= 0.2, \% of surface area acting as a free-water exchanger, for computing cutaneous water loss}
 
-\item{extref}{\% oxygen extraction efficiency, for respiratory water loss}
+\item{aeyes}{= 0.03, \% of surface area taken up by open eye, for computing ocular water loss (only when active)}
 
-\item{DELTAR}{Temperature difference (deg C) between expired and inspired air, for computing respiratory water loss}
+\item{extref}{= 20, \% oxygen extraction efficiency, for respiratory water loss}
+
+\item{DELTAR}{= 0.1, Temperature difference (deg C) between expired and inspired air, for computing respiratory water loss}
 }
 \description{
 An implementation of the Niche Mapper ectotherm model that computes body temperature, water loss,
@@ -141,7 +143,6 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. micro_global()
 \item{\code{FoodWater}{ = 82, Wwater content of food (\%)}\cr}
 \item{\code{minwater}{ = 15, Minimum tolerated dehydration (\% of wet mass) - prohibits foraging if greater than this}\cr}
 \item{\code{gutfill}{ = 75.,}\cr}
-\item{\code{soilmoisture1}{ = 0,}\cr}
 \item{\code{raindrink}{ = 0., Gut fill (\%) at which satiation occurs - if greater than 100\%, animal always tries to forage}\cr}
 }
 \strong{ Dynamic Energy Budget (DEB) model parameters:}
@@ -151,40 +152,40 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. micro_global()
 }
 \strong{ Core DEB parameters:}
 \itemize{
-\item{\code{z}{ = 7.174*fract, Zoom factor (cm)}\cr}
-\item{\code{delta}{ =  0.217, Shape coefficient (-)}\cr}
-\item{\code{p_Xm}{ = 13290, Surface area-specific maximum feeding rate J/cm2/h}\cr}
-\item{\code{kappa_X}{ = 0.85, Digestive efficiency (decimal \%)}\cr}
-\item{\code{v_dotref}{ = 0.05591/24., Energy conductance (cm/h)}\cr}
-\item{\code{kappa}{ = 0.8501, fraction of mobilised reserve allocated to soma}\cr}
-\item{\code{p_Mref}{ = 45.14/24., Volume-specific somatic maintenance (J/cm3/h)}\cr}
-\item{\code{E_G}{ = 7189, Cost of structure (J/cm3)}\cr}
-\item{\code{k_R}{ = 0.95, Fraction of reproduction energy fixed in eggs}\cr}
-\item{\code{k_J}{ = 0.00628/24., Maturity maintenance rate coefficient (1/h)}\cr}
-\item{\code{E_Hb}{ = 6.533e+04*fract^3, Maturity at birth (J)}\cr}
+\item{\code{z}{ = 2.825*fract, Zoom factor (cm)}\cr}
+\item{\code{del_M}{ =  0.2144, Shape coefficient (-)}\cr}
+\item{\code{F_m}{ = 12420, Surface area-specific maximum feeding rate J/cm2/h}\cr}
+\item{\code{kap_X}{ = 0.85, Digestive efficiency (decimal \%)}\cr}
+\item{\code{v}{ = 0.02795/24, Energy conductance (cm/h)}\cr}
+\item{\code{kap}{ = 0.8206, fraction of mobilised reserve allocated to soma}\cr}
+\item{\code{p_M}{ = 48.81/24, Volume-specific somatic maintenance (J/cm3/h)}\cr}
+\item{\code{E_G}{ = 7512, Cost of structure (J/cm3)}\cr}
+\item{\code{kap_R}{ = 0.95, Fraction of reproduction energy fixed in eggs}\cr}
+\item{\code{k_J}{ = 0.006498/24, Maturity maintenance rate coefficient (1/h)}\cr}
+\item{\code{E_Hb}{ = 866.6*fract^3, Maturity at birth (J)}\cr}
 \item{\code{E_Hj}{ = E_Hb*fract^3, Maturity at metamorphosis (J)}\cr}
-\item{\code{E_Hp}{ = 1.375e+05*fract^3, Maturity at puberty}\cr}
-\item{\code{h_aref}{ = 3.61e-13/(24.^2), Weibull ageing acceleration (1/h2)}\cr}
+\item{\code{E_Hp}{ = 1.019e+04*fract^3, Maturity at puberty}\cr}
+\item{\code{h_a}{ = 1.051e-08/(24^2), Weibull ageing acceleration (1/h2)}\cr}
 \item{\code{s_G}{ = 0.01, Gompertz stress coefficient (-)}\cr}
+\item{\code{E_0}{ = 9220*fract^4, Energy content of the egg (derived from core parameters) (J)}\cr}
 }
 \strong{ Thermal DEB parameters:}
 \itemize{
 \item{\code{T_REF}{ = 20, Reference temperature for rate correction (deg C)}\cr}
-\item{\code{TA}{ = 7130, Arhhenius temperature}\cr}
-\item{\code{TAL}{ = 5.305e+04, Arrhenius temperature for decrease below lower boundary of tolerance range \code{TL}}\cr}
-\item{\code{TAH}{ = 9.076e+04, Arrhenius temperature for decrease above upper boundary of tolerance range \code{TH}}\cr}
-\item{\code{TL}{ = 288., Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
-\item{\code{TH}{ = 315., Upper boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
+\item{\code{TA}{ = 8817 Arhhenius temperature}\cr}
+\item{\code{TAL}{ = 50000, Arrhenius temperature for decrease below lower boundary of tolerance range \code{TL}}\cr}
+\item{\code{TAH}{ = 90000, Arrhenius temperature for decrease above upper boundary of tolerance range \code{TH}}\cr}
+\item{\code{TL}{ = 279, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
+\item{\code{TH}{ = 306, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
 }
 \strong{ Compound/derived DEB parameters:}
 \itemize{
-\item{\code{E_Egg}{ = 1.04e+06*fract^4, Energy content of the egg (J)}\cr}
-\item{\code{E_m}{ = (p_Mref*z/kappa)/v_dotref, Maximum reserve density (J/cm3)}\cr}
+\item{\code{E_m}{ = (p_M*z/kap)/v, Maximum reserve density (J/cm3)}\cr}
 }
 \strong{ Food-related axilliary DEB parameters:}
 \itemize{
 \item{\code{f}{ = 1, functional response (-), usually kept at 1 because gut model controls food availability such that f=0 when gut empty}\cr}
-\item{\code{MsM}{ = 186.03*6, Maximum volume-specific energy density of stomach (J/cm3)}\cr}
+\item{\code{E_sm}{ = 350, Maximum volume-specific energy density of stomach (J/cm3)}\cr}
 \item{\code{K}{ = 1, Half saturation constant (#/cm2)}\cr}
 \item{\code{X}{ = 10, Food density (J/cm2)}\cr}
 }
@@ -193,17 +194,17 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. micro_global()
 \item{\code{andens_deb}{ = Andens/1000, Animal density (g/cm3)}\cr}
 \item{\code{d_V}{ = 0.3, Dry mass fraction of structure}\cr}
 \item{\code{d_E}{ = 0.3, Dry mass fraction of reserve}\cr}
-\item{\code{eggdryfrac}{ = 0.3, Dry mass fraction of egg}\cr}
+\item{\code{d_Egg}{ = 0.3, Dry mass fraction of egg}\cr}
 \item{\code{mu_X}{ = 525000, Molar Gibbs energy (chemical potential) of food (J/mol)}\cr}
 \item{\code{mu_E}{ = 585000, Molar Gibbs energy (chemical potential) of reserve (J/mol)}\cr}
 \item{\code{mu_V}{ = 500000, Molar Gibbs energy (chemical potential) of structure (J/mol)}\cr}
 \item{\code{mu_P}{ = 480000, Molar Gibbs energy (chemical potential) of faeces (J/mol)}\cr}
-\item{\code{kappa_X_P}{ = 0.1, Faecation efficiency of food to faeces (-)}\cr}
-\item{\code{nX}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in food}\cr}
-\item{\code{nE}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in reserve}\cr}
-\item{\code{nV}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in structure}\cr}
-\item{\code{nP}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in faeces}\cr}
-\item{\code{N_waste}{ = c(1,4/5,3/5,4/5), chem. indices of C, O, H and N in nitrogenous waste}\cr}
+\item{\code{kap_X_P}{ = 0.1, Faecation efficiency of food to faeces (-)}\cr}
+\item{\code{n_X}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in food}\cr}
+\item{\code{n_E}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in reserve}\cr}
+\item{\code{n_V}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in structure}\cr}
+\item{\code{n_P}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in faeces}\cr}
+\item{\code{n_M_nitro}{ = c(1,4/5,3/5,4/5), chem. indices of C, O, H and N in nitrogenous waste}\cr}
 }
 \strong{ Insect DEB model parameters (not yet in operation):}
 \itemize{
@@ -216,14 +217,14 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. micro_global()
 \strong{ Inital conditions for DEB model:}
 \itemize{
 \item{\code{v_init}{ = 3e-9, Initial structural volume (cm3)}\cr}
-\item{\code{E_init}{ = E_Egg/v_init, Initial reserve density (J/cm3)}\cr}
+\item{\code{E_init}{ = E_0/v_init, Initial reserve density (J/cm3)}\cr}
 \item{\code{E_H_init}{ = 0, Initial maturity (J)}\cr}
 \item{\code{stage}{ = 0, Initial stage (0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction)}\cr}
 }
 \strong{ Metabolic depression parameters (not yet functional):}
 \itemize{
 \item{\code{aestivate}{ = 0, Does the animal aestivate/go into torpor? 1=yes, 0=no}\cr}
-\item{\code{depress}{ = 0.3, Fraction by which \code{p_Mref}, \code{k_J} and \code{v_dotref} are reduced during torpor}\cr}
+\item{\code{depress}{ = 0.3, Fraction by which \code{p_M}, \code{k_J} and \code{v} are reduced during torpor}\cr}
 }
 \strong{ Reproductive phenology model parameters:}
 \itemize{
@@ -291,7 +292,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. micro_global()
 }
 \strong{Outputs:}
 
-environ variables: !add solar
+environ variables:
 \itemize{
 \item 1 JULDAY - day of year
 \item 2 YEAR - year of simulation
@@ -348,8 +349,9 @@ masbal variables:
 \item 14 Urine_g - urine production (g/h)
 \item 15 H2OResp_g - respiratory water loss (g/h)
 \item 16 H2OCut_g - cutaneous water loss (g/h)
-\item 17 H2OBal_g - instantaneous water balance (g/h)
-\item 18 H2OCumBal_g - cumulative water balance (g)
+\item 17 H2OEye_g - ocular water loss (g/h)
+\item 18 H2OBal_g - instantaneous water balance (g/h)
+\item 19 H2OCumBal_g - cumulative water balance (g)
 }
 debout variables:
 \itemize{

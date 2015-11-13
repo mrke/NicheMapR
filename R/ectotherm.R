@@ -7,32 +7,33 @@
 #' a user-specified mass is used as well as a allometric (mass and body temperature) function to
 #' compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. micro_global(), must be run prior to running the ectotherm model
 #'
-#' @param amass Mass of animal (g), note this model is 'steady state' so no lags in heating/cooling due to mass
-#' @param lometry Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)
-#' @param ABSMAX Maximum solar absorptivity, decimal percent
-#' @param ABSMIN Maximum solar absorptivity, decimal percent
-#' @param TMAXPR Voluntary thermal maximum, degrees C (upper body temperature for foraging and also affects burrow depth selection)
-#' @param TMINPR Voluntary thermal minimum, degrees C (lower body temperature for foraging)
-#' @param TBASK Minimum basking temperature, degrees C
-#' @param TEMERGE Temperature at which animal will move to a basking site, degrees C
-#' @param TPREF Preferred body temperature, degrees C
-#' @param ctmax Critical thermal maximum, degrees C (affects burrow depth selection)
-#' @param ctmin Critical thermal minimum, degrees C (affects burrow depth selection)
-#' @param dayact Diurnal activity allowed?  1=yes, 0=no
-#' @param nocturn Nocturnal activity allowed?  1=yes, 0=no
-#' @param crepus Crepuscular activity allowed?  1=yes, 0=no
-#' @param CkGrShad shade seeking allowed?  1=yes, 0=no
-#' @param burrow Shelter in burrow allowed?  1=yes, 0=no
-#' @param climb climbing to seek cooler habitats allowed?  1=yes, 0=no
-#' @param shdburrow choose if the animal's retreat is in the shade (1) or in the open (0)
-#' @param mindepth Minimum depth (soil node #) to which animal can retreat if burrowing
-#' @param maxdepth Maximum depth (soil node #) to which animal can retreat if burrowing
-#' @param MR_1 Metabolic rate parameter MR=MR_1*M^MR_2*10^(MR_3*Tb) based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231
-#' @param MR_2 Metabolic rate parameter
-#' @param MR_3 Metabolic rate parameter
-#' @param skinwet \% of surface area acting as a free-water exchanger, for computing cutaneous water loss
-#' @param extref \% oxygen extraction efficiency, for respiratory water loss
-#' @param DELTAR Temperature difference (deg C) between expired and inspired air, for computing respiratory water loss
+#' @param amass = 40, Mass of animal (g), note this model is 'steady state' so no lags in heating/cooling due to mass
+#' @param lometry = 3, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)
+#' @param ABSMAX = 0.85, Maximum solar absorptivity, decimal percent
+#' @param ABSMIN = 0.85, Maximum solar absorptivity, decimal percent
+#' @param TMAXPR = 34, Voluntary thermal maximum, degrees C (upper body temperature for foraging and also affects burrow depth selection)
+#' @param TMINPR = 24, Voluntary thermal minimum, degrees C (lower body temperature for foraging)
+#' @param TBASK = 17.5, Minimum basking temperature, degrees C
+#' @param TEMERGE = 17.5, Temperature at which animal will move to a basking site, degrees C
+#' @param TPREF = 30, Preferred body temperature, degrees C
+#' @param ctmax = 40, Critical thermal maximum, degrees C (affects burrow depth selection)
+#' @param ctmin = 6, Critical thermal minimum, degrees C (affects burrow depth selection)
+#' @param dayact = 1, Diurnal activity allowed?  1=yes, 0=no
+#' @param nocturn = 0, Nocturnal activity allowed?  1=yes, 0=no
+#' @param crepus = 0, Crepuscular activity allowed?  1=yes, 0=no
+#' @param CkGrShad = 1, shade seeking allowed?  1=yes, 0=no
+#' @param burrow = 1 Shelter in burrow allowed?  1=yes, 0=no
+#' @param climb = 0, climbing to seek cooler habitats allowed?  1=yes, 0=no
+#' @param shdburrow = 0, choose if the animal's retreat is in the shade (1) or in the open (0)
+#' @param mindepth = 2, Minimum depth (soil node #) to which animal can retreat if burrowing
+#' @param maxdepth = 10, Maximum depth (soil node #) to which animal can retreat if burrowing
+#' @param MR_1 = 0.013, Metabolic rate parameter 1 MR=MR_1*M^MR_2*10^(MR_3*Tb) based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231
+#' @param MR_2 = 0.800, Metabolic rate parameter 2
+#' @param MR_3 = 0.038, Metabolic rate parameter 3
+#' @param skinwet = 0.2, \% of surface area acting as a free-water exchanger, for computing cutaneous water loss
+#' @param aeyes = 0.03, \% of surface area taken up by open eye, for computing ocular water loss (only when active)
+#' @param extref = 20, \% oxygen extraction efficiency, for respiratory water loss
+#' @param DELTAR = 0.1, Temperature difference (deg C) between expired and inspired air, for computing respiratory water loss
 #' @usage ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax, ctmin,
 #'  TPREF, dayact, nocturn, crepus, CkGrShad, burrow, climb, shdburrow, mindepth, maxdepth,
 #'  MR_1, MR_2, MR_3, skinwet, extref, DELTAR, ...)
@@ -108,7 +109,6 @@
 #' \item{\code{FoodWater}{ = 82, Wwater content of food (\%)}\cr}
 #' \item{\code{minwater}{ = 15, Minimum tolerated dehydration (\% of wet mass) - prohibits foraging if greater than this}\cr}
 #' \item{\code{gutfill}{ = 75.,}\cr}
-#' \item{\code{soilmoisture1}{ = 0,}\cr}
 #' \item{\code{raindrink}{ = 0., Gut fill (\%) at which satiation occurs - if greater than 100\%, animal always tries to forage}\cr}
 #'}
 #' \strong{ Dynamic Energy Budget (DEB) model parameters:}
@@ -118,40 +118,40 @@
 #'}
 #' \strong{ Core DEB parameters:}
 #' \itemize{
-#' \item{\code{z}{ = 7.174*fract, Zoom factor (cm)}\cr}
-#' \item{\code{del_M}{ =  0.217, Shape coefficient (-)}\cr}
-#' \item{\code{F_m}{ = 13290, Surface area-specific maximum feeding rate J/cm2/h}\cr}
+#' \item{\code{z}{ = 2.825*fract, Zoom factor (cm)}\cr}
+#' \item{\code{del_M}{ =  0.2144, Shape coefficient (-)}\cr}
+#' \item{\code{F_m}{ = 12420, Surface area-specific maximum feeding rate J/cm2/h}\cr}
 #' \item{\code{kap_X}{ = 0.85, Digestive efficiency (decimal \%)}\cr}
-#' \item{\code{v}{ = 0.05591/24., Energy conductance (cm/h)}\cr}
-#' \item{\code{kap}{ = 0.8501, fraction of mobilised reserve allocated to soma}\cr}
-#' \item{\code{p_M}{ = 45.14/24., Volume-specific somatic maintenance (J/cm3/h)}\cr}
-#' \item{\code{E_G}{ = 7189, Cost of structure (J/cm3)}\cr}
+#' \item{\code{v}{ = 0.02795/24, Energy conductance (cm/h)}\cr}
+#' \item{\code{kap}{ = 0.8206, fraction of mobilised reserve allocated to soma}\cr}
+#' \item{\code{p_M}{ = 48.81/24, Volume-specific somatic maintenance (J/cm3/h)}\cr}
+#' \item{\code{E_G}{ = 7512, Cost of structure (J/cm3)}\cr}
 #' \item{\code{kap_R}{ = 0.95, Fraction of reproduction energy fixed in eggs}\cr}
-#' \item{\code{k_J}{ = 0.00628/24., Maturity maintenance rate coefficient (1/h)}\cr}
-#' \item{\code{E_Hb}{ = 6.533e+04*fract^3, Maturity at birth (J)}\cr}
+#' \item{\code{k_J}{ = 0.006498/24, Maturity maintenance rate coefficient (1/h)}\cr}
+#' \item{\code{E_Hb}{ = 866.6*fract^3, Maturity at birth (J)}\cr}
 #' \item{\code{E_Hj}{ = E_Hb*fract^3, Maturity at metamorphosis (J)}\cr}
-#' \item{\code{E_Hp}{ = 1.375e+05*fract^3, Maturity at puberty}\cr}
-#' \item{\code{h_a}{ = 3.61e-13/(24.^2), Weibull ageing acceleration (1/h2)}\cr}
+#' \item{\code{E_Hp}{ = 1.019e+04*fract^3, Maturity at puberty}\cr}
+#' \item{\code{h_a}{ = 1.051e-08/(24^2), Weibull ageing acceleration (1/h2)}\cr}
 #' \item{\code{s_G}{ = 0.01, Gompertz stress coefficient (-)}\cr}
+#' \item{\code{E_0}{ = 9220*fract^4, Energy content of the egg (derived from core parameters) (J)}\cr}
 #'}
 #' \strong{ Thermal DEB parameters:}
 #' \itemize{
 #' \item{\code{T_REF}{ = 20, Reference temperature for rate correction (deg C)}\cr}
-#' \item{\code{TA}{ = 7130, Arhhenius temperature}\cr}
-#' \item{\code{TAL}{ = 5.305e+04, Arrhenius temperature for decrease below lower boundary of tolerance range \code{TL}}\cr}
-#' \item{\code{TAH}{ = 9.076e+04, Arrhenius temperature for decrease above upper boundary of tolerance range \code{TH}}\cr}
-#' \item{\code{TL}{ = 288., Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
-#' \item{\code{TH}{ = 315., Upper boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
+#' \item{\code{TA}{ = 8817 Arhhenius temperature}\cr}
+#' \item{\code{TAL}{ = 50000, Arrhenius temperature for decrease below lower boundary of tolerance range \code{TL}}\cr}
+#' \item{\code{TAH}{ = 90000, Arrhenius temperature for decrease above upper boundary of tolerance range \code{TH}}\cr}
+#' \item{\code{TL}{ = 279, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
+#' \item{\code{TH}{ = 306, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
 #'}
 #' \strong{ Compound/derived DEB parameters:}
 #' \itemize{
-#' \item{\code{E_0}{ = 1.04e+06*fract^4, Energy content of the egg (J)}\cr}
 #' \item{\code{E_m}{ = (p_M*z/kap)/v, Maximum reserve density (J/cm3)}\cr}
 #'}
 #' \strong{ Food-related axilliary DEB parameters:}
 #' \itemize{
 #' \item{\code{f}{ = 1, functional response (-), usually kept at 1 because gut model controls food availability such that f=0 when gut empty}\cr}
-#' \item{\code{E_sm}{ = 186.03*6, Maximum volume-specific energy density of stomach (J/cm3)}\cr}
+#' \item{\code{E_sm}{ = 350, Maximum volume-specific energy density of stomach (J/cm3)}\cr}
 #' \item{\code{K}{ = 1, Half saturation constant (#/cm2)}\cr}
 #' \item{\code{X}{ = 10, Food density (J/cm2)}\cr}
 #'}
@@ -315,8 +315,9 @@
 #' \item 14 Urine_g - urine production (g/h)
 #' \item 15 H2OResp_g - respiratory water loss (g/h)
 #' \item 16 H2OCut_g - cutaneous water loss (g/h)
-#' \item 17 H2OBal_g - instantaneous water balance (g/h)
-#' \item 18 H2OCumBal_g - cumulative water balance (g)
+#' \item 17 H2OEye_g - ocular water loss (g/h)
+#' \item 18 H2OBal_g - instantaneous water balance (g/h)
+#' \item 19 H2OCumBal_g - cumulative water balance (g)
 #'}
 #' debout variables:
 #' \itemize{
@@ -465,9 +466,9 @@
 #'with(forage,points((TIME-1)~JULDAY,pch=15,cex=2,col='orange')) # foraging Tbs
 #'with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
 #' @export
-ectotherm<-function(amass=5,lometry=3,ABSMAX=0.85,ABSMIN=0.85,TMAXPR=35,TMINPR=25,TBASK=20,TEMERGE=10,
-TPREF=30,ctmax=40,ctmin=5,dayact=1,nocturn=0,crepus=0,CkGrShad=1,burrow=1,climb=0,shdburrow=0,
-mindepth=2,maxdepth=10,MR_1=0.013,MR_2=0.8,MR_3=0.038,skinwet=0.2,extref=20.,DELTAR=0.1,
+ectotherm<-function(amass=40.,lometry=3,ABSMAX=0.85,ABSMIN=0.85,TMAXPR=34,TMINPR=24,TBASK=17.5,TEMERGE=17.5,
+TPREF=30,ctmax=40,ctmin=6,dayact=1,nocturn=0,crepus=0,CkGrShad=1,burrow=1,climb=0,shdburrow=0,
+mindepth=2,maxdepth=10,MR_1=0.013,MR_2=0.8,MR_3=0.038,skinwet=0.1,aeyes=0.03,extref=20.,DELTAR=0.1,
 microin="none",nyears=micro$nyears,ystrt=0,enberr=0.0002,live=1,write_input=0,
 startday=1,minshade=0.,maxshade=micro$MAXSHADES[1],FLTYPE=0.0,SUBTK=2.79,REFL=micro$REFL,
 DEP=micro$DEP,metout=micro$metout,shadmet=micro$shadmet,soil=micro$soil,shadsoil=micro$shadsoil,
@@ -475,7 +476,7 @@ soilmoist=micro$soilmoist,shadmoist=micro$shadmoist,humid=micro$humid,shadhumid=
 soilpot=micro$soilpot,shadpot=micro$shadpot,RAINFALL=micro$RAINFALL,MAXSHADES=micro$MAXSHADES,
 ectoin=rbind(as.numeric(micro$ALTT),as.numeric(micro$REFL)[1],micro$longlat[1],micro$longlat[2]
   ,0,0,1990,1990),customallom=c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743),
-shape_a=1.,shape_b=3,shape_c=0.6666666667,FATOSK=0.4,FATOSB=0.4,rinsul=0.,ptcond=0.25,
+shape_a=1.,shape_b=3,shape_c=0.6666666667,FATOSK=0.4,FATOSB=0.4,rinsul=0.,ptcond=0.1,
 Spheat=4185,Flshcond=0.5,Andens=1000,EMISAN=0.95,
 fosorial=0,rainact=0,actrainthresh=0.1,soilnode=4.,ctminthresh=12,ctkill=0,
 PFEWAT=73,PTUREA=0,FoodWater=82,minwater=15,gutfill=75.,raindrink=0.,
@@ -666,7 +667,6 @@ flyer=0,flyspeed=5,flymetab=0.1035){
 
   ACTLVL<-1
   nodnum<-10
-  spec<-0. # spectacle covering eye surface? (adds to water loss for lizard/frog/turtle geometry)
   xbas<-1.
   nofood<-0
   tdigpr<-TPREF
@@ -675,19 +675,6 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   minshd<-minshade
   behav=c(dayact,nocturn,crepus,rainact,burrow,CkGrShad,climb,fosorial,nofood)
   julday<-1
-
-  # DEB model initial conditions
-  V_init_baby<-3e-9
-  E_init_baby<-E_0/V_init_baby
-  E_baby_init<-E_init_baby
-  V_baby_init<-V_init_baby
-  ms_init<-0.
-  cumrepro_init<-0.
-  q_init<-0.
-  hs_init<-0.
-  cumbatch_init<-0.
-  pregnant<-0
-  E_m<-(p_M*z/kap)/v
 
   # conversions from percent to proportion
   PTUREA1<-PTUREA/100
@@ -698,6 +685,7 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   water_stages[,5]<-water_stages[,5]/100
 
   #DEB mass balance calculations
+  E_m<-(p_M*z/kap)/v # maximum reserve density, J/cm3
   n_O<-cbind(n_X,n_V,n_E,n_P) # matrix of composition of organics, i.e. food, structure, reserve and faeces
   CHON<-c(12,1,16,14)
   wO<-CHON%*%n_O
@@ -715,16 +703,28 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   eta_O<-matrix(c(y_XE/mu_E*-1,0,1/mu_E,y_PE/mu_E,0,0,-1/mu_E,0,0,y_VE/mu_E,-1/mu_E,0),nrow=4)
   w_N<-CHON%*%n_M_nitro
 
+  # DEB model initial conditions
+  V_init_baby<-3e-9
+  E_init_baby<-E_0/V_init_baby
+  E_baby_init<-E_init_baby
+  V_baby_init<-V_init_baby
+  ms_init<-0.
+  cumrepro_init<-0.
+  q_init<-0.
+  hs_init<-0.
+  cumbatch_init<-0.
+  pregnant<-0
+
   lat<-ectoin[4]
   foodwaters<-rep(FoodWater,nrow(metout))
-  foodlevels<-foodwaters
+  foodlevels<-rep(X,nrow(metout))
   julstart<-metout[1,2]
   tannul<-as.numeric(mean(soil[,12]))
   monthly<-0
   tester<-0
   microyear<-1
 
-  ectoinput<-as.matrix(c(ALT,FLTYPE,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,AMASS,EMISAN,absan,RQ,rinsul,lometry,live,TIMBAS,Flshcond,Spheat,Andens,ABSMAX,ABSMIN,FATOSK,FATOSB,FATOBJ,TMAXPR,TMINPR,DELTAR,SKINW,spec,xbas,extref,TPREF,ptcond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,tdigpr,maxshd,minshd,ctmax,ctmin,behav,julday,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,julstart,monthly,customallom,MR_1,MR_2,MR_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,minwater,microyear,container,flyer,flyspeed,dim,maxdepth,ctminthresh,ctkill,gutfill,mindepth,TBASK,TEMERGE,F_m,SUBTK,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,breedtempthresh,breedtempcum,contwet))
+  ectoinput<-as.matrix(c(ALT,FLTYPE,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,AMASS,EMISAN,absan,RQ,rinsul,lometry,live,TIMBAS,Flshcond,Spheat,Andens,ABSMAX,ABSMIN,FATOSK,FATOSB,FATOBJ,TMAXPR,TMINPR,DELTAR,SKINW,aeyes,xbas,extref,TPREF,ptcond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,tdigpr,maxshd,minshd,ctmax,ctmin,behav,julday,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,julstart,monthly,customallom,MR_1,MR_2,MR_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,minwater,microyear,container,flyer,flyspeed,dim,maxdepth,ctminthresh,ctkill,gutfill,mindepth,TBASK,TEMERGE,F_m,SUBTK,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,breedtempthresh,breedtempcum,contwet))
   debmod<-c(clutchsize,andens_deb,d_V,d_Egg,mu_X,mu_E,mu_V,mu_P,T_REF,z,kap,kap_X,p_M,v,E_G,kap_R,E_sm,del_M,h_a,V_init_baby,E_init_baby,k_J,E_Hb,E_Hj,E_Hp,clutch_ab[2],batch,breedrainthresh,photostart,photofinish,daylengthstart,daylengthfinish,photodirs,photodirf,clutch_ab[1],frogbreed,frogstage,eta_O,JM_JO,E_0,kap_X_P,PTUREA1,PFEWAT1,wO,w_N,FoodWater1,f,s_G,K,X,metab_mode,stages,y_EV_l,s_j,startday,raindrink,reset,ma,mi,mh,aestivate,depress,minclutch)
   deblast<-c(iyear,countday,v_init,E_init,ms_init,cumrepro_init,q_init,hs_init,cumbatch_init,V_baby_init,E_baby_init,E_H_init,stage)
 

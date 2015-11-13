@@ -37,9 +37,9 @@ ectorun(ecto)
 
 \item{deblast}{Initial DEB state}
 
-\item{grassgrowths}{Food related - to remove}
+\item{foodwaters}{Food water content (add units)}
 
-\item{grasstsdms}{Food related - to remove}
+\item{foodlevels}{Food levels (add units)}
 
 \item{wetlandTemps}{Tempature of water body}
 
