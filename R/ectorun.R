@@ -16,8 +16,8 @@
 #' @param RAINFALL Daily rainfall
 #' @param debmod Dynamic Energy Budget (DEB) model paramters
 #' @param deblast Initial DEB state
-#' @param grassgrowths Food related - to remove
-#' @param grasstsdms Food related - to remove
+#' @param foodwaters Food water content (add units)
+#' @param foodlevels Food levels (add units)
 #' @param wetlandTemps Tempature of water body
 #' @param wetlandDepths Depth of water body
 #' @param arrhenius Arrhenius thermal response
@@ -48,8 +48,8 @@ ectorun <- function(ecto) {
     as.double(ecto$RAINFALL),
     as.double(ecto$debmod),
     as.double(ecto$deblast),
-    as.double(ecto$grassgrowths),
-    as.double(ecto$grasstsdms),
+    as.double(ecto$foodwaters),
+    as.double(ecto$foodlevels),
     as.double(ecto$wetlandTemps),
     as.double(ecto$wetlandDepths),
     as.double(ecto$arrhenius),
@@ -59,8 +59,8 @@ ectorun <- function(ecto) {
     as.double(ecto$MAXSHADES),
     as.double(ecto$S_instar),
     environ=matrix(data = 0., nrow = dim*24, ncol = 20),
-    enbal=matrix(data = 0., nrow = dim*24, ncol = 14),
-    masbal=matrix(data = 0., nrow = dim*24, ncol = 21),
+    enbal=matrix(data = 0., nrow = dim*24, ncol = 13),
+    masbal=matrix(data = 0., nrow = dim*24, ncol = 18),
     debout=matrix(data = 0., nrow = dim*24, ncol = 21),
     yearout=matrix(data = 0., nrow = 1, ncol = 20),
     yearsout=matrix(data = 0., nrow = ceiling(dim/365), ncol = 45),PACKAGE = "ECTOTHERM")
@@ -70,8 +70,8 @@ ectorun <- function(ecto) {
   library.dynam("ECTOTHERM", "NicheMapR", lib.loc = .libPaths()[1])
 
   environ <- matrix(data = 0., nrow = 24*dim, ncol = 20)
-  enbal <- matrix(data = 0., nrow = 24*dim, ncol = 14)
-  masbal <- matrix(data = 0., nrow = 24*dim, ncol = 21)
+  enbal <- matrix(data = 0., nrow = 24*dim, ncol = 13)
+  masbal <- matrix(data = 0., nrow = 24*dim, ncol = 18)
   debout <- matrix(data = 0., nrow = 24*dim, ncol = 21)
   yearout <- matrix(data = 0., nrow = 1, ncol = 20)
   yearsout <- matrix(data = 0., nrow = ceiling(dim/365), ncol = 45)
@@ -89,11 +89,11 @@ ectorun <- function(ecto) {
   yearout<-a$yearout
   yearsout<-a$yearsout
   environ.names<-c("JULDAY","YEAR","DAY","TIME","TC","SHADE","SOLAR","DEP","ACT","TA","VEL","RELHUM","ZEN","CONDEP","WATERTEMP","DAYLENGTH","WINGANGLE","WINGTEMP","FLYING","FLYTIME")
-  enbal.names<-c("JULDAY","YEAR","DAY","TIME","TC","QSOL","QIRIN","QMET","QEVAP","QIROUT","QCONV","QCOND","ENB","NTRY")
-  masbal.names<-c("JULDAY","YEAR","DAY","TIME","TC","O2_ml","CO2_ml","NWASTE_g","H2OFree_g","H2OMet_g","DryFood_g","WetFood_g","DryFaeces_g","WetFaeces_G","Urine_g","H2OResp_g","H2OCut_g","H2OEvap_g","H2OBal_g","H2OCumBal_g","GutFreeMass_g")
+  enbal.names<-c("JULDAY","YEAR","DAY","TIME","QSOL","QIRIN","QMET","QEVAP","QIROUT","QCONV","QCOND","ENB","NTRY")
+  masbal.names<-c("JULDAY","YEAR","DAY","TIME","O2_ml","CO2_ml","NWASTE_g","H2OFree_g","H2OMet_g","DryFood_g","WetFood_g","DryFaeces_g","WetFaeces_G","Urine_g","H2OResp_g","H2OCut_g","H2OBal_g","H2OCumBal_g")
   debout.names<-c("JULDAY","YEAR","DAY","TIME","WETMASS","RESERVE_DENS","CUMREPRO","HS","MASS_GUT","SVL","V","E_H","CUMBATCH","V_baby","E_baby","Pregnant","Stage","WETMASS_STD","Body_cond","Surviv_Prob","Breeding")
   yearout.names<-c("DEVTIME","BIRTHDAY","BIRTHMASS","MONMATURE","MONREPRO","SVLREPRO","FECUNDITY","CLUTCHES","ANNUALACT","MINRESERVE","LASTFOOD","TOTFOOD","MINTB","MAXTB","Pct_Dess","LifeSpan","GenTime","R0","rmax","SVL")
-  yearsout.names<-c("YEAR","MaxStg","MaxWgt","MaxLen","Tmax","Tmin","MinRes","MaxDess","MinShade","MaxShade","MinDep","MaxDep","Bsk","Forage","Dist","Food","Drink","NWaste","Feces","O2","Clutch","Fec","CauseDeath","tLay","tEgg","tStg1","tStg2","tStg3","tStg4","tStg5","tStg6","tStg7","tStg8","mStg1","mStg2","mStg3","mStg4","mStg5","mStg6","mStg7","mStg8","surviv","ovip_surviv","fitness","deathstage")
+  yearsout.names<-c("YEAR","MaxStg","MaxWgt","MaxLen","Tmax","Tmin","MinRes","MaxDes","MinShade","MaxShade","MinDep","MaxDep","Bsk","Forage","Dist","Food","Drink","NWaste","Feces","O2","Clutch","Fec","CauseDeath","tLay","tEgg","tStg1","tStg2","tStg3","tStg4","tStg5","tStg6","tStg7","tStg8","mStg1","mStg2","mStg3","mStg4","mStg5","mStg6","mStg7","mStg8","surviv","ovip_surviv","fitness","deathstage")
 
   colnames(environ)<-environ.names
   colnames(enbal)<-enbal.names
