@@ -60,7 +60,7 @@ ectorun <- function(ecto) {
     as.double(ecto$S_instar),
     environ=matrix(data = 0., nrow = dim*24, ncol = 20),
     enbal=matrix(data = 0., nrow = dim*24, ncol = 13),
-    masbal=matrix(data = 0., nrow = dim*24, ncol = 18),
+    masbal=matrix(data = 0., nrow = dim*24, ncol = 19),
     debout=matrix(data = 0., nrow = dim*24, ncol = 21),
     yearout=matrix(data = 0., nrow = 1, ncol = 20),
     yearsout=matrix(data = 0., nrow = ceiling(dim/365), ncol = 45),PACKAGE = "ECTOTHERM")
@@ -71,7 +71,7 @@ ectorun <- function(ecto) {
 
   environ <- matrix(data = 0., nrow = 24*dim, ncol = 20)
   enbal <- matrix(data = 0., nrow = 24*dim, ncol = 13)
-  masbal <- matrix(data = 0., nrow = 24*dim, ncol = 18)
+  masbal <- matrix(data = 0., nrow = 24*dim, ncol = 19)
   debout <- matrix(data = 0., nrow = 24*dim, ncol = 21)
   yearout <- matrix(data = 0., nrow = 1, ncol = 20)
   yearsout <- matrix(data = 0., nrow = ceiling(dim/365), ncol = 45)
