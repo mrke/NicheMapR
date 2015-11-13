@@ -41,8 +41,8 @@ The results are stored as a list in the variable *micro*. The main ones to focus
 The first two rows of the output tables **metout** and **shadmet** look like this
 
 ```{r, echo=FALSE, results='asis'}
-knitr::kable(head(micro$metout[,1:9], 2))
-knitr::kable(head(micro$metout[,10:18], 2))
+knitr::kable(head(micro$metout[,1:9], 2), digits = 2)
+knitr::kable(head(micro$metout[,10:18], 2), digits = 2)
 ```
 
 and show, for each day of the year and for each hour of the day, a series of aboveground microclimatic conditions as follows:
@@ -82,8 +82,7 @@ Because the snow model wasn't flagged to run, there will be zeros in all the sno
 The first two rows of the output tables **soil** and **shadsoil** look like this 
 
 ```{r, echo=FALSE, results='asis'}
-knitr::kable(head(micro$soil[,1:9], 2))
-knitr::kable(head(micro$soil[,10:12], 2))
+knitr::kable(head(micro$soil[,1:12], 2), digits = 2)
 ```
 
 and show, for each day of the year and for each hour of the day, the soil temperatures as follows:
