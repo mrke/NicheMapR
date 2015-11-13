@@ -299,7 +299,7 @@ environ variables: !add solar
 \item 4 TIME - time of day (hours)
 \item 5 TC - body temperature (deg C)
 \item 6 SHADE - shade selected (\%)
-\item 7 ORIENT  - orientation to sun (1=normal, 0=parallel) (currently fixed at 1 in code)
+\item 7 SOLAR  - solar radiation (W/m2) at animal location
 \item 8 DEP - depth below ground (cm)
 \item 9 ACT - activity state (0=inactive, 1=basking, 2=foraging)
 \item 10 TA - air temperature (deg C) at animal location
@@ -320,16 +320,15 @@ enbal variables:
 \item 2 YEAR - year of simulation
 \item 3 DAY - day of simulation
 \item 4 TIME - time of day (hours)
-\item 5 TC - body temperature (deg C) ! redundant
-\item 6 QSOL - solar radiation absorbed (W)
-\item 7 QIRIN  - infrared radiation absorbed (W)
-\item 8 QMET - metabolic heat production (W)
-\item 9 QEVAP - evaporative heat loss (W)
-\item 10 QIROUT - infrared radiation lost (W)
-\item 11 QCONV - heat lost by convection (W)
-\item 12 QCOND - heat lost by conduction (W)
-\item 13 ENB - energy balance (degrees C)
-\item 14 NTRY - iterations required for solution to heat balance equation
+\item 5 QSOL - solar radiation absorbed (W)
+\item 6 QIRIN  - infrared radiation absorbed (W)
+\item 7 QMET - metabolic heat production (W)
+\item 8 QEVAP - evaporative heat loss (W)
+\item 9 QIROUT - infrared radiation lost (W)
+\item 10 QCONV - heat lost by convection (W)
+\item 11 QCOND - heat lost by conduction (W)
+\item 12 ENB - energy balance (degrees C)
+\item 13 NTRY - iterations required for solution to heat balance equation
 }
 masbal variables:
 \itemize{
@@ -337,23 +336,20 @@ masbal variables:
 \item 2 YEAR - year of simulation
 \item 3 DAY - day of simulation
 \item 4 TIME - time of day (hours)
-\item 5 TC - body temperature (deg C) ! redundant
-\item 6 O2_ml - oxygen consumption rate (ml/h)
-\item 7 CO2_ml - carbon dioxide production rate (ml/h)
-\item 8 NWASTE_g - nitrogenous waste production (g/h)
-\item 9 H2OFree_g - water from food (g/h)
-\item 10 H2OMet_g - metabolic water production (g/h)
-\item 11 DryFood_g - dry food intake (g/h)
-\item 12 WetFood_g - wet foood intake (g/h)
-\item 13 DryFaeces_g - dry faeces production (g/h)
-\item 14 WetFaeces_G - wet faeces production (g/h)
-\item 15 Urine_g - urine production (g/h)
-\item 16 H2OResp_g - respiratory water loss (g/h)
-\item 17 H2OCut_g - cutaneous water loss (g/h)
-\item 18 H2OEvap_g - evaporative water loss (cutaneous plus respiratory) (g/h) !redundant
-\item 19 H2OBal_g - instantaneous water balance (g/h)
-\item 20 H2OCumBal_g - cumulative water balance (g)
-\item 21 GutFreeMass_g - gut-free wet mass (g)
+\item 5 O2_ml - oxygen consumption rate (ml/h)
+\item 6 CO2_ml - carbon dioxide production rate (ml/h)
+\item 7 NWASTE_g - nitrogenous waste production (g/h)
+\item 8 H2OFree_g - water from food (g/h)
+\item 9 H2OMet_g - metabolic water production (g/h)
+\item 10 DryFood_g - dry food intake (g/h)
+\item 11 WetFood_g - wet foood intake (g/h)
+\item 12 DryFaeces_g - dry faeces production (g/h)
+\item 13 WetFaeces_G - wet faeces production (g/h)
+\item 14 Urine_g - urine production (g/h)
+\item 15 H2OResp_g - respiratory water loss (g/h)
+\item 16 H2OCut_g - cutaneous water loss (g/h)
+\item 17 H2OBal_g - instantaneous water balance (g/h)
+\item 18 H2OCumBal_g - cumulative water balance (g)
 }
 debout variables:
 \itemize{
@@ -409,7 +405,7 @@ yearsout variables:
 \item 5 Tmax - maximum annual body temperature (deg C)
 \item 6 Tmin  - minimum annual body temperature (deg C)
 \item 7 MinRes - minimum annual reserve density (J/cm3)
-\item 8 MaxDess - maximum annual desiccation level (% of normal wet body mass)
+\item 8 MaxDes - maximum annual desiccation level (% of normal wet body mass)
 \item 9 MinShade - minimum annual shade selected
 \item 10 MaxShade - maximum annual shade selected
 \item 11 MinDep - minimum annual depth selected (cm)

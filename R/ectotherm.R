@@ -119,19 +119,19 @@
 #' \strong{ Core DEB parameters:}
 #' \itemize{
 #' \item{\code{z}{ = 7.174*fract, Zoom factor (cm)}\cr}
-#' \item{\code{delta}{ =  0.217, Shape coefficient (-)}\cr}
-#' \item{\code{p_Xm}{ = 13290, Surface area-specific maximum feeding rate J/cm2/h}\cr}
-#' \item{\code{kappa_X}{ = 0.85, Digestive efficiency (decimal \%)}\cr}
-#' \item{\code{v_dotref}{ = 0.05591/24., Energy conductance (cm/h)}\cr}
-#' \item{\code{kappa}{ = 0.8501, fraction of mobilised reserve allocated to soma}\cr}
-#' \item{\code{p_Mref}{ = 45.14/24., Volume-specific somatic maintenance (J/cm3/h)}\cr}
+#' \item{\code{del_M}{ =  0.217, Shape coefficient (-)}\cr}
+#' \item{\code{F_m}{ = 13290, Surface area-specific maximum feeding rate J/cm2/h}\cr}
+#' \item{\code{kap_X}{ = 0.85, Digestive efficiency (decimal \%)}\cr}
+#' \item{\code{v}{ = 0.05591/24., Energy conductance (cm/h)}\cr}
+#' \item{\code{kap}{ = 0.8501, fraction of mobilised reserve allocated to soma}\cr}
+#' \item{\code{p_M}{ = 45.14/24., Volume-specific somatic maintenance (J/cm3/h)}\cr}
 #' \item{\code{E_G}{ = 7189, Cost of structure (J/cm3)}\cr}
-#' \item{\code{k_R}{ = 0.95, Fraction of reproduction energy fixed in eggs}\cr}
+#' \item{\code{kap_R}{ = 0.95, Fraction of reproduction energy fixed in eggs}\cr}
 #' \item{\code{k_J}{ = 0.00628/24., Maturity maintenance rate coefficient (1/h)}\cr}
 #' \item{\code{E_Hb}{ = 6.533e+04*fract^3, Maturity at birth (J)}\cr}
 #' \item{\code{E_Hj}{ = E_Hb*fract^3, Maturity at metamorphosis (J)}\cr}
 #' \item{\code{E_Hp}{ = 1.375e+05*fract^3, Maturity at puberty}\cr}
-#' \item{\code{h_aref}{ = 3.61e-13/(24.^2), Weibull ageing acceleration (1/h2)}\cr}
+#' \item{\code{h_a}{ = 3.61e-13/(24.^2), Weibull ageing acceleration (1/h2)}\cr}
 #' \item{\code{s_G}{ = 0.01, Gompertz stress coefficient (-)}\cr}
 #'}
 #' \strong{ Thermal DEB parameters:}
@@ -145,13 +145,13 @@
 #'}
 #' \strong{ Compound/derived DEB parameters:}
 #' \itemize{
-#' \item{\code{E_Egg}{ = 1.04e+06*fract^4, Energy content of the egg (J)}\cr}
-#' \item{\code{E_m}{ = (p_Mref*z/kappa)/v_dotref, Maximum reserve density (J/cm3)}\cr}
+#' \item{\code{E_0}{ = 1.04e+06*fract^4, Energy content of the egg (J)}\cr}
+#' \item{\code{E_m}{ = (p_M*z/kap)/v, Maximum reserve density (J/cm3)}\cr}
 #'}
 #' \strong{ Food-related axilliary DEB parameters:}
 #' \itemize{
 #' \item{\code{f}{ = 1, functional response (-), usually kept at 1 because gut model controls food availability such that f=0 when gut empty}\cr}
-#' \item{\code{MsM}{ = 186.03*6, Maximum volume-specific energy density of stomach (J/cm3)}\cr}
+#' \item{\code{E_sm}{ = 186.03*6, Maximum volume-specific energy density of stomach (J/cm3)}\cr}
 #' \item{\code{K}{ = 1, Half saturation constant (#/cm2)}\cr}
 #' \item{\code{X}{ = 10, Food density (J/cm2)}\cr}
 #'}
@@ -160,17 +160,17 @@
 #' \item{\code{andens_deb}{ = Andens/1000, Animal density (g/cm3)}\cr}
 #' \item{\code{d_V}{ = 0.3, Dry mass fraction of structure}\cr}
 #' \item{\code{d_E}{ = 0.3, Dry mass fraction of reserve}\cr}
-#' \item{\code{eggdryfrac}{ = 0.3, Dry mass fraction of egg}\cr}
+#' \item{\code{d_Egg}{ = 0.3, Dry mass fraction of egg}\cr}
 #' \item{\code{mu_X}{ = 525000, Molar Gibbs energy (chemical potential) of food (J/mol)}\cr}
 #' \item{\code{mu_E}{ = 585000, Molar Gibbs energy (chemical potential) of reserve (J/mol)}\cr}
 #' \item{\code{mu_V}{ = 500000, Molar Gibbs energy (chemical potential) of structure (J/mol)}\cr}
 #' \item{\code{mu_P}{ = 480000, Molar Gibbs energy (chemical potential) of faeces (J/mol)}\cr}
-#' \item{\code{kappa_X_P}{ = 0.1, Faecation efficiency of food to faeces (-)}\cr}
-#' \item{\code{nX}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in food}\cr}
-#' \item{\code{nE}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in reserve}\cr}
-#' \item{\code{nV}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in structure}\cr}
-#' \item{\code{nP}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in faeces}\cr}
-#' \item{\code{N_waste}{ = c(1,4/5,3/5,4/5), chem. indices of C, O, H and N in nitrogenous waste}\cr}
+#' \item{\code{kap_X_P}{ = 0.1, Faecation efficiency of food to faeces (-)}\cr}
+#' \item{\code{n_X}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in food}\cr}
+#' \item{\code{n_E}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in reserve}\cr}
+#' \item{\code{n_V}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in structure}\cr}
+#' \item{\code{n_P}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in faeces}\cr}
+#' \item{\code{n_M_nitro}{ = c(1,4/5,3/5,4/5), chem. indices of C, O, H and N in nitrogenous waste}\cr}
 #'}
 #' \strong{ Insect DEB model parameters (not yet in operation):}
 #' \itemize{
@@ -183,14 +183,14 @@
 #' \strong{ Inital conditions for DEB model:}
 #' \itemize{
 #' \item{\code{v_init}{ = 3e-9, Initial structural volume (cm3)}\cr}
-#' \item{\code{E_init}{ = E_Egg/v_init, Initial reserve density (J/cm3)}\cr}
+#' \item{\code{E_init}{ = E_0/v_init, Initial reserve density (J/cm3)}\cr}
 #' \item{\code{E_H_init}{ = 0, Initial maturity (J)}\cr}
 #' \item{\code{stage}{ = 0, Initial stage (0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction)}\cr}
 #'}
 #' \strong{ Metabolic depression parameters (not yet functional):}
 #' \itemize{
 #' \item{\code{aestivate}{ = 0, Does the animal aestivate/go into torpor? 1=yes, 0=no}\cr}
-#' \item{\code{depress}{ = 0.3, Fraction by which \code{p_Mref}, \code{k_J} and \code{v_dotref} are reduced during torpor}\cr}
+#' \item{\code{depress}{ = 0.3, Fraction by which \code{p_M}, \code{k_J} and \code{v} are reduced during torpor}\cr}
 #'}
 #' \strong{ Reproductive phenology model parameters:}
 #' \itemize{
@@ -258,7 +258,7 @@
 #'}
 #' \strong{Outputs:}
 #'
-#' environ variables: !add solar
+#' environ variables:
 #' \itemize{
 #' \item 1 JULDAY - day of year
 #' \item 2 YEAR - year of simulation
@@ -266,7 +266,7 @@
 #' \item 4 TIME - time of day (hours)
 #' \item 5 TC - body temperature (deg C)
 #' \item 6 SHADE - shade selected (\%)
-#' \item 7 ORIENT  - orientation to sun (1=normal, 0=parallel) (currently fixed at 1 in code)
+#' \item 7 SOLAR  - solar radiation (W/m2) at animal location
 #' \item 8 DEP - depth below ground (cm)
 #' \item 9 ACT - activity state (0=inactive, 1=basking, 2=foraging)
 #' \item 10 TA - air temperature (deg C) at animal location
@@ -287,16 +287,15 @@
 #' \item 2 YEAR - year of simulation
 #' \item 3 DAY - day of simulation
 #' \item 4 TIME - time of day (hours)
-#' \item 5 TC - body temperature (deg C) ! redundant
-#' \item 6 QSOL - solar radiation absorbed (W)
-#' \item 7 QIRIN  - infrared radiation absorbed (W)
-#' \item 8 QMET - metabolic heat production (W)
-#' \item 9 QEVAP - evaporative heat loss (W)
-#' \item 10 QIROUT - infrared radiation lost (W)
-#' \item 11 QCONV - heat lost by convection (W)
-#' \item 12 QCOND - heat lost by conduction (W)
-#' \item 13 ENB - energy balance (degrees C)
-#' \item 14 NTRY - iterations required for solution to heat balance equation
+#' \item 5 QSOL - solar radiation absorbed (W)
+#' \item 6 QIRIN  - infrared radiation absorbed (W)
+#' \item 7 QMET - metabolic heat production (W)
+#' \item 8 QEVAP - evaporative heat loss (W)
+#' \item 9 QIROUT - infrared radiation lost (W)
+#' \item 10 QCONV - heat lost by convection (W)
+#' \item 11 QCOND - heat lost by conduction (W)
+#' \item 12 ENB - energy balance (degrees C)
+#' \item 13 NTRY - iterations required for solution to heat balance equation
 #'}
 #' masbal variables:
 #' \itemize{
@@ -304,23 +303,20 @@
 #' \item 2 YEAR - year of simulation
 #' \item 3 DAY - day of simulation
 #' \item 4 TIME - time of day (hours)
-#' \item 5 TC - body temperature (deg C) ! redundant
-#' \item 6 O2_ml - oxygen consumption rate (ml/h)
-#' \item 7 CO2_ml - carbon dioxide production rate (ml/h)
-#' \item 8 NWASTE_g - nitrogenous waste production (g/h)
-#' \item 9 H2OFree_g - water from food (g/h)
-#' \item 10 H2OMet_g - metabolic water production (g/h)
-#' \item 11 DryFood_g - dry food intake (g/h)
-#' \item 12 WetFood_g - wet foood intake (g/h)
-#' \item 13 DryFaeces_g - dry faeces production (g/h)
-#' \item 14 WetFaeces_G - wet faeces production (g/h)
-#' \item 15 Urine_g - urine production (g/h)
-#' \item 16 H2OResp_g - respiratory water loss (g/h)
-#' \item 17 H2OCut_g - cutaneous water loss (g/h)
-#' \item 18 H2OEvap_g - evaporative water loss (cutaneous plus respiratory) (g/h) !redundant
-#' \item 19 H2OBal_g - instantaneous water balance (g/h)
-#' \item 20 H2OCumBal_g - cumulative water balance (g)
-#' \item 21 GutFreeMass_g - gut-free wet mass (g)
+#' \item 5 O2_ml - oxygen consumption rate (ml/h)
+#' \item 6 CO2_ml - carbon dioxide production rate (ml/h)
+#' \item 7 NWASTE_g - nitrogenous waste production (g/h)
+#' \item 8 H2OFree_g - water from food (g/h)
+#' \item 9 H2OMet_g - metabolic water production (g/h)
+#' \item 10 DryFood_g - dry food intake (g/h)
+#' \item 11 WetFood_g - wet foood intake (g/h)
+#' \item 12 DryFaeces_g - dry faeces production (g/h)
+#' \item 13 WetFaeces_G - wet faeces production (g/h)
+#' \item 14 Urine_g - urine production (g/h)
+#' \item 15 H2OResp_g - respiratory water loss (g/h)
+#' \item 16 H2OCut_g - cutaneous water loss (g/h)
+#' \item 17 H2OBal_g - instantaneous water balance (g/h)
+#' \item 18 H2OCumBal_g - cumulative water balance (g)
 #'}
 #' debout variables:
 #' \itemize{
@@ -376,7 +372,7 @@
 #' \item 5 Tmax - maximum annual body temperature (deg C)
 #' \item 6 Tmin  - minimum annual body temperature (deg C)
 #' \item 7 MinRes - minimum annual reserve density (J/cm3)
-#' \item 8 MaxDess - maximum annual desiccation level (% of normal wet body mass)
+#' \item 8 MaxDes - maximum annual desiccation level (% of normal wet body mass)
 #' \item 9 MinShade - minimum annual shade selected
 #' \item 10 MaxShade - maximum annual shade selected
 #' \item 11 MinDep - minimum annual depth selected (cm)
@@ -482,16 +478,16 @@ ectoin=rbind(as.numeric(micro$ALTT),as.numeric(micro$REFL)[1],micro$longlat[1],m
 shape_a=1.,shape_b=3,shape_c=0.6666666667,FATOSK=0.4,FATOSB=0.4,rinsul=0.,ptcond=0.25,
 Spheat=4185,Flshcond=0.5,Andens=1000,EMISAN=0.95,
 fosorial=0,rainact=0,actrainthresh=0.1,soilnode=4.,ctminthresh=12,ctkill=0,
-PFEWAT=73,PTUREA=0,FoodWater=82,minwater=15,gutfill=75.,soilmoisture1=0,raindrink=0.,
-DEB=0,fract=1,z=7.174*fract,delta= 0.217,p_Xm=13290,kappa_X=0.85,v_dotref=0.05591/24.,
-kappa=0.8501,p_Mref=45.14/24.,E_G=7189,k_R=0.95,k_J=0.00628/24.,E_Hb=6.533e+04*fract^3,
-E_Hj=E_Hb*fract^3,E_Hp=1.375e+05*fract^3,h_aref=3.61e-13/(24.^2),s_G=0.01,
+PFEWAT=73,PTUREA=0,FoodWater=82,minwater=15,gutfill=75.,raindrink=0.,
+DEB=0,fract=1,z=7.174*fract,del_M= 0.217,F_m=13290,kap_X=0.85,v=0.05591/24.,
+kap=0.8501,p_M=45.14/24.,E_G=7189,kap_R=0.95,k_J=0.00628/24.,E_Hb=6.533e+04*fract^3,
+E_Hj=E_Hb*fract^3,E_Hp=1.375e+05*fract^3,h_a=3.61e-13/(24.^2),s_G=0.01,
 T_REF=20,TA=7130,TAL=5.305e+04,TAH=9.076e+04,TL=288.,TH=315.,
-E_Egg=1.04e+06*fract^4,E_m=(p_Mref*z/kappa)/v_dotref,f=1.,MsM=186.03*6.,K=1,X=10,andens_deb=
-    Andens/1000,d_V=0.3,d_E=0.3,eggdryfrac=0.3,mu_X=525000,mu_E=585000,mu_V=500000,mu_P=480000,
-kappa_X_P=0.1,nX=c(1,1.8,0.5,.15),nE=c(1,1.8,0.5,.15),nV=c(1,1.8,0.5,.15),nP=c(1,1.8,0.5,.15),
-N_waste=c(1,4/5,3/5,4/5),metab_mode=0,stages=7,y_EV_l=0.95,S_instar=c(2.660,2.310,1.916,0),
-  s_j=0.999,v_init=3e-9,E_init=E_Egg/v_init,E_H_init=0,stage=0,aestivate=0,depress=0.3,
+E_0=1.04e+06*fract^4,E_m=(p_M*z/kap)/v,f=1.,E_sm=186.03*6.,K=1,X=10,andens_deb=
+    Andens/1000,d_V=0.3,d_E=0.3,d_Egg=0.3,mu_X=525000,mu_E=585000,mu_V=500000,mu_P=480000,
+kap_X_P=0.1,n_X=c(1,1.8,0.5,.15),n_E=c(1,1.8,0.5,.15),n_V=c(1,1.8,0.5,.15),n_P=c(1,1.8,0.5,.15),
+n_M_nitro=c(1,4/5,3/5,4/5),metab_mode=0,stages=7,y_EV_l=0.95,S_instar=c(2.660,2.310,1.916,0),
+  s_j=0.999,v_init=3e-9,E_init=E_0/v_init,E_H_init=0,stage=0,aestivate=0,depress=0.3,
 clutchsize=2.,clutch_ab=c(0,0),viviparous=0,minclutch=0,batch=1,photostart=3,photofinish=1,
 daylengthstart=12.5,daylengthfinish=13.,photodirs=1,photodirf=0,frogbreed=0,frogstage=0,
 reset=0,breedactthresh=1,breedrainthresh=0,breedtempthresh=200,breedtempcum=24*7,ma=1e-4,mi=0,mh=0.5,
@@ -641,11 +637,6 @@ flyer=0,flyspeed=5,flymetab=0.1035){
     dim=length(RAINFALL)
   }
 
-
-  if(soilmoisture1==1){
-  soilpotb<-soilpot
-  soilmoistb<-soilmoist
-  }
   # habitat
   ALT<-ectoin[1] # altitude (m)
   OBJDIS<-1.0 # distance from object (e.g. bush)
@@ -662,25 +653,14 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   RQ<-0.8 # respiratory quotient
 
   FATOBJ<-0.
-  #  if(container==1){
-  #    live<-0}else{live<-1
-  #  }
-  #live<-1
   TIMBAS<-1.
-  #  if(container==1){
-  #    SKINW<-100.}else{
   SKINW<-skinwet
-  #    }
   skint<-0.
   O2gas<-20.95
   CO2gas<-0.03
   N2gas<-79.02
   gas<-c(O2gas,CO2gas,N2gas)
-  #  if(container==1){
-  #    transt<-1
-  #  }else{
   transt<-0
-  #  }
   tranin<-1
   tcinit<-metout[1,"TALOC"]
 
@@ -691,19 +671,14 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   nofood<-0
   tdigpr<-TPREF
   o2max<-extref
-  #  if(container==1){
-  #  maxshd<-1.
-  #  minshd<-0.
-  #  }else{
   maxshd<-maxshade
   minshd<-minshade
-  #  }
   behav=c(dayact,nocturn,crepus,rainact,burrow,CkGrShad,climb,fosorial,nofood)
   julday<-1
 
   # DEB model initial conditions
   V_init_baby<-3e-9
-  E_init_baby<-E_Egg/V_init_baby
+  E_init_baby<-E_0/V_init_baby
   E_baby_init<-E_init_baby
   V_baby_init<-V_init_baby
   ms_init<-0.
@@ -712,7 +687,7 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   hs_init<-0.
   cumbatch_init<-0.
   pregnant<-0
-  E_m<-(p_Mref*z/kappa)/v_dotref
+  E_m<-(p_M*z/kap)/v
 
   # conversions from percent to proportion
   PTUREA1<-PTUREA/100
@@ -721,105 +696,36 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   water_stages[,3]<-water_stages[,3]/100
   water_stages[,4]<-water_stages[,4]/100
   water_stages[,5]<-water_stages[,5]/100
-  eggmass<-0 # initial dry mass of an egg (g) - no longer used so delete
 
   #DEB mass balance calculations
-  nO<-cbind(nX,nV,nE,nP) # matrix of composition of organics, i.e. food, structure, reserve and faeces
+  n_O<-cbind(n_X,n_V,n_E,n_P) # matrix of composition of organics, i.e. food, structure, reserve and faeces
   CHON<-c(12,1,16,14)
-  wO<-CHON%*%nO
+  wO<-CHON%*%n_O
   w_V=wO[3]
   M_V<-d_V/w_V
-  yEX<-kappa_X*mu_X/mu_E # yield of reserve on food
-  yXE<-1/yEX # yield of food on reserve
-  yVE<-mu_E*M_V/E_G  # yield of structure on reserve
-  yPX<-kappa_X_P*mu_X/mu_P # yield of faeces on food
-  yXP<-1/yPX # yield of food on faeces
-  yPE<-yPX/yEX # yield of faeces on reserve  0.143382353
-  nM<-matrix(c(1,0,2,0,0,2,1,0,0,0,2,0,N_waste),nrow=4)
-  N_waste_inv<-c(-1*N_waste[1]/N_waste[4],(-1*N_waste[2])/(2*N_waste[4]),(4*N_waste[1]+N_waste[2]-2*N_waste[3])/(4*N_waste[4]),1/N_waste[4])
-  nM_inv<-matrix(c(1,0,-1,0,0,1/2,-1/4,0,0,0,1/2,0,N_waste_inv),nrow=4)
-  JM_JO<--1*nM_inv%*%nO
-  etaO<-matrix(c(yXE/mu_E*-1,0,1/mu_E,yPE/mu_E,0,0,-1/mu_E,0,0,yVE/mu_E,-1/mu_E,0),nrow=4)
-  w_N<-CHON%*%N_waste
+  y_EX<-kap_X*mu_X/mu_E # yield of reserve on food
+  y_XE<-1/y_EX # yield of food on reserve
+  y_VE<-mu_E*M_V/E_G  # yield of structure on reserve
+  y_PX<-kap_X_P*mu_X/mu_P # yield of faeces on food
+  y_PE<-y_PX/y_EX # yield of faeces on reserve  0.143382353
+  nM<-matrix(c(1,0,2,0,0,2,1,0,0,0,2,0,n_M_nitro),nrow=4)
+  n_M_nitro_inv<-c(-1*n_M_nitro[1]/n_M_nitro[4],(-1*n_M_nitro[2])/(2*n_M_nitro[4]),(4*n_M_nitro[1]+n_M_nitro[2]-2*n_M_nitro[3])/(4*n_M_nitro[4]),1/n_M_nitro[4])
+  n_M_inv<-matrix(c(1,0,-1,0,0,1/2,-1/4,0,0,0,1/2,0,n_M_nitro_inv),nrow=4)
+  JM_JO<--1*n_M_inv%*%n_O
+  eta_O<-matrix(c(y_XE/mu_E*-1,0,1/mu_E,y_PE/mu_E,0,0,-1/mu_E,0,0,y_VE/mu_E,-1/mu_E,0),nrow=4)
+  w_N<-CHON%*%n_M_nitro
 
   lat<-ectoin[4]
-  if(soilmoisture1==1){
-  humid[,3:9]<-metout[,5]/100 # assume ambient humidity down to 30cm
-  shadhumid[,3:9]<-shadmet[,5]/100 # assume ambient humidity down to 30cm
-  humid[,7:12]<-0.8 # assume higher humidity in burrow, 60cm and lower
-  shadhumid[,7:12]<-0.8 # assume higher humidity in burrow, 60cm and lower
-
-
-  grassgrowths<-as.data.frame(soilpotb)
-  soilmoist2b<-as.data.frame(soilmoistb)
-  soilmoist2b<-subset(soilmoist2b,soilmoist2b$TIME==720)
-  grassgrowths<-subset(grassgrowths,soilmoist2b$TIME==720)
-  grassgrowths<-grassgrowths$PT5cm # assume plant growth driven by 5cm depth
-
-    grow<-grassgrowths
-    grow[grow>-1500]<-1 # find times when below permanent wilting point
-    grow[grow<=-1500]<-0
-    counter<-0
-    grow2<-grow*0
-      for(j in 1:length(grow)){
-        if(j==1){
-            if(grow[j]==1){
-            counter<-counter+1
-            }
-          grow2[j]<-counter
-        }else{
-          if(grow[j-1]>0 & grow[j]==1){
-            counter<-counter+1
-          }else{
-            counter<-0
-          }
-          grow2[j]<-counter
-        }
-      }
-     grow3<-grow2
-     grow3[grow3<7]<-0 # use one week in a row as time required for plats to come back after PWP has been hit
-     grow3[grow3>0]<-1 # make vector of 0 and 1 where 1 means plants could have come back from drought
-
-  soilmoist2b<-soilmoist2b$WC5cm
-  grassgrowths<-as.data.frame(cbind(grassgrowths,soilmoist2b))
-  colnames(grassgrowths)<-c('pot','moist')
-  grassgrowths$pot[grassgrowths$pot>-200]<-FoodWater # assume plants start wilting at about 2 bar, but above this they are at max water content
-  grassgrowths$moist<-grassgrowths$moist*100 # convert to percent
-  potmult<-grassgrowths$pot
-  potmult[potmult!=82]<-0
-  potmult[potmult!=0]<-1
-  wilting<-subset(grassgrowths,grassgrowths$pot==FoodWater) # find soil moisture range corresponding to values above the wilting point
-  wilting<-min(wilting$moist) # get the min soil moisture at which plants aren't wilting
-  grassgrowths<-grassgrowths$moist
-  grassgrowths[grassgrowths>wilting]<-FoodWater # now have vector of either max plant water content or soil moisture content - need to convert the latter into a smooth decline to zero from max value
-  minmoist<-0
-  grassgrowths[grassgrowths<FoodWater]<-(grassgrowths[grassgrowths<FoodWater]-minmoist)/(wilting-minmoist)*FoodWater # for just the values less than max water content, make them equal to the
-  grassgrowths<-grassgrowths/100*grow3
-  grasstsdms<-grassgrowths
-  }else{
-    grassgrowths<-rep(FoodWater,nrow(metout))
-    grasstsdms<-grassgrowths
-  }
+  foodwaters<-rep(FoodWater,nrow(metout))
+  foodlevels<-foodwaters
   julstart<-metout[1,2]
   tannul<-as.numeric(mean(soil[,12]))
   monthly<-0
   tester<-0
   microyear<-1
 
-  # bucket model for soil moisture
-  fieldcap<-ectoin[5]# %vol, water content at 0.1ba = 10kPa
-  fieldcap<-30 # field capacity, m3/m3*100
-  if(soilmoisture1==1){
-    conth<-fieldcap/10 # containter height, cm
-    contw<-100
-    contype<-1 # is 'containter' sitting on the surface, like a bucket (0) or sunk into the ground like a pond (1)
-    rainmult<-0.3 # !!!!!!!!!!!!!!rainfall multiplier to reflect catchment (don't make this zero unless you want a drought!)
-    continit<-0 # initial container water level (cm)
-    conthole<-0#2.8 # daily loss of height (mm) due to 'hole' in container (e.g. infiltration to soil, drawdown from water tank)
-    contwet<- 2 # percent wet value for container
-  }
-  ectoinput<-as.matrix(c(ALT,FLTYPE,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,AMASS,EMISAN,absan,RQ,rinsul,lometry,live,TIMBAS,Flshcond,Spheat,Andens,ABSMAX,ABSMIN,FATOSK,FATOSB,FATOBJ,TMAXPR,TMINPR,DELTAR,SKINW,spec,xbas,extref,TPREF,ptcond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,tdigpr,maxshd,minshd,ctmax,ctmin,behav,julday,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,julstart,monthly,customallom,MR_1,MR_2,MR_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,minwater,microyear,container,flyer,flyspeed,dim,maxdepth,ctminthresh,ctkill,gutfill,mindepth,TBASK,TEMERGE,p_Xm,SUBTK,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,breedtempthresh,breedtempcum,contwet))
-  debmod<-c(clutchsize,andens_deb,d_V,eggdryfrac,mu_X,mu_E,mu_V,mu_P,T_REF,z,kappa,kappa_X,p_Mref,v_dotref,E_G,k_R,MsM,delta,h_aref,V_init_baby,E_init_baby,k_J,E_Hb,E_Hj,E_Hp,clutch_ab[2],batch,breedrainthresh,photostart,photofinish,daylengthstart,daylengthfinish,photodirs,photodirf,clutch_ab[1],frogbreed,frogstage,etaO,JM_JO,E_Egg,kappa_X_P,PTUREA1,PFEWAT1,wO,w_N,FoodWater1,f,s_G,K,X,metab_mode,stages,y_EV_l,s_j,startday,raindrink,reset,ma,mi,mh,aestivate,depress,minclutch)
+  ectoinput<-as.matrix(c(ALT,FLTYPE,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,AMASS,EMISAN,absan,RQ,rinsul,lometry,live,TIMBAS,Flshcond,Spheat,Andens,ABSMAX,ABSMIN,FATOSK,FATOSB,FATOBJ,TMAXPR,TMINPR,DELTAR,SKINW,spec,xbas,extref,TPREF,ptcond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,tdigpr,maxshd,minshd,ctmax,ctmin,behav,julday,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,julstart,monthly,customallom,MR_1,MR_2,MR_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,minwater,microyear,container,flyer,flyspeed,dim,maxdepth,ctminthresh,ctkill,gutfill,mindepth,TBASK,TEMERGE,F_m,SUBTK,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,breedtempthresh,breedtempcum,contwet))
+  debmod<-c(clutchsize,andens_deb,d_V,d_Egg,mu_X,mu_E,mu_V,mu_P,T_REF,z,kap,kap_X,p_M,v,E_G,kap_R,E_sm,del_M,h_a,V_init_baby,E_init_baby,k_J,E_Hb,E_Hj,E_Hp,clutch_ab[2],batch,breedrainthresh,photostart,photofinish,daylengthstart,daylengthfinish,photodirs,photodirf,clutch_ab[1],frogbreed,frogstage,eta_O,JM_JO,E_0,kap_X_P,PTUREA1,PFEWAT1,wO,w_N,FoodWater1,f,s_G,K,X,metab_mode,stages,y_EV_l,s_j,startday,raindrink,reset,ma,mi,mh,aestivate,depress,minclutch)
   deblast<-c(iyear,countday,v_init,E_init,ms_init,cumrepro_init,q_init,hs_init,cumbatch_init,V_baby_init,E_baby_init,E_H_init,stage)
 
   origjulday<-metout[,1]
@@ -838,7 +744,7 @@ flyer=0,flyspeed=5,flymetab=0.1035){
     wetlandTemps<-c(wetlandTemps[((ystrt)*365*24+1):(dim*24)],wetlandTemps[1:((ystrt)*365*24)])
     MAXSHADES<-c(MAXSHADES[((ystrt)*365+1):(dim)],MAXSHADES[1:((ystrt)*365)])
     RAINFALL<-c(RAINFALL[((ystrt)*365+1):(dim)],RAINFALL[1:((ystrt)*365)])
-    grassgrowths<-c(grassgrowths[((ystrt)*365+1):(dim)],grassgrowths[1:((ystrt)*365)])
+    foodwaters<-c(foodwaters[((ystrt)*365+1):(dim)],foodwaters[1:((ystrt)*365)])
     metout[,1]<-origjulday
     shadmet[,1]<-origjulday
     soil[,1]<-origjulday
@@ -890,8 +796,8 @@ flyer=0,flyspeed=5,flymetab=0.1035){
     write.csv(deblast, file = "ecto csv input/deblast.csv")
     write.csv(RAINFALL, file = "ecto csv input/rainfall.csv")
     write.csv(DEP, file = "ecto csv input/dep.csv")
-    write.csv(grassgrowths, file = "ecto csv input/grassgrowths.csv")
-    write.csv(grasstsdms, file = "ecto csv input/grasstsdms.csv")
+    write.csv(foodwaters, file = "ecto csv input/foodwaters.csv")
+    write.csv(foodlevels, file = "ecto csv input/foodlevels.csv")
     write.csv(wetlandTemps, file = "ecto csv input/wetlandTemps.csv")
     write.csv(wetlandDepths, file = "ecto csv input/wetlandDepths.csv")
     write.csv(arrhenius, file = "ecto csv input/arrhenius.csv")
@@ -911,7 +817,7 @@ flyer=0,flyspeed=5,flymetab=0.1035){
     write.table(humid[(seq(1,dim*24)),], file = "ecto csv input/humid.csv",sep=",",row.names=FALSE)
     write.table(shadhumid[(seq(1,dim*24)),], file = "ecto csv input/shadhumid.csv",sep=",",row.names=FALSE)
   }
-  ecto<-list(dim=dim,ectoinput=ectoinput,metout=metout,shadmet=shadmet,soil=soil,shadsoil=shadsoil,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,DEP=DEP,RAINFALL=RAINFALL,iyear=iyear,countday=countday,debmod=debmod,deblast=deblast,grassgrowths=grassgrowths,grasstsdms=grasstsdms,wetlandTemps=wetlandTemps,wetlandDepths=wetlandDepths,arrhenius=arrhenius,thermal_stages=thermal_stages,behav_stages=behav_stages,water_stages=water_stages,MAXSHADES=MAXSHADES,S_instar=S_instar)
+  ecto<-list(dim=dim,ectoinput=ectoinput,metout=metout,shadmet=shadmet,soil=soil,shadsoil=shadsoil,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,DEP=DEP,RAINFALL=RAINFALL,iyear=iyear,countday=countday,debmod=debmod,deblast=deblast,foodwaters=foodwaters,foodlevels=foodlevels,wetlandTemps=wetlandTemps,wetlandDepths=wetlandDepths,arrhenius=arrhenius,thermal_stages=thermal_stages,behav_stages=behav_stages,water_stages=water_stages,MAXSHADES=MAXSHADES,S_instar=S_instar)
 
   cat('running ectotherm model ... \n')
 
@@ -928,9 +834,9 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   yearsout<-ectout$yearsout[1:nyears,]
 
   if(DEB==0){
-    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,RAINFALL=RAINFALL,enbal=enbal,environ=environ,masbal=masbal,yearout=yearout,yearsout=yearsout,grassgrowths=grassgrowths,grasstsdms=grasstsdms,TMAXPR=TMAXPR,TMINPR=TMINPR,ctmax=ctmax,ctmin=ctmin,TBASK=TBASK,TEMERGE=TEMERGE))
+    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,RAINFALL=RAINFALL,enbal=enbal,environ=environ,masbal=masbal,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,TMAXPR=TMAXPR,TMINPR=TMINPR,ctmax=ctmax,ctmin=ctmin,TBASK=TBASK,TEMERGE=TEMERGE))
   }else{
-    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,RAINFALL=RAINFALL,enbal=enbal,masbal=masbal,environ=environ,debout=debout,yearout=yearout,yearsout=yearsout,grassgrowths=grassgrowths,grasstsdms=grasstsdms,TMAXPR=TMAXPR,TMINPR=TMINPR,ctmax=ctmax,ctmin=ctmin,TBASK=TBASK,TEMERGE=TEMERGE))
+    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,RAINFALL=RAINFALL,enbal=enbal,masbal=masbal,environ=environ,debout=debout,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,TMAXPR=TMAXPR,TMINPR=TMINPR,ctmax=ctmax,ctmin=ctmin,TBASK=TBASK,TEMERGE=TEMERGE))
   }
 
 }
