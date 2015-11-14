@@ -74,3 +74,14 @@ Also a quote using `>`:
 
 > "He who gives up [code] safety for [code] speed deserves neither."
 ([via](https://twitter.com/hadleywickham/status/504368538874703872))
+
+
+$Y = X\beta + \epsilon$
+
+\(MR\)
+
+
+\[\alpha+\beta=\gamma\]
+\[\begin{aligned} \dot{x} & = \sigma(y-x) \ \dot{y} & = \rho x - y - xz \ \dot{z} & = -\beta z + xy \end{aligned} \]
+The probability of getting \(k\) heads when flipping \(n\) coins is \[P(E) = {n \choose k} p^k (1-p)^{ n-k} \]
+\[ \frac{1}{\Bigl(\sqrt{\phi \sqrt{5}}-\phi\Bigr) e^{\frac25 \pi}} = 1+\frac{e^{-2\pi}} {1+\frac{e^{-4\pi}} {1+\frac{e^{-6\pi}} {1+\frac{e^{-8\pi}} {1+\ldots} } } } \]
