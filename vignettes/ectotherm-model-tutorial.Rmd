@@ -41,29 +41,32 @@ The results are stored as a list in the variable *ecto*. The main ones to focus 
 * **enbal** The components of the computed heat budget
 * **masbal** The components of the computed mass budget
 
-The first 13 columns of the first 24 rows of the output table **environ** look like this
+The output table **environ** look like this
 
 ```{r, echo=FALSE, results='asis'}
-knitr::kable(head(ecto$environ[,1:13], 24), digits = 2)
+knitr::kable(head(ecto$environ[,1:13], 12), digits = 2)
+knitr::kable(head(ecto$environ[,14:22], 12), digits = 2)
 ```
 
-and show, for each day of the year and for each hour of the day, a series of aboveground microclimatic conditions as follows:
+and show the body temperature and activity state, for each day of the year and for each hour of the day, as well as a series outputs relating to the environment experienced by the animal:
 
 1. JULDAY - day of year
-1. TIME - time of day (mins)
-1. TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-1. TAREF - air temperature (deg C) at reference height (1.2m)
-1. RHLOC - relative humidity (%) at local height (specified by 'Usrhyt' variable)
-1. RH  - relative humidity (%) at reference height (1.2m)
-1. VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
-1. VREF - wind speed (m/s) at reference height (1.2m)
-1. SNOWMELT - snowmelt (mm)
-1. POOLDEP - water pooling on surface (mm)
-1. PCTWET - soil surface wetness (%)
+1. YEAR - year of simulation
+1. DAY - day of simulation
+1. TIME - time of day (hours)
+1. TC - body temperature (deg C)
+1. SHADE - shade selected (\%)
+1. SOLAR  - solar radiation (W/m2) at animal location
+1. DEP - depth below ground (cm)
+1. ACT - activity state (0=inactive, 1=basking, 2=foraging)
+1. TA - air temperature (deg C) at animal location
+1. VEL - wind speed (m/s) at animal location
+1. RELHUM - relative humidity (\%) at animal location
 1. ZEN - zenith angle of sun (degrees - 90 = below the horizon)
-1. SOLR - solar radiation (W/m2)
-1. TSKYC - sky radiant temperature (deg C)
-1. DEW - dew presence (0 or 1)
-1. FROST - frost presence (0 or 1)
-1. SNOWFALL - snow predicted to have fallen (mm)
-1. SNOWDEP - predicted snow depth (cm)
+1. CONDEP - depth of water body (cm) (may not be simulated or supplied)
+1. WATERTEMP - temperature of water body (deg C) (may not be simulated or supplied)
+1. DAYLENGTH - day length (hours)
+1. WINGANGLE - wing angle (degrees) for butterfly model
+1. WINGTEMP - wing temperature (degrees C) for butterfly model
+1. FLYING - flying state (1=flying, 0=not flying) for butterfly model
+1. FLYTIME - flying time (hours) for butterfly model

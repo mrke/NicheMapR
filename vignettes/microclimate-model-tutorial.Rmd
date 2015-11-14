@@ -11,10 +11,10 @@ vignette: >
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
- eval = TRUE
+ eval = FALSE
 )
 ```
-This vignette provides a detailed tutorial of the Niche Mapper microclimate model as implemented in the package *NicheMapR*. See the *microclimate* vignette for details on the underlying theory and equations.
+This vignette provides a detailed tutorial of the Niche Mapper microclimate model as implemented in the package *NicheMapR*. See the [microclimate](microclimate-model-tutorial.Rmd) vignette for details on the underlying theory and equations.
 
 ## Getting started: working with the micro_global() function
 
