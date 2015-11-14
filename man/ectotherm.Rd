@@ -6,7 +6,7 @@
 \usage{
 ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax, ctmin,
  TPREF, dayact, nocturn, crepus, CkGrShad, burrow, climb, shdburrow, mindepth, maxdepth,
- MR_1, MR_2, MR_3, skinwet, extref, DELTAR, ...)
+ M_1, M_2, M_3, skinwet, extref, DELTAR, ...)
 }
 \arguments{
 \item{amass}{= 40, Mass of animal (g), note this model is 'steady state' so no lags in heating/cooling due to mass}
@@ -49,11 +49,11 @@ ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax,
 
 \item{maxdepth}{= 10, Maximum depth (soil node #) to which animal can retreat if burrowing}
 
-\item{MR_1}{= 0.013, Metabolic rate parameter 1 MR=MR_1*M^MR_2*10^(MR_3*Tb) based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231}
+\item{M_1}{= 0.013, Metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb) based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231}
 
-\item{MR_2}{= 0.800, Metabolic rate parameter 2}
+\item{M_2}{= 0.800, Metabolic rate parameter 2}
 
-\item{MR_3}{= 0.038, Metabolic rate parameter 3}
+\item{M_3}{= 0.038, Metabolic rate parameter 3}
 
 \item{skinwet}{= 0.2, \% of surface area acting as a free-water exchanger, for computing cutaneous water loss}
 
@@ -86,7 +86,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 
 \itemize{
 \item{\code{minshade}{ = 0., Minimum shade (\%) available to the animal}\cr}
-\item{\code{maxshade}{ = micro$MAXSHADES[1], Maximum shade (\%) available to the animal}\cr}
+\item{\code{maxshades}{ = micro$MAXSHADES, Vector of daily maximum shade values}\cr}
 \item{\code{FLTYPE}{ = 0.0, Fluid type 0=air, 1=water }\cr}
 \item{\code{SUBTK}{ = 2.79, Substrate thermal conductivity (W/mC)}\cr}
 \item{\code{REFL}{ = micro$REFL, Vector of daily substrate reflectances (\%)}\cr}
@@ -102,8 +102,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{soilpot}{ = micro$soilpot, Microclimate model output for soil water potential, minimum shade conditions}\cr}
 \item{\code{shadpot}{ = micro$shadpot, Microclimate model output for soil water potential, maximum shade conditions}\cr}
 \item{\code{RAINFALL}{ = micro$RAINFALL, Vector of daily rainfall}\cr}
-\item{\code{MAXSHADES}{ = micro$MAXSHADES, Vector of daily maximum shade values}\cr}
-\item{\code{ectoin}{ = rbind(as.numeric(micro$ALTT),as.numeric(micro$REFL)[1],micro$longlat[1],micro$longlat[2],0,0,1990,1990), Other items needed by the model - this needs to be tidied up}\cr}
+\item{\code{ectoin}{ = rbind(as.numeric(micro$ALTT),as.numeric(micro$REFL)[1],micro$longlat[1],micro$longlat[2]), Other items needed by the model - this needs to be tidied up}\cr}
 }
 \strong{ Morphological parameters:}
 
@@ -147,7 +146,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 }
 \strong{ Dynamic Energy Budget (DEB) model parameters:}
 \itemize{
-\item{\code{DEB}{ = 0, Run the DEB model (1) or just heat balance (0). Latter uses allometrically predicted respiration base on \code{MR_1}, \code{MR_2} and \code{MR_3}}\cr}
+\item{\code{DEB}{ = 0, Run the DEB model (1) or just heat balance (0). Latter uses allometrically predicted respiration base on \code{M_1}, \code{M_2} and \code{M_3}}\cr}
 \item{\code{fract}{ = 1, Scaling factor for DEB body-size covariation relationships - use it to make a metabolically scaled larger or smaller version of your animal}\cr}
 }
 \strong{ Core DEB parameters:}
@@ -322,7 +321,7 @@ enbal variables:
 \item 3 DAY - day of simulation
 \item 4 TIME - time of day (hours)
 \item 5 QSOL - solar radiation absorbed (W)
-\item 6 QIRIN  - infrared radiation absorbed (W)
+\item 6 QIRIN - infrared radiation absorbed (W)
 \item 7 QMET - metabolic heat production (W)
 \item 8 QEVAP - evaporative heat loss (W)
 \item 9 QIROUT - infrared radiation lost (W)

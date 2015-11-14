@@ -11,7 +11,7 @@ vignette: >
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
- eval = FALSE
+ eval = TRUE
 )
 ```
 This vignette provides a detailed tutorial of the Niche Mapper microclimate model as implemented in the package *NicheMapR*. See the [microclimate](microclimate-model-tutorial.Rmd) vignette for details on the underlying theory and equations.
@@ -49,8 +49,8 @@ and show, for each day of the year and for each hour of the day, a series of abo
 
 1. JULDAY - day of year
 1. TIME - time of day (mins)
-1. TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-1. TAREF - air temperature (deg C) at reference height (1.2m)
+1. TALOC - air temperature (&deg;C) at local height (specified by 'Usrhyt' variable)
+1. TAREF - air temperature (&deg;C) at reference height (1.2m)
 1. RHLOC - relative humidity (%) at local height (specified by 'Usrhyt' variable)
 1. RH  - relative humidity (%) at reference height (1.2m)
 1. VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
@@ -58,9 +58,9 @@ and show, for each day of the year and for each hour of the day, a series of abo
 1. SNOWMELT - snowmelt (mm)
 1. POOLDEP - water pooling on surface (mm)
 1. PCTWET - soil surface wetness (%)
-1. ZEN - zenith angle of sun (degrees - 90 = below the horizon)
+1. ZEN - zenith angle of sun (degrees - 90&deg; = below the horizon)
 1. SOLR - solar radiation (W/m2)
-1. TSKYC - sky radiant temperature (deg C)
+1. TSKYC - sky radiant temperature (&deg;C)
 1. DEW - dew presence (0 or 1)
 1. FROST - frost presence (0 or 1)
 1. SNOWFALL - snow predicted to have fallen (mm)
@@ -333,7 +333,7 @@ for(i in 1:10){
 
 ### Snow
 
-Snow has a powerful influence on soil temperatures and can be simulated in the NicheMapR microclimate model by setting the parameter *snowmodel* = 1. This invokes an algorithm that builds up to 8 phantom nodes of snow above the surface as a function of incoming precipitation and losses due to melting. The model incorporates a declining albedo with time since snow and has five user-controlled parameters: *snowtemp* - the air temperature (deg C) at which rain falls as snow, *snowdens* (Mg/m3) - the density of the snow, *snowmelt* (-) - the proportion of calculated snow melt that doesn't refreeze into the snowpack,  *rainmelt* (-) a parameter in an equation from Anderson's SNOW17 model (<http://www.nws.noaa.gov/oh/hrl/nwsrfs/users_manual/part2/_pdf/22snow17.pdf>) that melts snow with rainfall as a function of air temperature. The snow density can also be made to vary as a linear function of day of year by providing a slope and intercept as the variable *densfun*, which is only used if non-zero. There is also a parameter *rainfrac* which controls the fraction of rain that falls on the first day of the month, with 0 meaning rain falls evenly. This parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data. This snow model has been tested with favourable results in the Australian Alps and through the USA (Kearney et al. in prep).
+Snow has a powerful influence on soil temperatures and can be simulated in the NicheMapR microclimate model by setting the parameter *snowmodel* = 1. This invokes an algorithm that builds up to 8 phantom nodes of snow above the surface as a function of incoming precipitation and losses due to melting. The model incorporates a declining albedo with time since snow and has five user-controlled parameters: *snowtemp* - the air temperature (&deg;C) at which rain falls as snow, *snowdens* (Mg/m3) - the density of the snow, *snowmelt* (-) - the proportion of calculated snow melt that doesn't refreeze into the snowpack,  *rainmelt* (-) a parameter in an equation from Anderson's SNOW17 model (<http://www.nws.noaa.gov/oh/hrl/nwsrfs/users_manual/part2/_pdf/22snow17.pdf>) that melts snow with rainfall as a function of air temperature. The snow density can also be made to vary as a linear function of day of year by providing a slope and intercept as the variable *densfun*, which is only used if non-zero. There is also a parameter *rainfrac* which controls the fraction of rain that falls on the first day of the month, with 0 meaning rain falls evenly. This parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data. This snow model has been tested with favourable results in the Australian Alps and through the USA (Kearney et al. in prep).
 
 Here is the consequence of invoking the snow model for soil temperature predictions at Madison, Wisconsin as well as the snow depth and snowfall predictions (running for 2 years to get a steady periodic and plotting only the 2nd year):
 
