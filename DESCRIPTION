@@ -24,4 +24,5 @@ Suggests:
     geonames,
     XML
 VignetteBuilder: knitr
-Vignettes: microclimate-model-tutorial
+Vignettes: microclimate-model-tutorial,
+    ectotherm-model-tutorial
