@@ -359,7 +359,7 @@ debout variables:
 \item 3 DAY - day of simulation
 \item 4 TIME - time of day (hours)
 \item 5 WETMASS - wet mass (g)
-\item 6 RESERVE_DENS  - reserve density (J/cm3)
+\item 6 E - reserve density (J/cm3)
 \item 7 CUMREPRO - energy in reproduction buffer (J)
 \item 8 HS - hazard rate (1/h)
 \item 9 MASS_GUT - wet gut contents (g)
