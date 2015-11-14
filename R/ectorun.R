@@ -60,12 +60,12 @@ ectorun <- function(ecto) {
     as.double(ecto$water_stages),
     as.double(ecto$MAXSHADES),
     as.double(ecto$S_instar),
-    environ=matrix(data = 0., nrow = dim*24, ncol = 20),
+    environ=matrix(data = 0., nrow = dim*24, ncol = 22),
     enbal=matrix(data = 0., nrow = dim*24, ncol = 13),
     masbal=matrix(data = 0., nrow = dim*24, ncol = 19),
     debout=matrix(data = 0., nrow = dim*24, ncol = 21),
     yearout=matrix(data = 0., nrow = 1, ncol = 20),
-    yearsout=matrix(data = 0., nrow = ceiling(dim/365), ncol = 45),PACKAGE = "ECTOTHERM")
+    yearsout=matrix(data = 0., nrow = ceiling(dim/365), ncol = 45),PACKAGE = "ectotherm")
 
 dyn.unload(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/ectotherm.dll',sep=""))
  }else{
@@ -97,7 +97,7 @@ dyn.unload(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/ectotherm.dll',se
     as.double(ecto$water_stages),
     as.double(ecto$MAXSHADES),
     as.double(ecto$S_instar),
-    environ=matrix(data = 0., nrow = dim*24, ncol = 20),
+    environ=matrix(data = 0., nrow = dim*24, ncol = 22),
     enbal=matrix(data = 0., nrow = dim*24, ncol = 13),
     masbal=matrix(data = 0., nrow = dim*24, ncol = 19),
     debout=matrix(data = 0., nrow = dim*24, ncol = 21),
@@ -107,7 +107,7 @@ dyn.unload(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/ectotherm.dll',se
   library.dynam.unload("ECTOTHERM", path.package("NicheMapR"))
   library.dynam("ECTOTHERM", "NicheMapR", lib.loc = .libPaths()[1])
 }
-  environ <- matrix(data = 0., nrow = 24*dim, ncol = 20)
+  environ <- matrix(data = 0., nrow = 24*dim, ncol = 22)
   enbal <- matrix(data = 0., nrow = 24*dim, ncol = 13)
   masbal <- matrix(data = 0., nrow = 24*dim, ncol = 19)
   debout <- matrix(data = 0., nrow = 24*dim, ncol = 21)
@@ -126,7 +126,7 @@ dyn.unload(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/ectotherm.dll',se
   debout<-a$debout
   yearout<-a$yearout
   yearsout<-a$yearsout
-  environ.names<-c("JULDAY","YEAR","DAY","TIME","TC","SHADE","SOLAR","DEP","ACT","TA","VEL","RELHUM","ZEN","CONDEP","WATERTEMP","DAYLENGTH","WINGANGLE","WINGTEMP","FLYING","FLYTIME")
+  environ.names<-c("JULDAY","YEAR","DAY","TIME","TC","SHADE","SOLAR","DEP","ACT","TA","TSUB","TSKY","VEL","RELHUM","ZEN","CONDEP","WATERTEMP","DAYLENGTH","WINGANGLE","WINGTEMP","FLYING","FLYTIME")
   enbal.names<-c("JULDAY","YEAR","DAY","TIME","QSOL","QIRIN","QMET","QEVAP","QIROUT","QCONV","QCOND","ENB","NTRY")
   masbal.names<-c("JULDAY","YEAR","DAY","TIME","O2_ml","CO2_ml","NWASTE_g","H2OFree_g","H2OMet_g","DryFood_g","WetFood_g","DryFaeces_g","WetFaeces_G","Urine_g","H2OResp_g","H2OCut_g","H2OEye_g","H2OBal_g","H2OCumBal_g")
   debout.names<-c("JULDAY","YEAR","DAY","TIME","WETMASS","RESERVE_DENS","CUMREPRO","HS","MASS_GUT","SVL","V","E_H","CUMBATCH","V_baby","E_baby","Pregnant","Stage","WETMASS_STD","Body_cond","Surviv_Prob","Breeding")

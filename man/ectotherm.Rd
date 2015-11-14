@@ -69,7 +69,7 @@ activity and microhabitat selection. It optionally runs the Dynamic Energy Budge
 computing mass budgets (inc. water budgets) and growth, development, reproduction trajectories
 as constrained by food, activity and temperature (see Details). When not running the DEB model
 a user-specified mass is used as well as a allometric (mass and body temperature) function to
-compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. micro_global(), must be run prior to running the ectotherm model
+compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{micro_global}}, must be run prior to running the ectotherm model
 }
 \details{
 \strong{ Parameters controling how the model runs:}

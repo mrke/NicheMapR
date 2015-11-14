@@ -5,7 +5,7 @@
 #' computing mass budgets (inc. water budgets) and growth, development, reproduction trajectories
 #' as constrained by food, activity and temperature (see Details). When not running the DEB model
 #' a user-specified mass is used as well as a allometric (mass and body temperature) function to
-#' compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. micro_global(), must be run prior to running the ectotherm model
+#' compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{micro_global}}, must be run prior to running the ectotherm model
 #'
 #' @param amass = 40, Mass of animal (g), note this model is 'steady state' so no lags in heating/cooling due to mass
 #' @param lometry = 3, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)
@@ -824,7 +824,6 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   ptm <- proc.time() # Start timing
   ectout<-ectorun(ecto)
   print(proc.time() - ptm) # Stop the clock
-
 
   environ<-ectout$environ[1:(dim*24),]
   enbal<-ectout$enbal[1:(dim*24),]
