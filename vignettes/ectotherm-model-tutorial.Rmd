@@ -1,5 +1,5 @@
 ---
-title: "Introduction to the NicheMapR microclimate model"
+title: "Introduction to the NicheMapR ectotherm model"
 author: "Michael Kearney"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
