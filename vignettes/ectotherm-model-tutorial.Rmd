@@ -11,7 +11,7 @@ vignette: >
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
- eval = TRUE
+ eval = FALSE
 )
 ```
 This vignette provides a detailed tutorial of the Niche Mapper ectotherm model as implemented in the package *NicheMapR*. It only considers the base heat and (partial) water budget model. For details on the implementation of the Dynamic Energy Budget model (for simulating growth, development and reproduction as well as full water budgets), see the *DEB-model-tutorial* vignette (on the to do list!).
@@ -131,7 +131,9 @@ knitr::kable(head(ecto$masbal[,11:19], 12))
 1. H2OCumBal_g - cumulative water balance (g)
 
 Most of these columns are zero because we are not running the on-board mass budget model (the Dynamic Energy Budget model, i.e. *DEB* = 0 by default). We are instead obtaining the oxygen consumption rate (ml/h) by an allometric function based on Eq. 2 from Andrews & Pough 1985,
+
 $V_{O_2} = M_1 M^{ M_2} 10^{M_3 T_b}$
+
 where $M$ is the mass in grams, $T_b$ is the body temperature, and $M_1$, $M_2$ and $M_3$ are constants which can be user-defined. From this and the oxygen extraction efficiency *extref* and difference in temperature between expired and inspired air *DETLAIR* (0.1 &deg;C by default), the respiratory water loss *H2OResp_g* can be computed. From the percentage of the skin that is 'wet' *skinwet* one can estimate the cutaneous water loss *H2O_cut*. The *skinwet* parameter represents the \% surface area that would act as  free water surface if all the little pores letting water through the skin were collected together in one place. Finally, the parameter *aeyes* is the \% of the total surface area taken up by the eyes when open, and is used to compute ocular water loss when the animal is active (a substantial part of the water loss!). If you are interested in the other quantities available in the **masbal** output, you will need to develop a DEB model for your species (see the [Dynamic Energy Budget lab](http://www.bio.vu.nl/thb/deb/deblab/), particularly the [Add-my-pet Portal](http://www.bio.vu.nl/thb/deb/deblab/add_my_pet/), for details, as well as the vignette (to do!) which explains the **debout** ouptut table).
 
 ## Plotting some output

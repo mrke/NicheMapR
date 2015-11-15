@@ -260,7 +260,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
         Please enter a correct value (12 - 365).", '\n')
     errors<-1
   }
-  if(is.numeric(loc)){
+  if(is.numeric(loc[1])){
     if(loc[1]>180 | loc[2] > 90){
       cat("ERROR: Latitude or longitude (longlat) is out of bounds.
         Please enter a correct value.", '\n')
@@ -860,7 +860,12 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       write.table(tides,file="micro csv input/tides.csv", sep = ",", col.names = NA, qmethod = "double")
     }
 
-    cat(paste('running microclimate model for',timeinterval,'days by',nyears,'years at site',loc,'\n'))
+    if(is.numeric(loc[1])){
+      location<-paste("long",loc[1],"lat",loc[2])
+    }else{
+      location<-loc
+    }
+    cat(paste('running microclimate model for',timeinterval,'days by',nyears,'years at site',location,'\n'))
     ptm <- proc.time() # Start timing
     microut<-microclimate(micro)
     print(proc.time() - ptm) # Stop the clock
