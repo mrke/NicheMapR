@@ -22,7 +22,7 @@ The *NicheMapR* ectotherm model is run with the function *ectotherm*. This inclu
 
 ### Basic operation: modelling heat and activity budgets for the average day of each month
 
-As with the microclimate model tutoria, this first example involves the most basic case of running the model to produce 12 days of output, one for each month of the year. Try running the model with the default inputs for a location of your choice, e.g.:
+As with the microclimate model tutorial, this first example involves the most basic case of running the model to produce 12 days of output, one for each month of the year. Try running the model with the default inputs for a location of your choice, e.g.:
 
 ```{r}
 library(NicheMapR)
@@ -70,9 +70,9 @@ and includes the following variables:
 1. FLYING - flying state (1=flying, 0=not flying) for butterfly model
 1. FLYTIME - flying time (hours) for butterfly model
 
-The model has considered, for each hour of the day, where the organism could be conditional on the behavioural options set. The default simulation is for the Eastern Water Skink, *Eulamprus quoyii*, which is diurnal (*dayact* = 1, *nocturn* = 0, *crepus* = 0). So, for the nighttime and twilight hours, the animal is assumed to be underground. The algorithm choosing the depth to put the animal starts at the shallowest depth allowed and moves deeper only if it would go below the stated critical thermal minimum **tmin* (6 &deg;C in this case) or if it would be half way between the maximum voluntary foraging temperature *TMAXPR* and the critical thermal maximum *ctmax*. Note how the wind speed is set to an arbitrarily low value when then animal is sheltering under ground, and the air, substrate and 'sky' temperatures are set to be equal to the soil temperature at the chosen depth.
+The model has considered, for each hour of the day, where the organism could be conditional on the behavioural options set. The default simulation is for the Eastern Water Skink, *Eulamprus quoyii*, which is diurnal (*dayact* = 1, *nocturn* = 0, *crepus* = 0). So, for the nighttime and twilight hours, the animal is assumed to be underground (*burrow* = 1). The algorithm choosing the depth to put the animal starts at the shallowest depth allowed and moves deeper only if it would go below the stated critical thermal minimum *ctmin* (6 &deg;C by default) or if it would be half way between the maximum voluntary foraging temperature *VTMAX* (34 &deg;C by default) and the critical thermal maximum *ctmax* (40 &deg;C by default). Note how the wind speed is set to an arbitrarily low value when then animal is sheltering under ground, and the air, substrate and 'sky' temperatures are set to be equal to the soil temperature at the chosen depth.
 
-When the sun rises (*ZEN* < 90&deg;, on the 7th hour in this case) the model tries placing the animal on the surface in the open, as long as the animal's body temeprature is above the emergence temperature *TEMERGE* (17.5 &deg;C in this case). If the resulting computed body temperature is above the basking threshold *TBASK* (also 17.5 &deg;C in the default case), that becomes the selected environment and the activity state *ACT* is set to 1. If the body temperature is above the minimum foraging temperature *TMINPREF*, then activity state is set to 2. If the animal's predicted temperature is above the preferred temperature *TPREF*, then shade seeking is invoked if allowed (*CkGrShad* = 1), which is what has happened in this example. The shade jumps in 3% intervals, and 9% was sufficient in this case. As the day moves on, the animal in this example can remain active near its preferred body temperature but only by ramping up the shade, to the maximum level of 90% in this case (vector *maxshades*) which by default comes from the microclimate model settings). Once the maximum shade is reached, the animal's preferred temperature is allowed to rise in 0.5 degree increments until the maximum foraging temperature is reached *TMAXPR*, upon which the animal is forced to become inactive.
+When the sun rises (*ZEN* < 90&deg;, on the 7th hour in this case) the model tries placing the animal on the surface in the open, as long as the animal's body temeprature is above the emergence temperature *TEMERGE* (17.5 &deg;C by default). If the resulting computed body temperature is above the basking threshold *TBASK* (also 17.5 &deg;C by default), that becomes the selected environment and the activity state *ACT* is set to 1. If the body temperature is above the minimum foraging temperature *VTMIN*, then activity state is set to 2. If the animal's predicted temperature is above the preferred temperature *TPREF* (30 &deg;C by default), then shade seeking is invoked if allowed (*CkGrShad* = 1), which is what has happened in this example. The shade jumps in 3% intervals, and 9% was sufficient in this case. As the day moves on, the animal in this example can remain active near its preferred body temperature but only by ramping up the shade, to the maximum level of 90% in this case (vector *maxshades*) which by default comes from the microclimate model settings). Once the maximum shade is reached, the animal's preferred temperature is allowed to rise in 0.5 degree increments until the maximum foraging temperature is reached *VTMAX*, upon which the animal is forced to become inactive.
 
 The output table **enbal** looks like this:
 
@@ -97,9 +97,11 @@ It quantifies the different pathways of exchange in each hour of the simulation:
 1. ENB - energy balance (&deg;C)
 1. NTRY - iterations required for solution to heat balance equation
 
-where the complete heat budget is $ENB = QSOL + QIRIN + QMET - QEVAP - QIROUT - QCONV - QCOND$
+where the complete heat budget is 
 
-QIRIN, QIROUT, QSOL and QMET will always be positive, but QEVAP, QCONV and QCOND may be positive or negative. E.g. in this case, QCOND is positive when the animal is in its retreat (so resulting in a loss of heat in the heat budget equation above) because the ground is slightly cooler than the animal, but negative from 9am when the ground has become warmer than the animal. Notice how QMET and QEVAP are very similar - they change in concert (higher metabolic rate means more respiratory water loss), mostly cancelling each other out, and so can often be neglected in heat budgets of small ectotherms. Notice also that more iterations of the model are required when the animal is out of its burrow, due to the model repeatedly trying different options (e.g. increasing shade, increasing the target temperature, etc.) until it finds a solution.
+$ENB = QSOL + QIRIN + QMET - QEVAP - QIROUT - QCONV - QCOND$
+
+QIRIN, QIROUT, QSOL and QMET will always be positive, but QEVAP, QCONV and QCOND may be positive or negative. E.g. in this case, QCOND is positive when the animal is in its retreat (so resulting in a loss of heat in the heat budget equation above) because the ground is slightly cooler than the animal, but negative from 9am when the ground has become warmer than the animal. Notice how QMET and QEVAP are very similar - they change in concert (higher metabolic rate means more respiratory water loss), mostly cancelling each other out, and so can often be neglected in heat budgets of small ectotherms. Notice also that more iterations of the model NTRY   are required when the animal is out of its burrow, due to the model repeatedly trying different options (e.g. increasing shade, increasing the target temperature, etc.) until it finds a solution.
 
 Finally, the output table **masbal** looks like this:
 
@@ -128,11 +130,13 @@ knitr::kable(head(ecto$masbal[,11:19], 12))
 1. H2OBal_g - instantaneous water balance (g/h)
 1. H2OCumBal_g - cumulative water balance (g)
 
-Most of these columns are zero because we are not running the on-board mass budget model (the Dynamic Energy Budget model, i.e. *DEB* = 0 by default). We are instead obtaining the oxygen consumption rate (ml/h) by an allometric function based on Eq. 2 from Andrews & Pough 1985, $V_{O_2} = M_1 M^{ M_2} 10^{M_3 T_b}$ where $M$ is the mass in grams, $T_b$ is the body temperature, and $M_1$, $M_2$ and $M_3$ are constants which can be user-defined. From this and the oxygen extraction efficiency *extref* and difference in temperature between expired and inspired air *DETLAIR* (0.1 &degC by default), the respiratory water loss *H2OResp_g* can be computed. From the percentage of the skin that is 'wet', *skinwet* one can estimate the cutaneous water loss *H2O_cut*. The *skinwet* parameter represents the \% surface area that would act as  free water surface if all the little pores letting water through the skin were collected together in one place. Finally, the parameter *aeyes* is the \% of the total surface area taken up by the eyes when open, and is used to compute ocular water loss when the animal is active (a substantial part of the water loss!). If you are interested in the other quantities available in the **masbal** output, you will need to develop a DEB model for your species (see the [Dynamic Energy Budget lab](http://www.bio.vu.nl/thb/deb/deblab/), particularly the [Add-my-pet Portal](http://www.bio.vu.nl/thb/deb/deblab/add_my_pet/), for details as well as the vignette ... which explains the **debout** ouptut table).
+Most of these columns are zero because we are not running the on-board mass budget model (the Dynamic Energy Budget model, i.e. *DEB* = 0 by default). We are instead obtaining the oxygen consumption rate (ml/h) by an allometric function based on Eq. 2 from Andrews & Pough 1985,
+$V_{O_2} = M_1 M^{ M_2} 10^{M_3 T_b}$
+where $M$ is the mass in grams, $T_b$ is the body temperature, and $M_1$, $M_2$ and $M_3$ are constants which can be user-defined. From this and the oxygen extraction efficiency *extref* and difference in temperature between expired and inspired air *DETLAIR* (0.1 &deg;C by default), the respiratory water loss *H2OResp_g* can be computed. From the percentage of the skin that is 'wet' *skinwet* one can estimate the cutaneous water loss *H2O_cut*. The *skinwet* parameter represents the \% surface area that would act as  free water surface if all the little pores letting water through the skin were collected together in one place. Finally, the parameter *aeyes* is the \% of the total surface area taken up by the eyes when open, and is used to compute ocular water loss when the animal is active (a substantial part of the water loss!). If you are interested in the other quantities available in the **masbal** output, you will need to develop a DEB model for your species (see the [Dynamic Energy Budget lab](http://www.bio.vu.nl/thb/deb/deblab/), particularly the [Add-my-pet Portal](http://www.bio.vu.nl/thb/deb/deblab/add_my_pet/), for details, as well as the vignette (to do!) which explains the **debout** ouptut table).
 
 ## Plotting some output
 
-Now let's take a more detailed look at the results, by running the following plotting code:
+Now let's take a more detailed look at the results, by running the following code:
 
 ```{r, fig.width=7, fig.height=5, fig.show = "hold"}
 # retrieve output
@@ -160,9 +164,8 @@ ylim=c(-20,70),type = "l", main =
 with(environ, points(ACT*5~dates,type = "l",col="orange"))
 with(environ, points(SHADE/10~dates,type = "l",col="green"))
 with(environ, points(DEP/10~dates,type = "l",col="brown"))
-#with(metout, points(TAREF~dates,type = "l",col="light blue"))
-abline(ecto$TMAXPR,0,lty=2,col='red')
-abline(ecto$TMINPR,0,lty=2,col='blue')
+abline(ecto$VTMAX,0,lty=2,col='red')
+abline(ecto$VTMIN,0,lty=2,col='blue')
 
 # seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)
 forage<-subset(environ,ACT==2)
@@ -177,11 +180,11 @@ with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
 
 ```
 
-In Fig. 1 you can see the daily cycles, for each month, of the body temperature (black), shade selected (green - %, divided by 10), activity level in orange (multiplied by 5, so 5 = basking, 10 = active) and depth in brown (m). Also superimposed are the voluntary foraging thresholds *TMINPR* (blue dashed line) and *TMAXPR* (red dashed line). Note how this lizard is active every day, but requires shade for this, and how body temperature jumps up on some evenings when it goes into its burrow (remember when inactive the body temperature may rise to a maximum of half way between *TMAXPR* and *CTMAX* before the animal moves deeper into the burrow).
+In Fig. 1 you can see the daily cycles, for each month, of the body temperature (black), % shade selected (green, divided by 10 for plotting), activity level in orange (multiplied by 5 for plotting, so 5 = basking, 10 = active) and depth in brown (m). Also superimposed are the voluntary foraging thresholds *VTMIN* (blue dashed line) and *VTMAX* (red dashed line). Note how this lizard is active every day, but requires shade for this, and how body temperature jumps up on some evenings when it goes into its burrow (remember when inactive the body temperature may rise to a maximum of half way between *VTMAX* and *CTMAX* before the animal moves deeper into the burrow).
 
-In Fig. 2 you can see the annual activity window, with dark blue representing the nighttime hours, light blue the foraging hours and orange the activity hours. Activity is possible for this lizard at this tropical throughout all daylight hours except 6am in July, when it is only warm enough to bask.
+In Fig. 2 you can see the annual activity window, with dark blue representing the nighttime hours, light blue the foraging hours and orange the activity hours. Activity is possible for this lizard at this tropical location throughout all daylight hours except 6am in July, when it is only warm enough to bask.
 
-Explore what changing the thermal thresholds *CTMIN*, *TEMERGE*, *TBASK*, *TMINPR*, *TMAXPR* and *CTMAX* does to these plots, as well as variation in available shade *maxshades* and burrow depths *mindepth* and *maxdepth*. Here is an example of the effect of reducing maximum shade in all months from 90/% to 50/%:
+Explore what changing the thermal thresholds *CTMIN*, *TEMERGE*, *TBASK*, *VTMIN*, *VTMAX* and *CTMAX* does to these plots, as well as variation in available shade *maxshades* and burrow depths *mindepth* and *maxdepth*. Here is an example of the effect of reducing maximum shade in all months from 90% to 50%:
 
 ```{r}
 ecto<-ectotherm(maxshades = rep(50,12))
@@ -211,8 +214,8 @@ ylim=c(-20,70),type = "l", main = "Fig. 3, Hourly Tb, depth, activity level and 
 with(environ, points(ACT*5~dates,type = "l",col="orange"))
 with(environ, points(SHADE/10~dates,type = "l",col="green"))
 with(environ, points(DEP/10~dates,type = "l",col="brown"))
-abline(ecto$TMAXPR,0,lty=2,col='red')
-abline(ecto$TMINPR,0,lty=2,col='blue')
+abline(ecto$VTMAX,0,lty=2,col='red')
+abline(ecto$VTMIN,0,lty=2,col='blue')
 
 # seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)
 forage<-subset(environ,ACT==2)
@@ -228,7 +231,11 @@ with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
 
 ## Preview of the Dynamic Energy Budget model in action
 
-The capacity to compute body temperature, metabolic rates, activity times and some aspects of the water budget allow many important inferences to be made about the ability of different types of animals to live in different climates and habitats. In some cases such processes may be limiting factors in the distribution. For example, Kearney and Porter (2004) found that activity time was likely to be a limiting factor for a nocturnal lizard in southern Australia. More often, these constraints act to limit the overall energy and water budget in a more subtle manner. These preliminary computations can provide the starting point for an energy budget analysis that could ultimately allow you to predict reproductive success and survival rates, key vital rates from which to infer distribution and abundance. One of the most powerful ways of achieving this is by using the Dynamic Energy Budget model (Kooijman, 2010), the 'standard model' of which is optionally implemented in the **ectotherm** model. Below is an example for the Eastern Water Skink (default settings for the DEB model), as developed in Schwarzkopf et al (in press). Note the intersting pattern of annual foraging - under the DEB mode the animal only forages when it is stomach is below a certain percentage full, 75% by default). The sudden drops in mass in the plot of wet mass through time are clutches. See vignette ... for more details on how to work with the DEB model in NicheMapR.
+The capacity to compute body temperature, metabolic rates, activity times and some aspects of the water budget allow many important inferences to be made about the ability of different types of animals to live in different climates and habitats. In some cases such processes may be limiting factors in the distribution. For example, Kearney and Porter (2004) found that activity time was likely to be a limiting factor for a nocturnal lizard in southern Australia. More often, these constraints act to limit the overall energy and water budget in a more subtle manner. 
+
+The preliminary computations made in this tutorial can provide the starting point for an energy budget analysis that could ultimately allow you to predict reproductive success and survival rates, key vital rates from which to infer distribution and abundance. One of the most powerful ways of achieving a full mass balance and life cycle trajectory is by using the Dynamic Energy Budget model (Kooijman, 2010), the 'standard model' of which is optionally implemented in the **ectotherm** model. 
+
+Below is an example for the Eastern Water Skink (default settings for the DEB model), as developed in Schwarzkopf et al. (in press). Note the intersting pattern of annual foraging - under the DEB mode the animal only forages when it is stomach is below a certain percentage full, 75% by default). The sudden drops in mass in the plot of wet mass through time are when the animal reproduces. If you run this yourself, check the output of **masbal**, which will have values for all variables, and also the **debout**, **yearout** and **yearsout** outputs described in the help section for the **ectotherm** function. See vignette ... for more details on how to work with the DEB model in NicheMapR.
 
 ```{r, fig.width=7, fig.height=5, fig.show = "hold"}
 # run the microclimate model daily for 5 years
@@ -262,8 +269,8 @@ ylim=c(-20,70),type = "l", main = "Hourly Tb, depth, activity level and shade"))
 with(environ, points(ACT*5~dates,type = "l",col="orange"))
 with(environ, points(SHADE/10~dates,type = "l",col="green"))
 with(environ, points(DEP/10~dates,type = "l",col="brown"))
-abline(ecto$TMAXPR,0,lty=2,col='red')
-abline(ecto$TMINPR,0,lty=2,col='blue')
+abline(ecto$VTMAX,0,lty=2,col='red')
+abline(ecto$VTMIN,0,lty=2,col='blue')
 
 # seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)
 forage<-subset(environ,ACT==2)

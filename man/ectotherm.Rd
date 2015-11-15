@@ -4,7 +4,7 @@
 \alias{ectotherm}
 \title{Ectotherm model.}
 \usage{
-ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax, ctmin,
+ectotherm(amass, lometry, ABSMAX, ABSMIN, VTMAX, VTMIN, TBASK, TEMERGE, ctmax, ctmin,
  TPREF, dayact, nocturn, crepus, CkGrShad, burrow, climb, shdburrow, mindepth, maxdepth,
  M_1, M_2, M_3, skinwet, extref, DELTAR, ...)
 }
@@ -17,9 +17,9 @@ ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax,
 
 \item{ABSMIN}{= 0.85, Maximum solar absorptivity, decimal percent}
 
-\item{TMAXPR}{= 34, Voluntary thermal maximum, degrees C (upper body temperature for foraging and also affects burrow depth selection)}
+\item{VTMAX}{= 34, Voluntary thermal maximum, degrees C (upper body temperature for foraging and also affects burrow depth selection)}
 
-\item{TMINPR}{= 24, Voluntary thermal minimum, degrees C (lower body temperature for foraging)}
+\item{VTMIN}{= 24, Voluntary thermal minimum, degrees C (lower body temperature for foraging)}
 
 \item{TBASK}{= 17.5, Minimum basking temperature, degrees C}
 
@@ -269,7 +269,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 }
 \strong{ Life stage-specific parameter allocation:}
 \itemize{
-\item{\code{thermal_stages}{ = matrix(data = c(rep(ctmin,8),rep(ctmax,8),rep(TMINPR,8),rep(TMAXPR,8),rep(TBASK,8),rep(TPREF,8)), nrow = 8, ncol = 6), Stage specific thermal thresholds (ctmin,ctmax,TMINPR,TMAXPR,TBASK,TPREF)}\cr}
+\item{\code{thermal_stages}{ = matrix(data = c(rep(ctmin,8),rep(ctmax,8),rep(VTMIN,8),rep(VTMAX,8),rep(TBASK,8),rep(TPREF,8)), nrow = 8, ncol = 6), Stage specific thermal thresholds (ctmin,ctmax,VTMIN,VTMAX,TBASK,TPREF)}\cr}
 \item{\code{behav_stages}{ = matrix(data = c(rep(dayact,8),rep(nocturn,8),rep(crepus,8),rep(burrow,8),rep(shdburrow,8),rep(mindepth,8),rep(maxdepth,8),rep(CkGrShad,8),rep(climb,8),rep(fosorial,8),rep(rainact,8),rep(actrainthresh,8),rep(breedactthresh,8),rep(flyer,8)), nrow = 8, ncol = 14), Stage specific behaviour dayact,nocturn,crepus,burrow,shdburrow,mindepth,maxdepth,CkGrShad,climb,fosorial,rainact,actrainthresh,breedactthresh,flyer)}\cr}
 \item{\code{water_stages}{ = matrix(data = c(rep(skinwet,8),rep(extref,8),rep(PFEWAT,8),rep(PTUREA,8),rep(FoodWater,8),rep(minwater,8),rep(raindrink,8),rep(gutfill,8)), nrow = 8, ncol = 8), Stage-specific water budget parameters (skinwet,extref,PFEWAT,PTUREA,FoodWater,minwater,raindrink,gutfill)}\cr}
 \item{\code{arrhenius}{ = matrix(data = matrix(data = c(rep(TA,8),rep(TAL,8),rep(TAH,8),rep(TL,8),rep(TH,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (TA,TAL,TAH,TL,TH)}\cr}
@@ -466,7 +466,7 @@ shadmet<-cbind(dates,shadmet)
 shadsoil<-cbind(dates,shadsoil)
 
 # run the ectotherm model
-ecto<-ectotherm(TMAXPR=35,TMINPR=30,TPREF=33,TBASK=20,TEMERGE=10)
+ecto<-ectotherm(VTMAX=35,VTMIN=30,TPREF=33,TBASK=20,TEMERGE=10)
 
 # retrieve output
 environ<-as.data.frame(ecto$environ) # activity, Tb and environment
@@ -487,8 +487,8 @@ with(environ, points(ACT*5~dates,type = "l",col="orange"))
 with(environ, points(SHADE/10~dates,type = "l",col="green"))
 with(environ, points(DEP/10~dates,type = "l",col="brown"))
 #with(metout, points(TAREF~dates,type = "l",col="light blue"))
-abline(ecto$TMAXPR,0,lty=2,col='red')
-abline(ecto$TMINPR,0,lty=2,col='blue')
+abline(ecto$VTMAX,0,lty=2,col='red')
+abline(ecto$VTMIN,0,lty=2,col='blue')
 
 # seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)
 forage<-subset(environ,ACT==2)

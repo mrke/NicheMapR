@@ -11,8 +11,8 @@
 #' @param lometry = 3, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)
 #' @param ABSMAX = 0.85, Maximum solar absorptivity, decimal percent
 #' @param ABSMIN = 0.85, Maximum solar absorptivity, decimal percent
-#' @param TMAXPR = 34, Voluntary thermal maximum, degrees C (upper body temperature for foraging and also affects burrow depth selection)
-#' @param TMINPR = 24, Voluntary thermal minimum, degrees C (lower body temperature for foraging)
+#' @param VTMAX = 34, Voluntary thermal maximum, degrees C (upper body temperature for foraging and also affects burrow depth selection)
+#' @param VTMIN = 24, Voluntary thermal minimum, degrees C (lower body temperature for foraging)
 #' @param TBASK = 17.5, Minimum basking temperature, degrees C
 #' @param TEMERGE = 17.5, Temperature at which animal will move to a basking site, degrees C
 #' @param TPREF = 30, Preferred body temperature, degrees C
@@ -34,7 +34,7 @@
 #' @param aeyes = 0.03, \% of surface area taken up by open eye, for computing ocular water loss (only when active)
 #' @param extref = 20, \% oxygen extraction efficiency, for respiratory water loss
 #' @param DELTAR = 0.1, Temperature difference (deg C) between expired and inspired air, for computing respiratory water loss
-#' @usage ectotherm(amass, lometry, ABSMAX, ABSMIN, TMAXPR, TMINPR, TBASK, TEMERGE, ctmax, ctmin,
+#' @usage ectotherm(amass, lometry, ABSMAX, ABSMIN, VTMAX, VTMIN, TBASK, TEMERGE, ctmax, ctmin,
 #'  TPREF, dayact, nocturn, crepus, CkGrShad, burrow, climb, shdburrow, mindepth, maxdepth,
 #'  M_1, M_2, M_3, skinwet, extref, DELTAR, ...)
 #' @details
@@ -235,7 +235,7 @@
 #'}
 #' \strong{ Life stage-specific parameter allocation:}
 #' \itemize{
-#' \item{\code{thermal_stages}{ = matrix(data = c(rep(ctmin,8),rep(ctmax,8),rep(TMINPR,8),rep(TMAXPR,8),rep(TBASK,8),rep(TPREF,8)), nrow = 8, ncol = 6), Stage specific thermal thresholds (ctmin,ctmax,TMINPR,TMAXPR,TBASK,TPREF)}\cr}
+#' \item{\code{thermal_stages}{ = matrix(data = c(rep(ctmin,8),rep(ctmax,8),rep(VTMIN,8),rep(VTMAX,8),rep(TBASK,8),rep(TPREF,8)), nrow = 8, ncol = 6), Stage specific thermal thresholds (ctmin,ctmax,VTMIN,VTMAX,TBASK,TPREF)}\cr}
 #' \item{\code{behav_stages}{ = matrix(data = c(rep(dayact,8),rep(nocturn,8),rep(crepus,8),rep(burrow,8),rep(shdburrow,8),rep(mindepth,8),rep(maxdepth,8),rep(CkGrShad,8),rep(climb,8),rep(fosorial,8),rep(rainact,8),rep(actrainthresh,8),rep(breedactthresh,8),rep(flyer,8)), nrow = 8, ncol = 14), Stage specific behaviour dayact,nocturn,crepus,burrow,shdburrow,mindepth,maxdepth,CkGrShad,climb,fosorial,rainact,actrainthresh,breedactthresh,flyer)}\cr}
 #' \item{\code{water_stages}{ = matrix(data = c(rep(skinwet,8),rep(extref,8),rep(PFEWAT,8),rep(PTUREA,8),rep(FoodWater,8),rep(minwater,8),rep(raindrink,8),rep(gutfill,8)), nrow = 8, ncol = 8), Stage-specific water budget parameters (skinwet,extref,PFEWAT,PTUREA,FoodWater,minwater,raindrink,gutfill)}\cr}
 #' \item{\code{arrhenius}{ = matrix(data = matrix(data = c(rep(TA,8),rep(TAL,8),rep(TAH,8),rep(TL,8),rep(TH,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (TA,TAL,TAH,TL,TH)}\cr}
@@ -431,7 +431,7 @@
 #'shadsoil<-cbind(dates,shadsoil)
 #'
 #'# run the ectotherm model
-#'ecto<-ectotherm(TMAXPR=35,TMINPR=30,TPREF=33,TBASK=20,TEMERGE=10)
+#'ecto<-ectotherm(VTMAX=35,VTMIN=30,TPREF=33,TBASK=20,TEMERGE=10)
 #'
 #'# retrieve output
 #'environ<-as.data.frame(ecto$environ) # activity, Tb and environment
@@ -452,8 +452,8 @@
 #'with(environ, points(SHADE/10~dates,type = "l",col="green"))
 #'with(environ, points(DEP/10~dates,type = "l",col="brown"))
 #'#with(metout, points(TAREF~dates,type = "l",col="light blue"))
-#'abline(ecto$TMAXPR,0,lty=2,col='red')
-#'abline(ecto$TMINPR,0,lty=2,col='blue')
+#'abline(ecto$VTMAX,0,lty=2,col='red')
+#'abline(ecto$VTMIN,0,lty=2,col='blue')
 #'
 #'# seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)
 #'forage<-subset(environ,ACT==2)
@@ -465,7 +465,7 @@
 #'with(forage,points((TIME-1)~JULDAY,pch=15,cex=2,col='orange')) # foraging Tbs
 #'with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
 #' @export
-ectotherm<-function(amass=40,lometry=3,ABSMAX=0.85,ABSMIN=0.85,TMAXPR=34,TMINPR=24,TBASK=17.5,
+ectotherm<-function(amass=40,lometry=3,ABSMAX=0.85,ABSMIN=0.85,VTMAX=34,VTMIN=24,TBASK=17.5,
 TEMERGE=17.5,TPREF=30,ctmax=40,ctmin=6,dayact=1,nocturn=0,crepus=0,CkGrShad=1,burrow=1,climb=0,
 shdburrow=0,mindepth=2,maxdepth=10,M_1=0.013,M_2=0.8,M_3=0.038,skinwet=0.1,aeyes=0.03,extref=20.,
 DELTAR=0.1,microin="none",nyears=micro$nyears,ystrt=0,enberr=0.0002,live=1,write_input=0,
@@ -494,7 +494,7 @@ reset=0,breedactthresh=1,breedrainthresh=0,breedtempthresh=200,breedtempcum=24*7
 container=0,wetmod=0,conth=10,contw=100,contype=1,rainmult=1,continit=0,conthole=0,contonly=1,
 contwet=80,wetlandTemps=matrix(data = 0., nrow = 24*dim, ncol = 1),
 wetlandDepths=matrix(data = 0., nrow = 24*dim, ncol = 1),
-thermal_stages=matrix(data = c(rep(ctmin,8),rep(ctmax,8),rep(TMINPR,8),rep(TMAXPR,8),rep(TBASK,8),
+thermal_stages=matrix(data = c(rep(ctmin,8),rep(ctmax,8),rep(VTMIN,8),rep(VTMAX,8),rep(TBASK,8),
   rep(TPREF,8)), nrow = 8, ncol = 6),
 behav_stages=matrix(data = c(rep(dayact,8),rep(nocturn,8),rep(crepus,8),rep(burrow,8),
   rep(shdburrow,8),rep(mindepth,8),rep(maxdepth,8),rep(CkGrShad,8),rep(climb,8),rep(fosorial,8),
@@ -723,7 +723,7 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   tester<-0
   microyear<-1
 
-  ectoinput<-as.matrix(c(ALT,FLTYPE,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,AMASS,EMISAN,absan,RQ,rinsul,lometry,live,TIMBAS,Flshcond,Spheat,Andens,ABSMAX,ABSMIN,FATOSK,FATOSB,FATOBJ,TMAXPR,TMINPR,DELTAR,SKINW,aeyes,xbas,extref,TPREF,ptcond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,tdigpr,maxshd,minshd,ctmax,ctmin,behav,julday,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,julstart,monthly,customallom,M_1,M_2,M_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,minwater,microyear,container,flyer,flyspeed,dim,maxdepth,ctminthresh,ctkill,gutfill,mindepth,TBASK,TEMERGE,F_m,SUBTK,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,breedtempthresh,breedtempcum,contwet))
+  ectoinput<-as.matrix(c(ALT,FLTYPE,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,AMASS,EMISAN,absan,RQ,rinsul,lometry,live,TIMBAS,Flshcond,Spheat,Andens,ABSMAX,ABSMIN,FATOSK,FATOSB,FATOBJ,VTMAX,VTMIN,DELTAR,SKINW,aeyes,xbas,extref,TPREF,ptcond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,tdigpr,maxshd,minshd,ctmax,ctmin,behav,julday,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,julstart,monthly,customallom,M_1,M_2,M_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,minwater,microyear,container,flyer,flyspeed,dim,maxdepth,ctminthresh,ctkill,gutfill,mindepth,TBASK,TEMERGE,F_m,SUBTK,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,breedtempthresh,breedtempcum,contwet))
   debmod<-c(clutchsize,andens_deb,d_V,d_Egg,mu_X,mu_E,mu_V,mu_P,T_REF,z,kap,kap_X,p_M,v,E_G,kap_R,E_sm,del_M,h_a,V_init_baby,E_init_baby,k_J,E_Hb,E_Hj,E_Hp,clutch_ab[2],batch,breedrainthresh,photostart,photofinish,daylengthstart,daylengthfinish,photodirs,photodirf,clutch_ab[1],frogbreed,frogstage,eta_O,JM_JO,E_0,kap_X_P,PTUREA1,PFEWAT1,wO,w_N,FoodWater1,f,s_G,K,X,metab_mode,stages,y_EV_l,s_j,startday,raindrink,reset,ma,mi,mh,aestivate,depress,minclutch)
   deblast<-c(iyear,countday,v_init,E_init,ms_init,cumrepro_init,q_init,hs_init,cumbatch_init,V_baby_init,E_baby_init,E_H_init,stage)
 
@@ -832,9 +832,9 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   yearsout<-ectout$yearsout[1:nyears,]
 
   if(DEB==0){
-    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,RAINFALL=RAINFALL,enbal=enbal,environ=environ,masbal=masbal,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,TMAXPR=TMAXPR,TMINPR=TMINPR,ctmax=ctmax,ctmin=ctmin,TBASK=TBASK,TEMERGE=TEMERGE))
+    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,RAINFALL=RAINFALL,enbal=enbal,environ=environ,masbal=masbal,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,VTMAX=VTMAX,VTMIN=VTMIN,ctmax=ctmax,ctmin=ctmin,TBASK=TBASK,TEMERGE=TEMERGE))
   }else{
-    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,RAINFALL=RAINFALL,enbal=enbal,masbal=masbal,environ=environ,debout=debout,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,TMAXPR=TMAXPR,TMINPR=TMINPR,ctmax=ctmax,ctmin=ctmin,TBASK=TBASK,TEMERGE=TEMERGE))
+    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,RAINFALL=RAINFALL,enbal=enbal,masbal=masbal,environ=environ,debout=debout,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,VTMAX=VTMAX,VTMIN=VTMIN,ctmax=ctmax,ctmin=ctmin,TBASK=TBASK,TEMERGE=TEMERGE))
   }
 
 }
