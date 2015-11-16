@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Michael Kearney" />
+
+<meta name="date" content="2015-11-16" />
+
+<title>Introduction to the NicheMapR microclimate model</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0A%7D%0Apre%20%7B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div id="header">
+<h1 class="title">Introduction to the NicheMapR microclimate model</h1>
+<h4 class="author"><em>Michael Kearney</em></h4>
+<h4 class="date"><em>2015-11-16</em></h4>
+</div>
+
+
+<p>This vignette provides a detailed tutorial of the Niche Mapper microclimate model as implemented in the package <em>NicheMapR</em>. See the <a href="microclimate-model-tutorial.Rmd">microclimate</a> vignette for details on the underlying theory and equations.</p>
+<div id="getting-started-working-with-the-micro_global-function" class="section level2">
+<h2>Getting started: working with the micro_global() function</h2>
+<p>The <em>NicheMapR</em> package includes data and functions for using a global monthly climate database for computing microclimates. This tutorial illustrates the different capabilities of the microclimate model using this database. For details on setting the model up to run with your own environmental data, see the vignette “xxxx”.</p>
+<div id="basic-operation-modelling-microclimates-for-the-average-day-of-each-month" class="section level3">
+<h3>Basic operation: modelling microclimates for the average day of each month</h3>
+<p>This first example involves the most basic case of running the model to produce 12 days of output, one for each month of the year, without invoking the soil moisture or snow subroutines. In this mode of operation, the model does three iterations of each day, the first one starting with a uniform soil temperature profile and the first two acting as ‘burn-in’ runs prior to the third and final run which is provided as the final output.</p>
+<p>Try running the model for a place of interest to you, as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(NicheMapR)
+
+micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc=</span><span class="st">&quot;Madison, Wisconsin, USA&quot;</span>)</code></pre></div>
+<p>The results are stored as a list in the variable <em>micro</em>. The main ones to focus on for now are</p>
+<ul>
+<li><strong>metout</strong> The above ground micrometeorological conditions under the minimum specified shade</li>
+<li><strong>shadmet</strong> The above ground micrometeorological conditions under the maximum specified shade</li>
+<li><strong>soil</strong> Hourly predictions of the soil temperatures under the minimum specified shade</li>
+<li><strong>shadsoil</strong> Hourly predictions of the soil temperatures under the maximum specified shade</li>
+</ul>
+<p>The first two rows of the output tables <strong>metout</strong> and <strong>shadmet</strong> look like this</p>
+<p>and show, for each day of the year and for each hour of the day, a series of aboveground microclimatic conditions as follows:</p>
+<ol style="list-style-type: decimal">
+<li>JULDAY - day of year</li>
+<li>TIME - time of day (mins)</li>
+<li>TALOC - air temperature (°C) at local height (specified by ‘Usrhyt’ variable)</li>
+<li>TAREF - air temperature (°C) at reference height (1.2m)</li>
+<li>RHLOC - relative humidity (%) at local height (specified by ‘Usrhyt’ variable)</li>
+<li>RH - relative humidity (%) at reference height (1.2m)</li>
+<li>VLOC - wind speed (m/s) at local height (specified by ‘Usrhyt’ variable)</li>
+<li>VREF - wind speed (m/s) at reference height (1.2m)</li>
+<li>SNOWMELT - snowmelt (mm)</li>
+<li>POOLDEP - water pooling on surface (mm)</li>
+<li>PCTWET - soil surface wetness (%)</li>
+<li>ZEN - zenith angle of sun (degrees - 90° = below the horizon)</li>
+<li>SOLR - solar radiation (W/m2)</li>
+<li>TSKYC - sky radiant temperature (°C)</li>
+<li>DEW - dew presence (0 or 1)</li>
+<li>FROST - frost presence (0 or 1)</li>
+<li>SNOWFALL - snow predicted to have fallen (mm)</li>
+<li>SNOWDEP - predicted snow depth (cm)</li>
+</ol>
+<p>Note that for air temperature, relative humidity and wind speed, there’s a ‘reference height’ value and a ‘local height’ value. The reference height value is the height at which the meteorological observations were made that were given to the model as input. The local height values are the microclimatic values at a height determined by the variable <em>Usrhyt</em>, which you can set to be relevant to the organism you are interested in (by default it is 1cm). It should be at the midpoint of the animal or plant’s height.</p>
+<p>Check what you got with:</p>
+<pre><code>metout&lt;-micro$metout # put the metout result into a variable 'metout'
+head(metout,24) # show the first 24 rows, i.e. the first day
+
+shadmet&lt;-micro$shadmet # put the shadmet result into a variable 'shadmet'
+head(shadmet,24) # show the first 24 rows, i.e. the first day</code></pre>
+<p>Because the snow model wasn’t flagged to run, there will be zeros in all the snow-related columns.</p>
+<p>The first two rows of the output tables <strong>soil</strong> and <strong>shadsoil</strong> look like this</p>
+<p>and show, for each day of the year and for each hour of the day, the soil temperatures as follows:</p>
+<ol style="list-style-type: decimal">
+<li>JULDAY - day of year</li>
+<li>TIME - time of day (mins)</li>
+<li>Columns 3-12 D0cm … - soil temperatures at each of the 10 specified depths</li>
+</ol>
+<p>Have a look at yours:</p>
+<pre><code>soil&lt;-micro$soil # put the soil result into a variable 'soil'
+head(soil,24) # show the first 24 rows, i.e. the first day
+
+shadsoil&lt;-micro$shadsoil # put the metout result into a variable 'shadsoil'
+head(shadsoil,24) # show the first 24 rows, i.e. the first day</code></pre>
+<p>The 10 different depths used by the model are specified with <em>DEP</em> and by default are <code>DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)</code>.</p>
+<p>There are some example plots of all the variables in the help for the <em>micro_global</em> function. Here is a plot for all the soil temperatures in Madison, Wisconsin in July and December:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">require</span>(lattice,<span class="dt">quietly =</span> <span class="ot">TRUE</span>)
+soil&lt;-<span class="kw">as.data.frame</span>(micro$soil) <span class="co"># get the soil data</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="kw">with</span>(<span class="kw">subset</span>(soil,JULDAY==<span class="dv">196</span> |<span class="st"> </span>JULDAY==<span class="dv">349</span>),{<span class="kw">xyplot</span>(D0cm +<span class="st"> </span>D2.5cm +<span class="st"> </span>D5cm +<span class="st"> </span>D10cm +<span class="st"> </span>D15cm +<span class="st"> </span>D20cm
+  +<span class="st"> </span>D30cm +<span class="st"> </span>D50cm +<span class="st"> </span>D100cm +<span class="st"> </span>D200cm ~<span class="st"> </span>TIME |<span class="st"> </span><span class="kw">as.factor</span>(JULDAY),<span class="dt">ylim=</span><span class="kw">c</span>(-<span class="dv">20</span>,<span class="dv">70</span>),<span class="dt">xlab =</span> <span class="st">&quot;Time of Day</span>
+<span class="st">  (min)&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Temperature (deg C)&quot;</span>, <span class="dt">auto.key=</span><span class="kw">list</span>(<span class="dt">columns =</span> <span class="dv">5</span>), <span class="dt">as.table =</span> <span class="ot">TRUE</span>, <span class="dt">type =</span>
+    <span class="st">&quot;b&quot;</span>, <span class="dt">main=</span><span class="kw">paste</span>(minshade,<span class="st">&quot;% shade&quot;</span>))})</code></pre></div>
+<p>Notice how the deeper one goes into the soil, the lower the amplitude of the fluctuations but also that the maximum temperature is reached later in the day. The daily fluctuations have largely disappeared by 50cm and at 200cm the temperature is stable year round. In fact the model assumes the deep soil temperature is the annual mean of the air temperatures, and this is a ‘boundary condition’ in the solution of the soil heat budget.</p>
+</div>
+<div id="simulating-shading-by-vegetation" class="section level3">
+<h3>Simulating shading by vegetation</h3>
+<p>By default the model runs twice, for two different levels of shading by vegetation. The particular shade levels can be selected with the parameters <em>maxshade</em> and <em>minshade</em>. Also, the second shade level simulation can be turned off if only one shade level is required with the parameter <em>runshade</em>. The code below runs the model for one shade level only, 50%:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc =</span> <span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runshade =</span> <span class="dv">0</span>, <span class="dt">minshade =</span> <span class="dv">50</span>)
+
+soil&lt;-<span class="kw">as.data.frame</span>(micro$soil) <span class="co"># get the soil data</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="kw">with</span>(<span class="kw">subset</span>(soil,JULDAY==<span class="dv">196</span> |<span class="st"> </span>JULDAY==<span class="dv">349</span>),{<span class="kw">xyplot</span>(D0cm +<span class="st"> </span>D2.5cm +<span class="st"> </span>D5cm +<span class="st"> </span>D10cm +<span class="st"> </span>D15cm +<span class="st"> </span>D20cm
+  +<span class="st"> </span>D30cm +<span class="st"> </span>D50cm +<span class="st"> </span>D100cm +<span class="st"> </span>D200cm ~<span class="st"> </span>TIME |<span class="st"> </span><span class="kw">as.factor</span>(JULDAY),<span class="dt">ylim=</span><span class="kw">c</span>(-<span class="dv">20</span>,<span class="dv">70</span>),<span class="dt">xlab =</span> <span class="st">&quot;Time of Day</span>
+<span class="st">  (min)&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Temperature (deg C)&quot;</span>, <span class="dt">auto.key=</span><span class="kw">list</span>(<span class="dt">columns =</span> <span class="dv">5</span>), <span class="dt">as.table =</span> <span class="ot">TRUE</span>, <span class="dt">type =</span>
+    <span class="st">&quot;b&quot;</span>, <span class="dt">main=</span><span class="kw">paste</span>(minshade,<span class="st">&quot;% shade&quot;</span>))})</code></pre></div>
+<p>Notice how, the effect of shade is to not only reduce the daytime soil temperatures, but also to increase the nighttime temperatures. This is due to the increased levels of infrared radiation reaching the ground surface because the shading vegetation is assumed to be at the reference height air temperature while the ‘sky temperature’ is typically much colder, depending on the level of cloud cover (have a look at the variable <em>Tsky</em> in the <strong>metout</strong> and <strong>shadmet</strong> outputs).</p>
+</div>
+<div id="simulating-terrain-effects---slope-aspect-hillshade" class="section level3">
+<h3>Simulating terrain effects - slope, aspect, hillshade</h3>
+<p>Slope and aspect have strong effects on microclimates through the effects of direct solar radiation. The default setting is flat ground in the <em>NicheMapR</em> microclimate model. Here is the effect of a 45 degree southerly slope on the 0% shade simulation:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc =</span> <span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runshade =</span> <span class="dv">0</span>, <span class="dt">minshade =</span> <span class="dv">0</span>, <span class="dt">slope =</span> <span class="dv">45</span>, aspect
+  =<span class="st"> </span><span class="dv">180</span>)
+
+soil&lt;-<span class="kw">as.data.frame</span>(micro$soil) <span class="co"># get the soil data</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="kw">with</span>(<span class="kw">subset</span>(soil,JULDAY==<span class="dv">196</span> |<span class="st"> </span>JULDAY==<span class="dv">349</span>),{<span class="kw">xyplot</span>(D0cm +<span class="st"> </span>D2.5cm +<span class="st"> </span>D5cm +<span class="st"> </span>D10cm +<span class="st"> </span>D15cm +<span class="st"> </span>D20cm
+  +<span class="st"> </span>D30cm +<span class="st"> </span>D50cm +<span class="st"> </span>D100cm +<span class="st"> </span>D200cm ~<span class="st"> </span>TIME |<span class="st"> </span><span class="kw">as.factor</span>(JULDAY),<span class="dt">ylim=</span><span class="kw">c</span>(-<span class="dv">20</span>,<span class="dv">70</span>),<span class="dt">xlab =</span> <span class="st">&quot;Time of Day</span>
+<span class="st">  (min)&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Temperature (deg C)&quot;</span>, <span class="dt">auto.key=</span><span class="kw">list</span>(<span class="dt">columns =</span> <span class="dv">5</span>), <span class="dt">as.table =</span> <span class="ot">TRUE</span>, <span class="dt">type =</span>
+    <span class="st">&quot;b&quot;</span>, <span class="dt">main=</span><span class="kw">paste</span>(minshade,<span class="st">&quot;% shade, 45 degree slope, 180 degrees aspect&quot;</span>))})</code></pre></div>
+<p>The strongest effect is on the December soil temperatures.</p>
+<p>Hillshade also has a strong effect on microclimates. Gullies and gorges receive a shorter window of direct solar radiation and have a smaller ‘view’ of the sky, and so don’t cool down as much at night. Horizon angles can be specified to simulated these kinds of effects by supplying in the parameter <em>hori</em> a vector of 24 horizon angles (angle to nearest hill/cliff) starting due north and continuing clockwise in 15 degree intervals. Here is an example for a steep-sided gully running north-south:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc=</span><span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runshade =</span> <span class="dv">0</span>, <span class="dt">minshade =</span> <span class="dv">0</span>, <span class="dt">hori =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">65</span>,
+  <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>, <span class="dv">65</span>))
+
+soil&lt;-<span class="kw">as.data.frame</span>(micro$soil) <span class="co"># get the soil data</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="kw">with</span>(<span class="kw">subset</span>(soil,JULDAY==<span class="dv">196</span> |<span class="st"> </span>JULDAY==<span class="dv">349</span>),{<span class="kw">xyplot</span>(D0cm +<span class="st"> </span>D2.5cm +<span class="st"> </span>D5cm +<span class="st"> </span>D10cm +<span class="st"> </span>D15cm +<span class="st"> </span>D20cm
+  +<span class="st"> </span>D30cm +<span class="st"> </span>D50cm +<span class="st"> </span>D100cm +<span class="st"> </span>D200cm ~<span class="st"> </span>TIME |<span class="st"> </span><span class="kw">as.factor</span>(JULDAY),<span class="dt">ylim=</span><span class="kw">c</span>(-<span class="dv">20</span>,<span class="dv">70</span>),<span class="dt">xlab =</span> <span class="st">&quot;Time of Day</span>
+<span class="st">  (min)&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Temperature (deg C)&quot;</span>, <span class="dt">auto.key=</span><span class="kw">list</span>(<span class="dt">columns =</span> <span class="dv">5</span>), <span class="dt">as.table =</span> <span class="ot">TRUE</span>, <span class="dt">type =</span>
+    <span class="st">&quot;b&quot;</span>, <span class="dt">main=</span><span class="kw">paste</span>(minshade,<span class="st">&quot;% shade, north-south gully&quot;</span>))})</code></pre></div>
+</div>
+<div id="changing-the-soil-properties" class="section level3">
+<h3>Changing the soil properties</h3>
+<p>Another important influence on microclimatic conditions is the substrate type. The substrate solar reflectivity can be changed with the parameter <em>REFL</em> and the emissivity with the parameter <em>SLE</em> (both range from 0-1).</p>
+<p>Soil thermal properties are also importance. Soil comprises a mixture of minerals, air and water. The density (kg/m3), thermal conductivity (W/mK) and specific heat capacity (J/kg-K) of the mineral component are specified by the parameters <em>Density</em>, <em>Thcond</em> and <em>SpecHeat</em>, respectively. The bulk density determines the proportion of the soil volume that is air, parameter <em>BulkDensity</em> (kg/m3). The overall soil conductivity, specific heat and density values are then adjusted for bulk density and soil moisture (see below), as well as for soil temperature, using themethods described in Campbell et al. (1994, equations 8, 9) and Campbell and Norman (Campbell &amp; Norman 1998, equations 8.13, 8.17, 8.20 and data in Tables 8.2 and 9.1). All these properites can be specified separately for each soil node in the model.</p>
+<p>The default values are typical for soil minerals as described in Campbell and Norman (1998) Table 8.2, but an ‘A-horizon’ layer for the first node, reflecting properties of organic matter, is also simulated (see Kearney et al. 2014). This can be turned off by specifying <code>cap = 0</code>.</p>
+<p>For simulating rock, <em>BulkDensity</em> should be set the same as <em>Density</em> and this can be easily set in <em>micro_global</em> by setting <em>soiltype</em> to value 0 (which also sets cap = 0):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc=</span><span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runshade =</span> <span class="dv">0</span>, <span class="dt">minshade =</span> <span class="dv">0</span>, <span class="dt">soiltype =</span> <span class="dv">0</span>)
+
+soil&lt;-<span class="kw">as.data.frame</span>(micro$soil) <span class="co"># get the soil data</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="kw">with</span>(<span class="kw">subset</span>(soil,JULDAY==<span class="dv">196</span> |<span class="st"> </span>JULDAY==<span class="dv">349</span>),{<span class="kw">xyplot</span>(D0cm +<span class="st"> </span>D2.5cm +<span class="st"> </span>D5cm +<span class="st"> </span>D10cm +<span class="st"> </span>D15cm +<span class="st"> </span>D20cm
+  +<span class="st"> </span>D30cm +<span class="st"> </span>D50cm +<span class="st"> </span>D100cm +<span class="st"> </span>D200cm ~<span class="st"> </span>TIME |<span class="st"> </span><span class="kw">as.factor</span>(JULDAY),<span class="dt">ylim=</span><span class="kw">c</span>(-<span class="dv">20</span>,<span class="dv">70</span>),<span class="dt">xlab =</span> <span class="st">&quot;Time of Day</span>
+<span class="st">  (min)&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Temperature (deg C)&quot;</span>, <span class="dt">auto.key=</span><span class="kw">list</span>(<span class="dt">columns =</span> <span class="dv">5</span>), <span class="dt">as.table =</span> <span class="ot">TRUE</span>, <span class="dt">type =</span>
+    <span class="st">&quot;b&quot;</span>, <span class="dt">main=</span><span class="kw">paste</span>(minshade,<span class="st">&quot;% shade, rock substrate&quot;</span>))})</code></pre></div>
+<p>Notice how the heat penetrates more deeply into the rock, producing a gentler temperature gradient with depth, cooler near-surface temperatures during the day and warmer near-surface temperatures at night.</p>
+<p>The texture of the soil, i.e. the proportion of silt, sand and clay and associated particle size distributions, has a powerful influence on soil moisture and is discussed further in the next section.</p>
+</div>
+<div id="soil-moisture" class="section level3">
+<h3>Soil moisture</h3>
+<p>The microclimate model has the option of either specifing soil moisture or modelling it from first principles. The <em>micro_global</em> function by default monthly soil moisture estimates obtained from the Climate Prediction Center(NOAA/OAR/ESRL PSD, Boulder, Colorado, USA, <a href="http://www.esrl.noaa.gov/psd/" class="uri">http://www.esrl.noaa.gov/psd/</a>).</p>
+<p>The model will compute soil moisture when the <em>runmoist</em> parameter = 1. This invokes an implementation of Campbell’s (1985) Program 11.1 for simulating depth-specific soil moisture, water potential and humidity gradients in the presence of vegetation. It uses matric potential as the dependent variable (rather than matric flux potential) and as a consequence is most computationally efficient when soil is relatively dry (it may significantly extend run times in wet environments).</p>
+<p>The soil moisture calculations are made at the 10 user-specified nodes (parameter <em>DEP</em>) and also at the midpoints between them, but are only reported for the 10 nodes in <em>DEP</em>. The user input variables specific to this module include, for each of these 19 nodes, the Campbell (or Clapp and Hornberger) b exponent (<em>BB</em>), the air entry potential <em>PE</em> (J/kg), the hydraulic conductivity <em>KS</em> (kg s m-3), the bulk density <em>BD</em> (kg m-3), the root density <em>L</em> (m m-3) and the leaf area index LAI. All other model parameters are fixed at those suggested by Campbell (1985). The model has been tested against detailed observations across Australia with favourable results (Kearney et al. in prep).</p>
+<p>Try running the model for your site with the soil moisture model turned on:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc=</span><span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runmoist =</span> <span class="dv">1</span>)</code></pre></div>
+<p>The output tables <strong>soilmoist</strong> and <strong>shadmoist</strong>, which previously were zero, will now have soil moisture values (m3/m3) in them:</p>
+<p>The model also gives you the soil water potential (the water-equivalent to temperature and the driving force for water flow, e.g. into or out of water-permeable eggs or skin) in the outputs <strong>soilpot</strong> and <strong>shadpot</strong>:</p>
+<p>Finally, the soil humidity is also computed (outputs <strong>humid</strong> and <strong>shadhumid</strong>):</p>
+<p>Note that soil humidity is typically close to saturation, even in ‘dry’ soils. The situation in a burrow may lower than this but still much higher than aboveground conditions (see Schmidt-Nielsen &amp; Schmidt-Nielsen. 1950).</p>
+<p>Plotting the results for soil moisture through time across the year:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">soilmoist&lt;-<span class="kw">as.data.frame</span>(micro$soilmoist) <span class="co"># get the minimum shade soil moisture output</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="co"># append dates</span>
+days&lt;-<span class="kw">rep</span>(<span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">12</span>),<span class="dv">24</span>)
+days&lt;-days[<span class="kw">order</span>(days)]
+dates&lt;-days+soilmoist$TIME/<span class="dv">60</span>/<span class="dv">24-1</span> <span class="co"># dates for hourly output</span>
+soilmoist&lt;-<span class="kw">cbind</span>(dates,soilmoist)
+for(i in <span class="dv">1</span>:<span class="dv">10</span>){
+  if(i==<span class="dv">1</span>){
+    <span class="kw">plot</span>(soilmoist[,i<span class="dv">+3</span>]~soilmoist[,<span class="dv">1</span>], <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="fl">0.5</span>),<span class="dt">xlab =</span> <span class="st">&quot;Month&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Moisture (%</span>
+<span class="st">      vol)&quot;</span>,<span class="dt">col=</span>i,<span class="dt">type =</span> <span class="st">&quot;l&quot;</span>,<span class="dt">main=</span><span class="kw">paste</span>(<span class="st">&quot;soil moisture, &quot;</span>,minshade,<span class="st">&quot;% shade&quot;</span>))
+  }else{
+    <span class="kw">points</span>(soilmoist[,i<span class="dv">+3</span>]~soilmoist[,<span class="dv">1</span>], <span class="dt">col=</span>i,<span class="dt">type =</span> <span class="st">&quot;l&quot;</span>)
+  }
+}</code></pre></div>
+<p>By default the model uses <em>soiltype</em> = 4, where Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, based on Campbell and Norman 1990 Table 9.1. One can also manually set the soil properites by setting <em>soiltype</em> = 12, upon which the model will use the user-specified values of <em>PE</em>, <em>KS</em>, <em>BB</em> and <em>BD</em>.</p>
+<p>Rerunning with clay as the soil type:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc=</span><span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runmoist =</span> <span class="dv">1</span>, <span class="dt">soiltype =</span> <span class="dv">11</span>)
+soilmoist&lt;-<span class="kw">as.data.frame</span>(micro$soilmoist) <span class="co"># get the minimum shade soil moisture output</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="co"># append dates</span>
+days&lt;-<span class="kw">rep</span>(<span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">12</span>),<span class="dv">24</span>)
+days&lt;-days[<span class="kw">order</span>(days)]
+dates&lt;-days+soilmoist$TIME/<span class="dv">60</span>/<span class="dv">24-1</span> <span class="co"># dates for hourly output</span>
+soilmoist&lt;-<span class="kw">cbind</span>(dates,soilmoist)
+for(i in <span class="dv">1</span>:<span class="dv">10</span>){
+  if(i==<span class="dv">1</span>){
+    <span class="kw">plot</span>(soilmoist[,i<span class="dv">+3</span>]~soilmoist[,<span class="dv">1</span>], <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="fl">0.5</span>),<span class="dt">xlab =</span> <span class="st">&quot;Month&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Moisture (%</span>
+<span class="st">      vol)&quot;</span>,<span class="dt">col=</span>i,<span class="dt">type =</span> <span class="st">&quot;l&quot;</span>,<span class="dt">main=</span><span class="kw">paste</span>(<span class="st">&quot;soil moisture, &quot;</span>,minshade,<span class="st">&quot;% shade&quot;</span>))
+  }else{
+    <span class="kw">points</span>(soilmoist[,i<span class="dv">+3</span>]~soilmoist[,<span class="dv">1</span>] ,<span class="dt">col=</span>i,<span class="dt">type =</span> <span class="st">&quot;l&quot;</span>)
+  }
+}</code></pre></div>
+<p>we see strong changes in the soil moisture values, with the fine-grained clay particles holding on more strongly to the water resulting in higher soil water content. Also very apparent in these plots is that the model was not reaching steady state soil moisture values with only 3 iterations of each day. This can be resolved by running the model for longer periods, as discussed in the next section.</p>
+</div>
+<div id="running-at-finer-time-intervals-and-for-longer-time-periods" class="section level3">
+<h3>Running at finer time intervals and for longer time periods</h3>
+<p>It is possible to run the model for multiple years by changing the <em>nyears</em> parameter. This can be useful when running the soil moisture and snow subroutines to allow annual cycles to stabilise. To illustrate, if we run the last example in the soil moisture section for five years, the soil moisture at all but the deepest levels have started to reach steady state:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nyears&lt;-<span class="dv">5</span>
+micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc=</span><span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runmoist =</span> <span class="dv">1</span>, <span class="dt">soiltype =</span> <span class="dv">11</span>, <span class="dt">nyears =</span> nyears)
+soilmoist&lt;-<span class="kw">as.data.frame</span>(micro$soilmoist) <span class="co"># get the minimum shade soil moisture output</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="co"># append dates</span>
+days&lt;-<span class="kw">rep</span>(<span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">12</span>*nyears)/<span class="dv">12</span>,<span class="dv">24</span>)
+days&lt;-days[<span class="kw">order</span>(days)]
+dates&lt;-days+soilmoist$TIME/<span class="dv">60</span>/<span class="dv">24</span>/(<span class="dv">12</span>) <span class="co"># dates for hourly output</span>
+soilmoist&lt;-<span class="kw">cbind</span>(dates,soilmoist)
+for(i in <span class="dv">1</span>:<span class="dv">10</span>){
+  if(i==<span class="dv">1</span>){
+    <span class="kw">plot</span>(soilmoist[,i<span class="dv">+3</span>]~soilmoist[,<span class="dv">1</span>], <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="fl">0.5</span>),<span class="dt">xlab =</span> <span class="st">&quot;Year&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Moisture (%</span>
+<span class="st">      vol)&quot;</span>,<span class="dt">col=</span>i,<span class="dt">type =</span> <span class="st">&quot;l&quot;</span>,<span class="dt">main=</span><span class="kw">paste</span>(<span class="st">&quot;soil moisture, &quot;</span>,minshade,<span class="st">&quot;% shade&quot;</span>))
+  }else{
+    <span class="kw">points</span>(soilmoist[,i<span class="dv">+3</span>]~soilmoist[,<span class="dv">1</span>],<span class="dt">col=</span>i,<span class="dt">type =</span> <span class="st">&quot;l&quot;</span>)
+  }
+}</code></pre></div>
+<p>It is also possible to run the model for more frequent intervals than once per month by changing the parameter <em>timeinterval</em>. If <em>timeinterval</em> is set to something less than 365, then the model runs as described in the previous section with three iterations per day, and uses the ‘spline’ function to interpolate the climate data from monthly to the chosen time interval. If ‘timeinterval’ is set to the maximum value of 365, it will apply the three iterations to the first day of the simulation to get started and then, from that day on, use the previous day’s conditions as the initial state for the next day’s conditions.</p>
+<p>Here is an example running the model for 365 days and plotting soil moisture:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">timeinterval&lt;-<span class="dv">365</span>
+micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc=</span><span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runmoist =</span> <span class="dv">1</span>, <span class="dt">soiltype =</span> <span class="dv">11</span>, <span class="dt">timeinterval =</span> timeinterval)
+soilmoist&lt;-<span class="kw">as.data.frame</span>(micro$soilmoist) <span class="co"># get the minimum shade soil moisture output</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="co"># append dates</span>
+days&lt;-<span class="kw">rep</span>(<span class="kw">seq</span>(<span class="dv">1</span>,timeinterval),<span class="dv">24</span>)
+days&lt;-days[<span class="kw">order</span>(days)]
+dates&lt;-days+soilmoist$TIME/<span class="dv">60</span>/<span class="dv">24-1</span> <span class="co"># dates for hourly output</span>
+soilmoist&lt;-<span class="kw">cbind</span>(dates,soilmoist)
+for(i in <span class="dv">1</span>:<span class="dv">10</span>){
+  if(i==<span class="dv">1</span>){
+    <span class="kw">plot</span>(soilmoist[,i<span class="dv">+3</span>]~soilmoist[,<span class="dv">1</span>], <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="fl">0.5</span>),<span class="dt">xlab =</span> <span class="st">&quot;Day of Year&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Moisture</span>
+<span class="st">      (% vol)&quot;</span>,<span class="dt">col=</span>i,<span class="dt">type =</span> <span class="st">&quot;l&quot;</span>,<span class="dt">main=</span><span class="kw">paste</span>(<span class="st">&quot;soil moisture, &quot;</span>,minshade,<span class="st">&quot;% shade&quot;</span>))
+  }else{
+    <span class="kw">points</span>(soilmoist[,i<span class="dv">+3</span>]~soilmoist[,<span class="dv">1</span>] ,<span class="dt">col=</span>i,<span class="dt">type =</span> <span class="st">&quot;l&quot;</span>)
+  }
+}</code></pre></div>
+<p>Here are the associated soil temperatures:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">soil&lt;-<span class="kw">as.data.frame</span>(micro$soil) <span class="co"># get the minimum shade soil temperature output</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="co"># append dates</span>
+days&lt;-<span class="kw">rep</span>(<span class="kw">seq</span>(<span class="dv">1</span>,timeinterval),<span class="dv">24</span>)
+days&lt;-days[<span class="kw">order</span>(days)]
+dates&lt;-days+soil$TIME/<span class="dv">60</span>/<span class="dv">24-1</span> <span class="co"># dates for hourly output</span>
+soil&lt;-<span class="kw">cbind</span>(dates,soil)
+for(i in <span class="dv">1</span>:<span class="dv">10</span>){
+  if(i==<span class="dv">1</span>){
+    <span class="kw">plot</span>(soil[,i<span class="dv">+3</span>]~soil[,<span class="dv">1</span>], <span class="dt">ylim=</span><span class="kw">c</span>(-<span class="dv">20</span>,<span class="dv">70</span>),<span class="dt">xlab =</span> <span class="st">&quot;Day of Year&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Temperature (deg</span>
+<span class="st">      C)&quot;</span>,<span class="dt">col=</span>i,<span class="dt">type =</span> <span class="st">&quot;l&quot;</span>,<span class="dt">main=</span><span class="kw">paste</span>(<span class="st">&quot;soil temperature, &quot;</span>,minshade,<span class="st">&quot;% shade&quot;</span>))
+  }else{
+    <span class="kw">points</span>(soil[,i<span class="dv">+3</span>]~soil[,<span class="dv">1</span>], <span class="dt">col=</span>i,<span class="dt">type =</span> <span class="st">&quot;l&quot;</span>)
+  }
+}</code></pre></div>
+</div>
+<div id="snow" class="section level3">
+<h3>Snow</h3>
+<p>Snow has a powerful influence on soil temperatures and can be simulated in the NicheMapR microclimate model by setting the parameter <em>snowmodel</em> = 1. This invokes an algorithm that builds up to 8 phantom nodes of snow above the surface as a function of incoming precipitation and losses due to melting. The model incorporates a declining albedo with time since snow and has five user-controlled parameters: <em>snowtemp</em> - the air temperature (°C) at which rain falls as snow, <em>snowdens</em> (Mg/m3) - the density of the snow, <em>snowmelt</em> (-) - the proportion of calculated snow melt that doesn’t refreeze into the snowpack, <em>rainmelt</em> (-) a parameter in an equation from Anderson’s SNOW17 model (<a href="http://www.nws.noaa.gov/oh/hrl/nwsrfs/users_manual/part2/_pdf/22snow17.pdf" class="uri">http://www.nws.noaa.gov/oh/hrl/nwsrfs/users_manual/part2/_pdf/22snow17.pdf</a>) that melts snow with rainfall as a function of air temperature. The snow density can also be made to vary as a linear function of day of year by providing a slope and intercept as the variable <em>densfun</em>, which is only used if non-zero. There is also a parameter <em>rainfrac</em> which controls the fraction of rain that falls on the first day of the month, with 0 meaning rain falls evenly. This parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data. This snow model has been tested with favourable results in the Australian Alps and through the USA (Kearney et al. in prep).</p>
+<p>Here is the consequence of invoking the snow model for soil temperature predictions at Madison, Wisconsin as well as the snow depth and snowfall predictions (running for 2 years to get a steady periodic and plotting only the 2nd year):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">timeinterval&lt;-<span class="dv">365</span>
+nyears&lt;-<span class="dv">2</span> <span class="co"># running two years, first one acting as a 'burn in' year and discarded</span>
+micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc=</span><span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">runmoist =</span> <span class="dv">1</span>, <span class="dt">snowmodel =</span> <span class="dv">1</span>, <span class="dt">timeinterval =</span> timeinterval, <span class="dt">nyears =</span> <span class="dv">2</span>)
+soil&lt;-<span class="kw">as.data.frame</span>(micro$soil)[(<span class="dv">365</span>*<span class="dv">24+1</span>):(<span class="dv">365</span>*<span class="dv">24</span>*nyears),] <span class="co"># get the minimum shade soil temperature output, discarding the first year</span>
+metout&lt;-<span class="kw">as.data.frame</span>(micro$metout)[(<span class="dv">365</span>*<span class="dv">24+1</span>):(<span class="dv">365</span>*<span class="dv">24</span>*nyears),] <span class="co"># get the minimum shade above ground conditions, discarding the first year</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="co"># append dates</span>
+days&lt;-<span class="kw">rep</span>(<span class="kw">seq</span>(<span class="dv">366</span>,timeinterval*nyears),<span class="dv">24</span>)
+days&lt;-days[<span class="kw">order</span>(days)]
+dates&lt;-days+soil$TIME/<span class="dv">60</span>/<span class="dv">24-1</span> <span class="co"># dates for hourly output</span>
+soil&lt;-<span class="kw">cbind</span>(dates,soil)
+metout&lt;-<span class="kw">cbind</span>(dates,metout)
+for(i in <span class="dv">1</span>:<span class="dv">10</span>){
+  if(i==<span class="dv">1</span>){
+    <span class="kw">plot</span>(soil[,i<span class="dv">+3</span>]~soil[,<span class="dv">1</span>], <span class="dt">ylim=</span><span class="kw">c</span>(-<span class="dv">20</span>,<span class="dv">70</span>),<span class="dt">xlab =</span> <span class="st">&quot;Day of Year&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Temperature (deg</span>
+<span class="st">      C)&quot;</span>,<span class="dt">col=</span>i,<span class="dt">type =</span> <span class="st">&quot;l&quot;</span>,<span class="dt">main=</span><span class="kw">paste</span>(<span class="st">&quot;soil temperature, &quot;</span>,minshade,<span class="st">&quot;% shade&quot;</span>))
+  }else{
+    <span class="kw">points</span>(soil[,i<span class="dv">+3</span>]~soil[,<span class="dv">1</span>], <span class="dt">col=</span>i,<span class="dt">type =</span> <span class="st">&quot;l&quot;</span>)
+  }
+}
+<span class="kw">with</span>(metout,{<span class="kw">plot</span>(SNOWDEP ~<span class="st"> </span>dates ,<span class="dt">xlab =</span> <span class="st">&quot;Time of Day (min)&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;snow depth, cm / snow fall</span>
+<span class="st">  , mm&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;h&quot;</span>, <span class="dt">main=</span><span class="kw">paste</span>(<span class="st">&quot;snow depth (cm) and snow fall (mm) &quot;</span>,minshade,<span class="st">&quot;% shade&quot;</span>,<span class="dt">sep=</span><span class="st">&quot;&quot;</span>), <span class="dt">col =</span> <span class="st">&quot;light blue&quot;</span>)})
+<span class="kw">with</span>(metout,{<span class="kw">points</span>(SNOWFALL ~<span class="st"> </span>dates ,<span class="dt">xlab =</span> <span class="st">&quot;Time of Day (min)&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;h&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;blue&quot;</span>)})</code></pre></div>
+</div>
+</div>
+<div id="the-intertidal-zone" class="section level2">
+<h2>The intertidal zone</h2>
+<p>The final application illustrated in this vignette concerns predicting the complex environment of the intertidal zone, where tidal influences impose strong effects on intertidal zones in a manner out of phase with the diurnal cycle. When the argument <em>shore</em> = 1, the microclimate model attempts to simulate such influences through a user-specified matrix <em>tides</em> of hourly values for 1) tide presence, 2) sea water temperature and 3) presence of wave splash. If the tide is present in a given hour, the model simplifies to heat exchange only by convection and conduction, with an arbitrarily large ‘wind speed’ imposed to strengthen the coupling of the sea water to the substrate. The effect of the wave splash vector is to make the surface wet and so exchange heat by evaporation.</p>
+<p>This module is currently untested. An example of what is possible is provided below, and illustrates what might happen on a rocky section of the shore of Lake Mendota in Madison:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nyears&lt;-<span class="dv">1</span>
+timeinterval&lt;-<span class="dv">365</span>
+<span class="co"># if you have data on tides for a shoreline, use the code below to specify the hours the tide is in, the water temperature and wave splash</span>
+  tides&lt;-<span class="kw">matrix</span>(<span class="dt">data =</span> <span class="dv">0</span>., <span class="dt">nrow =</span> <span class="dv">24</span>*timeinterval*nyears, <span class="dt">ncol =</span> <span class="dv">3</span>) <span class="co"># make an empty matrix</span>
+  tides[,<span class="dv">2</span>]&lt;-<span class="dv">5</span> <span class="co"># set a constant sea water temperature</span>
+  tides[,<span class="dv">3</span>]&lt;-<span class="dv">0</span> <span class="co"># zero the wave splash column</span>
+  tides[<span class="dv">12</span>,<span class="dv">3</span>]&lt;-<span class="dv">90</span> <span class="co"># make the 12th value (hour 12 on 1st day) get a spash, resulting in the rock evaporating as if it is 90% wetted</span>
+  mocktides&lt;-<span class="kw">rep</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>,<span class="dv">12</span>),<span class="kw">rep</span>(<span class="dv">1</span>,<span class="dv">13</span>)),timeinterval*nyears) <span class="co"># made a sequence of tides, where 1 means tide is in and 2 means out, and offset it to 24 hour cycle</span>
+  mocktides&lt;-mocktides[<span class="dv">1</span>:<span class="dv">8760</span>] <span class="co"># subset it to a year long of 24 hour tides</span>
+  tides[<span class="dv">1</span>:(timeinterval*nyears*<span class="dv">24</span>),<span class="dv">1</span>]&lt;-mocktides <span class="co"># put the mock tides in the tides vector, column 1</span>
+micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc=</span><span class="st">&quot;Madison, Wisconsin, USA&quot;</span>, <span class="dt">shore =</span> <span class="dv">1</span>, <span class="dt">soiltype =</span> <span class="dv">0</span>, <span class="dt">timeinterval =</span> timeinterval, <span class="dt">nyears =</span> nyears, <span class="dt">tides =</span> tides)
+soil&lt;-<span class="kw">as.data.frame</span>(micro$soil) <span class="co"># get the minimum shade soil temperature output first year</span>
+minshade&lt;-micro$minshade <span class="co"># get the value for minimum shade</span>
+<span class="co"># append dates</span>
+days&lt;-<span class="kw">rep</span>(<span class="kw">seq</span>(<span class="dv">1</span>,timeinterval),<span class="dv">24</span>)
+days&lt;-days[<span class="kw">order</span>(days)]
+dates&lt;-days+soil$TIME/<span class="dv">60</span>/<span class="dv">24-1</span> <span class="co"># dates for hourly output</span>
+soil&lt;-<span class="kw">cbind</span>(dates,soil)
+for(i in <span class="dv">1</span>:<span class="dv">10</span>){
+  if(i==<span class="dv">1</span>){
+    <span class="kw">plot</span>(soil[,i<span class="dv">+3</span>]~soil[,<span class="dv">1</span>], <span class="dt">ylim=</span><span class="kw">c</span>(-<span class="dv">20</span>,<span class="dv">70</span>),<span class="dt">xlab =</span> <span class="st">&quot;Day of Year&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Soil Temperature (deg</span>
+<span class="st">      C)&quot;</span>,<span class="dt">col=</span>i,<span class="dt">type =</span> <span class="st">&quot;l&quot;</span>,<span class="dt">main=</span><span class="kw">paste</span>(<span class="st">&quot;soil temperature, &quot;</span>,minshade,<span class="st">&quot;% shade&quot;</span>))
+  }else{
+    <span class="kw">points</span>(soil[,i<span class="dv">+3</span>]~soil[,<span class="dv">1</span>], <span class="dt">col=</span>i,<span class="dt">type =</span> <span class="st">&quot;l&quot;</span>)
+  }
+}  </code></pre></div>
+<p><strong>NOTE</strong> specifying too disparate a sea water temperature from the substrate temperature may result in the model crashing!</p>
+</div>
+<div id="other-parameters" class="section level2">
+<h2>Other parameters</h2>
+<p>In the help for the <strong>micro_global</strong> function you’ll find information on a number of other parameters that may be of use for your application. These allow control of the eccentricity of the earth’s orbit <em>EC</em> (if you want to go way back into the past), changes in the timing of daily maxima and minima for air temperature, cloud cover, wind speed and relative humidity <em>TIMINS</em> and <em>TIMAXS</em>, the optical effects of the amount of water in the upper atmosphere <em>CMH2O</em>, whether to apply the Global Aerosol Data Set (package <strong>GADS</strong>) to determine solar attenuation due to dust etc. in the atmosphere <em>rungads</em>, whether the model outputs csv files <em>writecsv</em> or csv files of all inputs <em>writeinput</em> (mainly used for the maintainers of the program when testing the Fortran code).</p>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Campbell, G. S. 1985. Soil Physics with Basic: Transport Models for Soil-Plant Systems. Elsevier, Amsterdam.</p>
+<p>Campbell, G. S., J. D. J. Jungbauer, W. R. Bidlake, and R. D. Hungerford. 1994. Predicting the effect of temperature on soil thermal conductivity. Soil Science 158:307-313.</p>
+<p>Campbell, G. S., and J. M. Norman. 1998. Environmental Biophysics. Springer, New York.</p>
+<p>Kearney, M. R., A. Shamakhy, R. Tingley, D. J. Karoly, A. A. Hoffmann, P. R. Briggs, and W. P. Porter. 2014. Microclimate modelling at macro scales: a test of a general microclimate model integrated with gridded continental-scale soil and weather data. Methods in Ecology and Evolution 5:273-286.</p>
+<p>Schmidt-Nielsen, B., and K. Schmidt-Nielsen. 1950. Evaporative Water Loss in Desert Rodents in Their Natural Habitat. Ecology 31:75-85.</p>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
