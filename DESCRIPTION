@@ -20,9 +20,10 @@ Suggests:
     lattice,
     MICROCLIMATE,
     microclimate,
+    ECTOTHERM,
+    ectotherm,
     rmarkdown,
     geonames,
     XML
 VignetteBuilder: knitr
-Vignettes: microclimate-model-tutorial,
-    ectotherm-model-tutorial
+Vignettes: microclimate-model-tutorial,ectotherm-model-tutorial
