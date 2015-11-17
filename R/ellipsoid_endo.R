@@ -1,40 +1,65 @@
-#' Implementation of the endotherm model .
+#' Ellipsoid endotherm model
 #'
-#' An implementation of described in
+#' An implementation of the model described in
 #' Porter, W. P., and M. Kearney. 2009. Size, shape, and the thermal niche of endotherms.
 #' Proceedings of the National Academy of Sciences 106:19666-19672.
 #' with additional rough calculations for water loss. Note this model is only relevant for
-#' conditions where there is no solar radiation and air/ground/sky temperatures are equal
+#' conditions where there is no solar radiation and air/ground/sky temperatures are equal.
+#' Originally coded into R from Excel by John Baumgartner.
 #' @param posture = 4.5, Shape, ratio of long to short axis of a prolate ellipsoid
 #' @param mass = 0.5, Body Mass (kg)
 #' @param coreT = 37, Core temperature (deg C)
 #' @param furdepth = 5, Fur depth (mm)
-#' @param O2eff = 0.2, Oxygen extraction efficiency (decimal \%)
 #' @param furcond = 0.04, Conductivity of fur (W/Cm)
+#' @param O2eff = 0.2, Oxygen extraction efficiency (decimal \%)
+#' @param stress = 0.6, Fraction of basal metabolic rate at which evaporative water loss is required (decimal \%)
 #' @param airT = 20, Air temperature (deg C)
 #' @param windspd = 1, Wind speed (m/s)
 #' @param rh = 50, Relative humidity (\%)
-#' @return AirTemp Air temperature for calculation (deg C)
-#' @return Windspeed Wind speed for calculation (m/s)
-#' @return RelHum Relative humidity for calculation (\%)
-#' @return Tcore Core temperature for calculation (deg C)
-#' @return UCT Upper Critical Temperature (deg C)
-#' @return LCT Lower Critical Temperature (deg C)
-#' @return Qresp_gph Respiration rate (W)
-#' @return Qresp_W Respiration rate (W)
-#' @return Qresp_kjph Respiration rate (kJ/h)
-#' @return Tskin Skin temperature (deg C)
-#' @return Qgen required heat generation (W)
-#' @return QgenFinal Required heat generation capped at basal (W)
-#' @return mlO2ph Oxygen consumption rate (ml/h)
-#' @return PctBasal Metabolic rate (\% of basal)
-#' @return status 1=cold, 2=happy, 3=hot
-#' @return H2Oloss_W Watts of heat to be dumped
-#' @return H2O_gph Water loss rate required to dump heat based on latent heat of vaporization
-#' @return massph_percent Percent of body mass lost as water per hour
-#' @return timetodeath Time to death (hours) from desiccation (15\% desiccated) if no water to drink
+#' @return
+#' \itemize{
+#' \item 1 AirTemp - Air temperature for calculation (deg C)
+#' \item 2 Windspeed - Wind speed for calculation (m/s)
+#' \item 3 RelHum - Relative humidity for calculation (\%)
+#' \item 4 Tcore - Core temperature for calculation (deg C)
+#' \item 5 UCT - Upper Critical Temperature (deg C)
+#' \item 6 LCT - Lower Critical Temperature (deg C)
+#' \item 7 Qresp_gph - Respiration rate (W)
+#' \item 8 Qresp_W - Respiration rate (W)
+#' \item 9 Qresp_kjph - Respiration rate (kJ/h)
+#' \item 10 Tskin - Skin temperature (deg C)
+#' \item 11 Qgen - required heat generation (W)
+#' \item 12 QgenFinal - Required heat generation capped at basal (W)
+#' \item 13 mlO2ph - Oxygen consumption rate (ml/h)
+#' \item 14 PctBasal - Metabolic rate (\% of basal)
+#' \item 15 status - 1=cold, 2=happy, 3=hot
+#' \item 16 H2Oloss_W - Watts of heat to be dumped
+#' \item 17 H2O_gph - Water loss rate required to dump heat based on latent heat of vaporization
+#' \item 18 massph_percent - Percent of body mass lost as water per hour
+#' \item 19 timetodeath - Time to death (hours) from desiccation (15\% desiccated) if no water to drink
+#' }
+#' @details
+#' Note that the parameter 'stress' is a fudge factor that accounts for physiological thermoregulatory
+#' adjustments during heat stress (e.g. core temperature increases, changes in flesh conductivity, changes
+#' in posture) that are not captured dynamically in this function (but some of these could be modelled
+#' dynamically on the basis of this function).
 #' @export
 #' @examples
+#'
+#'# compute metabolic and water loss rate as a function of air temperature
+#'endo<-ellipsoid(airT=seq(5,45), windspd = 0.1)
+#'endo<-as.data.frame(endo)
+#'plot(endo$AirTemp,endo$QgenFinal,type='l', xlab = "Air Temperature (deg C)", ylab = "Metabolic Rate (W)", main="Metabolic Rate vs. Air Temperaure")
+#'plot(endo$AirTemp,endo$H2O_gph,type='l', xlab = "Air Temperature (deg C)", ylab = "Water Loss Rate (g/h)", main="Water Loss Rate vs. Air Temperaure")
+#'
+#'# compute thermoneutral zone as a function of body mass
+#'masses<-10^seq(-3,2,0.5) # log sequence of masses
+#'endo<-ellipsoid(mass = masses)
+#'endo<-as.data.frame(endo)
+#'ylims<-c(min(endo$UCT,endo$LCT),max(endo$UCT,endo$LCT))
+#'plot(masses,endo$UCT, col='red',type='l', ylim=ylims, xlab="body mass (kg)",ylab="temperature (deg C)", main = "Upper and Lower Critical Temperatures vs Mass")
+#'points(masses,endo$LCT, type='l', col='blue')
+#'
 #'micro<-micro_global(loc = 'Birdsville, Australia') # run the model with default location and settings
 #'
 #'metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
@@ -66,9 +91,9 @@
 #'with(endo,{points(Tcore ~ dates,xlab = "Date and Time",lty=2, type = "l")})
 #'with(endo,{plot(timetodeath ~ dates,xlab = "Date and Time", ylab = "Time to Death (h)"
 #', type = "l",main=paste("Time to Death by Desiccation",sep=""), ylim=c(0,24))})
-ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, O2eff = 0.2,
-  furcond = 0.04, airT = 20, windspd = 1, rh = 50) {
-  if(posture==1){posture=1.01} # avoid divide by zero
+ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, furcond = 0.04,
+  O2eff = 0.2, stress = 0.6, airT = 20, windspd = 1, rh = 50) {
+  posture[posture==1]<-1.01 # avoid divide by zero
   mouseelephant <- 10^(-1.462 + 0.675 * log10(mass * 1000))
   a_coef <- 0.6
   b_coef <- 0.5
@@ -109,7 +134,7 @@ ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, O2eff
   Rconv <- 1 / (hc * Aouter)
   Rrad <- 1 / (4 * Aouter * 1 * 0.95 * (5.7 * 10^-8) * (airT + 273.15)^3)
   Rtotal <- Rbody + Rinsul + (Rconv*Rrad)/(Rconv + Rrad)
-  upcrit <- coreT - (mouseelephant*0.6*Rtotal)
+  upcrit <- coreT - (mouseelephant*stress*Rtotal)
   lowcrit <- coreT - mouseelephant * Rtotal
   Qgen <- (coreT - airT) / Rtotal
   QgenFinal <- ifelse(Qgen < mouseelephant, mouseelephant, Qgen)
@@ -119,19 +144,20 @@ ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, O2eff
   Qresp_W <- ((Qresp_gph / 3600) * conv_H2O_loss) / 1000
   Qresp_kjph <- Qresp_W / 1000 * 3600
   PctBasal <- QgenFinal / mouseelephant * 100
-  status <- ifelse(Qgen > mouseelephant, 1, ifelse(Qgen < 0.6 * mouseelephant, 3, 2)) # 1 = cold, 2 = happy, 3 = stress
+  status <- ifelse(Qgen > mouseelephant, 1, ifelse(Qgen < stress * mouseelephant, 3, 2)) # 1 = cold, 2 = happy, 3 = stress
   H2Oloss_W <- (Qgen * -1) + mouseelephant
   H2O_gph <- (((H2Oloss_W) * 1000) / conv_H2O_loss) * 3600
   H2O_gph[H2O_gph<0]<-0
   massph_percent <- ifelse(H2O_gph < 0, 0, ((H2O_gph / 1000) / mass) * 100)
   timetodeath <- ifelse(H2O_gph < 0, NA, 1 / (H2O_gph / (mass * 0.15 * 1000)))
 
-
   results<-cbind(airT, windspd, rh, coreT, upcrit, lowcrit, Qresp_gph, Qresp_W, Qresp_kjph, skinT, Qgen,
            QgenFinal, mlO2ph, PctBasal, status, H2Oloss_W, H2O_gph,
            massph_percent, timetodeath)
+
   colnames(results)<-c('AirTemp','WindSpeed','RelHum','Tcore','UCT','LCT','Qresp_gph','Qresp_W',
     'Qresp_kjph','Tskin','Qgen','QgenFinal','mlO2ph','PctBasal','status','H2Oloss_W',
     'H2O_gph','massph_percent','timetodeath')
+
   return(results)
 }
