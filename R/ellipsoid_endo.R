@@ -65,6 +65,7 @@
 #'with(endo,{points(Tcore ~ dates,xlab = "Date and Time",lty=2, type = "l")})
 #'with(endo,{plot(timetodeath ~ dates,xlab = "Date and Time", ylab = "Time to Death (h)"
 #', type = "l",main=paste("Time to Death by Desiccation",sep=""), ylim=c(0,24))})
+#' @export
 ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, O2eff = 0.2,
   furcond = 0.04, airT = 20, windspd = 1, rh = 50) {
   if(posture==1){posture=1.01} # avoid divide by zero

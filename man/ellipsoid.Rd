@@ -8,62 +8,62 @@ ellipsoid(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5,
   O2eff = 0.2, furcond = 0.04, airT = 20, windspd = 1, rh = 50)
 }
 \arguments{
-\item{posture}{Shape, ratio of long to short axis of a prolate ellipsoid}
+\item{posture}{= 4.5, Shape, ratio of long to short axis of a prolate ellipsoid}
 
-\item{mass}{Body Mass (kg)}
+\item{mass}{= 0.5, Body Mass (kg)}
 
-\item{coreT}{Core temperature (deg C)}
+\item{coreT}{= 37, Core temperature (deg C)}
 
-\item{furdepth}{Fur depth (mm)}
+\item{furdepth}{= 5, Fur depth (mm)}
 
-\item{O2eff}{Oxygen extraction efficiency (decimal \%)}
+\item{O2eff}{= 0.2, Oxygen extraction efficiency (decimal \%)}
 
-\item{furcond}{Conductivity of fur (W/Cm)}
+\item{furcond}{= 0.04, Conductivity of fur (W/Cm)}
 
-\item{airT}{Air temperature (deg C)}
+\item{airT}{= 20, Air temperature (deg C)}
 
-\item{windspd}{Wind speed (m/s)}
+\item{windspd}{= 1, Wind speed (m/s)}
 
-\item{rh}{Relative humidity (\%)}
+\item{rh}{= 50, Relative humidity (\%)}
 }
 \value{
-AirTemp
+AirTemp Air temperature for calculation (deg C)
 
-Windspeed
+Windspeed Wind speed for calculation (m/s)
 
-RelHum
+RelHum Relative humidity for calculation (\%)
 
-Tcore
+Tcore Core temperature for calculation (deg C)
 
-UpperCritTemp
+UCT Upper Critical Temperature (deg C)
 
-LowerCritTemp
+LCT Lower Critical Temperature (deg C)
 
-Qresp_gph, respiration rate in grams per hour
+Qresp_gph Respiration rate (W)
 
-Qresp_W, respiration rate in watts
+Qresp_W Respiration rate (W)
 
-Qresp_kjph, respiratino rate in kilojules per hour
+Qresp_kjph Respiration rate (kJ/h)
 
-Tskin, skin temp
+Tskin Skin temperature (deg C)
 
-Qgen, required heat generation
+Qgen required heat generation (W)
 
-QgenFinal, required heat generation capped at basal
+QgenFinal Required heat generation capped at basal (W)
 
-mlO2ph, mls of O2 consumed per hour
+mlO2ph Oxygen consumption rate (ml/h)
 
-PctBasal, metabolic rate expressed as a percentage of basal
+PctBasal Metabolic rate (\% of basal)
 
-status, 1=cold, 2=happy, 3=hot
+status 1=cold, 2=happy, 3=hot
 
-H2Oloss_W, watts of heat to be dumped
+H2Oloss_W Watts of heat to be dumped
 
-H2O_gph, water loss rate required to dump heat based on latent heat of vaporization
+H2O_gph Water loss rate required to dump heat based on latent heat of vaporization
 
-massph_percent, percent of body mass lost as water per hour
+massph_percent Percent of body mass lost as water per hour
 
-timetodeath, time to death (hours) from desiccation (15\% desiccated) if no water to drink
+timetodeath Time to death (hours) from desiccation (15\% desiccated) if no water to drink
 }
 \description{
 An implementation of described in
@@ -71,5 +71,38 @@ Porter, W. P., and M. Kearney. 2009. Size, shape, and the thermal niche of endot
 Proceedings of the National Academy of Sciences 106:19666-19672.
 with additional rough calculations for water loss. Note this model is only relevant for
 conditions where there is no solar radiation and air/ground/sky temperatures are equal
+}
+\examples{
+micro<-micro_global(loc = 'Birdsville, Australia') # run the model with default location and settings
+
+metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
+shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
+soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
+shadsoil<-as.data.frame(micro$shadsoil) # soil temperatures, maximum shade
+
+# append dates
+days<-rep(seq(1,12),24)
+days<-days[order(days)]
+dates<-days+metout$TIME/60/24-1 # dates for hourly output
+dates2<-seq(1,12,1) # dates for daily output
+metout<-cbind(dates,metout)
+soil<-cbind(dates,soil)
+shadmet<-cbind(dates,shadmet)
+shadsoil<-cbind(dates,shadsoil)
+
+endo<-cbind(metout[,1:3],ellipsoid(airT = shadmet$TALOC, windspd = shadmet$VLOC, rh = shadmet$RHLOC))
+
+with(endo,{plot(H2O_gph ~ dates,xlab = "Date and Time", ylab = "Water Loss Rate (g/h)"
+, type = "l",main=paste("Evaporative Water Loss",sep=""))})
+with(endo,{plot(QgenFinal ~ dates,xlab = "Date and Time", ylab = "Metabolic Rate (W)"
+, type = "l",main=paste("Metabolic Heat Generation",sep=""))})
+with(endo,{plot(PctBasal ~ dates,xlab = "Date and Time", ylab = "Metabolic Rate (\% of basal)"
+, type = "l",main=paste("Metabolic Heat Generation",sep=""))})
+with(endo,{plot(Tskin ~ dates,xlab = "Date and Time", ylab = "Skin and Core Temperature (deg C)"
+, type = "l",main=paste("Skin and Core Temperature",sep=""),ylim=c(min(cbind(endo$Tcore,endo$Tskin)),
+ max(cbind(endo$Tcore,endo$Tskin))))})
+with(endo,{points(Tcore ~ dates,xlab = "Date and Time",lty=2, type = "l")})
+with(endo,{plot(timetodeath ~ dates,xlab = "Date and Time", ylab = "Time to Death (h)"
+, type = "l",main=paste("Time to Death by Desiccation",sep=""), ylim=c(0,24))})
 }
 
