@@ -2,6 +2,7 @@
 
 export(ectorun)
 export(ectotherm)
+export(ellipsoid)
 export(get.global.climate)
 export(micro_global)
 export(microclimate)
