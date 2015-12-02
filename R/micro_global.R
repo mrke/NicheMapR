@@ -534,7 +534,6 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     ALTT<-as.numeric(raster::extract(elev,x)*1000) # convert from km to m
     cat("extracting climate data", '\n')
     CLIMATE <- raster::extract(global_climate,x)
-
     RAINFALL <- CLIMATE[,1:12]
     WNMAXX <- CLIMATE[,13:24]
     WNMINN<-WNMAXX*0.1 # impose diurnal cycle
@@ -580,6 +579,10 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       cat("extracting soil moisture data", '\n')
       SoilMoist<-raster::extract(soilmoisture,xx)/1000 # this is originally in mm/m
       if(nrow(SoilMoist)>1){SoilMoist<-SoilMoist[1,]}
+    }
+    if(is.na(max(SoilMoist, ALTT, CLIMATE))==TRUE){
+      cat("Sorry, there is no environmental data for this location")
+      stop()
     }
     # correct for fact that wind is measured at 10 m height
     # wind shear equation v / vo = (h / ho)^a

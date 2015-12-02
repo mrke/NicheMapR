@@ -31,7 +31,7 @@
 #' @param M_2 = 0.800, Metabolic rate parameter 2
 #' @param M_3 = 0.038, Metabolic rate parameter 3
 #' @param skinwet = 0.2, \% of surface area acting as a free-water exchanger, for computing cutaneous water loss
-#' @param aeyes = 0.03, \% of surface area taken up by open eye, for computing ocular water loss (only when active)
+#' @param peyes = 0.03, \% of surface area taken up by open eye, for computing ocular water loss (only when active)
 #' @param extref = 20, \% oxygen extraction efficiency, for respiratory water loss
 #' @param DELTAR = 0.1, Temperature difference (deg C) between expired and inspired air, for computing respiratory water loss
 #' @usage ectotherm(amass, lometry, ABSMAX, ABSMIN, VTMAX, VTMIN, TBASK, TEMERGE, ctmax, ctmin,
@@ -467,7 +467,7 @@
 #' @export
 ectotherm<-function(amass=40,lometry=3,ABSMAX=0.85,ABSMIN=0.85,VTMAX=34,VTMIN=24,TBASK=17.5,
 TEMERGE=17.5,TPREF=30,ctmax=40,ctmin=6,dayact=1,nocturn=0,crepus=0,CkGrShad=1,burrow=1,climb=0,
-shdburrow=0,mindepth=2,maxdepth=10,M_1=0.013,M_2=0.8,M_3=0.038,skinwet=0.1,aeyes=0.03,extref=20.,
+shdburrow=0,mindepth=2,maxdepth=10,M_1=0.013,M_2=0.8,M_3=0.038,skinwet=0.1,peyes=0.03,extref=20.,
 DELTAR=0.1,microin="none",nyears=micro$nyears,ystrt=0,enberr=0.0002,live=1,write_input=0,
 startday=1,minshade=0.,maxshades=micro$MAXSHADES,FLTYPE=0.0,SUBTK=2.79,REFL=micro$REFL,
 DEP=micro$DEP,metout=micro$metout,shadmet=micro$shadmet,soil=micro$soil,shadsoil=micro$shadsoil,
@@ -723,7 +723,7 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   tester<-0
   microyear<-1
 
-  ectoinput<-as.matrix(c(ALT,FLTYPE,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,AMASS,EMISAN,absan,RQ,rinsul,lometry,live,TIMBAS,Flshcond,Spheat,Andens,ABSMAX,ABSMIN,FATOSK,FATOSB,FATOBJ,VTMAX,VTMIN,DELTAR,SKINW,aeyes,xbas,extref,TPREF,ptcond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,tdigpr,maxshd,minshd,ctmax,ctmin,behav,julday,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,julstart,monthly,customallom,M_1,M_2,M_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,minwater,microyear,container,flyer,flyspeed,dim,maxdepth,ctminthresh,ctkill,gutfill,mindepth,TBASK,TEMERGE,F_m,SUBTK,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,breedtempthresh,breedtempcum,contwet))
+  ectoinput<-as.matrix(c(ALT,FLTYPE,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,AMASS,EMISAN,absan,RQ,rinsul,lometry,live,TIMBAS,Flshcond,Spheat,Andens,ABSMAX,ABSMIN,FATOSK,FATOSB,FATOBJ,VTMAX,VTMIN,DELTAR,SKINW,peyes,xbas,extref,TPREF,ptcond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,tdigpr,maxshd,minshd,ctmax,ctmin,behav,julday,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,julstart,monthly,customallom,M_1,M_2,M_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,minwater,microyear,container,flyer,flyspeed,dim,maxdepth,ctminthresh,ctkill,gutfill,mindepth,TBASK,TEMERGE,F_m,SUBTK,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,breedtempthresh,breedtempcum,contwet))
   debmod<-c(clutchsize,andens_deb,d_V,d_Egg,mu_X,mu_E,mu_V,mu_P,T_REF,z,kap,kap_X,p_M,v,E_G,kap_R,E_sm,del_M,h_a,V_init_baby,E_init_baby,k_J,E_Hb,E_Hj,E_Hp,clutch_ab[2],batch,breedrainthresh,photostart,photofinish,daylengthstart,daylengthfinish,photodirs,photodirf,clutch_ab[1],frogbreed,frogstage,eta_O,JM_JO,E_0,kap_X_P,PTUREA1,PFEWAT1,wO,w_N,FoodWater1,f,s_G,K,X,metab_mode,stages,y_EV_l,s_j,startday,raindrink,reset,ma,mi,mh,aestivate,depress,minclutch)
   deblast<-c(iyear,countday,v_init,E_init,ms_init,cumrepro_init,q_init,hs_init,cumbatch_init,V_baby_init,E_baby_init,E_H_init,stage)
 
