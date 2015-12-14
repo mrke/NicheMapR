@@ -44,9 +44,12 @@ plantgro<-function(soilpot=soilpot,soilmoist=soilmoist, root_shallow=4, root_dee
   grow3[grow3<growth_delay*24]<-0 # apply growth delay specified by the user for time required for plants to come back after PWP has been hit
   grow3[grow3>0]<-1 # make vector of 0 and 1 where 1 means plants could have come back from drought
 
-  meanmoist<-as.data.frame(soilmoist)[,((root_shallow+2):(root_deep+2))]  # get range of soil water moisture depths to take mean of
-  meanmoist<-apply(meanmoist, 1, mean)
-
+  if(root_shallow==root_deep){
+   meanmoist<-as.data.frame(soilmoist)[,((root_shallow+2):(root_deep+2))]  # get range of soil water moisture depths to take mean of
+  }else{
+   meanmoist<-as.data.frame(soilmoist)[,((root_shallow+2):(root_deep+2))]  # get range of soil water moisture depths to take mean of
+   meanmoist<-apply(meanmoist, 1, mean)
+  }
   mean.moist.pot<-as.data.frame(cbind(meanpot,meanmoist))
   colnames(mean.moist.pot)<-c('pot','moist')
   mean.moist.pot$pot[mean.moist.pot$pot>wilting_thresh]<-FoodWater # assume plants start wilting at about 2 bar, but above this they are at max water content
