@@ -66,8 +66,8 @@ plantgro<-function(soilpot=soilpot,soilmoist=soilmoist, root_shallow=4, root_dee
   pct.water<-pct.water/100*grow3 # now convert to proportion and cut out times below PWP (including regrowth penalty)
 
   plantmoist<-mean.moist.pot$moist
-  colnames(plantmoist)<-'soilmoist'
-  plantmoist$moist.index<-plantmoist$soilmoist/max(plantmoist$soilmoist)*11 # put in units scaling from 0-11
+  plantmoist$moist.index<-plantmoist/max(plantmoist)*11 # put in units scaling from 0-11
+  colnames(plantmoist)<-c("soilmoist","moist.index")
   # next four lines spread the values out more evenly over 11 categories
   minval<-min(plantmoist$moist.index[plantmoist$soilmoist!=0])
   plantmoist$moist.index[plantmoist$soilmoist==0]<-minval
