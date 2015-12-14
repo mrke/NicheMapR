@@ -12,8 +12,8 @@
 #' @export
 plantgro<-function(soilpot=soilpot,soilmoist=soilmoist, root_shallow=4, root_deep=8, growth_delay=1, wilting_thresh=-200, permanent_wilting_point=-1500, FoodWater=82){
 
-  soilmoist<-subset(soilmoist,soilmoist$TIME==720) # just use midday value
-  soilpot<-subset(soilpot,soilpot$TIME==720) # just use midday
+  soilmoist<-subset(soilmoist,soilmoist[,"TIME"]==720) # just use midday value
+  soilpot<-subset(soilpot,soilpot[,"TIME"]==720) # just use midday
   if(root_shallow==root_deep){
    meanpot<-as.data.frame(soilpot)[,((root_shallow+2):(root_deep+2))]
   }else{
