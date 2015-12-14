@@ -721,7 +721,7 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   }else{
     plant<-plantgro(soilmoist=soilmoist,soilpot=soilpot,root_shallow=plantsim[1], root_deep=plantsim[2], growth_delay=plantsim[3], wilting_thresh=plantsim[4], permanent_wilting_point=plantsim[5], FoodWater=plantsim[6])
     foodwaters<-plant[,3]*100
-    foodlevels<-rep(X,nrow(metout))
+    foodlevels<-rep(X,nrow(metout)/24)
   }
 
   lat<-ectoin[4]
