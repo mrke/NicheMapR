@@ -14,9 +14,12 @@ plantgro<-function(soilpot=soilpot,soilmoist=soilmoist, root_shallow=4, root_dee
 
   #soilmoist<-subset(soilmoist,TIME==720) # just use midday value
   #soilpot<-subset(soilpot,TIME==720) # just use midday
-  meanpot<-as.data.frame(soilpot)[,((root_shallow+2):(root_deep+2))] # get range of soil water potential depths to take mean of
-  meanpot<-apply(meanpot, 1, mean) # get average soil water potential across chosen depth range
-
+  if(root_shallow==root_deep){
+   meanpot<-as.data.frame(soilpot)[,((root_shallow+2):(root_deep+2))]
+  }else{
+   meanpot<-as.data.frame(soilpot)[,((root_shallow+2):(root_deep+2))] # get range of soil water potential depths to take mean of
+   meanpot<-apply(meanpot, 1, mean) # get average soil water potential across chosen depth range
+  }
   grow<-meanpot
   grow[grow>permanent_wilting_point]<-1 # find times above the PWP (growth possible)
   grow[grow<=permanent_wilting_point]<-0 # find times when below the PWP (plant dead)
