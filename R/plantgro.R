@@ -41,7 +41,7 @@ plantgro<-function(soilpot=soilpot,soilmoist=soilmoist, root_shallow=4, root_dee
     }
   }
   grow3<-grow2
-  grow3[grow3<growth_delay*24]<-0 # apply growth delay specified by the user for time required for plants to come back after PWP has been hit
+  grow3[grow3<growth_delay]<-0 # apply growth delay specified by the user for time required for plants to come back after PWP has been hit
   grow3[grow3>0]<-1 # make vector of 0 and 1 where 1 means plants could have come back from drought
 
   if(root_shallow==root_deep){
