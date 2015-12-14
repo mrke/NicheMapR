@@ -2,10 +2,11 @@
 % Please edit documentation in R/ellipsoid_endo.R
 \name{ellipsoid}
 \alias{ellipsoid}
-\title{Implementation of the endotherm model .}
+\title{Ellipsoid endotherm model}
 \usage{
 ellipsoid(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5,
-  O2eff = 0.2, furcond = 0.04, airT = 20, windspd = 1, rh = 50)
+  furcond = 0.04, O2eff = 0.2, stress = 0.6, airT = 20, windspd = 1,
+  rh = 50)
 }
 \arguments{
 \item{posture}{= 4.5, Shape, ratio of long to short axis of a prolate ellipsoid}
@@ -16,9 +17,11 @@ ellipsoid(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5,
 
 \item{furdepth}{= 5, Fur depth (mm)}
 
+\item{furcond}{= 0.04, Conductivity of fur (W/Cm)}
+
 \item{O2eff}{= 0.2, Oxygen extraction efficiency (decimal \%)}
 
-\item{furcond}{= 0.04, Conductivity of fur (W/Cm)}
+\item{stress}{= 0.6, Fraction of basal metabolic rate at which evaporative water loss is required (decimal \%)}
 
 \item{airT}{= 20, Air temperature (deg C)}
 
@@ -27,52 +30,58 @@ ellipsoid(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5,
 \item{rh}{= 50, Relative humidity (\%)}
 }
 \value{
-AirTemp Air temperature for calculation (deg C)
-
-Windspeed Wind speed for calculation (m/s)
-
-RelHum Relative humidity for calculation (\%)
-
-Tcore Core temperature for calculation (deg C)
-
-UCT Upper Critical Temperature (deg C)
-
-LCT Lower Critical Temperature (deg C)
-
-Qresp_gph Respiration rate (W)
-
-Qresp_W Respiration rate (W)
-
-Qresp_kjph Respiration rate (kJ/h)
-
-Tskin Skin temperature (deg C)
-
-Qgen required heat generation (W)
-
-QgenFinal Required heat generation capped at basal (W)
-
-mlO2ph Oxygen consumption rate (ml/h)
-
-PctBasal Metabolic rate (\% of basal)
-
-status 1=cold, 2=happy, 3=hot
-
-H2Oloss_W Watts of heat to be dumped
-
-H2O_gph Water loss rate required to dump heat based on latent heat of vaporization
-
-massph_percent Percent of body mass lost as water per hour
-
-timetodeath Time to death (hours) from desiccation (15\% desiccated) if no water to drink
+\itemize{
+\item 1 AirTemp - Air temperature for calculation (deg C)
+\item 2 Windspeed - Wind speed for calculation (m/s)
+\item 3 RelHum - Relative humidity for calculation (\%)
+\item 4 Tcore - Core temperature for calculation (deg C)
+\item 5 UCT - Upper Critical Temperature (deg C)
+\item 6 LCT - Lower Critical Temperature (deg C)
+\item 7 Qresp_gph - Respiration rate (W)
+\item 8 Qresp_W - Respiration rate (W)
+\item 9 Qresp_kjph - Respiration rate (kJ/h)
+\item 10 Tskin - Skin temperature (deg C)
+\item 11 Qgen - required heat generation (W)
+\item 12 QgenFinal - Required heat generation capped at basal (W)
+\item 13 mlO2ph - Oxygen consumption rate (ml/h)
+\item 14 PctBasal - Metabolic rate (\% of basal)
+\item 15 status - 1=cold, 2=happy, 3=hot
+\item 16 H2Oloss_W - Watts of heat to be dumped
+\item 17 H2O_gph - Water loss rate required to dump heat based on latent heat of vaporization
+\item 18 massph_percent - Percent of body mass lost as water per hour
+\item 19 timetodeath - Time to death (hours) from desiccation (15\% desiccated) if no water to drink
+}
 }
 \description{
-An implementation of described in
+An implementation of the model described in
 Porter, W. P., and M. Kearney. 2009. Size, shape, and the thermal niche of endotherms.
 Proceedings of the National Academy of Sciences 106:19666-19672.
 with additional rough calculations for water loss. Note this model is only relevant for
-conditions where there is no solar radiation and air/ground/sky temperatures are equal
+conditions where there is no solar radiation and air/ground/sky temperatures are equal.
+Originally coded into R from Excel by John Baumgartner.
+}
+\details{
+Note that the parameter 'stress' is a fudge factor that accounts for physiological thermoregulatory
+adjustments during heat stress (e.g. core temperature increases, changes in flesh conductivity, changes
+in posture) that are not captured dynamically in this function (but some of these could be modelled
+dynamically on the basis of this function).
 }
 \examples{
+
+# compute metabolic and water loss rate as a function of air temperature
+endo<-ellipsoid(airT=seq(5,45), windspd = 0.1)
+endo<-as.data.frame(endo)
+plot(endo$AirTemp,endo$QgenFinal,type='l', xlab = "Air Temperature (deg C)", ylab = "Metabolic Rate (W)", main="Metabolic Rate vs. Air Temperaure")
+plot(endo$AirTemp,endo$H2O_gph,type='l', xlab = "Air Temperature (deg C)", ylab = "Water Loss Rate (g/h)", main="Water Loss Rate vs. Air Temperaure")
+
+# compute thermoneutral zone as a function of body mass
+masses<-10^seq(-3,2,0.5) # log sequence of masses
+endo<-ellipsoid(mass = masses)
+endo<-as.data.frame(endo)
+ylims<-c(min(endo$UCT,endo$LCT),max(endo$UCT,endo$LCT))
+plot(masses,endo$UCT, col='red',type='l', ylim=ylims, xlab="body mass (kg)",ylab="temperature (deg C)", main = "Upper and Lower Critical Temperatures vs Mass")
+points(masses,endo$LCT, type='l', col='blue')
+
 micro<-micro_global(loc = 'Birdsville, Australia') # run the model with default location and settings
 
 metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
