@@ -66,19 +66,18 @@ plantgro<-function(soilpot=soilpot,soilmoist=soilmoist, root_shallow=4, root_dee
   pct.water<-pct.water/100*grow3 # now convert to proportion and cut out times below PWP (including regrowth penalty)
 
   plantmoist<-mean.moist.pot$moist
-  plantmoist$moist.index<-plantmoist/max(plantmoist)*11 # put in units scaling from 0-11
-  colnames(plantmoist)<-c("soilmoist","moist.index")
+  moist.index<-plantmoist/max(plantmoist)*11 # put in units scaling from 0-11
   # next four lines spread the values out more evenly over 11 categories
-  minval<-min(plantmoist$moist.index[plantmoist$soilmoist!=0])
-  plantmoist$moist.index[plantmoist$soilmoist==0]<-minval
-  plantmoist$moist.index<-plantmoist$moist.index-minval
-  plantmoist$moist.index<-plantmoist$moist.index/max(plantmoist$moist.index)*11 # put in units scaling from 0-11
+  minval<-min(moist.index[plantmoist!=0])
+  moist.index[plantmoist==0]<-minval
+  moist.index<-moist.index-minval
+  moist.index<-moist.index/max(moist.index)*11 # put in units scaling from 0-11
 
   plant.pres<-pct.water
   plant.pres[plant.pres>.6]<-1
   plant.pres[plant.pres<1]<-0
 
-  plantgro<-cbind(plantmoist,pct.water,plant.pres)
+  plantgro<-cbind(plantmoist,moist.index,pct.water,plant.pres)
 
   return(plantgro)
 }
