@@ -153,6 +153,7 @@
 #' \item{\code{E_sm}{ = 350, Maximum volume-specific energy density of stomach (J/cm3)}\cr}
 #' \item{\code{K}{ = 1, Half saturation constant (#/cm2)}\cr}
 #' \item{\code{X}{ = 10, Food density (J/cm2)}\cr}
+#' \item{\code{plantsim}{ = 0, parameters for plant growth simulation model - 0 is off, otherwise vector of 6 values: 1) shallowest soil node to use, 2) deepest soil node to use, 3) growth_delay (days), 4) water potential at wilting threshold (J/kg), 5) water potential at permanent wilting point (J/kg), 6) percent water in food at maximum}\cr}
 #'}
 #' \strong{ Composition-related axilliary DEB parameters:}
 #' \itemize{
@@ -483,8 +484,8 @@ DEB=0,fract=1,z=2.825*fract,del_M=0.2144,F_m=12420,kap_X=0.85,v=0.02795/24.,
 kap=0.8206,p_M=48.81/24.,E_G=7512,kap_R=0.95,k_J=0.00628/24.,E_Hb=866.6*fract^3,
 E_Hj=E_Hb*fract^3,E_Hp=1.019e+04*fract^3,h_a=1.051e-08/(24.^2),s_G=0.01,
 T_REF=20,TA=8817,TAL=5.0e+04,TAH=9.0+04,TL=279,TH=306,
-E_0=9220*fract^4,f=1.,E_sm=350.,K=1,X=10,andens_deb=
-    Andens/1000,d_V=0.3,d_E=0.3,d_Egg=0.3,mu_X=525000,mu_E=585000,mu_V=500000,mu_P=480000,
+E_0=9220*fract^4,f=1.,E_sm=350.,K=1,X=10,plantsim=0, andens_deb=Andens/1000,
+    d_V=0.3,d_E=0.3,d_Egg=0.3,mu_X=525000,mu_E=585000,mu_V=500000,mu_P=480000,
 kap_X_P=0.1,n_X=c(1,1.8,0.5,.15),n_E=c(1,1.8,0.5,.15),n_V=c(1,1.8,0.5,.15),n_P=c(1,1.8,0.5,.15),
 n_M_nitro=c(1,4/5,3/5,4/5),metab_mode=0,stages=7,y_EV_l=0.95,S_instar=c(2.660,2.310,1.916,0),
   s_j=0.999,v_init=3e-9,E_init=E_0/v_init,E_H_init=0,stage=0,aestivate=0,depress=0.3,
@@ -714,9 +715,16 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   cumbatch_init<-0.
   pregnant<-0
 
+  if(length(plantsim)==0){
+    foodwaters<-rep(FoodWater,nrow(metout))
+    foodlevels<-rep(X,nrow(metout))
+  }else{
+    plant<-plantgro(soilmoist=soilmoist,soilpot=soilpot,root_shallow=plantsim[1], root_deep=plantsim[2], growth_delay=plantsim[3], wilting_thresh=plantsim[4], permanent_wilting_point=plantsim[5], FoodWater=plantsim[6])
+    foodwaters<-plant$pct.water
+    foodlevels<-rep(X,nrow(metout))
+  }
+
   lat<-ectoin[4]
-  foodwaters<-rep(FoodWater,nrow(metout))
-  foodlevels<-rep(X,nrow(metout))
   julstart<-metout[1,2]
   tannul<-as.numeric(mean(soil[,12]))
   monthly<-0
