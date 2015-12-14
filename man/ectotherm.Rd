@@ -57,7 +57,7 @@ ectotherm(amass, lometry, ABSMAX, ABSMIN, VTMAX, VTMIN, TBASK, TEMERGE, ctmax, c
 
 \item{skinwet}{= 0.2, \% of surface area acting as a free-water exchanger, for computing cutaneous water loss}
 
-\item{aeyes}{= 0.03, \% of surface area taken up by open eye, for computing ocular water loss (only when active)}
+\item{peyes}{= 0.03, \% of surface area taken up by open eye, for computing ocular water loss (only when active)}
 
 \item{extref}{= 20, \% oxygen extraction efficiency, for respiratory water loss}
 
@@ -187,6 +187,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{E_sm}{ = 350, Maximum volume-specific energy density of stomach (J/cm3)}\cr}
 \item{\code{K}{ = 1, Half saturation constant (#/cm2)}\cr}
 \item{\code{X}{ = 10, Food density (J/cm2)}\cr}
+\item{\code{plantsim}{ = 0, parameters for plant growth simulation model - 0 is off, otherwise vector of 6 values: 1) shallowest soil node to use, 2) deepest soil node to use, 3) growth_delay (days), 4) water potential at wilting threshold (J/kg), 5) water potential at permanent wilting point (J/kg), 6) percent water in food at maximum}\cr}
 }
 \strong{ Composition-related axilliary DEB parameters:}
 \itemize{
