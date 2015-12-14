@@ -12,8 +12,8 @@
 #' @export
 plantgro<-function(soilpot=soilpot,soilmoist=soilmoist, root_shallow=4, root_deep=8, growth_delay=1, wilting_thresh=-200, permanent_wilting_point=-1500, FoodWater=82){
 
-  #soilmoist<-subset(soilmoist,TIME==720) # just use midday value
-  #soilpot<-subset(soilpot,TIME==720) # just use midday
+  soilmoist<-subset(soilmoist,TIME==720) # just use midday value
+  soilpot<-subset(soilpot,TIME==720) # just use midday
   if(root_shallow==root_deep){
    meanpot<-as.data.frame(soilpot)[,((root_shallow+2):(root_deep+2))]
   }else{
@@ -65,9 +65,8 @@ plantgro<-function(soilpot=soilpot,soilmoist=soilmoist, root_shallow=4, root_dee
   pct.water[pct.water<FoodWater]<-(pct.water[pct.water<FoodWater]-minmoist)/(wilting-minmoist)*FoodWater # for just the values less than max water content, make them equal to the ratio of moisture level and wilting point moisture and then multiplied by food water content so have moisture content ranging from max level down to min moisture possible
   pct.water<-pct.water/100*grow3 # now convert to proportion and cut out times below PWP (including regrowth penalty)
 
-  plantmoist<-as.data.frame(cbind(dates,mean.moist.pot$moist))
-  colnames(plantmoist)<-c('date1','soilmoist')
-  plantmoist$date1<-dates
+  plantmoist<-mean.moist.pot$moist
+  colnames(plantmoist)<-'soilmoist'
   plantmoist$moist.index<-plantmoist$soilmoist/max(plantmoist$soilmoist)*11 # put in units scaling from 0-11
   # next four lines spread the values out more evenly over 11 categories
   minval<-min(plantmoist$moist.index[plantmoist$soilmoist!=0])
