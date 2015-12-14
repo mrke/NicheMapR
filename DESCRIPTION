@@ -23,6 +23,7 @@ Suggests:
     ectotherm,
     rmarkdown,
     geonames,
+    raster,
     XML
 VignetteBuilder: knitr
 Vignettes: ectotherm-model-tutorial
