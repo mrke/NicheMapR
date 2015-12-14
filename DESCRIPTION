@@ -7,7 +7,6 @@ Description: This packages provides an interface to a suite of biophysical model
 Depends:
     R (>= 3.2.2)
 Imports:
-   raster
 License: TBA
 LazyData: true
 RoxygenNote: 5.0.0
