@@ -81,7 +81,7 @@
 #' \item{\code{FATOSB}{ = 0.4, Configuration factor to subsrate for infrared calculations}\cr}
 #' \item{\code{rinsul}{ = 0., Insulative fat layer thickness (m)}\cr}
 #' \item{\code{ptcond}{ = 0.25, Fraction of surface contacting the substrate}\cr}
-#' \item{\code{Spheat}{ = 4185, Specific heat of flesh J/(kg-K)}\cr}
+#' \item{\code{Spheat}{ = 3073, Specific heat of flesh J/(kg-K)}\cr}
 #' \item{\code{Flshcond}{ = 0.5, Thermal conductivity of flesh (W/mC, range: 0.412-2.8)}\cr}
 #' \item{\code{Andens}{ = 1000, Density of flesh (kg/m3)}\cr}
 #' \item{\code{EMISAN}{ = 0.95, Emissivity of animal (0-1)}\cr}
@@ -194,7 +194,7 @@
 #'}
 #' \strong{ Reproductive phenology model parameters:}
 #' \itemize{
-#' \item{\code{clutchsize}{ = 2., Clutch size (#), overridden by \code{clutch_ab}}\cr}
+#' \item{\code{clutchsize}{ = 5, Clutch size (#), overridden by \code{clutch_ab}}\cr}
 #' \item{\code{clutch_ab}{ = c(0,0), # paramters for relationship between length (cm) and clutch size: clutch size = a*SVL-b, make a and b zero if fixed clutch size}\cr}
 #' \item{\code{viviparous}{ = 0, Viviparous reproduction? 1=yes, 0=no (if yes, animal will be held in adult-sided female's body for duration of development and will experience her body temperature}\cr}
 #' \item{\code{minclutch}{ = 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate}\cr}
@@ -477,7 +477,7 @@ soilpot=micro$soilpot,shadpot=micro$shadpot,RAINFALL=micro$RAINFALL,
 ectoin=rbind(as.numeric(micro$ALTT),as.numeric(micro$REFL)[1],micro$longlat[1],micro$longlat[2])
 ,customallom=c(10.4713,0.688,0.425,0.85,3.798,0.683,0.694,0.743),
 shape_a=1.,shape_b=3,shape_c=0.6666666667,FATOSK=0.4,FATOSB=0.4,rinsul=0.,ptcond=0.1,
-Spheat=4185,Flshcond=0.5,Andens=1000,EMISAN=0.95,
+Spheat=3073,Flshcond=0.5,Andens=1000,EMISAN=0.95,
 fosorial=0,rainact=0,actrainthresh=0.1,soilnode=4.,ctminthresh=12,ctkill=0,
 PFEWAT=73,PTUREA=0,FoodWater=82,minwater=15,gutfill=75,raindrink=0.,
 DEB=0,fract=1,z=2.825*fract,del_M=0.2144,F_m=12420,kap_X=0.85,v=0.02795/24.,
@@ -715,7 +715,7 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   cumbatch_init<-0.
   pregnant<-0
 
-  if(length(plantsim)==0){
+  if(plantsim[1]==0){
     foodwaters<-rep(FoodWater,nrow(metout))
     foodlevels<-rep(X,nrow(metout))
   }else{

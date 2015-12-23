@@ -115,7 +115,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{FATOSB}{ = 0.4, Configuration factor to subsrate for infrared calculations}\cr}
 \item{\code{rinsul}{ = 0., Insulative fat layer thickness (m)}\cr}
 \item{\code{ptcond}{ = 0.25, Fraction of surface contacting the substrate}\cr}
-\item{\code{Spheat}{ = 4185, Specific heat of flesh J/(kg-K)}\cr}
+\item{\code{Spheat}{ = 3073, Specific heat of flesh J/(kg-K)}\cr}
 \item{\code{Flshcond}{ = 0.5, Thermal conductivity of flesh (W/mC, range: 0.412-2.8)}\cr}
 \item{\code{Andens}{ = 1000, Density of flesh (kg/m3)}\cr}
 \item{\code{EMISAN}{ = 0.95, Emissivity of animal (0-1)}\cr}
@@ -228,7 +228,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 }
 \strong{ Reproductive phenology model parameters:}
 \itemize{
-\item{\code{clutchsize}{ = 2., Clutch size (#), overridden by \code{clutch_ab}}\cr}
+\item{\code{clutchsize}{ = 5, Clutch size (#), overridden by \code{clutch_ab}}\cr}
 \item{\code{clutch_ab}{ = c(0,0), # paramters for relationship between length (cm) and clutch size: clutch size = a*SVL-b, make a and b zero if fixed clutch size}\cr}
 \item{\code{viviparous}{ = 0, Viviparous reproduction? 1=yes, 0=no (if yes, animal will be held in adult-sided female's body for duration of development and will experience her body temperature}\cr}
 \item{\code{minclutch}{ = 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate}\cr}
