@@ -1,4 +1,4 @@
-#' Ectotherm model.
+#' Ectotherm model
 #'
 #' An implementation of the Niche Mapper ectotherm model that computes body temperature, water loss,
 #' activity and microhabitat selection. It optionally runs the Dynamic Energy Budget (DEB) model for
@@ -166,10 +166,10 @@
 #' \item{\code{mu_V}{ = 500000, Molar Gibbs energy (chemical potential) of structure (J/mol)}\cr}
 #' \item{\code{mu_P}{ = 480000, Molar Gibbs energy (chemical potential) of faeces (J/mol)}\cr}
 #' \item{\code{kap_X_P}{ = 0.1, Faecation efficiency of food to faeces (-)}\cr}
-#' \item{\code{n_X}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in food}\cr}
-#' \item{\code{n_E}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in reserve}\cr}
-#' \item{\code{n_V}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in structure}\cr}
-#' \item{\code{n_P}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in faeces}\cr}
+#' \item{\code{n_X}{ = c(1,1.8,0.5,0.15), chem. indices of C, O, H and N in food}\cr}
+#' \item{\code{n_E}{ = c(1,1.8,0.5,0.15), chem. indices of C, O, H and N in reserve}\cr}
+#' \item{\code{n_V}{ = c(1,1.8,0.5,0.15), chem. indices of C, O, H and N in structure}\cr}
+#' \item{\code{n_P}{ = c(1,1.8,0.5,0.15), chem. indices of C, O, H and N in faeces}\cr}
 #' \item{\code{n_M_nitro}{ = c(1,4/5,3/5,4/5), chem. indices of C, O, H and N in nitrogenous waste}\cr}
 #'}
 #' \strong{ Insect DEB model parameters (not yet in operation):}
@@ -486,7 +486,7 @@ E_Hj=E_Hb*fract^3,E_Hp=1.019e+04*fract^3,h_a=1.051e-08/(24.^2),s_G=0.01,
 T_REF=20,TA=8817,TAL=5.0e+04,TAH=9.0+04,TL=279,TH=306,
 E_0=9220*fract^4,f=1.,E_sm=350.,K=1,X=10,plantsim=0, andens_deb=Andens/1000,
     d_V=0.3,d_E=0.3,d_Egg=0.3,mu_X=525000,mu_E=585000,mu_V=500000,mu_P=480000,
-kap_X_P=0.1,n_X=c(1,1.8,0.5,.15),n_E=c(1,1.8,0.5,.15),n_V=c(1,1.8,0.5,.15),n_P=c(1,1.8,0.5,.15),
+kap_X_P=0.1,n_X=c(1,1.8,0.5,0.15),n_E=c(1,1.8,0.5,0.15),n_V=c(1,1.8,0.5,0.15),n_P=c(1,1.8,0.5,0.15),
 n_M_nitro=c(1,4/5,3/5,4/5),metab_mode=0,stages=7,y_EV_l=0.95,S_instar=c(2.660,2.310,1.916,0),
   s_j=0.999,v_init=3e-9,E_init=E_0/v_init,E_H_init=0,stage=0,aestivate=0,depress=0.3,
 clutchsize=5,clutch_ab=c(0,0),viviparous=0,minclutch=0,batch=1,photostart=3,photofinish=1,

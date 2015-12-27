@@ -2,7 +2,7 @@
 % Please edit documentation in R/ectotherm.R
 \name{ectotherm}
 \alias{ectotherm}
-\title{Ectotherm model.}
+\title{Ectotherm model}
 \usage{
 ectotherm(amass, lometry, ABSMAX, ABSMIN, VTMAX, VTMIN, TBASK, TEMERGE, ctmax, ctmin,
  TPREF, dayact, nocturn, crepus, CkGrShad, burrow, climb, shdburrow, mindepth, maxdepth,
@@ -200,10 +200,10 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{mu_V}{ = 500000, Molar Gibbs energy (chemical potential) of structure (J/mol)}\cr}
 \item{\code{mu_P}{ = 480000, Molar Gibbs energy (chemical potential) of faeces (J/mol)}\cr}
 \item{\code{kap_X_P}{ = 0.1, Faecation efficiency of food to faeces (-)}\cr}
-\item{\code{n_X}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in food}\cr}
-\item{\code{n_E}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in reserve}\cr}
-\item{\code{n_V}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in structure}\cr}
-\item{\code{n_P}{ = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in faeces}\cr}
+\item{\code{n_X}{ = c(1,1.8,0.5,0.15), chem. indices of C, O, H and N in food}\cr}
+\item{\code{n_E}{ = c(1,1.8,0.5,0.15), chem. indices of C, O, H and N in reserve}\cr}
+\item{\code{n_V}{ = c(1,1.8,0.5,0.15), chem. indices of C, O, H and N in structure}\cr}
+\item{\code{n_P}{ = c(1,1.8,0.5,0.15), chem. indices of C, O, H and N in faeces}\cr}
 \item{\code{n_M_nitro}{ = c(1,4/5,3/5,4/5), chem. indices of C, O, H and N in nitrogenous waste}\cr}
 }
 \strong{ Insect DEB model parameters (not yet in operation):}

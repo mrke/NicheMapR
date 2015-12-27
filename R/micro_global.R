@@ -1,4 +1,4 @@
-#' Global implementation of the microclimate model.
+#' Global implementation of the microclimate model
 #'
 #' An implementation of the Niche Mapper microclimate model that uses the global climate database
 #' derived from "New, M., Lister, D., Hulme, M. and Makin, I., 2002: A high-resolution data
