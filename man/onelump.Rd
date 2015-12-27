@@ -2,9 +2,7 @@
 % Please edit documentation in R/onelump.R
 \name{onelump}
 \alias{onelump}
-\title{Transient, 'one-lump', heat budget for computing rate of change of temperature
-under a constant environment
-Michael Kearney & Warren Porter developed this R function in July 2014.}
+\title{One-lump Transient Heat Budget for Constant Environment}
 \usage{
 onelump(t, Tc_init, thresh, AMASS, lometry, Tair, Trad, vel, Qsol, Zen, ...)
 }
@@ -103,6 +101,5 @@ Tbs<-onelump(t=t, Tc_init=5, thresh=29, AMASS=masses[i], lometry=2, Tair=30, Tra
   points(Tbs$Tc~t,type='l',col=i)
  }
 }
-
 }
 

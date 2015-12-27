@@ -2,7 +2,7 @@
 % Please edit documentation in R/micro_global.R
 \name{micro_global}
 \alias{micro_global}
-\title{Global implementation of the microclimate model.}
+\title{Global implementation of the microclimate model}
 \usage{
 micro_global(loc = "Madison, Wisconsin USA", timeinterval = 12, nyears = 1, soiltype = 4,
 REFL = 0.15, slope = 0, aspect = 0,

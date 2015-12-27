@@ -1,3 +1,5 @@
+#' One-lump Transient Heat Budget for Constant Environment
+#'
 #' Transient, 'one-lump', heat budget for computing rate of change of temperature
 #' under a constant environment
 #' Michael Kearney & Warren Porter developed this R function in July 2014.
@@ -59,7 +61,6 @@
 #'   points(Tbs$Tc~t,type='l',col=i)
 #'  }
 #' }
-#'
 #' @export
 onelump<-function(t=seq(1,3600,60),Tc_init=5,thresh=29,AMASS=500,lometry=2,Tair=30,Trad=30,vel=0.1,Qsol=500,Zen=20,
   Flshcond=0.5,q=0,Spheat=3073,EMISAN=0.95, rho=932, ABS=0.85,
