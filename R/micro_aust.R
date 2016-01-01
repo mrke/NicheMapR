@@ -56,6 +56,7 @@
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
+#' \code{Refhyt}{ = 120, Reference height (cm), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
 #' \code{RUF}{ = 0.004, Roughness height (m), e.g. sand is 0.05, grass may be 2.0, current allowed range: 0.001 (snow) - 2.0 cm.}\cr\cr
 #' \code{EC}{ = 0.0167238, Eccenricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)}\cr\cr
 #' \code{SLE}{ = 0.95, Substrate longwave IR emissivity (decimal \%), typically close to 1}\cr\cr
@@ -245,7 +246,7 @@
 micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart=1990,yfinish=1990,
   nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,
   DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.),
-  minshade=0,maxshade=90,Usrhyt=1,
+  minshade=0,maxshade=90,Refhyt=120,Usrhyt=1,
   runshade=1,rungads=1,write_input=0,writecsv=0,manualshade=1,
   soildata=1,terrain=0,dailywind=1,adiab_cor=1,warm=0,spatial="c:/Australian Environment/",vlsci=0,
   ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2560,SpecHeat=870,BulkDensity=1300,
@@ -462,14 +463,14 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
         Please use a larger height above the surface.", '\n')
     errors<-1
   }
-  if(Usrhyt<0.5 | Usrhyt>120){
-    cat("ERROR: Reference height (Usrhyt) is out of bounds.
-        Please enter a correct value (0.05 - 120).", '\n')
+  if(Usrhyt<0.5 | Usrhyt>Refhyt){
+    cat("ERROR: Local height (Usrhyt) is out of bounds.
+        Please enter a correct value (0.05 - Refhyt).", '\n')
     errors<-1
   }
-  if(CMH2O<0.5 | CMH2O>120){
+  if(CMH2O<0.5 | CMH2O>Refhyt){
     cat("ERROR: Preciptable water in air column (CMH2O) is out of bounds.
-        Please enter a correct value (0.1 - 2).", '\n')
+        Please enter a correct value (0.1 - Refhyt).", '\n')
     errors<-1
   }
   if(max(TIMAXS)>24 | min(TIMAXS)<0){
@@ -1520,7 +1521,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
     SNOW <- rep(0,timeinterval*nyears) # no snow simulated on surface
 
     # microclimate input parameters list
-    microinput<-c(dim,RUF,ERR,Usrhyt,Numtyps,Numint,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun)
+    microinput<-c(dim,RUF,ERR,Usrhyt,Numtyps,Numint,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,Refhyt)
 
     julday1=matrix(data = 0., nrow = dim, ncol = 1)
     SLES1=matrix(data = 0., nrow = dim, ncol = 1)
