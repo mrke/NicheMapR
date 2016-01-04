@@ -1,0 +1,272 @@
+## ---- echo = FALSE-------------------------------------------------------
+knitr::opts_chunk$set(
+ eval = TRUE
+)
+
+## ----table1, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+tabl <- "
+*Physical Quantity*       |	*Quantity Symbol* |	*Unit*   |	*Unit Symbol*
+------------------------- | ----------------- | -------- | --------------
+length                    | *l*               | metre    | m
+mass                      | *m*               | kilogram | kg
+time                      | *t*               | second   | s
+thermodynamic temperature | *T*               | kelvin   | K
+"
+cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
+
+## ----table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+tabl <- "
+*Physical Quantity*  | *Quantity Symbol*   | *Unit*   | *Unit Symbol*   | *Unit Definition*
+-------------------- | ------------------- | -------- | --------------- | -----------------
+force                | *F*                 | newton   | N               | $J$ $m^{-1}$
+energy               | *E*                 | joule    | J               | $N$ $m$
+pressure             | *p*                 | pascal   | Pa              | $N$ $m^{-2}$, $J$ $m^{-3}$
+power                | *P*                 | watt     | W               | $J$ $s^{-1}$
+volume               | *t*                 | cubic metre | $m^3$        | $m^3$
+Celsius temperature$^*$ | $t$              | degree Celsius   | &deg;C   | $K$
+"
+cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
+
+## ----table3, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+tabl <- "
+*Multiple* | *Prefix*	| *Symbol* |	*Multiple* | *Prefix*	 | *Symbol*
+---------- | -------- | -------- | ----------- | --------- | -------
+$10^{-1}$	 | deci	    | *d*      | $10^{1}$	   | deca	     | da
+$10^{-2}$	 | centi    | *c*      | $10^{2}$	   | hecto     | h
+$10^{-3}$	 | milli    | *m*      | $10^{3}$	   | kilo	     | k
+$10^{-6}$	 | micro    | *µ*      | $10^{6}$	   | mega	     | M
+$10^{-9}$	 | nano	    | *n*      | $10^{9}$	   | giga	     | G
+$10^{-12}$ | pico	    | *p*      | $10^{12}$   | tera	     | T
+"
+cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
+
+## ----table4, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+tabl <- "
+**Force**   
+&nbsp;&nbsp;&nbsp;&nbsp;dyne = $10^5$ N$^*$  
+&nbsp;&nbsp;&nbsp;&nbsp;kilogram force = $9.80665$ N$^*$  
+&nbsp;&nbsp;&nbsp;&nbsp;ounce force = $2.7801385$ x $10^{-1}$ N  
+&nbsp;&nbsp;&nbsp;&nbsp;pound force = $4.4482216152605$ N$^*$  
+   
+**Energy**   
+&nbsp;&nbsp;&nbsp;&nbsp;British thermal unit (thermochemical) = $1.054350$ x $10^{3}$ J  
+&nbsp;&nbsp;&nbsp;&nbsp;calorie (thermochemical) = $4.184$ J  
+&nbsp;&nbsp;&nbsp;&nbsp;what hour = $3.60$ x $10^{3}$ J$^*$  
+   
+**Pressure**   
+&nbsp;&nbsp;&nbsp;&nbsp;bar = $10^{5}$ $Pa^*$  
+&nbsp;&nbsp;&nbsp;&nbsp;centimetre of water (4 &deg;C) = $9.80638$ x $10^{1}$ Pa   
+&nbsp;&nbsp;&nbsp;&nbsp;millimetre of mercury (0 &deg;C) = $1.333224$ x $10^{2}$ Pa   
+&nbsp;&nbsp;&nbsp;&nbsp;pound per square inch = $6.894757$ x $10^{3}$ Pa   
+&nbsp;&nbsp;&nbsp;&nbsp;standard atmosphere = $1.01325$ x $10^{5}$ Pa   
+&nbsp;&nbsp;&nbsp;&nbsp;torr = $1.333224$ x $10^{2}$ Pa   
+   
+**Power**   
+&nbsp;&nbsp;&nbsp;&nbsp;British thermal unit (thermochemical) = $1.054350$ x $10^{3}$ W   
+&nbsp;&nbsp;&nbsp;&nbsp;calorie (thermochemical) per second = $4.184$ W$^*$   
+&nbsp;&nbsp;&nbsp;&nbsp;calorie (thermochemical) per minute = $6.973333$ x $10^{-2}$ W   
+&nbsp;&nbsp;&nbsp;&nbsp;kilocalorie (thermochemical) per hour = $8.604207$ x $10^{-1}$ W   
+   
+**Volume**   
+&nbsp;&nbsp;&nbsp;&nbsp;cubic foot = $2.8316592$ m$^{3*}$   
+&nbsp;&nbsp;&nbsp;&nbsp;gallon = $3.785411784$ x $10^{-3}$ m$^{-3*}$    
+&nbsp;&nbsp;&nbsp;&nbsp;litre = $10^{-3}$ m$^{-3*}$   
+&nbsp;&nbsp;&nbsp;&nbsp;pint (U.S. liquid) = $4.73176473$ x $10^{-4}$  m$^{3*}$   
+&nbsp;&nbsp;&nbsp;&nbsp;quart (U.S. liquid) = $9.4635295$ x $10^{-4}$  m$^{3*}$  
+   
+**Length**   
+&nbsp;&nbsp;&nbsp;&nbsp;foot = $3.048$ x $10^{-1}$ m$^{*}$   
+&nbsp;&nbsp;&nbsp;&nbsp;inch = $2.54$ x $10^{-2}$ m$^{*}$   
+&nbsp;&nbsp;&nbsp;&nbsp;mile (U.S. statute) = $1.609344$ x $10^{3}$ m$^{*}$   
+&nbsp;&nbsp;&nbsp;&nbsp;mile (U.S. nautical) = $1.852$ x $10^{3}$ m$^{*}$   
+&nbsp;&nbsp;&nbsp;&nbsp;yard = $9.144$ x $10^{-1}$ m$^{*}$   
+   
+**Mass**
+&nbsp;&nbsp;&nbsp;&nbsp;ounce = $2.8349523125$ x $10^{-2}$ kg$^{*}$   
+&nbsp;&nbsp;&nbsp;&nbsp;pound = $4.5359237$ x $10^{-1}$ kg$^{*}$   
+&nbsp;&nbsp;&nbsp;&nbsp;ton (short, 2000 pound) = $9.0718474$ x $10^{2}$ kg$^{*}$   
+   
+$^{*}$exact, by definition
+"
+cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
+
+## ----table5, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+tabl <- "
+*Quantity*                                           | *Symbol*	| *Value*  |	*Units*
+---------------------------------------------------- | -------- | -------- | -----------
+Density of dry air at 25 &deg;C and 101325 Pa$^{*}$	 | &rho;	    | $1.184$    | kg m$^3$	   
+Diffusivity of water vapour in air at 25 &deg;C and 101325 Pa$^{*}$	 | *D*	    | $2.614$ x $10^{-5}$    | m$^2$ s$^{-1}$	   
+Dynamic viscosity of dry air at 25 &deg;C and 101325 Pa$^{*}$	 | &mu;	    | $1.806$ x $10^{-5}$    | kg m$^{-1}$ s$^{-1}$	   
+Gas constant for ideal gas	 | *R*	    | $8.31434$    | J mol$^{-1}$ K$^{-1}$   
+Gas constant for water vapour	 | *R*$_v$	    | $4.6150$ x $10^{2}$    | Pa m$^3$ kg$^{-1}$ K$^{-1}$	   
+Gravitational constant	 | *R*	    | $6.6732$ x $10^{-11}$    | N m$^2$ kg$^{-2}$	   
+Kinematic viscosity of dry air at 25 &deg;C and 101325 Pa$^{*}$	 | &nu;	    | $1.525$ x $10^{-5}$    | m$^3$ s$^{-1}$	
+Latent heat of vapourisation of water at 25 &deg;C	 | *L*	    | $2.442$ x $10^{6}$    | J kg$^{-1}$	   
+Molecular weight of dry air	 | *M*$_a$	    | $2.8966$ x $10^{-2}$    | kg mol$^{-1}$	   
+Molecular weight of water | *M*$_v$	    | $1.8016$ x $10^{-2}$    | kg mol$^{-1}$	 
+Specific heat of dry air	 | *c*$_p$	    | $1.00484$ x $10^{3}$    | K kg$^{-1}$ K$^{-1}$	   
+Standard pressure	 | *P*$_0$ 	    | $1.01325$ x $10^{5}$    | Pa	   
+Standard temperature	 | *T*$_0$ 	    | $2.7315$ x $10^{2}$    | K	   
+Stefan-Boltzmann constant	 | &sigma;	    | $5.67032$ x $10^{-8}$    | W m$^{-2}$ K$^{-4}$	   
+Thermal conductivity of dry air at 25 &deg;C and 101325 Pa$^{*}$	 | *k*	    | $2.601$ x $10^{-2}$    | W m$^{-1}$ K$^{-1}$	   
+"
+cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
+
+## ----table6, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+tabl <- "
+
+*Compound* | *10&deg;C*	| *15&deg;C*  |	 *20&deg;C* | *25&deg;C*	| *30&deg;C*	| *35&deg;C*	
+--- | --- | --- | --- | --- | --- | --- 
+NH$_4$Cl|79.0 | 79.5 | 79.5 | 78.0 | 77.5 | -
+NH$_4$HPO$_4$ (monophosphate)|- | - | 93.0 | 93.0 | 92.0 | -
+NH$_4$NO$_3$|75.0 | 70.0 | 65.5 | 62.5 | 59.5 | 55.0
+NH$_4$NO$_3$ + NaNO$_3$|58.0 | 55.0 | 52.0 | 50.0 | 47.0 | 44.5
+NH$_4$NO$_3$ + AgNO$_3$|70.5 | 68.0 | 65.1 | 61.5 | 58.0 | 55.0
+(NH$_4$)$_2$ SO$_4$|80.5 | 81.0 | 80.5 | 80.0 | 80.0 | 79.5
+CaCl$_2$&middot;6H$_2$O$^2$|38.0 | 35.0 | 32.5 | 29.5 | - | -
+CaHPO$_4$&middot;2H$_2$O$^3$|97.5 | 99.5 | 95.0 | 97.0 | 95.0 | -
+CaH$_4$(PO$_4$)&middot;H$_2$O$^4$|98.0 | 99.0 | 94.0 | 96.0 | 93.5 | -
+Ca(NO$_3$)$_2$&middot;4H$_2$O$^5$|- | 56.0 | 55.5 | 50.5 | 47.0 | -
+C0Cl$_2$$^6$|- | 72.5 (18 &deg;C) | 67.0 | - | 62.0 | -
+Cr$_2$O$_3$$^7$|- | 45.5 | (39.0) | - | 44.5 | -
+Glucose|57 (12 &deg;C) | - | 55.0 | 55.0 | - | 53.0
+LiCl&middot;H$_2$O$^8$|13.5 | 13.0 | 12.5 | 12.0 | 11.5 | 11.5
+Pb(NO$_3$)$_2$$^9$|98.0 | 97.0 | 97.0 | 95.5 | 95.0 | 94.5
+Pb(NO$_3$)$_2$+NH$_4$NO$_3$|66.5 | 62.0 | 58.0 | 55.0 | 52.5 | 49.5
+MgCl$_2$&middot;6H$_2$O|34.0 | 34.0 | 33.0 | 32.5 | 32.5 | 32.5
+Mg(NO$_3$)$_2$&middot;6H$_2$O|58.0 | 56.0 | 55.0 | 53.0 | 52.0 | 50.5
+P$_2$O$_5$|0.0 | 0.0 | 0.0 | 0.0 | 0.0 | -
+KAc|(21.0) | - | 20.0 | 22.5 | 22.0 | -
+KBr|86.0 | - | 84.0 | 80.0 | 82.0 | -
+K$_2$CO$_3$&middot;2H$_2$O$^{10}$|47.0 | 44.0 | 44.0 | 43.0 | 43.0 | -
+KCl|88.0 | 86.5 | 85.0 | 85.0 | 84.5 | 83.0
+K$_2$CrO$_4$|- | - | 88.0 | - | 86.5 | -
+K$_2$Cr$_2$O$_7$|- | - | 98.0 | 98.0 | 97.5 | 96.5
+KH$_2$PO$_4$|98.0 | 99.0 | 96.5 | 96.0 | 93.5 | -
+KF&middot;2H$_2$O$^{11}$|- | - | - | 30.5 | 27.4 | -
+KNO$_3$$^{12}$|96.0 | 95.5 | 93.5 | 92.5 | 91.0 | 89.5
+KNO$_2$|- | - | 48.5 | - | 47.0 | -
+K$_2$SO$_4$|98.5 | 99.0 | 98.0 | 97.5 | 96.5 | 96.0
+KCNS$^{13}$|52.0 | 50.0 | 47.0 | 46.5 | 43.5 | 41.5
+K tartrate$^{14}$|- | 75.0 | 75.0 | 75.0 | 74.0 | -
+KNa tartrate$^{15}$|87.5 | - | 87.0 | 87.0 | 87.0 | -
+Pyrocatechol|- | 99.0 | 95.5 | 93.5 | 92.5 | 90.5
+Resorinol|- | 95.0 | 87.0 | 85.0 | 82.5 | 79.5
+AgNO$_3$|88.0 | 86.0 | 84.0 | 82.0 | 80.0 | 78.0
+AgNO$_3$+Pb(NO$_3$)$_2$|84.0 | 83.0 | 80.5 | 78.5 | 76.5 | 75.0
+NaAc&middot;3H$_2$O|- | - | 75.0 | 73.0 | 71.0 | -
+NaBr&middot;2H$_2$O$^{16}$|63.0 | 61.0 | 59.0 | 57.5 | 56.0 | 54.5
+Na$_2$CO$_3$&middot;10H$_2$O$^{17}$|(99.0) | - | 92.0 | 87.0 | 87.0 | -
+NaCl|76.5 | 76.0 | 76.0 | 75.5 | 75.5 | 75.5
+NaCl+KCl|- | - | 70.0 | 71.5 | 71.0 | -
+Na$_2$CrO$_4$&middot;4H$_2$O|- | - | - | - | 64.5 | -
+Na$_2$Cr$_2$O$_7$&middot;H$_2$O$^{18}$|60.0 | 56.5 | 54.5 | 53.0 | 52.5 | 51.0
+NaOH|(5.5) | - | 5.5 | 7.0 | (4.0) | -
+NaI|- | - | 38.0 | 38.0 | 36.0 | -
+NaNO$_3$|77.5 | 76.5 | 76.0 | 74.0 | 72.5 | 71.0
+NaNO$_2$|- | - | 65.5 | 64.0 | 63.0 | -
+Na$_2$SO$_4$&middot;10H$_2$O|- | - | (93.0) | (93.0) | - | (87.0)
+Na tartrate$^{19}$|- | 94.0 | 92.0 | 92.0 | 92.0 | -
+Urea|81.5 | 80.0 | 80.0 | 76.0 | 73.3 | -
+ZnCl$_2$&middot;1.5H$_2$O$^{20}$|(10.0) | (10.0) | 10.0 | - | (10.0) | -
+ZnSO$_4$&middot;7H$_2$O$^{21}$|- | - | - | 88.5 | - | -
+"
+cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
+
+## ----table7, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+tabl <- "
+
+*Compound* | *Relative Humidity*	| *Compound*  |	 *Relative Humidity*	
+--- | --- | --- | --- 
+BaI$_2$&middot;2H$_2$O|44.0 | NaHSO$_4$ | 52.0
+CaSO$_4$&middot;2H$_2$O|98.0 | NaBrO$_3$ | 92.0
+NH$_4$&middot;4H$_2$O|65.0 | NaNO$_3$+KNO$_3$| 71.0
+NH$_4$&middot;7H$_2$O|90.0 | Na$_2$HPO$_4$&middot;7H$_2$O | 95.0
+NH$_4$&middot;4H$_2$O|57.5 | Na$_2$SO$_3$$^*$ | 95.0
+NH$_4$&middot;6H$_2$O|55.5 | NaCNS | 35.5
+H$_3$PO$_4$|9.0 | Na$_2$S$_2$O$_3$ | 78.0
+KHSO$_4$|86.0 | 2n(NO$_3$)$_2$ | 42.0
+K$_2$HPO$_4$|44.5 | - | -
+"
+cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
+
+## ----table8, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+tabl <- "
+
+*Compound* | *Relative Humidity*	| *Compound*  |	 *Relative Humidity*	
+--- | --- | --- | --- 
+NH$_4$Br$_2$|75.0 | MgSO$_4$&middot;7H$_2$O | 89.0
+BaBr$_2$|74.5 | Mg(CNS)$_2$ | 47.5
+BaCl$_2$|90.0 | MnBr$_2$&middot;6H$_2$O | 34.5
+BaI$_2$&middot;2H$_2$O|43.0 | MnCl$_2$&middot;4H$_2$O | 56.0
+Ba(CNS)$_2$&middot;2H$_2$O|54.5 | NiBr$_2$&middot;3H$_2$O | 27.0
+CaAc$_2$&middot;H$_2$O|17.0 | NiCl$_2$&middot;6H$_2$O | 53.0
+CaAc$_2$&middot;H$_2$O + sucrose|13.0 | H$_3$PO$_4$ | 9.0
+CaBr$_2$|16.5 | KBr + sucrose | 63.0
+CaI$_2$&middot;6H$_2$O|11.5 | KBr + Urea | 51.0
+Ca methane sulphonate|72.5 | KClO$_3$ | 98.0
+Ca(MnO$_4$)$_2$&middot;4H$_2$O|37.5 | KCl + KClO$_3$ | 85.0
+Ca(CNS)$_2$&middot;3H$_2$O|17.5 | KHCO$_4$ | 21.5
+CaZnCl$_2$|20.0 | KOH | 8.0
+CeCl$_3$ (tech.)|45.5 | K$_4$P$_2$O$_7$&middot;3H$_2$O | 49.5
+CrCl$_3$|42.5 | K$_2$S$_2$O$_3$ | 66.0
+CoBr$_2$|41.5 | NaAc + sucrose | 37.6
+Co(NO$_3$)$_2$&middot;6H$_2$O|(49.0) | NaCl + sucrose | 63.0
+CuBr$_2$|62.5 | NaCl + NaNO$_3$ | 69.0
+CuCl$_2$&middot;2H$_2$O|67.0 | NaCl + Na$_2$SO$_4$&middot;7H$_2$O | 74.0
+Cu(NO$_3$)$_2$&middot;6H$_2$O|(35.0) | NaHSO$_4$ | 81.0
+Ethanolamine sulphate|12.5 | NaH$_2$PO$_4$ | 70.0
+FeBr$_2$&middot;6H$_2$O|39.0 | Na methane sulphonate | 61.5
+FeCl$_2$&middot;4H$_2$O|60.0 | SrBr$_2$&middot;6H$_2$O | 58.5
+LiBr&middot;2H$_2$O|7.0 | SrI$_2$&middot;6H$_2$O | 33.0
+LiI&middot;3H$_2$O|18.0 | Sr(CNS)$_2$&middot;3H$_2$O | 31.5
+LiNo$_3$&middot;3H$_2$O|47.0 | Sucrose | 85.0
+LiCNS$^2$|12.5 | Surcose + urea | 52.0
+MgBr$_2$&middot;6H$_2$O|31.5 | ZnBr$_2$ | 8.5
+MgI$_2$|27.0 | ZbI$_2$$^2$ | 20.0
+Mg(ClO$_4$)$_2$&middot;6H$_2$O|(41.0) | Zn(MnO$_4$)$_2$&middot;6H$_2$O | 51.0
+Mg silicoflouride|91.5 | Zn(CNS)$_2$ | 80.5
+"
+cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
+
+## ----table9, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+tabl <- "
+
+*Compound* | *Mass*, g m$^{-3}$ (STPD)	| *Relative Humidity*  	
+--- | --- | --- | --- 
+P$_4$O$_5$|<2 x 10$^{-3}$ | <0.1
+Mg(ClO$_4$)$_2$|<5 x 10$^{-4}$ | <0.1
+Mg(ClO$_4$)$_2$&middot;3H$_2$O|<2 x 10$^{-5}$ | <0.1
+KOH (fused)|0.002 | <0.1
+Al$_2$O$_3$|0.003 | <0.1
+H$_2$SO$_4$|0.003 | <0.1
+MgO|0.008 | <0.1
+NaOH (fused)|0.16 | 0.6
+CaBr$_2$|0.2 | 0.8
+CaO|0.2 | 0.8
+CaCl$_2$|0.14-0.25 | 0.6-1.0
+H$_2$SO$_4$ (95%)|0.3 | 1.2
+CaCl$_2$ (fused)|0.36 | 1.4
+ZnCl$_2$|0.8 | 3.2
+ZnBr$_2$|1.1 | 4.4
+CuSO$_4$|1.4 | 5.6
+"
+cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
+
+## ----table10, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+library(NicheMapR)
+knitr::kable(PropAirTable10) # output the table in a format good for HTML/PDF/docx conversion
+
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=12----
+par(mfrow = c(2,1)) # set up for 2 plots in 1 columns
+rhs=seq(65,100,5)
+plot(rhs,WETAIR(rh=rhs,db=0)$wtrpot*-1,type='l',ylab="WATER POTENTIAL (phi), Pa", xlab="RELATIVE HUMIDITY (%)")
+points(rhs,WETAIR(rh=rhs,db=50)$wtrpot*-1,type='l',ylab="WATER POTENTIAL (phi), Pa", xlab="RELATIVE HUMIDITY (%)")
+rhs=seq(99.3,100,0.1)
+plot(rhs,WETAIR(rh=rhs,db=0)$wtrpot*-1,type='l',ylab="WATER POTENTIAL (phi), Pa", xlab="RELATIVE HUMIDITY (%)")
+points(rhs,WETAIR(rh=rhs,db=50)$wtrpot*-1,type='l',ylab="WATER POTENTIAL (phi), Pa", xlab="RELATIVE HUMIDITY (%)")
+
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6----
+tairs=seq(-20,50,5)
+plot(tairs,DRYAIR(db=tairs)$emtmax,type='l',ylim=c(0.7E-5,1.2E-5),ylab="WAVELENGTH OF MAXIMUM EMITTANCE FROM BLACK-BODY (lambda_m), m", xlab="AIR TEMPERATURE (t), &deg;C")
+
