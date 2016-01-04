@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="C. Richard Tracy, William R. Welch, Michael R. Kearney and Warren P. Porter" />
+
+<meta name="date" content="2016-01-05" />
+
+<title>Properties of Air: A Manual for Use in Biophysical Ecology, 4th Edition</title>
+
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0A%7D%0Apre%20%7B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div id="header">
+<h1 class="title">Properties of Air: A Manual for Use in Biophysical Ecology, 4th Edition</h1>
+<h4 class="author"><em>C. Richard Tracy, William R. Welch, Michael R. Kearney and Warren P. Porter</em></h4>
+<h4 class="date"><em>2016-01-05</em></h4>
+</div>
+
+
+<p>This manual was made possible by the invaluable assistance of Ann Chambers and Cheryle Hughes. Financial support was provided by grants from the Department of Zoology, Wisconsin Alumni Research Foundation, ERDA (Contract EY-76-5-02-2270), and NSF (Grant Nos. 74-19454 and 77-25786). Michael Kearney updated the document, translated the Fortrans subroutines DRYAIR and WETAIR, and the function VAPPRS into R, and made it a vignette as part of the <em>NicheMapR</em> package.</p>
+<center>
+First edition 1973<br />
+Second edition 1978<br />
+Third edition 1980<br />
+Fourth edition 2016
+</center>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This manual comprises a series of tables and graphs that illustrate selected properties of air as functions of temperature, pressure, and humidity. The particular properties that are displayed were chosen because of their importance in analytical studies of energy (heat) and mass (water) transfer between organisms and their physical environments. Except where otherwise noted, the graphs were drawn from information in the Smithsonian Meteorological Tables (List 1971). These graphs are considered to be a concise references for the values of the indicated properties, and not substitutes for the more accurate Smithsonian tables.</p>
+<p>All information in this manual is expressed in terms of the International System of Units (SI), which is based, in part, on the metre, kilogram, second and kelvin. Basic units, derived units, prefixes, and some useful physical constants and conversion factors are listed below. More extensive lists are provided by List (1971), Mechtly (1973). and the Symbols Committee of the Royal Society (1975). Note that the symbol for a physical quantity is an italicized (slanted) letter of the Roman or Greek alphabet, and the unit for a quantity is indicated by an unitalicized (upright) Roman letter. An equation is provided as a mathematical description of each graph. In addition, two Fortran subroutines that calculate all of the information in the graphs are listed. Two of the equations in subroutine DRYAIR (thermal conductivity of air and latent heat of vaporization of water) are linear regressions that were fit to tabular data. All other equations in DRYAIR were taken from the Smithsonian tables.</p>
+<p>All humidity calculations in subroutine WETAIR are made with the internationally accepted Goff-Gratch equation (function VAPPRS in subroutine WETAIR). A mathematically less cumbersome and often more useful alternative was reported by Tetens (Murray 1976); calculations with this equation differ negligibly from those with the Goff-Gratch expression. Tetens equation is provided on page x to calculate the saturation vapor pressure (<span class="math inline">\(e_d^*\)</span>) at the dewpoint temperature (<span class="math inline">\(t_d\)</span>). Note that this equation can also be used to calculate the saturation vapor pressure (<span class="math inline">\(e^*\)</span>) at the dry bulb temperature (<span class="math inline">\(t\)</span>) if t replaces td, and the saturation vapor pressure (<span class="math inline">\(e_w^*\)</span>) at the wet bulb temperature (<span class="math inline">\(t_w\)</span>) if <span class="math inline">\(t_w\)</span> replaces <span class="math inline">\(t_d\)</span>. The relationship of wet bulb temperature to dry bulb temperature, vapor density, and relative humidty is shown in the psychometric diagram on page x.</p>
+<p>Mathematical expressions for some properties of air that are dependent on humidity are not available. The equations for these properties are restricted to dry air in this manual; the accompanying graphs, however, include comparisons for saturated air, shown by broken lines, from the theoretical calculations of Mason and Monchick (1965).</p>
+<div id="table-1.-basic-units" class="section level3">
+<h3>Table 1. Basic units</h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left"><em>Physical Quantity</em></th>
+<th align="left"><em>Quantity Symbol</em></th>
+<th align="left"><em>Unit</em></th>
+<th align="left"><em>Unit Symbol</em></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">length</td>
+<td align="left"><em>l</em></td>
+<td align="left">metre</td>
+<td align="left">m</td>
+</tr>
+<tr class="even">
+<td align="left">mass</td>
+<td align="left"><em>m</em></td>
+<td align="left">kilogram</td>
+<td align="left">kg</td>
+</tr>
+<tr class="odd">
+<td align="left">time</td>
+<td align="left"><em>t</em></td>
+<td align="left">second</td>
+<td align="left">s</td>
+</tr>
+<tr class="even">
+<td align="left">thermodynamic temperature</td>
+<td align="left"><em>T</em></td>
+<td align="left">kelvin</td>
+<td align="left">K</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="table-2.-derived-units" class="section level3">
+<h3>Table 2. Derived units</h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left"><em>Physical Quantity</em></th>
+<th align="left"><em>Quantity Symbol</em></th>
+<th align="left"><em>Unit</em></th>
+<th align="left"><em>Unit Symbol</em></th>
+<th align="left"><em>Unit Definition</em></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">force</td>
+<td align="left"><em>F</em></td>
+<td align="left">newton</td>
+<td align="left">N</td>
+<td align="left"><span class="math inline">\(J\)</span> <span class="math inline">\(m^{-1}\)</span></td>
+</tr>
+<tr class="even">
+<td align="left">energy</td>
+<td align="left"><em>E</em></td>
+<td align="left">joule</td>
+<td align="left">J</td>
+<td align="left"><span class="math inline">\(N\)</span> <span class="math inline">\(m\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left">pressure</td>
+<td align="left"><em>p</em></td>
+<td align="left">pascal</td>
+<td align="left">Pa</td>
+<td align="left"><span class="math inline">\(N\)</span> <span class="math inline">\(m^{-2}\)</span>, <span class="math inline">\(J\)</span> <span class="math inline">\(m^{-3}\)</span></td>
+</tr>
+<tr class="even">
+<td align="left">power</td>
+<td align="left"><em>P</em></td>
+<td align="left">watt</td>
+<td align="left">W</td>
+<td align="left"><span class="math inline">\(J\)</span> <span class="math inline">\(s^{-1}\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left">volume</td>
+<td align="left"><em>t</em></td>
+<td align="left">cubic metre</td>
+<td align="left"><span class="math inline">\(m^3\)</span></td>
+<td align="left"><span class="math inline">\(m^3\)</span></td>
+</tr>
+<tr class="even">
+<td align="left">Celsius temperature<span class="math inline">\(^*\)</span></td>
+<td align="left"><span class="math inline">\(t\)</span></td>
+<td align="left">degree Celsius</td>
+<td align="left">°C</td>
+<td align="left"><span class="math inline">\(K\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="table-3.-prefixes" class="section level3">
+<h3>Table 3. Prefixes</h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left"><em>Multiple</em></th>
+<th align="left"><em>Prefix</em></th>
+<th align="left"><em>Symbol</em></th>
+<th align="left"><em>Multiple</em></th>
+<th align="left"><em>Prefix</em></th>
+<th align="left"><em>Symbol</em></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><span class="math inline">\(10^{-1}\)</span></td>
+<td align="left">deci</td>
+<td align="left"><em>d</em></td>
+<td align="left"><span class="math inline">\(10^{1}\)</span></td>
+<td align="left">deca</td>
+<td align="left">da</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(10^{-2}\)</span></td>
+<td align="left">centi</td>
+<td align="left"><em>c</em></td>
+<td align="left"><span class="math inline">\(10^{2}\)</span></td>
+<td align="left">hecto</td>
+<td align="left">h</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(10^{-3}\)</span></td>
+<td align="left">milli</td>
+<td align="left"><em>m</em></td>
+<td align="left"><span class="math inline">\(10^{3}\)</span></td>
+<td align="left">kilo</td>
+<td align="left">k</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(10^{-6}\)</span></td>
+<td align="left">micro</td>
+<td align="left"><em>µ</em></td>
+<td align="left"><span class="math inline">\(10^{6}\)</span></td>
+<td align="left">mega</td>
+<td align="left">M</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(10^{-9}\)</span></td>
+<td align="left">nano</td>
+<td align="left"><em>n</em></td>
+<td align="left"><span class="math inline">\(10^{9}\)</span></td>
+<td align="left">giga</td>
+<td align="left">G</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(10^{-12}\)</span></td>
+<td align="left">pico</td>
+<td align="left"><em>p</em></td>
+<td align="left"><span class="math inline">\(10^{12}\)</span></td>
+<td align="left">tera</td>
+<td align="left">T</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="table-4.-conversion-factors" class="section level3">
+<h3>Table 4. Conversion factors</h3>
+<p><strong>Force</strong><br />
+    dyne = <span class="math inline">\(10^5\)</span> N<span class="math inline">\(^*\)</span><br />
+    kilogram force = <span class="math inline">\(9.80665\)</span> N<span class="math inline">\(^*\)</span><br />
+    ounce force = <span class="math inline">\(2.7801385\)</span> x <span class="math inline">\(10^{-1}\)</span> N<br />
+    pound force = <span class="math inline">\(4.4482216152605\)</span> N<span class="math inline">\(^*\)</span></p>
+<p><strong>Energy</strong><br />
+    British thermal unit (thermochemical) = <span class="math inline">\(1.054350\)</span> x <span class="math inline">\(10^{3}\)</span> J<br />
+    calorie (thermochemical) = <span class="math inline">\(4.184\)</span> J<br />
+    what hour = <span class="math inline">\(3.60\)</span> x <span class="math inline">\(10^{3}\)</span> J<span class="math inline">\(^*\)</span></p>
+<p><strong>Pressure</strong><br />
+    bar = <span class="math inline">\(10^{5}\)</span> <span class="math inline">\(Pa^*\)</span><br />
+    centimetre of water (4 °C) = <span class="math inline">\(9.80638\)</span> x <span class="math inline">\(10^{1}\)</span> Pa<br />
+    millimetre of mercury (0 °C) = <span class="math inline">\(1.333224\)</span> x <span class="math inline">\(10^{2}\)</span> Pa<br />
+    pound per square inch = <span class="math inline">\(6.894757\)</span> x <span class="math inline">\(10^{3}\)</span> Pa<br />
+    standard atmosphere = <span class="math inline">\(1.01325\)</span> x <span class="math inline">\(10^{5}\)</span> Pa<br />
+    torr = <span class="math inline">\(1.333224\)</span> x <span class="math inline">\(10^{2}\)</span> Pa</p>
+<p><strong>Power</strong><br />
+    British thermal unit (thermochemical) = <span class="math inline">\(1.054350\)</span> x <span class="math inline">\(10^{3}\)</span> W<br />
+    calorie (thermochemical) per second = <span class="math inline">\(4.184\)</span> W<span class="math inline">\(^*\)</span><br />
+    calorie (thermochemical) per minute = <span class="math inline">\(6.973333\)</span> x <span class="math inline">\(10^{-2}\)</span> W<br />
+    kilocalorie (thermochemical) per hour = <span class="math inline">\(8.604207\)</span> x <span class="math inline">\(10^{-1}\)</span> W</p>
+<p><strong>Volume</strong><br />
+    cubic foot = <span class="math inline">\(2.8316592\)</span> m<span class="math inline">\(^{3*}\)</span><br />
+    gallon = <span class="math inline">\(3.785411784\)</span> x <span class="math inline">\(10^{-3}\)</span> m<span class="math inline">\(^{-3*}\)</span><br />
+    litre = <span class="math inline">\(10^{-3}\)</span> m<span class="math inline">\(^{-3*}\)</span><br />
+    pint (U.S. liquid) = <span class="math inline">\(4.73176473\)</span> x <span class="math inline">\(10^{-4}\)</span> m<span class="math inline">\(^{3*}\)</span><br />
+    quart (U.S. liquid) = <span class="math inline">\(9.4635295\)</span> x <span class="math inline">\(10^{-4}\)</span> m<span class="math inline">\(^{3*}\)</span></p>
+<p><strong>Length</strong><br />
+    foot = <span class="math inline">\(3.048\)</span> x <span class="math inline">\(10^{-1}\)</span> m<span class="math inline">\(^{*}\)</span><br />
+    inch = <span class="math inline">\(2.54\)</span> x <span class="math inline">\(10^{-2}\)</span> m<span class="math inline">\(^{*}\)</span><br />
+    mile (U.S. statute) = <span class="math inline">\(1.609344\)</span> x <span class="math inline">\(10^{3}\)</span> m<span class="math inline">\(^{*}\)</span><br />
+    mile (U.S. nautical) = <span class="math inline">\(1.852\)</span> x <span class="math inline">\(10^{3}\)</span> m<span class="math inline">\(^{*}\)</span><br />
+    yard = <span class="math inline">\(9.144\)</span> x <span class="math inline">\(10^{-1}\)</span> m<span class="math inline">\(^{*}\)</span></p>
+<p><strong>Mass</strong>     ounce = <span class="math inline">\(2.8349523125\)</span> x <span class="math inline">\(10^{-2}\)</span> kg<span class="math inline">\(^{*}\)</span><br />
+    pound = <span class="math inline">\(4.5359237\)</span> x <span class="math inline">\(10^{-1}\)</span> kg<span class="math inline">\(^{*}\)</span><br />
+    ton (short, 2000 pound) = <span class="math inline">\(9.0718474\)</span> x <span class="math inline">\(10^{2}\)</span> kg<span class="math inline">\(^{*}\)</span></p>
+<p><span class="math inline">\(^{*}\)</span>exact, by definition</p>
+</div>
+<div id="table-5.-physical-constants" class="section level3">
+<h3>Table 5. Physical constants</h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left"><em>Quantity</em></th>
+<th align="left"><em>Symbol</em></th>
+<th align="left"><em>Value</em></th>
+<th align="left"><em>Units</em></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Density of dry air at 25 °C and 101325 Pa<span class="math inline">\(^{*}\)</span></td>
+<td align="left">ρ</td>
+<td align="left"><span class="math inline">\(1.184\)</span></td>
+<td align="left">kg m<span class="math inline">\(^3\)</span></td>
+</tr>
+<tr class="even">
+<td align="left">Diffusivity of water vapour in air at 25 °C and 101325 Pa<span class="math inline">\(^{*}\)</span></td>
+<td align="left"><em>D</em></td>
+<td align="left"><span class="math inline">\(2.614\)</span> x <span class="math inline">\(10^{-5}\)</span></td>
+<td align="left">m<span class="math inline">\(^2\)</span> s<span class="math inline">\(^{-1}\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left">Dynamic viscosity of dry air at 25 °C and 101325 Pa<span class="math inline">\(^{*}\)</span></td>
+<td align="left">μ</td>
+<td align="left"><span class="math inline">\(1.806\)</span> x <span class="math inline">\(10^{-5}\)</span></td>
+<td align="left">kg m<span class="math inline">\(^{-1}\)</span> s<span class="math inline">\(^{-1}\)</span></td>
+</tr>
+<tr class="even">
+<td align="left">Gas constant for ideal gas</td>
+<td align="left"><em>R</em></td>
+<td align="left"><span class="math inline">\(8.31434\)</span></td>
+<td align="left">J mol<span class="math inline">\(^{-1}\)</span> K<span class="math inline">\(^{-1}\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left">Gas constant for water vapour</td>
+<td align="left"><em>R</em><span class="math inline">\(_v\)</span></td>
+<td align="left"><span class="math inline">\(4.6150\)</span> x <span class="math inline">\(10^{2}\)</span></td>
+<td align="left">Pa m<span class="math inline">\(^3\)</span> kg<span class="math inline">\(^{-1}\)</span> K<span class="math inline">\(^{-1}\)</span></td>
+</tr>
+<tr class="even">
+<td align="left">Gravitational constant</td>
+<td align="left"><em>R</em></td>
+<td align="left"><span class="math inline">\(6.6732\)</span> x <span class="math inline">\(10^{-11}\)</span></td>
+<td align="left">N m<span class="math inline">\(^2\)</span> kg<span class="math inline">\(^{-2}\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left">Kinematic viscosity of dry air at 25 °C and 101325 Pa<span class="math inline">\(^{*}\)</span></td>
+<td align="left">ν</td>
+<td align="left"><span class="math inline">\(1.525\)</span> x <span class="math inline">\(10^{-5}\)</span></td>
+<td align="left">m<span class="math inline">\(^3\)</span> s<span class="math inline">\(^{-1}\)</span></td>
+</tr>
+<tr class="even">
+<td align="left">Latent heat of vapourisation of water at 25 °C</td>
+<td align="left"><em>L</em></td>
+<td align="left"><span class="math inline">\(2.442\)</span> x <span class="math inline">\(10^{6}\)</span></td>
+<td align="left">J kg<span class="math inline">\(^{-1}\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left">Molecular weight of dry air</td>
+<td align="left"><em>M</em><span class="math inline">\(_a\)</span></td>
+<td align="left"><span class="math inline">\(2.8966\)</span> x <span class="math inline">\(10^{-2}\)</span></td>
+<td align="left">kg mol<span class="math inline">\(^{-1}\)</span></td>
+</tr>
+<tr class="even">
+<td align="left">Molecular weight of water</td>
+<td align="left"><em>M</em><span class="math inline">\(_v\)</span></td>
+<td align="left"><span class="math inline">\(1.8016\)</span> x <span class="math inline">\(10^{-2}\)</span></td>
+<td align="left">kg mol<span class="math inline">\(^{-1}\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left">Specific heat of dry air</td>
+<td align="left"><em>c</em><span class="math inline">\(_p\)</span></td>
+<td align="left"><span class="math inline">\(1.00484\)</span> x <span class="math inline">\(10^{3}\)</span></td>
+<td align="left">K kg<span class="math inline">\(^{-1}\)</span> K<span class="math inline">\(^{-1}\)</span></td>
+</tr>
+<tr class="even">
+<td align="left">Standard pressure</td>
+<td align="left"><em>P</em><span class="math inline">\(_0\)</span></td>
+<td align="left"><span class="math inline">\(1.01325\)</span> x <span class="math inline">\(10^{5}\)</span></td>
+<td align="left">Pa</td>
+</tr>
+<tr class="odd">
+<td align="left">Standard temperature</td>
+<td align="left"><em>T</em><span class="math inline">\(_0\)</span></td>
+<td align="left"><span class="math inline">\(2.7315\)</span> x <span class="math inline">\(10^{2}\)</span></td>
+<td align="left">K</td>
+</tr>
+<tr class="even">
+<td align="left">Stefan-Boltzmann constant</td>
+<td align="left">σ</td>
+<td align="left"><span class="math inline">\(5.67032\)</span> x <span class="math inline">\(10^{-8}\)</span></td>
+<td align="left">W m<span class="math inline">\(^{-2}\)</span> K<span class="math inline">\(^{-4}\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left">Thermal conductivity of dry air at 25 °C and 101325 Pa<span class="math inline">\(^{*}\)</span></td>
+<td align="left"><em>k</em></td>
+<td align="left"><span class="math inline">\(2.601\)</span> x <span class="math inline">\(10^{-2}\)</span></td>
+<td align="left">W m<span class="math inline">\(^{-1}\)</span> K<span class="math inline">\(^{-1}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(^{*}\)</span>Variable that is functionally related to other properties in this manual</p>
+</div>
+<div id="table-6.-percent-relative-humidity-over-saturated-solutions-as-a-function-of-temperature.-from-winston-and-bates-19601" class="section level3">
+<h3>Table 6. Percent relative humidity over saturated solutions as a function of temperature. From Winston and Bates (1960)<span class="math inline">\(^1\)</span></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left"><em>Compound</em></th>
+<th align="left"><em>10°C</em></th>
+<th align="left"><em>15°C</em></th>
+<th align="left"><em>20°C</em></th>
+<th align="left"><em>25°C</em></th>
+<th align="left"><em>30°C</em></th>
+<th align="left"><em>35°C</em></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">NH<span class="math inline">\(_4\)</span>Cl</td>
+<td align="left">79.0</td>
+<td align="left">79.5</td>
+<td align="left">79.5</td>
+<td align="left">78.0</td>
+<td align="left">77.5</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left">NH<span class="math inline">\(_4\)</span>HPO<span class="math inline">\(_4\)</span> (monophosphate)</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">93.0</td>
+<td align="left">93.0</td>
+<td align="left">92.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">NH<span class="math inline">\(_4\)</span>NO<span class="math inline">\(_3\)</span></td>
+<td align="left">75.0</td>
+<td align="left">70.0</td>
+<td align="left">65.5</td>
+<td align="left">62.5</td>
+<td align="left">59.5</td>
+<td align="left">55.0</td>
+</tr>
+<tr class="even">
+<td align="left">NH<span class="math inline">\(_4\)</span>NO<span class="math inline">\(_3\)</span> + NaNO<span class="math inline">\(_3\)</span></td>
+<td align="left">58.0</td>
+<td align="left">55.0</td>
+<td align="left">52.0</td>
+<td align="left">50.0</td>
+<td align="left">47.0</td>
+<td align="left">44.5</td>
+</tr>
+<tr class="odd">
+<td align="left">NH<span class="math inline">\(_4\)</span>NO<span class="math inline">\(_3\)</span> + AgNO<span class="math inline">\(_3\)</span></td>
+<td align="left">70.5</td>
+<td align="left">68.0</td>
+<td align="left">65.1</td>
+<td align="left">61.5</td>
+<td align="left">58.0</td>
+<td align="left">55.0</td>
+</tr>
+<tr class="even">
+<td align="left">(NH<span class="math inline">\(_4\)</span>)<span class="math inline">\(_2\)</span> SO<span class="math inline">\(_4\)</span></td>
+<td align="left">80.5</td>
+<td align="left">81.0</td>
+<td align="left">80.5</td>
+<td align="left">80.0</td>
+<td align="left">80.0</td>
+<td align="left">79.5</td>
+</tr>
+<tr class="odd">
+<td align="left">CaCl<span class="math inline">\(_2\)</span>·6H<span class="math inline">\(_2\)</span>O<span class="math inline">\(^2\)</span></td>
+<td align="left">38.0</td>
+<td align="left">35.0</td>
+<td align="left">32.5</td>
+<td align="left">29.5</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left">CaHPO<span class="math inline">\(_4\)</span>·2H<span class="math inline">\(_2\)</span>O<span class="math inline">\(^3\)</span></td>
+<td align="left">97.5</td>
+<td align="left">99.5</td>
+<td align="left">95.0</td>
+<td align="left">97.0</td>
+<td align="left">95.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">CaH<span class="math inline">\(_4\)</span>(PO<span class="math inline">\(_4\)</span>)·H<span class="math inline">\(_2\)</span>O<span class="math inline">\(^4\)</span></td>
+<td align="left">98.0</td>
+<td align="left">99.0</td>
+<td align="left">94.0</td>
+<td align="left">96.0</td>
+<td align="left">93.5</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left">Ca(NO<span class="math inline">\(_3\)</span>)<span class="math inline">\(_2\)</span>·4H<span class="math inline">\(_2\)</span>O<span class="math inline">\(^5\)</span></td>
+<td align="left">-</td>
+<td align="left">56.0</td>
+<td align="left">55.5</td>
+<td align="left">50.5</td>
+<td align="left">47.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">C0Cl<span class="math inline">\(_2\)</span><span class="math inline">\(^6\)</span></td>
+<td align="left">-</td>
+<td align="left">72.5 (18 °C)</td>
+<td align="left">67.0</td>
+<td align="left">-</td>
+<td align="left">62.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left">Cr<span class="math inline">\(_2\)</span>O<span class="math inline">\(_3\)</span><span class="math inline">\(^7\)</span></td>
+<td align="left">-</td>
+<td align="left">45.5</td>
+<td align="left">(39.0)</td>
+<td align="left">-</td>
+<td align="left">44.5</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">Glucose</td>
+<td align="left">57 (12 °C)</td>
+<td align="left">-</td>
+<td align="left">55.0</td>
+<td align="left">55.0</td>
+<td align="left">-</td>
+<td align="left">53.0</td>
+</tr>
+<tr class="even">
+<td align="left">LiCl·H<span class="math inline">\(_2\)</span>O<span class="math inline">\(^8\)</span></td>
+<td align="left">13.5</td>
+<td align="left">13.0</td>
+<td align="left">12.5</td>
+<td align="left">12.0</td>
+<td align="left">11.5</td>
+<td align="left">11.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Pb(NO<span class="math inline">\(_3\)</span>)<span class="math inline">\(_2\)</span><span class="math inline">\(^9\)</span></td>
+<td align="left">98.0</td>
+<td align="left">97.0</td>
+<td align="left">97.0</td>
+<td align="left">95.5</td>
+<td align="left">95.0</td>
+<td align="left">94.5</td>
+</tr>
+<tr class="even">
+<td align="left">Pb(NO<span class="math inline">\(_3\)</span>)<span class="math inline">\(_2\)</span>+NH<span class="math inline">\(_4\)</span>NO<span class="math inline">\(_3\)</span></td>
+<td align="left">66.5</td>
+<td align="left">62.0</td>
+<td align="left">58.0</td>
+<td align="left">55.0</td>
+<td align="left">52.5</td>
+<td align="left">49.5</td>
+</tr>
+<tr class="odd">
+<td align="left">MgCl<span class="math inline">\(_2\)</span>·6H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">34.0</td>
+<td align="left">34.0</td>
+<td align="left">33.0</td>
+<td align="left">32.5</td>
+<td align="left">32.5</td>
+<td align="left">32.5</td>
+</tr>
+<tr class="even">
+<td align="left">Mg(NO<span class="math inline">\(_3\)</span>)<span class="math inline">\(_2\)</span>·6H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">58.0</td>
+<td align="left">56.0</td>
+<td align="left">55.0</td>
+<td align="left">53.0</td>
+<td align="left">52.0</td>
+<td align="left">50.5</td>
+</tr>
+<tr class="odd">
+<td align="left">P<span class="math inline">\(_2\)</span>O<span class="math inline">\(_5\)</span></td>
+<td align="left">0.0</td>
+<td align="left">0.0</td>
+<td align="left">0.0</td>
+<td align="left">0.0</td>
+<td align="left">0.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left">KAc</td>
+<td align="left">(21.0)</td>
+<td align="left">-</td>
+<td align="left">20.0</td>
+<td align="left">22.5</td>
+<td align="left">22.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">KBr</td>
+<td align="left">86.0</td>
+<td align="left">-</td>
+<td align="left">84.0</td>
+<td align="left">80.0</td>
+<td align="left">82.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left">K<span class="math inline">\(_2\)</span>CO<span class="math inline">\(_3\)</span>·2H<span class="math inline">\(_2\)</span>O<span class="math inline">\(^{10}\)</span></td>
+<td align="left">47.0</td>
+<td align="left">44.0</td>
+<td align="left">44.0</td>
+<td align="left">43.0</td>
+<td align="left">43.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">KCl</td>
+<td align="left">88.0</td>
+<td align="left">86.5</td>
+<td align="left">85.0</td>
+<td align="left">85.0</td>
+<td align="left">84.5</td>
+<td align="left">83.0</td>
+</tr>
+<tr class="even">
+<td align="left">K<span class="math inline">\(_2\)</span>CrO<span class="math inline">\(_4\)</span></td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">88.0</td>
+<td align="left">-</td>
+<td align="left">86.5</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">K<span class="math inline">\(_2\)</span>Cr<span class="math inline">\(_2\)</span>O<span class="math inline">\(_7\)</span></td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">98.0</td>
+<td align="left">98.0</td>
+<td align="left">97.5</td>
+<td align="left">96.5</td>
+</tr>
+<tr class="even">
+<td align="left">KH<span class="math inline">\(_2\)</span>PO<span class="math inline">\(_4\)</span></td>
+<td align="left">98.0</td>
+<td align="left">99.0</td>
+<td align="left">96.5</td>
+<td align="left">96.0</td>
+<td align="left">93.5</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">KF·2H<span class="math inline">\(_2\)</span>O<span class="math inline">\(^{11}\)</span></td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">30.5</td>
+<td align="left">27.4</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left">KNO<span class="math inline">\(_3\)</span><span class="math inline">\(^{12}\)</span></td>
+<td align="left">96.0</td>
+<td align="left">95.5</td>
+<td align="left">93.5</td>
+<td align="left">92.5</td>
+<td align="left">91.0</td>
+<td align="left">89.5</td>
+</tr>
+<tr class="odd">
+<td align="left">KNO<span class="math inline">\(_2\)</span></td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">48.5</td>
+<td align="left">-</td>
+<td align="left">47.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left">K<span class="math inline">\(_2\)</span>SO<span class="math inline">\(_4\)</span></td>
+<td align="left">98.5</td>
+<td align="left">99.0</td>
+<td align="left">98.0</td>
+<td align="left">97.5</td>
+<td align="left">96.5</td>
+<td align="left">96.0</td>
+</tr>
+<tr class="odd">
+<td align="left">KCNS<span class="math inline">\(^{13}\)</span></td>
+<td align="left">52.0</td>
+<td align="left">50.0</td>
+<td align="left">47.0</td>
+<td align="left">46.5</td>
+<td align="left">43.5</td>
+<td align="left">41.5</td>
+</tr>
+<tr class="even">
+<td align="left">K tartrate<span class="math inline">\(^{14}\)</span></td>
+<td align="left">-</td>
+<td align="left">75.0</td>
+<td align="left">75.0</td>
+<td align="left">75.0</td>
+<td align="left">74.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">KNa tartrate<span class="math inline">\(^{15}\)</span></td>
+<td align="left">87.5</td>
+<td align="left">-</td>
+<td align="left">87.0</td>
+<td align="left">87.0</td>
+<td align="left">87.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left">Pyrocatechol</td>
+<td align="left">-</td>
+<td align="left">99.0</td>
+<td align="left">95.5</td>
+<td align="left">93.5</td>
+<td align="left">92.5</td>
+<td align="left">90.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Resorinol</td>
+<td align="left">-</td>
+<td align="left">95.0</td>
+<td align="left">87.0</td>
+<td align="left">85.0</td>
+<td align="left">82.5</td>
+<td align="left">79.5</td>
+</tr>
+<tr class="even">
+<td align="left">AgNO<span class="math inline">\(_3\)</span></td>
+<td align="left">88.0</td>
+<td align="left">86.0</td>
+<td align="left">84.0</td>
+<td align="left">82.0</td>
+<td align="left">80.0</td>
+<td align="left">78.0</td>
+</tr>
+<tr class="odd">
+<td align="left">AgNO<span class="math inline">\(_3\)</span>+Pb(NO<span class="math inline">\(_3\)</span>)<span class="math inline">\(_2\)</span></td>
+<td align="left">84.0</td>
+<td align="left">83.0</td>
+<td align="left">80.5</td>
+<td align="left">78.5</td>
+<td align="left">76.5</td>
+<td align="left">75.0</td>
+</tr>
+<tr class="even">
+<td align="left">NaAc·3H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">75.0</td>
+<td align="left">73.0</td>
+<td align="left">71.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">NaBr·2H<span class="math inline">\(_2\)</span>O<span class="math inline">\(^{16}\)</span></td>
+<td align="left">63.0</td>
+<td align="left">61.0</td>
+<td align="left">59.0</td>
+<td align="left">57.5</td>
+<td align="left">56.0</td>
+<td align="left">54.5</td>
+</tr>
+<tr class="even">
+<td align="left">Na<span class="math inline">\(_2\)</span>CO<span class="math inline">\(_3\)</span>·10H<span class="math inline">\(_2\)</span>O<span class="math inline">\(^{17}\)</span></td>
+<td align="left">(99.0)</td>
+<td align="left">-</td>
+<td align="left">92.0</td>
+<td align="left">87.0</td>
+<td align="left">87.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">NaCl</td>
+<td align="left">76.5</td>
+<td align="left">76.0</td>
+<td align="left">76.0</td>
+<td align="left">75.5</td>
+<td align="left">75.5</td>
+<td align="left">75.5</td>
+</tr>
+<tr class="even">
+<td align="left">NaCl+KCl</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">70.0</td>
+<td align="left">71.5</td>
+<td align="left">71.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">Na<span class="math inline">\(_2\)</span>CrO<span class="math inline">\(_4\)</span>·4H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">64.5</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left">Na<span class="math inline">\(_2\)</span>Cr<span class="math inline">\(_2\)</span>O<span class="math inline">\(_7\)</span>·H<span class="math inline">\(_2\)</span>O<span class="math inline">\(^{18}\)</span></td>
+<td align="left">60.0</td>
+<td align="left">56.5</td>
+<td align="left">54.5</td>
+<td align="left">53.0</td>
+<td align="left">52.5</td>
+<td align="left">51.0</td>
+</tr>
+<tr class="odd">
+<td align="left">NaOH</td>
+<td align="left">(5.5)</td>
+<td align="left">-</td>
+<td align="left">5.5</td>
+<td align="left">7.0</td>
+<td align="left">(4.0)</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left">NaI</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">38.0</td>
+<td align="left">38.0</td>
+<td align="left">36.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">NaNO<span class="math inline">\(_3\)</span></td>
+<td align="left">77.5</td>
+<td align="left">76.5</td>
+<td align="left">76.0</td>
+<td align="left">74.0</td>
+<td align="left">72.5</td>
+<td align="left">71.0</td>
+</tr>
+<tr class="even">
+<td align="left">NaNO<span class="math inline">\(_2\)</span></td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">65.5</td>
+<td align="left">64.0</td>
+<td align="left">63.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">Na<span class="math inline">\(_2\)</span>SO<span class="math inline">\(_4\)</span>·10H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">(93.0)</td>
+<td align="left">(93.0)</td>
+<td align="left">-</td>
+<td align="left">(87.0)</td>
+</tr>
+<tr class="even">
+<td align="left">Na tartrate<span class="math inline">\(^{19}\)</span></td>
+<td align="left">-</td>
+<td align="left">94.0</td>
+<td align="left">92.0</td>
+<td align="left">92.0</td>
+<td align="left">92.0</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">Urea</td>
+<td align="left">81.5</td>
+<td align="left">80.0</td>
+<td align="left">80.0</td>
+<td align="left">76.0</td>
+<td align="left">73.3</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left">ZnCl<span class="math inline">\(_2\)</span>·1.5H<span class="math inline">\(_2\)</span>O<span class="math inline">\(^{20}\)</span></td>
+<td align="left">(10.0)</td>
+<td align="left">(10.0)</td>
+<td align="left">10.0</td>
+<td align="left">-</td>
+<td align="left">(10.0)</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">ZnSO<span class="math inline">\(_4\)</span>·7H<span class="math inline">\(_2\)</span>O<span class="math inline">\(^{21}\)</span></td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">88.5</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(^{1}\)</span>Parentheses around a value of relative humidity indicate some doubt of accuracy.<br />
+<span class="math inline">\(^{2}\)</span>May be unstable around 20 °C.<br />
+<span class="math inline">\(^{3}\)</span>May be a transition point between 15 and 20 °C.<br />
+<span class="math inline">\(^{4}\)</span>Calcium monophosphate.<br />
+<span class="math inline">\(^{5}\)</span>Good up to 40 °C.<br />
+<span class="math inline">\(^{6}\)</span>Uncertain around 20 °C, large temperature coefficient.<br />
+<span class="math inline">\(^{7}\)</span>Other researchers report 40% at 30 °C.<br />
+<span class="math inline">\(^{8}\)</span>LiCl·XH<span class="math inline">\(_2\)</span>O → LiCl·H<span class="math inline">\(_2\)</span>O at 25 °C.<br />
+<span class="math inline">\(^{9}\)</span>Solution slightly acid due to hydrolysis, but stable.<br />
+<span class="math inline">\(^{10}\)</span>Should be granulated then moistened; powdered from is unstable.<br />
+<span class="math inline">\(^{11}\)</span>KF·2H<span class="math inline">\(_2\)</span>O → KF at 50 °C.<br />
+<span class="math inline">\(^{12}\)</span>Large temperature coefficient.<br />
+<span class="math inline">\(^{13}\)</span>Very toxic.<br />
+<span class="math inline">\(^{14}\)</span>Potassium tartrate. Excellent.<br />
+<span class="math inline">\(^{15}\)</span>Potassium sodium tartrate (Rochelle salts). Good only below 40 °C.<br />
+<span class="math inline">\(^{16}\)</span>Good up to 55 °C, large temperature coefficient.<br />
+<span class="math inline">\(^{17}\)</span>NaCO<span class="math inline">\(_3\)</span>·10H<span class="math inline">\(_2\)</span>O…..&gt;Na<span class="math inline">\(_2\)</span>CO<span class="math inline">\(_3\)</span>&amp;middot’H<span class="math inline">\(_2\)</span>O at 32 °C.<br />
+<span class="math inline">\(^{18}\)</span>Very good; small temperature coefficient.<br />
+<span class="math inline">\(^{19}\)</span>This is also listed with one water of hydration, instead of two; good only below 40 °C.<br />
+<span class="math inline">\(^{20}\)</span>Unstable around 20 °C.<br />
+<span class="math inline">\(^{21}\)</span>Good below 10 °C.</p>
+</div>
+<div id="table-7.-percent-relative-humidity-over-saturated-solutions-at-20-c.-from-winston-and-bates-1960" class="section level3">
+<h3>Table 7. Percent relative humidity over saturated solutions at 20 °C. From Winston and Bates (1960)</h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left"><em>Compound</em></th>
+<th align="left"><em>Relative Humidity</em></th>
+<th align="left"><em>Compound</em></th>
+<th align="left"><em>Relative Humidity</em></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">BaI<span class="math inline">\(_2\)</span>·2H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">44.0</td>
+<td align="left">NaHSO<span class="math inline">\(_4\)</span></td>
+<td align="left">52.0</td>
+</tr>
+<tr class="even">
+<td align="left">CaSO<span class="math inline">\(_4\)</span>·2H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">98.0</td>
+<td align="left">NaBrO<span class="math inline">\(_3\)</span></td>
+<td align="left">92.0</td>
+</tr>
+<tr class="odd">
+<td align="left">NH<span class="math inline">\(_4\)</span>·4H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">65.0</td>
+<td align="left">NaNO<span class="math inline">\(_3\)</span>+KNO<span class="math inline">\(_3\)</span></td>
+<td align="left">71.0</td>
+</tr>
+<tr class="even">
+<td align="left">NH<span class="math inline">\(_4\)</span>·7H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">90.0</td>
+<td align="left">Na<span class="math inline">\(_2\)</span>HPO<span class="math inline">\(_4\)</span>·7H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">95.0</td>
+</tr>
+<tr class="odd">
+<td align="left">NH<span class="math inline">\(_4\)</span>·4H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">57.5</td>
+<td align="left">Na<span class="math inline">\(_2\)</span>SO<span class="math inline">\(_3\)</span><span class="math inline">\(^*\)</span></td>
+<td align="left">95.0</td>
+</tr>
+<tr class="even">
+<td align="left">NH<span class="math inline">\(_4\)</span>·6H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">55.5</td>
+<td align="left">NaCNS</td>
+<td align="left">35.5</td>
+</tr>
+<tr class="odd">
+<td align="left">H<span class="math inline">\(_3\)</span>PO<span class="math inline">\(_4\)</span></td>
+<td align="left">9.0</td>
+<td align="left">Na<span class="math inline">\(_2\)</span>S<span class="math inline">\(_2\)</span>O<span class="math inline">\(_3\)</span></td>
+<td align="left">78.0</td>
+</tr>
+<tr class="even">
+<td align="left">KHSO<span class="math inline">\(_4\)</span></td>
+<td align="left">86.0</td>
+<td align="left">2n(NO<span class="math inline">\(_3\)</span>)<span class="math inline">\(_2\)</span></td>
+<td align="left">42.0</td>
+</tr>
+<tr class="odd">
+<td align="left">K<span class="math inline">\(_2\)</span>HPO<span class="math inline">\(_4\)</span></td>
+<td align="left">44.5</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(^{*}\)</span>Good only below 29.6 °C.</p>
+</div>
+<div id="table-8.-percent-relative-humidity-over-saturated-solutions-at-25-c.-from-winston-and-bates-19601" class="section level3">
+<h3>Table 8. Percent relative humidity over saturated solutions at 25 °C. From Winston and Bates (1960)<span class="math inline">\(^1\)</span></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left"><em>Compound</em></th>
+<th align="left"><em>Relative Humidity</em></th>
+<th align="left"><em>Compound</em></th>
+<th align="left"><em>Relative Humidity</em></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">NH<span class="math inline">\(_4\)</span>Br<span class="math inline">\(_2\)</span></td>
+<td align="left">75.0</td>
+<td align="left">MgSO<span class="math inline">\(_4\)</span>·7H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">89.0</td>
+</tr>
+<tr class="even">
+<td align="left">BaBr<span class="math inline">\(_2\)</span></td>
+<td align="left">74.5</td>
+<td align="left">Mg(CNS)<span class="math inline">\(_2\)</span></td>
+<td align="left">47.5</td>
+</tr>
+<tr class="odd">
+<td align="left">BaCl<span class="math inline">\(_2\)</span></td>
+<td align="left">90.0</td>
+<td align="left">MnBr<span class="math inline">\(_2\)</span>·6H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">34.5</td>
+</tr>
+<tr class="even">
+<td align="left">BaI<span class="math inline">\(_2\)</span>·2H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">43.0</td>
+<td align="left">MnCl<span class="math inline">\(_2\)</span>·4H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">56.0</td>
+</tr>
+<tr class="odd">
+<td align="left">Ba(CNS)<span class="math inline">\(_2\)</span>·2H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">54.5</td>
+<td align="left">NiBr<span class="math inline">\(_2\)</span>·3H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">27.0</td>
+</tr>
+<tr class="even">
+<td align="left">CaAc<span class="math inline">\(_2\)</span>·H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">17.0</td>
+<td align="left">NiCl<span class="math inline">\(_2\)</span>·6H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">53.0</td>
+</tr>
+<tr class="odd">
+<td align="left">CaAc<span class="math inline">\(_2\)</span>·H<span class="math inline">\(_2\)</span>O + sucrose</td>
+<td align="left">13.0</td>
+<td align="left">H<span class="math inline">\(_3\)</span>PO<span class="math inline">\(_4\)</span></td>
+<td align="left">9.0</td>
+</tr>
+<tr class="even">
+<td align="left">CaBr<span class="math inline">\(_2\)</span></td>
+<td align="left">16.5</td>
+<td align="left">KBr + sucrose</td>
+<td align="left">63.0</td>
+</tr>
+<tr class="odd">
+<td align="left">CaI<span class="math inline">\(_2\)</span>·6H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">11.5</td>
+<td align="left">KBr + Urea</td>
+<td align="left">51.0</td>
+</tr>
+<tr class="even">
+<td align="left">Ca methane sulphonate</td>
+<td align="left">72.5</td>
+<td align="left">KClO<span class="math inline">\(_3\)</span></td>
+<td align="left">98.0</td>
+</tr>
+<tr class="odd">
+<td align="left">Ca(MnO<span class="math inline">\(_4\)</span>)<span class="math inline">\(_2\)</span>·4H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">37.5</td>
+<td align="left">KCl + KClO<span class="math inline">\(_3\)</span></td>
+<td align="left">85.0</td>
+</tr>
+<tr class="even">
+<td align="left">Ca(CNS)<span class="math inline">\(_2\)</span>·3H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">17.5</td>
+<td align="left">KHCO<span class="math inline">\(_4\)</span></td>
+<td align="left">21.5</td>
+</tr>
+<tr class="odd">
+<td align="left">CaZnCl<span class="math inline">\(_2\)</span></td>
+<td align="left">20.0</td>
+<td align="left">KOH</td>
+<td align="left">8.0</td>
+</tr>
+<tr class="even">
+<td align="left">CeCl<span class="math inline">\(_3\)</span> (tech.)</td>
+<td align="left">45.5</td>
+<td align="left">K<span class="math inline">\(_4\)</span>P<span class="math inline">\(_2\)</span>O<span class="math inline">\(_7\)</span>·3H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">49.5</td>
+</tr>
+<tr class="odd">
+<td align="left">CrCl<span class="math inline">\(_3\)</span></td>
+<td align="left">42.5</td>
+<td align="left">K<span class="math inline">\(_2\)</span>S<span class="math inline">\(_2\)</span>O<span class="math inline">\(_3\)</span></td>
+<td align="left">66.0</td>
+</tr>
+<tr class="even">
+<td align="left">CoBr<span class="math inline">\(_2\)</span></td>
+<td align="left">41.5</td>
+<td align="left">NaAc + sucrose</td>
+<td align="left">37.6</td>
+</tr>
+<tr class="odd">
+<td align="left">Co(NO<span class="math inline">\(_3\)</span>)<span class="math inline">\(_2\)</span>·6H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">(49.0)</td>
+<td align="left">NaCl + sucrose</td>
+<td align="left">63.0</td>
+</tr>
+<tr class="even">
+<td align="left">CuBr<span class="math inline">\(_2\)</span></td>
+<td align="left">62.5</td>
+<td align="left">NaCl + NaNO<span class="math inline">\(_3\)</span></td>
+<td align="left">69.0</td>
+</tr>
+<tr class="odd">
+<td align="left">CuCl<span class="math inline">\(_2\)</span>·2H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">67.0</td>
+<td align="left">NaCl + Na<span class="math inline">\(_2\)</span>SO<span class="math inline">\(_4\)</span>·7H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">74.0</td>
+</tr>
+<tr class="even">
+<td align="left">Cu(NO<span class="math inline">\(_3\)</span>)<span class="math inline">\(_2\)</span>·6H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">(35.0)</td>
+<td align="left">NaHSO<span class="math inline">\(_4\)</span></td>
+<td align="left">81.0</td>
+</tr>
+<tr class="odd">
+<td align="left">Ethanolamine sulphate</td>
+<td align="left">12.5</td>
+<td align="left">NaH<span class="math inline">\(_2\)</span>PO<span class="math inline">\(_4\)</span></td>
+<td align="left">70.0</td>
+</tr>
+<tr class="even">
+<td align="left">FeBr<span class="math inline">\(_2\)</span>·6H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">39.0</td>
+<td align="left">Na methane sulphonate</td>
+<td align="left">61.5</td>
+</tr>
+<tr class="odd">
+<td align="left">FeCl<span class="math inline">\(_2\)</span>·4H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">60.0</td>
+<td align="left">SrBr<span class="math inline">\(_2\)</span>·6H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">58.5</td>
+</tr>
+<tr class="even">
+<td align="left">LiBr·2H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">7.0</td>
+<td align="left">SrI<span class="math inline">\(_2\)</span>·6H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">33.0</td>
+</tr>
+<tr class="odd">
+<td align="left">LiI·3H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">18.0</td>
+<td align="left">Sr(CNS)<span class="math inline">\(_2\)</span>·3H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">31.5</td>
+</tr>
+<tr class="even">
+<td align="left">LiNo<span class="math inline">\(_3\)</span>·3H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">47.0</td>
+<td align="left">Sucrose</td>
+<td align="left">85.0</td>
+</tr>
+<tr class="odd">
+<td align="left">LiCNS<span class="math inline">\(^2\)</span></td>
+<td align="left">12.5</td>
+<td align="left">Surcose + urea</td>
+<td align="left">52.0</td>
+</tr>
+<tr class="even">
+<td align="left">MgBr<span class="math inline">\(_2\)</span>·6H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">31.5</td>
+<td align="left">ZnBr<span class="math inline">\(_2\)</span></td>
+<td align="left">8.5</td>
+</tr>
+<tr class="odd">
+<td align="left">MgI<span class="math inline">\(_2\)</span></td>
+<td align="left">27.0</td>
+<td align="left">ZbI<span class="math inline">\(_2\)</span><span class="math inline">\(^2\)</span></td>
+<td align="left">20.0</td>
+</tr>
+<tr class="even">
+<td align="left">Mg(ClO<span class="math inline">\(_4\)</span>)<span class="math inline">\(_2\)</span>·6H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">(41.0)</td>
+<td align="left">Zn(MnO<span class="math inline">\(_4\)</span>)<span class="math inline">\(_2\)</span>·6H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">51.0</td>
+</tr>
+<tr class="odd">
+<td align="left">Mg silicoflouride</td>
+<td align="left">91.5</td>
+<td align="left">Zn(CNS)<span class="math inline">\(_2\)</span></td>
+<td align="left">80.5</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(^{1}\)</span>Parentheses around a value of relative humidity indicate some doubt of accuracy.<br />
+<span class="math inline">\(^{2}\)</span>Light sensitive.<br />
+<span class="math inline">\(^{3}\)</span>Prepare by mixing Ca(OH)<span class="math inline">\(_2\)</span> + ZnO + 4HCl.</p>
+</div>
+<div id="table-9.-efficiency-of-drying-agents-expressed-as-mass-of-water-remaining-per-unit-volume-of-air-dried-at-25-c-and-as-relative-humidity.-from-winston-and-bates-1960." class="section level3">
+<h3>Table 9. Efficiency of drying agents expressed as mass of water remaining per unit volume of air dried at 25 °C, and as relative humidity<span class="math inline">\(^*\)</span>. From Winston and Bates (1960).</h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left"><em>Compound</em></th>
+<th align="left"><em>Mass</em>, g m<span class="math inline">\(^{-3}\)</span> (STPD)</th>
+<th align="left"><em>Relative Humidity</em></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">P<span class="math inline">\(_4\)</span>O<span class="math inline">\(_5\)</span></td>
+<td align="left">&lt;2 x 10<span class="math inline">\(^{-3}\)</span></td>
+<td align="left">&lt;0.1</td>
+</tr>
+<tr class="even">
+<td align="left">Mg(ClO<span class="math inline">\(_4\)</span>)<span class="math inline">\(_2\)</span></td>
+<td align="left">&lt;5 x 10<span class="math inline">\(^{-4}\)</span></td>
+<td align="left">&lt;0.1</td>
+</tr>
+<tr class="odd">
+<td align="left">Mg(ClO<span class="math inline">\(_4\)</span>)<span class="math inline">\(_2\)</span>·3H<span class="math inline">\(_2\)</span>O</td>
+<td align="left">&lt;2 x 10<span class="math inline">\(^{-5}\)</span></td>
+<td align="left">&lt;0.1</td>
+</tr>
+<tr class="even">
+<td align="left">KOH (fused)</td>
+<td align="left">0.002</td>
+<td align="left">&lt;0.1</td>
+</tr>
+<tr class="odd">
+<td align="left">Al<span class="math inline">\(_2\)</span>O<span class="math inline">\(_3\)</span></td>
+<td align="left">0.003</td>
+<td align="left">&lt;0.1</td>
+</tr>
+<tr class="even">
+<td align="left">H<span class="math inline">\(_2\)</span>SO<span class="math inline">\(_4\)</span></td>
+<td align="left">0.003</td>
+<td align="left">&lt;0.1</td>
+</tr>
+<tr class="odd">
+<td align="left">MgO</td>
+<td align="left">0.008</td>
+<td align="left">&lt;0.1</td>
+</tr>
+<tr class="even">
+<td align="left">NaOH (fused)</td>
+<td align="left">0.16</td>
+<td align="left">0.6</td>
+</tr>
+<tr class="odd">
+<td align="left">CaBr<span class="math inline">\(_2\)</span></td>
+<td align="left">0.2</td>
+<td align="left">0.8</td>
+</tr>
+<tr class="even">
+<td align="left">CaO</td>
+<td align="left">0.2</td>
+<td align="left">0.8</td>
+</tr>
+<tr class="odd">
+<td align="left">CaCl<span class="math inline">\(_2\)</span></td>
+<td align="left">0.14-0.25</td>
+<td align="left">0.6-1.0</td>
+</tr>
+<tr class="even">
+<td align="left">H<span class="math inline">\(_2\)</span>SO<span class="math inline">\(_4\)</span> (95%)</td>
+<td align="left">0.3</td>
+<td align="left">1.2</td>
+</tr>
+<tr class="odd">
+<td align="left">CaCl<span class="math inline">\(_2\)</span> (fused)</td>
+<td align="left">0.36</td>
+<td align="left">1.4</td>
+</tr>
+<tr class="even">
+<td align="left">ZnCl<span class="math inline">\(_2\)</span></td>
+<td align="left">0.8</td>
+<td align="left">3.2</td>
+</tr>
+<tr class="odd">
+<td align="left">ZnBr<span class="math inline">\(_2\)</span></td>
+<td align="left">1.1</td>
+<td align="left">4.4</td>
+</tr>
+<tr class="even">
+<td align="left">CuSO<span class="math inline">\(_4\)</span></td>
+<td align="left">1.4</td>
+<td align="left">5.6</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(^{*}\)</span>Relative humidity calculated as 3.98 x mass.</p>
+</div>
+<div id="table-10.-water-potential-kpa-of-nacl-solutions-as-a-function-of-temperature.-from-brown-and-van-haveren-1972." class="section level3">
+<h3>Table 10. Water potential (kPa) of NaCl solutions as a function of temperature. From Brown and van Haveren (1972).</h3>
+<center>
+<h4>
+<em>Temperature</em>, °C
+</h4>
+</center>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Molality</th>
+<th align="right">0</th>
+<th align="right">5</th>
+<th align="right">10</th>
+<th align="right">15</th>
+<th align="right">20</th>
+<th align="right">25</th>
+<th align="right">30</th>
+<th align="right">35</th>
+<th align="right">40</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.05</td>
+<td align="right">-214</td>
+<td align="right">-218</td>
+<td align="right">-222</td>
+<td align="right">-226</td>
+<td align="right">-230</td>
+<td align="right">-234</td>
+<td align="right">-238</td>
+<td align="right">-242</td>
+<td align="right">-245</td>
+</tr>
+<tr class="even">
+<td align="right">0.10</td>
+<td align="right">-423</td>
+<td align="right">-431</td>
+<td align="right">-439</td>
+<td align="right">-447</td>
+<td align="right">-454</td>
+<td align="right">-462</td>
+<td align="right">-470</td>
+<td align="right">-477</td>
+<td align="right">-485</td>
+</tr>
+<tr class="odd">
+<td align="right">0.20</td>
+<td align="right">-8360</td>
+<td align="right">-852</td>
+<td align="right">-868</td>
+<td align="right">-884</td>
+<td align="right">-900</td>
+<td align="right">-915</td>
+<td align="right">-930</td>
+<td align="right">-946</td>
+<td align="right">-961</td>
+</tr>
+<tr class="even">
+<td align="right">0.30</td>
+<td align="right">-1247</td>
+<td align="right">-1272</td>
+<td align="right">-1297</td>
+<td align="right">-1321</td>
+<td align="right">-1344</td>
+<td align="right">-1368</td>
+<td align="right">-1391</td>
+<td align="right">-1415</td>
+<td align="right">-1437</td>
+</tr>
+<tr class="odd">
+<td align="right">0.40</td>
+<td align="right">-1658</td>
+<td align="right">-1693</td>
+<td align="right">-1727</td>
+<td align="right">-1759</td>
+<td align="right">-1791</td>
+<td align="right">-1823</td>
+<td align="right">-1855</td>
+<td align="right">-1886</td>
+<td align="right">-1917</td>
+</tr>
+<tr class="even">
+<td align="right">0.50</td>
+<td align="right">-2070</td>
+<td align="right">-2115</td>
+<td align="right">-2158</td>
+<td align="right">-2200</td>
+<td align="right">-2241</td>
+<td align="right">-2281</td>
+<td align="right">-2322</td>
+<td align="right">-2362</td>
+<td align="right">-2402</td>
+</tr>
+<tr class="odd">
+<td align="right">0.60</td>
+<td align="right">-2484</td>
+<td align="right">-2539</td>
+<td align="right">-2593</td>
+<td align="right">-2644</td>
+<td align="right">-2694</td>
+<td align="right">-2744</td>
+<td align="right">-2794</td>
+<td align="right">-2843</td>
+<td align="right">-2891</td>
+</tr>
+<tr class="even">
+<td align="right">0.70</td>
+<td align="right">-2901</td>
+<td align="right">-2967</td>
+<td align="right">-3030</td>
+<td align="right">-3091</td>
+<td align="right">-3151</td>
+<td align="right">-3210</td>
+<td align="right">-3270</td>
+<td align="right">-3228</td>
+<td align="right">-3385</td>
+</tr>
+<tr class="odd">
+<td align="right">0.80</td>
+<td align="right">-3320</td>
+<td align="right">-3398</td>
+<td align="right">-3472</td>
+<td align="right">-3543</td>
+<td align="right">-3612</td>
+<td align="right">-3682</td>
+<td align="right">-3751</td>
+<td align="right">-3818</td>
+<td align="right">-3885</td>
+</tr>
+<tr class="even">
+<td align="right">0.90</td>
+<td align="right">-3743</td>
+<td align="right">-3832</td>
+<td align="right">-3917</td>
+<td align="right">-3998</td>
+<td align="right">-4079</td>
+<td align="right">-4158</td>
+<td align="right">-4327</td>
+<td align="right">-4314</td>
+<td align="right">-4390</td>
+</tr>
+<tr class="odd">
+<td align="right">1.00</td>
+<td align="right">-4169</td>
+<td align="right">-4270</td>
+<td align="right">-4366</td>
+<td align="right">-4459</td>
+<td align="right">-4550</td>
+<td align="right">-4640</td>
+<td align="right">-4729</td>
+<td align="right">-4815</td>
+<td align="right">-4901</td>
+</tr>
+<tr class="even">
+<td align="right">1.10</td>
+<td align="right">-4599</td>
+<td align="right">-4713</td>
+<td align="right">-4820</td>
+<td align="right">-4924</td>
+<td align="right">-5026</td>
+<td align="right">-5127</td>
+<td align="right">-5226</td>
+<td align="right">-5322</td>
+<td align="right">-5418</td>
+</tr>
+<tr class="odd">
+<td align="right">1.20</td>
+<td align="right">-5032</td>
+<td align="right">-5160</td>
+<td align="right">-5278</td>
+<td align="right">-5394</td>
+<td align="right">-5507</td>
+<td align="right">-5620</td>
+<td align="right">-5730</td>
+<td align="right">-5835</td>
+<td align="right">-5941</td>
+</tr>
+<tr class="even">
+<td align="right">1.30</td>
+<td align="right">-5470</td>
+<td align="right">-5611</td>
+<td align="right">-5742</td>
+<td align="right">-5869</td>
+<td align="right">-5994</td>
+<td align="right">-6119</td>
+<td align="right">-6239</td>
+<td align="right">-6354</td>
+<td align="right">-6471</td>
+</tr>
+<tr class="odd">
+<td align="right">1.40</td>
+<td align="right">-5912</td>
+<td align="right">-6068</td>
+<td align="right">-6210</td>
+<td align="right">-6350</td>
+<td align="right">-6487</td>
+<td align="right">-6623</td>
+<td align="right">-6754</td>
+<td align="right">-6880</td>
+<td align="right">-7006</td>
+</tr>
+<tr class="even">
+<td align="right">1.50</td>
+<td align="right">-6359</td>
+<td align="right">-6529</td>
+<td align="right">-6684</td>
+<td align="right">-6837</td>
+<td align="right">-6987</td>
+<td align="right">-7134</td>
+<td align="right">-7276</td>
+<td align="right">-7411</td>
+<td align="right">-7548</td>
+</tr>
+<tr class="odd">
+<td align="right">1.60</td>
+<td align="right">-6811</td>
+<td align="right">-6996</td>
+<td align="right">-7163</td>
+<td align="right">-7330</td>
+<td align="right">-7491</td>
+<td align="right">-7652</td>
+<td align="right">-7805</td>
+<td align="right">-7950</td>
+<td align="right">-8007</td>
+</tr>
+<tr class="even">
+<td align="right">1.70</td>
+<td align="right">-7260</td>
+<td align="right">-7460</td>
+<td align="right">-7640</td>
+<td align="right">-7820</td>
+<td align="right">-8000</td>
+<td align="right">-8170</td>
+<td align="right">-8300</td>
+<td align="right">-8490</td>
+<td align="right">-8650</td>
+</tr>
+<tr class="odd">
+<td align="right">1.80</td>
+<td align="right">-7730</td>
+<td align="right">-7940</td>
+<td align="right">-8130</td>
+<td align="right">-8330</td>
+<td align="right">-8520</td>
+<td align="right">-8700</td>
+<td align="right">-8880</td>
+<td align="right">-8940</td>
+<td align="right">-9210</td>
+</tr>
+<tr class="even">
+<td align="right">1.90</td>
+<td align="right">-8190</td>
+<td align="right">-8430</td>
+<td align="right">-8630</td>
+<td align="right">-8840</td>
+<td align="right">-9040</td>
+<td align="right">-9240</td>
+<td align="right">-9430</td>
+<td align="right">-9600</td>
+<td align="right">-9780</td>
+</tr>
+<tr class="odd">
+<td align="right">2.00</td>
+<td align="right">-8670</td>
+<td align="right">-8920</td>
+<td align="right">-9130</td>
+<td align="right">-9360</td>
+<td align="right">-9570</td>
+<td align="right">-9780</td>
+<td align="right">-9980</td>
+<td align="right">-10160</td>
+<td align="right">-10350</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math display">\[
+\begin{aligned}
+  \dot{x} &amp; = \sigma(y-x) \\
+  \dot{y} &amp; = \rho x- y - xz 
+\end{aligned}
+\]</span></p>
+<p><img src="data:image/png;base64,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" alt /></p>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAJACAMAAABlpiR1AAAAllBMVEUAAAAAADoAAGYAOmYAOpAAZmYAZrY6AAA6ADo6AGY6Ojo6ZmY6ZrY6kNtmAABmADpmAGZmOgBmOpBmZgBmZjpmZrZmkJBmtrZmtv+QOgCQOjqQOmaQZgCQkDqQkGaQkNuQ29uQ2/+2ZgC2Zjq2Zma2tma225C2/9u2///bkDrbkJDb////tmb/trb/25D//7b//9v///9mJfVuAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAa8ElEQVR4nO2di3bruHVAZde1Z5LambRpe51pm5qdJGbN2tb//1wFgC89SOF1qENi77US3/GlAEra9xDPg90eQDG7W98AwBxngta73d3bLe4E4AJEUFANgoJqEBRUMwja7Bw/bng3ACe0gn697B7dn75fd/fvt7sfgCOcoF+/jJ08/i+AG0IbFFSDoKCaQdBDM9RCCxQU0Qv6/frwccsbAbhEL+jXC+NLoI9RBH2+5X0AXGRog37+xBoRUMdI0Cc6SaCO0SP+8Zb3AXAROkmgGjpJoBo6SaCa0SN+RycJ1MFcPKjmkqDff+ZhD0pAUFANgoJqEBRUg6CgGgQF1SAoqAZBQTUICqphJglUw65OUM0gaPXwUT/uP59YFgqKGK1met43Dx/7mt3HoIijFfWfP7/b/wFo4WhF/dcf3hAUVDG0QetD76h65hEPqhgNM1WPpidPJx40wTgoqAZBQTVthuVuxxwD9aCL8SEKZmN8wyleoImz1Df04kETZ6lvGh7xoIiz1DcVERQUMW6DmhBa0wYFTYyGmWxXnvgJqmAcFFSDoKAaHvGgGjpJoBqGmUA1DNSDapjqBNWwWARUw3I7UA3joKAaBAXVkPoGVDPqxdN9B31wVieohrM6QTWc1QmqGQn6RCcJ1HE21QmgiZBOkkkhaqZEibKwGCGdJCuoXUxClx8WIqSTZARt1WTNEyzD6BF/dbGIEbTNYc+qUViGkLl4IigsTpigJsI+7rvuEoA4gYtFDhfdvbVrmwHk4ZwkUA3nJIFqws5J+n5lOhQWJeicpLpre9IIhYUIOSdpNNk0ddUOwItwQa+fkzSa4JwaqGeLE3gRI+hVfCJoQHFQMCKCHtqgbQidbIMiKHghI2g/mD/ZTkVQ8CJQ0GyZRRAUvBCKoJa5laMICl4gKKgm9BH/y/i5fvxfZyAoJBMaQQ+N0HbP3PfrtVYogkIyEY/4pu0kXV3NhKCQjGQbdMHiYKvICXpoDDx8VFMxFEHBCzFBm7u3+uFjcssHgoIXUoKa9qeZh69ZLAIpSAlqFjQZQU9WM4WvooKykY6gU8d9ISh4IdwGracGoxAUvAidSfpn751ydl3J5GFKCApehK9mypN8EUHBi+BHfO0xhZSzXiibiDZo5bEStO6mQhlmgiRiOkltDvAZTc1h8l8vpjGAoJBEuKDXVzG1q0TsgUoICkkEC1p5tEG7bccmixOCQgoivfh+nV31iKCQhMw4aKfldH4HBAUvhGaSuhmk71cEhRTCBXU7j1NzLyIoeBHRSXLjm4lp6xAUvAgVtOlm1z0zLNNJgiQCBR2dg1glTcojKHgRPMw05K0j9Q3IEyzo1cyfmeuFskFQUA2CgmpEBPVI0oig4IVMftDJCaTweqFshKY6R8NROYqDYpHa1dlcWZSHoOBF1IJl5uJhKSI2zT2PfsjXC2UjPRefXC+UTcJcfNJTHkHBCwbqQTUICqrhEQ+qoZMEqmGYCVTDQD2ohmNoQDUICqqJyQ96/175HDSXp14om1BBzVa5yrRA6cXDEgSPgz6bESbTg68ZBwV5YmaS3N5jZpJgAVQJyvFecIoqQVEUTlEmKIrCMeoERVEYI7PtOLFeFIUOpTNJKAqOOEH7UxLk6kVRMIgI2jZS55oBHvWiKEgKameaRltEIupFURATtFVzakLUs94djhaOmKDtYpKpwSh/71C0aER68fkiqLsWRcsldBz0L/0vvn+9kh/0cX+U0z6yXnc1ipZK9CEKzfxA/cHRu7fDRVNNgVDjULRQghcsO+U8zuTOVO/wChQtkbhtx/Uucddx1MQUihZIeCep3v37y9Vdx25vctpA/aVXoWhpRPTi612XXWSSPq3DZCM01jQGRgsjZpipvrajczRMmmOY6fSlKFoQUeOg1wz1yIGXJBlhtBxE1oPKRlD3ehQtA5n1oH2Izd4GHZWAoyUgtGC5i7STvf0scqHo9gkW1KWwdbkblqj3SjE4unFCBf16cUGx+znH3JqnfF6h6KYJFbRP/D25DGRgGUFRdNPE5GZyXM/NtJSgPOk3TMy+eMf1ffHLCbonjG6V6OV2NhHjPIsKShjdJsFtUNXH0KDo5ggVtM9bezWB7ZdZ81TlWrDsC2F0YwSPgzaex9A0d2+HblSmLR9BoOiWCJ9Jcks9H+eu3bv2p+nnT7VURSUijG4HqdxMprtvBD3p6w9LTcKKCwZFN0K8oDO7OvdDBJ3qSsn7g6KbIFbQ+lr6RdcGnVw5uoQ9POk3QJSgJi3Y1W0fdkHT5FULqYOiaydcULeSTjz9Yi4Io+smeKDe9uA9VorkqjcDKLpi4ubi1yUoiq6Y0AjarDCC2vpwdJ1EdJKqq21Qj611N9AFRddIVC/eCDjbi/9+vbbU6SayEEbXR+w4aDM/Dup2LuWoNzMoujISpjp/mwuSzZXcDrfzBEVXhdRc/MLFhdWNo+shXtBVH8eNomuhUEEJo2tBWtCbrAf1BEVXQLER1EIYVU/Zgu4Jo9opXlDCqG5E8oPmrHcRUFQtJY6DXoIwqhQRQXUuFrkGimokWFC7GcksaJqbylS6WOQaKKqPUEHNuGZlEifPZxZRu1jkCjzptRGTftGlV55Pv6h3scg1UFQVMVs+3Hr6zQwznUEYVQSCXgRFtYCgExBGdYCg06CoAhB0DsLozWGq8wooeluY6rwKYfSWIKgPOHozENQTFL0NCOoNYfQWIGgIOLo4CBoIii5L8GKR0oaZziGMLkloBP16uZr7O2+9KsHRxQh/xB+CaGpy0JB6tYKiyxDVBq3SHu9B9eqFMLoEkZ2ken7LR8Z6VYOj4kT34j+fSu0kHYOissQJajrzaU/5DX2thFFJYgRtruzpzFrvKkBRMcIFra4fdZyz3pVAGBUieNtxegc+rN71gKISMJOUEcJofoRS39g9IXMSb/WbxNHMyAlqEzu0RyemFbcyUDQnUVOdB2bTihhBWzWn8o9s+kskjOYjInnY8+jHZYygbe6mqb2fW/8GUTQToYI23WKmueRhpUdQC2E0C8G9+H4MtJp+yrvNyY/7mXO7i/jyUDSdmMQNjvnEDQdHD7G2mWwIFPLVEUZTkRI0W72rB0eTEHnE56x3C6BoPCKdpGHGqbiB+gkIo7GIDDMNfzvZCC3v+8LRKEQG6m2icEe5w0wXwNFwhKY6r3alSv2mUDSQBEH/d7IXTwSdgTAaREQb1PV8Zo9CqrsV97RBL4Gj/sT04s0AU7Ob7SV1iW4nm6qlf0M46knMOOihiVnvEhOM8PXgqBfBM0nPxtLfeW1LGjVF4+vdNDh6laipzsov+Q2CeoCj88QJ6jfLiaB+oOgMcYL67TtGUF8Io5MgqBJw9DKSgmaptyBw9ALBgnrviz9c+vBRFb5gORQcPUVkLt7Q3L3VDx9lb/mIAkWPkBLUtD/NPHzNYpFgCKMj4rd8zGMuNIKerGYaGggB91ggfEAdMYLO9c47ugg6NWTK538NHLVICdq2QeupRKJ8+B6gqKCgrsM/uaSEj94LwqicoJnqLZ7CHUXQFVCyo0KCsu04M8U6KjOTxLZjAcpUVGSgnk1zMpQYRtl2vC6Kc5QIujrKclRmLp5tx7IU5KjQYhG2HUtTiqNiy+2WLa5IinA0fjUTCWwVsH1H4wfq/QRlPag0G1+7KC1ocr3gwYYdRdCNsFVHEXQ7bNJRBN0U23MUQbfGxhwVEdRjzdOmPkRtbMlRmeV2s+mXw+qFKDbjqNBM0ujArxzFQQTbcFRqqrOZ2s4ZVxxEsQFHgwV1sfHzKXFb0uo/uLWwdkdDBf16cQuUup/i9UIyq3Y0VNA+U8hkWrDM9UIO1utooKAea+Uz1wuZWKmjLLcriDU6GizoEEERdIWsztHgNmg/vul51EdqvZCbdTkaKujn04+TPwjXCwKsyNHgcdB2n2btd5ZXer0gw1ocDZ9JcmmXUs/5WMens21WsVmEXZ1lo95RBC0e3Y7KLLfLWC8sgOKHfXQE9TzxOLleWAiljkYKeoikSaNMCKoRjY7GCfr5lPR8D6kXFkXdwz5K0Ho6KVj2emFxVDkaIej3a+IgfVC9cAv0OBouaHLzM6xeuBFKHvYRU52pzc+weuGGKHA0VNAMzc+weuG23DqQMlAPV7mlo0x1gg83czRe0O9fZyJodQivn08cJrslbvOwjxW0nn3EWz9/ejvawxRZL2hieUejBG3mDtretzuX3OYQzknaGgs7GjUOemB2qN7EzXaDMifNbZAlH/bBm+bsavprWRtM9KyJoFtmKUfj9sVfE/Tr5f7dhtBmqiWAoOtnEUdDI2jjFUHddXNblxB0E8g/7CM6SdXVNmjOekE7so5G9eJNP2muF5+zXlgBgo7GjoM281Odbm/yzDUIujGkHvYJU52/TQvap3XgOO6SkHBUZC7eI0kjgm6T7I7Gp1+cwSNJI4JulryOighKBC2cjA1SEUEPbdD2MtqgxZLJURlB+4XNk8vvEbQAcjjKinqQJPlhLxRBLaOmaHy9sHqSHEVQWIB4RxEUliHyYY+gsBwRkkru6kRQOCfQUckImqVe2B4hgVRO0K+X3cNHNRVDEbRwfCUVE7S5e6sfPiaX3iMoeEkqJahpf5p5+KkDExEULNcclZpJMiYbQU9WMw2v9q0XNs+sDtIRdOpETwSFMZOSCrdB66lktwgKp1xUVLQXT/IwSIVxUFAN+UFBNUKCsu0Y8iAzzMS2Y8gE245BNSKCsu0YchEoaNe2nH/EE0EhF6ER9OvFJ2sY244hE+GPeK+jOtl2DHmIaoNW6cchIih4EdlJqneJJ8oiKHgR3Yv/fPKKoqwHhSTiBDWd+bSnPIKCFzGCmgMSUteMICh4ES5oNXN2h0C9UDahgtZ+j/ZuQH8y0CIoeCEyk+QOkjX9o2rqIgQFLyQXi1T9kbJpxUHBSC4WubCrM6o4KJj4LR9T6u2HCPrIOCgkEiOo829G0H1tVpSYhujXC494SEFGUDtUejfjJ4KCH0KC5qsXygZBQTUICqpBUFANgoJqpNIvZqsXyobUN6AaBAXVICioBkFBNQgKqkFQUI3MivqM9ULZyORmylgvlI1QbqZ89ULZkJsJVENuJlCNdG6m5HqhbMjNBKohNxOohtxMoBqh3Ez56oWyEZpJMjmZPp84TBZSkZmLt36aBGKTh88iKHghlJupTxvGOUmQRPSepMkDZvYubrb5mUgeBknERtDv19kmqEkbRgSFdKIf8d+vM4NNXy/37zaENlO9JAQFL+LboFOx0dG4hsCkxAgKXiQIylw8yIOgoBqhR3w3oD8pMYKCFzKdpLpbdM9x3JBGtKCTB8zs+xz1BoaZIAmxgfoWBuohCclzkgxEUEhCZrFI3S1opg0KaQgtt+uaApMNAQQFL0jcAKqRTNwwaorG1wtlI5m4AUEhGcnEDQgKyUgmbkBQSEYycQOCQjIkbgDVyCVu+HrZPXxUUzEUQcELscQNzd1b/fBh93cm1QtlI5UC3LQ/zTz81LJmBAUvpA5RMAuajKAnq5kGvcOKg1KRErSLoBWrmSAFsWNoXBu0nuruIyh4Eb1g+epAqL2U5GGQBgd5gWoSBP2NbccgTugj/l+7/56fi2fbMeQhuA3atirnV9yx7RgyEfqIP4TGRxM+Z6c72TQHuQhvgza7uz9N984tbDuGXER0klwQnYMICrkIF7Q2EfTKGCjbjiET4bs6Tfg8/P/8xjm2HUMeZHrxGeuFshEaB81XL5SN9EwS60EhiXhBv38lgoI4sYLWiedxIyh4ESVoM7eQLnO9UDbhgroRpCvpmczWT7tgZGp7MoKCF6GCVvbwo8nNmi12s4cbMGWgHlIIHgf94X7MCjo6ZI6pTkgiNII2PhHUauyWibBYBJKI6CRVV9ugRFDIRVQv3vSTZnvxfRt0Mn8YgoIXseOgzfw4KL14yAOb5kA1bDsG1UglD8tWL5QNx9CAaiSPoclSL5SN5DE0WeqFspE8hiZLvVA2ksfQZKkXykbyGJos9ULZcAwNqEbuGJpM9ULZiB1Dk6teKBtmkkA1zMWDahAUVIOgoBoEBdUgKKgGQUE1cfviF6wXyiZG0MmtmhL1QtkgKKhGSNDq/t0cpsRhspCIjKDWz5/eZtqsCApeiAhqUzdVds0TqW8gCSFBf3QXkTwMkggW1Gs1k4meNREU0pEZqP96uX8fpbhLLQ7KRWomqXFRdnLtPYKCF1GJG+bOOMxdL5RNsKC1yytSJ6YXQVDwIjgFeNeo/Hyam5XvtoZMdqQQFLwI3pPUtyqrmad8H185jhvSiF/NNDXCuT8aKGWYCZIQEdTjKgQFL0Qe8URQyIVMJ6nuUuPQBoU0hIaZuinRySiLoOAFA/WgGslNc3OrnhAUvEBQUA2CgmoQFFSDoKAaMouAamS2fLSXPnxUUzEUQcGLmAjqlf+muXurHz7s/s6keqFspAQ17U8zD1+zWARSkBLUXGMEPVnNNDQQAu4RCkY6gk6teUJQ8EK4DVpPnfiFoOCFmKCuw0/yMEhDTtBM9ULZICioRmignm3HkAeZqU62HUMmRARl0xzkQuSUD7YdQy5EBCWCQi5kzkli2zFkQuggL7YdQx7k1oNmqhfKRiiC5qsXykZa0Mn1oABeCAsaRLawSkELFqTklhCUgqRLyiCoLDreKQXdqqQ8glaP9pjY6RNmTJyNyy2m451S0K1KyiGodc/kBrVnxU7w9fL7p5hDQHS8Uwq6VUk5BLV7jIygo1zLZ5jNxvVciJ2vIx0KWrAgJbfkXuxm2W125akBpH172rE5bC7QUR3vlIJuVVK2XrwVdPYQhX45aNB8k453SkG3KimLoMM6JQ9Bo+rIAAUtWJCSW+raoMMpH/NtUIBFaQXtD/eYPGgb4BZ04bdxPZ/JjAwAN2FoH1RmCj/1lA+AvLA+DlSDoKCazCvqAfJyGkGr+bMQAZblWNBDJKUXD5o4EvTziec76GIsaM0oE2hjEPT7leYnqKMXlOYnaGSY6pRoftp8os+u/Om84X58/vyep6D0EjLeT75PqO5en+P9uUMyEktyg5ePaQW1gso0P79fD7dl1+CbNShp61C+Xuy/oPSC0kvIeD/5PiGzTNK+Psf7a6wOqSX124dSChIdqHdrpA4fnVuxP7OS7yrtGun0gtJLyHk/2T4huxTS7NfJ8f7scZfpJXVr35MKWmCq8/Bvp/8eosvYPdu3m1xQhhLy3o8tLcMnZDCC5iiofviPdg9lUkl1q2RSQQsIWt2/u2A/s5vEAydEckE5biXn/RgyfUL7+vAYzVDQoQjTBk0uqfqda18nFXSWWSTDV3eMySXqGiCJbUdzY+kF5biVnPezz/YJNdaG9ILME9kImlqSS6NQJb63kaCuqZBb0KbrASDoVEG5PqHDN/jwkV5Qd9Rlnk/q8DGpFtTlYuYRP1NOtk/INWZTC7IFZHnEu+KefuR6xGcVtHbNj/bgmoRmct2PE2rqJOW7n/RPaISxIblr047mpJfkbumntA6gbATttjjlGPtoVA0z5bqfXJ+Qk6DJMaJnqDIMM+W5JVFBP/tUThlGjxtdA/V57iffJ9QrleX9VTkG6q2SVeItiQraPi3MrdXpM5TuxtILSi8h3/1k/ITMpscf6XfUFmYnFjXckngvHiAF9iSBatjVCapBUFDNmaC0QUETCAqqQVBQDYKCahAUVIOgoBoG6kE1jIOCahAUVCO/JwkgAVYzgWoQFFSDoKAaBAXVICioBkFBNQgKqmGqE1TDTBKo5mwmCUATwyM+PRkMQHa6R7xJ5p8j3wZAVkZtUBNGOSkJdHHcSWoK6cS3R+Y2d2/2GJguw+MwmnH/XrV/evjoTzizZ1+0v7d5scaXjEppix8K+/uraz9Vx1cOr3cv+379sW9+7L/+cPwkq3fjI1jmknDZwjd2WmCRWz4+f/pTl5ru27nTDKeYtYenVP0Xffja3Z+rXZt7uE1vPb5kXEpXfF/Y91jQ4crqxKX60fVWm6Pf2/yFQwdhRlCXCrfaVkvtLIJu7B/gRer7v7nclb2gIwUuCPqPNqZ9/fIvg5XGkzNB2x9d8ftpQe2PE0GNnO2MyXhMxSQxrIcrpwV1+ThtHvCQD0M5JbZBD3Y4TwZBR7JcEPSxsnNs9nCW9vfGhjNB3W/64vfTgtorTwQ9hMrPJxsh6vFfVEMENVkM/6tN1ei+qsr9xl7Qver/NvUILLEXb4JQ3R7K5hVBHxt3XkXlFUH74vdhEdSESjcgfRQlP5/+4Y/uvytzmNyuLd2mvu1/c/wWtkSJ46BGDHsy2yBofd4G3XW9mcMl5lzOQ9+lGrVBH08uGUrpi99PC2qvHF6/37dnxTlBP5+OnvG7IWjbJqYr3Abc9jf967dHgTNJLu125c627HrVw/u/FEFt//rhoxp68c8nlwylDMXvLwo6XHkcQe134L6IsWufT/f/6e6uzznuAuzBziEL+X7jgo74/nVTTZgL9MdY9BH082n0+LgkqOlgV8+nDceTR3xbylD8fiqCtlceC2rD4ZmgJlR/v979t7mHXtCuhnos6KYf8T319gdC2y/SfPP9I74Z9Q4vCvr589///HZFUFfKqPhRYa2gj+MrvSJoq63953QcQffjcxwMXSdpNGS2AcaCNrsSOkr992m/6dan0eDhRUG/X//t0Ay9IqgtZVT8UJgLdca7cX2ngl5qg7o/Hp7z791RSqYN+mP8l32HbNvDTG7eY5PNmGM6LQ5txUFQd66k+/0lQQ9Nz8ezsaEzQU0po+KHwlw8Ne3ScX0Xe/G2/zMKE+ZF5rs5/DAm9r146/i4F99H8G3FmFbQys7ebbSdfcQQnar7vw7joHX/b/OkF99e0k/9jAU9vsSW8vtR8f1RiaNJyHF9w+vtr+wDu2rHQYcWZWXjhvX9aBzUBuXDX97/tR8otUFmU/HzpBdfgqB66Z/c9g+f/+T7OiO2/9Vro42gTTERVDF1GzTttEDj8VW0Pahnv6vXydBJqgppg+qlnYN3q5n+x6cl2XTjWV5Xr5JxL940YbbVwobVczIOWsqCUFgL57s6f0NQ0EO/WGRLsw+wHY4SN2xsCA02wOgR3y60IZSCIs7aoBWdJFDEkaANARSUMQhaM04P+hgtFsFO0EfXi8dOUEkbQetdSbvmYD0MbdAGR0EfR734Nm8AgBoYBwXVnM0ksd4ONHE0F08TFLTRCUrgBJVwygeoBkFBNQgKqvl/e2ixT5XsK2MAAAAASUVORK5CYII=" alt /></p>
+</div>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Brown RW, Van Havern BP, eds. 1972. Psychrometry in water relations research: proceedings of a symposium on thermocouple psychrometry Utah Agric. Expt. Station.</p>
+<p>List RJ. 1971. Smithsonian Meteorological Tables. Smithsonian Institution Press.</p>
+<p>Mason EA, Monchick L. 1965. Survey of the equation of state and transport properties of moist gases. Pages 257-272 in</p>
+<p>Wexler A, ed. Humidity and Moisture. Measurement and Control in Science and Industry, vol. 3. New York: Reinhold Publishing Corporation.</p>
+<p>Mechtly EA. 1973. The International System of Units: Physical Constants and Conversion Factors. National Aeronautics and Space Administration.</p>
+<p>Murray BR. 1976. On the computation of saturation vapor pressure. Journal of Applied Meteorology 6:203-204.</p>
+<p>Symbols Committee of the Royal Society. 1975. Quantities, Units and Symbols. The Royal Society.</p>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
