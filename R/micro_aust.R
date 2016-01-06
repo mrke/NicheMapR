@@ -1,12 +1,6 @@
-#' Global implementation of the microclimate model.
+#' Australian implementation of the microclimate model.
 #'
-#' An implementation of the Niche Mapper microclimate model that uses the global climate database
-#' derived from "New, M., Lister, D., Hulme, M. and Makin, I., 2002: A high-resolution data
-#' set of surface climate over global land areas. Climate Research 21:1-25"
-#' It also optionally uses a global monthly soil moisture estimate from NOAA CPC Soil Moisture http://140.172.38.100/psd/thredds/catalog/Datasets/cpcsoil/catalog.html
-#' Aerosol attenuation can also be computed based on the Global Aerosol Data Set (GADS)
-#' Koepke, P., M. Hess, I. Schult, and E. P. Shettle. 1997. Global Aerosol Data Set. Max-Planck-Institut for Meteorologie, Hamburg
-#' by choosing the option 'rungads<-1'
+#' An implementation of the Niche Mapper microclimate model that uses the AWAP daily weather database
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param ystart First year to run
@@ -30,17 +24,15 @@
 #' @return shadpot Hourly predictions of the soil water potential under the maximum specified shade
 #' @return humid Hourly predictions of the soil humidity under the minimum specified shade
 #' @return shadhumid Hourly predictions of the soil humidity under the maximum specified shade
-#' @usage micro_global(loc = "Madison, Wisconsin USA", timeinterval = 365, ystart = 1990, yfinish = 1990, soiltype = 4,
-#' REFL = 0.15, slope = 0, aspect = 0,
-#' DEP = c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.), minshade = 0, maxshade = 90,
+#' @usage micro_aust(loc = "Melbourne, Australia", timeinterval = 365, ystart = 1990, yfinish = 1990, soiltype = 4,
+#' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.), minshade = 0, maxshade = 90,
 #' Usrhyt = 1, ...)
 #' @export
 #' @details
 #'
 #' \strong{ Parameters controling how the model runs:}
 #'
-#' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1)
-#' or just once for the minimum shade (0)?}\cr\cr
+#' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 #' \code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
