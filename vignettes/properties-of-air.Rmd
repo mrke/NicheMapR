@@ -30,14 +30,14 @@ This manual comprises a series of tables and graphs that illustrate selected pro
 
 All information in this manual is expressed in terms of the International System of Units (SI), which is based, in part, on the metre, kilogram, second and kelvin. Basic units, derived units, prefixes, and some useful physical constants and conversion factors are listed below. More extensive lists are provided by List (1971), Mechtly (1973), and the Symbols Committee of the Royal Society (1975). Note that the symbol for a physical quantity is an italicized (slanted) letter of the Roman or Greek alphabet, and the unit for a quantity is indicated by an unitalicized (upright) Roman letter.  
 
-An equation is provided as a mathematical description of each graph. In addition, two Fortran subroutines  and a function that calculate all of the information in the graphs are included in the NicheMapR package as R functions. Two of the equations in function DRYAIR (thermal conductivity of air and latent heat of vaporization of water) are linear regressions that were fit to tabular data. All other equations in DRYAIR were taken from the Smithsonian tables.  
+An equation is provided as a mathematical description of each graph. In addition, two Fortran subroutines and a function that calculate all of the information in the graphs are included in the NicheMapR package as R functions, and the R code use to obtain the data in the plots is provided as code snippets below each figure. Two of the equations in function DRYAIR (thermal conductivity of air and latent heat of vaporization of water) are linear regressions that were fit to tabular data. All other equations in DRYAIR were taken from the Smithsonian tables.  
 
-All humidity calculations in function WETAIR are made with the internationally accepted Goff-Gratch equation (function VAPPRS in subroutine WETAIR). A mathematically less cumbersome and often more useful alternative was reported by Tetens (Murray 1976); calculations with this equation differ negligibly from those with the Goff-Gratch expression. Teten’s equation is provided on page x to calculate the saturation vapor pressure ($e_d^*$) at the dewpoint temperature ($t_d$). Note that this equation can also be used to calculate the saturation vapor pressure ($e^*$) at the dry bulb temperature ($t$) if $t$ replaces $t_d$, and the saturation vapor pressure ($e_w^*$) at the wet bulb temperature ($t_w$) if $t_w$ replaces $t_d$. The relationship of wet bulb temperature to dry bulb temperature, vapor density, and relative humidty is shown in the psychometric diagram on page x.
+All humidity calculations in function WETAIR are made with the internationally accepted Goff-Gratch equation (function VAPPRS used by function WETAIR). A mathematically less cumbersome and often more useful alternative was reported by Tetens (Murray 1976); calculations with this equation differ negligibly from those with the Goff-Gratch expression. Teten’s equation is provided in Figure 4 to calculate the saturation vapor pressure ($e_d^*$) at the dewpoint temperature ($t_d$). Note that this equation can also be used to calculate the saturation vapor pressure ($e^*$) at the dry bulb temperature ($t$) if $t$ replaces $t_d$, and the saturation vapor pressure ($e_w^*$) at the wet bulb temperature ($t_w$) if $t_w$ replaces $t_d$. The relationship of wet bulb temperature to dry bulb temperature, vapor density, and relative humidty is shown in the psychometric diagram Figure 15.
 
-Mathematical expressions for some properties of air that are dependent on humidity are not available. The equations for these properties are restricted to dry air in this manual; the accompanying graphs, however, include comparisons for saturated air, shown by broken lines, from the theoretical calculations of Mason and Monchick (1965).
+Mathematical expressions for some properties of air that are dependent on humidity are not available. The equations for these properties are restricted to dry air in this manual but see Mason and Monchick (1965) for further information on humid air.
 
 
-### Table 1. Basic units
+## Table 1. Basic units
 ```{r table1, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
 *Physical Quantity*       |	*Quantity Symbol* |	*Unit*   |	*Unit Symbol*
@@ -50,7 +50,7 @@ thermodynamic temperature | *T*               | kelvin   | K
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
 
-### Table 2. Derived units
+## Table 2. Derived units
 ```{r table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
 *Physical Quantity*  | *Quantity Symbol*   | *Unit*   | *Unit Symbol*   | *Unit Definition*
@@ -65,7 +65,7 @@ Celsius temperature$^*$ | $t$              | degree Celsius   | &deg;C   | $K$
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
 
-### Table 3. Prefixes
+## Table 3. Prefixes
 ```{r table3, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
 *Multiple* | *Prefix*	| *Symbol* |	*Multiple* | *Prefix*	 | *Symbol*
@@ -81,7 +81,7 @@ cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
 
 
-### Table 4. Conversion factors
+## Table 4. Conversion factors
 ```{r table4, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
 **Force**   
@@ -133,19 +133,19 @@ $^{*}$exact, by definition
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
 
-### Table 5. Physical constants
+## Table 5. Physical constants
 ```{r table5, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
 *Quantity*                                           | *Symbol*	| *Value*  |	*Units*
 ---------------------------------------------------- | -------- | -------- | -----------
 Density of dry air at 25 &deg;C and 101325 Pa$^{*}$	 | &rho;	    | $1.184$    | kg m$^3$	   
-Diffusivity of water vapour in air at 25 &deg;C and 101325 Pa$^{*}$	 | *D*	    | $2.614$ x $10^{-5}$    | m$^2$ s$^{-1}$	   
+Diffusivity of water vapor in air at 25 &deg;C and 101325 Pa$^{*}$	 | *D*	    | $2.614$ x $10^{-5}$    | m$^2$ s$^{-1}$	   
 Dynamic viscosity of dry air at 25 &deg;C and 101325 Pa$^{*}$	 | &mu;	    | $1.806$ x $10^{-5}$    | kg m$^{-1}$ s$^{-1}$	   
 Gas constant for ideal gas	 | *R*	    | $8.31434$    | J mol$^{-1}$ K$^{-1}$   
-Gas constant for water vapour	 | *R*$_v$	    | $4.6150$ x $10^{2}$    | Pa m$^3$ kg$^{-1}$ K$^{-1}$	   
+Gas constant for water vapor	 | *R*$_v$	    | $4.6150$ x $10^{2}$    | Pa m$^3$ kg$^{-1}$ K$^{-1}$	   
 Gravitational constant	 | *R*	    | $6.6732$ x $10^{-11}$    | N m$^2$ kg$^{-2}$	   
 Kinematic viscosity of dry air at 25 &deg;C and 101325 Pa$^{*}$	 | &nu;	    | $1.525$ x $10^{-5}$    | m$^3$ s$^{-1}$	
-Latent heat of vapourisation of water at 25 &deg;C	 | *L*	    | $2.442$ x $10^{6}$    | J kg$^{-1}$	   
+Latent heat of vaporization of water at 25 &deg;C	 | *L*	    | $2.442$ x $10^{6}$    | J kg$^{-1}$	   
 Molecular weight of dry air	 | *M*$_a$	    | $2.8966$ x $10^{-2}$    | kg mol$^{-1}$	   
 Molecular weight of water | *M*$_v$	    | $1.8016$ x $10^{-2}$    | kg mol$^{-1}$	 
 Specific heat of dry air	 | *c*$_p$	    | $1.00484$ x $10^{3}$    | K kg$^{-1}$ K$^{-1}$	   
@@ -159,7 +159,7 @@ cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
 $^{*}$Variable that is functionally related to other properties in this manual
 
-### Table 6. Percent relative humidity over saturated solutions as a function of temperature. From Winston and Bates (1960)$^1$
+## Table 6. Percent relative humidity over saturated solutions as a function of temperature. From Winston and Bates (1960)$^1$
 ```{r table6, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
 
@@ -244,7 +244,7 @@ $^{19}$This is also listed with one water of hydration, instead of two; good onl
 $^{20}$Unstable around 20 &deg;C.   
 $^{21}$Good below 10 &deg;C.      
 
-### Table 7. Percent relative humidity over saturated solutions at 20 &deg;C. From Winston and Bates (1960)
+## Table 7. Percent relative humidity over saturated solutions at 20 &deg;C. From Winston and Bates (1960)
 ```{r table7, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
 
@@ -265,7 +265,7 @@ cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
 $^{*}$Good only below 29.6 &deg;C.
 
-### Table 8. Percent relative humidity over saturated solutions at 25 &deg;C. From Winston and Bates (1960)$^1$
+## Table 8. Percent relative humidity over saturated solutions at 25 &deg;C. From Winston and Bates (1960)$^1$
 ```{r table8, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
 
@@ -310,7 +310,7 @@ $^{1}$Parentheses around a value of relative humidity indicate some doubt of acc
 $^{2}$Light sensitive.   
 $^{3}$Prepare by mixing Ca(OH)$_2$ + ZnO + 4HCl.   
 
-### Table 9. Efficiency of drying agents expressed as mass of water remaining per unit volume of air dried at 25 &deg;C, and as relative humidity$^*$. From Winston and Bates (1960).
+## Table 9. Efficiency of drying agents expressed as mass of water remaining per unit volume of air dried at 25 &deg;C, and as relative humidity$^*$. From Winston and Bates (1960).
 ```{r table9, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
 
@@ -338,28 +338,28 @@ cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
 $^{*}$Relative humidity calculated as 3.98 x mass. 
 
-### Table 10. Water potential (kPa) of NaCl solutions as a function of temperature. From Brown and van Haveren (1972).
+## Table 10. Water potential (kPa) of NaCl solutions as a function of temperature. From Brown and van Haveren (1972).
 <center> <h4>*Temperature*, &deg;C</h4> </center>
 ```{r table10, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 library(NicheMapR)
 knitr::kable(PropAirTable10) # output the table in a format good for HTML/PDF/docx conversion
 ```
 
-### Table 11. Water potential (kPa) of KCl solutions as a function of temperature. From Brown and van Haveren (1972).
+## Table 11. Water potential (kPa) of KCl solutions as a function of temperature. From Brown and van Haveren (1972).
 <center> <h4>*Temperature*, &deg;C</h4> </center>
 ```{r table11, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 library(NicheMapR)
 knitr::kable(PropAirTable10) # output the table in a format good for HTML/PDF/docx conversion
 ```
 
-### Table 12. Preparation of standard molal solutions of NaCl and KCl from 2 molal stock solutions. From Brown and van Haveren (1972).
+## Table 12. Preparation of standard molal solutions of NaCl and KCl from 2 molal stock solutions. From Brown and van Haveren (1972).
 <center> <h4>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mass of NaCl Solution, g &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mass of KCl Solution, g*</h4> </center>
 ```{r table12, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 library(NicheMapR)
 knitr::kable(PropAirTable12) # output the table in a format good for HTML/PDF/docx conversion
 ```
 
-### Figure 1. Black-body emittance
+## Figure 1. Black-body emittance
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
@@ -369,10 +369,15 @@ par(yaxs="i")
 ylab = expression(paste("BLACK BODY EMITTANCE ( ", italic(phi), ") W m"^{-2}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,DRYAIR(db=tairs)$bbemit,type='l',ylab=ylab, xlab=xlab,cex.lab=1.5,cex.axis=1.5,lwd=2)
+grid()
 text(10, 550, expression(paste(phi," = ",5.67032," x 10"^{-8},"(",italic(t)," + 273.15)"^{4})),cex=1.5)
 ```
+```
+tairs=seq(-20,50,5) # sequence of air temperatures
+bbemit=DRYAIR(db=tairs)$bbemit # compute values
+```
 
-### Figure 2. Density of dry air
+## Figure 2. Density of dry air
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
@@ -382,23 +387,29 @@ par(yaxs="i")
 ylab = expression(paste("DENSITY OF DRY AIR ( ", italic(rho), ") kg m"^{-3}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,DRYAIR(db=tairs,bp = 85000)$densty,type='l',ylim=c(1,1.5),ylab=ylab, xlab=xlab,cex.lab=1.5,cex.axis=1.5,lwd=2)
+grid()
 points(tairs,DRYAIR(db=tairs,bp = 100000)$densty,type='l',lwd=2)
 text(30, 1.4, expression(paste(italic(rho)," = ",frac(italic(P), paste(287.04,"(",italic(t)," + 273.15)",sep="")))),cex=1.5)
 text(10,1.3,"100 000 Pa",cex=1.5)
 text(0,1.14,"85 000 Pa",cex=1.5)
 ```
+```
+tairs=seq(-20,50,5) # sequence of air temperatures
+densty=DRYAIR(db=tairs,bp = 85000)$densty # compute values
+```
 
-### Figure 3. Dew point temperature
+## Figure 3. Dew point temperature
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
 par(mfrow = c(2,1)) # set up for 2 plots in 1 columns
-dbs=seq(0,50,5)
+dps=seq(0,50,5)
 par(oma = c(5,5,2,2) + 0.1)
 par(mar = c(0,0,1,0) + 0.1)
 par(xaxs="i")
 par(yaxs="i")
-xlab = expression(paste("SATURATION VAPOUR PRESSURE AT ",italic(t[{d}])," OVER WATER (", italic(e[{d}]),") Pa"))
+xlab = expression(paste("SATURATION VAPOR PRESSURE AT ",italic(t)[{d}]," OVER WATER (", italic(e)[{d}],") Pa"))
 ylab = expression(paste("DEW POINT TEMPERATURE (",italic(t)[{d}],") ",degree*C))
-plot(WETAIR(db=dbs,rh=100)$esat,dbs,type='l',xlim=c(0,14000),xaxt='n',yaxt='n',ylab="", xlab="",cex.lab=1.2,cex.axis=1.5,lwd=2)
+plot(WETAIR(db=dps,rh=100)$esat,dps,type='l',xlim=c(0,14000),xaxt='n',yaxt='n',ylab="", xlab="",cex.lab=1.2,cex.axis=1.5,lwd=2)
+grid()
 axis(side=3, at=seq(0,14,2)*1000)
 mtext(xlab, side=3, line=2)
 axis(side=2, at=seq(0,50,10))
@@ -408,15 +419,16 @@ text(750+x,25+y, expression(paste(italic(alpha)," = ",7.5)),cex=.8)
 text(900+x,22+y, expression(paste(italic(beta)," = ",237.3)),cex=.8) 
 text(1800+x,23.5+y, "}",cex=1.5)
 text(3200+x,23.5+y, "OVER WATER",cex=.8)
-dbs=seq(-50,0,5)
-xlab = expression(paste("SATURATION VAPOUR PRESSURE AT ",italic(t[{d}])," OVER ICE (", italic(e[{d}]),") Pa"))
+dps=seq(-50,0,5)
+xlab = expression(paste("SATURATION VAPOR PRESSURE AT ",italic(t)[{d}]," OVER ICE (", italic(e)[{d}],") Pa"))
 ylab = expression(paste("DEW POINT TEMPERATURE (  ",italic(t)[{d}]," ) ",degree*C))
-plot(WETAIR(db=dbs,rh=100)$esat,dbs,type='l',xlim=c(0,700),xaxt='n',yaxt='n',ylab="", xlab="",cex.lab=1.2,cex.axis=1.5,lwd=2)
+plot(WETAIR(db=dps,rh=100)$esat,dps,type='l',xlim=c(0,700),xaxt='n',yaxt='n',ylab="", xlab="",cex.lab=1.2,cex.axis=1.5,lwd=2)
+grid()
 axis(side=1, at=seq(0,7,1)*100)
 mtext(xlab, side=1, line=2.3)
 axis(side=2, at=seq(-50,0,10))
 title(ylab = ylab, outer = TRUE,line=2,cex=1.5)
-text(400,-35, expression(paste(italic(e)[d]^{"*"}," = 100 x 10"^{bgroup("[",0.7858+frac(italic(t[d])*alpha,italic(t[d])+beta),"]")})),cex=1.5)
+text(400,-35, expression(paste(italic(e)[d]^{"*"}," = 100 x 10"^{bgroup("[",0.7858+frac(italic(t)[d]*alpha,italic(t)[d]+beta),"]")})),cex=1.5)
 x=-170
 y=15
 text(300+x,-20+y, expression(paste(italic(alpha)," = ",9.5)),cex=.8) 
@@ -424,30 +436,39 @@ text(310+x,-23.5+y, expression(paste(italic(beta)," = ",265.5)),cex=.8)
 text(360+x,-21.5+y, "}",cex=1.5)
 text(410+x,-21.5+y, "OVER ICE",cex=.8)
 ```
+```
+dps=seq(-20,50,5) # sequence of dew points
+esat=WETAIR(db=dps,rh=100)$esat # compute values
+```
 
-### Figure 4. Diffusivity of water vapour in air
+## Figure 4. Diffusivity of water vapor in air
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
 par(xaxs="i")
 par(yaxs="i")
-ylab = expression(paste("DIFFUSIVITY OF WATER VAPOUR IN AIR (  ", italic(D), ") m"^{2},"s"^{-1}))
+ylab = expression(paste("DIFFUSIVITY OF WATER VAPOR IN AIR (  ", italic(D), ") m"^{2},"s"^{-1}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,DRYAIR(db=tairs,bp = 70000)$difvpr,type='l',ylim=c(1.98E-5,3E-5),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
+grid()
 points(tairs,DRYAIR(db=tairs,bp = 85000)$difvpr,type='l',lwd=2)
 points(tairs,DRYAIR(db=tairs,bp = 100000)$difvpr,type='l',lwd=2)
 text(17,2.35E-5,"100 000 Pa",cex=1.25)
 text(4,2.55E-5,"85 000 Pa",cex=1.25)
 text(-9,2.85E-5,"70 000 Pa",cex=1.25)
-text(37, 2.5E-5, expression(paste(italic(D)," = ",italic(D[0]),(frac(italic(T),italic(T[0])))^italic(n),frac(italic(rho),italic(rho[0])))),cex=1.15) 
-text(37, 2.4E-5, expression(paste(italic(D[0])," = ",2.26," x ",10^{-5},sep="")),cex=1.05) 
+text(37, 2.5E-5, expression(paste(italic(D)," = ",italic(D)[0],(frac(italic(T),italic(T)[0]))^italic(n),frac(italic(rho),italic(rho)[0]))),cex=1.15) 
+text(37, 2.4E-5, expression(paste(italic(D)[0]," = ",2.26," x ",10^{-5},sep="")),cex=1.05) 
 text(37, 2.3E-5, expression(paste(italic(T)," = ",italic(t)+273.15)),cex=1.05) 
 text(37, 2.2E-5, expression(paste(italic(n)," = ",1.81)),cex=1.05) 
-text(37, 2.1E-5, expression(paste(italic(rho[0])," = ",2.26," x ",10^{5})),cex=1.05) 
+text(37, 2.1E-5, expression(paste(italic(rho)[0]," = ",2.26," x ",10^{5})),cex=1.05) 
+```
+```
+tairs=seq(-20,50,5) # sequence of air temperatures
+difvpr=DRYAIR(db=tairs,bp = 85000)$difvpr # compute values
 ```
 
-### Figure 5. Dynamic viscosity of air
+## Figure 5. Dynamic viscosity of air
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
@@ -457,14 +478,19 @@ par(yaxs="i")
 ylab = expression(paste("DYNAMIC VISCOSITY OF AIR (  ", italic(mu), ") kg m"^{-1},"s"^{-1}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,DRYAIR(db=tairs)$visdyn,type='l',ylim=c(.4E-5,2.4E-5),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
-text(10, 1.5E-5, expression(paste(italic(mu)," = ",italic(mu[0]),bgroup("[",frac(italic(T[0])+C,italic(T)+C)*bgroup("(",frac(italic(T),italic(T[0])),")")^italic(1.5),"]"))),cex=1.15) 
-text(10, 1.2E-5, expression(paste(italic(mu[0])," = ",1.8325," x ",10^{-5},sep="")),cex=1.05) 
-text(10, 1.04E-5, expression(paste(italic(T[0])," = ",296.16)),cex=1.05) 
+grid()
+text(10, 1.5E-5, expression(paste(italic(mu)," = ",italic(mu)[0],bgroup("[",frac(italic(T)[0]+C,italic(T)+C)*bgroup("(",frac(italic(T),italic(T)[0]),")")^italic(1.5),"]"))),cex=1.15) 
+text(10, 1.2E-5, expression(paste(italic(mu)[0]," = ",1.8325," x ",10^{-5},sep="")),cex=1.05) 
+text(10, 1.04E-5, expression(paste(italic(T)[0]," = ",296.16)),cex=1.05) 
 text(10, 0.94E-5, expression(paste(italic(C)," = ",120)),cex=1.05) 
-text(10, 0.81E-5, expression(paste(italic(rho[0])," = ",italic(t)+273.15)),cex=1.05) 
+text(10, 0.81E-5, expression(paste(italic(rho)[0]," = ",italic(t)+273.15)),cex=1.05) 
+```
+```
+tairs=seq(-20,50,5) # sequence of air temperatures
+visdyn=DRYAIR(db=tairs)$visdyn # compute values
 ```
 
-### Figure 6. Group of variables in Grashof number
+## Figure 6. Group of variables in Grashof number
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
@@ -474,10 +500,15 @@ par(yaxs="i")
 ylab = expression(paste("GROUP OF VARIABLES IN GRASHOF NUMBER (  ", italic(gamma), ") m"^{-3},"K"^{-1}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,DRYAIR(db=tairs)$ggroup,type='l',ylim=c(9E5,10E6),ylab=ylab, xlab=xlab,cex.lab=1.1,cex.axis=1.25,lwd=2)
+grid()
 text(10, 8E6, expression(paste(italic(gamma)," = ",frac(0.0980618*italic(beta),italic(nu)^{2}))),cex=1.15) 
 ```
+```
+tairs=seq(-20,50,5) # sequence of air temperatures
+ggroup=DRYAIR(db=tairs)$ggroup # compute values
+```
 
-### Figure 7.Kinematic viscosity of air at 100 000 Pa
+## Figure 7.Kinematic viscosity of air at 100 000 Pa
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
@@ -487,60 +518,80 @@ par(mar = c(5,5,4,2) + 0.1)
 ylab = expression(paste("KINEMATIC VISCOSITY OF AIR AT 10 000 Pa (  ", italic(nu), ") m"^{2},"K"^{-1}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,DRYAIR(db=tairs)$viskin,type='l',ylim=c(0.2E-5,2.2E-5),ylab=ylab, xlab=xlab,cex.lab=1.1,cex.axis=1.25,lwd=2)
+grid()
 text(-10, 2E-5, expression(paste(italic(nu)," = ",frac(italic(mu),italic(rho)))),cex=1.5) 
 ```
+```
+tairs=seq(-20,50,5) # sequence of air temperatures
+viskin=DRYAIR(db=tairs)$viskin # compute values
+```
 
-### Figure 8.Latent heat of vapourisation of water
+## Figure 8.Latent heat of vaporization of water
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
 par(yaxs="i")
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
-ylab = expression(paste("LATENT HEAT OF VAPOURISATION OF WATER (  ", italic(L), ") J kg"^{-1}))
+ylab = expression(paste("LATENT HEAT OF VAPORIZATION OF WATER (  ", italic(L), ") J kg"^{-1}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,DRYAIR(db=tairs)$htovpr,type='l',ylim=c(2.35E6,2.6E6),ylab=ylab, xlab=xlab,cex.lab=1.1,cex.axis=1.25,lwd=2)
+grid()
 text(20, 2.55E6, expression(paste(italic(L)," = ",2.5012," x 10"^6-2378.7*italic(t))),cex=1.25) 
 text(20, 2.53E6, expression(-20<paste(italic(L)<60)),cex=1.25) 
 ```
+```
+tairs=seq(-20,50,5) # sequence of air temperatures
+htovpr=DRYAIR(db=tairs)$htovpr # compute values
+```
 
-### Figure 9. Mixing ratio over water at 100 000 Pa
+## Figure 9. Mixing ratio over water at 100 000 Pa
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
 par(xaxs="i")
 par(yaxs="i")
-ylab = expression(paste("MIXING RATIO OVER WATER AT 100 000 Pa (  ", italic(r[w]), ") kg kg"^{-1}))
+ylab = expression(paste("MIXING RATIO OVER WATER AT 100 000 Pa (  ", italic(r)[w], ") kg kg"^{-1}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,WETAIR(db=tairs, rh=100)$rw,type='l',ylim=c(.9E-3,10E-2),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
+grid()
 points(tairs,WETAIR(db=tairs, rh=50)$rw,type='l',cex.lab=1.25,cex.axis=1.25,lwd=2)
 points(tairs,WETAIR(db=tairs, rh=25)$rw,type='l',cex.lab=1.25,cex.axis=1.25,lwd=2)
-text(0, 0.08, expression(paste(italic(r[w])," = ",frac(0.62570*italic(e),italic(p)-1.0060*italic(e)))),cex=1.15) 
+text(0, 0.08, expression(paste(italic(r)[w]," = ",frac(0.62570*italic(e),italic(p)-1.0060*italic(e)))),cex=1.15) 
 text(28, 0.035, expression(paste(100,"% ",italic(rh))),cex=1.05) 
 text(35, 0.025, expression(paste(50,"% ",italic(rh))),cex=1.05)
 text(39, 0.016, expression(paste(25,"% ",italic(rh))),cex=1.05) 
 ```
+```
+tairs=seq(-20,50,5) # sequence of air temperatures
+rw=WETAIR(db=tairs, rh=100)$rw # compute values
+```
 
-### Figure 10. Specific heat of air at 100 000 Pa
+## Figure 10. Specific heat of air at 100 000 Pa
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
 par(xaxs="i")
 par(yaxs="i")
-ylab = expression(paste("SPECIFIC HEAT OF AIR AT 100 000 Pa (  ", italic(c[p]), ") J kg"^{-1}, "K"^{-1}))
+ylab = expression(paste("SPECIFIC HEAT OF AIR AT 100 000 Pa (  ", italic(c)[p], ") J kg"^{-1}, "K"^{-1}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,WETAIR(db=tairs, rh=100)$cp,type='l',ylim=c(1E3,1.1E3),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
+grid()
 points(tairs,WETAIR(db=tairs, rh=50)$cp,type='l',cex.lab=1.25,cex.axis=1.25,lwd=2)
 points(tairs,WETAIR(db=tairs, rh=25)$cp,type='l',cex.lab=1.25,cex.axis=1.25,lwd=2)
-text(0, 1080, expression(paste(italic(c[p])," = ",frac(1004.84+(1864.40*italic(r[w])),1+r[w]))),cex=1.15) 
+text(0, 1080, expression(paste(italic(c)[p]," = ",frac(1004.84+(1864.40*italic(r)[w]),1+italic(r)[w]))),cex=1.15) 
 text(28, 1040, expression(paste(100,"% ",italic(rh))),cex=1.05) 
 text(35, 1025, expression(paste(50,"% ",italic(rh))),cex=1.05)
 text(39, 1018, expression(paste(25,"% ",italic(rh))),cex=1.05) 
 ```
+```
+tairs=seq(-20,50,5) # sequence of air temperatures
+cp=WETAIR(db=tairs, rh=100)$cp # compute values
+```
 
-### Figure 11. Standard atmospheric pressure
+## Figure 11. Standard atmospheric pressure
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
@@ -549,29 +600,40 @@ alts=seq(-500,3000,250)
 par(mar = c(5,5,4,2) + 0.1)
 ylab = expression(paste("STANDARD ATMOSPHERIC PRESSURE (  ", italic(p), ") Pa"))
 xlab = expression(paste("ALTITUDE (",italic(Z),") m"))
-plot(alts,DRYAIR(db=20, alt=alts)$patmos,type='l',ylim=c(0.7E5,1.2E5),ylab=ylab,xlab=xlab,cex.lab=1.1,cex.axis=1.25,lwd=2)
+plot(alts,DRYAIR(db=20, alt=alts)$patmos,type='l',ylim=c(0.7E5,1.2E5),ylab=ylab,xlab=xlab,cex.lab=1.1,cex.axis=1.15,lwd=2)
+grid()
 text(1500, 1.1E5, expression(paste(italic(p)," = ",101325,bgroup("[",1-(2.2569*10^{-5}*Z),"]")^5.2553)),cex=1.25) 
 text(1500, 1.05E5, expression(-1000<paste(italic(Z)<20000)),cex=1.25) 
 ```
+```
+alts=seq(-500,3000,250) # sequence of altitudes (m)
+patmos=DRYAIR(db=20, alt=alts)$patmos # compute values
+```
 
-### Figure 12. Temperature
+## Figure 12. Temperature
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
 par(xaxs="i")
 par(yaxs="i")
-ylab = expression(paste("TEMPERATURE (", italic(t[F]),")",degree*F))
-xlab = expression(paste("TEMPERATURE (", italic(t[C]),")",degree*C))
+ylab = expression(paste("TEMPERATURE (", italic(t)[F],")",degree*F))
+xlab = expression(paste("TEMPERATURE (", italic(t)[C],")",degree*C))
 plot(tairs,((9/5)*tairs)+32,type='l',ylim=c(10,110),ylab=ylab,xlab=xlab,cex.lab=1.1,cex.axis=1.25,lwd=2)
 tairs=seq(-40,-20,5)
+grid()
 library(Hmisc)
-subplot(fun=plot(tairs,((9/5)*tairs)+32,type='l',xlim=c(-40,-20),ylim=c(-40,0),ylab="",xlab="",cex.lab=.9,cex.axis=0.98,lwd=2),x=40,y=40,size=c(2,2)) 
-text(-10, 95, expression(paste(italic(t[f])," = ",bgroup("[",bgroup("(",frac(9,5),")")*italic(t)[c],"]")+32)),cex=1.25) 
-text(-10, 75, expression(paste(italic(t[c])," = ",bgroup("(",frac(5,9),")")*(italic(t)[f]-32))),cex=1.25) 
+subplot(fun=plot(tairs,((9/5)*tairs)+32,type='l',xlim=c(-40,-20),ylim=c(-40,0),ylab="",xlab="",cex.lab=.9,cex.axis=0.98,lwd=2),x=37,y=43,size=c(1.8,1.8)) 
+text(-10, 95, expression(paste(italic(t)[f]," = ",bgroup("[",bgroup("(",frac(9,5),")")*italic(t)[c],"]")+32)),cex=1.25) 
+text(-10, 75, expression(paste(italic(t)[c]," = ",bgroup("(",frac(5,9),")")*(italic(t)[f]-32))),cex=1.25) 
+```
+```
+tc=seq(-20,50,5) # sequence of air temperatures in deg C
+tf=((9/5)*tc)+32 # compute deg F
+tairs=seq(-40,-20,5) # sequence of air temperatures in deg F
 ```
 
-### Figure 13. Temperature coefficient of volume expansion for dry air
+## Figure 13. Temperature coefficient of volume expansion for dry air
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
@@ -581,10 +643,15 @@ par(mar = c(5,5,4,2) + 0.1)
 ylab = expression(paste("TEMPERATURE COEFFICIENT OF VOLUME EXPANSION FOR DRY AIR (  ", italic(beta), ") K"^{-1}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,DRYAIR(db=tairs)$tcoeff,type='l',ylim=c(3E-3,4E-3),ylab=ylab, xlab=xlab,cex.lab=0.9,cex.axis=1.25,lwd=2)
+grid()
 text(15,3.8E-3, expression(paste(italic(beta)," = ",frac(1,italic(t)+273.15))),cex=1.25) 
 ```
+```
+tairs=seq(-20,50,5) # sequence of air temperatures
+tcoeff=DRYAIR(db=tairs)$tcoeff # compute values
+```
 
-### Figure 14. Thermal conductivity of air
+## Figure 14. Thermal conductivity of air
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
@@ -594,51 +661,152 @@ par(mar = c(5,5,4,2) + 0.1)
 ylab = expression(paste("THERMAL CONDUCTIVITY OF AIR (  ", italic(k), ") W m"^{-1}, " K"^{-1}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,DRYAIR(db=tairs)$thcond,type='l',ylim=c(1E-3,3E-2),ylab=ylab, xlab=xlab,cex.lab=1.2,cex.axis=1.25,lwd=2)
+grid()
 text(20, 1.3E-2, expression(paste(italic(k)," = ",(2.425*10^{2})+(7.038*10^{-5}*t))),cex=1.25) 
 text(20, 1.1E-2, expression(-20<paste(italic(t)<40)),cex=1.25) 
 ```
+```
+tairs=seq(-20,50,5) # sequence of air temperatures
+thcond=DRYAIR(db=tairs)$thcond # compute values
+```
 
-
-### Figure 15. Vapour density over water
+## Figure 15. Vapour density over water
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(0,60,5)
 par(mar = c(5,5,4,2) + 0.1)
 par(xaxs="i")
 par(yaxs="i")
-ylab = expression(paste("VAPOUR DENSITY OVER WATER (", italic(rho[v]), ") kg m"^{-3}))
+ylab = expression(paste("VAPOR DENSITY OVER WATER (", italic(rho)[v], ") kg m"^{-3}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,WETAIR(db=tairs, rh=100)$vd,type='l',ylim=c(0E-1,9E-2),ylab=ylab,xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
-for(rh in seq(10,80,10)){
+grid()
+for(rh in c(0,10,20,30,40,50,60,80,100)){
 points(tairs,WETAIR(db=tairs, rh=rh)$vd,type='l',lwd=2)
 }
 for(wb in seq(0,50,2)){
 points(c(wb,wb+WETAIR(db=wb, wb=wb, rh=100)$esat/(0.000660 * (1.0 + 0.00115 * wb) * 101325)),c(WETAIR(db=wb, wb=wb, rh=100)$vd,0),type='l',lwd=2)
 }
+text(30, 0.08, expression(paste(italic(rho)[v]," = ",frac(italic(e),461.5*(italic(t)+273.15)))),cex=1.25) 
+xlab = expression(paste("RELATIVE HUMIDITY (",italic(rh),"), %"))
+mtext(xlab, side=4, line=1.25,cex=1.25)
+text(27,.044,expression(paste("WET BULB TEMPERATURE ( ",italic(t)[w],") ",degree*C)),cex=1.25, srt=45)
+for(rh in seq(0,60,10)){
+  mtext(at=c(60,WETAIR(db=60, rh=rh)$vd),text=rh,cex=1.25,side=4,srt=90)
+}
+for(wb in seq(10,50,10)){
+  text(wb-1,WETAIR(db=wb, rh=100)$vd+.002,wb,cex=1.25)
+}
+```
+```
+# get vapor density at different air temperatures for a given relative humidity
+tairs=seq(0,60,5) # sequence of air temperatures at which to obtain vapor density
+vd=WETAIR(db=tairs, rh=100)$vd # obtain vapor density at 100% rh
+
+# get dry bulb temperatures for a set of saturated wet bulb temperatures
+wb=seq(0,50,2) # sequence of wet bulb temperatures
+db=wb+WETAIR(db=wb, wb=wb, rh=100)$esat/(0.000660 * (1.0 + 0.00115 * wb) * 101325)) # rearrangement of formulae in WETAIR
+
 ```
 
+## Figure 16. Vapour pressure over water
+```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
+par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
+tairs=seq(-20,50,5)
+par(mar = c(5,5,4,2) + 0.1)
+par(xaxs="i")
+par(yaxs="i")
+ylab = expression(paste("VAPOR PRESSURE OVER WATER (", italic(e), "), Pa"))
+xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
+plot(tairs,WETAIR(db=tairs, rh=100)$e,type='l',ylim=c(0,10E3),ylab=ylab,xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
+points(tairs,WETAIR(db=tairs, rh=50)$e,type='l',lwd=2)
+points(tairs,WETAIR(db=tairs, rh=25)$e,type='l',lwd=2)
+grid()
+text(0,8000, expression(paste(italic(e)," = ",461.50*italic(rho)[v]*(t+273.15))),cex=1.25) 
+text(26, 4200, expression(paste(100,"% ",italic(rh))),cex=1.05) 
+text(32, 3000, expression(paste(50,"% ",italic(rh))),cex=1.05)
+text(37, 2000, expression(paste(25,"% ",italic(rh))),cex=1.05) 
+```
+```
+tairs=seq(-20,50,5) # sequence of air temperatures
+e=WETAIR(db=tairs, rh=100)$e # compute values
+```
 
+## Figure 17. Virtual temperature increment at 100 000 Pa
+```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
+par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
+tairs=seq(-20,50,5)
+par(mar = c(5,5,4,2) + 0.1)
+par(xaxs="i")
+par(yaxs="i")
+ylab = expression(paste("VIRTUAL TEMPERATURE INCREMENT AT 100 000 Pa ( ", Delta*italic(T)[v], "), K"))
+xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
+plot(tairs,WETAIR(db=tairs, rh=100)$tvinc,type='l',ylim=c(0,20),ylab=ylab,xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
+points(tairs,WETAIR(db=tairs, rh=50)$tvinc,type='l',lwd=2)
+points(tairs,WETAIR(db=tairs, rh=25)$tvinc,type='l',lwd=2)
+grid()
+text(0,14, expression(paste(Delta*italic(T)[v]," = ",italic(T)*bgroup("[",frac(1+(frac(italic(r)[w],0.622)),1+italic(r)[w]),"]")-italic(T))),cex=1.25) 
+text(0,11, expression(paste(italic(T)," = ",italic(t)+273.15)),cex=1.25) 
+text(26, 5.5, expression(paste(100,"% ",italic(rh))),cex=1.05) 
+text(32, 4, expression(paste(50,"% ",italic(rh))),cex=1.05)
+text(37, 2.5, expression(paste(25,"% ",italic(rh))),cex=1.05) 
+```
+```
+tairs=seq(-20,50,5) # sequence of air temperatures
+tvinc=WETAIR(db=tairs, rh=100)$tvinc # compute values
+```
 
-
-
-
+## Figure 18. Water potential
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=12}
 par(mfrow = c(2,1)) # set up for 2 plots in 1 columns
+tairs=seq(0,50,5)
+par(oma = c(5,5,2,2) + 0.1)
+par(mar = c(0,0,1,0) + 0.1)
+par(xaxs="i")
+par(yaxs="i")
+ylab = expression(paste("-1* WATER POTENTIAL ( ", italic(phi), "), PA"))
+xlab = expression(paste("RELATIVE HUMIDITY (%)"))
+
 rhs=seq(65,100,5)
-plot(rhs,WETAIR(rh=rhs,db=0)$wtrpot*-1,type='l',ylab="WATER POTENTIAL (phi), Pa", xlab="RELATIVE HUMIDITY (%)")
-points(rhs,WETAIR(rh=rhs,db=50)$wtrpot*-1,type='l',ylab="WATER POTENTIAL (phi), Pa", xlab="RELATIVE HUMIDITY (%)")
+plot(rhs,WETAIR(rh=rhs,db=0)$wtrpot*-1,type='l',ylab="", xlab="",xaxt='n',yaxt='n',cex.lab=1.2,cex.axis=1.5,lwd=2)
+points(rhs,WETAIR(rh=rhs,db=50)$wtrpot*-1,type='l',lwd=2)
+grid()
+axis(side=3, at=seq(65,100,10))
+axis(side=2, at=seq(0,5,1)*1E7)
+text(80,0.5E7, expression(paste(psi," = ",(4.615*10^5)*(italic(t)+273.15)*ln(italic(rh)/100))),cex=1.25) 
+text(76,2.8E7,expression(paste(0,degree*C)),cex=1.25)
+text(87,2.8E7,expression(paste(50,degree*C)),cex=1.25)
+
 rhs=seq(99.3,100,0.1)
-plot(rhs,WETAIR(rh=rhs,db=0)$wtrpot*-1,type='l',ylab="WATER POTENTIAL (phi), Pa", xlab="RELATIVE HUMIDITY (%)")
-points(rhs,WETAIR(rh=rhs,db=50)$wtrpot*-1,type='l',ylab="WATER POTENTIAL (phi), Pa", xlab="RELATIVE HUMIDITY (%)")
+plot(rhs,WETAIR(rh=rhs,db=0)$wtrpot*-1,type='l',ylab="", xlab="",xaxt='n',yaxt='n',cex.lab=1.2,cex.axis=1.5,lwd=2)
+points(rhs,WETAIR(rh=rhs,db=50)$wtrpot*-1,type='l',lwd=2)
+grid()
+axis(side=1, at=seq(99.4,100,0.2))
+axis(side=2, at=seq(0,9,1)*1E5)
+text(99.5,5E5,expression(paste(0,degree*C)),cex=1.25)
+text(99.75,5E5,expression(paste(50,degree*C)),cex=1.25)
+```
+```
+tairs=seq(0,50,5) # sequence of air temperatures
+wtrpot=WETAIR(rh=rhs,db=0)$wtrpot # compute values
 ```
 
-
-
-
-
+## Figure 19. Wavelength of maximum emittance from black-body
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6}
+par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
+par(xaxs="i")
+par(yaxs="i")
 tairs=seq(-20,50,5)
-plot(tairs,DRYAIR(db=tairs)$emtmax,type='l',ylim=c(0.7E-5,1.2E-5),ylab="WAVELENGTH OF MAXIMUM EMITTANCE FROM BLACK-BODY (lambda_m), m", xlab="AIR TEMPERATURE (t), &deg;C")
+par(mar = c(5,5,4,2) + 0.1)
+ylab = expression(paste("WAVELENGTH OF MAXIMUM EMITTANCE FROM BLACK-BODY (  ", italic(lambda)[m], ") m"))
+xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
+plot(tairs,DRYAIR(db=tairs)$emtmax,type='l',ylim=c(0.7E-5,1.2E-5),ylab=ylab, xlab=xlab,cex.lab=1.0,cex.axis=1.25,lwd=2)
+grid()
+text(0, 0.9E-5, expression(paste(italic(lambda)[m]," = ",2.897*10^{3}/(italic(t)+273.15))),cex=1.25) 
+```
+```
+tairs=seq(-20,50,5) # sequence of air temperatures
+emtmax=DRYAIR(db=tairs)$emtmax # compute values
 ```
 
 ## References   
