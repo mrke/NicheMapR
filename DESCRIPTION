@@ -3,13 +3,14 @@ Title: R implementation of Niche Mapper software for biophysical modelling
 Version: 0.0.0.9000
 Authors@R: person("Michael", "Kearney", email = "mrke@unimelb.edu.au", role = c("aut", "cre"))
 Maintainer: Michael Kearney <mrke@unimelb.edu.au>
-Description: This packages provides an interface to a suite of biophysical modelling algorithims including the Niche Mapper system.
+Description: This packages provides an interface to a suite of biophysical
+    modelling algorithims including the Niche Mapper system.
 Depends:
     R (>= 3.2.2)
 Imports:
 License: TBA
 LazyData: true
-RoxygenNote: 5.0.0
+RoxygenNote: 5.0.1
 Suggests:
     devtools,
     dismo,
@@ -26,4 +27,4 @@ Suggests:
     raster,
     XML
 VignetteBuilder: knitr
-Vignettes: ectotherm-model-tutorial
+Vignettes: properties-of-air
