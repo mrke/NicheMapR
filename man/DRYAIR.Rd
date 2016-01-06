@@ -30,7 +30,7 @@ htovpr Latent heat of vapourisation of water (J kg-1)
 
 tcoeff Temperature coefficient of volume expansion (K-1)
 
-ggroup Group of variables in Grashof number (-m3 -K)
+ggroup Group of variables in Grashof number (1-m3 -K)
 
 bbemit black body emittance (W m-2)
 

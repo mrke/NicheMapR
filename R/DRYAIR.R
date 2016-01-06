@@ -17,7 +17,7 @@
 #' @return thcond Thermal conductivity (W m-1 K-1)
 #' @return htovpr Latent heat of vapourisation of water (J kg-1)
 #' @return tcoeff Temperature coefficient of volume expansion (K-1)
-#' @return ggroup Group of variables in Grashof number (-m3 -K)
+#' @return ggroup Group of variables in Grashof number (1-m3 -K)
 #' @return bbemit black body emittance (W m-2)
 #' @return emtmax Wave length of maximum emittance (m)
 #' @export
@@ -25,13 +25,14 @@ DRYAIR <- function(db=db, bp=0, alt=0){
   tstd=273.15
   pstd=101325.
   patmos=pstd*((1-(0.0065*alt/288))^(1/0.190284))
-  if(bp<=0){bp=patmos}
+  bp=rep(bp,length(patmos))
+  bp[bp<=0]=patmos[bp<=0]
   densty=bp/(287.04*(db+tstd))
   visnot=1.8325E-5
   tnot=296.16
   c=120.
-  visdyn=(visnot*((tnot+c)/(db)))*(((db+tstd)/tnot)^1.5)
-  viskin=120./densty
+  visdyn=(visnot*((tnot+c)/(db+tstd+c)))*(((db+tstd)/tnot)^1.5)
+  viskin=visdyn/densty
   difvpr=2.26E-5*(((db+tstd)/tstd)^1.81)*(1.E5/bp)
   thcond=0.02425+(7.038E-5*db)
   htovpr=2.5012E6-2.3787E3*db
