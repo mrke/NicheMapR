@@ -10,7 +10,6 @@ library(NicheMapR)
 source('../R/ectotherm.R')
 
 ## ------------------------------------------------------------------------
-SoilMoist=rep(0.2,12)
 micro<-micro_global(loc = "Kuranda, Queensland", runmoist=1)
 ecto<-ectotherm()
 

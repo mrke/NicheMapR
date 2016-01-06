@@ -84,12 +84,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h3>Basic operation: modelling heat and activity budgets for the average day of each month</h3>
 <p>As with the microclimate model tutorial, this first example involves the most basic case of running the model to produce 12 days of output, one for each month of the year. Try running the model with the default inputs for a location of your choice, e.g.:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(NicheMapR)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">SoilMoist=<span class="kw">rep</span>(<span class="fl">0.2</span>,<span class="dv">12</span>)
-micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc =</span> <span class="st">&quot;Kuranda, Queensland&quot;</span>, <span class="dt">runmoist=</span><span class="dv">1</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc =</span> <span class="st">&quot;Kuranda, Queensland&quot;</span>, <span class="dt">runmoist=</span><span class="dv">1</span>)</code></pre></div>
+<pre><code>## Loading required namespace: ncdf4</code></pre>
 <pre><code>## extracting climate data 
 ## running microclimate model for 12 days by 1 years at site Kuranda, Queensland 
 ##    user  system elapsed 
-##    0.32    0.00    0.33</code></pre>
+##    0.31    0.00    0.31</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ecto&lt;-<span class="kw">ectotherm</span>()</code></pre></div>
 <pre><code>## running ectotherm model ... 
 ##    user  system elapsed 
@@ -977,13 +977,13 @@ micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc =</span> <sp
 <pre><code>## extracting climate data 
 ## running microclimate model for 365 days by 5 years at site Kuranda, Queensland 
 ##    user  system elapsed 
-##   28.69    0.00   28.70</code></pre>
+##   28.93    0.02   29.03</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># run the ectotherm model with the DEB model turned on and in viviparous mode, simulating the</span>
 <span class="co"># Eastern Water Skink, Eulamprus quoyii</span>
 ecto&lt;-<span class="kw">ectotherm</span>(<span class="dt">DEB =</span> <span class="dv">1</span>, <span class="dt">mindepth =</span> <span class="dv">4</span>, <span class="dt">viviparous =</span> <span class="dv">1</span>)</code></pre></div>
 <pre><code>## running ectotherm model ... 
 ##    user  system elapsed 
-##    5.48    0.00    5.53</code></pre>
+##    5.51    0.02    5.52</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">metout&lt;-<span class="kw">as.data.frame</span>(micro$metout) <span class="co"># above ground microclimatic conditions, min shade</span>
 environ&lt;-<span class="kw">as.data.frame</span>(ecto$environ) <span class="co"># activity, Tb and environment</span>
 masbal&lt;-<span class="kw">as.data.frame</span>(ecto$masbal) <span class="co"># activity, Tb and environment</span>
