@@ -4,8 +4,10 @@ author: C. Richard Tracy, William R. Welch, Berry Pinshow, Michael R. Kearney an
   Warren P. Porter
 date: '`r Sys.Date()`'
 output: rmarkdown::html_vignette
-vignette: |
-  %\VignetteIndexEntry{Properties of Air} %\VignetteEncoding{UTF-8} %\VignetteEngine{knitr::rmarkdown}
+vignette: >
+  %\VignetteIndexEntry{Properties of Air}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, echo = FALSE}
