@@ -2,11 +2,10 @@
 % Please edit documentation in R/micro_aust.R
 \name{micro_aust}
 \alias{micro_aust}
-\title{Global implementation of the microclimate model.}
+\title{Australian implementation of the microclimate model.}
 \usage{
-micro_global(loc = "Madison, Wisconsin USA", timeinterval = 365, ystart = 1990, yfinish = 1990, soiltype = 4,
-REFL = 0.15, slope = 0, aspect = 0,
-DEP = c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.), minshade = 0, maxshade = 90,
+micro_aust(loc = "Melbourne, Australia", timeinterval = 365, ystart = 1990, yfinish = 1990, soiltype = 4,
+REFL = 0.15, slope = 0, aspect = 0, DEP = c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.), minshade = 0, maxshade = 90,
 Usrhyt = 1, ...)
 }
 \arguments{
@@ -58,13 +57,7 @@ humid Hourly predictions of the soil humidity under the minimum specified shade
 shadhumid Hourly predictions of the soil humidity under the maximum specified shade
 }
 \description{
-An implementation of the Niche Mapper microclimate model that uses the global climate database
-derived from "New, M., Lister, D., Hulme, M. and Makin, I., 2002: A high-resolution data
-set of surface climate over global land areas. Climate Research 21:1-25"
-It also optionally uses a global monthly soil moisture estimate from NOAA CPC Soil Moisture http://140.172.38.100/psd/thredds/catalog/Datasets/cpcsoil/catalog.html
-Aerosol attenuation can also be computed based on the Global Aerosol Data Set (GADS)
-Koepke, P., M. Hess, I. Schult, and E. P. Shettle. 1997. Global Aerosol Data Set. Max-Planck-Institut for Meteorologie, Hamburg
-by choosing the option 'rungads<-1'
+An implementation of the Niche Mapper microclimate model that uses the AWAP daily weather database
 }
 \examples{
 micro<-micro_global() # run the model with default location and settings

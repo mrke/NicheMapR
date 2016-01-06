@@ -27,4 +27,4 @@ Suggests:
     raster,
     XML
 VignetteBuilder: knitr
-Vignettes: properties-of-air, microclimate-model-tutorial, ectotherm-model-tutorial
+Vignettes: properties-of-air
