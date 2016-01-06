@@ -259,7 +259,7 @@ knitr::kable(PropAirTable10) # output the table in a format good for HTML/PDF/do
 
 ## ----table11, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 library(NicheMapR)
-knitr::kable(PropAirTable10) # output the table in a format good for HTML/PDF/docx conversion
+knitr::kable(PropAirTable11) # output the table in a format good for HTML/PDF/docx conversion
 
 ## ----table12, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 library(NicheMapR)
