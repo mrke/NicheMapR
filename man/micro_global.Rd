@@ -75,7 +75,12 @@ or just once for the minimum shade (0)?}\cr\cr
 
 \strong{ General additional parameters:}\cr\cr
 \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
-\code{RUF}{ = 0.004, Roughness height (m), e.g. sand is 0.05, grass may be 2.0, current allowed range: 0.001 (snow) - 2.0 cm.}\cr\cr
+\code{Refhyt}{ = 120, Reference height (cm), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
+\code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
+\code{Z01}{ = 0, Top (1st) segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used)}\cr\cr
+\code{Z02}{ = 0, 2nd segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
+\code{ZH1}{ = 0, Top of (1st) segment, height above surface(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
+\code{ZH2}{ = 0, 2nd segment, height above surface(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
 \code{EC}{ = 0.0167238, Eccenricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)}\cr\cr
 \code{SLE}{ = 0.95, Substrate longwave IR emissivity (decimal \%), typically close to 1}\cr\cr
 \code{Thcond}{ = 2.5, Soil minerals thermal conductivity (W/mK)}\cr\cr
@@ -140,11 +145,11 @@ metout/shadmet variables:
 \item 1 JULDAY - day of year
 \item 2 TIME - time of day (mins)
 \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-\item 4 TAREF - air temperature (deg C) at reference height (1.2m)
+\item 4 TAREF - air temperature (deg C) at reference height (specified by 'Refhyt', 120cm default)
 \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
-\item 6 RH  - relative humidity (\%) at reference height (1.2m)
+\item 6 RH  - relative humidity (\%) at reference height (specified by 'Refhyt', 120cm default)
 \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
-\item 8 VREF - wind speed (m/s) at reference height (1.2m)
+\item 8 VREF - wind speed (m/s) at reference height (specified by 'Refhyt', 120cm default)
 \item 9 SNOWMELT - snowmelt (mm)
 \item 10 POOLDEP - water pooling on surface (mm)
 \item 11 PCTWET - soil surface wetness (\%)
