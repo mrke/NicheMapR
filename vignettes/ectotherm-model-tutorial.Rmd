@@ -11,7 +11,7 @@ vignette: >
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
- eval = FALSE
+ eval = TRUE
 )
 ```
 This vignette provides a detailed tutorial of the Niche Mapper ectotherm model as implemented in the package *NicheMapR*. It only considers the base heat and (partial) water budget model. For details on the implementation of the Dynamic Energy Budget model (for simulating growth, development and reproduction as well as full water budgets), see the *DEB-model-tutorial* vignette (on the to do list!).
@@ -31,7 +31,7 @@ library(NicheMapR)
 source('../R/ectotherm.R')
 ```
 ```{r}
-micro<-micro_global(loc = "Kuranda, Queensland")
+micro<-micro_global(loc = "Kuranda, Queensland", runmoist=1)
 ecto<-ectotherm()
 ```
 

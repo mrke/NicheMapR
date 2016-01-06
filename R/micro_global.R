@@ -253,7 +253,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
   snowmodel=0,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
   shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)) {
-
+  SoilMoist=SoilMoist_Init
   errors<-0
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
