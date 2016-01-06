@@ -28,13 +28,14 @@
 #' @return denair Hourly predictions of the soil moisture under the maximum specified shade
 #' @return cp Specific heat of air at constant pressure (J kg-1 K-1)
 #' @return wtrpot Water potential (P)
+#' @return Relative humidity (\%)
 #' @export
-WETAIR <- function(db=db, wb=0, rh=rh, dp=999, bp=101325){
+WETAIR <- function(db=db, wb=db, rh=0, dp=999, bp=101325){
 
   tk = db + 273.15
   esat = VAPPRS(db)
   if(dp < 999.0){
-    e = VAPPRS(db)
+    e = VAPPRS(dp)
     rh = (e / esat) * 100
   }else{
     if(min(rh) > -1){
@@ -46,17 +47,17 @@ WETAIR <- function(db=db, wb=0, rh=rh, dp=999, bp=101325){
       e = wbsat - dltae
       rh = (e / esat) * 100
     }
-    rw = ((0.62197 * 1.0053 * e) / (bp - 1.0053 * e))
-    vd = e * 0.018016 / (0.998 * 8.31434 * tk)
-    tvir = tk * ((1.0 + rw / (18.016 / 28.966)) / (1.0 + rw))
-    tvinc = tvir - tk
-    denair = 0.0034838 * bp / (0.999 * tvir)
-    cp = (1004.84 + (rw * 1846.40)) / (1.0 + rw)
-    if (min(rh)<=0.0){
-      wtrpot = -999
-    }else{
-      wtrpot = 4.615e+5 * tk * log(rh / 100.0)
-    }
   }
-  return(list(e=e, esat=esat, vd=vd, rw=rw, tvinc=tvinc, denair=denair, cp=cp, wtrpot=wtrpot))
+  rw = ((0.62197 * 1.0053 * e) / (bp - 1.0053 * e))
+  vd = e * 0.018016 / (0.998 * 8.31434 * tk)
+  tvir = tk * ((1.0 + rw / (18.016 / 28.966)) / (1.0 + rw))
+  tvinc = tvir - tk
+  denair = 0.0034838 * bp / (0.999 * tvir)
+  cp = (1004.84 + (rw * 1846.40)) / (1.0 + rw)
+  if (min(rh)<=0.0){
+    wtrpot = -999
+  }else{
+    wtrpot = 4.615e+5 * tk * log(rh / 100.0)
+  }
+  return(list(e=e, esat=esat, vd=vd, rw=rw, tvinc=tvinc, denair=denair, cp=cp, wtrpot=wtrpot, rh=rh))
 }

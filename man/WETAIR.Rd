@@ -4,7 +4,7 @@
 \alias{WETAIR}
 \title{WETAIR}
 \usage{
-WETAIR(db = db, wb = 0, rh = rh, dp = 999, bp = 101325)
+WETAIR(db = db, wb = db, rh = 0, dp = 999, bp = 101325)
 }
 \arguments{
 \item{db}{Dry bulb temperature (degrees C)}
@@ -35,6 +35,8 @@ denair Hourly predictions of the soil moisture under the maximum specified shade
 cp Specific heat of air at constant pressure (J kg-1 K-1)
 
 wtrpot Water potential (P)
+
+Relative humidity (\%)
 }
 \description{
 Calculates several properties of humid air as output variables below. The program

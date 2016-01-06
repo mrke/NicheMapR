@@ -269,6 +269,8 @@ knitr::kable(PropAirTable12) # output the table in a format good for HTML/PDF/do
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
+par(xaxs="i")
+par(yaxs="i")
 ylab = expression(paste("BLACK BODY EMITTANCE ( ", italic(phi), ") W m"^{-2}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,DRYAIR(db=tairs)$bbemit,type='l',ylab=ylab, xlab=xlab,cex.lab=1.5,cex.axis=1.5,lwd=2)
@@ -278,6 +280,8 @@ text(10, 550, expression(paste(phi," = ",5.67032," x 10"^{-8},"(",italic(t)," + 
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
+par(xaxs="i")
+par(yaxs="i")
 ylab = expression(paste("DENSITY OF DRY AIR ( ", italic(rho), ") kg m"^{-3}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,DRYAIR(db=tairs,bp = 85000)$densty,type='l',ylim=c(1,1.5),ylab=ylab, xlab=xlab,cex.lab=1.5,cex.axis=1.5,lwd=2)
@@ -291,6 +295,8 @@ par(mfrow = c(2,1)) # set up for 2 plots in 1 columns
 dbs=seq(0,50,5)
 par(oma = c(5,5,2,2) + 0.1)
 par(mar = c(0,0,1,0) + 0.1)
+par(xaxs="i")
+par(yaxs="i")
 xlab = expression(paste("SATURATION VAPOUR PRESSURE AT ",italic(t[{d}])," OVER WATER (", italic(e[{d}]),") Pa"))
 ylab = expression(paste("DEW POINT TEMPERATURE (",italic(t)[{d}],") ",degree*C))
 plot(WETAIR(db=dbs,rh=100)$esat,dbs,type='l',xlim=c(0,14000),xaxt='n',yaxt='n',ylab="", xlab="",cex.lab=1.2,cex.axis=1.5,lwd=2)
@@ -323,6 +329,8 @@ text(410+x,-21.5+y, "OVER ICE",cex=.8)
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
+par(xaxs="i")
+par(yaxs="i")
 ylab = expression(paste("DIFFUSIVITY OF WATER VAPOUR IN AIR (  ", italic(D), ") m"^{2},"s"^{-1}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,DRYAIR(db=tairs,bp = 70000)$difvpr,type='l',ylim=c(1.98E-5,3E-5),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
@@ -341,6 +349,8 @@ text(37, 2.1E-5, expression(paste(italic(rho[0])," = ",2.26," x ",10^{5})),cex=1
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
+par(xaxs="i")
+par(yaxs="i")
 ylab = expression(paste("DYNAMIC VISCOSITY OF AIR (  ", italic(mu), ") kg m"^{-1},"s"^{-1}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,DRYAIR(db=tairs)$visdyn,type='l',ylim=c(.4E-5,2.4E-5),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
@@ -354,19 +364,133 @@ text(10, 0.81E-5, expression(paste(italic(rho[0])," = ",italic(t)+273.15)),cex=1
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
+par(xaxs="i")
+par(yaxs="i")
 ylab = expression(paste("GROUP OF VARIABLES IN GRASHOF NUMBER (  ", italic(gamma), ") m"^{-3},"K"^{-1}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
-plot(tairs,DRYAIR(db=tairs)$ggroup,type='l',ylim=c(2E-8,10E-8),ylab=ylab, xlab=xlab,cex.lab=1.1,cex.axis=1.25,lwd=2)
-text(10, 8E-8, expression(paste(italic(gamma)," = ",frac(0.0980618*italic(beta),italic(nu)^{2}))),cex=1.15) 
+plot(tairs,DRYAIR(db=tairs)$ggroup,type='l',ylim=c(9E5,10E6),ylab=ylab, xlab=xlab,cex.lab=1.1,cex.axis=1.25,lwd=2)
+text(10, 8E6, expression(paste(italic(gamma)," = ",frac(0.0980618*italic(beta),italic(nu)^{2}))),cex=1.15) 
+
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6----
+par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
+par(xaxs="i")
+par(yaxs="i")
+tairs=seq(-20,50,5)
+par(mar = c(5,5,4,2) + 0.1)
+ylab = expression(paste("KINEMATIC VISCOSITY OF AIR AT 10 000 Pa (  ", italic(nu), ") m"^{2},"K"^{-1}))
+xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
+plot(tairs,DRYAIR(db=tairs)$viskin,type='l',ylim=c(0.2E-5,2.2E-5),ylab=ylab, xlab=xlab,cex.lab=1.1,cex.axis=1.25,lwd=2)
+text(-10, 2E-5, expression(paste(italic(nu)," = ",frac(italic(mu),italic(rho)))),cex=1.5) 
+
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6----
+par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
+par(xaxs="i")
+par(yaxs="i")
+tairs=seq(-20,50,5)
+par(mar = c(5,5,4,2) + 0.1)
+ylab = expression(paste("LATENT HEAT OF VAPOURISATION OF WATER (  ", italic(L), ") J kg"^{-1}))
+xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
+plot(tairs,DRYAIR(db=tairs)$htovpr,type='l',ylim=c(2.35E6,2.6E6),ylab=ylab, xlab=xlab,cex.lab=1.1,cex.axis=1.25,lwd=2)
+text(20, 2.55E6, expression(paste(italic(L)," = ",2.5012," x 10"^6-2378.7*italic(t))),cex=1.25) 
+text(20, 2.53E6, expression(-20<paste(italic(L)<60)),cex=1.25) 
 
 ## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
-ylab = expression(paste("KINEMATIC VISCOSITY OF AIR AT 10 000 Pa (  ", italic(nu), ") m"^{2},"K"^{-1}))
+par(xaxs="i")
+par(yaxs="i")
+ylab = expression(paste("MIXING RATIO OVER WATER AT 100 000 Pa (  ", italic(r[w]), ") kg kg"^{-1}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
-plot(tairs,DRYAIR(db=tairs)$ggroup,type='l',ylim=c(2E-8,10E-8),ylab=ylab, xlab=xlab,cex.lab=1.1,cex.axis=1.25,lwd=2)
-text(10, 8E-8, expression(paste(italic(gamma)," = ",frac(0.0980618*italic(beta),italic(nu)^{2}))),cex=1.15) 
+plot(tairs,WETAIR(db=tairs, rh=100)$rw,type='l',ylim=c(.9E-3,10E-2),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
+points(tairs,WETAIR(db=tairs, rh=50)$rw,type='l',cex.lab=1.25,cex.axis=1.25,lwd=2)
+points(tairs,WETAIR(db=tairs, rh=25)$rw,type='l',cex.lab=1.25,cex.axis=1.25,lwd=2)
+text(0, 0.08, expression(paste(italic(r[w])," = ",frac(0.62570*italic(e),italic(p)-1.0060*italic(e)))),cex=1.15) 
+text(28, 0.035, expression(paste(100,"% ",italic(rh))),cex=1.05) 
+text(35, 0.025, expression(paste(50,"% ",italic(rh))),cex=1.05)
+text(39, 0.016, expression(paste(25,"% ",italic(rh))),cex=1.05) 
+
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6----
+par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
+tairs=seq(-20,50,5)
+par(mar = c(5,5,4,2) + 0.1)
+par(xaxs="i")
+par(yaxs="i")
+ylab = expression(paste("SPECIFIC HEAT OF AIR AT 100 000 Pa (  ", italic(c[p]), ") J kg"^{-1}, "K"^{-1}))
+xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
+plot(tairs,WETAIR(db=tairs, rh=100)$cp,type='l',ylim=c(1E3,1.1E3),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
+points(tairs,WETAIR(db=tairs, rh=50)$cp,type='l',cex.lab=1.25,cex.axis=1.25,lwd=2)
+points(tairs,WETAIR(db=tairs, rh=25)$cp,type='l',cex.lab=1.25,cex.axis=1.25,lwd=2)
+text(0, 1080, expression(paste(italic(c[p])," = ",frac(1004.84+(1864.40*italic(r[w])),1+r[w]))),cex=1.15) 
+text(28, 1040, expression(paste(100,"% ",italic(rh))),cex=1.05) 
+text(35, 1025, expression(paste(50,"% ",italic(rh))),cex=1.05)
+text(39, 1018, expression(paste(25,"% ",italic(rh))),cex=1.05) 
+
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6----
+par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
+par(xaxs="i")
+par(yaxs="i")
+alts=seq(-500,3000,250)
+par(mar = c(5,5,4,2) + 0.1)
+ylab = expression(paste("STANDARD ATMOSPHERIC PRESSURE (  ", italic(p), ") Pa"))
+xlab = expression(paste("ALTITUDE (",italic(Z),") m"))
+plot(alts,DRYAIR(db=20, alt=alts)$patmos,type='l',ylim=c(0.7E5,1.2E5),ylab=ylab,xlab=xlab,cex.lab=1.1,cex.axis=1.25,lwd=2)
+text(1500, 1.1E5, expression(paste(italic(p)," = ",101325,bgroup("[",1-(2.2569*10^{-5}*Z),"]")^5.2553)),cex=1.25) 
+text(1500, 1.05E5, expression(-1000<paste(italic(Z)<20000)),cex=1.25) 
+
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6----
+par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
+tairs=seq(-20,50,5)
+par(mar = c(5,5,4,2) + 0.1)
+par(xaxs="i")
+par(yaxs="i")
+ylab = expression(paste("TEMPERATURE (", italic(t[F]),")",degree*F))
+xlab = expression(paste("TEMPERATURE (", italic(t[C]),")",degree*C))
+plot(tairs,((9/5)*tairs)+32,type='l',ylim=c(10,110),ylab=ylab,xlab=xlab,cex.lab=1.1,cex.axis=1.25,lwd=2)
+tairs=seq(-40,-20,5)
+library(Hmisc)
+subplot(fun=plot(tairs,((9/5)*tairs)+32,type='l',xlim=c(-40,-20),ylim=c(-40,0),ylab="",xlab="",cex.lab=.9,cex.axis=0.98,lwd=2),x=40,y=40,size=c(2,2)) 
+text(-10, 95, expression(paste(italic(t[f])," = ",bgroup("[",bgroup("(",frac(9,5),")")*italic(t)[c],"]")+32)),cex=1.25) 
+text(-10, 75, expression(paste(italic(t[c])," = ",bgroup("(",frac(5,9),")")*(italic(t)[f]-32))),cex=1.25) 
+
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6----
+par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
+par(xaxs="i")
+par(yaxs="i")
+tairs=seq(-20,50,5)
+par(mar = c(5,5,4,2) + 0.1)
+ylab = expression(paste("TEMPERATURE COEFFICIENT OF VOLUME EXPANSION FOR DRY AIR (  ", italic(beta), ") K"^{-1}))
+xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
+plot(tairs,DRYAIR(db=tairs)$tcoeff,type='l',ylim=c(3E-3,4E-3),ylab=ylab, xlab=xlab,cex.lab=0.9,cex.axis=1.25,lwd=2)
+text(15,3.8E-3, expression(paste(italic(beta)," = ",frac(1,italic(t)+273.15))),cex=1.25) 
+
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6----
+par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
+par(xaxs="i")
+par(yaxs="i")
+tairs=seq(-20,50,5)
+par(mar = c(5,5,4,2) + 0.1)
+ylab = expression(paste("THERMAL CONDUCTIVITY OF AIR (  ", italic(k), ") W m"^{-1}, " K"^{-1}))
+xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
+plot(tairs,DRYAIR(db=tairs)$thcond,type='l',ylim=c(1E-3,3E-2),ylab=ylab, xlab=xlab,cex.lab=1.2,cex.axis=1.25,lwd=2)
+text(20, 1.3E-2, expression(paste(italic(k)," = ",(2.425*10^{2})+(7.038*10^{-5}*t))),cex=1.25) 
+text(20, 1.1E-2, expression(-20<paste(italic(t)<40)),cex=1.25) 
+
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6----
+par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
+tairs=seq(0,60,5)
+par(mar = c(5,5,4,2) + 0.1)
+par(xaxs="i")
+par(yaxs="i")
+ylab = expression(paste("VAPOUR DENSITY OVER WATER (", italic(rho[v]), ") kg m"^{-3}))
+xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
+plot(tairs,WETAIR(db=tairs, rh=100)$vd,type='l',ylim=c(0E-1,9E-2),ylab=ylab,xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
+for(rh in seq(10,80,10)){
+points(tairs,WETAIR(db=tairs, rh=rh)$vd,type='l',lwd=2)
+}
+for(wb in seq(0,50,2)){
+points(c(wb,wb+WETAIR(db=wb, wb=wb, rh=100)$esat/(0.000660 * (1.0 + 0.00115 * wb) * 101325)),c(WETAIR(db=wb, wb=wb, rh=100)$vd,0),type='l',lwd=2)
+}
 
 ## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=12----
 par(mfrow = c(2,1)) # set up for 2 plots in 1 columns
