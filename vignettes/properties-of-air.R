@@ -579,6 +579,8 @@ points(rhs,WETAIR(rh=rhs,db=50)$wtrpot*-1,type='l',lwd=2)
 grid()
 axis(side=1, at=seq(99.4,100,0.2))
 axis(side=2, at=seq(0,9,1)*1E5)
+mtext(text=ylab, side=2, outer=TRUE,cex=1.25,line=2)
+mtext(text=xlab, side=1, outer=TRUE,cex=1.25,line=2)
 text(99.5,5E5,expression(paste(0,degree*C)),cex=1.25)
 text(99.75,5E5,expression(paste(50,degree*C)),cex=1.25)
 
