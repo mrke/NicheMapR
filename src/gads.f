@@ -120,7 +120,7 @@ ccccc -----------------------------------------------------------------c
 CCCCC -----------------------------------------------------------------C
 c     some definitions for this version                                c
 CCCCC -----------------------------------------------------------------C
-
+         write(*,*) 'got here'
 	lat5=lat51
 	lon5=lon51
 	season=season1
@@ -198,7 +198,6 @@ c      read (*,*) iwel
 	do 9999 iwel=1,nwel
 
       if (ws.eq.'w') then
-         write(*,*) 'got here'
          open(ntape,file='../glodat/winter.dat')
          read (ntape,'(a1)') dum
          cseas='winter '
