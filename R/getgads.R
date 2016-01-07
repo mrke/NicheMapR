@@ -24,7 +24,7 @@ lon=140
     as.double(lon5),
     as.double(relhum),
     as.double(season),
-    optdep=matrix(data = 0., nrow = 25, ncol = 2))
+    optdep=matrix(data = 0., nrow = 25, ncol = 2), PACKAGE="gads")
   setwd(curdir)
   optdep <- matrix(data = 0., nrow = 25, ncol = 2)
   storage.mode(optdep)<-"double"
