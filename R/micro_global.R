@@ -428,29 +428,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
   # end error trapping
 
   if(errors==0){ # continue
-    if(rungads==1){
-      if(library(GADS,quietly = TRUE,logical.return = TRUE)){
-      }else{
-        if(library(devtools, quietly = TRUE, logical.return = TRUE)){
-          devtools::install_github('mrke/GADS', args="--no-multiarch")
-          if(library(GADS,quietly = TRUE,logical.return = TRUE)){
-          }else{
-            stop("could not install GADS")
-          }
-        }else{
-          install.packages("devtools")
-          if(library(devtools, quietly = TRUE, logical.return = TRUE)){
-            devtools::install_github('mrke/GADS', args="--no-multiarch")
-            if(library(GADS,quietly = TRUE,logical.return = TRUE)){
-            }else{
-              stop("could not install GADS")
-            }
-          }else{
-            stop("could not install devtools or GADS")
-          }
-        }
-      }
-    }
+
     ################## time related variables #################################
 
     juldays12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
@@ -701,8 +679,8 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       ####### get solar attenuation due to aerosols with program GADS #####################
       relhum<-1.
       season<-0.
-      optdep.summer<-as.data.frame(GADS::get.gads(longlat[2],longlat[1],relhum,0))
-      optdep.winter<-as.data.frame(GADS::get.gads(longlat[2],longlat[1],relhum,1))
+      optdep.summer<-as.data.frame(get.gads(longlat[2],longlat[1],relhum,0))
+      optdep.winter<-as.data.frame(get.gads(longlat[2],longlat[1],relhum,1))
       optdep<-cbind(optdep.winter[,1],rowMeans(cbind(optdep.summer[,2],optdep.winter[,2])))
       optdep<-as.data.frame(optdep)
       colnames(optdep)<-c("LAMBDA","OPTDEPTH")
