@@ -1,0 +1,28 @@
+  1  1  10.     23.0              ! geaendert 21.01.94; alt:  1  1  10.5    23.0
+  0.0  2.      2.                 !                           0.0  1.5     1.5
+  2  1   2.0    23.0              !
+  0.0 10.0     5.7                !
+  3  1  10.0    23.0              !
+  0.0  2.0     1.77               !
+  4  1  10.0    23.0              !
+  0.0  2.0      .860              !
+  5  2   8.5    23.0              !
+  0.0  2.0      .860              !
+  2.0  3.5     1.500              !
+  6  1   6.0    23.0              !
+  0.0  6.0     1.900              !
+  7  2   8.5    23.0              ! neues Profil fuer continental mineral
+  0.0  2.0     1.770              !
+  2.0  3.5     1.500              !
+
+Der File enthaelt die Daten von 7 Hoehenprofilen,
+jeweils in dieser Reihenfolge:
+
+IIP:   Profil_Nummer
+NIL:   Zahl der Schichten (wie in TAPE201 oder TAPE207)
+HFTA:  H|he des tropospheric background
+HSTRA: H|he des stratosph{rischen Aerosols
+f}r jede Schicht:
+H0:    Untergrenze der Schicht
+h1:    Obergrenze
+HM:    effektive Schichtdicke (f}r Exponentialprofil)
