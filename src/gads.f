@@ -1,6 +1,12 @@
       subroutine gads(lat51,lon51,relhum1,season1,optdep1)
 
 ccccc ------------------------------------------------------------------c
+c     Note that must specify location of profiles.dat, extback.dat,     c
+c     optdat and glodata - make sure dimension of tap matches          c
+c     length of optdat plus file names (4 + 2, e.g. waso99 )           c
+c     08/Jan/2016                                           M.Kearney  c
+CCCCC -----------------------------------------------------------------C
+ccccc ------------------------------------------------------------------c
 c     create global distributions of microphysical and optical aerosol  c
 c     properties on the base of the GADS database.                      c
 c                                                                       c
@@ -69,7 +75,7 @@ ccccc -----------------------------------------------------------------c
       character*20 catyp
       character*30 typnam
       character*50 area
-
+      CHARACTER(len=255) :: cwd
       common /prog/   nprog
       common /profi/  nil(10),hfta(10),hstra(10),
      *                h0(2,10),h1(2,10),hm(2,10)
@@ -120,7 +126,7 @@ ccccc -----------------------------------------------------------------c
 CCCCC -----------------------------------------------------------------C
 c     some definitions for this version                                c
 CCCCC -----------------------------------------------------------------C
-         write(*,*) 'got here'
+
 	lat5=lat51
 	lon5=lon51
 	season=season1
@@ -196,20 +202,21 @@ c      write (*,*) '?'
 c      read (*,*) iwel
 	iwel=1
 	do 9999 iwel=1,nwel
+         write(*,*) 'got there'
 
       if (ws.eq.'w') then
-         open(ntape,file='../glodat/winter.dat')
+         open(ntape,file='extdata/glodat/winter.dat')
          read (ntape,'(a1)') dum
          cseas='winter '
       else if (ws.eq.'s') then
-         open(ntape,file='../glodat/summer.dat')
+         open(ntape,file='extdata/glodat/summer.dat')
          read (ntape,'(a1)') dum
          cseas='summer '
       else
          print*,' wrong input! try again!'
          goto 1001
       end if
-
+         write(*,*) 'got there 2'
       if (iwel.lt.1.or.iwel.gt.nwel) then
          print*,' wrong number! try again! '
          goto 909
@@ -358,8 +365,8 @@ c     h1(il,ip): Obergrenze der Schicht                                c
 c     hm(il,ip): effektive Dicke der Schicht il fuer den Typ ip        c
 CCCCC -----------------------------------------------------------------C
 
-      open (8,file='profiles.dat')
-
+      open (8,file='extdata/profiles.dat')
+      write(*,*) 'got here 3'
       nprof=7
       DO IP=1,nprof
          READ(8,8010) IIP,NIL(IP),HFTA(IP),HSTRA(IP)
@@ -379,7 +386,7 @@ C								       C
 C     UEBERSPRINGEN DER ERSTEN BEIDEN ZEILEN von TAPE9		       C
 CCCCC -----------------------------------------------------------------C
 
-      open (9,file='extback.dat')
+      open (9,file='extdata/extback.dat')
       IL=1
       READ(9,'(/)')
       DO IWL=1,mlamb
@@ -612,7 +619,7 @@ CCCCC -----------------------------------------------------------------C
       character*4  comnam
       character*8  opanam,optnam
       character*10 dum2
-      character*16 tap
+      character*21 tap
       character*20 catyp
       character*30 typnam
 
@@ -671,10 +678,10 @@ c     Bestimmung des Filenamens der gesuchten Komponente aus	       c
 c     Komponentennummer und Feuchteklasse                              c
 ccccc -----------------------------------------------------------------c
 
-            tap(1:10)='../optdat/'
-            tap(11:14)=comnam(jc)
-            tap(15:16)=chum(iht)
-c			write(10,*) tap
+            tap(1:15)='extdata/optdat/'
+            tap(16:19)=comnam(jc)
+            tap(20:21)=chum(iht)
+   			write(10,*) tap
             ntap=20
 
 ccccc -----------------------------------------------------------------c
@@ -731,7 +738,7 @@ c            print*,ibuf
 
             kbuf(ibuf)=nbuf
             open (ntap,file=tap,iostat=ios)
-c            print*,'opened file ',tap,iostat
+            print*,'opened file ',tap,iostat
 
             if (ios.ne.0) then
                print*,' error while opening file ',tap

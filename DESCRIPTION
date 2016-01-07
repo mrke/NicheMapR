@@ -14,7 +14,6 @@ RoxygenNote: 5.0.1
 Suggests:
     devtools,
     dismo,
-    GADS,
     geonames,
     knitr,
     lattice,

@@ -11,10 +11,8 @@
 #' @useDynLib "gads"
 #' @export
 get.gads <- function(lat, lon, relhum, season) {
-relhum=1
-season=0
-lat=-35
-lon=140
+  curdir<-getwd()
+  setwd(path.package("NicheMapR"))
   lat5s<-seq(-90,90,5) #lat range for GADS
   lon5s<-seq(-180,175,5) #long range for GADS
   lat5<-lat5s[which.min(abs(lat5s-lat))] # get nearest latitude square for input location
