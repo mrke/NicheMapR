@@ -1,5 +1,5 @@
       subroutine gads(lat51,lon51,relhum1,season1,optdep1)
-      
+
 ccccc ------------------------------------------------------------------c
 c     create global distributions of microphysical and optical aerosol  c
 c     properties on the base of the GADS database.                      c
@@ -42,7 +42,7 @@ c      - OPTCOM                                                        c
 c      - OPTPAR                                                        c
 c      - OUT4                                                          c
 c                                                                      c
-c      Diese Unterprogramme sind an ATLOPT angehÑngt.                  c
+c      Diese Unterprogramme sind an ATLOPT angeh?ngt.                  c
 c                                                                      c
 c      ab 14.12.92 anderes Format der neuen Mie-Rechnungen eingebaut   c
 c      ab 04.11.93 neue Parameter scattering, absorption, omega ratio  c
@@ -51,7 +51,7 @@ c      ab 27.07.94 opt. Dicke fuer alle Wellenlaengen berechnet        c
 c                                                                      c
 c      18.11.97 GADS 2.1                                               c
 c                                                                      c
-c      18.11.97                                                M. Hess c       
+c      18.11.97                                                M. Hess c
 ccccc -----------------------------------------------------------------c
 
       integer   prnr,acnr,njc,rht
@@ -69,7 +69,7 @@ ccccc -----------------------------------------------------------------c
       character*20 catyp
       character*30 typnam
       character*50 area
-     
+
       common /prog/   nprog
       common /profi/  nil(10),hfta(10),hstra(10),
      *                h0(2,10),h1(2,10),hm(2,10)
@@ -93,14 +93,14 @@ ccccc -----------------------------------------------------------------c
       common /geog/   lata,late,lati,lona,lone,loni,na,area
       common /norm/   norm,mixnor
 	common /r/      lat5,lon5,relhum,season,optdep
-       
+
       data alamb /0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,
      *            0.9,1.0,1.25,1.5,1.75,2.0,2.5,3.0,3.2,3.39,3.5,3.75,
      *            4.0,4.5,5.0,5.5,6.0,6.2,6.5,7.2,7.9,8.2,8.5,8.7,9.0,
      *            9.2,9.5,9.8,10.0,10.6,11.0,11.5,12.5,13.0,14.0,14.8,
      *            15.0,16.4,17.2,18.0,18.5,20.0,21.3,22.5,25.0,27.9,30.,
      *            35.0,40.0/,mlamb/61/
-     
+
       data ahum /0.,50.,70.,80.,90.,95.,98.,99./
       data nhum /0,50,70,80,90,95,98,99/,mhum/8/
       data chum /'00','50','70','80','90','95','98','99'/
@@ -114,7 +114,7 @@ ccccc -----------------------------------------------------------------c
      *             '        ','turb.fac','li.ratio','pha.func',
      *             'ext.rat ','abs.rat ',
      *             '        '/
-     
+
       data jnopar/1,1,1,1,1,1,0,0,1,0,0,0,0/,nop/7/
 
 CCCCC -----------------------------------------------------------------C
@@ -124,7 +124,7 @@ CCCCC -----------------------------------------------------------------C
 	lat5=lat51
 	lon5=lon51
 	season=season1
-	relhum=relhum1       
+	relhum=relhum1
       niw=1
       njh=1
       nih=1
@@ -135,12 +135,12 @@ CCCCC -----------------------------------------------------------------C
       lone=lon5
       loni=5
       nlmal=1
-      
+
       norm=1
       nprog=4
 
       ntape=22
-      
+
       ip=0
       do i=1,13
          if (jnopar(i).eq.1) then
@@ -171,7 +171,7 @@ ccccc ----------------------------------------------------------------c
 
 c      print*,' please select wavelength: '
 c      print*,' '
-      
+
       nwel=25
 c      do 11 iwel=1,22
 c         if (nwel.ge.(iwel+44)) then
@@ -198,6 +198,7 @@ c      read (*,*) iwel
 	do 9999 iwel=1,nwel
 
       if (ws.eq.'w') then
+         write(*,*) 'got here'
          open(ntape,file='../glodat/winter.dat')
          read (ntape,'(a1)') dum
          cseas='winter '
@@ -223,12 +224,12 @@ c      print*,' please select rel. humidity: '
 c      print*,' '
 c      do ihum=1,mhum
 c         write(*,121) ihum,nhum(ihum)
-c  121    format (5x,'(',i2,')',3x,i2,' %')       
+c  121    format (5x,'(',i2,')',3x,i2,' %')
 c      end do
-      
+
 c  908 write (*,*) '?'
 c      read (*,*) ihum
-	ihum=relhum	
+	ihum=relhum
 c      if (ihum.lt.1.or.ihum.gt.mhum) then
 c         print*,' wrong number! try again! '
 c         goto 908
@@ -254,11 +255,11 @@ ccccc -----------------------------------------------------------------c
 c      print*,' Anfang head4'
 	 if(iwel.eq.1)then
        call head4 (iwel,ihum)
-	 endif 
+	 endif
 c      print*,' Ende head4'
 
 ccccc -----------------------------------------------------------------c
-c      Schleife Åber alle verlangten WellenlÑngen und Feuchteklassen   c
+c      Schleife ?ber alle verlangten Wellenl?ngen und Feuchteklassen   c
 ccccc -----------------------------------------------------------------c
 
        do il=1,niw
@@ -266,14 +267,14 @@ ccccc -----------------------------------------------------------------c
           do ih=1,njh
 
 ccccc -----------------------------------------------------------------c
-c      Schleife Åber alle verlangten geographischen Koordinaten        c
+c      Schleife ?ber alle verlangten geographischen Koordinaten        c
 ccccc -----------------------------------------------------------------c
 
              do ilat=lata,late,-lati
-             
+
                 do ilmal=1,nlmal
                    do ilon=lona,lone,loni
-                   
+
 ccccc -----------------------------------------------------------------c
 c      Einlesen der Rohdaten von den Files TAPE201, TAPE207:	       c
 c     ------------------------------------------------------	       c
@@ -319,12 +320,12 @@ c       print*,' Ende optpar',ilat,ilon
           end do
        end do
        close (ntape)
-9999	continue       
+9999	continue
 
        close (10)
-	
+
 	 do 9998 i=1,25
-	  do 9997 j=1,2	
+	  do 9997 j=1,2
 	   optdep1(i,j)=optdep(i,j)
 9997	  continue
 9998	 continue
@@ -338,7 +339,7 @@ C     *****************************************************************C
 C								       C
 C     -----------------------------------------------------------------C
 C     EINLESEN DER HOEHEN-PROFILE vom File profiles.dat und der        C
-C     Extinktionskoeffizienten der oberen AtmosphÑre von extcof.dat    C
+C     Extinktionskoeffizienten der oberen Atmosph?re von extcof.dat    C
 CCCCC -----------------------------------------------------------------C
 
       common /wavel/  mlamb,alamb(61),niw
@@ -371,7 +372,7 @@ CCCCC -----------------------------------------------------------------C
       close (8)
 
 CCCCC -----------------------------------------------------------------C
-C     Einlesen der Extinktionskoeffizienten fÅr die obere AtmosphÑre:  C
+C     Einlesen der Extinktionskoeffizienten f?r die obere Atmosph?re:  C
 C								       C
 C     EXTINCTION COEFFICIENT -	FREE TROPOSPHERIC AEROSOL  +	       C
 C     EXTINCTION COEFFICIENT -	  STRATOSPHERIC   AEROSOL	       C
@@ -407,7 +408,7 @@ c     Beschriftung des Output-Files TAPE10			           c
 ccccc -----------------------------------------------------------------c
 
       real mixrat,numden
-      
+
       character*2 chum
       character*4 comnam
       character opanam*8,cseas*7,tseas*11,optnam*8,opnam(10)*8
@@ -442,7 +443,7 @@ c     *		'============================')
 c      end if
 
 CCCCC -----------------------------------------------------------------C
-C     Beschriftung fÅr verschiedene Wellenlaengen und rel. Feuchten    c	       c
+C     Beschriftung f?r verschiedene Wellenlaengen und rel. Feuchten    c	       c
 CCCCC -----------------------------------------------------------------C
 
 c      if (nih.ne.0) then
@@ -473,7 +474,7 @@ c         write(10,4001) (opnam(in),in=1,10)
 c         write(10,4002) (opnam(in),in=11,kop)
  4002    format('                               ',5(1x,a8,1x))
       end if
-      
+
 c      write(10,4003)
 c 4003 format('#',13x,'  [1/km]  ','  [1/km]  ','  [1/km]  ',
 c     *       30x,'   [sr]')
@@ -588,7 +589,7 @@ CCCCC *****************************************************************C
 C     *****************************************************************C
 C                                                                      C
 C     -----------------------------------------------------------------C
-C      Einlesen der optischen Rohdaten in einen Puffer fÅr             C
+C      Einlesen der optischen Rohdaten in einen Puffer f?r             C
 C      20 Komponenten                                                  C
 c                                                                      c
 c     Bei den urspruenglichen Mie-Rechnungen sind alle Koeffizienten   c
@@ -598,14 +599,14 @@ c     Ergebnisse in der ersten Zeile durch den Zusatz 'neu' gekenn-    c
 c     zeichnet werden: z.B. TAPE741, neu                               c
 c                                                                      c
 c     13.05.94 Quellung von Russ ausgeschlossen.                       c
-c     17.11.97 new file format in ../optdat/                           c 
+c     17.11.97 new file format in ../optdat/                           c
 c                                                                      c
 c     Stand: 17.11.97                                         M. Hess  c
 CCCCC -----------------------------------------------------------------C
 
       integer prnr,acnr,njc,rht
       real n,numden
-      
+
       character*1  dum
       character*2  chum
       character*3  atn,pat
@@ -615,7 +616,7 @@ CCCCC -----------------------------------------------------------------C
       character*16 tap
       character*20 catyp
       character*30 typnam
-      
+
       logical exists,ende
 
       common /opar/   mopar,jnopar(13),nop,opanam(13),optnam(13)
@@ -630,13 +631,13 @@ CCCCC -----------------------------------------------------------------C
       common /buffer/ ibuf,kbuf(20),extbuf(20),scabuf(20),absbuf(20),
      *                sisbuf(20),asybuf(20),bacbuf(20),phabuf(112,20),
      *	          brebuf(20),bimbuf(20),mbuf
-     
+
 ccccc -----------------------------------------------------------------c
-c      Schleife Åber alle am Gitterpunkt vorkommenden Komponenten      c
+c      Schleife ?ber alle am Gitterpunkt vorkommenden Komponenten      c
 ccccc -----------------------------------------------------------------c
 
        do il=1,nl
-       
+
 	  if (nih.eq.0) then
 	     do ihu=1,mhum
 		if (nh(il).eq.ihu) then
@@ -646,13 +647,13 @@ ccccc -----------------------------------------------------------------c
 	  end if
 
 	  do ic=1,njc(il)
-	  
+
 c	  print*,'Anfang Komponenten schleife: ',ic,njc(il)
-	  
+
 	     jc=acnr(ic,il)
-	     
+
 ccccc -----------------------------------------------------------------c
-c     Ausschlu· der Quellung bei insoluble, Russ und den               c
+c     Ausschlu? der Quellung bei insoluble, Russ und den               c
 c     mineralischen Komponenten und bei den Wolken                     c                          c
 ccccc -----------------------------------------------------------------c
 
@@ -678,7 +679,7 @@ c			write(10,*) tap
             ntap=20
 
 ccccc -----------------------------------------------------------------c
-c     Bestimmung der Kennnummer fÅr den Puffer Åber die WellenlÑnge    c
+c     Bestimmung der Kennnummer f?r den Puffer ?ber die Wellenl?nge    c
 c                                                                      c
 c         nbuf: Kennummer der aktuellen Komponente fuer den Puffer     c
 c     kbuf(20): Kennummern der gespeicherten Komponenten               c
@@ -690,7 +691,7 @@ ccccc -----------------------------------------------------------------c
 c 	     print*,'nbuf= ',nbuf
 
 ccccc -----------------------------------------------------------------c
-c      öberprÅfung des Puffers auf öbereinstimmung mit nbuf            c
+c      ?berpr?fung des Puffers auf ?bereinstimmung mit nbuf            c
 ccccc -----------------------------------------------------------------c
 
 	     exists=.false.
@@ -706,7 +707,7 @@ c           print*,'mbuf= ',mbuf
 
 ccccc -----------------------------------------------------------------c
 c      Einlesen der Komponentendaten, falls sie nicht im Puffer        c
-c      stehen, sonst öbernahme aus dem Puffer                          c
+c      stehen, sonst ?bernahme aus dem Puffer                          c
 ccccc -----------------------------------------------------------------c
 
 c       print*,exists
@@ -728,20 +729,20 @@ c               print*,' ibuf= ',ibuf
                ibuf=1
             end if
 c            print*,ibuf
-            
+
             kbuf(ibuf)=nbuf
             open (ntap,file=tap,iostat=ios)
 c            print*,'opened file ',tap,iostat
-            
+
             if (ios.ne.0) then
                print*,' error while opening file ',tap
                print*,'  latitude: ',latx
                print*,' longitude: ',lonx
                stop
             end if
-            
-            
-c ALTER INPUT            
+
+
+c ALTER INPUT
 c            read (ntap,200) dum
 c            read (ntap,'(22(/))')
 c            rlamb=0.
@@ -754,24 +755,24 @@ c            do ila=ilamb+1,mlamb
 c               read (ntap,500) rl
 c               print*,rl
 c            end do
-c                        
+c
 c            read (ntap,'(4(/))')
-c            
+c
 c            ntheta=96
 c            do it=1,ntheta
-c            
+c
 c               read (ntap,510,end=511)
 c     *               thet,(pha(il,ic,it),ila=1,ilamb)
 c  510          format(1x,70e10.3)
-c  
+c
 c               print*,it,thet,pha(il,ic,it)
-c  
+c
 c            end do
 c  511       continue
-c  
-c    
+c
+c
 c  ENDE ALTER INPUT
-  
+
          do iline=1,100
             read (ntap,220) dum2
             if (dum2.eq.'# optical ') then
@@ -781,13 +782,13 @@ c  ENDE ALTER INPUT
  2002    continue
          do iline=1,5
             read (ntap,200) dum
-         end do                  
-               
+         end do
+
          do ila=1,mlamb
             read (ntap,500) rlamb,extco,scaco,absco,sisca,asymf,
      *                      exn,refr,refi
   500       format(2x,7e10.3,2e11.3)
-  
+
             if (rlamb.eq.alamb(ilamb)) then
                ext(il,ic)=extco
                sca(il,ic)=scaco
@@ -796,7 +797,7 @@ c  ENDE ALTER INPUT
                asy(il,ic)=asymf
                bre(il,ic)=refr
                bim(il,ic)=refi
-            end if   
+            end if
          end do
          read (ntap,'(7(/))')
          it=1
@@ -808,24 +809,24 @@ c  ENDE ALTER INPUT
             it=it+1
          end do
   511    ntheta=it-1
-  
-c ENDE NEUER INPUT  
-  
+
+c ENDE NEUER INPUT
+
             bac(il,ic)=pha(il,ic,ntheta)
-            
-            extbuf(ibuf)=ext(il,ic)            
-            scabuf(ibuf)=sca(il,ic)            
-            absbuf(ibuf)=abs(il,ic)            
-            sisbuf(ibuf)=sis(il,ic)            
-            asybuf(ibuf)=asy(il,ic)            
-            brebuf(ibuf)=bre(il,ic)            
-            bimbuf(ibuf)=bim(il,ic)            
-            bacbuf(ibuf)=bac(il,ic)            
-                    
+
+            extbuf(ibuf)=ext(il,ic)
+            scabuf(ibuf)=sca(il,ic)
+            absbuf(ibuf)=abs(il,ic)
+            sisbuf(ibuf)=sis(il,ic)
+            asybuf(ibuf)=asy(il,ic)
+            brebuf(ibuf)=bre(il,ic)
+            bimbuf(ibuf)=bim(il,ic)
+            bacbuf(ibuf)=bac(il,ic)
+
             close (ntap)
-            
+
 c            print*,'closed file ',ntap
-                        
+
          end if
 	 end do
       end do
@@ -851,7 +852,7 @@ CCCCC *****************************************************************C
 C     *****************************************************************C
 C                                                                      c
 C     -----------------------------------------------------------------C
-C     Berechnung und Ausdruck der gewÅnschten optischen Parameter      C
+C     Berechnung und Ausdruck der gew?nschten optischen Parameter      C
 CCCCC -----------------------------------------------------------------C
 
       integer prnr,acnr,rht
@@ -927,7 +928,7 @@ c      print*,' Berechnung der Summen'
             supf(it)=supf(it)+acmr(jc,l)*pha(l,jc,it)
          end do
       end if
-      
+
 c      print*,jc,l,njc(l),summe,acmr(jc,l),ext(l,jc)
 
    20 CONTINUE
@@ -950,7 +951,7 @@ c      print*,' Berechnung der normierten Werte'
 
       SSA(L) = SUMSSA/SUMME
       ASF(L) = SUMASF/SUMMS
-      
+
 CCCCC -----------------------------------------------------------------C
 C     ABSOLUTE OPTISCHE PARAMETER                                      C
 CCCCC -----------------------------------------------------------------C
@@ -1078,7 +1079,7 @@ CCCCC -----------------------------------------------------------------C
          extfta(ilamb)=parlay(nlay-2,1)
          extstr(ilamb)=parlay(nlay-1,1)
       end if
-      
+
       hu = h1(nl,prnr)
       ho = hu + hfta(prnr)
       z = 8.
@@ -1094,7 +1095,7 @@ CCCCC -----------------------------------------------------------------C
 C                     + FREE TROP. AEROSOL                             C
 CCCCC -----------------------------------------------------------------C
 
-         ODEPTH = ODEPTH + EXTFTA(ilamb)*HFTAE      
+         ODEPTH = ODEPTH + EXTFTA(ilamb)*HFTAE
      +                   + EXTSTR(ilamb)*HSTRA(prnr)
 
 c        do il=1,nl
@@ -1143,7 +1144,7 @@ c      print*,'Aufruf von out4'
 
       call out4(iop,ilamb,ihum)
 
-c      print*,'Ende out4' 
+c      print*,'Ende out4'
 
       RETURN
       END
@@ -1153,7 +1154,7 @@ ccccc *****************************************************************c
 c     *****************************************************************c
 c			                                                     c
 c     -----------------------------------------------------------------c
-c     AUSGABE DER DATEN	fÅr atlopt				                 c
+c     AUSGABE DER DATEN	f?r atlopt				                 c
 ccccc -----------------------------------------------------------------c
 
       integer prnr,acnr,njc,rht
@@ -1191,7 +1192,7 @@ c     *			       (oparam(ip,l),ip=1,iop)
            optdep(ilamb,1)=alamb(ilamb)
 	     optdep(ilamb,2)=oparam(6,l)
 	    else
-c	       write (10,3020) 
+c	       write (10,3020)
 c     *			       (oparam(ip,l),ip=1,iop)
  3020          FORMAT(13x,1p3e10.3,0p3e10.3,1pe10.3)
 	    end if
@@ -1202,7 +1203,7 @@ c     *			       (oparam(ip,l),ip=1,5)
 c	       write (10,2030) (oparam(ip,l),ip=6,iop)
  2030	       FORMAT(11x,1p10e10.3)
 	    else
-c	       write (10,3040) 
+c	       write (10,3040)
 c     *			       (oparam(ip,l),ip=1,5)
  3040	       FORMAT(13x,10e10.3)
 c	       write (10,2030) (oparam(ip,l),ip=6,iop)
