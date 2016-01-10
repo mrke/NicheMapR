@@ -471,7 +471,7 @@ TEMERGE=17.5,TPREF=30,ctmax=40,ctmin=6,dayact=1,nocturn=0,crepus=0,CkGrShad=1,bu
 shdburrow=0,mindepth=2,maxdepth=10,M_1=0.013,M_2=0.8,M_3=0.038,skinwet=0.1,peyes=0.03,extref=20.,
 DELTAR=0.1,microin="none",nyears=micro$nyears,ystrt=0,enberr=0.0002,live=1,write_input=0,
 startday=1,minshade=0.,maxshades=micro$MAXSHADES,FLTYPE=0.0,SUBTK=2.79,REFL=micro$REFL,
-DEP=micro$DEP,metout=micro$metout,shadmet=micro$shadmet,soil=micro$soil,shadsoil=micro$shadsoil,
+DEP=micro$DEP,metout=as.data.frame(micro$metout),shadmet=micro$shadmet,soil=micro$soil,shadsoil=micro$shadsoil,
 soilmoist=micro$soilmoist,shadmoist=micro$shadmoist,humid=micro$humid,shadhumid=micro$shadhumid,
 soilpot=micro$soilpot,shadpot=micro$shadpot,RAINFALL=micro$RAINFALL,
 ectoin=rbind(as.numeric(micro$ALTT),as.numeric(micro$REFL)[1],micro$longlat[1],micro$longlat[2])
@@ -714,7 +714,6 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   hs_init<-0.
   cumbatch_init<-0.
   pregnant<-0
-
   if(plantsim[1]==0){
     foodwaters<-rep(FoodWater,nrow(metout))
     foodlevels<-rep(X,nrow(metout))

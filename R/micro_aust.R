@@ -502,32 +502,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
   # end error trapping
 
   if(errors==0){ # continue
-    if(vlsci==0){
 
-    if(rungads==1){
-      if(library(GADS,quietly = TRUE,logical.return = TRUE)){
-      }else{
-        if(library(devtools, quietly = TRUE, logical.return = TRUE)){
-          devtools::install_github('mrke/GADS', args="--no-multiarch")
-          if(library(GADS,quietly = TRUE,logical.return = TRUE)){
-          }else{
-            stop("could not install GADS")
-          }
-        }else{
-          install.packages("devtools")
-          if(library(devtools, quietly = TRUE, logical.return = TRUE)){
-            devtools::install_github('mrke/GADS', args="--no-multiarch")
-            if(library(GADS,quietly = TRUE,logical.return = TRUE)){
-            }else{
-              stop("could not install GADS")
-            }
-          }else{
-            stop("could not install devtools or GADS")
-          }
-        }
-      }
-    }
-    }
     ################## time related variables #################################
     nyears<-yfinish-ystart+1
     if(vlsci==1){
@@ -828,14 +803,8 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
     if(rungads==1){
       ####### get solar attenuation due to aerosols with program GADS #####################
       relhum<-1.
-      season<-0.
-      if(vlsci==0){
-       optdep.summer<-as.data.frame(GADS::get.gads(longlat[2],longlat[1],relhum,0))
-       optdep.winter<-as.data.frame(GADS::get.gads(longlat[2],longlat[1],relhum,1))
-      }else{
-       optdep.summer<-as.data.frame(get.gads(longlat[2],longlat[1],relhum,0))
-       optdep.winter<-as.data.frame(get.gads(longlat[2],longlat[1],relhum,1))
-      }
+      optdep.summer<-as.data.frame(rungads(longlat[2],longlat[1],relhum,0))
+      optdep.winter<-as.data.frame(rungads(longlat[2],longlat[1],relhum,1))
       optdep<-cbind(optdep.winter[,1],rowMeans(cbind(optdep.summer[,2],optdep.winter[,2])))
       optdep<-as.data.frame(optdep)
       colnames(optdep)<-c("LAMBDA","OPTDEPTH")
@@ -843,7 +812,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
       LAMBDA<-c(290,295,300,305,310,315,320,330,340,350,360,370,380,390,400,420,440,460,480,500,520,540,560,580,600,620,640,660,680,700,720,740,760,780,800,820,840,860,880,900,920,940,960,980,1000,1020,1080,1100,1120,1140,1160,1180,1200,1220,1240,1260,1280,1300,1320,1380,1400,1420,1440,1460,1480,1500,1540,1580,1600,1620,1640,1660,1700,1720,1780,1800,1860,1900,1950,2000,2020,2050,2100,2120,2150,2200,2260,2300,2320,2350,2380,2400,2420,2450,2490,2500,2600,2700,2800,2900,3000,3100,3200,3300,3400,3500,3600,3700,3800,3900,4000)
       TAI<-predict(a,data.frame(LAMBDA))
       ################ end GADS ##################################################
-    }else{ # use the original profile from Elterman, L. 1970. Vertical-attenuation model with eight surface meteorological ranges 2 to 13 kilometers. U. S. Airforce Cambridge Research Laboratory, Bedford, Mass.
+    }else{ # use a suitable one for Australia (same as around Adelaide/Melbourne)
       TAI<-c(0.0670358341290886,0.0662612704779235,0.065497075238002,0.0647431301168489,0.0639993178022531,0.0632655219571553,0.0625416272145492,0.0611230843885423,0.0597427855962549,0.0583998423063099,0.0570933810229656,0.0558225431259535,0.0545864847111214,0.0533843764318805,0.0522154033414562,0.0499736739981675,0.047855059159556,0.0458535417401334,0.0439633201842001,0.0421788036108921,0.0404946070106968,0.0389055464934382,0.0374066345877315,0.0359930755919066,0.0346602609764008,0.0334037648376212,0.0322193394032758,0.0311029105891739,0.0300505736074963,0.0290585886265337,0.0281233764818952,0.0272415144391857,0.0264097320081524,0.0256249068083005,0.0248840604859789,0.0241843546829336,0.0235230870563317,0.0228976873502544,0.0223057135186581,0.0217448478998064,0.0212128934421699,0.0207077699817964,0.0202275105711489,0.0197702578594144,0.0193342605242809,0.0189178697551836,0.0177713140039894,0.0174187914242432,0.0170790495503944,0.0167509836728154,0.0164335684174899,0.0161258546410128,0.0158269663770596,0.0155360978343254,0.0152525104459325,0.0149755299703076,0.0147045436435285,0.0144389973831391,0.0141783930434343,0.0134220329447663,0.0131772403830191,0.0129356456025128,0.0126970313213065,0.0124612184223418,0.0122280636204822,0.01199745718102,0.0115436048739351,0.0110993711778668,0.0108808815754663,0.0106648652077878,0.0104513876347606,0.0102405315676965,0.00982708969547694,0.00962473896278535,0.00903679230300494,0.00884767454432418,0.0083031278398166,0.00796072474935954,0.00755817587626185,0.00718610751850881,0.00704629977586921,0.00684663903049612,0.00654155580333479,0.00642947339729728,0.00627223096874308,0.00603955966866779,0.00580920937536261,0.00568506186880564,0.00563167068287251,0.00556222005081865,0.00550522989971023,0.00547395763028062,0.0054478983436216,0.00541823364504573,0.00539532163908382,0.00539239864119488,0.00541690124712384,0.00551525885358836,0.00564825853509463,0.00577220185074264,0.00584222986640171,0.00581645238345584,0.00566088137411449,0.00535516862329704,0.00489914757707667,0.00432017939770409,0.0036813032251836,0.00309019064543606,0.00270890436501562,0.00276446109239711,0.00356019862584603)
     } #end check if running gads
 

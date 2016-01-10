@@ -1,12 +1,15 @@
-#' Downloads the global climate, soil moisture and elevation datasets
-#' required to run function micro_global
+#' get.global.climate
 #'
-#' the files are:
-#' global
-#' derived from "New, M., Lister, D., Hulme, M. and Makin, I., 2002: A high-resolution data
-#' set of surface climate over global land areas. Climate Research 21:1-25"
-#' It also optionally uses a global monthly soil moisture estimate from NOAA CPC Soil Moisture http://140.172.38.100/psd/thredds/catalog/Datasets/cpcsoil/catalog.html
-#' Aerosol attenuation can also be computed based on the Global Aerosol Data Set (GADS)
+#' Downloads the global climate, elevation and soil moisture datasets used in the function micro_global. The global
+#' climate dataset global.nc is pre-generated (using code in the 'build.global.climate.R' function
+#' generated from "New, M., Lister, D., Hulme, M. and Makin, I., 2002: A high-resolution
+#' data set of surface climate over global land areas. Climate Research 21:1-25", specically 10' estimates of monthly
+#' mean (over 1961-1990) preceipitation, wet-days, air temperature, diurnal temperature range, relative humidity and
+#' wind speed. Cloud cover comes from a bilinear interpolation of a lower resolution version of this dataset (New, M.,
+#' M. Hulme, and P. D. Jones. 1999. Representing twentieth century space-time climate variability. Part 1: development
+#' of a 1961-90 mean monthly terrestrial climatology. Journal of Climate 12:829-856.). The micro_global function
+#' optionaly uses a  global monthly soil moisture estimate from NOAA CPC Soil Moisture http://140.172.38.100/psd/
+#' thredds/catalog/Datasets/cpcsoil/catalog.html
 #' @param folder Path to the folder you want to install the global climate data in
 #' @usage get.global.climate(folder)
 #' @export
@@ -16,6 +19,9 @@ if(substr(ANSWER, 1, 1) == "y"){
   if(dir.exists(folder)==FALSE){
     dir.create(folder)
   }
+  soilmoist.file<-"http://140.172.38.100/psd/thredds/catalog/Datasets/cpcsoil/catalog.html?dataset=Datasets/cpcsoil/soilw.mon.ltm.v2.nc"
+  destin<-paste(folder,"/soilw.mon.ltm.v2.nc",sep="")
+  download.file(soilmoist.file, destin, mode="wb")
   climate.file<-"https://www.dropbox.com/s/9eg1aaooid4lbqv/global%20climate.zip?raw=1"
   destin<-paste(folder,"/global climate.zip",sep="")
   cat("downloading 'Global Climate.zip' \n")
