@@ -1,4 +1,4 @@
-#' get.gads
+#' rungads
 #'
 #' Function to extract data from the Fortran Global Aerosol Database software,
 #' for a specific location, season and relative humidity
@@ -10,7 +10,7 @@
 #' @return optdep A vector of wavelength-specific optical depths
 #' @useDynLib "gads"
 #' @export
-get.gads <- function(lat, lon, relhum, season) {
+rungads <- function(lat, lon, relhum, season) {
   curdir<-getwd()
   setwd(path.package("NicheMapR"))
   lat5s<-seq(-90,90,5) #lat range for GADS

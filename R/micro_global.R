@@ -501,35 +501,6 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     MAXSHADES <- rep(0,(timeinterval*nyears))+maxshade # daily max shade (%)
     MINSHADES <- rep(0,(timeinterval*nyears))+minshade # daily min shade (%)
 
-    # load global climate files
-    gcfolder<-paste(.libPaths()[1],"/gcfolder.rda",sep="")
-    if(file.exists(gcfolder)==FALSE){
-      cat("You don't appear to have the global climate data set - \n run function get.global.climate(folder = 'folder you want to put it in') .....\n exiting function micro_global")
-      opt <- options(show.error.messages=FALSE)
-      on.exit(options(opt))
-      stop()
-    }
-    load(gcfolder)
-    global_climate<-raster::brick(paste(folder,"/global_climate.nc",sep=""))
-    elev<-raster::raster(paste(folder,"/elev.nc",sep=""))
-    soilmoisture<-suppressWarnings(raster::brick(paste(folder,"/soilw.mon.ltm.v2.nc",sep="")))
-
-    ALTT<-as.numeric(raster::extract(elev,x)*1000) # convert from km to m
-    cat("extracting climate data", '\n')
-    CLIMATE <- raster::extract(global_climate,x)
-    RAINFALL <- CLIMATE[,1:12]
-    WNMAXX <- CLIMATE[,13:24]
-    WNMINN<-WNMAXX*0.1 # impose diurnal cycle
-    TMINN <- CLIMATE[,25:36]
-    TMAXX <- CLIMATE[,37:48]
-    ALLMINTEMPS<-TMINN
-    ALLMAXTEMPS<-TMAXX
-    ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
-    CCMAXX <- 100-CLIMATE[,49:60]
-    CCMINN<-CCMAXX
-    RAINYDAYS <- CLIMATE[,61:72]
-    RHMINN <- CLIMATE[,73:84]
-    RHMAXX <- CLIMATE[,85:96]
     if(soiltype==0){ # simulating rock so turn of soil moisture model and set density equal to bulk density
       BulkDensity<-Density
       cap=0
@@ -547,26 +518,44 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       }
     }
 
+    # load global climate files
+    gcfolder<-paste(.libPaths()[1],"/gcfolder.rda",sep="")
+    if(file.exists(gcfolder)==FALSE){
+      cat("You don't appear to have the global climate data set - \n run function get.global.climate(folder = 'folder you want to put it in') .....\n exiting function micro_global")
+      opt <- options(show.error.messages=FALSE)
+      on.exit(options(opt))
+      stop()
+    }
+    load(gcfolder)
+
+    cat("extracting climate data", '\n')
+    global_climate<-raster::brick(paste(folder,"/global_climate.nc",sep=""))
+    CLIMATE <- raster::extract(global_climate,x)
+    ALTT<-as.numeric(CLIMATE[,1]) # convert from km to m
+    RAINFALL <- CLIMATE[,2:13]
+    RAINYDAYS <- CLIMATE[,14:25]/10
+    WNMAXX <- CLIMATE[,26:37]/10
+    WNMINN<-WNMAXX*0.1 # impose diurnal cycle
+    TMINN <- CLIMATE[,38:49]/10
+    TMAXX <- CLIMATE[,50:61]/10
+    ALLMINTEMPS<-TMINN
+    ALLMAXTEMPS<-TMAXX
+    ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
+    RHMINN <- CLIMATE[,62:73]/10
+    RHMAXX <- CLIMATE[,74:85]/10
+    CCMINN <- CLIMATE[,86:97]/10
+    CCMAXX <- CCMINN
     if(runmoist==0){
-      # extract soil moisture (this database has longitude from 0-365!)
-      longlat1<-longlat
-      if(longlat1[1]<0){
-        longlat1[1]<-360+longlat1[1]
-      }
-      if(is.numeric(loc)==FALSE){
-        xx<-cbind(longlat1)
-      }else{
-        xx<-t(cbind(longlat1))
-      }
-      xx2<-as.numeric(xx)
+      # extract soil moisture
+      soilmoisture<-suppressWarnings(raster::brick(paste(folder,"/soilw.mon.ltm.v2.nc",sep="")))
       cat("extracting soil moisture data", '\n')
-      SoilMoist<-raster::extract(soilmoisture,xx)/1000 # this is originally in mm/m
-      if(nrow(SoilMoist)>1){SoilMoist<-SoilMoist[1,]}
+      SoilMoist<-raster::extract(soilmoisture,x)/1000 # this is originally in mm/m
     }
     if(is.na(max(SoilMoist, ALTT, CLIMATE))==TRUE){
       cat("Sorry, there is no environmental data for this location")
       stop()
     }
+
     # correct for fact that wind is measured at 10 m height
     # wind shear equation v / vo = (h / ho)^a
     #where
@@ -678,9 +667,8 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     if(rungads==1){
       ####### get solar attenuation due to aerosols with program GADS #####################
       relhum<-1.
-      season<-0.
-      optdep.summer<-as.data.frame(get.gads(longlat[2],longlat[1],relhum,0))
-      optdep.winter<-as.data.frame(get.gads(longlat[2],longlat[1],relhum,1))
+      optdep.summer<-as.data.frame(rungads(longlat[2],longlat[1],relhum,0))
+      optdep.winter<-as.data.frame(rungads(longlat[2],longlat[1],relhum,1))
       optdep<-cbind(optdep.winter[,1],rowMeans(cbind(optdep.summer[,2],optdep.winter[,2])))
       optdep<-as.data.frame(optdep)
       colnames(optdep)<-c("LAMBDA","OPTDEPTH")
@@ -689,7 +677,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       TAI<-predict(a,data.frame(LAMBDA))
       ################ end GADS ##################################################
     }else{ # use the original profile from Elterman, L. 1970. Vertical-attenuation model with eight surface meteorological ranges 2 to 13 kilometers. U. S. Airforce Cambridge Research Laboratory, Bedford, Mass.
-      TAI<-c(0.0670358341290886,0.0662612704779235,0.065497075238002,0.0647431301168489,0.0639993178022531,0.0632655219571553,0.0625416272145492,0.0611230843885423,0.0597427855962549,0.0583998423063099,0.0570933810229656,0.0558225431259535,0.0545864847111214,0.0533843764318805,0.0522154033414562,0.0499736739981675,0.047855059159556,0.0458535417401334,0.0439633201842001,0.0421788036108921,0.0404946070106968,0.0389055464934382,0.0374066345877315,0.0359930755919066,0.0346602609764008,0.0334037648376212,0.0322193394032758,0.0311029105891739,0.0300505736074963,0.0290585886265337,0.0281233764818952,0.0272415144391857,0.0264097320081524,0.0256249068083005,0.0248840604859789,0.0241843546829336,0.0235230870563317,0.0228976873502544,0.0223057135186581,0.0217448478998064,0.0212128934421699,0.0207077699817964,0.0202275105711489,0.0197702578594144,0.0193342605242809,0.0189178697551836,0.0177713140039894,0.0174187914242432,0.0170790495503944,0.0167509836728154,0.0164335684174899,0.0161258546410128,0.0158269663770596,0.0155360978343254,0.0152525104459325,0.0149755299703076,0.0147045436435285,0.0144389973831391,0.0141783930434343,0.0134220329447663,0.0131772403830191,0.0129356456025128,0.0126970313213065,0.0124612184223418,0.0122280636204822,0.01199745718102,0.0115436048739351,0.0110993711778668,0.0108808815754663,0.0106648652077878,0.0104513876347606,0.0102405315676965,0.00982708969547694,0.00962473896278535,0.00903679230300494,0.00884767454432418,0.0083031278398166,0.00796072474935954,0.00755817587626185,0.00718610751850881,0.00704629977586921,0.00684663903049612,0.00654155580333479,0.00642947339729728,0.00627223096874308,0.00603955966866779,0.00580920937536261,0.00568506186880564,0.00563167068287251,0.00556222005081865,0.00550522989971023,0.00547395763028062,0.0054478983436216,0.00541823364504573,0.00539532163908382,0.00539239864119488,0.00541690124712384,0.00551525885358836,0.00564825853509463,0.00577220185074264,0.00584222986640171,0.00581645238345584,0.00566088137411449,0.00535516862329704,0.00489914757707667,0.00432017939770409,0.0036813032251836,0.00309019064543606,0.00270890436501562,0.00276446109239711,0.00356019862584603)
+      TAI<-c(0.42,0.415,0.412,0.408,0.404,0.4,0.395,0.388,0.379,0.379,0.379,0.375,0.365,0.345,0.314,0.3,0.288,0.28,0.273,0.264,0.258,0.253,0.248,0.243,0.236,0.232,0.227,0.223,0.217,0.213,0.21,0.208,0.205,0.202,0.201,0.198,0.195,0.193,0.191,0.19,0.188,0.186,0.184,0.183,0.182,0.181,0.178,0.177,0.176,0.175,0.175,0.174,0.173,0.172,0.171,0.17,0.169,0.168,0.167,0.164,0.163,0.163,0.162,0.161,0.161,0.16,0.159,0.157,0.156,0.156,0.155,0.154,0.153,0.152,0.15,0.149,0.146,0.145,0.142,0.14,0.139,0.137,0.135,0.135,0.133,0.132,0.131,0.13,0.13,0.129,0.129,0.128,0.128,0.128,0.127,0.127,0.126,0.125,0.124,0.123,0.121,0.118,0.117,0.115,0.113,0.11,0.108,0.107,0.105,0.103,0.1)
     } #end check if running gads
 
     ################ soil properties  ##################################################
