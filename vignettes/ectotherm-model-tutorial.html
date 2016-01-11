@@ -89,11 +89,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <pre><code>## Loading required namespace: ncdf4</code></pre>
 <pre><code>## running microclimate model for 12 days by 1 years at site Kuranda, Queensland 
 ##    user  system elapsed 
-##    0.31    0.00    0.31</code></pre>
+##    0.32    0.00    0.32</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ecto&lt;-<span class="kw">ectotherm</span>()</code></pre></div>
 <pre><code>## running ectotherm model ... 
 ##    user  system elapsed 
-##    0.08    0.00    0.08</code></pre>
+##    0.07    0.00    0.07</code></pre>
 <p>The results are stored as a list in the variable <em>ecto</em>. The main ones to focus on for now are</p>
 <ul>
 <li><strong>environ</strong> The body temperature, activity and envionments experienced by the animal</li>
@@ -975,13 +975,13 @@ micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc =</span> <sp
 <pre><code>## extracting climate data 
 ## running microclimate model for 365 days by 5 years at site Kuranda, Queensland 
 ##    user  system elapsed 
-##   29.33    0.01   29.40</code></pre>
+##   28.71    0.06   28.77</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># run the ectotherm model with the DEB model turned on and in viviparous mode, simulating the</span>
 <span class="co"># Eastern Water Skink, Eulamprus quoyii</span>
 ecto&lt;-<span class="kw">ectotherm</span>(<span class="dt">DEB =</span> <span class="dv">1</span>, <span class="dt">mindepth =</span> <span class="dv">4</span>, <span class="dt">viviparous =</span> <span class="dv">1</span>)</code></pre></div>
 <pre><code>## running ectotherm model ... 
 ##    user  system elapsed 
-##    5.56    0.00    5.56</code></pre>
+##    5.41    0.01    5.42</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">metout&lt;-<span class="kw">as.data.frame</span>(micro$metout) <span class="co"># above ground microclimatic conditions, min shade</span>
 environ&lt;-<span class="kw">as.data.frame</span>(ecto$environ) <span class="co"># activity, Tb and environment</span>
 masbal&lt;-<span class="kw">as.data.frame</span>(ecto$masbal) <span class="co"># activity, Tb and environment</span>
