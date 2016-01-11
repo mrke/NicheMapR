@@ -202,7 +202,6 @@ c      write (*,*) '?'
 c      read (*,*) iwel
 	iwel=1
 	do 9999 iwel=1,nwel
-         write(*,*) 'got there'
 
       if (ws.eq.'w') then
          open(ntape,file='extdata/glodat/winter.dat')
@@ -216,7 +215,6 @@ c      read (*,*) iwel
          print*,' wrong input! try again!'
          goto 1001
       end if
-         write(*,*) 'got there 2'
       if (iwel.lt.1.or.iwel.gt.nwel) then
          print*,' wrong number! try again! '
          goto 909
@@ -366,7 +364,6 @@ c     hm(il,ip): effektive Dicke der Schicht il fuer den Typ ip        c
 CCCCC -----------------------------------------------------------------C
 
       open (8,file='extdata/profiles.dat')
-      write(*,*) 'got here 3'
       nprof=7
       DO IP=1,nprof
          READ(8,8010) IIP,NIL(IP),HFTA(IP),HSTRA(IP)
