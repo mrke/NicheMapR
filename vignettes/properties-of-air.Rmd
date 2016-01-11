@@ -459,6 +459,7 @@ grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$bbemit,type='l',ylim=ylim,ylab=ylab, xlab=xlab,cex.lab=1.5,cex.axis=1.5,lwd=2)
 plotrix::boxed.labels(10, 550, expression(paste(phi," = ",5.67032," x 10"^{-8},"(",italic(t)," + 273.15)"^{4})),cex=1.5,bg="white",border=NA)
 ```
+
 ```
 tairs=seq(-20,50,5) # sequence of air temperatures
 bbemit=DRYAIR(db=tairs)$bbemit # compute values
@@ -488,6 +489,7 @@ plotrix::boxed.labels(30, 1.4, expression(paste(italic(rho)," = ",frac(italic(P)
 plotrix::boxed.labels(10,1.3,"100 000 Pa",cex=1.5,bg="white",border=NA)
 plotrix::boxed.labels(0,1.14,"85 000 Pa",cex=1.5,bg="white",border=NA)
 ```
+
 ```
 tairs=seq(-20,50,5) # sequence of air temperatures
 densty=DRYAIR(db=tairs,bp = 85000)$densty # compute values
@@ -546,6 +548,7 @@ plotrix::boxed.labels(310+x,-23.5+y, expression(paste(italic(beta)," = ",265.5))
 plotrix::boxed.labels(360+x,-21.5+y, "}",cex=1.5,bg="white",border=NA)
 plotrix::boxed.labels(420+x,-21.5+y, "OVER ICE",cex=.8,bg="white",border=NA)
 ```
+
 ```
 dps=seq(-20,50,5) # sequence of dew points
 esat=WETAIR(db=dps,rh=100)$esat # compute values
@@ -582,6 +585,7 @@ plotrix::boxed.labels(37, 2.30E-5, expression(paste(italic(T)," = ",italic(t)+27
 plotrix::boxed.labels(37, 2.2E-5, expression(paste(italic(n)," = ",1.81)),cex=1.05,bg="white",border=NA) 
 plotrix::boxed.labels(37, 2.1E-5, expression(paste(italic(rho)[0]," = ",2.26," x ",10^{5})),cex=1.05,bg="white",border=NA) 
 ```
+
 ```
 tairs=seq(-20,50,5) # sequence of air temperatures
 difvpr=DRYAIR(db=tairs,bp = 85000)$difvpr # compute values
@@ -613,6 +617,7 @@ plotrix::boxed.labels(10, 1.04E-5, expression(paste(italic(T)[0]," = ",296.16)),
 plotrix::boxed.labels(10, 0.94E-5, expression(paste(italic(C)," = ",120)),cex=1.05,bg="white",border=NA) 
 plotrix::boxed.labels(10, 0.81E-5, expression(paste(italic(rho)[0]," = ",italic(t)+273.15)),cex=1.05,bg="white",border=NA) 
 ```
+
 ```
 tairs=seq(-20,50,5) # sequence of air temperatures
 visdyn=DRYAIR(db=tairs)$visdyn # compute values
@@ -639,6 +644,7 @@ grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$ggroup,type='l',ylim=c(9E5,10E6),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
 plotrix::boxed.labels(10, 8E6, expression(paste(italic(gamma)," = ",frac(0.0980618*italic(beta),italic(nu)^{2}))),cex=1.15,bg="white",border=NA) 
 ```
+
 ```
 tairs=seq(-20,50,5) # sequence of air temperatures
 ggroup=DRYAIR(db=tairs)$ggroup # compute values
@@ -665,6 +671,7 @@ grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$viskin,type='l',ylim=c(0.2E-5,2.2E-5),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
 plotrix::boxed.labels(-10, 2E-5, expression(paste(italic(nu)," = ",frac(italic(mu),italic(rho)))),cex=1.5,bg="white",border=NA) 
 ```
+
 ```
 tairs=seq(-20,50,5) # sequence of air temperatures
 viskin=DRYAIR(db=tairs)$viskin # compute values
@@ -692,6 +699,7 @@ points(tairs,DRYAIR(db=tairs)$htovpr,type='l',ylim=c(2.35E6,2.6E6),ylab=ylab, xl
 plotrix::boxed.labels(20, 2.55E6, expression(paste(italic(L)," = ",2.5012," x 10"^6-2378.7*italic(t))),cex=1.25,bg="white",border=NA) 
 plotrix::boxed.labels(20, 2.53E6, expression(-20<paste(italic(L)<60)),cex=1.25,bg="white",border=NA) 
 ```
+
 ```
 tairs=seq(-20,50,5) # sequence of air temperatures
 htovpr=DRYAIR(db=tairs)$htovpr # compute values
@@ -723,6 +731,7 @@ plotrix::boxed.labels(28, 0.035, expression(paste(100,"% ",italic(rh))),cex=1.05
 plotrix::boxed.labels(35, 0.025, expression(paste(50,"% ",italic(rh))),cex=1.05,bg="white",border=NA)
 plotrix::boxed.labels(39, 0.016, expression(paste(25,"% ",italic(rh))),cex=1.05,bg="white",border=NA) 
 ```
+
 ```
 tairs=seq(-20,50,5) # sequence of air temperatures
 rw=WETAIR(db=tairs, rh=100)$rw # compute values
@@ -754,6 +763,7 @@ plotrix::boxed.labels(28, 1040, expression(paste(100,"% ",italic(rh))),cex=1.05,
 plotrix::boxed.labels(35, 1025, expression(paste(50,"% ",italic(rh))),cex=1.05,bg="white",border=NA)
 plotrix::boxed.labels(39, 1018, expression(paste(25,"% ",italic(rh))),cex=1.05,bg="white",border=NA) 
 ```
+
 ```
 tairs=seq(-20,50,5) # sequence of air temperatures
 cp=WETAIR(db=tairs, rh=100)$cp # compute values
@@ -781,6 +791,7 @@ points(alts,DRYAIR(db=20, alt=alts)$patmos,type='l',ylim=c(0.7E5,1.2E5),ylab=yla
 plotrix::boxed.labels(1500, 1.1E5, expression(paste(italic(p)," = ",101325,bgroup("[",1-(2.2569*10^{-5}*Z),"]")^5.2553)),cex=1.25,bg="white",border=NA) 
 plotrix::boxed.labels(1500, 1.05E5, expression(-1000<paste(italic(Z)<20000)),cex=1.25,bg="white",border=NA) 
 ```
+
 ```
 alts=seq(-500,3000,250) # sequence of altitudes (m)
 patmos=DRYAIR(db=20, alt=alts)$patmos # compute values
@@ -810,6 +821,7 @@ Hmisc::subplot(fun=plot(tairs,((9/5)*tairs)+32,type='l',xlim=c(-40,-20),ylim=c(-
 plotrix::boxed.labels(-5, 95, expression(paste(italic(t)[f]," = ",bgroup("[",bgroup("(",frac(9,5),")")*italic(t)[c],"]")+32)),cex=1.25,bg="white",border=NA) 
 plotrix::boxed.labels(-5, 75, expression(paste(italic(t)[c]," = ",bgroup("(",frac(5,9),")")*(italic(t)[f]-32))),cex=1.25,bg="white",border=NA) 
 ```
+
 ```
 tc=seq(-20,50,5) # sequence of air temperatures in deg C
 tf=((9/5)*tc)+32 # compute deg F
@@ -837,6 +849,7 @@ grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$tcoeff,type='l',ylim=c(3E-3,4E-3),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
 plotrix::boxed.labels(15,3.8E-3, expression(paste(italic(beta)," = ",frac(1,italic(t)+273.15))),cex=1.25,bg="white",border=NA) 
 ```
+
 ```
 tairs=seq(-20,50,5) # sequence of air temperatures
 tcoeff=DRYAIR(db=tairs)$tcoeff # compute values
@@ -864,6 +877,7 @@ points(tairs,DRYAIR(db=tairs)$thcond,type='l',ylim=c(1E-3,3E-2),ylab=ylab, xlab=
 plotrix::boxed.labels(20, 1.3E-2, expression(paste(italic(k)," = ",(2.425*10^{2})+(7.038*10^{-5}*t))),cex=1.25,bg="white",border=NA) 
 plotrix::boxed.labels(20, 1.1E-2, expression(-20<paste(italic(t)<40)),cex=1.25,bg="white",border=NA) 
 ```
+
 ```
 tairs=seq(-20,50,5) # sequence of air temperatures
 thcond=DRYAIR(db=tairs)$thcond # compute values
@@ -905,15 +919,15 @@ for(wb in seq(10,50,10)){
   plotrix::boxed.labels(wb-1,WETAIR(db=wb, rh=100)$vd+.002,wb,cex=1.25,bg="white",border=NA)
 }
 ```
+
 ```
 # get vapor density at different air temperatures for a given relative humidity
 tairs=seq(0,60,5) # sequence of air temperatures at which to obtain vapor density
-vd=WETAIR(db=tairs, rh=100)$vd # obtain vapor density at 100% rh
+vd=WETAIR(db=tairs, rh=100)$vd # obtain vapor density at 100% rh  
 
 # get dry bulb temperatures for a set of saturated wet bulb temperatures
 wb=seq(0,50,2) # sequence of wet bulb temperatures
 db=wb+WETAIR(db=wb, wb=wb, rh=100)$esat/(0.000660 * (1.0 + 0.00115 * wb) * 101325)) # rearrangement of formulae in WETAIR
-
 ```
 
 \pagebreak 
@@ -942,6 +956,7 @@ plotrix::boxed.labels(26, 4200, expression(paste(100,"% ",italic(rh))),cex=1.05,
 plotrix::boxed.labels(32, 3000, expression(paste(50,"% ",italic(rh))),cex=1.05,bg="white",border=NA)
 plotrix::boxed.labels(37, 2000, expression(paste(25,"% ",italic(rh))),cex=1.05,bg="white",border=NA) 
 ```
+
 ```
 tairs=seq(-20,50,5) # sequence of air temperatures
 e=WETAIR(db=tairs, rh=100)$e # compute values
@@ -974,6 +989,7 @@ plotrix::boxed.labels(26, 5.5, expression(paste(100,"% ",italic(rh))),cex=1.05,b
 plotrix::boxed.labels(32, 4, expression(paste(50,"% ",italic(rh))),cex=1.05,bg="white",border=NA)
 plotrix::boxed.labels(37, 2.5, expression(paste(25,"% ",italic(rh))),cex=1.05,bg="white",border=NA) 
 ```
+
 ```
 tairs=seq(-20,50,5) # sequence of air temperatures
 tvinc=WETAIR(db=tairs, rh=100)$tvinc # compute values
@@ -1025,6 +1041,7 @@ mtext(text=xlab, side=1, outer=TRUE,cex=1.25,line=2)
 plotrix::boxed.labels(99.5,5E5,expression(paste(0,degree*C)),cex=1.25,bg="white",border=NA)
 plotrix::boxed.labels(99.75,5E5,expression(paste(50,degree*C)),cex=1.25,bg="white",border=NA)
 ```
+
 ```
 tairs=seq(0,50,5) # sequence of air temperatures
 wtrpot=WETAIR(rh=rhs,db=0)$wtrpot # compute values
@@ -1051,6 +1068,7 @@ grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$emtmax,type='l',ylim=c(0.7E-5,1.2E-5),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
 plotrix::boxed.labels(0, 0.9E-5,expression(paste(italic(lambda)[m]," = ",2.897*10^{3}/(italic(t)+273.15))),cex=1.25,bg="white",border=NA) 
 ```
+
 ```
 tairs=seq(-20,50,5) # sequence of air temperatures
 emtmax=DRYAIR(db=tairs)$emtmax # compute values
@@ -1175,6 +1193,7 @@ WETAIR <- function(db=db, wb=db, rh=0, dp=999, bp=101325){
   return(list(e=e, esat=esat, vd=vd, rw=rw, tvinc=tvinc, denair=denair, cp=cp, wtrpot=wtrpot, rh=rh))
 }
 ```
+
 \pagebreak 
 
 ### Function VAPPRS
