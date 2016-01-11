@@ -735,7 +735,7 @@ c            print*,ibuf
 
             kbuf(ibuf)=nbuf
             open (ntap,file=tap,iostat=ios)
-            print*,'opened file ',tap,iostat
+c            print*,'opened file ',tap,iostat
 
             if (ios.ne.0) then
                print*,' error while opening file ',tap
