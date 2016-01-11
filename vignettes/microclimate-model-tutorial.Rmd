@@ -4,7 +4,7 @@ author: "Michael Kearney"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction to the NicheMapR microclimate model}
+  %\VignetteIndexEntry{microclimate-model-tutorial}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
