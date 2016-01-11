@@ -742,7 +742,6 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     Z02 <- 0. # 2nd segment roughness height(m)
     ZH1 <- 0. # Top of (1st) segment, height above surface(m)
     ZH2 <- 0. # 2nd segment, height above surface(m)
-    SNOW <- rep(0,timeinterval*nyears) # no snow simulated on surface
 
     # microclimate input parameters list
     microinput<-c(dim,RUF,ERR,Usrhyt,Numtyps,Numint,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,Refhyt)
@@ -760,7 +759,6 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     RHMINN1=matrix(data = 0., nrow = dim, ncol = 1)
     WNMAXX1=matrix(data = 0., nrow = dim, ncol = 1)
     WNMINN1=matrix(data = 0., nrow = dim, ncol = 1)
-    SNOW1=matrix(data = 0., nrow = dim, ncol = 1)
     REFLS1=matrix(data = 0., nrow = dim, ncol = 1)
     PCTWET1=matrix(data = 0., nrow = dim, ncol = 1)
     RAINFALL1=matrix(data = 0, nrow = dim, ncol = 1)
@@ -779,7 +777,6 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     RHMINN1[1:dim]<-RHMINN
     WNMAXX1[1:dim]<-WNMAXX
     WNMINN1[1:dim]<-WNMINN
-    SNOW1[1:dim]<-SNOW
     REFLS1[1:dim]<-REFLS
     PCTWET1[1:dim]<-PCTWET
     RAINFALL1[1:dim]<-RAINFALL
@@ -790,7 +787,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
     }
     # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
-    micro<-list(tides=tides,microinput=microinput,julday=julday,SLES=SLES1,DEP=DEP,Intrvls=Intrvls1,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,SNOW=SNOW1,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI,snowmodel=snowmodel)
+    micro<-list(tides=tides,microinput=microinput,julday=julday,SLES=SLES1,DEP=DEP,Intrvls=Intrvls1,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI,snowmodel=snowmodel)
 
     # write all input to csv files in their own folder
     if(write_input==1){
@@ -815,7 +812,6 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       write.table(CCMINN, file = "micro csv input/CCMINN.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(WNMAXX, file = "micro csv input/WNMAXX.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(WNMINN, file = "micro csv input/WNMINN.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(SNOW, file = "micro csv input/SNOW.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(REFLS, file = "micro csv input/REFLS.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(PCTWET, file = "micro csv input/PCTWET.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(soilinit, file = "micro csv input/soilinit.csv", sep = ",", col.names = NA, qmethod = "double")
