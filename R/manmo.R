@@ -73,9 +73,9 @@ manmo<-function(Body.Mass = 58, Height = 162, Activity.MR = 121.6, Maximum.SR = 
   output = cbind(Body.Mass, Height, SA, Activity.MR, Maximum.SR, Temp.Increase, Area.Clothed, Albedo.body, Tskin, Speed, Evap.Eff, Tair, RH, WS, WS.effective, Solar.Rad, Solar.Load, Total.Solar.Load.Incident.Absorbed, Metab, Total.Heat.Load, hc, Clothing.EVAP, Clothing.CONV, Clothing.RESP, Conv.clothed, Conv.unclothed, Convection, Tclothing, IR.Heat.loss, Evap.unclothed, Evap.clothed, Evap, Evap.resp, Evap.total, Storage, Max.Sweat.Rate, Max.Evap.Rate, Sweat, Sweat.limited)
 }
 
-output<-manmo(Tair = seq(0,50))
+#output<-manmo(Tair = seq(0,50))
 
-plot(Sweat ~ Tair, data = output, type = 'l')
+#plot(Sweat ~ Tair, data = output, type = 'l')
 
-write.csv(output,'manmo_out.csv')
+#write.csv(output,'manmo_out.csv')
 
