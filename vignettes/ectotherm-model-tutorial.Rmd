@@ -4,7 +4,7 @@ author: "Michael Kearney"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{ectotherm model tutorial}
+  %\VignetteIndexEntry{ectotherm-model-tutorial}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -27,9 +27,7 @@ As with the microclimate model tutorial, this first example involves the most ba
 ```{r}
 library(NicheMapR)
 ```
-```{r, echo=FALSE}
-source('../R/ectotherm.R')
-```
+
 ```{r}
 micro<-micro_global(loc = "Kuranda, Queensland", runmoist=1)
 ecto<-ectotherm()
