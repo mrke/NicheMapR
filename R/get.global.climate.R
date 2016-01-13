@@ -19,9 +19,6 @@ if(substr(ANSWER, 1, 1) == "y"){
   if(dir.exists(folder)==FALSE){
     dir.create(folder)
   }
-  soilmoist.file<-"http://140.172.38.100/psd/thredds/catalog/Datasets/cpcsoil/catalog.html?dataset=Datasets/cpcsoil/soilw.mon.ltm.v2.nc"
-  destin<-paste(folder,"/soilw.mon.ltm.v2.nc",sep="")
-  download.file(soilmoist.file, destin, mode="wb")
   climate.file<-"https://www.dropbox.com/s/9eg1aaooid4lbqv/global%20climate.zip?raw=1"
   destin<-paste(folder,"/global climate.zip",sep="")
   cat("downloading 'Global Climate.zip' \n")

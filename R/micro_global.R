@@ -31,7 +31,7 @@
 #' @return shadhumid Hourly predictions of the soil humidity under the maximum specified shade
 #' @usage micro_global(loc = "Madison, Wisconsin USA", timeinterval = 12, nyears = 1, soiltype = 4,
 #' REFL = 0.15, slope = 0, aspect = 0,
-#' DEP = c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.), minshade = 0, maxshade = 90,
+#' DEP = c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export
 #' @details
@@ -62,8 +62,8 @@
 #' \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
 #' \code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
 #' \code{hori}{ = rep(0,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
-#' \code{TIMAXS}{ = c(1.0, 1.0, 0.0, 0.0), Time of Maximums for Air Wind RelHum Cloud (h), air & Wind max's relative to solar noon, humidity and cloud cover max's relative to sunrise}\cr\cr
-#' \code{TIMINS}{ = c(0.0, 0.0, 1.0, 1.0), Time of Minimums for Air Wind RelHum Cloud (h), air & Wind min's relative to sunrise, humidity and cloud cover min's relative to solar noon}\cr\cr
+#' \code{TIMAXS}{ = c(1, 1, 0, 0), Time of Maximums for Air Wind RelHum Cloud (h), air & Wind max's relative to solar noon, humidity and cloud cover max's relative to sunrise}\cr\cr
+#' \code{TIMINS}{ = c(0, 0, 1, 1), Time of Minimums for Air Wind RelHum Cloud (h), air & Wind min's relative to sunrise, humidity and cloud cover min's relative to solar noon}\cr\cr
 #' \code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr
 #'
 #' \strong{ Soil moisture mode parameters:}
@@ -237,12 +237,12 @@
 #'}
 micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,soiltype=4,
   REFL=0.15,slope=0,aspect=0,
-  DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.),
+  DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
   minshade=0,maxshade=90,Refhyt=1.2, Usrhyt=0.01, Z01=0, Z02=0, ZH1=0, ZH2=0,
   runshade=1,rungads=1,write_input=0,writecsv=0,
   ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2560,SpecHeat=870,BulkDensity=1300,
   PCTWET=0,cap=1,CMH2O=1.,hori=rep(0,24),
-  TIMAXS=c(1.0, 1.0, 0.0, 0.0),TIMINS=c(0.0, 0.0, 1.0, 1.0),timezone=0,
+  TIMAXS=c(1, 1, 0, 0),TIMINS=c(0, 0, 1, 1),timezone=0,
   runmoist=0,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(1.3,19),Clay=20,
   maxpool=10000,rainmult=1,evenrain=0,
   SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3),
@@ -390,9 +390,9 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
         Please enter a correct value (0.005 - Refhyt).", '\n')
     errors<-1
   }
-  if(CMH2O<0.5 | CMH2O>Refhyt*100){
+  if(CMH2O<0.5 | CMH2O>2){
     cat("ERROR: Preciptable water in air column (CMH2O) is out of bounds.
-        Please enter a correct value (0.1 - Refhyt*100).", '\n')
+        Please enter a correct value (0.1 - 2).", '\n')
     errors<-1
   }
   if(max(TIMAXS)>24 | min(TIMAXS)<0){
