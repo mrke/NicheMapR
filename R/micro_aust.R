@@ -1302,10 +1302,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
           PCTWET<-pmax(soilwet,PCTWET)
         }
 
-        Intrvls<-rep(0,dim)
-        Intrvls[1] <- 1 # user-supplied last Julian day in each time interval sequence
         Numtyps <- 10 # number of substrate types
-        Numint <- dim  # number of time intervals
         Nodes <- matrix(data = 0, nrow = 10, ncol = dim) # deepest nodes for each substrate type
         Nodes[1:10,] <- c(1:10) # deepest nodes for each substrate type
 
@@ -1476,11 +1473,10 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
         ALAT<-as.numeric(ALAT)
 
     # microclimate input parameters list
-    microinput<-c(dim,RUF,ERR,Usrhyt,Numtyps,Numint,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,Refhyt)
+    microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun)
 
     julday1=matrix(data = 0., nrow = dim, ncol = 1)
     SLES1=matrix(data = 0., nrow = dim, ncol = 1)
-    Intrvls1=matrix(data = 0., nrow = dim, ncol = 1)
     MAXSHADES1=matrix(data = 0., nrow = dim, ncol = 1)
     MINSHADES1=matrix(data = 0., nrow = dim, ncol = 1)
     TMAXX1=matrix(data = 0., nrow = dim, ncol = 1)
@@ -1498,7 +1494,6 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
     moists1=matrix(data = 0., nrow = 10, ncol = dim)
     julday1[1:dim]<-julday
     SLES1[1:dim]<-SLES
-    Intrvls1[1:dim]<-Intrvls
     MAXSHADES1[1:dim]<-MAXSHADES
     MINSHADES1[1:dim]<-MINSHADES
     TMAXX1[1:dim]<-TMAXX
@@ -1519,7 +1514,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
       tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
     }
     # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
-    micro<-list(tides=tides,microinput=microinput,julday=julday,SLES=SLES1,DEP=DEP,Intrvls=Intrvls1,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI,snowmodel=snowmodel)
+    micro<-list(tides=tides,microinput=microinput,julday=julday,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI,snowmodel=snowmodel)
    # write all input to csv files in their own folder
     if(write_input==1){
       if(dir.exists("micro csv input")==FALSE){
@@ -1529,7 +1524,6 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
       write.table(julday, file = "micro csv input/julday.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(SLES, file = "micro csv input/SLES.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(DEP, file = "micro csv input/DEP.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(Intrvls, file = "micro csv input/Intrvls.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(Nodes, file = "micro csv input/Nodes.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(MAXSHADES, file = "micro csv input/Maxshades.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(MINSHADES, file = "micro csv input/Minshades.csv", sep = ",", col.names = NA, qmethod = "double")
