@@ -1,10 +1,10 @@
 ---
-title: "Core inputs and outputs of the NicheMapR microclimate model"
+title: "Inputs and outputs of the NicheMapR microclimate model"
 author: "Michael Kearney"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{microclimate-core-IO.Rmd}
+  %\VignetteIndexEntry{Microclimate Model IO}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,10 +16,11 @@ knitr::opts_chunk$set(
 ```
 This vignette runs through the core inputs and outputs of the NicheMapR microclimate model. It provides a basis for developing scripts and functions that are customised to particular databases of climate/weather, terrain, vegetation and soil properties.
 
-### Model mode parameters
+### Model mode settings
 
 ```
-writecsv<-0 # make Fortran code write output as csv files
+writecsv<-0 # make Fortran program write output as csv files
+microdaily<-0 # run microclimate model as normal, where each day is iterated 3 times starting with the initial condition of uniform soil temp at mean monthly temperature
 runshade<-1 # run the model twice, once for each shade level (1) or just for the first shade level (0)?
 runmoist<-1 # run soil moisture model (0=no, 1=yes)?
 snowmodel<-1 # run the snow model (0=no, 1=yes)? - note that this runs slower
@@ -27,26 +28,24 @@ snowmodel<-1 # run the snow model (0=no, 1=yes)? - note that this runs slower
 
 ### Time and location parameters
 ```
-longlat<-c(-89.40123,43.07305) # type a long/lat here in decimal degrees
 julnum<-12 # number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 julday<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
 idayst <- 1 # start month
-ida<-julnum # end month
-microdaily<-0 # run microclimate model as normal, where each day is iterated 3 times starting with the initial condition of uniform soil temp at mean monthly temperature
-HEMIS <- ifelse(longlat[2]<0,2.,1.) # chose hemisphere based on latitude
-ALAT <- abs(trunc(longlat[2])) # degrees latitude
-AMINUT <- (abs(longlat[2])-ALAT)*60 # minutes latitude
-ALONG <- abs(trunc(longlat[1])) # degrees longitude
-ALMINT <- (abs(longlat[1])-ALONG)*60 # minutes latitude
-ALREF <- ALONG # reference longitude for time zone
+ida<-12 # end month
+HEMIS <- 1 # chose hemisphere
+ALAT <- 43 # degrees latitude
+AMINUT <- 4.383 # minutes latitude
+ALONG <- 89 # degrees longitude
+ALMINT <- 24.074 # minutes latitude
+ALREF <- 89 # reference longitude for time zone
 EC <- 0.0167238 # Eccenricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)
 ```
 
 ### Air and wind vertical profile parameters
 ```
 RUF <- 0.004 # Roughness height (m), , e.g. sand is 0.05, grass may be 2.0, current allowed range: 0.001 (snow) - 2.0 cm.
-Refhyt <- 200 # Reference height (cm), reference height at which air temperature, wind speed and relative humidity input data are measured
-Usrhyt <- 1# local height (cm) at which air temperature, relative humidity and wind speed calculatinos will be made
+Refhyt <- 2 # Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured
+Usrhyt <- 0.01# local height (m) at which air temperature, relative humidity and wind speed calculatinos will be made
 # Next four parameters are segmented velocity profiles due to bushes, rocks etc. on the surface
 #IF NO EXPERIMENTAL WIND PROFILE DATA SET ALL THESE TO ZERO! (then roughness height is based on the parameter RUF)
 Z01 <- 0. # Top (1st) segment roughness height(m)
