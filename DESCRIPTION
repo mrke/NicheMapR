@@ -20,6 +20,9 @@ Suggests:
     rmarkdown,
     geonames,
     raster,
-    XML
+    XML,
+    readr,
+    rutils,
+    ncdf4
 VignetteBuilder: knitr
-Vignettes: properties-of-air,ectotherm-model-tutorial,microclimate-model-tutorial,microclimate-core-IO
+Vignettes: properties-of-air,ectotherm-model-tutorial,microclimate-model-tutorial,microclimate-IO,microclimate-inputs
