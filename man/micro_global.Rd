@@ -7,7 +7,7 @@
 micro_global(loc = "Madison, Wisconsin USA", timeinterval = 12, nyears = 1, soiltype = 4,
 REFL = 0.15, slope = 0, aspect = 0,
 DEP = c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.), minshade = 0, maxshade = 90,
-Usrhyt = 1, ...)
+Usrhyt = 0.01, ...)
 }
 \arguments{
 \item{loc}{Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth}
@@ -75,7 +75,7 @@ or just once for the minimum shade (0)?}\cr\cr
 
 \strong{ General additional parameters:}\cr\cr
 \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
-\code{Refhyt}{ = 120, Reference height (cm), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
+\code{Refhyt}{ = 1.2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
 \code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
 \code{Z01}{ = 0, Top (1st) segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used)}\cr\cr
 \code{Z02}{ = 0, 2nd segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
@@ -145,11 +145,11 @@ metout/shadmet variables:
 \item 1 JULDAY - day of year
 \item 2 TIME - time of day (mins)
 \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-\item 4 TAREF - air temperature (deg C) at reference height (specified by 'Refhyt', 120cm default)
+\item 4 TAREF - air temperature (deg C) at reference height (specified by 'Refhyt', 1.2m default)
 \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
-\item 6 RH  - relative humidity (\%) at reference height (specified by 'Refhyt', 120cm default)
+\item 6 RH  - relative humidity (\%) at reference height (specified by 'Refhyt', 1.2m default)
 \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
-\item 8 VREF - wind speed (m/s) at reference height (specified by 'Refhyt', 120cm default)
+\item 8 VREF - wind speed (m/s) at reference height (specified by 'Refhyt', 1.2cm default)
 \item 9 SNOWMELT - snowmelt (mm)
 \item 10 POOLDEP - water pooling on surface (mm)
 \item 11 PCTWET - soil surface wetness (\%)
