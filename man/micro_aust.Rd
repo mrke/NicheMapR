@@ -6,7 +6,7 @@
 \usage{
 micro_aust(loc = "Melbourne, Australia", timeinterval = 365, ystart = 1990, yfinish = 1990, soiltype = 4,
 REFL = 0.15, slope = 0, aspect = 0, DEP = c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.), minshade = 0, maxshade = 90,
-Usrhyt = 1, ...)
+Usrhyt = 0.01, ...)
 }
 \arguments{
 \item{loc}{Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth}
@@ -31,7 +31,7 @@ Usrhyt = 1, ...)
 
 \item{maxshade}{Maximum shade level to us (\%)}
 
-\item{Usrhyt}{Local height (cm) at which air temperature, wind speed and humidity are to be computed for organism of interest}
+\item{Usrhyt}{Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest}
 
 \item{...}{Additional arguments, see Details}
 }

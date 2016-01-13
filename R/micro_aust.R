@@ -12,7 +12,7 @@
 #' @param soiltype Soil type: Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, user-defined = 12, based on Campbell and Norman 1990 Table 9.1.
 #' @param minshade Minimum shade level to use (\%)
 #' @param maxshade Maximum shade level to us (\%)
-#' @param Usrhyt Local height (cm) at which air temperature, wind speed and humidity are to be computed for organism of interest
+#' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
 #' @param ... Additional arguments, see Details
 #' @return metout The above ground micrometeorological conditions under the minimum specified shade
 #' @return shadmet The above ground micrometeorological conditions under the maximum specified shade
@@ -26,7 +26,7 @@
 #' @return shadhumid Hourly predictions of the soil humidity under the maximum specified shade
 #' @usage micro_aust(loc = "Melbourne, Australia", timeinterval = 365, ystart = 1990, yfinish = 1990, soiltype = 4,
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.), minshade = 0, maxshade = 90,
-#' Usrhyt = 1, ...)
+#' Usrhyt = 0.01, ...)
 #' @export
 #' @details
 #'
@@ -48,8 +48,8 @@
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
-#' \code{Refhyt}{ = 120, Reference height (cm), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
-#' \code{RUF}{ = 0.004, Roughness height (m), e.g. sand is 0.05, grass may be 2.0, current allowed range: 0.001 (snow) - 2.0 cm.}\cr\cr
+#' \code{Refhyt}{ = 1.2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
+#' \code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
 #' \code{Z01}{ = 0, Top (1st) segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used)}\cr\cr
 #' \code{Z02}{ = 0, 2nd segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
 #' \code{ZH1}{ = 0, Top of (1st) segment, height above surface(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
@@ -242,7 +242,7 @@
 micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart=1990,yfinish=1990,
   nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,
   DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.),
-  minshade=0,maxshade=90,Refhyt=120,Usrhyt=1,Z01=0,Z02=0,ZH1=0,ZH2=0,
+  minshade=0,maxshade=90,Refhyt=1.2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
   runshade=1,rungads=1,write_input=0,writecsv=0,manualshade=1,
   soildata=1,terrain=0,dailywind=1,adiab_cor=1,warm=0,spatial="c:/Australian Environment/",vlsci=0,
   ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2560,SpecHeat=870,BulkDensity=1300,
@@ -270,7 +270,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
 # DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
 # minshade=0
 # maxshade=90
-# Usrhyt=1
+# Usrhyt=.01
 # runshade=1
 # rungads=1
 # write_input=0
@@ -459,12 +459,12 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
         Please use a larger height above the surface.", '\n')
     errors<-1
   }
-  if(Usrhyt<0.5 | Usrhyt>Refhyt){
+  if(Usrhyt<0.005 | Usrhyt>Refhyt){
     cat("ERROR: Local height (Usrhyt) is out of bounds.
-        Please enter a correct value (0.05 - Refhyt).", '\n')
+        Please enter a correct value (0.005 - Refhyt).", '\n')
     errors<-1
   }
-  if(CMH2O<0.5 | CMH2O>Refhyt){
+  if(CMH2O<0.5 | CMH2O>Refhyt*100){
     cat("ERROR: Preciptable water in air column (CMH2O) is out of bounds.
         Please enter a correct value (0.1 - Refhyt).", '\n')
     errors<-1

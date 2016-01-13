@@ -32,7 +32,7 @@
 #' @usage micro_global(loc = "Madison, Wisconsin USA", timeinterval = 12, nyears = 1, soiltype = 4,
 #' REFL = 0.15, slope = 0, aspect = 0,
 #' DEP = c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.), minshade = 0, maxshade = 90,
-#' Usrhyt = 1, ...)
+#' Usrhyt = 0.01, ...)
 #' @export
 #' @details
 #'
@@ -46,7 +46,7 @@
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
-#' \code{Refhyt}{ = 120, Reference height (cm), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
+#' \code{Refhyt}{ = 1.2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
 #' \code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
 #' \code{Z01}{ = 0, Top (1st) segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used)}\cr\cr
 #' \code{Z02}{ = 0, 2nd segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
@@ -116,11 +116,11 @@
 #' \item 1 JULDAY - day of year
 #' \item 2 TIME - time of day (mins)
 #' \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-#' \item 4 TAREF - air temperature (deg C) at reference height (specified by 'Refhyt', 120cm default)
+#' \item 4 TAREF - air temperature (deg C) at reference height (specified by 'Refhyt', 1.2m default)
 #' \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
-#' \item 6 RH  - relative humidity (\%) at reference height (specified by 'Refhyt', 120cm default)
+#' \item 6 RH  - relative humidity (\%) at reference height (specified by 'Refhyt', 1.2m default)
 #' \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
-#' \item 8 VREF - wind speed (m/s) at reference height (specified by 'Refhyt', 120cm default)
+#' \item 8 VREF - wind speed (m/s) at reference height (specified by 'Refhyt', 1.2cm default)
 #' \item 9 SNOWMELT - snowmelt (mm)
 #' \item 10 POOLDEP - water pooling on surface (mm)
 #' \item 11 PCTWET - soil surface wetness (\%)
@@ -238,7 +238,7 @@
 micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,soiltype=4,
   REFL=0.15,slope=0,aspect=0,
   DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.),
-  minshade=0,maxshade=90,Refhyt=120, Usrhyt=1, Z01=0, Z02=0, ZH1=0, ZH2=0,
+  minshade=0,maxshade=90,Refhyt=1.2, Usrhyt=0.01, Z01=0, Z02=0, ZH1=0, ZH2=0,
   runshade=1,rungads=1,write_input=0,writecsv=0,
   ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2560,SpecHeat=870,BulkDensity=1300,
   PCTWET=0,cap=1,CMH2O=1.,hori=rep(0,24),
@@ -385,14 +385,14 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
         Please use a larger height above the surface.", '\n')
     errors<-1
   }
-  if(Usrhyt<0.5 | Usrhyt>Refhyt){
+  if(Usrhyt<0.005 | Usrhyt>Refhyt){
     cat("ERROR: Reference height (Usrhyt) is out of bounds.
-        Please enter a correct value (0.05 - Refhyt).", '\n')
+        Please enter a correct value (0.005 - Refhyt).", '\n')
     errors<-1
   }
-  if(CMH2O<0.5 | CMH2O>Refhyt){
+  if(CMH2O<0.5 | CMH2O>Refhyt*100){
     cat("ERROR: Preciptable water in air column (CMH2O) is out of bounds.
-        Please enter a correct value (0.1 - Refhyt).", '\n')
+        Please enter a correct value (0.1 - Refhyt*100).", '\n')
     errors<-1
   }
   if(max(TIMAXS)>24 | min(TIMAXS)<0){
