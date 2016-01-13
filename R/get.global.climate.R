@@ -14,7 +14,7 @@
 #' @usage get.global.climate(folder)
 #' @export
 get.global.climate <- function(folder="c:/globalclimate"){
-ANSWER<-readline(prompt = "This function downloads and extracts 0.93 GB of data, type 'y' if you want to continue: ")
+ANSWER<-readline(prompt = "This function downloads and extracts 0.5 GB of data, type 'y' if you want to continue: ")
 if(substr(ANSWER, 1, 1) == "y"){
   if(dir.exists(folder)==FALSE){
     dir.create(folder)
