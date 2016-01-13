@@ -10,7 +10,7 @@
 
 <meta name="author" content="C. Richard Tracy, William R. Welch, Berry Pinshow, Michael R. Kearney and Warren P. Porter" />
 
-<meta name="date" content="2016-01-13" />
+<meta name="date" content="2016-01-14" />
 
 <title>Properties of Air: A Manual for Use in Biophysical Ecology, 5th Edition</title>
 
@@ -72,7 +72,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="header">
 <h1 class="title">Properties of Air: A Manual for Use in Biophysical Ecology, 5th Edition</h1>
 <h4 class="author"><em>C. Richard Tracy, William R. Welch, Berry Pinshow, Michael R. Kearney and Warren P. Porter</em></h4>
-<h4 class="date"><em>2016-01-13</em></h4>
+<h4 class="date"><em>2016-01-14</em></h4>
 </div>
 
 
@@ -2189,10 +2189,8 @@ emtmax=DRYAIR(db=tairs)$emtmax # compute values</code></pre>
 <p>The example below is based on code from the function build.global.climate, and adjusts relative humidity for a change in temperature, assuming the absolute humidity (vapor density) remains constant. In the global_climate dataset, this is the assumption made about absolute humidity, with the min and max relative humidity simply based on the max and min air temperatures, respectively.</p>
 <p>In the calculations below, the maximum humidity for January is calculated by obtaining the vapor pressure for the minimum relative humidity, at the maximum air temperature, then obtaining the saturation vapor pressure at the minimum air temperature and computing the relative humidity at the minimum temperature from the ratio of actual to saturation vapor pressure. The final calculated value should be identical to the maximum relative humidity surface in the global_climate dataset.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(NicheMapR) <span class="co"># load the NicheMapR package</span>
-<span class="kw">library</span>(raster) <span class="co"># package for working with rasters</span></code></pre></div>
-<pre><code>## Warning: package 'raster' was built under R version 3.2.3</code></pre>
-<pre><code>## Loading required package: sp</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ncdf4) <span class="co"># package for dealing with netcdf files (a kind of layered raster)</span>
+<span class="kw">library</span>(raster) <span class="co"># package for working with rasters</span>
+<span class="kw">library</span>(ncdf4) <span class="co"># package for dealing with netcdf files (a kind of layered raster)</span>
 global_climate&lt;-<span class="kw">brick</span>(<span class="kw">paste</span>(<span class="st">&quot;c:/globalclimate/global_climate.nc&quot;</span>,<span class="dt">sep=</span><span class="st">&quot;&quot;</span>)) <span class="co"># read the global_climate dataset</span>
 Tair_min_january=global_climate[[<span class="dv">38</span>]]/<span class="dv">10</span> <span class="co"># 38th layer of global_climate is min January air temperature*10</span>
 Tair_max_january=global_climate[[<span class="dv">50</span>]]/<span class="dv">10</span> <span class="co"># 50th layer of global_climate is max January air temperature*10</span>
