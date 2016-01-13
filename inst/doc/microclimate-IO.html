@@ -10,9 +10,9 @@
 
 <meta name="author" content="Michael Kearney" />
 
-<meta name="date" content="2016-01-11" />
+<meta name="date" content="2016-01-13" />
 
-<title>Core inputs and outputs of the NicheMapR microclimate model</title>
+<title>Inputs and outputs of the NicheMapR microclimate model</title>
 
 
 
@@ -26,41 +26,40 @@
 
 
 <div id="header">
-<h1 class="title">Core inputs and outputs of the NicheMapR microclimate model</h1>
+<h1 class="title">Inputs and outputs of the NicheMapR microclimate model</h1>
 <h4 class="author"><em>Michael Kearney</em></h4>
-<h4 class="date"><em>2016-01-11</em></h4>
+<h4 class="date"><em>2016-01-13</em></h4>
 </div>
 
 
 <p>This vignette runs through the core inputs and outputs of the NicheMapR microclimate model. It provides a basis for developing scripts and functions that are customised to particular databases of climate/weather, terrain, vegetation and soil properties.</p>
-<div id="model-mode-parameters" class="section level3">
-<h3>Model mode parameters</h3>
-<pre><code>writecsv&lt;-0 # make Fortran code write output as csv files
+<div id="model-mode-settings" class="section level3">
+<h3>Model mode settings</h3>
+<pre><code>writecsv&lt;-0 # make Fortran program write output as csv files
+microdaily&lt;-0 # run microclimate model as normal, where each day is iterated 3 times starting with the initial condition of uniform soil temp at mean monthly temperature
 runshade&lt;-1 # run the model twice, once for each shade level (1) or just for the first shade level (0)?
 runmoist&lt;-1 # run soil moisture model (0=no, 1=yes)?
 snowmodel&lt;-1 # run the snow model (0=no, 1=yes)? - note that this runs slower</code></pre>
 </div>
 <div id="time-and-location-parameters" class="section level3">
 <h3>Time and location parameters</h3>
-<pre><code>longlat&lt;-c(-89.40123,43.07305) # type a long/lat here in decimal degrees
-julnum&lt;-12 # number of time intervals to generate predictions for over a year (must be 12 &lt;= x &lt;=365)
+<pre><code>julnum&lt;-12 # number of time intervals to generate predictions for over a year (must be 12 &lt;= x &lt;=365)
 julday&lt;-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
 idayst &lt;- 1 # start month
-ida&lt;-julnum # end month
-microdaily&lt;-0 # run microclimate model as normal, where each day is iterated 3 times starting with the initial condition of uniform soil temp at mean monthly temperature
-HEMIS &lt;- ifelse(longlat[2]&lt;0,2.,1.) # chose hemisphere based on latitude
-ALAT &lt;- abs(trunc(longlat[2])) # degrees latitude
-AMINUT &lt;- (abs(longlat[2])-ALAT)*60 # minutes latitude
-ALONG &lt;- abs(trunc(longlat[1])) # degrees longitude
-ALMINT &lt;- (abs(longlat[1])-ALONG)*60 # minutes latitude
-ALREF &lt;- ALONG # reference longitude for time zone
+ida&lt;-12 # end month
+HEMIS &lt;- 1 # chose hemisphere
+ALAT &lt;- 43 # degrees latitude
+AMINUT &lt;- 4.383 # minutes latitude
+ALONG &lt;- 89 # degrees longitude
+ALMINT &lt;- 24.074 # minutes latitude
+ALREF &lt;- 89 # reference longitude for time zone
 EC &lt;- 0.0167238 # Eccenricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)</code></pre>
 </div>
 <div id="air-and-wind-vertical-profile-parameters" class="section level3">
 <h3>Air and wind vertical profile parameters</h3>
 <pre><code>RUF &lt;- 0.004 # Roughness height (m), , e.g. sand is 0.05, grass may be 2.0, current allowed range: 0.001 (snow) - 2.0 cm.
-Refhyt &lt;- 200 # Reference height (cm), reference height at which air temperature, wind speed and relative humidity input data are measured
-Usrhyt &lt;- 1# local height (cm) at which air temperature, relative humidity and wind speed calculatinos will be made
+Refhyt &lt;- 2 # Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured
+Usrhyt &lt;- 0.01# local height (m) at which air temperature, relative humidity and wind speed calculatinos will be made
 # Next four parameters are segmented velocity profiles due to bushes, rocks etc. on the surface
 #IF NO EXPERIMENTAL WIND PROFILE DATA SET ALL THESE TO ZERO! (then roughness height is based on the parameter RUF)
 Z01 &lt;- 0. # Top (1st) segment roughness height(m)

@@ -725,3 +725,28 @@ grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$emtmax,type='l',ylim=c(0.7E-5,1.2E-5),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
 plotrix::boxed.labels(0, 0.9E-5,expression(paste(italic(lambda)[m]," = ",2.897*10^{3}/(italic(t)+273.15))),cex=1.25,bg="white",border=NA) 
 
+## ---- results='asis', fig.width=7, fig.height=8--------------------------
+library(NicheMapR) # load the NicheMapR package
+library(raster) # package for working with rasters
+library(ncdf4) # package for dealing with netcdf files (a kind of layered raster)
+global_climate<-brick(paste("c:/globalclimate/global_climate.nc",sep="")) # read the global_climate dataset
+Tair_min_january=global_climate[[38]]/10 # 38th layer of global_climate is min January air temperature*10
+Tair_max_january=global_climate[[50]]/10 # 50th layer of global_climate is max January air temperature*10
+RH_min_january=global_climate[[62]]/10 # 62nd layer of global_climate is max January relative humidity*10
+RH_max_january=global_climate[[74]]/10 # 74th layer of global_climate is max January relative humidity*10
+# use WETAIR.rh to get the vapor pressure for January based on min relative humidty and max air temperature
+e=WETAIR.rh(rh=RH_min_january,db=Tair_max_january)$e 
+# use the VAPPRS function to get the saturation vapor pressure for the new temperature, Tmin January
+esat=VAPPRS(Tair_min_january) 
+RH_max_january=(e/esat)*100 # compute new relative humidity for minimum air temperature
+# conditional replace of any values >100 with 100
+values(RH_max_january) <- ifelse(values(RH_max_january > 100), 100, values(RH_max_january)) 
+# now plot the results
+par(mfrow = c(3,2)) # set up for 6 plots in 2 columns
+plot(Tair_max_january,zlim=c(-40,50),main="Max Air Temperature, January") # plot the January max air temperature
+plot(RH_min_january,zlim=c(0,100),main="Min Relative Humidity, January") # plot the January min relative humidity
+plot(e, main="vapor pressure, January")
+plot(esat, main="sat. vapor pressure at Tmin")
+plot(Tair_min_january,zlim=c(-40,50),main="Min Air Temperature, January") # plot the January max air temperature
+plot(RH_max_january,zlim=c(0,100),main="Max Relative Humidity, January") # plot the January min relative humidity
+
