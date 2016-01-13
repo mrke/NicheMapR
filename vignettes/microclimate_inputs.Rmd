@@ -21,11 +21,11 @@ knitr::opts_chunk$set(
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
-writecsv                  | *-*               | 0 (off) or 1 (on) | make Fortran program write output as csv files  
-microdaily                | *-*               | 0 (off) or 1 (on) | run in daily mode (initial conditions from previous day)
-runshade                  | *-*               | 0 (off) or 1 (on) | run the model twice, once for each shade level
-runmoist                  | *-*               | 0 (off) or 1 (on) | run soil moisture model
-snowmodel                 | *-*               | 0 (off) or 1 (on) | run the snow model
+writecsv                  | -                 | 0 (off) or 1 (on) | make Fortran program write output as csv files  
+microdaily                | -                 | 0 (off) or 1 (on) | run in daily mode (initial conditions from previous day)
+runshade                  | -                 | 0 (off) or 1 (on) | run the model twice, once for each shade level
+runmoist                  | -                 | 0 (off) or 1 (on) | run soil moisture model
+snowmodel                 | -                 | 0 (off) or 1 (on) | run the snow model
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
@@ -35,17 +35,17 @@ cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
-julnum                    | *days*            | positive integer  | number of days to run the model
-julday                    | *day of year*     | 1-365             | vector of julian days (length must equal julnum)
-idayst                    | *-*               | 1-julnum          | start day (usually 1)
-ida                       | *-*               | 1-julnum          | end day (usually value of julnum)
-HEMIS                     | *-*               | 1 (N) or 2 (S)    | hemisphere to run
-ALAT                      | *degrees*         | 0-90              | latitude (degrees)
-AMINUT                    | *dec. minutes*    | 0-60              | latitude (minutes)
-ALONG                     | *degrees*         | 0-180             | longitude (degrees)
-ALMINT                    | *dec. minutes*    | 0-60              | longitude (minutes)
-ALREF                     | *degrees*         | 0-180             | reference longitude (degrees) for time zone
-EC                        | *-*               | 0.0034 to 0.058   | eccenricity of the earth's orbit (presently 0.0167238)
+julnum                    | days              | positive integer  | number of days to run the model
+julday                    | day of year       | 1-365             | vector of julian days (length must equal julnum)
+idayst                    | -                 | 1-julnum          | start day (usually 1)
+ida                       | -                 | 1-julnum          | end day (usually value of julnum)
+HEMIS                     | -                 | 1 (N) or 2 (S)    | hemisphere to run
+ALAT                      | degrees           | 0-90              | latitude (degrees)
+AMINUT                    | dec. minutes      | 0-60              | latitude (minutes)
+ALONG                     | degrees           | 0-180             | longitude (degrees)
+ALMINT                    | dec. minutes      | 0-60              | longitude (minutes)
+ALREF                     | degrees           | 0-180             | reference longitude (degrees) for time zone
+EC                        | -                 | 0.0034 to 0.058   | eccenricity of the earth's orbit (presently 0.0167238)
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
@@ -55,13 +55,126 @@ cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
-RUF                       | *m*               | 0.01-200          | roughness height
-Refhyt                    | *m*               | 0.50-10           | reference measurement height for air temp, wind speed and humidity input data
-Usrhyt                    | *m*               | > 0.005, < Refhyt | local height at which to compute air temp, wind speed and humidity
-Z01                       | *m*               | > Z02, < ZH2      | end day (usually value of julnum)
-Z02                       | *m*               | > RUF, < Z01      | hemisphere to run
-ZH1                       | *m*               | > ZH2, < Refhyt   | experimental reference height 2 (top)
-ZH2                       | *m*               | > RUF, < ZH1      | latitude (minutes)
+RUF                       | m                 | 0.01-200          | roughness height
+Refhyt                    | m                 | 0.50-10           | reference measurement height for air temp, wind speed and humidity input data
+Usrhyt                    | m                 | > 0.005, < Refhyt | local height at which to compute air temp, wind speed and humidity 
+Z01                       | m                 | 0 or (> Z02, < ZH2)   | 1st segment, roughness height (0 if no experimental data)
+Z02                       | m                 | 0 or (> RUF, < Z01)   | 2nd segment, roughness height (0 if no experimental data)
+ZH1                       | m                 | 0 or (> ZH2, < Refhyt)| 1st segment, height above surface (0 if no experimental data)
+ZH2                       | m                 | 0 or (> RUF, < ZH1)   | 2nd segment, height above surface (0 if no experimental data)
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
+
+### Radiation-related parameters
+```{r table4, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+tabl <- "
+*Name*                    | *Units *          |	*Allowed Range*   |	*Description*
+------------------------- | ----------------- | ----------------- | --------------
+SLES                      | -                 | 0-1               | substrate longwave IR emissivity; vector of length = julnum
+REFLS                      | -                 | 0-1               | substrate solar reflectivity; vector of length = julnum
+CMH2O                     | cm                | 0.1-2             | precipitable cm H$_2$O in air column
+TAI                       | -                 | 1-julnum          | aerosol optical extinction coefficients, vector of length 111 for wavelengths between 290 and 4000 nm$^1$ 
+"
+cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
+```
+
+$^{1}$Wavelenghth increments are: 290,295,300,305,310,315,320,330,340,350,360,370,380,390,400,420,440,460,480,500,
+520,540,560,580,600,620,640,660,680,700,720,740,760,780,800,820,840,860,880,900,920,940,960,980,1000,1020,1080,1100,
+1120,1140,1160,1180,1200,1220,1240,1260,1280,1300,1320,1380,1400,1420,1440,1460,1480,1500,1540,1580,1600,1620,1640,
+1660,1700,1720,1780,1800,1860,1900,1950,2000,2020,2050,2100,2120,2150,2200,2260,2300,2320,2350,2380,2400,2420,2450,
+2490,2500,2600,2700,2800,2900,3000,3100,3200,3300,3400,3500,3600,3700,3800,3900,4000
+
+### Terrain and shading parameters
+```{r table5, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+tabl <- "
+*Name*                    | *Units *          |	*Allowed Range*   |	*Description*
+------------------------- | ----------------- | ----------------- | --------------
+ALTT                      | m                 | 0-10,000          | altitude
+slope                     | decimal degrees   | 0-90              | slope
+azmuth                    | decimal degrees   | 0-360             | aspect (0 is north)
+hori                      | decimal degrees   | 0-90              | horizon angle 
+VIEWF                     | -                 | 0-1               | view factor to sky (fraction of sky obscured by terrain) 
+MINSHADES                 | %                 | 0-100             | minimum shade; vector of length = julnum 
+MAXSHADES                 | %                 | 0-100             | maximum shade (must be greater than minimum shade); vector of length = julnum 
+PCTWETS                   | %                 | 0-100             | percentage of substrate unit area that is wet (drives evaporation - set internally when runmoist==1); vector of length = julnum 
+"
+cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
+```
+
+### Soil profile settings
+```{r table6, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+tabl <- "
+*Name*                    | *Units *          |	*Allowed Range*   |	*Description*
+------------------------- | ----------------- | ----------------- | --------------
+DEP                       | cm                | 0-1000            | vector of 10 depths acting as nodes for soil heat budget calculations (must start at 0 and nodes must be closely spaced near the surface$^1$)
+ERR                       | -                 | >0                | integrator error for soil heat budget solution (typically 1.5-2)
+tannul                    | &deg;C            | -80 - +60         | annual mean temperature
+soilinit                  | &deg;C            | -80 - +60         | initial soil temperature profile; vector of length 10, corresponding to depths specified in variable DEP
+"
+cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
+```
+
+$^{1}$Typical depth profile c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200)
+
+### Time varying environmental data
+```{r table7, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+tabl <- "
+*Name*                    | *Units *          |	*Allowed Range*   |	*Description*
+------------------------- | ----------------- | ----------------- | --------------
+TIMINS                    | h                 | 0-23              | time of minima for air temp, wind, humidity and cloud cover; vector of 4 integers$^1$
+TIMAXS                    | h                 | 0-23              | time of maxima for air temp, wind, humidity and cloud cover; vector of 4 integers$^2$
+TMINN                     | &deg;C            | -80 - +60         | minimum air temperature (at reference height, Refhyt); vector of length = julnum
+TMAXX                     | &deg;C            | -80 - +60         | maximum air temperature (at reference height, Refhyt); vector of length = julnum
+RHMINN                    | %                 | 0-100             | minimum relative humidity (at reference height, Refhyt); vector of length = julnum
+RHMAXX                    | %                 | 0-100             | maximum relative humidity (at reference height, Refhyt); vector of length = julnum
+WNMINN                    | m s$^{-1}$        | 0-100             | minimum wind speed (at reference height, Refhyt); vector of length = julnum
+WNMAXX                    | m s$^{-1}$        | 0-100             | maximum wind speed (at reference height, Refhyt); vector of length = julnum
+CCMINN                    | %                 | 0-100             | minimum cloud cover; vector of length = julnum
+CCMAXX                    | %                 | 0-100             | maximum cloud cover; vector of length = julnum
+RAINFALL                  | mm                | 0-2000            | daily total rainfall; vector of length = julnum
+tannulrun                 | &deg;C            | -80 - +60         | daily deep soil temperature; vector of length = julnum
+moists                    | decimal %         | 0-1               | predefined soil daily moisture profile through time; matrix of 10 rows (depths) and julnum columns
+"
+cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
+```
+
+$^{1}$Air temp & wind mins relative to sunrise, humidity and cloud cover mins relative to solar noon - typical TIMINS vector c(0, 0, 1, 1)  
+$^{2}$Air temp & wind maxs relative to solar noon, humidity and cloud cover maxs relative to sunrise - typical TIMAXS vector c(1, 1, 0, 0)
+
+### Soil properties
+```{r table8, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+tabl <- "
+*Name*                    | *Units *             |	*Allowed Range*   |	*Description*
+------------------------- | -------------------- | ------------------ | --------------
+Numtyps                   | -                    | 1-10               | number of soil types
+Nodes                     | -                    | 0-360              | aspect (0 is north)
+soilprops[numtyps,1]      | Mg m$^{-3}$          | 0-90               | bulk density 
+soilprops[numtyps,2]      | m$^{3}$ m$^{-3}$     | 0-90               | volumetric water content at saturation (0.1 bar matric potential)  
+soilprops[numtyps,3]      | %                    | 0-90              | clay content 
+soilprops[numtyps,4]      | W m$^{-1}$ K$^{-1}$  | 0-90              | thermal conductivity  
+soilprops[numtyps,5]      | J kg$^{-1}$ K$^{-1}$ | 0-90              | specific heat capacity 
+soilprops[numtyps,6]      | Mg m$^{-3}$          | 0-90              | mineral density 
+"
+cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
+```
+
+### Soil moisture parameters
+```{r table9, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+tabl <- "
+*Name*                    | *Units *             |	*Allowed Range*   |	*Description*
+------------------------- | -------------------- | ----------------- | --------------
+PE                        | -                    | 0-10,000          | altitude
+KS                        | -                    | 0-90              | slope
+BB                        | -                    | 0-360             | aspect (0 is north)
+BD                        | Mg m$^{-3}$          | 0-90              | bulk density 
+L                         | m$^{3}$ m$^{-3}$     | 0-90              | volumetric water content at saturation (0.1 bar matric potential) 
+LAI                       | %                    | 0-90              | clay content 
+rainmult                  | W m$^{-1}$ K$^{-1}$  | 0-90              | thermal conductivity  
+maxpool                   | J kg$^{-1}$ K$^{-1}$ | 0-90              | specific heat capacity 
+evenrain                  | Mg m$^{-3}$          | 0-90              | mineral density 
+SoilMoist_Init            | Mg m$^{-3}$          | 0-90              | mineral density 
+"
+cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
+```
+
