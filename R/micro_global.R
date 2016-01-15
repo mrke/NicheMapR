@@ -475,7 +475,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       x <- t(as.matrix(as.numeric(c(longlat[1,1],longlat[1,2]))))
     }else{
       if(is.numeric(loc)==FALSE){ # might not be quite right format, try correcting
-        loc=c(loc[1],loc[2])
+        loc=cbind(as.numeric(loc[1]),as.numeric(loc[2]))
       }
       longlat <- loc
       x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
