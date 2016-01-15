@@ -460,7 +460,8 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
 
     ################## location and terrain #################################
 
-    if(is.numeric(loc)==FALSE){ # use geocode to get location from site name via googlemaps
+    if(is.numeric(loc)==FALSE & length(loc)==1){
+      # use geocode to get location from site name via googlemaps
       if (!requireNamespace("dismo", quietly = TRUE)) {
         stop("dismo needed for the place name geocode function to work. Please install it.",
           call. = FALSE)
@@ -473,6 +474,9 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       if(nrow(longlat>1)){longlat<-longlat[1,]}
       x <- t(as.matrix(as.numeric(c(longlat[1,1],longlat[1,2]))))
     }else{
+      if(is.numeric(loc)==FALSE){ # might not be quite right format, try correcting
+        loc=c(loc[1],loc[2])
+      }
       longlat <- loc
       x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
     }
