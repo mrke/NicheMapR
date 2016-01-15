@@ -107,7 +107,7 @@
 #' Tbs=seq(25,35,2.5) # sequence of body temperatures to use
 #'
 #' for(j in 1:length(Tbs)){
-#' debout<-matrix(data = 0, nrow = n, 25)
+#' debout<-matrix(data = 0, nrow = n, ncol=26)
 #' deb.names<-c("E_pres","V_pres","E_H_pres","q_pres","hs_pres","surviv_pres","Es_pres","cumrepro","cumbatch","p_B_past","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","wetmass","gutfreemass","gutfull","fecundity","clutches")
 #' colnames(debout)<-deb.names
 #'
@@ -171,13 +171,13 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
   p_MT = p_M*Tcorr
   k_Mdot = p_MT/E_G
   k_JT = k_J*Tcorr
-  p_Am = p_MT*z/kap
+  p_AmT = p_MT*z/kap
   vT = v*Tcorr
-  E_m = p_Am/vT
+  E_m = p_AmT/vT
   F_mT = F_m*Tcorr
   g = E_G/(kap*E_m)
   E_scaled=E_pres/E_m
-  V_max=(kap*p_Am/p_MT)^(3.)
+  V_max=(kap*p_AmT/p_MT)^(3.)
   h_aT = h_a*Tcorr
   L_T = 0.
   L_pres = V_pres^(1./3.)
@@ -221,13 +221,13 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
     #use embryo equation for scaled reserve, U_E, from Kooijman 2009 eq. 1
     Sc = L_pres^2*(g*E_scaled)/(g+E_scaled)*(1+((k_Mdot*L_pres)/vT))
     dUEdt = -1*Sc
-    E_temp=((E_pres*V_pres/p_Am)+dUEdt)*p_Am/(V_pres+dVdt)
+    E_temp=((E_pres*V_pres/p_AmT)+dUEdt)*p_AmT/(V_pres+dVdt)
     dEdt=E_temp-E_pres
   }else{
     if(Es_pres>0.0000001*E_sm*V_pres){
-      dEdt = (p_Am*f-E_pres*vT)/L_pres
+      dEdt = (p_AmT*f-E_pres*vT)/L_pres
     }else{
-      dEdt = (p_Am*0-E_pres*vT)/L_pres
+      dEdt = (p_AmT*0-E_pres*vT)/L_pres
     }
   }
   E = E_pres+dEdt
@@ -239,7 +239,7 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
   p_M = p_MT*V_pres
   p_J = k_JT*E_H_pres
   if(Es_pres>0.0000001*E_sm*V_pres){
-    p_A = V_pres^(2./3.)*p_Am*f
+    p_A = V_pres^(2./3.)*p_AmT*f
   }else{
     p_A = 0
   }
@@ -251,9 +251,9 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
   if(E_H_pres<E_Hp){
     if(E_H_pres<=E_Hb){
       #use embryo equation for scaled maturity, U_H, from Kooijman 2009 eq. 3
-      U_H_pres=E_H_pres/p_Am
+      U_H_pres=E_H_pres/p_AmT
       dUHdt=(1-kap)*Sc-k_JT*U_H_pres
-      dE_Hdt=dUHdt*p_Am
+      dE_Hdt=dUHdt*p_AmT
     }else{
       dE_Hdt = (1-kap)*p_C-p_J
     }
@@ -406,12 +406,12 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
   if(E_H_pres>E_Hb){
     if(acthr > 0){
       # Regulates X dynamics
-      dEsdt = F_mT*(X/(K+X))*V_pres^(2./3.)*f-1.*(p_Am/kap_X)*V_pres^(2./3.)
+      dEsdt = F_mT*(X/(K+X))*V_pres^(2./3.)*f-1.*(p_AmT/kap_X)*V_pres^(2./3.)
     }else{
-      dEsdt = -1.*(p_Am/kap_X)*V_pres^(2./3.)
+      dEsdt = -1.*(p_AmT/kap_X)*V_pres^(2./3.)
     }
   }else{
-    dEsdt = -1.*(p_Am/kap_X)*V_pres^(2./3.)
+    dEsdt = -1.*(p_AmT/kap_X)*V_pres^(2./3.)
   }
 
   if(V_pres==0){
