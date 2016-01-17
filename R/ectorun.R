@@ -31,44 +31,44 @@
 ectorun <- function(ecto) {
 
   dim<-ecto$dim
- if(is.loaded("ectotherm", "ECTOTHERM", type = "FORTRAN")==FALSE){
-   dyn.load(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/ectotherm.dll',sep=""))
-  a <- .Fortran("ectotherm",
-    as.integer(ecto$dim),
-    as.double(ecto$ectoinput),
-    as.double(ecto$metout),
-    as.double(ecto$shadmet),
-    as.double(ecto$soil),
-    as.double(ecto$shadsoil),
-    as.double(ecto$soilmoist),
-    as.double(ecto$shadmoist),
-    as.double(ecto$soilpot),
-    as.double(ecto$shadpot),
-    as.double(ecto$humid),
-    as.double(ecto$shadhumid),
-    as.double(ecto$DEP),
-    as.double(ecto$RAINFALL),
-    as.double(ecto$debmod),
-    as.double(ecto$deblast),
-    as.double(ecto$foodwaters),
-    as.double(ecto$foodlevels),
-    as.double(ecto$wetlandTemps),
-    as.double(ecto$wetlandDepths),
-    as.double(ecto$arrhenius),
-    as.double(ecto$thermal_stages),
-    as.double(ecto$behav_stages),
-    as.double(ecto$water_stages),
-    as.double(ecto$maxshades),
-    as.double(ecto$S_instar),
-    environ=matrix(data = 0., nrow = dim*24, ncol = 22),
-    enbal=matrix(data = 0., nrow = dim*24, ncol = 13),
-    masbal=matrix(data = 0., nrow = dim*24, ncol = 19),
-    debout=matrix(data = 0., nrow = dim*24, ncol = 21),
-    yearout=matrix(data = 0., nrow = 1, ncol = 20),
-    yearsout=matrix(data = 0., nrow = ceiling(dim/365), ncol = 45),PACKAGE = "ectotherm")
-
-dyn.unload(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/ectotherm.dll',sep=""))
- }else{
+# if(is.loaded("ectotherm", "ECTOTHERM", type = "FORTRAN")==FALSE){
+#   dyn.load(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/ectotherm.dll',sep=""))
+#   a <- .Fortran("ectotherm",
+#     as.integer(ecto$dim),
+#     as.double(ecto$ectoinput),
+#     as.double(ecto$metout),
+#     as.double(ecto$shadmet),
+#     as.double(ecto$soil),
+#     as.double(ecto$shadsoil),
+#     as.double(ecto$soilmoist),
+#     as.double(ecto$shadmoist),
+#     as.double(ecto$soilpot),
+#     as.double(ecto$shadpot),
+#     as.double(ecto$humid),
+#     as.double(ecto$shadhumid),
+#     as.double(ecto$DEP),
+#     as.double(ecto$RAINFALL),
+#     as.double(ecto$debmod),
+#     as.double(ecto$deblast),
+#     as.double(ecto$foodwaters),
+#     as.double(ecto$foodlevels),
+#     as.double(ecto$wetlandTemps),
+#     as.double(ecto$wetlandDepths),
+#     as.double(ecto$arrhenius),
+#     as.double(ecto$thermal_stages),
+#     as.double(ecto$behav_stages),
+#     as.double(ecto$water_stages),
+#     as.double(ecto$maxshades),
+#     as.double(ecto$S_instar),
+#     environ=matrix(data = 0., nrow = dim*24, ncol = 22),
+#     enbal=matrix(data = 0., nrow = dim*24, ncol = 13),
+#     masbal=matrix(data = 0., nrow = dim*24, ncol = 19),
+#     debout=matrix(data = 0., nrow = dim*24, ncol = 21),
+#     yearout=matrix(data = 0., nrow = 1, ncol = 20),
+#     yearsout=matrix(data = 0., nrow = ceiling(dim/365), ncol = 45),PACKAGE = "ectotherm")
+#
+# dyn.unload(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/ectotherm.dll',sep=""))
+#  }else{
 
   a <- .Fortran("ectotherm",
     as.integer(ecto$dim),
@@ -104,8 +104,8 @@ dyn.unload(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/ectotherm.dll',se
     yearout=matrix(data = 0., nrow = 1, ncol = 20),
     yearsout=matrix(data = 0., nrow = ceiling(dim/365), ncol = 45),PACKAGE = "ECTOTHERM")
     # need to load and unload the microclimate dll or else it crashes second time round - probably due to memory leak
-  library.dynam.unload("ECTOTHERM", path.package("NicheMapR"))
-  library.dynam("ECTOTHERM", "NicheMapR", lib.loc = .libPaths()[1])
+#  library.dynam.unload("ECTOTHERM", path.package("NicheMapR"))
+#  library.dynam("ECTOTHERM", "NicheMapR", lib.loc = .libPaths()[1])
 }
   environ <- matrix(data = 0., nrow = 24*dim, ncol = 22)
   enbal <- matrix(data = 0., nrow = 24*dim, ncol = 13)
