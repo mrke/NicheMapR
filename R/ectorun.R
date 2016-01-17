@@ -106,7 +106,7 @@ ectorun <- function(ecto) {
     # need to load and unload the microclimate dll or else it crashes second time round - probably due to memory leak
 #  library.dynam.unload("ECTOTHERM", path.package("NicheMapR"))
 #  library.dynam("ECTOTHERM", "NicheMapR", lib.loc = .libPaths()[1])
-}
+#}
   environ <- matrix(data = 0., nrow = 24*dim, ncol = 22)
   enbal <- matrix(data = 0., nrow = 24*dim, ncol = 13)
   masbal <- matrix(data = 0., nrow = 24*dim, ncol = 19)
