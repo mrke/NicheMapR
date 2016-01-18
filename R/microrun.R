@@ -16,64 +16,6 @@
 #' @export
 microclimate <- function(micro) {
   julnum<-micro$microinput[1]
-
-# hacky workaround for problem that microclimate DLL loads as 'microclimate' when building the vignettes
-# so have to check if this is happening and run the first block of the if statement below, otherwise
-# the vignette build isn't happening, the model is just being run under normal cirumstances, so the
-# second block is run. Presumably this would be avoided if source code was part of the package rather
-# than working with foreign DLLs
- if(is.loaded("microclimate", "MICROCLIMATE", type = "FORTRAN")==FALSE){
-   dyn.load(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/microclimate.dll',sep=""))
-  a <- .Fortran("microclimate",
-    as.integer(julnum),
-    as.double(micro$microinput),
-    as.double(micro$julday),
-    as.double(micro$SLES),
-    as.double(micro$DEP),
-    as.double(micro$MAXSHADES),
-    as.double(micro$MINSHADES),
-    as.double(micro$Nodes),
-    as.double(micro$TIMAXS),
-    as.double(micro$TIMINS),
-    as.double(micro$RHMAXX),
-    as.double(micro$RHMINN),
-    as.double(micro$CCMAXX),
-    as.double(micro$CCMINN),
-    as.double(micro$WNMAXX),
-    as.double(micro$WNMINN),
-    as.double(micro$TMAXX),
-    as.double(micro$TMINN),
-    as.double(micro$REFLS),
-    as.double(micro$PCTWET),
-    as.double(micro$soilinit),
-    as.double(micro$hori),
-    as.double(micro$TAI),
-    as.double(micro$soilprop),
-    as.double(micro$moists),
-    as.double(micro$RAINFALL),
-    as.double(micro$tannulrun),
-    as.double(micro$tides),
-    as.double(micro$PE),
-    as.double(micro$KS),
-    as.double(micro$BB),
-    as.double(micro$BD),
-    as.double(micro$L),
-    as.double(micro$LAI),
-
-    metout=matrix(data = 0., nrow = 24*julnum, ncol = 18),
-    soil=matrix(data = 0., nrow = 24*julnum, ncol = 12),
-    shadmet=matrix(data = 0., nrow = 24*julnum, ncol = 18),
-    shadsoil=matrix(data = 0., nrow = 24*julnum, ncol = 12),
-    soilmoist=matrix(data = 0., nrow = 24*julnum, ncol = 12),
-    shadmoist=matrix(data = 0., nrow = 24*julnum, ncol = 12),
-    humid=matrix(data = 0., nrow = 24*julnum, ncol = 12),
-    shadhumid=matrix(data = 0., nrow = 24*julnum, ncol = 12),
-    soilpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),
-    shadpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),PACKAGE = "microclimate")
-
-dyn.unload(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/microclimate.dll',sep=""))
- }else{
-
   a <- .Fortran("microclimate",
     as.integer(julnum),
     as.double(micro$microinput),
@@ -121,13 +63,6 @@ dyn.unload(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/microclimate.dll'
     soilpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),
     shadpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),PACKAGE = "MICROCLIMATE")
 
-  # need to load and unload the microclimate dll or else it crashes second time round - probably due to memory leak
-#if(is.loaded("microclimate", "MICROCLIMATE", type = "FORTRAN")){
-    library.dynam.unload("MICROCLIMATE", path.package("NicheMapR"))
-#}
-  library.dynam("MICROCLIMATE", "NicheMapR", lib.loc = .libPaths()[1])
-#dyn.unload(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/microclimate.dll',sep=""))
- }
   metout <- matrix(data = 0., nrow = 24*julnum, ncol = 18)
   shadmet <- matrix(data = 0., nrow = 24*julnum, ncol = 18)
   soil <- matrix(data = 0., nrow = 24*julnum, ncol = 12)
