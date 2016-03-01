@@ -7,7 +7,7 @@ with(as.list(c(indata, y)), {
     Trad<-Tradf(t)
     Zen<-Zenf(t)
     Zenith<-Zen*pi/180 # zenith angle in radians
-    Tc<-Tc_init
+    Tc<-y
     Tskin<-Tc+0.1
     RHskin<-100 # assume saturated air near skin surface
     vel[vel<0.01]<-0.01 # don't let wind speed go too low - always some free convection
