@@ -15,16 +15,23 @@ knitr::opts_chunk$set(
 )
 ```
 
-<center>**Appendix 1. From "Kearney and Porter (2016). NicheMapR - an R package for biophysical modelling: the microclimate model. in prep"**  </center> 
-&nbsp;
-   
-<center>Michael R. Kearney$^1$ and Warren P. Porter$^2$  
-$^1$School of BioSciences, The University of Melbourne, Parkville, VIC 3010, Australia    
-$^2$Department of Zoology, The University of Wisconsin, Madison WI 53706, USA  </center> 
+
+\pagebreak
+
+# 1. Introduction
+
+This document is Appendix 1 for the NicheMapR microclimate model software note (Kearney and Porter 2016). It provides a detailed explanation of the underlying theory and equations of the microclimate model used in NicheMapR. All of the calcuations described here are coded in Fortran in a set of subroutines and functions depicted in Figure 1. The Fortran code is compiled as a dynamic link library that can be called from R, as described in Kearney and Porter (2016). 
+
+```{r fig.width=8, fig.height=3,echo=FALSE, fig.cap='Figure 1. Stucture of the NicheMapR microclimate model Fortran program'}
+library(png)
+library(grid)
+img <- readPNG("C:/Users/mrke/Manuscripts/microclimate software note/Fig1.png")
+ grid.raster(img)
+```
 
 
-# 1. Solar radiation calculations
-Solar radiation has a dominating effect on the available microclimates across the earth. The total solar irradiance (W m$^{-2}$) reaching the earth at a given location depends on
+# 2. Solar radiation calculations
+Solar radiation has a dominating effect on the available microclimates across the earth. The total solar irradiance ($W m^{-2}$) reaching the earth at a given location depends on
 
 1. the radiation reaching the outer edge of the atmosphere at the location of interest (extra-terrestrial radiation – affected by the earth’s orbit, time of year and day, and location on the earth);   
 2. the effect of the atmosphere as the radiation travels through it to the ground (terrestrial radiation – affected by attenuation due to Raleigh scattering, aerosols, water vapour, ozone and cloud);   
@@ -32,11 +39,10 @@ Solar radiation has a dominating effect on the available microclimates across th
 
 The SOLRAD subroutine used in the NicheMapR microclimate model for calculating clear sky solar radiation is based on McCullough and Porter (1971) with modifications to incorporate skylight before sunrise and after sunset (Rozenberg 1966, p. 19) and to include the effects of sloping surfaces and hill-shade.
 
-## 1.1 Extra-terrestrial Radiation
-The total solar irradiance reaching an imaginary plane perpendicular to the sun’s rays at the outer edge of the atmosphere is obtained by integrating across all wavelengths of radiation emitted by the sun (290 to 4000 nm) after correcting for the distance of the earth from the sun and for the angle at which the sun is shining on that plane. Thus, the wavelength-specific irradiance reaching this plane is $$ \large{ I_\lambda = S_\lambda \left( {\frac{a}{r}} \right) ^2 \cos Z } $$ where $S_\lambda$ is solar spectral irradiance reaching a plane perpendicular to the incoming radiation at one astronomical unit from the sun (Fig. 2, data stored internally in SOLRAD), *a* is the length of the long (semi-major) axis of the earth’s elliptical orbit around the sun, *r* is the distance between the earth and the sun and *Z* is the angle between the sun’s rays and a line extending perpendicular to the imaginary plane (so no direct radiation is received by this plane if *Z* > 90°, but see below for twilight conditions).
+## 2.1 Extra-terrestrial Radiation
+The total solar irradiance reaching an imaginary plane perpendicular to the sun’s rays at the outer edge of the atmosphere is obtained by integrating across all wavelengths of radiation emitted by the sun after correcting for the distance of the earth from the sun and for the angle at which the sun is shining on that plane. Thus, the wavelength-specific irradiance reaching this plane is $$ \large{ I_\lambda = S_\lambda \left( {\frac{a}{r}} \right) ^2 \cos Z } $$ where $S_\lambda$ is solar spectral irradiance reaching a plane perpendicular to the incoming radiation at one astronomical unit from the sun (Fig. 2, data stored internally in SOLRAD), *a* is the length of the long (semi-major) axis of the earth’s elliptical orbit around the sun, *r* is the distance between the earth and the sun and *Z* is the angle between the sun’s rays and a line extending perpendicular to the imaginary plane (so no direct radiation is received by this plane if *Z* > 90°, but see below for twilight conditions).
 
-## Figure 2. Solar spectral irradiance as a function of wavelength
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6, fig.align='center', fig.cap='Figure 2. Solar spectral irradiance as a function of wavelength'}
 optical<-read.csv("c:/git/NicheMapR/OPTICAL.csv")
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(mar = c(5,5,4,2) + 0.1)
@@ -44,22 +50,48 @@ ylab=expression(paste("solar spectral irradiance,  W m"^{-2}))
 plot(optical[,2]~optical[,1],type='l',ylab=expression(paste("solar spectral irradiance,  W m"^{-2})),xlab="wavelength, nm")
 ```
 
+The factor $\left( {\frac{a}{r}} \right) ^2$ is approximated in the model as $1+2\epsilon \cos (\omega d)$ where $\omega=\frac{2 \pi} {365}$, $\omega$ is the eccentricity of the earth’s orbit (default value of 0.01675) and *d* is the day of the year (1-365). From the astronomical triangle, the term $\cos Z = \cos \phi \cos \delta h + \sin \phi \sin \delta$, where $\phi$ is the latitude, $\delta$ is the solar declination and *h* is the solar hour angle. The solar declination (the latitude on earth where the sun is directly overhead on a given day) is $\delta = \arcsin (0.39784993 \sin \zeta)$ where the ecliptic longitude of the earth in its orbit is $\zeta = \omega (*d* - 80 ) + 2 \epsilon [\sin (\omega d) - \sin (\omega 80) ]$. The solar hour angle (the angular distance of the sun relative to the zenith crossing; the right ascension for an observer at a particular location and time of day) is $h = 15(t_d – t_{sn})$ degrees, with $t_d$ the local standard time of day and tsn the local standard time of true solar noon. The value of $t_{sn}$ is calculated by adding/subtracting 4 min for each degree of longitude west/east of the reference longitude for the local time zone. The hour angle at sunset $H_+=\arccos [-\tan \delta \tan \phi ]$ while the hour angle at sunrise $H_-=-H_+$. In the polar zones, where the (absolute) latitude $\phi$>66°30', there may be no sunrise/sunset but rather a long day ($H_+ = \pi$) or a long night ($H_+ = 0$).
 
-The factor $\left( {\frac{a}{r}} \right) ^2$ is approximated in the model as $1+2\epsilon \cos (\omega d)$ where $\omega=\frac{2 \pi} {365}$,  \omega is the eccentricity of the earth’s orbit (default value of 0.01675) and *d* is the day of the year (1-365). From the astronomical triangle, the term $\cos Z = \cos \phi \cos \delta h + \sin \phi \sin \delta$, where \phi is the latitude, \delta is the solar declination and *h* is the solar hour angle. The solar declination $\delta = \arcsin (0.39784993 \sin \zeta)$ where the ecliptic longitude of the earth in its orbit $\zeta = \omega (*d* - 80 ) + 2 \epsilon [\sin (\omega d) - \sin (\omega 80) ]$. The hour angle $h = 15(t_d – t_{sn})$ degrees, with $t_d$ the local standard time of day and tsn the local standard time of true solar noon. The value of $t_{sn}$ is calculated by adding/subtracting 4 min for each degree of longitude west/east of the reference longitude for the local time zone. The hour angle at sunset $H_+=\arccos [-\tan \delta \tan \phi ]$ while the hour angle at sunrise $H_-=-H_+$. In the polar zones, where the (absolute) latitude \phi>66°30', there may be no sunrise/sunset but rather a long day ($H_+$ = \pi) or a long night ($H_+$ = 0).
-
-## 1.2 Terrestrial Radiation
+## 2.2 Terrestrial Radiation
 Solar radiation reaching the earth, i.e. terrestrial radiation, varies from extra-terrestrial radiation because of scattering, reflection and absorption of radiation by the atmosphere. It may thus include a direct $I_\lambda$ and a scattered component $D_\lambda$ (skylight or sky radiation), where global terrestrial radiation $G_{\lambda} =I{\lambda}+D{_\lambda\lambda}$. The total radiant energy from the sun G is obtained by integrating across all emitted wavelengths, thus $G = I + D$. If the zenith angle $Z$ is between 170 and 88°, twilight conditions are assumed and $G = D = 10^{(41.34615384-0.423076923 Z)0.00146}$ based on the regression in (Rozenberg 1966, p. 19). Otherwise, G is computed by calculating monochromatic irradiance for the direct and diffuse components and then integrating across all wavelengths using the trapezoidal rule.
 
-### 1.2.1 Direct Component of Terrestrial Radiation
+### 2.2.1 Direct Component of Terrestrial Radiation
 The direct, horizontal plane component of terrestrial solar radiation is calculated as
 $$\large{ I_\lambda = S_\lambda \left( {\frac{a}{r}} \right) ^2 \cos Z_a \exp \left[ -m(Z_a)_\lambda \tau(h) \right] }$$
-where the apparent zenith angle $Z_a$ is the angle between the beams of direct radiation and the local zenith direction (i.e. vertical) at the surface of the earth, $h$ is the elevation above sea level at which $I_\lambda$ is to be evaluated, $m(Z_a)$ is the relative optical air mass, and $_\lambda \tau(h)$ is the total vertical monochromatic extinction coefficient at elevation h. The term $m(Z_a)_\lambda \tau(h)$ represents the “total monochromatic extinction coefficient” and is often abbreviated as $_\lambda \tau(Z_a)$ . Atmospheric refraction means that, for large values of the true zenith angle $Z$ (≥ 88°), the apparent zenith angle $Z_a$ will differ by a factor $R = 16 + (Z_a - 88)10$ minutes of an arc. The term $m(Z_a) = \left[\cos Z_a + 0.025 \exp(-11 \cos Z_a) \right]^{-1}$. Variation in $m(Z_a)$ with altitude is ignored as it is negligible up to at least 6 km above sea level.
+where the apparent zenith angle, $Z_a$, is the angle between the beams of direct radiation and the local zenith direction (i.e. vertical) at the surface of the earth, $h$ is the elevation above sea level at which $I_\lambda$ is to be evaluated, $m(Z_a)$ is the relative optical air mass, and $_\lambda \tau(h)$ is the total vertical monochromatic extinction coefficient at elevation h. The term $m(Z_a)_\lambda \tau(h)$ represents the “total monochromatic extinction coefficient” and is often abbreviated as $_\lambda \tau(Z_a)$ . Atmospheric refraction means that, for large values of the true zenith angle $Z$ ($geq$ 88°), the apparent zenith angle $Z_a$ will differ by a factor $R = 16 + (Z_a - 88)10$ minutes of an arc. The term $m(Z_a) = \left[\cos Z_a + 0.025 \exp(-11 \cos Z_a) \right]^{-1}$. Variation in $m(Z_a)$ with altitude is ignored as it is negligible up to at least 6 km above sea level.
 
 The total vertical monochromatic extinction depends on Rayleigh scattering (due to molecules, especially oxygen and nitrogen) $_\lambda \tau_R$ , scattering due to aerosols (dust, water droplets, etc.) $_\lambda \tau_A$ , and absorption due to ozone $_\lambda \tau_O$  and water vapour $_\lambda \tau_W$, thus
 $$\large{ _\lambda \tau(h)=_\lambda \tau_R(h) + _\lambda \tau_A(h)+ _\lambda \tau_O(h) + _\lambda \tau_W(h) } $$
-The separate extinction factors are first obtained for sea level and then adjusted for elevation h. Wavelength-specific sea level Rayleigh and ozone optical thicknesses are taken from Elterman (1968, 1970) for atmospheric pressure P = 1013 mb, a sea level meteorological range MR0 (visibility at 0.55 $\mu$) of 25 km and a total atmospheric ozone content X of 0.34 cm NTP (normal temperature and pressure; T = 18 °C and P = 1013 mb) (Fig. 3a,b). Rayleigh optical thickness is subsequently adjusted by the ratio of the barometric pressure to the reference pressure. Wavelength-specific sea level optical thickness for 1 cm precipitable water vapour in the air column is taken from Gates and Harrop (1963) (Fig. 3c).
+The separate extinction factors are first obtained for sea level and then adjusted for elevation h. Wavelength-specific sea level Rayleigh and ozone optical thicknesses are taken from Elterman (1968, 1970) for atmospheric pressure P = 1013 mb, a sea level meteorological range $MR_0$ (visibility at 0.55 $\mu$) of 25 km and a total atmospheric ozone content $X$ of 0.34 cm NTP (normal temperature and pressure; T = 18 °C and P = 1013 mb) (Fig. 3a,b). Rayleigh optical thickness is subsequently adjusted by the ratio of the barometric pressure to the reference pressure. Wavelength-specific sea level optical thickness for 1 cm precipitable water vapour in the air column is taken from Gates and Harrop (1963) (Fig. 3c).
+
+```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6, fig.align='center', fig.cap='Figure 3. Wavelenght-specific optical thickness for different atmospheric components'}
+par(mfrow = c(2,2)) # set up for 2 plots in 2 columns
+plot(optical[,3]~optical[,1],type='l',ylab="optical thickness, cm",xlab="wavelength, nm",main="a) molecular")
+plot(optical[,5]~optical[,1],type='l',ylab="optical thickness, cm",xlab="wavelength, nm",main="b) ozone")
+plot(optical[,6]~optical[,1],type='l',ylab="optical thickness, cm",xlab="wavelength, nm",main="c) water")
+plot(optical[,4]~optical[,1],type='l',ylab="optical thickness, cm",xlab="wavelength, nm",main="d) aerosol")
+```
 
 Total atmospheric ozone shows significant seasonal and latitudinal variations, and is assumed to follow the variation in Figure 4 (data from Robinson 1966, p. 114). A correction factor of the ratio of the latitude/season-specific ozone to the reference level (0.34 cm) is thus applied to the elevation-adjusted extinction term for ozone (Fig. 4).
+
+```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=10, fig.align='center', fig.cap='Figure 4. Seasonal, latitudinal and altitudinal correction factors for atmospheric ozone', fig.subcap=c('seasonal and latitudinal correction factors','altitudinal correction factors')}
+altfct<-read.csv("c:/git/NicheMapR/ALTFCT.csv")
+oz<-read.csv("c:/git/NicheMapR/OZ.csv")
+par(mfrow = c(2,1)) # set up for 2 plots in 1 columns
+for(i in 2:13){
+  if(i==2){
+    plot(oz[,i]~oz[,1],type='b',ylab="correction factor",xlab="latitude",main="a) latitude and season", col=i-1,pch=i-1,ylim=c(0.2,0.5))
+  }else{
+    points(oz[,i]~oz[,1],type='b',ylab="correction factor",xlab="latitude",pch=i-1,col=i-1)
+  }
+}
+legend(-95,.5, c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'),pch=seq(1,12), col=seq(1,12),bty="n",horiz=TRUE,cex=1)
+
+plot(altfct[,2]~altfct[,1],type='b',ylab="correction factor",xlab="altitude", main="b) altitude",col=1,pch=1,ylim=c(0,1))
+points(altfct[,3]~altfct[,1],type='b',ylab="correction factor",xlab="altitude",col=1,pch=2,ylim=c(0,1))
+points(altfct[,4]~altfct[,1],type='b',ylab="correction factor",xlab="altitude",col=1,pch=3,ylim=c(0,1))
+legend(16,1.05, c('molecular', 'aerosol', 'ozone'),pch=seq(1,3), col=1,bty="n",horiz=FALSE,cex=1)
+```
 
 Aerosol attenuation profiles vary significantly with latitude and longitude. The original version of the microclimate model applied data from Elterman (1968, 1970) on wavelength-specific attenuation (Fig. 3d), but this is based on observations in North America which can be strongly divergent from other regions of the globe such as Australia. The microclimate model in NicheMapR now includes the option of using the [Global Aerosol Data Set (GADS)](http://www.lrz.de/~uh234an/www/radaer/gads.html) (Koepke et al. 1997), which is a Fortran program that can produce profiles of aerosol attenuation on a 5°x5° grid of the globe. GADS has been modified to give output for the full spectral profile for a single location (rather than a single wavelength for the all co-ordinates in the database), compiled to be called within the R environment, and included as part of the NicheMapR package. The data for GADS is installed in the folder ‘extdata’ and the Fortran program is called with the function ‘get.gads’ which returns 25 values for optical depths between 250 and 4000 nm for a user specified season (summer or winter) and relative humidity level (8 values ranging from 0-100%). These values can then be splined across the 111 wavelengths required by the microclimate model (see example in function micro_global).
 
@@ -71,25 +103,25 @@ $$ \small{ A_O(h)=1.07573E-06h^5 - 5.14511E-05h^4 + 7.97960E-04h^3 - 4.90904E-03
 
 The data on which these curves are fitted (Fig. 5) are stored internally in SOLRAD.
 
-In the model, no generic altitudinal correction is made for the effect of precipitable water vapour as its vertical distribution is highly variable, and AW(h) is assumed by default to equal 1 cm for all elevations but can be changed by the user. Using the Gates and Harrop (1963) coefficients, the total monochromatic extinction coefficient for water vapour absorption $$_\lambda \tau_W (Z_a,h)=_\lambda \tau_W  \sqrt{ m(Z_a) w A_W(h) } $$
+In the model, no generic altitudinal correction is made for the effect of precipitable water vapour as its vertical distribution is highly variable, and AW(h) is assumed by default to equal 1 cm for all elevations but can be changed by the user. Using the Gates and Harrop (1963) coefficients, the total monochromatic extinction coefficient for water vapour absorption is $$_\lambda \tau_W (Z_a,h)=_\lambda \tau_W  \sqrt{ m(Z_a) w A_W(h) } $$
 
 In summary, the total monochromatic extinction coefficient $_\lambda \tau (Z_a) = m(Z_a) _\lambda \tau(h) =$  
 
 $$m(Z_a) \left[ (\frac{P}{1013}) _\lambda \tau_R(h) A_R(h) + \left( \frac{25}{MR_0} \right) _\lambda \tau_A(h) A_A(h)+ \left( \frac{X}{0.34} \right) _\lambda \tau_O(h) A_O(h) \right] \\ + _\lambda \tau_W \sqrt{ m(Z_a) w A_W(h) }$$
 
-This value is constrained to be no greater than 80 in cases where low sun angles may make m(Z_a ) too large.
+This value is constrained to be no greater than 80 in cases where low sun angles may make $m(Z_a)$ too large.
 
-### 1.2.2 Scattered Component of Terrestrial Radiation
+### 2.2.2 Scattered Component of Terrestrial Radiation
 Scattered radiation $D_\lambda$ is the solar radiation that is diffusely transmitted by the earth’s atmosphere and depends on the wavelength of the radiation, the solar zenith angle, the optical properties of the terrestrial atmosphere and the reflecting properties of the surface underlying the atmosphere. For wavelengths greater than 360 nanometres, 
 
 $$D_\lambda (_\lambda \tau_R ,Z,A)=I_{0,\lambda} \left[  \frac{ \gamma_l (Z,_\lambda \tau_R) + \gamma_r (Z,_\lambda \tau_R)} {2(1-A(\lambda) \bar{s} (_\lambda \tau_R)} -e^{-_\lambda \tau_R m(Z_a) } \right] $$
 
-where $A(\lambda)$ is the albedo of the underlying surface and the functions $\gamma_l$, $\gamma_r$ and $\bar{s}$ ̅ are calculated using the Dave-Warten subroutine (Dave and Warten 1968). In the ultraviolet region, <=360 nanometers, 
+where $A(\lambda)$ is the albedo of the underlying surface and the functions $\gamma_l$, $\gamma_r$ and $\bar{s}$ are calculated using the Dave-Warten subroutine (Dave and Warten 1968). In the ultraviolet region, <=360 nanometers, 
 $$D_\lambda = \frac{ S_\lambda }{ \pi } \left(\frac{a}{r} \right)^2 \left[ F_d (p,Z,\lambda)+ \frac{F^{\prime}_d}{Q}(p,Z,\lambda) \frac{A(\lambda)}{(1-A(\lambda) \bar{s} (_\lambda \tau_R +_\lambda \tau_O )}\right]$$
 
 where the functions $F_d$ and $\frac{F^{\prime}_d}{Q}$ are generated from tables in Dave and Furakawa (1967) and are stored in SOLRAD.
 
-## 1.3 Slope, aspect and hill-shade effects
+## 2.3 Slope, aspect and hill-shade effects
 For sloping surfaces, a correction is made to the zenith angle, $Z$ based on the angle of the slope $SL$, the azimuth of the slope $AZ_SL$, and the azimuth of the sun $AZ_SUN$ such that the zenith angle (in radians) for the slope 
 
 $$Z_SL =\arccos \left( \cos(Z) \cos(SL) + \sin(Z) \sin(SL) \cos \left(AZ_SUN - AZ_SL \right) \right).$$ 
@@ -98,7 +130,7 @@ In the Southern Hemisphere, the azimuth of the sun
 
 $$AZ_{SUN,S} = \arccos \left( \frac{ ( \sin(\phi)  \sin \left( \frac{90 \pi}{180} - Z \right) - \sin(\delta) }{  \cos(\phi) \cos\left( \frac{90 \pi}{180} - Z \right) } \right)$$
 
-where \phi is the latitude and \delta is the solar declination. The equivalent formula for the Northern Hemisphere is 
+where $\phi$ is the latitude and $\delta$ is the solar declination. The equivalent formula for the Northern Hemisphere is 
 
 $$AZ_{SUN,S} = \arccos \left( \frac{ \sin(\delta) - \sin(\phi)  \sin \left( \frac{90 \pi}{180} - Z \right) }{ \cos(\phi) \cos\left( \frac{90 \pi}{180} - Z \right) } \right)$$
 
@@ -106,18 +138,18 @@ This value ranges from 0-180° and is thus subtracted from 360° to obtain after
 
 Local terrain may also obscure direct and diffuse radiation by increasing the horizon angle and thus causing ‘hill-shade’ (Dozier et al. 1981). Horizon angles in 24 directions can be entered into NicheMapR and, when the altitude of the sun is less than the horizon angle in that direction, direct radiation is set to zero. The [‘r.horizon’ function](https://grass.osgeo.org/grass70/manuals/r.horizon.html) of the GIS package GRASS (Neteler et al. 2012) can be used to compute horizon angles from a DEM.
 
-### 1.2.3 Total solar radiation reaching a surface
+### 2.2.3 Total solar radiation reaching a surface
 The total or ‘global’ solar radiation finally reaching the earth’s surface can now be summarised as
 
 $$Q_{solar} = G = \int_0^{\inf} G_\lambda d \lambda = \int_0^{\inf} (I_\lambda+D_\lambda) d\lambda= I + D$$ 
 
 and depends on the solar zenith angle, the elevation (atmospheric pressure), the albedo of the underlying surface $A$ and the optical properties of the atmosphere. In the NicheMapR microclimate model, it is summed over 11 wavelengths from 0.290 to 4 $\mu m$. Adjustments for cloud cover are made according to the Angstrom formula (formula 5.33 on P. 177 of Linacre 1992) $Q_{solar,cld} = Q_{solar} (0.36 + 0.64 (\frac{1 - P_{cld}}{100})$ where $P_{cld}$ is the percentage cloud cover.
 
-# 2. Longwave radiation
+# 3. Longwave radiation
 
-Longwave radiation is a major route of heat exchange in terrestrial environments. All objects in a habitat emit longwave radiation at a rate proportional to the 4th power of their temperature, $Q_{IR} = \sigma \epsilon T^4$ where $\sigma$ is the Stefan Boltzman constant ($W m^{−2} K^{−4}$), $\epsilon$ is the emissivity and $T$ is the object’s temperature in Kelvin. The heat budget at the ground surface depends in part on the longwave radiation received from the sky and surrounding objects (e.g. hills and shade from vegetation) as well as the longwave radiation it emits. The following equations are used for computing infra-red radiation exchange in the NicheMapR microclimate model.
+Longwave radiation is a major route of heat exchange in terrestrial environments. All objects in a habitat emit longwave radiation at a rate proportional to the 4th power of their temperature, $Q_{IR} = \sigma \epsilon T^4$ where $\sigma$ is the Stefan Boltzman constant ($W m^{2} K^{-4}$), $\epsilon$ is the emissivity and $T$ is the object’s temperature in Kelvin. The heat budget at the ground surface depends in part on the longwave radiation received from the sky and surrounding objects (e.g. hills and shade from vegetation) as well as the longwave radiation it emits. The following equations are used for computing infra-red radiation exchange in the NicheMapR microclimate model.
 
-For longwave radiation from clear skies, ARAD, the sky emissivity is approximated as $\epsilon_{SKY} = 1.72 \left( \frac{e_A}{T_A} \right)^{\frac{1}{7}}$ (Campbell Gaylson S. and Norman 1998, eqn 10.10), where $T_A$ is the shaded air temperature (at reference height, 1.2 m) in Kelvin and $e_A$ is the vapour pressure of the air in kilopascals (see section 5). Thus, given a percentage cloud clover $CLD$, 
+For longwave radiation from clear skies, ARAD, the sky emissivity is approximated as $\epsilon_{SKY} = 1.72 \left( \frac{e_A}{T_A} \right)^{\frac{1}{7}}$ (Campbell Gaylson S. and Norman 1998, eqn 10.10), where $T_A$ is the shaded air temperature (at reference height, i.e. 1.2 m) in Kelvin and $e_A$ is the vapour pressure of the air in kilopascals (see section 5). Thus, given a percentage cloud clover $CLD$, 
 
 $$A_{RAD}= \sigma \epsilon_{SKY} (T_A+273)^4 (1-\frac{CLD}{100}).$$
 
@@ -153,9 +185,9 @@ $$T_{SKY}=\left[ \frac{ (Q_{IR,SKY} + Q_{IR,VEG}) VIEWF + Q_{IR,HILL} (1 - VIEWF
 
 (assuming $\epsilon$ of 1).
 
-# 3. Hourly interpolation of weather data
+# 4. Hourly interpolation of weather data
 
-The weather station data inputs – air temperature, relative humidity, wind speed and cloud cover – are maximum and minimum values for the day and must be converted to hourly profiles. The subroutines VSINE and SINEC do this based on the user inputs of when the daily minima and maxima occur relative to sunrise and solar noon and the timings of sunrise, sunset and solar noon as computed by SOLRAD.
+The microclimate model can take hourly weather input data by setting 'hourly=1' and supplying data for air temperature, humidity, cloud cover, wind speed, solar radiation and rainfall in the respective vectors TAIRhr, RHhr, CLDhr, WNhr, SOLRhr, RAINhr. Typically, however, solar radiation must be computed from first principles, rainfall is daily, and the air temperature, relative humidity, wind speed and cloud cover variables are maximum and minimum values for the day and must be converted to hourly profiles. The subroutines VSINE and SINEC do this based on the user inputs of when the daily minima and maxima occur relative to sunrise and solar noon and the timings of sunrise, sunset and solar noon as computed by SOLRAD.
 
 VSINE works with relative humidity, wind speed and cloud cover. It first assumes the midnight value is the average of the given minimum and maximum, and computes three slopes: a slope from the midnight point to the sunrise maximum (cloud cover, relative humidity) or minimum (wind speed) value, a slope from the sunrise value to the midday minimum (cloud cover, relative humidity) or maximum (wind speed) value, and slope from the midday value back to the assumed midnight value. The model then uses these slopes to compute the values on the hour through the entire day. Note, however, that if the model is running for every day of the year (and is not doing the first day of the simulation) it uses the value for the last hour of the previous day as the initial value for midnight on the current day.  Otherwise, it uses the average of the minimum and maximum value as the starting point. The result is a day length-specific linear interpolation.
 
@@ -175,7 +207,7 @@ Similarly, an exponential decay occurs from the temperature at sunset towards mi
 
 $$\LARGE{ Z_s = \sin \left( \frac{ \frac{ 360 ( t - t_{ref} )} {2 ( t_{T_max} - t_{sr} )}} {57.29577} \right)}$$
 
-# 4. Vertical air temperature and wind speed profiles
+# 5. Vertical air temperature and wind speed profiles
 
 Air temperature and wind speed vary with height above the ground as a function of the air temperature and wind speed at the reference height, the surface temperature, and the presence and spacing of objects on the surface (surface roughness). In the NicheMapR microclimate model, the MICRO subroutine computes a single unsegmented wind velocity u and temperature profile based on the user-specified roughness height $z_0$ and reference height $z$ while MICROSEGMT computes a three segment velocity and temperature profile based on user-specified, experimentally determined values for roughness heights $z_{0,1}$ and $z_{0,2}$ at two segment heights $z_1$ and $z_2$.
 
@@ -208,11 +240,11 @@ $$Q_{conv} = \frac{0.08472}{T_{ave}} (T_{ref} - T_{sub}) u^* \frac{ S_{t_b}}{(1 
 
 where $T_{ave}$ is the average of the reference and substrate temperatures, in kelvin.
 
-# 5. Hydric and thermal properties of air, and surface evaporation
+# 6. Hydric and thermal properties of air, and surface evaporation
 
 Subroutines DRYAIR, WETAIR, HUMID and EVAP, together with function VAPPRS, compute the hydric and thermal properties of air, and the implication for evaporation from the surface. DRYAIR, WETAIR and VAPPRS are now available as R functions in the NicheMapR package and are described in detail in the technical manual “Properties of Air” (Tracy et al. 2016, Tracy et al. 1980) which is now available as a vignette in NicheMapR.
 
-DRYAIR computes atmospheric pressure $P = 101325 ( 1 - \frac {0.0065 A}{288})^{\frac{1}{0.190284}}$ where $A$ is altitude (m), together with the air density $\rho_{air} = \frac{ 101325 }{ 287.04 (T_{air}+273.15)}$ where $T_{air}$ is the air temperature (°C), the dynamic viscosity $v_{dyn} = 1.8325 × 10^{-5} \frac{296.16+C}{\rho_{air}+273.15+120} \left( \frac{T_{air}+273.15}{296.16} \right)^{1.5}$, the kinematic viscosity $v_{kin} = \frac{ v_{dyn}}{ρ_{air}}$, diffusivity of water vapour in air $\alpha = 2.26 × 10^{-5} \left( \frac{ T_{air}+273.15 }{ 273.15} \right)^{1.81} \frac{1×10^5}{P}$, the thermal conductivity of air $k_{air} = 0.02425 + (7.038 × 10^{-5} T_{air})$, and the latent heat of vapourisation of water $\delta H_{vap} = 2.5012 × 10^6 - 2.3787 × 10^3 T_{air}$.
+DRYAIR computes atmospheric pressure $P = 101325 ( 1 - \frac {0.0065 A}{288})^{\frac{1}{0.190284}}$ where $A$ is altitude (m), together with the air density $\rho_{air} = \frac{ 101325 }{ 287.04 (T_{air}+273.15)}$ where $T_{air}$ is the air temperature (°C), the dynamic viscosity $v_{dyn} = 1.8325 × 10^{-5} \frac{296.16+C}{\rho_{air}+273.15+120} \left( \frac{T_{air}+273.15}{296.16} \right)^{1.5}$, the kinematic viscosity $v_{kin} = \frac{ v_{dyn}}{\rho_{air}}$, diffusivity of water vapour in air $\alpha = 2.26 × 10^{-5} \left( \frac{ T_{air}+273.15 }{ 273.15} \right)^{1.81} \frac{1×10^5}{P}$, the thermal conductivity of air $k_{air} = 0.02425 + (7.038 × 10^{-5} T_{air})$, and the latent heat of vapourisation of water $\delta H_{vap} = 2.5012 × 10^6 - 2.3787 × 10^3 T_{air}$.
 
 Function VAPPRS computes the saturation water vapour pressure for a given $T_{air}$ as 
 
@@ -231,21 +263,21 @@ HUMID uses DRYAIR and WETAIR to adjust relative humidity from the reference heig
 The mass transfer  coefficient $h_d = \frac{h_c}{c_p \rho_{air}} \left( \frac{0.71}{0.60} \right)^{0.666}$ and the convective heat transfer coefficient $h_c = \max(|\frac{Q_{conv}}{T_{loc}-T_{ref}}|,0.5)$ are both computed in DSUB.
 Finally, $m_{evap}$ is converted to energy lost/gained as heat by evaporation/condensation $Q_{evap} = m_{evap} \Delta H_{vap}$ where the latent heat of vaporisation is computed as $\Delta H_{vap} = 10 ^ 3 (2500.8 - 2.36 T_{surf} + 0.0016 T_{surf}^2 - 0.00006 T_{surf}^3)$ if the surface temperature $T_{surf}$ > 0 °C, and $\Delta H_{vap} = 10^3 (2834.1 - 0.29 T_{surf} + 0.004 T_{surf}^2)$ if $T_{surf} \leq 0 °C$.
 
-# 6. Soil heat balance and soil thermal properties
+# 7. Soil heat balance and soil thermal properties
 
 The soil temperature change through depth z and time t is described by the one-dimensional partial differential equation 
 
 $$\large{ \frac{dT}{dt} = \frac{ k }{ \rho c } \frac{ \delta^2 T }{ \delta z^2} }$$
 
-(Carslaw and Jaeger 1959) and requires one initial condition and two boundary conditions for its solution. The initial condition (soil temperature profile) is either the mean daily reference air temperature or (when doing daily simulations) the temperature profile at the end of the previous day. The deep soil boundary condition is obtained by assuming it is the mean annual air temperature. The remaining boundary condition at the soil surface is obtained by equating the energy conducted to the soil surface to the net heat transfer to the surface by solar radiation, infrared radiation, convection and evaporation, i.e. an energy balance for the soil surface
+(Carslaw and Jaeger 1959) and requires one initial condition and two boundary conditions for its solution. The initial condition (soil temperature profile) is either the mean daily reference air temperature or (when doing daily simulations) the temperature profile at the end of the previous day. The deep soil boundary condition is obtained by assuming it is the mean annual air temperature. The remaining boundary condition at the soil surface is obtained by equating the energy conducted to the soil surface to the net heat transfer to the surface by solar radiation, infrared radiation, convection and evaporation, i.e. a unit area energy balance for the soil surface
 
 $$\large{ Q_{cond} = -k_{so} \frac{\delta T }{ \delta z}|_{z_0} = Q_{solar} + Q_{IR} + Q_{conv} - Q_{evap} }$$
 
 This equation is solved by breaking the soil profile into nodes and solving separate ODEs for each using the Adams Predictor-Corrector algorithm with Runge Kutta starting, with the ODE for the surface $\frac{ dT_{s,1}}{dt} = \frac{Q_{solar} + Q_{IR} + Q_{conv} - Q_{evap} }{C_{s,1}}$ and the subsequent ODEs $\frac{dT_{s,i}}{dt} = \frac{ K_{s,i-1} (T_{s,i-1} - T_{s,i})+K_{s,i} T_{s,i+1}-T_{s,i})}{C_{s,i}}$ where for a given node $i$ the heat capacity $C_i= \rho_{s,i} c_{s,i}  \frac{ z_{i+1}-z_{i-1}}{2}$ , and $K_{s,i}=  k_{s,i} (z_{i+1}-z_i)$ where $k_{s,i}$ is the thermal conductivity. The computation of the terms $Q_{solar}$, $Q_{IR}$, $Q_{conv}$ and $Q_{evap}$ have been described earlier in this document.
 
-In the NicheMapR microclimate model, 10 soil nodes are specified, including the surface. The spacing is under the control of the user but must be closer near the surface where changes are most rapid, to ensure that the numerical integration is successful. The key soil thermal properties in the equations above are the density ¬s, the specific heat capacity cs and the thermal conductivity ks, all of which may vary with time as a function of soil temperature and moisture, and with depth as a function of geology. The original version of the microclimate model did not permit soil properties to vary with depth or time. In the present version up to 10 different soil properties with depth (i.e. unique properties for each node). The user specifies the conductivity, specific heat capacity, density and water-holding capacity of the mineral components of the different soil layers together with the bulk density and a time-vector for each layer of relative soil moisture values. The overall soil conductivity, specific heat and density values are then adjusted for bulk density and soil moisture and soil temperature, using the methods described in Campbell et al. (1994, equations 8, 9) and Campbell and Norman (Campbell Gaylson S. and Norman 1998, equations 8.13, 8.17, 8.20 and data in tables 8.2 and 9.1) in the subroutine SOILPROPS (Fig. 1) which is called by DSUB and utilises the routines in DRYAIR, WETAIR and VAPPRS. If the soil temperature is between -0.45 and 0.4 °C and there is moisture in the soil, the latent heat of fusion (333.5 J g^-1^) is added to the computation of specific heat.
+In the NicheMapR microclimate model, 10 soil nodes are specified, including the surface. The spacing is under the control of the user but must be closer near the surface where changes are most rapid, to ensure that the numerical integration is successful. The key soil thermal properties in the equations above are the density $\rho$, the specific heat capacity $c_s$ and the thermal conductivity $k_s$, all of which may vary with time as a function of soil temperature and moisture, and with depth as a function of geology. The original version of the microclimate model did not permit soil properties to vary with depth or time. In the present version up to 10 different soil properties with depth (i.e. unique properties for each node). The user specifies the conductivity, specific heat capacity, density and water-holding capacity of the mineral components of the different soil layers together with the bulk density and a time-vector for each layer of relative soil moisture values. The overall soil conductivity, specific heat and density values are then adjusted for bulk density and soil moisture and soil temperature, using the methods described in Campbell et al. (1994, equations 8, 9) and Campbell and Norman (Campbell Gaylson S. and Norman 1998, equations 8.13, 8.17, 8.20 and data in tables 8.2 and 9.1) in the subroutine SOILPROPS (Fig. 1) which is called by DSUB and utilises the routines in DRYAIR, WETAIR and VAPPRS. If the soil temperature is between -0.45 and 0.4 °C and there is moisture in the soil, the latent heat of fusion ($333.5 J g^{-1}$) is added to the computation of specific heat.
 
-# 7. Soil water balance
+# 8. Soil water balance
 
 The NicheMapR microclimate model now has the capacity for the user to provide daily inputs for soil moisture levels, or they can be calculated from first principles as a function of rainfall, soil type and transpiration. To calculate the soil water budget, we have integrated Campbell’s (1985) Program 11.1 (henceforth C11.1) for simulating depth-specific soil moisture, water potential and humidity gradients in the presence of vegetation. This model takes the approach of linearising the differential equation for flow in space, and using a Newton-Raphson procedure to solve the non-linear equations through time. The linearisation through space involves representing the soil as a series of capacitors and resistors (see Campbell G. S. 1985 Fig. 8.5). It uses matric potential as the dependent variable (rather than matric flux potential) and hence is most computationally efficient when soil is relatively dry. The model is well described in Campbell (1985) thus here we only provide details specific to the integration with the NicheMapR microclimate model and driving data.
 
@@ -253,9 +285,9 @@ We wrote C11.1 as Fortran subroutine INFIL which is called from the hourly outpu
 
 Potential evaporation was computed by simulating evaporation from a completely wet surface using code of the original version of the NicheMapR model. Following Campbell (1985, equation 12.30), this was partitioned among evaporation and transpiration as a function of leaf area index $LAI$ (a user input). The fractional surface wetness for the next hour’s heat budget was set as the ratio of potential to actual evapotranspiration calculated by C11.1.
 
-The microclimate model uses 10 user-specified nodes for computing the heat budget. We added code to C11.1 to insert extra nodes half way between the original 10 nodes, such that a total of 19 nodes were used for soil moisture calculations. The user input variables specific to C11.1 include, for each of these 19 nodes, the Campbell (or Clapp and Hornberger) exponent $B$, the air entry potential $P_e$ (J kg^-1^), the hydraulic conductivity $K_s$ (kg s m^-3^), the bulk density $\rho_{b}$ (kg m^-3^) and the root density (m m^-3^) in addition to the leaf area index $LAI$ already mentioned. All other model parameters for C11.1 were fixed at those suggested by Campbell (1985).
+The microclimate model uses 10 user-specified nodes for computing the heat budget. We added code to C11.1 to insert extra nodes half way between the original 10 nodes, such that a total of 19 nodes were used for soil moisture calculations. The user input variables specific to C11.1 include, for each of these 19 nodes, the Campbell (or Clapp and Hornberger) exponent $B$, the air entry potential $P_e$ ($J kg^{-1}$), the hydraulic conductivity $K_s$ ($kg s m^{-3}$), the bulk density $\rho_{b}$ (kg $m^{-3}$) and the root density ($m m^{-3}$) in addition to the leaf area index $LAI$ already mentioned. All other model parameters for C11.1 were fixed at those suggested by Campbell (1985).
 
-# 8. Snow
+# 9. Snow
 
 The capacity to model the growth and decay of a snowpack, and its influence on substrate temperatures, has been incorporated into the NicheMapR microclimate model by allowing an additional 8 nodes of snow to be added to the 10 substrate nodes, with their thermal properties set to that of ice when snow is present. The snow nodes are at 2.5, 5, 10, 20, 50, 100, 200 and 300cm, with the original 0cm node continuing to act as the surface node and the connection between the 300cm node and the original soil surface able to grow to an arbitrary large extent. As the snow pack grows, subroutine SNOWLAYER (Fig. 1) checks to see whether sufficient snow has accreted or melted to increase or decrease the number of snow nodes in use. Snow is not permitted to be below 2.5 cm depth. Subroutine OSUB contains the formulae for computing snow growth and melt, and calls SNOWLAYER (Fig. 1)
 
@@ -263,7 +295,7 @@ Snow growth is driven by inputted precipitation for each day and the user specif
 
 Snow melt occurs according to the heat load as computed by the heat budget for the substrate (including the snow), as well as melting due to rain. If the mean temperature between a given pair of soil nodes is greater than 0.4 °C, the change in mean temperature between nodes is computed and multiplied by the snow heat capacity (including the heat of fusion), snow density and distance between the nodes to obtain the heat input, and then divided by the heat of fusion to compute the mass of snow melted. Rain-melt is simulated following Anderson (2006) by multiplying the product of the rainfall and mean air temperature for the day by a rain melt factor (default value 0.0125) whenever rain falls at air temperatures above the snow threshold.
 
-# 9. References
+# 10. References
 
 Anderson E. 2006. Snow Accumulation and Ablation Model – SNOW-17  
 
@@ -286,6 +318,8 @@ Elterman L. 1968. UV, visible and IR attenuation for altitudes to 59 km. Bedford
 ---. 1970. Vertical-attenuation model with eight surface meteorological ranges 2 to 13 kilometers. Bedford, Mass.: U. S. Airforce Cambridge Research Laboratory. Report no.  
 
 Gates DM, Harrop WJ. 1963. Infrared transmission of the atmosphere to solar radiation. Applied Optics 2:887-898.  
+
+Kearney MR, Porter WP. 2016. NicheMapR - an R package for biophysical modelling: the microclimate model. Ecography in review.
 
 Koepke P, Hess M, Schult I, Shettle EP. 1997. Global Aerosol Data Set. Hamburg: Max-Planck-Institut für Meteorologie. Report no.  
 

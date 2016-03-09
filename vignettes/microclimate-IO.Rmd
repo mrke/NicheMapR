@@ -24,6 +24,7 @@ microdaily<-0 # run microclimate model as normal, where each day is iterated 3 t
 runshade<-1 # run the model twice, once for each shade level (1) or just for the first shade level (0)?
 runmoist<-1 # run soil moisture model (0=no, 1=yes)?
 snowmodel<-1 # run the snow model (0=no, 1=yes)? - note that this runs slower
+hourly<-0 # run from hourly weather input (0=no, 1=yes)?
 ```
 
 ### Time and location parameters
@@ -97,6 +98,12 @@ WNMAXX<-c(4.9,4.8,5.2,5.3,4.6,4.3,3.8,3.7,4,4.6,4.9,4.8) # max wind speed (m/s)
 CCMINN<-c(50.3,47,48.2,47.5,40.9,35.7,34.1,36.6,42.6,48.4,61.1,60.1) # min cloud cover (%)
 CCMAXX<-c(50.3,47,48.2,47.5,40.9,35.7,34.1,36.6,42.6,48.4,61.1,60.1) # max cloud cover (%)
 RAINFALL<-c(28,28.2,54.6,79.7,81.3,100.1,101.3,102.5,89.7,62.4,54.9,41.2) # monthly mean rainfall (mm)
+TAIRhr=rep(0,24*julnum) # hourly air temperatures (deg C), not used unless 'hourly=1'
+RHhr=rep(0,24*julnum) # hourly relative humidity (%), not used unless 'hourly=1'
+WNhr=rep(0,24*julnum) # hourly wind speed (m/s), not used unless 'hourly=1'
+CLDhr=rep(0,24*julnum) # hourly cloud cover (%), not used unless 'hourly=1'
+SOLRhr=rep(0,24*julnum) # hourly solar radiation (W/m2, not used unless 'hourly=1'
+RAINhr=rep(0,24*julnum) # hourly rainfall (mm), not used unless 'hourly=1'
 tannul<-mean(c(TMAXX,TMINN)) # annual mean temperature for getting monthly deep soil temperature (deg C)
 tannulrun<-rep(tannul,julnum) # monthly deep soil temperature (2m) (deg C)
 SoilMoist<-c(0.42,0.42,0.42,0.43,0.44,0.44,0.43,0.42,0.41,0.42,0.42,0.43) # soil moisture (decimal %, 1 means saturated)
@@ -189,10 +196,10 @@ tides<-matrix(data = 0., nrow = 24*julnum, ncol = 3) # matrix for tides
 ### Collating all input parameters
 ```
 # input parameter vector
-microinput<-c(julnum,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun)
+microinput<-c(julnum,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly)
 
 # Final input list - all these variables are expected by the input argument of the Fortran microclimate subroutine
-micro<-list(microinput=microinput,tides=tides,julday=julday,SLES=SLES,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX,TMINN=TMINN,RHMAXX=RHMAXX,RHMINN=RHMINN,CCMAXX=CCMAXX,CCMINN=CCMINN,WNMAXX=WNMAXX,WNMINN=WNMINN,REFLS=REFLS,PCTWET=PCTWET,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists,RAINFALL=RAINFALL,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI)
+micro<-list(microinput=microinput,tides=tides,julday=julday,SLES=SLES,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX,TMINN=TMINN,RHMAXX=RHMAXX,RHMINN=RHMINN,CCMAXX=CCMAXX,CCMINN=CCMINN,WNMAXX=WNMAXX,WNMINN=WNMINN,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,REFLS=REFLS,PCTWET=PCTWET,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists,RAINFALL=RAINFALL,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI)
 ```
 
 ### Executing the microclimate model
