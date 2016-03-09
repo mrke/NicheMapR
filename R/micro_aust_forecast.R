@@ -530,11 +530,11 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
     }else{
       juldays<-juldaysn
     }
-    julnum <- timeinterval*nyears # total days to do
+    julnum <- 2 # total days to do
     julday <- subset(juldays, juldays!=0) # final vector of julian days
     julday<-rep(julday,nyears)
     idayst <- 1 # start day
-    ida<-timeinterval*nyears # end day
+    ida<-2 # end day
     dates<-Sys.time()-60*60*24
     curyear<-as.numeric(format(dates,"%Y"))
 
@@ -632,7 +632,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
       soiltype<-lumped[1,6]
       soilprop<-subset(ppf, ppf==soilcode[1,2])
     }else{
-      SLES2 <- rep(SLE,timeinterval*nyears)
+      SLES2 <- rep(SLE,2*nyears)
       if(manualshade==0){
         cat("extracting shade data", '\n')
         if(vlsci==0){
@@ -1125,7 +1125,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
         }else{
           location<-loc
         }
-        cat(paste('running microclimate model for',timeinterval,'days by',nyears,'years at site',location,'\n'))
+        cat(paste('running microclimate model for',dim,'days by',nyears,'years at site',location,'\n'))
         ptm <- proc.time() # Start timing
         microut<-microclimate(micro)
         print(proc.time() - ptm) # Stop the clock
