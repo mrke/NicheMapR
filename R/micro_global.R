@@ -740,13 +740,22 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
 
     # Next four parameters are segmented velocity profiles due to bushes, rocks etc. on the surface
     #IF NO EXPERIMENTAL WIND PROFILE DATA SET ALL THESE TO ZERO! (then roughness height is based on the parameter RUF)
-    Z01 <- 0. # Top (1st) segment roughness height(m)
-    Z02 <- 0. # 2nd segment roughness height(m)
-    ZH1 <- 0. # Top of (1st) segment, height above surface(m)
-    ZH2 <- 0. # 2nd segment, height above surface(m)
+    Z01 <- 0 # Top (1st) segment roughness height(m)
+    Z02 <- 0 # 2nd segment roughness height(m)
+    ZH1 <- 0 # Top of (1st) segment, height above surface(m)
+    ZH2 <- 0 # 2nd segment, height above surface(m)
+
+    # hourly option set to 0, so make empty vectors
+    hourly=0
+    TAIRhr=rep(0,24*dim)
+    RHhr=rep(0,24*dim)
+    WNhr=rep(0,24*dim)
+    CLDhr=rep(0,24*dim)
+    SOLRhr=rep(0,24*dim)
+    RAINhr=rep(0,24*dim)
 
     # microclimate input parameters list
-    microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun)
+    microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly)
 
     julday1=matrix(data = 0., nrow = dim, ncol = 1)
     SLES1=matrix(data = 0., nrow = dim, ncol = 1)
@@ -787,7 +796,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
     }
     # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
-    micro<-list(tides=tides,microinput=microinput,julday=julday,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI,snowmodel=snowmodel)
+    micro<-list(tides=tides,microinput=microinput,julday=julday,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI,snowmodel=snowmodel)
 
     # write all input to csv files in their own folder
     if(write_input==1){
@@ -827,6 +836,11 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       write.table(L,file="micro csv input/L.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(LAI,file="micro csv input/LAI.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(tides,file="micro csv input/tides.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(RHhr,file="micro csv input/RHhr.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(WNhr,file="micro csv input/WNhr.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(CLDhr,file="micro csv input/CLDhr.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(SOLRhr,file="micro csv input/SOLRhr.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(RAINhr,file="micro csv input/RAINhr.csv", sep = ",", col.names = NA, qmethod = "double")
     }
 
     if(is.numeric(loc[1])){

@@ -26,6 +26,7 @@ microdaily                | -                 | 0 (off) or 1 (on) | run in daily
 runshade                  | -                 | 0 (off) or 1 (on) | run the model twice, once for each shade level
 runmoist                  | -                 | 0 (off) or 1 (on) | run soil moisture model
 snowmodel                 | -                 | 0 (off) or 1 (on) | run the snow model
+hourly                    | -                 | 0 (off) or 1 (on) | run the model from hourly weather inputs
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
@@ -144,6 +145,12 @@ CCMAXX                    | %                 | 0-100             | maximum clou
 RAINFALL                  | mm                | 0-2000            | daily total rainfall; vector of length = julnum
 tannulrun                 | &deg;C            | -80 - +60         | daily deep soil temperature; vector of length = julnum
 moists                    | decimal %         | 0-1               | predefined soil daily moisture profile through time$^4$
+TAIRhr                    | &deg;C            | -80 - +60         | hourly air temperature (at reference height, Refhyt)$^5$
+RHhr                      | %                 | 0-100             | hourly relative humidity (at reference height, Refhyt)$^5$
+WNhr                      | m s$^{-1}$        | 0-100             | hourly wind speed (at reference height, Refhyt)$^5$
+CLDhr                     | %                 | 0-100             | hourly cloud cover$^5$
+SOLRhr                    | W m$^{2}$         | 0-1367            | hourly solar radiation$^5$
+RAINhr                    | mm                | 0-2000            | hourly rainfall$^5$
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
@@ -152,6 +159,7 @@ $^{1}$Vector of 4 integers, air temp & wind mins relative to sunrise, humidity a
 $^{2}$Vector of 4 integers, air temp & wind maxs relative to solar noon, humidity and cloud cover maxs relative to sunrise - typical TIMAXS vector c(1, 1, 0, 0).
 $^{3}$Vector of length = julnum.
 $^{4}$Matrix of 10 rows (depths) and julnum columns. The first column is used to specify the initial soil moisture when running the soil moisture model.
+$^{5}$Vector of length = julnum*24.
 
 ## Substrate properties
 ```{r table8, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
@@ -176,7 +184,7 @@ $^{2}$The number of nodes specified should correspond with the variable numtypes
 
 $^{3}$Matrix of 10 rows (depths) and 6 columns
 
-$^{4}$0.1 bar matric potential
+$^{4}$at a matric potential of 0.1 bar
 
 ## Soil moisture parameters
 ```{r table9, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
@@ -219,7 +227,7 @@ $^{1}$As a function of day of year (1,365), in units of Mg m$^{-3}$ - if it is c
 
 $^{2}$For equation from Anderson's SNOW-17 model that melts snow with rainfall as a function of air temp (typical value 1.25)
 
-## Intertidal simulation parameteres (currently experimental and untested)
+## Intertidal simulation parameters (currently experimental and untested)
 ```{r table11, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
 *Name*                    | *Units *             |	*Allowed Range*   |	*Description*
