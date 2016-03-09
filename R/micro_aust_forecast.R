@@ -784,7 +784,32 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
         }else{ # use a suitable one for Australia (same as around Adelaide/Melbourne)
           TAI<-c(0.0670358341290886,0.0662612704779235,0.065497075238002,0.0647431301168489,0.0639993178022531,0.0632655219571553,0.0625416272145492,0.0611230843885423,0.0597427855962549,0.0583998423063099,0.0570933810229656,0.0558225431259535,0.0545864847111214,0.0533843764318805,0.0522154033414562,0.0499736739981675,0.047855059159556,0.0458535417401334,0.0439633201842001,0.0421788036108921,0.0404946070106968,0.0389055464934382,0.0374066345877315,0.0359930755919066,0.0346602609764008,0.0334037648376212,0.0322193394032758,0.0311029105891739,0.0300505736074963,0.0290585886265337,0.0281233764818952,0.0272415144391857,0.0264097320081524,0.0256249068083005,0.0248840604859789,0.0241843546829336,0.0235230870563317,0.0228976873502544,0.0223057135186581,0.0217448478998064,0.0212128934421699,0.0207077699817964,0.0202275105711489,0.0197702578594144,0.0193342605242809,0.0189178697551836,0.0177713140039894,0.0174187914242432,0.0170790495503944,0.0167509836728154,0.0164335684174899,0.0161258546410128,0.0158269663770596,0.0155360978343254,0.0152525104459325,0.0149755299703076,0.0147045436435285,0.0144389973831391,0.0141783930434343,0.0134220329447663,0.0131772403830191,0.0129356456025128,0.0126970313213065,0.0124612184223418,0.0122280636204822,0.01199745718102,0.0115436048739351,0.0110993711778668,0.0108808815754663,0.0106648652077878,0.0104513876347606,0.0102405315676965,0.00982708969547694,0.00962473896278535,0.00903679230300494,0.00884767454432418,0.0083031278398166,0.00796072474935954,0.00755817587626185,0.00718610751850881,0.00704629977586921,0.00684663903049612,0.00654155580333479,0.00642947339729728,0.00627223096874308,0.00603955966866779,0.00580920937536261,0.00568506186880564,0.00563167068287251,0.00556222005081865,0.00550522989971023,0.00547395763028062,0.0054478983436216,0.00541823364504573,0.00539532163908382,0.00539239864119488,0.00541690124712384,0.00551525885358836,0.00564825853509463,0.00577220185074264,0.00584222986640171,0.00581645238345584,0.00566088137411449,0.00535516862329704,0.00489914757707667,0.00432017939770409,0.0036813032251836,0.00309019064543606,0.00270890436501562,0.00276446109239711,0.00356019862584603)
         } #end check if running gads
+        channel <- RODBC::odbcConnect("AWAPDaily")
+        yearlist<-seq(ystart,(ystart+(nyears-1)),1)
+        for(j in 1:nyears){ # start loop through years
+          yeartodo<-yearlist[j]
+          lat1<-x[2]-0.024
+          lat2<-x[2]+0.025
+          lon1<-x[1]-0.024
+          lon2<-x[1]+0.025
+          query<-paste("SELECT a.latitude, a.longitude, b.*
+                       FROM [AWAPDaily].[dbo].[latlon] as a
+                       , [AWAPDaily].[dbo].[",yeartodo,"] as b
+                       where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
+                       order by b.day",sep="")
+          output<- sqlQuery(channel,query)
+          output$sol<-as.numeric(as.character(output$sol))
 
+          if(nrow(output)>365){
+            # fix leap years
+            output<-output[-60,]
+          }
+          if(j==1){
+            results<-output
+          }else{
+            results<-rbind(results,output)
+          }
+        }
 
         if(adiab_cor==1){
           TMAXX<-as.matrix(results$tmax+adiab_corr_max)
@@ -834,10 +859,10 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
           MAXSHADES<-rep(maxshades1$y*100,nyears)
           MAXSHADES<-MAXSHADES[1:ndays]
           if(manualshade==1){
-            maxshades <- rep(maxshade,365)
+            maxshades <- rep(maxshade,2)
             maxshades <- rep(maxshades,nyears)
             MAXSHADES<-maxshades
-            minshades <- rep(minshade,365)
+            minshades <- rep(minshade,2)
             minshades <- rep(minshades,nyears)
             MINSHADES<-minshades
           }
@@ -930,39 +955,8 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
         #Heavy trees 	0.25
         #Several buildings 	0.25
         #Hilly, mountainous terrain 	0.25
-        if(dailywind!=1){
-          WNMINN<-WNMINN*(1.2/10)^0.15*.1 # reduce min wind further because have only 9am/3pm values to get max/min
-          WNMAXX<-WNMAXX*(1.2/10)^0.15
-          WNMINN<-WNMINN#*3.25 # for snow
-          WNMAXX<-WNMAXX#*3.25 # for snow
-          cat('min wind * 0.1 \n')
-          #cat('max wind * 2.0 for snow ')
-        }else{
-          if(snowmodel==0){
-            WNMAXX<-dwind*(1.2/2)^0.15
-            WNMINN<-WNMAXX
-            WNMAXX<-WNMAXX*2#*3.5#*5
-            WNMINN<-WNMINN*0.5#1.5#*3.5#*2
-            cat('min wind * 0.5 \n')
-            cat('max wind * 2 \n')
-          }else{
-            WNMAXX<-dwind*(1.2/2)^0.15#*3.25
-            WNMINN<-WNMAXX
-            WNMAXX<-WNMAXX*2#*2.5#*3.5#*5
-            WNMINN<-WNMINN*0.5#*3#1.5#*3.5#*2
-            WNMINN[WNMINN<0.1]<-0.1
-            #cat('min wind * 0.5 * 1.5 for snow \n')
-            #cat('max wind * 2 * 2.5 for snow \n')
-          }
-        }
-        if(vlsci==0){
-          CCMINN<-CCMINN*0.5
-          CCMAXX<-CCMAXX*2
-          CCMINN[CCMINN>100]<-100
-          CCMAXX[CCMAXX>100]<-100
-        }
-        cat('min cloud * 0.5 \n')
-        cat('max cloud * 2 \n')
+        WNMINN<-WNMINN*(1.2/10)^0.15
+        WNMAXX<-WNMAXX*(1.2/10)^0.15
 
         # impose uniform warming
         TMAXX<-TMAXX+warm
@@ -1162,7 +1156,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
           shadhumid[,3:12]<-0.99
         }
 
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,forecast=forecast))
       } # end of check for na sites
     } # end of check if soil data is being used but no soil data returned
   } # end error trapping
