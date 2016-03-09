@@ -71,7 +71,6 @@ microclimate <- function(micro) {
     as.double(micro$RHhr),
     as.double(micro$WNhr),
     as.double(micro$CLDhr),
-    as.double(micro$IRhr),
     as.double(micro$SOLRhr),
     as.double(micro$RAINhr),
     metout=matrix(data = 0., nrow = 24*julnum, ncol = 18),
