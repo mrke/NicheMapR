@@ -588,8 +588,8 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
     if(soildata==0){
       soilprop<-cbind(0,0)
       # creating the shade array
-      MAXSHADES <- rep(0,(timeinterval*nyears))+maxshade # daily max shade (%)
-      MINSHADES <- rep(0,(timeinterval*nyears))+minshade # daily min shade (%)
+      MAXSHADES <- rep(0,(2*nyears))+maxshade # daily max shade (%)
+      MINSHADES <- rep(0,(2*nyears))+minshade # daily min shade (%)
     }
 
 
