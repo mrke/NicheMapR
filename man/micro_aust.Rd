@@ -60,7 +60,7 @@ shadhumid Hourly predictions of the soil humidity under the maximum specified sh
 An implementation of the Niche Mapper microclimate model that uses the AWAP daily weather database
 }
 \examples{
-micro<-micro_global() # run the model with default location and settings
+micro<-micro_aust() # run the model with default location and settings
 
 metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
