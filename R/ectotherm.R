@@ -89,6 +89,7 @@
 #' \strong{ Behavioural parameters:}
 #'
 #' \itemize{
+#' \item{\code{warmsig}{ = 0, Warming signal for emergence? 1=yes, 0=no (if in burrow deeper than node 2, 0.1 degree sensitivity)}\cr}
 #' \item{\code{fosorial}{ = 0, Fossorial activity? 1=yes, 0=no (this option hasn't been tested)}\cr}
 #' \item{\code{rainact}{ = 0, Activity is limited by rainfall? 1=yes, 0=no, threshold rainfall for activity set by \code{actrainthresh}}\cr}
 #' \item{\code{actrainthresh}{ = 0.1, Threshold (mm) of rain causing activity if \code{rainact}=1}\cr}
@@ -478,7 +479,7 @@ ectoin=rbind(as.numeric(micro$ALTT),as.numeric(micro$REFL)[1],micro$longlat[1],m
 ,customallom=c(10.4713,0.688,0.425,0.85,3.798,0.683,0.694,0.743),
 shape_a=1.,shape_b=3,shape_c=0.6666666667,FATOSK=0.4,FATOSB=0.4,rinsul=0.,ptcond=0.1,
 Spheat=3073,Flshcond=0.5,Andens=1000,EMISAN=0.95,
-fosorial=0,rainact=0,actrainthresh=0.1,soilnode=4.,ctminthresh=12,ctkill=0,
+warmsig=0,fosorial=0,rainact=0,actrainthresh=0.1,soilnode=4.,ctminthresh=12,ctkill=0,
 PFEWAT=73,PTUREA=0,FoodWater=82,minwater=15,gutfill=75,raindrink=0.,
 DEB=0,fract=1,z=2.825*fract,del_M=0.2144,F_m=12420,kap_X=0.85,v=0.02795/24.,
 kap=0.8206,p_M=48.81/24.,E_G=7512,kap_R=0.95,k_J=0.00628/24.,E_Hb=866.6*fract^3,
@@ -730,7 +731,7 @@ flyer=0,flyspeed=5,flymetab=0.1035){
   tester<-0
   microyear<-1
 
-  ectoinput<-as.matrix(c(ALT,FLTYPE,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,AMASS,EMISAN,absan,RQ,rinsul,lometry,live,TIMBAS,Flshcond,Spheat,Andens,ABSMAX,ABSMIN,FATOSK,FATOSB,FATOBJ,VTMAX,VTMIN,DELTAR,SKINW,peyes,xbas,extref,TPREF,ptcond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,tdigpr,maxshd,minshd,ctmax,ctmin,behav,julday,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,julstart,monthly,customallom,M_1,M_2,M_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,minwater,microyear,container,flyer,flyspeed,dim,maxdepth,ctminthresh,ctkill,gutfill,mindepth,TBASK,TEMERGE,F_m,SUBTK,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,breedtempthresh,breedtempcum,contwet))
+  ectoinput<-as.matrix(c(ALT,FLTYPE,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,AMASS,EMISAN,absan,RQ,rinsul,lometry,live,TIMBAS,Flshcond,Spheat,Andens,ABSMAX,ABSMIN,FATOSK,FATOSB,FATOBJ,VTMAX,VTMIN,DELTAR,SKINW,peyes,xbas,extref,TPREF,ptcond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,tdigpr,maxshd,minshd,ctmax,ctmin,behav,julday,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,julstart,monthly,customallom,M_1,M_2,M_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,minwater,microyear,container,flyer,flyspeed,dim,maxdepth,ctminthresh,ctkill,gutfill,mindepth,TBASK,TEMERGE,F_m,SUBTK,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,breedtempthresh,breedtempcum,contwet,warmsig))
   debmod<-c(clutchsize,andens_deb,d_V,d_Egg,mu_X,mu_E,mu_V,mu_P,T_REF,z,kap,kap_X,p_M,v,E_G,kap_R,E_sm,del_M,h_a,V_init_baby,E_init_baby,k_J,E_Hb,E_Hj,E_Hp,clutch_ab[2],batch,breedrainthresh,photostart,photofinish,daylengthstart,daylengthfinish,photodirs,photodirf,clutch_ab[1],frogbreed,frogstage,eta_O,JM_JO,E_0,kap_X_P,PTUREA1,PFEWAT1,wO,w_N,FoodWater1,f,s_G,K,X,metab_mode,stages,y_EV_l,s_j,startday,raindrink,reset,ma,mi,mh,aestivate,depress,minclutch)
   deblast<-c(iyear,countday,v_init,E_init,ms_init,cumrepro_init,q_init,hs_init,cumbatch_init,V_baby_init,E_baby_init,E_H_init,stage)
 
