@@ -515,7 +515,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       BD<-rep(BulkDensity/1000,19) # soil bulk density, Mg/m3
     }else{
       if(soiltype<12){ # use soil properties as specified in Campbell and Norman 1998 Table 9.1
-      E<-rep(CampNormTbl9_1[soiltype,4],19) #air entry potential J/kg
+      PE<-rep(CampNormTbl9_1[soiltype,4],19) #air entry potential J/kg
       KS<-rep(CampNormTbl9_1[soiltype,6],19) #saturated conductivity, kg s/m3
       BB<-rep(CampNormTbl9_1[soiltype,5],19) #soil 'b' parameter
       BD<-rep(BulkDensity/1000,19) # soil bulk density, Mg/m3
