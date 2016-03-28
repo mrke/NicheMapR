@@ -32,6 +32,8 @@
 #' \strong{ Parameters controling how the model runs:}
 #'
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
+#' \code{hourly}{ = 1, Run the model with hourly input weather data (1) or with min/max values (0)
+#' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)\cr\cr
 #' \code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
@@ -242,7 +244,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
   nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,
   DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
   minshade=0,maxshade=90,Refhyt=1.2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
-  runshade=1,rungads=1,write_input=0,writecsv=0,manualshade=1,
+  runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,manualshade=1,
   soildata=1,terrain=0,dailywind=1,adiab_cor=1,warm=0,spatial="c:/Australian Environment/",vlsci=0,
   ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2560,SpecHeat=870,BulkDensity=1300,
   PCTWET=0,rainwet=1.5,cap=1,CMH2O=1.,hori=rep(0,24),
@@ -271,6 +273,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
   # maxshade=90
   # Usrhyt=.01
   # runshade=1
+  # clearsky=0
   # rungads=1
   # write_input=0
   # writecsv=0
@@ -956,7 +959,11 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
         #Hilly, mountainous terrain 	0.25
         WNMINN<-WNMINN*(1.2/10)^0.15
         WNMAXX<-WNMAXX*(1.2/10)^0.15
-
+        if(clearsky==1){
+          CCMINN=CCMINN*0
+          CCMAXX=CCMAX*0
+          cat('running for clear sky conditions')
+        }
         # impose uniform warming
         TMAXX<-TMAXX+warm
         TMINN<-TMINN+warm
