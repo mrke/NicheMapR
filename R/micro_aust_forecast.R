@@ -27,13 +27,14 @@
 #' @usage micro_aust(loc = "Melbourne, Australia", timeinterval = 365, ystart = 1990, yfinish = 1990, soiltype = 4,
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
+#' @export
 #' @details
 #'
-#' \strong{ Parameters controling how the model runs:}
+#' \strong{ Parameters controling how the model runs:}\cr\cr
 #'
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
-#' \code{hourly}{ = 1, Run the model with hourly input weather data (1) or with min/max values (0)
-#' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)\cr\cr
+#' \code{hourly}{ = 1, Run the model with hourly input weather data (1) or with min/max values (0)}\cr\cr
+#' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
 #' \code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
