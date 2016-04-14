@@ -258,7 +258,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
   LAI=0.1,
   snowmodel=0,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
-  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",barcoo="",quadrangle=1,hourly=0) {
+  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",barcoo="",quadrangle=1,hourly=0) {
   #
   # loc="Nyrripi, Northern Territory"
   # timeinterval=365
@@ -733,6 +733,85 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
     adiab_corr_max = delta_elev * 0.0077 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
     adiab_corr_min = delta_elev * 0.0039 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
 
+    if(scenario!=""){
+      cat("generate climate change scenario", '\n')
+      # diff spline function
+      getdiff<-function(diffs,grid){
+        diff1<-(unlist(diffs[1])+unlist(diffs[12]))/2
+
+        # generate list of days
+        for(ys in 1:nyears){
+          day<-c(1,15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5, 365)
+          day.leap<-c(1,15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5, 366)
+          if(ys==1){
+            days2=day
+            days=day
+          }else{
+            days2=c(days2,(day+365*(ys-1)))
+            days=c(days,day)
+          }
+        }
+
+        if(is.na(diffs[1])==TRUE){
+          # find the nearest cell with data
+          NArem<-grid[[1]]
+          NArem<-Which(!is.na(NArem), cells=TRUE)
+          dist<-distanceFromPoints(maxTst05[[1]],x)
+          distNA<-extract(dist,NArem)
+          cellsR<-cbind(distNA,NArem)
+          distmin<-which.min(distNA)
+          cellrep<-cellsR[distmin,2]
+          diffs<-extract(maxTst05,cellrep)
+          diff1<-(unlist(diffs[1])+unlist(diffs[12]))/2
+        }
+        diffs3=rep(c(diff1,diffs,diff1),nyears)
+        days_diffs<-data.frame(matrix(NA, nrow = nyears*14, ncol = 3))
+        days_diffs[,1]<-days
+        days_diffs[,3]<-days2
+        days_diffs[,2]<-diffs3
+        colnames(days_diffs)<-c("days","diffs","new_day")
+
+        # interpolate monthly differences
+        f<-approxfun(x=days_diffs$new_day, y=days_diffs$diffs)
+        xx<-seq(1,max(days2),1)
+        sp_diff<-f(xx)
+        return(sp_diff)
+      }
+
+      ########### Max and Min Air Temps ################
+
+      load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","maxTst05_",scenario,"_",year,".Rda",sep="")) #maxTst05
+
+      diffs<-extract(maxTst05,x)
+      TMAXX_diff<-getdiff(diffs,maxTst05)
+
+      load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","minTst05_",scenario,"_",year,".Rda",sep="")) #minTst05
+
+      diffs<-extract(minTst05,x)
+      TMINN_diff<-getdiff(diffs,minTst05)
+
+      ################ RH ############################
+
+      load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","RHst05_",scenario,"_",year,".Rda",sep="")) #maxTst05
+
+      diffs<-extract(RHst05,x)
+      RH_diff<-getdiff(diffs,RHst05)
+
+      ################ wind ############################
+
+      load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","PT_VELst05_",scenario,"_",year,".Rda",sep=""))
+
+      diffs<-extract(PT_VELst05,x)
+      WIND_diff<-getdiff(diffs,PT_VELst05)
+
+      ############# SOLAR/CLOUD COVER ##################
+
+      load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","SOLCst05_",scenario,"_",year,".Rda",sep=""))
+
+      diffs<-extract(SOLCst05,x)
+      SOLAR_diff<-getdiff(diffs,SOLCst05)
+    }
+
     cat("extracting climate data", '\n')
     # connect to server
     if(vlsci==0){
@@ -960,9 +1039,77 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
             TMAXX<-as.matrix(results$tmax)
             TMINN<-as.matrix(results$tmin)
           }
+          if(scenario!=""){
+            TMAXX=TMAXX+TMAXX_diff
+            TMINN=TMINN+TMINN_diff
+          }
           RAINFALL<-results$rr
           dim<-length(RAINFALL)
           output_AWAPDaily<-results
+
+          if(scenario!=""){
+            # first work out for each site the new predicted rainfall amount for each month - use this to adjust for fact that will underestimate chcange
+            # using proportion becasue 0 x % is still 0
+            # add columns with days, months and years
+            RAIN_current<-as.data.frame(RAINFALL)
+            dates<-seq(ISOdate(ystart,1,1,tz=paste("Etc/GMT-",10,sep=""))-3600*12, ISOdate((ystart+nyears),1,1,tz=paste("Etc/GMT-",10,sep=""))-3600*13, by="days")
+            dates=subset(dates, format(dates, "%m/%d")!= "02/29") # remove leap years
+            RAINFALL_sum<-aggregate(RAIN_current, by=list(format(dates,"%m-%Y")),FUN=sum)
+            dates2<-RAINFALL_sum$Group.1
+            RAINFALL_sum<-RAINFALL_sum[order(as.Date(paste("01-",RAINFALL_sum$Group.1,sep=""),"%m-%Y")),2]
+
+            load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","RAINst05_",scenario,"_",year,".Rda",sep=""))
+            diffs<-rep(extract(RAINst05,x),nyears)
+
+            if(is.na(diffs[1])==TRUE){
+              print("no data")
+              # find the nearest cell with data
+              NArem<-RAINst05[[1]] # don't need to re-do this within bioregion loop
+              NArem<-Which(!is.na(NArem), cells=TRUE)
+              dist<-distanceFromPoints(RAINst05[[1]],y)
+              distNA<-extract(dist,NArem)
+              cellsR<-cbind(distNA,NArem)
+              distmin<-which.min(distNA)
+              cellrep<-cellsR[distmin,2]
+              diffs<-rep(extract(RAINst05,cellrep),nyears)
+            }
+
+            rainfall_new<-(RAINFALL_sum*diffs)
+
+            rainfall_new[rainfall_new < 0 ]= 0 # get rid of any negative rainfall values
+
+            ## Now extract predicted change in mm
+            load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","RAINst05_mm_",scenario,"_",year,".Rda",sep=""))
+            rainfall_change_mm<-rep(extract(RAINst05_mm,x),nyears)
+
+            #########Now get predicted change in rainfall (could also get this from OzClim or ClimSim layer)#############
+            Diff_prop<-rainfall_new/RAINFALL_sum # proportion change
+            Diff_prop[Diff_prop=='NaN']= 0
+            Diff_prop[Diff_prop=='Inf']= 0 ## If was previously no rainfall and now is rainfall need to alter code so this is simply added
+
+            newRAINFALL=rep(NA,length(RAINFALL))
+            for (k in 1:length(RAINFALL)){ # loop through each sites applying monthly % changes
+              month<-which(dates2==format(dates[k],"%m-%Y"))
+              # Test if predicted rainfall matches up - use rainfall_change_mm layer
+              Rain_adj<-rainfall_change_mm[month]
+
+              # test for if proportional change is 0 (because current rainfall is 0)
+              #but rainfall predicted to increase
+              if(Diff_prop[month]==0 & Rain_adj > 1){ # couldn't get proportion as no current rain days but need to add rain
+                print('new rain days needed')
+                # previously no rain, randomly select a day and put all rain on it
+                listD<-seq(1,length(newRAINFALL),1)
+                altD<-sample(listD,1)
+                newRAINFALL[altD]<-Rain_adj/30
+              }else{
+                newRAINFALL[k]<-RAINFALL[k]*Diff_prop[month]
+              }
+            } # end of loop through each day
+            newRAINFALL[newRAINFALL<0.1]<-0
+            newRAINFALL[is.na(newRAINFALL)]<-0
+            RAINFALL=newRAINFALL
+          }
+
         }
 
         # cloud cover
@@ -1000,6 +1147,9 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
                 output_AWAPDaily[nrow(output_AWAPDaily),9]=mean(output_AWAPDaily[,9],na.rm=TRUE)
               }
               solar<-zoo::na.approx(output_AWAPDaily[,9])
+              if(scenario!=""){
+                solar=solar*SOLAR_diff
+              }
               cloud<-(1-as.data.frame(solar)/as.data.frame(daily_sol))*100
               cloud[cloud<0]<-0
               cloud[cloud>100]<-100
@@ -1110,6 +1260,9 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
             output_AWAPDaily$clearsky<-all_clear
 
             output_AWAPDaily[,9]<-glm_sol[1]+glm_sol[2]*output_AWAPDaily$rr+glm_sol[3]*output_AWAPDaily$tmax+glm_sol[4]*output_AWAPDaily$tmin+glm_sol[5]*output_AWAPDaily$day+glm_sol[6]*output_AWAPDaily$clearsky
+            if(scenario!=""){
+              output_AWAPDaily[,9]=output_AWAPDaily[,9]*SOLAR_diff
+            }
             cloud<-(1-as.data.frame(output_AWAPDaily$sol)/as.data.frame(output_AWAPDaily$clearsky))*100
             cloud[cloud<0]<-0
             cloud[cloud>100]<-100
@@ -1130,6 +1283,9 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
             loge[loge<=273.16]<- -9.09718*(273.16/TMAXK-1.)-3.56654*log10(273.16/TMAXK)+.876793*(1.-TMAXK/273.16)+log10(6.1071)
             estar<-(10.^loge)*100.
             RHMINN<-(VAPRES/estar)*100
+            if(scenario!=""){
+              RHMINN<-RHMINN+RH_diff
+            }
             RHMINN[RHMINN>100]<-100
             RHMINN[RHMINN<0]<-0.01
             #RHMINN
@@ -1139,6 +1295,9 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
             loge[loge<=273.16]<- -9.09718*(273.16/TMINK-1.)-3.56654*log10(273.16/TMINK)+.876793*(1.-TMINK/273.16)+log10(6.1071)
             estar<-(10.^loge)*100.
             RHMAXX<-(VAPRES/estar)*100
+            if(scenario!=""){
+              RHMAXX<-RHMAXX+RH_diff
+            }
             RHMAXX[RHMAXX>100]<-100
             RHMAXX[RHMAXX<0]<-0.01
           }else{
@@ -1209,6 +1368,9 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
             loge[loge<=273.16]<- -9.09718*(273.16/TMAXK-1.)-3.56654*log10(273.16/TMAXK)+.876793*(1.-TMAXK/273.16)+log10(6.1071)
             estar<-(10.^loge)*100.
             RHMINN<-(VAPRES/estar)*100
+            if(scenario!=""){
+              RHMINN<-RHMINN+RH_diff
+            }
             RHMINN[RHMINN>100]<-100
             RHMINN[RHMINN<0]<-0.01
             #RHMINN
@@ -1218,6 +1380,9 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
             loge[loge<=273.16]<- -9.09718*(273.16/TMINK-1.)-3.56654*log10(273.16/TMINK)+.876793*(1.-TMINK/273.16)+log10(6.1071)
             estar<-(10.^loge)*100.
             RHMAXX<-(VAPRES/estar)*100
+            if(scenario!=""){
+              RHMAXX<-RHMAXX+RH_diff
+            }
             RHMAXX[RHMAXX>100]<-100
             RHMAXX[RHMAXX<0]<-0.01
 
@@ -1259,6 +1424,10 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
           WNMAXX<-rep(WNMAXX1$y,nyears)
           WNMINN1 <-suppressWarnings(spline(juldays12,WNMINN,n=timeinterval,xmin=1,xmax=365,method="periodic"))
           WNMINN<-rep(WNMINN1$y,nyears)
+          if(scenario!=""){
+            WNMAXX=WNMAXX*WIND_diff
+            WNMINN=WNMINN*WIND_diff
+          }
         }
 
         if(soildata==1){

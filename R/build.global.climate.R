@@ -33,10 +33,10 @@ destin<-paste(folder,"soilw.mon.ltm.v2.nc",sep="")
 download.file(soilmoist.file, destin, mode="wb")
 cat('soilw.mon.ltm.v2.nc \n',sep="")
 gridout <- raster(ncol=2160, nrow=1080, xmn=-180, xmx=180, ymn=-90, ymx=90)
-soilmoist.05deg=stack(paste(folder,"soilw.mon.ltm.v2.nc",sep=""))
+soilmoist0.5deg=stack(paste(folder,"soilw.mon.ltm.v2.nc",sep=""))
 cat('interpolating soilw.mon.ltm.v2.nc from 0.5 deg to 10 min\n',sep="")
-soilmoist.10min=resample(rotate(soilmoist.05deg), gridout)
-rm(soilmoist.05deg)
+soilmoist.10min=resample(rotate(soilmoist0.5deg), gridout)
+rm(soilmoist0.5deg)
 
 # global_climate.nc construction
 

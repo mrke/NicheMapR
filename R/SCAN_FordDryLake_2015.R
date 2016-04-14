@@ -1,0 +1,65 @@
+#'  Ford Dry Lake, SCAN site 2184, year 2015
+#'
+#' Hourly weather, soil temperature and soil moisture observations
+#' extracted from the Soil and Climate Network Analysis.
+#'
+#' This is a modified version of the raw data with the following modifications:
+#' 1. A new relative humidity variable RHUM is the max of RHUM.I and RHUM.H
+#' 2. A new variable "date time" has been added, which is a POSIXct formatted
+#'    concatenation of the original date and time values
+#' 3. Incomplete days have been searched for and filled with NA values
+#'
+#' @format A data frame with 8760 rows and 49 variables:
+#' \describe{
+#'   \item{Site}{network type}
+#'   \item{Date}{site id}
+#'   \item{Time}{USA state}
+#'   \item{PREC.I}{Precipitation Accumulation, inches}
+#'   \item{TOBS.I}{Air Temperature, degrees C}
+#'   \item{TMAX.H}{Air Temperature, hourly maximum, degrees C}
+#'   \item{TMIN.H}{Air Temperature, hourly minimum, degrees C}
+#'   \item{TAVG.H}{Air Temperature, hourly average, degrees C}
+#'   \item{PRCP.H}{Precipitation Increment, inches}
+#'   \item{SMS.I_2}{Soil Moisture 2 inches, percent}
+#'   \item{SMS.I_4}{Soil Moisture 4 inches, percent}
+#'   \item{SMS.I_8}{Soil Moisture 8 inches, percent}
+#'   \item{SMS.I_20}{Soil Moisture 20 inches, percent}
+#'   \item{SMS.I_40}{Soil Moisture 40 inches, percent}
+#'   \item{STO.I_2}{Soil Temperature 2 inches, degrees C}
+#'   \item{STO.I_4}{Soil Temperature 4 inches, degrees C}
+#'   \item{STO.I_8}{Soil Temperature 8 inches, degrees C}
+#'   \item{STO.I_20}{Soil Temperature 20 inches, degrees C}
+#'   \item{STO.I_40}{Soil Temperature 40 inches, degrees C}
+#'   \item{STO.I-2_2}{Soil Temperature 2 inches, replicate probe, degrees C}
+#'   \item{STO.I-2_4}{Soil Temperature 4 inches, replicate probe, degrees C}
+#'   \item{STO.I-2_8}{Soil Temperature 8 inches, replicate probe, degrees C}
+#'   \item{STO.I-2_20}{Soil Temperature 20 inches, replicate probe, degrees C}
+#'   \item{STO.I-2_40}{Soil Temperature 40 inches, replicate probe, degrees C}
+#'   \item{SAL.I_2}{Salinity 2 inches, g/L}
+#'   \item{SAL.I_4}{Salinity 4 inches, g/L}
+#'   \item{SAL.I_8}{Salinity 8 inches, g/L}
+#'   \item{SAL.I_20}{Salinity 20 inches, g/L}
+#'   \item{SAL.I_40}{Salinity 40 inches, g/L}
+#'   \item{RDC.I_2}{Real Dielectric Constant 2 inches, -}
+#'   \item{RDC.I_4}{Real Dielectric Constant 4 inches, -}
+#'   \item{RDC.I_8}{Real Dielectric Constant 8 inches, -}
+#'   \item{RDC.I_20}{Real Dielectric Constant 20 inches, -}
+#'   \item{RDC.I_40}{Real Dielectric Constant 40 inches, -}
+#'   \item{BATT.I}{Battery, volts}
+#'   \item{BATT.I-2}{Battery 2, volts}
+#'   \item{WDIRV.H}{Wind Direction, degrees}
+#'   \item{WSPDX.H}{Wind Speed, maximum, miles per hour}
+#'   \item{WSPDV.H}{Wind Speed, average, miles per hour}
+#'   \item{RHUM.I}{Relative Humidity, percent}
+#'   \item{PRES.I}{Air Pressure, Kpa}
+#'   \item{SRADV.H}{Solar Radiation - Total, W/m2}
+#'   \item{DPTP.H}{date and time recording started}
+#'   \item{PVPV.H}{Vapor Pressure - Partial, Kpa}
+#'   \item{RHUMN.H}{Relative Humidity, hourly minimum, percent}
+#'   \item{RHUMX.H}{Relative Humidity, hourly maximum, percent}
+#'   \item{SVPV.H}{Vapor Pressure - Saturated, Kpa}
+#'   \item{RHUM}{relative humidity, percent}
+#'   \item{datetime}{POSIXct date and time}
+#' }
+#' @source Natural Resource Conservation Service Soil Climate Network Analysis http://www.wcc.nrcs.usda.gov/scan/
+"SCAN_FordDryLake_2015"
