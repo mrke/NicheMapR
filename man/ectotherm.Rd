@@ -123,6 +123,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \strong{ Behavioural parameters:}
 
 \itemize{
+\item{\code{warmsig}{ = 0, Warming signal for emergence? 1=yes, 0=no (if in burrow deeper than node 2, 0.1 degree sensitivity)}\cr}
 \item{\code{fosorial}{ = 0, Fossorial activity? 1=yes, 0=no (this option hasn't been tested)}\cr}
 \item{\code{rainact}{ = 0, Activity is limited by rainfall? 1=yes, 0=no, threshold rainfall for activity set by \code{actrainthresh}}\cr}
 \item{\code{actrainthresh}{ = 0.1, Threshold (mm) of rain causing activity if \code{rainact}=1}\cr}
