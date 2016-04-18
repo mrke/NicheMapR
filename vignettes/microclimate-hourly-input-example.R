@@ -8,7 +8,6 @@ library(NicheMapR)
 library(zoo)
 
 ## ------------------------------------------------------------------------
-load("C:/git/NicheMapR/data/SCANsites.Rda")
 head(SCANsites)
 
 ## ------------------------------------------------------------------------
@@ -25,7 +24,6 @@ nyears=yfinish-ystart+1 # number of years to run
 
 
 ## ------------------------------------------------------------------------
-load("C:/git/NicheMapR/data/SCAN_FordDryLake_2015.Rda")
 weather<-SCAN_FordDryLake_2015 # make SCAN_FordDrylake_2015 supplied package data the weather input variable
 
 ## ------------------------------------------------------------------------
