@@ -1,10 +1,10 @@
 ---
-title: "Inputs and outputs of the NicheMapR microclimate model"
+title: "Monthly example of inputs and outputs of the NicheMapR microclimate model"
 author: "Michael R. Kearney"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Microclimate Model IO}
+  %\VignetteIndexEntry{Microclimate Model Monthly Input Example}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
