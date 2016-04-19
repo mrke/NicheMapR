@@ -49,7 +49,7 @@ Madison, WI 53706, USA
 
 ## Preface to the Fifth Edition
 
-This fifth edition of Properties of Air has been transcribed into R Markdown, and the Fortran subroutines and function have been converted to R functions, by Michael Kearney. The figures have been generated with the R functions. It is now a vignette as part of the *NicheMapR* package.
+This fifth edition of Properties of Air has been transcribed into R Markdown, and the Fortran subroutines and function have been converted to R functions, by Michael Kearney. The figures have been generated with the R functions. It is now a vignette as part of the [NicheMapR R package](https://git/mrke/NicheMapR).
 
 ## Preface to the Fourth Edition
 
@@ -88,9 +88,9 @@ This manual comprises a series of tables and graphs that illustrate selected pro
 
 All information in this manual is expressed in terms of the International System of Units (SI), which is based, in part, on the metre, kilogram, second and kelvin. Basic units, derived units, prefixes, and some useful physical constants and conversion factors are listed below. More extensive lists are provided by List (1971), Mechtly (1973), and the Symbols Committee of the Royal Society (1975). Note that the symbol for a physical quantity is an italicized (slanted) letter of the Roman or Greek alphabet, and the unit for a quantity is indicated by an unitalicized (upright) Roman letter.  
 
-An equation is provided as a mathematical description of each graph. In addition, two Fortran subroutines and a function that calculate all of the information in the graphs are included in the NicheMapR package as R functions, and the R code use to obtain the data in the plots is provided as code snippets below each figure. Two of the equations in function DRYAIR (thermal conductivity of air and latent heat of vaporization of water) are linear regressions that were fit to tabular data. All other equations in DRYAIR were taken from the Smithsonian tables.  
+An equation is provided as a mathematical description of each graph. In addition, two Fortran subroutines and a function that calculate all of the information in the graphs are included in the ```NicheMapR``` package as R functions, and the R code use to obtain the data in the plots is provided as code snippets below each figure. Two of the equations in function ```DRYAIR``` (thermal conductivity of air and latent heat of vaporization of water) are linear regressions that were fit to tabular data. All other equations in DRYAIR were taken from the Smithsonian tables.  
 
-All humidity calculations in function WETAIR are made with the internationally accepted Goff-Gratch equation (function VAPPRS used by function WETAIR). A mathematically less cumbersome and often more useful alternative was reported by Tetens (Murray 1976); calculations with this equation differ negligibly from those with the Goff-Gratch expression. Teten's equation is provided in Figure 4 to calculate the saturation vapor pressure ($e_d^*$) at the dewpoint temperature ($t_d$). Note that this equation can also be used to calculate the saturation vapor pressure ($e^*$) at the dry bulb temperature ($t$) if $t$ replaces $t_d$, and the saturation vapor pressure ($e_w^*$) at the wet bulb temperature ($t_w$) if $t_w$ replaces $t_d$. The relationship of wet bulb temperature to dry bulb temperature, vapor density, and relative humidty is shown in the psychometric diagram Figure 15.
+All humidity calculations in function ```WETAIR``` are made with the internationally accepted Goff-Gratch equation (function ```VAPPRS``` used by function ```WETAIR```). A mathematically less cumbersome and often more useful alternative was reported by Tetens (Murray 1976); calculations with this equation differ negligibly from those with the Goff-Gratch expression. Teten's equation is provided in Figure 4 to calculate the saturation vapor pressure ($e_d^*$) at the dewpoint temperature ($t_d$). Note that this equation can also be used to calculate the saturation vapor pressure ($e^*$) at the dry bulb temperature ($t$) if $t$ replaces $t_d$, and the saturation vapor pressure ($e_w^*$) at the wet bulb temperature ($t_w$) if $t_w$ replaces $t_d$. The relationship of wet bulb temperature to dry bulb temperature, vapor density, and relative humidity is shown in the psychometric diagram Figure 15.
 
 Mathematical expressions for some properties of air that are dependent on humidity are not available. The equations for these properties are restricted to dry air in this manual but see Mason and Monchick (1965) for further information on humid air.
 
@@ -927,7 +927,8 @@ vd=WETAIR(db=tairs, rh=100)$vd # obtain vapor density at 100% rh
 
 # get dry bulb temperatures for a set of saturated wet bulb temperatures
 wb=seq(0,50,2) # sequence of wet bulb temperatures
-db=wb+WETAIR(db=wb, wb=wb, rh=100)$esat/(0.000660 * (1.0 + 0.00115 * wb) * 101325)) # rearrangement of formulae in WETAIR
+# rearrangement of formulae in WETAIR
+db=wb+WETAIR(db=wb, wb=wb, rh=100)$esat/(0.000660 * (1.0 + 0.00115 * wb) * 101325))
 ```
 
 \pagebreak 
@@ -1076,47 +1077,60 @@ emtmax=DRYAIR(db=tairs)$emtmax # compute values
 
 ## Example application on a raster dataset
 
-The functions described below can be applied on gridded dataset (rasters). The generic function WETAIR is described below but will not work on rasters (because of conditional statements). Instead, use WETAIR.dp, WETAIR.rh or WETAIR.wb depending on whether you have data on dew point, relative humidity or wet bulb temperature, respectively.  
+The functions described below can be applied on gridded dataset (rasters). The generic function ```WETAIR``` is described below but will not work on rasters (because of conditional statements). Instead, use ```WETAIR.dp```, ```WETAIR.rh``` or WETAIR.wb depending on whether you have data on dew point, relative humidity or wet bulb temperature, respectively.  
 
-The example below is based on code from the function build.global.climate, and adjusts relative humidity for a change in temperature, assuming the absolute humidity (vapor density) remains constant. In the global\_climate dataset, this is the assumption made about absolute humidity, with the min and max relative humidity simply based on the max and min air temperatures, respectively.  
+The example below is based on code from the function build.global.climate, and adjusts relative humidity for a change in temperature, assuming the absolute humidity (vapor density) remains constant. In the ```global_climate``` dataset, this is the assumption made about absolute humidity, with the min and max relative humidity simply based on the max and min air temperatures, respectively.  
 
-In the calculations below, the maximum humidity for January is calculated by obtaining the vapor pressure for the minimum relative humidity, at the maximum air temperature, then obtaining the saturation vapor pressure at the minimum air temperature and computing the relative humidity at the minimum temperature from the ratio of actual to saturation vapor pressure. The final calculated value should be identical to the maximum relative humidity surface in the global\_climate dataset. 
+In the calculations below, the maximum humidity for January is calculated by obtaining the vapor pressure for the minimum relative humidity, at the maximum air temperature, then obtaining the saturation vapor pressure at the minimum air temperature and computing the relative humidity at the minimum temperature from the ratio of actual to saturation vapor pressure. The final calculated value should be identical to the maximum relative humidity surface in the ```global_climate``` dataset. 
 
-```{r, results='asis', fig.width=7, fig.height=8}
+```{r, results='asis', fig.width=7, fig.height=8, warning=FALSE, message=FALSE}
 library(NicheMapR) # load the NicheMapR package
 library(raster) # package for working with rasters
 library(ncdf4) # package for dealing with netcdf files (a kind of layered raster)
-global_climate<-brick(paste("c:/globalclimate/global_climate.nc",sep="")) # read the global_climate dataset
-Tair_min_january=global_climate[[38]]/10 # 38th layer of global_climate is min January air temperature*10
-Tair_max_january=global_climate[[50]]/10 # 50th layer of global_climate is max January air temperature*10
-RH_min_january=global_climate[[62]]/10 # 62nd layer of global_climate is max January relative humidity*10
-RH_max_january=global_climate[[74]]/10 # 74th layer of global_climate is max January relative humidity*10
-# use WETAIR.rh to get the vapor pressure for January based on min relative humidty and max air temperature
+# read the global_climate dataset
+global_climate<-brick(paste("c:/globalclimate/global_climate.nc",sep="")) 
+ # 38th layer of global_climate is min January air temperature*10
+Tair_min_january=global_climate[[38]]/10
+# 50th layer of global_climate is max January air temperature*10
+Tair_max_january=global_climate[[50]]/10 
+# 62nd layer of global_climate is max January relative humidity*10
+RH_min_january=global_climate[[62]]/10 
+# 74th layer of global_climate is max January relative humidity*10
+RH_max_january=global_climate[[74]]/10 
+# use WETAIR.rh to get the vapor pressure for January based on min
+# relative humidty and max air temperature
 e=WETAIR.rh(rh=RH_min_january,db=Tair_max_january)$e 
-# use the VAPPRS function to get the saturation vapor pressure for the new temperature, Tmin January
+# use the VAPPRS function to get the saturation vapor pressure for
+# the new temperature, Tmin January
 esat=VAPPRS(Tair_min_january) 
-RH_max_january=(e/esat)*100 # compute new relative humidity for minimum air temperature
+# compute new relative humidity for minimum air temperature
+RH_max_january=(e/esat)*100 
 # conditional replace of any values >100 with 100
 values(RH_max_january) <- ifelse(values(RH_max_january > 100), 100, values(RH_max_january)) 
 # now plot the results
 par(mfrow = c(3,2)) # set up for 6 plots in 2 columns
-plot(Tair_max_january,zlim=c(-40,50),main="Max Air Temperature, January") # plot the January max air temperature
-plot(RH_min_january,zlim=c(0,100),main="Min Relative Humidity, January") # plot the January min relative humidity
+# plot the January max air temperature
+plot(Tair_max_january,zlim=c(-40,50),main="Max Air Temperature, January")
+# plot the January min relative humidity
+plot(RH_min_january,zlim=c(0,100),main="Min Relative Humidity, January") 
 plot(e, main="vapor pressure, January")
 plot(esat, main="sat. vapor pressure at Tmin")
-plot(Tair_min_january,zlim=c(-40,50),main="Min Air Temperature, January") # plot the January max air temperature
-plot(RH_max_january,zlim=c(0,100),main="Max Relative Humidity, January") # plot the January min relative humidity
+# plot the January max air temperature
+plot(Tair_min_january,zlim=c(-40,50),main="Min Air Temperature, January") 
+# plot the January min relative humidity
+plot(RH_max_january,zlim=c(0,100),main="Max Relative Humidity, January") 
 ```
 
 \pagebreak 
 
 ## Function DRYAIR
-```
+```{r}
 #' DRYAIR
 #'
-#' Calculates several properties of dry air and related characteristics shownas output variables below. The program
-#' is based on equations from List, R. J. 1971. Smithsonian Meteorological Tables. Smithsonian
-#' Institution Press. Washington, DC. WETAIR must be used in conjunction with function VAPPRS.
+#' Calculates several properties of dry air and related characteristics shown
+#' as output variables below. The program is based on equations from List, R. J. 1971.
+#' Smithsonian Meteorological Tables. Smithsonian Institution Press. Washington, DC.
+#' WETAIR must be used in conjunction with function VAPPRS.
 #'
 #' The user must supply values for the input variables (db, bp and alt).
 #' If alt is known (-1000 < alt < 20000) but not BP, then set BP=0
@@ -1162,16 +1176,17 @@ DRYAIR <- function(db=db, bp=0, alt=0){
 \pagebreak 
 
 ## Function WETAIR
-```
+```{r}
 #' WETAIR
 #'
 #' Calculates several properties of humid air as output variables below. The program
 #' is based on equations from List, R. J. 1971. Smithsonian Meteorological Tables. Smithsonian
 #' Institution Press. Washington, DC. WETAIR must be used in conjunction with function VAPPRS.
 #'
-#' Input variables are shown below. The user must supply known values for DB and BP (BP at one standard
-#' atmosphere is 101 325 pascals). Values for the remaining variables are determined by whether the user has
-#' either (1) psychrometric data (WB or RH), or (2) hygrometric data (DP)
+#' Input variables are shown below. The user must supply known values for DB and BP 
+#' (BP at one standard atmosphere is 101 325 pascals). Values for the remaining variables
+#' are determined by whether the user has either (1) psychrometric data (WB or RH),
+#' or (2) hygrometric data (DP)
 #'
 #' (1) Psychrometric data:
 #' If WB is known but not RH, then set RH=-1 and DP=999
@@ -1224,14 +1239,15 @@ WETAIR <- function(db=db, wb=db, rh=0, dp=999, bp=101325){
   }else{
     wtrpot = 4.615e+5 * tk * log(rh / 100.0)
   }
-  return(list(e=e, esat=esat, vd=vd, rw=rw, tvinc=tvinc, denair=denair, cp=cp, wtrpot=wtrpot, rh=rh))
+  return(list(e=e, esat=esat, vd=vd, rw=rw, tvinc=tvinc, denair=denair, cp=cp,
+  wtrpot=wtrpot, rh=rh))
 }
 ```
 
 \pagebreak 
 
 ### Function VAPPRS
-```
+```{r}
 #' VAPPRS
 #'
 #' Calculates saturation vapour pressure for a given air temperature.
@@ -1241,8 +1257,11 @@ WETAIR <- function(db=db, wb=db, rh=0, dp=999, bp=101325){
 VAPPRS <- function(db=db){
   t=db+273.16
   loge=t
-  loge[t<=273.16]=-9.09718*(273.16/t[t<=273.16]-1.)-3.56654*log10(273.16/t[t<=273.16])+.876793*(1.-t[t<=273.16]/273.16)+log10(6.1071)
-  loge[t>273.16]=-7.90298*(373.16/t[t>273.16]-1.)+5.02808*log10(373.16/t[t>273.16])-1.3816E-07*(10.^(11.344*(1.-t[t>273.16]/373.16))-1.)+8.1328E-03*(10.^(-3.49149*(373.16/t[t>273.16]-1.))-1.)+log10(1013.246)
+  loge[t<=273.16]=-9.09718*(273.16/t[t<=273.16]-1.)-3.56654*log10(273.16/t[t<=273.16])+
+  .876793*(1.-t[t<=273.16]/273.16)+log10(6.1071)
+  loge[t>273.16]=-7.90298*(373.16/t[t>273.16]-1.)+5.02808*log10(373.16/t[t>273.16])-
+  1.3816E-07*(10.^(11.344*(1.-t[t>273.16]/373.16))-1.)+8.1328E-03*(10.^(-3.49149*(373.16
+  /t[t>273.16]-1.))-1.)+log10(1013.246)
   esat=(10.^loge)*100
   return(esat)
 }

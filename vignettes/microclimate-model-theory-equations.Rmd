@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 # 1. Introduction
 
-This document is Appendix 1 for the NicheMapR microclimate model software note (Kearney and Porter 2016). It provides a detailed explanation of the underlying theory and equations of the microclimate model used in NicheMapR. All of the calcuations described here are coded in Fortran in a set of subroutines and functions depicted in Figure 1. The Fortran code is compiled as a dynamic link library that can be called from R, as described in Kearney and Porter (2016). 
+This document is Appendix 1 for the NicheMapR microclimate model software note (Kearney and Porter 2016). It provides a detailed explanation of the underlying theory and equations of the microclimate model used in the NicheMapR R package. All of the calcuations described here are coded in Fortran in a set of subroutines and functions depicted in Figure 1. The Fortran code is compiled as a dynamic link library that can be called from R, as described in Kearney and Porter (2016). 
 
 ```{r fig.width=8, fig.height=3,echo=FALSE, fig.cap='Figure 1. Stucture of the NicheMapR microclimate model Fortran program'}
 library(png)

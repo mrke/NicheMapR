@@ -328,16 +328,16 @@ Now the model has run and we need to retrieve the output from the ```micro``` li
 ```{r}
 # retrieve ouptut
 dates=weather$datetime[1:nrow(micro$metout)]
-metout<-as.data.frame(micro$metout[1:(julnum*24),]) # retrieve above ground microclimatic conditions, min shade
-shadmet<-as.data.frame(micro$shadmet[1:(julnum*24),]) # retrieve above ground microclimatic conditions, max shade
-soil<-as.data.frame(micro$soil[1:(julnum*24),]) # retrieve soil temperatures, minimum shade
-shadsoil<-as.data.frame(micro$shadsoil[1:(julnum*24),]) # retrieve soil temperatures, maximum shade
-soilmoist<-as.data.frame(micro$soilmoist[1:(julnum*24),]) # retrieve soil moisture, minimum shade
-shadmoist<-as.data.frame(micro$shadmoist[1:(julnum*24),]) # retrieve soil moisture, maximum shade
-humid<-as.data.frame(micro$humid[1:(julnum*24),]) # retrieve soil humidity, minimum shade
-shadhumid<-as.data.frame(micro$shadhumid[1:(julnum*24),]) # retrieve soil humidity, maximum shade
-soilpot<-as.data.frame(micro$soilpot[1:(julnum*24),]) # retrieve soil water potential, minimum shade
-shadpot<-as.data.frame(micro$shadpot[1:(julnum*24),]) # retrieve soil water potential, maximum shade
+metout<-as.data.frame(micro$metout) # retrieve above ground microclimatic conditions, min shade
+shadmet<-as.data.frame(micro$shadmet) # retrieve above ground microclimatic conditions, max shade
+soil<-as.data.frame(micro$soil) # retrieve soil temperatures, minimum shade
+shadsoil<-as.data.frame(micro$shadsoil) # retrieve soil temperatures, maximum shade
+soilmoist<-as.data.frame(micro$soilmoist) # retrieve soil moisture, minimum shade
+shadmoist<-as.data.frame(micro$shadmoist) # retrieve soil moisture, maximum shade
+humid<-as.data.frame(micro$humid) # retrieve soil humidity, minimum shade
+shadhumid<-as.data.frame(micro$shadhumid) # retrieve soil humidity, maximum shade
+soilpot<-as.data.frame(micro$soilpot) # retrieve soil water potential, minimum shade
+shadpot<-as.data.frame(micro$shadpot) # retrieve soil water potential, maximum shade
 
 # append dates
 metout<-cbind(dates,metout)
