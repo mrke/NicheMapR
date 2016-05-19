@@ -1,6 +1,6 @@
 Package: NicheMapR
 Title: R implementation of Niche Mapper software for biophysical modelling
-Version: 1.1.0
+Version: 1.1.1
 Authors@R: person("Michael", "Kearney", email = "mrke@unimelb.edu.au", role = c("aut", "cre"))
 Maintainer: Michael Kearney <mrke@unimelb.edu.au>
 Description: This packages provides an interface to a suite of biophysical
@@ -24,4 +24,4 @@ Suggests:
     rutils,
     ncdf4
 VignetteBuilder: knitr
-Vignettes: properties-of-air,ectotherm-model-tutorial,microclimate-model-tutorial,microclimate-IO,microclimate-inputs
+Vignettes: properties-of-air,ectotherm-model-tutorial,microclimate-model-tutorial,microclimate-monthly-input-example,microclimate-inputs,microclimate-model-theory-equations,microclimate-hourly-input-example

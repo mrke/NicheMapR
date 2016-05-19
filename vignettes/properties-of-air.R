@@ -1,105 +1,9 @@
----
-title: 'Properties of Air: A Manual for Use in Biophysical Ecology, 5th Edition'
-author: C. Richard Tracy, William R. Welch, Berry Pinshow, Michael R. Kearney and
-  Warren P. Porter
-date: '`r Sys.Date()`'
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Properties of Air}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
-
-```{r, echo = FALSE}
+## ---- echo = FALSE-------------------------------------------------------
 knitr::opts_chunk$set(
  eval = TRUE
 )
-```
 
-
-*Current Addresses:*  
-**C. Richard Tracy**  
-Department of Biology MS-315  
-University of Nevada, Reno  
-Reno, NV 89557, USA 
-
-**William R. Welch**  
-Deceased; Madison, Wisconsin, USA  
-
-**Berry Pinshow**  
-Mitrani Department of Desert Ecology  
-Jacob Blaustein Institutes for Desert Research  
-Ben-Gurion University of the Negev  
-Sede Boqer Campus  
-84990 Midreshet Ben-Gurion, Israel 
-
-**Michael R. Kearney**  
-School of BioSciences  
-The University of Melbourne  
-Victoria, 3010 Australia  
-
-**Warren P. Porter**  
-Department of Zoology  
-University of Wisconsin-Madison  
-Zoology Research Building  
-1117 West Johnson Street  
-Madison, WI 53706, USA
-
-\pagebreak 
-
-## Preface to the Fifth Edition
-
-This fifth edition of Properties of Air has been transcribed into R Markdown, and the Fortran subroutines and function have been converted to R functions, by Michael Kearney. The figures have been generated with the R functions. It is now a vignette as part of the [NicheMapR R package](https://git/mrke/NicheMapR).
-
-## Preface to the Fourth Edition
-
-This fourth edition of Properties of Air is largely a reprint of the third edition with errors corrected. This edition was created because Berry Pinshow wanted a digital version for his personal use. He scanned the third edition, and corrected errors in it. The fourth edition exists due to Berry's enthusiasm to develop a digital version with errors
-corrected. This preface is largely to say a few things about this small book.  
-
-When I was a graduate student, I found myself constantly looking up physical characteristics of air as I developed biophysical ecological models. I got so tired of looking in reference books that I decided to extract what I needed and make tables and graphs of the properties of air. These, and other tables that I accumulated, became my main source of reference material in my research. For years, I carried these reference tools around in a folder of hand-drawn graphs and tables. Various visitors to Warren Porter's lab asked for copies of the graphs and tables in my folder. Bill Welch suggested that we get the artistic staff in the Department of Zoology at the University of Wisconsin to make pen-and-ink drawings from my graphs. Subsequently, I created a set of general subroutines in the program language FORTRAN, which simply translated the graphs. As these tools accumulated, Bill Welch and I continued to add to the reference material, and Warren Porter facilitated getting the book put together in a package that we self-published out of the Porter Lab. Many dozens of people have requested this book, and it seems to remain useful as many continue to ask for copies of it. However, the original printing has now exhausted, so creating this digital version made sense.  
-
-One of the original authors of this book, and our good friend, Dr. Bill Welch, died at
-much too young an age. To him, we dedicate this fourth edition.  
-
-<center>C. Richard Tracy  
-Department of Biology  
-University of Nevada, Reno  
-Reno, NV 89557  
-
-First Edition 1973  
-Second Edition 1978  
-Third Edition 1980  
-Fourth Edition 2010 </center>  
-
-
-## Preface to the Third Edition
-
-This manual was made possible by the invaluable assistance of Ann Chambers and Cheryle Hughes. Financial support was provided by grants from the Department of Zoology, Wisconsin Alumni Research Foundation, ERDA (Contract EY-76-5-02-2270), and NSF (Grant Nos. 74-19454 and 77-25786 to WPP).   
-
-<center>First edition 1973  
-Second edition 1978  
-Third edition 1980  
-Fourth edition 2010 </center>
-\pagebreak  
-
-## Introduction
-
-This manual comprises a series of tables and graphs that illustrate selected properties of air as functions of temperature, pressure, and humidity. The particular properties that are displayed were chosen because of their importance in analytical studies of energy (heat) and mass (water) transfer between organisms and their physical environments. Except where otherwise noted, the graphs were drawn from information in the Smithsonian Meteorological Tables (List 1971). These graphs are considered to be a concise references for the values of the indicated properties, and not substitutes for the more accurate Smithsonian tables.  
-
-All information in this manual is expressed in terms of the International System of Units (SI), which is based, in part, on the metre, kilogram, second and kelvin. Basic units, derived units, prefixes, and some useful physical constants and conversion factors are listed below. More extensive lists are provided by List (1971), Mechtly (1973), and the Symbols Committee of the Royal Society (1975). Note that the symbol for a physical quantity is an italicized (slanted) letter of the Roman or Greek alphabet, and the unit for a quantity is indicated by an unitalicized (upright) Roman letter.  
-
-An equation is provided as a mathematical description of each graph. In addition, two Fortran subroutines and a function that calculate all of the information in the graphs are included in the ```NicheMapR``` package as R functions, and the R code use to obtain the data in the plots is provided as code snippets below each figure. Two of the equations in function ```DRYAIR``` (thermal conductivity of air and latent heat of vaporization of water) are linear regressions that were fit to tabular data. All other equations in DRYAIR were taken from the Smithsonian tables.  
-
-All humidity calculations in function ```WETAIR``` are made with the internationally accepted Goff-Gratch equation (function ```VAPPRS``` used by function ```WETAIR```). A mathematically less cumbersome and often more useful alternative was reported by Tetens (Murray 1976); calculations with this equation differ negligibly from those with the Goff-Gratch expression. Teten's equation is provided in Figure 4 to calculate the saturation vapor pressure ($e_d^*$) at the dewpoint temperature ($t_d$). Note that this equation can also be used to calculate the saturation vapor pressure ($e^*$) at the dry bulb temperature ($t$) if $t$ replaces $t_d$, and the saturation vapor pressure ($e_w^*$) at the wet bulb temperature ($t_w$) if $t_w$ replaces $t_d$. The relationship of wet bulb temperature to dry bulb temperature, vapor density, and relative humidity is shown in the psychometric diagram Figure 15.
-
-Mathematical expressions for some properties of air that are dependent on humidity are not available. The equations for these properties are restricted to dry air in this manual but see Mason and Monchick (1965) for further information on humid air.
-
-
-\pagebreak 
-
-
-## Table 1. Basic units
-```{r table1, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table1, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 *Physical Quantity*       |	*Quantity Symbol* |	*Unit*   |	*Unit Symbol*
 ------------------------- | ----------------- | -------- | --------------
@@ -109,10 +13,8 @@ time                      | *t*               | second   | s
 thermodynamic temperature | *T*               | kelvin   | K
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-## Table 2. Derived units
-```{r table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 *Physical Quantity*  | *Quantity Symbol*   | *Unit*   | *Unit Symbol*   | *Unit Definition*
 -------------------- | ------------------- | -------- | --------------- | -----------------
@@ -124,10 +26,8 @@ volume               | *t*                 | cubic metre | $m^3$        | $m^3$
 Celsius temperature$^*$ | $t$              | degree Celsius   | &deg;C   | $K$
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-## Table 3. Prefixes
-```{r table3, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table3, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 *Multiple* | *Prefix*	| *Symbol* |	*Multiple* | *Prefix*	 | *Symbol*
 ---------- | -------- | -------- | ----------- | --------- | -------
@@ -139,14 +39,8 @@ $10^{-9}$	 | nano	    | *n*      | $10^{9}$	   | giga	     | G
 $10^{-12}$ | pico	    | *p*      | $10^{12}$   | tera	     | T
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-
-\pagebreak 
-
-
-## Table 4. Conversion factors
-```{r table4, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table4, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 **Force**   
 &nbsp;&nbsp;&nbsp;&nbsp;dyne = $10^5$ N$^*$  
@@ -195,12 +89,8 @@ tabl <- "
 $^{*}$exact, by definition
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-\pagebreak 
-
-## Table 5. Physical constants
-```{r table5, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table5, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 *Quantity*                                           | *Symbol*	| *Value*  |	*Units*
 ---------------------------------------------------- | -------- | -------- | -----------
@@ -221,14 +111,8 @@ Stefan-Boltzmann constant	 | $\\sigma$	    | $5.67032$ x $10^{-8}$    | W m$^{-2
 Thermal conductivity of dry air at 25 &deg;C and 101325 Pa$^{*}$	 | *k*	    | $2.601$ x $10^{-2}$    | W m$^{-1}$ K$^{-1}$	   
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-$^{*}$Variable that is functionally related to other properties in this manual
-
-\pagebreak 
-
-## Table 6. Percent relative humidity over saturated solutions as a function of temperature. From Winston and Bates (1960)$^1$
-```{r table6, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table6, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 
 *Compound* | *10&deg;C*	| *15&deg;C*  |	 *20&deg;C* | *25&deg;C*	| *30&deg;C*	| *35&deg;C*	
@@ -288,32 +172,8 @@ ZnCl$_2$&middot;1.5H$_2$O$^{20}$|(10.0) | (10.0) | 10.0 | - | (10.0) | -
 ZnSO$_4$&middot;7H$_2$O$^{21}$|- | - | - | 88.5 | - | -
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-$^{1}$Parentheses around a value of relative humidity indicate some doubt of accuracy.   
-$^{2}$May be unstable around 20 &deg;C.   
-$^{3}$May be a transition point between 15 and 20 &deg;C.   
-$^{4}$Calcium monophosphate.   
-$^{5}$Good up to 40 &deg;C.   
-$^{6}$Uncertain around 20 &deg;C, large temperature coefficient.   
-$^{7}$Other researchers report 40\% at 30 &deg;C.   
-$^{8}$LiCl&middot;XH$_2$O &rarr; LiCl&middot;H$_2$O at 25 &deg;C.     
-$^{9}$Solution slightly acid due to hydrolysis, but stable.   
-$^{10}$Should be granulated then moistened; powdered from is unstable.   
-$^{11}$KF&middot;2H$_2$O &rarr; KF at 50 &deg;C.   
-$^{12}$Large temperature coefficient.   
-$^{13}$Very toxic.   
-$^{14}$Potassium tartrate. Excellent.   
-$^{15}$Potassium sodium tartrate (Rochelle salts). Good only below 40 &deg;C.   
-$^{16}$Good up to 55 &deg;C, large temperature coefficient.   
-$^{17}$NaCO$_3$&middot;10H$_2$O.....>Na$_2$CO$_3$&middot;H$_2$O at 32 &deg;C.   
-$^{18}$Very good; small temperature coefficient.   
-$^{19}$This is also listed with one water of hydration, instead of two; good only below 40 &deg;C.   
-$^{20}$Unstable around 20 &deg;C.   
-$^{21}$Good below 10 &deg;C.      
-
-## Table 7. Percent relative humidity over saturated solutions at 20 &deg;C. From Winston and Bates (1960)
-```{r table7, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table7, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 
 *Compound* | *Relative Humidity*	| *Compound*  |	 *Relative Humidity*	
@@ -329,14 +189,8 @@ KHSO$_4$|86.0 | 2n(NO$_3$)$_2$ | 42.0
 K$_2$HPO$_4$|44.5 | - | -
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-$^{*}$Good only below 29.6 &deg;C.
-
-\pagebreak 
-
-## Table 8. Percent relative humidity over saturated solutions at 25 &deg;C. From Winston and Bates (1960)$^1$
-```{r table8, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table8, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 
 *Compound* | *Relative Humidity*	| *Compound*  |	 *Relative Humidity*	
@@ -374,16 +228,8 @@ Mg(ClO$_4$)$_2$&middot;6H$_2$O|(41.0) | Zn(MnO$_4$)$_2$&middot;6H$_2$O | 51.0
 Mg silicoflouride|91.5 | Zn(CNS)$_2$ | 80.5
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-$^{1}$Parentheses around a value of relative humidity indicate some doubt of accuracy.   
-$^{2}$Light sensitive.   
-$^{3}$Prepare by mixing Ca(OH)$_2$ + ZnO + 4HCl.   
-
-\pagebreak 
-
-## Table 9. Efficiency of drying agents expressed as mass of water remaining per unit volume of air dried at 25 &deg;C, and as relative humidity$^*$. From Winston and Bates (1960).
-```{r table9, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table9, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 
 *Compound* | *Mass*, g m$^{-3}$ (STPD)	| *Relative Humidity*  	
@@ -406,41 +252,20 @@ ZnBr$_2$|1.1 | 4.4
 CuSO$_4$|1.4 | 5.6
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-$^{*}$Relative humidity calculated as 3.98 x mass. 
-
-\pagebreak 
-
-## Table 10. Water potential (kPa) of NaCl solutions as a function of temperature. From Brown and van Haveren (1972).
-<center> <h4>*Temperature*, &deg;C</h4> </center>
-```{r table10, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table10, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 library(NicheMapR)
 knitr::kable(PropAirTable10) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-\pagebreak 
-
-## Table 11. Water potential (kPa) of KCl solutions as a function of temperature. From Brown and van Haveren (1972).
-<center> <h4>*Temperature*, &deg;C</h4> </center>
-```{r table11, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table11, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 library(NicheMapR)
 knitr::kable(PropAirTable11) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-\pagebreak 
-
-## Table 12. Preparation of standard molal solutions of NaCl and KCl from 2 molal stock solutions. From Brown and van Haveren (1972).
-<center> <h4>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mass of NaCl Solution, g &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mass of KCl Solution, g*</h4> </center>
-```{r table12, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table12, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 library(NicheMapR)
 knitr::kable(PropAirTable12) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-\pagebreak 
-
-## Figure 1. Black-body emittance
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -458,17 +283,8 @@ abline(v = tix$xticks, col = 'grey', lty = 1)
 grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$bbemit,type='l',ylim=ylim,ylab=ylab, xlab=xlab,cex.lab=1.5,cex.axis=1.5,lwd=2)
 plotrix::boxed.labels(10, 550, expression(paste(phi," = ",5.67032," x 10"^{-8},"(",italic(t)," + 273.15)"^{4})),cex=1.5,bg="white",border=NA)
-```
 
-```
-tairs=seq(-20,50,5) # sequence of air temperatures
-bbemit=DRYAIR(db=tairs)$bbemit # compute values
-```
-
-\pagebreak 
-
-## Figure 2. Density of dry air
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -488,17 +304,8 @@ points(tairs,DRYAIR(db=tairs,bp = 100000)$densty,type='l',lwd=2)
 plotrix::boxed.labels(30, 1.4, expression(paste(italic(rho)," = ",frac(italic(P), paste(287.04,"(",italic(t)," + 273.15)",sep="")))),cex=1.5,bg="white",border=NA)
 plotrix::boxed.labels(10,1.3,"100 000 Pa",cex=1.5,bg="white",border=NA)
 plotrix::boxed.labels(0,1.14,"85 000 Pa",cex=1.5,bg="white",border=NA)
-```
 
-```
-tairs=seq(-20,50,5) # sequence of air temperatures
-densty=DRYAIR(db=tairs,bp = 85000)$densty # compute values
-```
-
-\pagebreak 
-
-## Figure 3. Dew point temperature
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(2,1)) # set up for 2 plots in 1 columns
 dps=seq(0,50,5)
 par(oma = c(5,5,2,2) + 0.1)
@@ -547,17 +354,8 @@ plotrix::boxed.labels(300+x,-20+y, expression(paste(italic(alpha)," = ",9.5)),ce
 plotrix::boxed.labels(310+x,-23.5+y, expression(paste(italic(beta)," = ",265.5)),cex=.8,bg="white",border=NA) 
 plotrix::boxed.labels(360+x,-21.5+y, "}",cex=1.5,bg="white",border=NA)
 plotrix::boxed.labels(420+x,-21.5+y, "OVER ICE",cex=.8,bg="white",border=NA)
-```
 
-```
-dps=seq(-20,50,5) # sequence of dew points
-esat=WETAIR(db=dps,rh=100)$esat # compute values
-```
-
-\pagebreak 
-
-## Figure 4. Diffusivity of water vapor in air
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -584,17 +382,8 @@ plotrix::boxed.labels(37, 2.40E-5, expression(paste(italic(D)[0]," = ",2.26," x 
 plotrix::boxed.labels(37, 2.30E-5, expression(paste(italic(T)," = ",italic(t)+273.15)),cex=1.05,bg="white",border=NA) 
 plotrix::boxed.labels(37, 2.2E-5, expression(paste(italic(n)," = ",1.81)),cex=1.05,bg="white",border=NA) 
 plotrix::boxed.labels(37, 2.1E-5, expression(paste(italic(rho)[0]," = ",2.26," x ",10^{5})),cex=1.05,bg="white",border=NA) 
-```
 
-```
-tairs=seq(-20,50,5) # sequence of air temperatures
-difvpr=DRYAIR(db=tairs,bp = 85000)$difvpr # compute values
-```
-
-\pagebreak 
-
-## Figure 5. Dynamic viscosity of air
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -616,17 +405,8 @@ plotrix::boxed.labels(10, 1.2E-5, expression(paste(italic(mu)[0]," = ",1.8325," 
 plotrix::boxed.labels(10, 1.04E-5, expression(paste(italic(T)[0]," = ",296.16)),cex=1.05,bg="white",border=NA) 
 plotrix::boxed.labels(10, 0.94E-5, expression(paste(italic(C)," = ",120)),cex=1.05,bg="white",border=NA) 
 plotrix::boxed.labels(10, 0.81E-5, expression(paste(italic(rho)[0]," = ",italic(t)+273.15)),cex=1.05,bg="white",border=NA) 
-```
 
-```
-tairs=seq(-20,50,5) # sequence of air temperatures
-visdyn=DRYAIR(db=tairs)$visdyn # compute values
-```
-
-\pagebreak 
-
-## Figure 6. Group of variables in Grashof number
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -643,17 +423,8 @@ abline(v = tix$xticks, col = 'grey', lty = 1)
 grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$ggroup,type='l',ylim=c(9E5,10E6),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
 plotrix::boxed.labels(10, 8E6, expression(paste(italic(gamma)," = ",frac(0.0980618*italic(beta),italic(nu)^{2}))),cex=1.15,bg="white",border=NA) 
-```
 
-```
-tairs=seq(-20,50,5) # sequence of air temperatures
-ggroup=DRYAIR(db=tairs)$ggroup # compute values
-```
-
-\pagebreak 
-
-## Figure 7.Kinematic viscosity of air at 100 000 Pa
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
 par(yaxs="i")
@@ -670,17 +441,8 @@ abline(v = tix$xticks, col = 'grey', lty = 1)
 grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$viskin,type='l',ylim=c(0.2E-5,2.2E-5),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
 plotrix::boxed.labels(-10, 2E-5, expression(paste(italic(nu)," = ",frac(italic(mu),italic(rho)))),cex=1.5,bg="white",border=NA) 
-```
 
-```
-tairs=seq(-20,50,5) # sequence of air temperatures
-viskin=DRYAIR(db=tairs)$viskin # compute values
-```
-
-\pagebreak 
-
-## Figure 8.Latent heat of vaporization of water
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
 par(yaxs="i")
@@ -698,17 +460,8 @@ grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$htovpr,type='l',ylim=c(2.35E6,2.6E6),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
 plotrix::boxed.labels(20, 2.55E6, expression(paste(italic(L)," = ",2.5012," x 10"^6-2378.7*italic(t))),cex=1.25,bg="white",border=NA) 
 plotrix::boxed.labels(20, 2.53E6, expression(-20<paste(italic(L)<60)),cex=1.25,bg="white",border=NA) 
-```
 
-```
-tairs=seq(-20,50,5) # sequence of air temperatures
-htovpr=DRYAIR(db=tairs)$htovpr # compute values
-```
-
-\pagebreak 
-
-## Figure 9. Mixing ratio over water at 100 000 Pa
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -730,17 +483,8 @@ plotrix::boxed.labels(0, 0.08, expression(paste(italic(r)[w]," = ",frac(0.62570*
 plotrix::boxed.labels(28, 0.035, expression(paste(100,"% ",italic(rh))),cex=1.05,bg="white",border=NA) 
 plotrix::boxed.labels(35, 0.025, expression(paste(50,"% ",italic(rh))),cex=1.05,bg="white",border=NA)
 plotrix::boxed.labels(39, 0.016, expression(paste(25,"% ",italic(rh))),cex=1.05,bg="white",border=NA) 
-```
 
-```
-tairs=seq(-20,50,5) # sequence of air temperatures
-rw=WETAIR(db=tairs, rh=100)$rw # compute values
-```
-
-\pagebreak 
-
-## Figure 10. Specific heat of air at 100 000 Pa
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -762,17 +506,8 @@ plotrix::boxed.labels(0, 1080, expression(paste(italic(c)[p]," = ",frac(1004.84+
 plotrix::boxed.labels(28, 1040, expression(paste(100,"% ",italic(rh))),cex=1.05,bg="white",border=NA) 
 plotrix::boxed.labels(35, 1025, expression(paste(50,"% ",italic(rh))),cex=1.05,bg="white",border=NA)
 plotrix::boxed.labels(39, 1018, expression(paste(25,"% ",italic(rh))),cex=1.05,bg="white",border=NA) 
-```
 
-```
-tairs=seq(-20,50,5) # sequence of air temperatures
-cp=WETAIR(db=tairs, rh=100)$cp # compute values
-```
-
-\pagebreak 
-
-## Figure 11. Standard atmospheric pressure
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
 par(yaxs="i")
@@ -790,17 +525,8 @@ grid(lty=1,col=1)
 points(alts,DRYAIR(db=20, alt=alts)$patmos,type='l',ylim=c(0.7E5,1.2E5),ylab=ylab,xlab=xlab,cex.lab=1.1,cex.axis=1.15,lwd=2)
 plotrix::boxed.labels(1500, 1.1E5, expression(paste(italic(p)," = ",101325,bgroup("[",1-(2.2569*10^{-5}*Z),"]")^5.2553)),cex=1.25,bg="white",border=NA) 
 plotrix::boxed.labels(1500, 1.05E5, expression(-1000<paste(italic(Z)<20000)),cex=1.25,bg="white",border=NA) 
-```
 
-```
-alts=seq(-500,3000,250) # sequence of altitudes (m)
-patmos=DRYAIR(db=20, alt=alts)$patmos # compute values
-```
-
-\pagebreak 
-
-## Figure 12. Temperature
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -820,18 +546,8 @@ tairs=seq(-40,-20,5)
 Hmisc::subplot(fun=plot(tairs,((9/5)*tairs)+32,type='l',xlim=c(-40,-20),ylim=c(-40,0),ylab="",xlab="",cex.lab=.9,cex.axis=0.98,lwd=2),x=c(30,50),y=c(20,60)) 
 plotrix::boxed.labels(-5, 95, expression(paste(italic(t)[f]," = ",bgroup("[",bgroup("(",frac(9,5),")")*italic(t)[c],"]")+32)),cex=1.25,bg="white",border=NA) 
 plotrix::boxed.labels(-5, 75, expression(paste(italic(t)[c]," = ",bgroup("(",frac(5,9),")")*(italic(t)[f]-32))),cex=1.25,bg="white",border=NA) 
-```
 
-```
-tc=seq(-20,50,5) # sequence of air temperatures in deg C
-tf=((9/5)*tc)+32 # compute deg F
-tairs=seq(-40,-20,5) # sequence of air temperatures in deg F
-```
-
-\pagebreak 
-
-## Figure 13. Temperature coefficient of volume expansion for dry air
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
 par(yaxs="i")
@@ -848,17 +564,8 @@ abline(v = tix$xticks, col = 'grey', lty = 1)
 grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$tcoeff,type='l',ylim=c(3E-3,4E-3),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
 plotrix::boxed.labels(15,3.8E-3, expression(paste(italic(beta)," = ",frac(1,italic(t)+273.15))),cex=1.25,bg="white",border=NA) 
-```
 
-```
-tairs=seq(-20,50,5) # sequence of air temperatures
-tcoeff=DRYAIR(db=tairs)$tcoeff # compute values
-```
-
-\pagebreak 
-
-## Figure 14. Thermal conductivity of air
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
 par(yaxs="i")
@@ -876,17 +583,8 @@ grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$thcond,type='l',ylim=c(1E-3,3E-2),ylab=ylab, xlab=xlab,cex.lab=1.2,cex.axis=1.25,lwd=2)
 plotrix::boxed.labels(20, 1.3E-2, expression(paste(italic(k)," = ",(2.425*10^{2})+(7.038*10^{-5}*t))),cex=1.25,bg="white",border=NA) 
 plotrix::boxed.labels(20, 1.1E-2, expression(-20<paste(italic(t)<40)),cex=1.25,bg="white",border=NA) 
-```
 
-```
-tairs=seq(-20,50,5) # sequence of air temperatures
-thcond=DRYAIR(db=tairs)$thcond # compute values
-```
-
-\pagebreak 
-
-## Figure 15. Vapour density over water
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=7.5}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=7.5----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(0,60,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -918,23 +616,8 @@ for(rh in seq(0,60,10)){
 for(wb in seq(10,50,10)){
   plotrix::boxed.labels(wb-1,WETAIR(db=wb, rh=100)$vd+.002,wb,cex=1.25,bg="white",border=NA)
 }
-```
 
-```
-# get vapor density at different air temperatures for a given relative humidity
-tairs=seq(0,60,5) # sequence of air temperatures at which to obtain vapor density
-vd=WETAIR(db=tairs, rh=100)$vd # obtain vapor density at 100% rh  
-
-# get dry bulb temperatures for a set of saturated wet bulb temperatures
-wb=seq(0,50,2) # sequence of wet bulb temperatures
-# rearrangement of formulae in WETAIR
-db=wb+WETAIR(db=wb, wb=wb, rh=100)$esat/(0.000660 * (1.0 + 0.00115 * wb) * 101325))
-```
-
-\pagebreak 
-
-## Figure 16. Vapour pressure over water
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -956,17 +639,8 @@ plotrix::boxed.labels(0,8000, expression(paste(italic(e)," = ",461.50*italic(rho
 plotrix::boxed.labels(26, 4200, expression(paste(100,"% ",italic(rh))),cex=1.05,bg="white",border=NA) 
 plotrix::boxed.labels(32, 3000, expression(paste(50,"% ",italic(rh))),cex=1.05,bg="white",border=NA)
 plotrix::boxed.labels(37, 2000, expression(paste(25,"% ",italic(rh))),cex=1.05,bg="white",border=NA) 
-```
 
-```
-tairs=seq(-20,50,5) # sequence of air temperatures
-e=WETAIR(db=tairs, rh=100)$e # compute values
-```
-
-\pagebreak 
-
-## Figure 17. Virtual temperature increment at 100 000 Pa
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -989,17 +663,8 @@ plotrix::boxed.labels(0,11, expression(paste(italic(T)," = ",italic(t)+273.15)),
 plotrix::boxed.labels(26, 5.5, expression(paste(100,"% ",italic(rh))),cex=1.05,bg="white",border=NA) 
 plotrix::boxed.labels(32, 4, expression(paste(50,"% ",italic(rh))),cex=1.05,bg="white",border=NA)
 plotrix::boxed.labels(37, 2.5, expression(paste(25,"% ",italic(rh))),cex=1.05,bg="white",border=NA) 
-```
 
-```
-tairs=seq(-20,50,5) # sequence of air temperatures
-tvinc=WETAIR(db=tairs, rh=100)$tvinc # compute values
-```
-
-\pagebreak 
-
-## Figure 18. Water potential
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(2,1)) # set up for 2 plots in 1 columns
 tairs=seq(0,50,5)
 par(oma = c(5,5,2,2) + 0.1)
@@ -1041,17 +706,8 @@ mtext(text=ylab, side=2, outer=TRUE,cex=1.25,line=2)
 mtext(text=xlab, side=1, outer=TRUE,cex=1.25,line=2)
 plotrix::boxed.labels(99.5,5E5,expression(paste(0,degree*C)),cex=1.25,bg="white",border=NA)
 plotrix::boxed.labels(99.75,5E5,expression(paste(50,degree*C)),cex=1.25,bg="white",border=NA)
-```
 
-```
-tairs=seq(0,50,5) # sequence of air temperatures
-wtrpot=WETAIR(rh=rhs,db=0)$wtrpot # compute values
-```
-
-\pagebreak 
-
-## Figure 19. Wavelength of maximum emittance from black-body
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8}
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
 par(yaxs="i")
@@ -1068,218 +724,29 @@ abline(v = tix$xticks, col = 'grey', lty = 1)
 grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$emtmax,type='l',ylim=c(0.7E-5,1.2E-5),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
 plotrix::boxed.labels(0, 0.9E-5,expression(paste(italic(lambda)[m]," = ",2.897*10^{3}/(italic(t)+273.15))),cex=1.25,bg="white",border=NA) 
-```
 
-```
-tairs=seq(-20,50,5) # sequence of air temperatures
-emtmax=DRYAIR(db=tairs)$emtmax # compute values
-```
-
-## Example application on a raster dataset
-
-The functions described below can be applied on gridded dataset (rasters). The generic function ```WETAIR``` is described below but will not work on rasters (because of conditional statements). Instead, use ```WETAIR.dp```, ```WETAIR.rh``` or WETAIR.wb depending on whether you have data on dew point, relative humidity or wet bulb temperature, respectively.  
-
-The example below is based on code from the function build.global.climate, and adjusts relative humidity for a change in temperature, assuming the absolute humidity (vapor density) remains constant. In the ```global_climate``` dataset, this is the assumption made about absolute humidity, with the min and max relative humidity simply based on the max and min air temperatures, respectively.  
-
-In the calculations below, the maximum humidity for January is calculated by obtaining the vapor pressure for the minimum relative humidity, at the maximum air temperature, then obtaining the saturation vapor pressure at the minimum air temperature and computing the relative humidity at the minimum temperature from the ratio of actual to saturation vapor pressure. The final calculated value should be identical to the maximum relative humidity surface in the ```global_climate``` dataset. 
-
-```{r, results='asis', fig.width=7, fig.height=8, warning=FALSE, message=FALSE}
+## ---- results='asis', fig.width=7, fig.height=8--------------------------
 library(NicheMapR) # load the NicheMapR package
 library(raster) # package for working with rasters
 library(ncdf4) # package for dealing with netcdf files (a kind of layered raster)
-# read the global_climate dataset
-global_climate<-brick(paste("c:/globalclimate/global_climate.nc",sep="")) 
- # 38th layer of global_climate is min January air temperature*10
-Tair_min_january=global_climate[[38]]/10
-# 50th layer of global_climate is max January air temperature*10
-Tair_max_january=global_climate[[50]]/10 
-# 62nd layer of global_climate is max January relative humidity*10
-RH_min_january=global_climate[[62]]/10 
-# 74th layer of global_climate is max January relative humidity*10
-RH_max_january=global_climate[[74]]/10 
-# use WETAIR.rh to get the vapor pressure for January based on min
-# relative humidty and max air temperature
+global_climate<-brick(paste("c:/globalclimate/global_climate.nc",sep="")) # read the global_climate dataset
+Tair_min_january=global_climate[[38]]/10 # 38th layer of global_climate is min January air temperature*10
+Tair_max_january=global_climate[[50]]/10 # 50th layer of global_climate is max January air temperature*10
+RH_min_january=global_climate[[62]]/10 # 62nd layer of global_climate is max January relative humidity*10
+RH_max_january=global_climate[[74]]/10 # 74th layer of global_climate is max January relative humidity*10
+# use WETAIR.rh to get the vapor pressure for January based on min relative humidty and max air temperature
 e=WETAIR.rh(rh=RH_min_january,db=Tair_max_january)$e 
-# use the VAPPRS function to get the saturation vapor pressure for
-# the new temperature, Tmin January
+# use the VAPPRS function to get the saturation vapor pressure for the new temperature, Tmin January
 esat=VAPPRS(Tair_min_january) 
-# compute new relative humidity for minimum air temperature
-RH_max_january=(e/esat)*100 
+RH_max_january=(e/esat)*100 # compute new relative humidity for minimum air temperature
 # conditional replace of any values >100 with 100
 values(RH_max_january) <- ifelse(values(RH_max_january > 100), 100, values(RH_max_january)) 
 # now plot the results
 par(mfrow = c(3,2)) # set up for 6 plots in 2 columns
-# plot the January max air temperature
-plot(Tair_max_january,zlim=c(-40,50),main="Max Air Temperature, January")
-# plot the January min relative humidity
-plot(RH_min_january,zlim=c(0,100),main="Min Relative Humidity, January") 
+plot(Tair_max_january,zlim=c(-40,50),main="Max Air Temperature, January") # plot the January max air temperature
+plot(RH_min_january,zlim=c(0,100),main="Min Relative Humidity, January") # plot the January min relative humidity
 plot(e, main="vapor pressure, January")
 plot(esat, main="sat. vapor pressure at Tmin")
-# plot the January max air temperature
-plot(Tair_min_january,zlim=c(-40,50),main="Min Air Temperature, January") 
-# plot the January min relative humidity
-plot(RH_max_january,zlim=c(0,100),main="Max Relative Humidity, January") 
-```
-
-\pagebreak 
-
-## Function DRYAIR
-```{r}
-#' DRYAIR
-#'
-#' Calculates several properties of dry air and related characteristics shown
-#' as output variables below. The program is based on equations from List, R. J. 1971.
-#' Smithsonian Meteorological Tables. Smithsonian Institution Press. Washington, DC.
-#' WETAIR must be used in conjunction with function VAPPRS.
-#'
-#' The user must supply values for the input variables (db, bp and alt).
-#' If alt is known (-1000 < alt < 20000) but not BP, then set BP=0
-#' @param db Dry bulb temperature (degrees C)
-#' @param bp Barometric pressure (pascal)
-#' @param alt Altitude (m)
-#' @return patmos Standard atmospheric pressure (P)
-#' @return densty Density (kg m-3)
-#' @return visdyn Dynamic viscosity (kg m-1 s-1)
-#' @return viskin Kinematic viscosity (m2 s-1)
-#' @return difvpr Diffusivity of water vapour in air (m2 s-1)
-#' @return thcond Thermal conductivity (W m-1 K-1)
-#' @return htovpr Latent heat of vapourisation of water (J kg-1)
-#' @return tcoeff Temperature coefficient of volume expansion (K-1)
-#' @return ggroup Group of variables in Grashof number (1-m3 -K)
-#' @return bbemit black body emittance (W m-2)
-#' @return emtmax Wave length of maximum emittance (m)
-#' @export
-DRYAIR <- function(db=db, bp=0, alt=0){
-  tstd=273.15
-  pstd=101325.
-  patmos=pstd*((1-(0.0065*alt/288))^(1/0.190284))
-  bp=rep(bp,length(patmos))
-  bp[bp<=0]=patmos[bp<=0]
-  densty=bp/(287.04*(db+tstd))
-  visnot=1.8325E-5
-  tnot=296.16
-  c=120.
-  visdyn=(visnot*((tnot+c)/(db+tstd+c)))*(((db+tstd)/tnot)^1.5)
-  viskin=visdyn/densty
-  difvpr=2.26E-5*(((db+tstd)/tstd)^1.81)*(1.E5/bp)
-  thcond=0.02425+(7.038E-5*db)
-  htovpr=2.5012E6-2.3787E3*db
-  tcoeff=1./(db+tstd)
-  ggroup=0.0980616*tcoeff/(viskin*viskin)
-  bbemit=5.670367E-8*((db+tstd)^4)
-  emtmax=2.897E-3/(db+tstd)
-  return(list(patmos=patmos, densty=densty, visdyn=visdyn, viskin=viskin, difvpr=difvpr,
-    thcond=thcond, htovpr=htovpr, tcoeff=tcoeff, ggroup=ggroup, bbemit=bbemit, emtmax=emtmax))
-}
-```
-
-\pagebreak 
-
-## Function WETAIR
-```{r}
-#' WETAIR
-#'
-#' Calculates several properties of humid air as output variables below. The program
-#' is based on equations from List, R. J. 1971. Smithsonian Meteorological Tables. Smithsonian
-#' Institution Press. Washington, DC. WETAIR must be used in conjunction with function VAPPRS.
-#'
-#' Input variables are shown below. The user must supply known values for DB and BP 
-#' (BP at one standard atmosphere is 101 325 pascals). Values for the remaining variables
-#' are determined by whether the user has either (1) psychrometric data (WB or RH),
-#' or (2) hygrometric data (DP)
-#'
-#' (1) Psychrometric data:
-#' If WB is known but not RH, then set RH=-1 and DP=999
-#' If RH is known but not WB then set WB=0 and DP=999
-#'
-#' (2) Hygrometric data:
-#' If DP is known then set WB = 0 and RH = 0.
-#' @param db Dry bulb temperature (degrees C)
-#' @param wb Wet bulb temperature (degrees C)
-#' @param rh Relative humidity (\%)
-#' @param dp Dew point temperature (degrees C)
-#' @param bp Barometric pressure (pascal)
-#' @return e Vapour pressure (P)
-#' @return esat Saturation vapour pressure (P)
-#' @return vd Vapour density (kg m-3)
-#' @return rw Mixing ration (kg kg-1)
-#' @return tvir Virtual temperature (K)
-#' @return tvinc Virtual temperature increment (K)
-#' @return denair Hourly predictions of the soil moisture under the maximum specified shade
-#' @return cp Specific heat of air at constant pressure (J kg-1 K-1)
-#' @return wtrpot Water potential (P)
-#' @return Relative humidity (\%)
-#' @export
-WETAIR <- function(db=db, wb=db, rh=0, dp=999, bp=101325){
-
-  tk = db + 273.15
-  esat = VAPPRS(db)
-  if(dp < 999.0){
-    e = VAPPRS(dp)
-    rh = (e / esat) * 100
-  }else{
-    if(min(rh) > -1){
-      e = esat * rh / 100
-    }else{
-      wbd = db - wb
-      wbsat = VAPPRS(wb)
-      dltae = 0.000660 * (1.0 + 0.00115 * wb) * bp * wbd
-      e = wbsat - dltae
-      rh = (e / esat) * 100
-    }
-  }
-  rw = ((0.62197 * 1.0053 * e) / (bp - 1.0053 * e))
-  vd = e * 0.018016 / (0.998 * 8.31434 * tk)
-  tvir = tk * ((1.0 + rw / (18.016 / 28.966)) / (1.0 + rw))
-  tvinc = tvir - tk
-  denair = 0.0034838 * bp / (0.999 * tvir)
-  cp = (1004.84 + (rw * 1846.40)) / (1.0 + rw)
-  if (min(rh)<=0.0){
-    wtrpot = -999
-  }else{
-    wtrpot = 4.615e+5 * tk * log(rh / 100.0)
-  }
-  return(list(e=e, esat=esat, vd=vd, rw=rw, tvinc=tvinc, denair=denair, cp=cp,
-  wtrpot=wtrpot, rh=rh))
-}
-```
-
-\pagebreak 
-
-### Function VAPPRS
-```{r}
-#' VAPPRS
-#'
-#' Calculates saturation vapour pressure for a given air temperature.
-#' @param db Dry bulb temperature (degrees C)
-#' @return esat Saturation vapour pressure (P)
-#' @export
-VAPPRS <- function(db=db){
-  t=db+273.16
-  loge=t
-  loge[t<=273.16]=-9.09718*(273.16/t[t<=273.16]-1.)-3.56654*log10(273.16/t[t<=273.16])+
-  .876793*(1.-t[t<=273.16]/273.16)+log10(6.1071)
-  loge[t>273.16]=-7.90298*(373.16/t[t>273.16]-1.)+5.02808*log10(373.16/t[t>273.16])-
-  1.3816E-07*(10.^(11.344*(1.-t[t>273.16]/373.16))-1.)+8.1328E-03*(10.^(-3.49149*(373.16
-  /t[t>273.16]-1.))-1.)+log10(1013.246)
-  esat=(10.^loge)*100
-  return(esat)
-}
-```
-
-## References   
-
-Brown RW, Van Havern BP, eds. 1972. Psychrometry in water relations research: proceedings of a symposium on thermocouple psychrometry Utah Agric. Expt. Station.
-
-List RJ. 1971. Smithsonian Meteorological Tables. Smithsonian Institution Press.
-
-Mason EA, Monchick L. 1965. Survey of the equation of state and transport properties of moist gases. Pages 257-272 in
-Wexler A, ed. Humidity and Moisture. Measurement and Control in Science and Industry, vol. 3. New York: Reinhold Publishing Corporation.
-
-Mechtly EA. 1973. The International System of Units: Physical Constants and Conversion Factors. National Aeronautics and Space Administration.
-
-Murray BR. 1976. On the computation of saturation vapor pressure. Journal of Applied Meteorology 6:203-204.
-
-Symbols Committee of the Royal Society. 1975. Quantities, Units and Symbols. The Royal Society.
-
+plot(Tair_min_january,zlim=c(-40,50),main="Min Air Temperature, January") # plot the January max air temperature
+plot(RH_max_january,zlim=c(0,100),main="Max Relative Humidity, January") # plot the January min relative humidity
 

@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 # 1. Introduction
 
-This document is Appendix 1 for the NicheMapR microclimate model software note (Kearney and Porter 2016). It provides a detailed explanation of the underlying theory and equations of the microclimate model used in NicheMapR. All of the calcuations described here are coded in Fortran in a set of subroutines and functions depicted in Figure 1. The Fortran code is compiled as a dynamic link library that can be called from R, as described in Kearney and Porter (2016). 
+This document is Appendix 1 for the NicheMapR microclimate model software note (Kearney and Porter 2016). It provides a detailed explanation of the underlying theory and equations of the microclimate model used in the NicheMapR R package. All of the calcuations described here are coded in Fortran in a set of subroutines and functions depicted in Figure 1. The Fortran code is compiled as a dynamic link library that can be called from R, as described in Kearney and Porter (2016). 
 
 ```{r fig.width=8, fig.height=3,echo=FALSE, fig.cap='Figure 1. Stucture of the NicheMapR microclimate model Fortran program'}
 library(png)
@@ -136,7 +136,7 @@ $$AZ_{SUN,S} = \arccos \left( \frac{ \sin(\delta) - \sin(\phi)  \sin \left( \fra
 
 This value ranges from 0-180° and is thus subtracted from 360° to obtain afternoon angles.
 
-Local terrain may also obscure direct and diffuse radiation by increasing the horizon angle and thus causing ‘hill-shade’ (Dozier et al. 1981). Horizon angles in 24 directions can be entered into NicheMapR and, when the altitude of the sun is less than the horizon angle in that direction, direct radiation is set to zero. The [‘r.horizon’ function](https://grass.osgeo.org/grass70/manuals/r.horizon.html) of the GIS package GRASS (Neteler et al. 2012) can be used to compute horizon angles from a DEM.
+Local terrain may also obscure direct and diffuse radiation by increasing the horizon angle and thus causing ‘hill-shade’ (Dozier et al. 1981). Horizon angles in 24 directions can be entered into NicheMapR and, when the altitude of the sun is less than the horizon angle in that direction, direct radiation is set to zero. The [r.horizon function](https://grass.osgeo.org/grass70/manuals/r.horizon.html) of the GIS package GRASS (Neteler et al. 2012) can be used to compute horizon angles from a DEM.
 
 ### 2.2.3 Total solar radiation reaching a surface
 The total or ‘global’ solar radiation finally reaching the earth’s surface can now be summarised as

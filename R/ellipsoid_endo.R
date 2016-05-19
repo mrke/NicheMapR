@@ -6,6 +6,7 @@
 #' with additional rough calculations for water loss. Note this model is only relevant for
 #' conditions where there is no solar radiation and air/ground/sky temperatures are equal.
 #' Originally coded into R from Excel by John Baumgartner.
+#' Requires the NicheMapR functions WETAIR, DRYAIR and VAPPRS
 #' @param posture = 4.5, Shape, ratio of long to short axis of a prolate ellipsoid
 #' @param mass = 0.5, Body Mass (kg)
 #' @param coreT = 37, Core temperature (deg C)
@@ -113,9 +114,10 @@ ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, furco
   Ecc_outr <- sqrt(ao^2 - co^2) / ao
   Aouter <- 2 * pi * bo^2 + 2 * pi * ((ao*bo)/Ecc_outr) * asin(Ecc_outr)
   Rinsul <- (bo - b)/(furcond * Aouter)
-  visc_air <- (0.000018325*((296.16+120)/(airT + 273.15+120)))*(((airT + 273.15)/296.16)^1.5)
-  k_air <- 0.02425 + (0.00007038 * airT)
-  den_air <- 101325 / (287.04 * (airT + 273.15))
+  dryair=DRYAIR(db=airT)
+  visc_air <- dryair$visdyn
+  k_air <- dryair$thcond
+  den_air <- dryair$densty
   volcheck <- (4/3) * 3.14159 * a * b * c
   CharDimens <- volcheck^0.333
   Eccentricity <- sqrt(a^2 - c^2) / a
@@ -139,7 +141,8 @@ ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, furco
   Qgen <- (coreT - airT) / Rtotal
   QgenFinal <- ifelse(Qgen < mouseelephant, mouseelephant, Qgen)
   mlO2ph <- QgenFinal / 20.1 * 3600
-  Qresp_gph <- (mlO2ph / 0.2094 / O2eff * (((10^( - 7.90298 * (373.16 / (coreT + 273.15) - 1) + 5.02808 * log10(373.16 / (coreT + 273.15)) - (1.3816 * 10^ - 7) * (10^(11.344 * (1 - (coreT + 273.15) / 373.16)) - 1) + (8.1328 * 10^ - 3) * (10^( - 3.49149 * (373.16 / (coreT + 273.15) - 1)) - 1) + log10(1013.246))) * 100 * (100 / 100)) * 0.018016 / (0.998 * 8.31434 * (coreT + 273.15)) - ((10^( - 7.90298 * (373.16 / (airT + 273.15) - 1) + 5.02808 * log10(373.16 / (airT + 273.15)) - (1.3816 * 10^ - 7) * (10^(11.344 * (1 - (airT + 273.15) / 373.16)) - 1) + (8.1328 * 10^ - 3) * (10^( - 3.49149 * (373.16 / (airT + 273.15) - 1)) - 1) + log10(1013.246))) * 100 * (rh / 100)) * 0.018016 / (0.998 * 8.31434 * (airT + 273.15)))) / 1000
+  esat <- VAPPRS(coreT)
+  Qresp_gph <- (mlO2ph / 0.2094 / O2eff) * (WETAIR(db = coreT, rh = 100)$vd - WETAIR(db = airT, rh = rh)$vd) / 1000
   conv_H2O_loss <- 2501200 - 2378.7 * airT
   Qresp_W <- ((Qresp_gph / 3600) * conv_H2O_loss) / 1000
   Qresp_kjph <- Qresp_W / 1000 * 3600

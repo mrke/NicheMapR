@@ -12,7 +12,6 @@
 #'   \item{Ks}{saturated conductivity, in kg s m-3}
 #'   \item{field}{field capacity (-1500 J/kg) water content, in m3/m3}
 #'   \item{wilting}{wilting point (-33 J/kg) water content, in m3/m3}
-#'   ...
 #' }
 #' @source Campbell, G. S., and J. M. Norman. 1998. Environmental Biophysics. Springer, New York.
 "CampNormTbl9_1"

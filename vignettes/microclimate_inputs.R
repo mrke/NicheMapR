@@ -1,23 +1,9 @@
----
-title: 'Microclimate Model Input Data'
-author: Michael R. Kearney
-date: '`r Sys.Date()`'
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Microclimate Model Input Data}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
-
-```{r, echo = FALSE}
+## ---- echo = FALSE-------------------------------------------------------
 knitr::opts_chunk$set(
  eval = TRUE
 )
-```
 
-
-## Model mode settings
-```{r table1, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table1, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
@@ -29,10 +15,8 @@ snowmodel                 | -                 | 0 (off) or 1 (on) | run the snow
 hourly                    | -                 | 0 (off) or 1 (on) | run the model from hourly weather inputs
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-## Time and location parameters
-```{r table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
@@ -49,10 +33,8 @@ ALREF                     | degrees           | 0-180             | reference lo
 EC                        | -                 | 0.0034 to 0.058   | eccenricity of the earth's orbit (presently 0.0167238)
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-## Air and wind vertical profile parameters
-```{r table3, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table3, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
@@ -65,62 +47,34 @@ ZH1                       | m                 | 0 or (> ZH2, < Refhyt)| 1st segm
 ZH2                       | m                 | 0 or (> RUF, < ZH1)   | 2nd segment, height above surface$^1$
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-$^1$Set to 0 if no experimental data
-
-## Radiation-related parameters
-```{r table4, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table4, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
 SLES                      | -                 | 0-1               | substrate longwave IR emissivity$^1$ 
 REFLS                      | -                 | 0-1               | substrate solar reflectivity$^1$ 
 CMH2O                     | cm                | 0.1-2             | precipitable cm H$_2$O in air column
-TAI                       | -                 | 1-julnum          | aerosol optical extinction coefficients$^{1,2}$ 
+TAI                       | -                 | 1-julnum          | aerosol optical extinction coefficients$^21$ 
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-$^{1}$Vector of length = julnum
-
-$^{2}$Vector of length 111 for wavelengths between 290 and 4000 nm. Wavelenghth increments are: 290,295,300,305,310,315,320,330,340,350,360,370,380,390,400,420,440,460,480,500,
-520,540,560,580,600,620,640,660,680,700,720,740,760,780,800,820,840,860,880,900,
-920,940,960,980,1000,1020,1080,1100,1120,1140,1160,1180,1200,1220,1240,1260,1280,
-1300,1320,1380,1400,1420,1440,1460,1480,1500,1540,1580,1600,1620,1640,1660,1700,
-1720,1780,1800,1860,1900,1950,2000,2020,2050,2100,2120,2150,2200,2260,2300,2320,
-2350,2380,2400,2420,2450,2490,2500,2600,2700,2800,2900,3000,3100,3200,3300,3400,
-3500,3600,3700,3800,3900,4000
-
-## Terrain and shading parameters
-```{r table5, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table5, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
 ALTT                      | m                 | 0-10,000          | altitude
 slope                     | decimal degrees   | 0-90              | slope
 azmuth                    | decimal degrees   | 0-360             | aspect (0 is north)
-hori                      | decimal degrees   | 0-90              | horizon angles$^1$  
-VIEWF                     | -                 | 0-1               | view factor to sky$^2$ 
-MINSHADES                 | %                 | 0-100             | minimum shade$^3$  
-MAXSHADES                 | %                 | 0-100             | maximum shade$^{3,4}$ 
-PCTWETS                   | %                 | 0-100             | percentage of substrate unit area that is wet$^{3,5}$  
+hori                      | decimal degrees   | 0-90              | horizon angle 
+VIEWF                     | -                 | 0-1               | view factor to sky$^1$ 
+MINSHADES                 | %                 | 0-100             | minimum shade$^2$  
+MAXSHADES                 | %                 | 0-100             | maximum shade$^{2,3}$ 
+PCTWETS                   | %                 | 0-100             | percentage of substrate unit area that is wet$^{2,4}$  
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-$^{1}$angle to the effective horizon, due to e.g. hills, buildings, in 24 directions from 0 degrees azimuth (north) clockwise in 15 degree intervals
-
-$^{2}$Fraction of sky obscured by terrain
-
-$^{3}$vector of length = julnum
-
-$^{4}$must be greater than minimum shade
-
-$^{5}$drives evaporation - set internally when runmoist==1
-
-## Substrate profile settings
-```{r table6, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table6, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
@@ -130,14 +84,8 @@ tannul                    | &deg;C            | -80 - +60         | annual mean 
 soilinit                  | &deg;C            | -80 - +60         | initial substrate temperature profile$^1$
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-$^{1}$Acting as nodes for substrate heat budget calculations. Must start at 0 and nodes must be closely spaced near the surface. Typical depth profile c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200)
-
-$^{2}$Vector of length 10, corresponding to depths specified in variable DEP
-
-## Time varying environmental data
-```{r table7, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table7, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
@@ -162,20 +110,8 @@ SOLRhr                    | W m$^{2}$         | 0-1367            | hourly solar
 RAINhr                    | mm                | 0-2000            | hourly rainfall$^5$
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-$^{1}$Vector of 4 integers, air temp & wind mins relative to sunrise, humidity and cloud cover mins relative to solar noon - typical TIMINS vector c(0, 0, 1, 1).  
-
-$^{2}$Vector of 4 integers, air temp & wind maxs relative to solar noon, humidity and cloud cover maxs relative to sunrise - typical TIMAXS vector c(1, 1, 0, 0).
-
-$^{3}$Vector of length = julnum.
-
-$^{4}$Matrix of 10 rows (depths) and julnum columns. The first column is used to specify the initial soil moisture when running the soil moisture model.
-
-$^{5}$Vector of length = julnum*24.
-
-## Substrate properties
-```{r table8, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table8, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 *Name*                    | *Units *             |	*Allowed Range*   |	*Description*
 ------------------------- | -------------------- | ------------------ | --------------
@@ -189,18 +125,8 @@ soilprops[,5]$^{3}$       | J kg$^{-1}$ K$^{-1}$ | >0                 | specific
 soilprops[,6]$^{3}$       | Mg m$^{-3}$          | >0                 | mineral density
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-$^{1}$Matrix of 10 rows (depths) and julnum columns
-
-$^{2}$The number of nodes specified should correspond with the variable numtypes, and in turn with the number of substrate types specified in soilprops in the soil props matrix. E.g. for a uniform profile, the first row of Nodes would be 10 (deepest soil node - the subsequent nodes all being left as 0), Numtyps would be 1, and only one and only the first row of soilprops would be filled, the rest being zero. At the other extreme, if all nodes were to have a different substrate type, values for a given row of each Nodes column would be 1, 2, ..., 10 and a different value would be specified for each row of each soilprops column.  
-
-$^{3}$Matrix of 10 rows (depths) and 6 columns
-
-$^{4}$at a matric potential of 0.1 bar
-
-## Soil moisture parameters
-```{r table9, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table9, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 *Name*                    | *Units *             |	*Allowed Range*  |	*Description*
 ------------------------- | -------------------- | ----------------- | --------------
@@ -215,14 +141,8 @@ maxpool                   | mm                   | >0                | max depth
 evenrain                  | -                    | 1 or 2            | even rainfall over 24hrs (1) or one event at midnight (2)
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-$^{1}$The 19 values represent the 10 depths as specified in the DEP vector, and an extra 9 depths in between. 
-
-$^{2}$To account for runoff - can be used to simulate a wetland.
-
-## Snow model parameters
-```{r table10, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table10, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 *Name*                    | *Units *             |	*Allowed Range*   |	*Description*
 ------------------------- | -------------------- | ------------------ | --------------
@@ -234,14 +154,8 @@ undercatch                | -                    | >=1                | undercat
 rainmelt                  | -                    | 0-2                | parameter for rain melting snow$^{2}$ 
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
 
-$^{1}$As a function of day of year (1,365), in units of Mg m$^{-3}$ - if it is c(0,0) then fixed density used 
-
-$^{2}$For equation from Anderson's SNOW-17 model that melts snow with rainfall as a function of air temp (typical value 1.25)
-
-## Intertidal simulation parameters (currently experimental and untested)
-```{r table11, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+## ----table11, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
 tabl <- "
 *Name*                    | *Units *             |	*Allowed Range*   |	*Description*
 ------------------------- | -------------------- | ------------------ | --------------
@@ -250,4 +164,4 @@ tides[1:julnum,2]         | &deg;C               | -80 - 80           | sea wate
 tides[1:julnum,3]         | -                    | -                  | % surface wetness from wave splash; vector of length julnum
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
+

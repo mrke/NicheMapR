@@ -65,16 +65,16 @@ Koepke, P., M. Hess, I. Schult, and E. P. Shettle. 1997. Global Aerosol Data Set
 by choosing the option 'rungads<-1'
 }
 \details{
-\strong{ Parameters controling how the model runs:}
+\strong{ Parameters controling how the model runs:}\cr\cr
 
-\code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1)
-or just once for the minimum shade (0)?}\cr\cr
+\code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
+\code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
 \code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
 \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 
 \strong{ General additional parameters:}\cr\cr
-\code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
+\code{ERR}{ = 2.0, Integrator error tolerance for soil temperature calculations}\cr\cr
 \code{Refhyt}{ = 1.2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
 \code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
 \code{Z01}{ = 0, Top (1st) segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used)}\cr\cr
