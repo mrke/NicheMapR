@@ -725,28 +725,174 @@ grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$emtmax,type='l',ylim=c(0.7E-5,1.2E-5),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
 plotrix::boxed.labels(0, 0.9E-5,expression(paste(italic(lambda)[m]," = ",2.897*10^{3}/(italic(t)+273.15))),cex=1.25,bg="white",border=NA) 
 
-## ---- results='asis', fig.width=7, fig.height=8--------------------------
+## ---- results='asis', fig.width=7, fig.height=8, warning=FALSE, message=FALSE----
 library(NicheMapR) # load the NicheMapR package
 library(raster) # package for working with rasters
 library(ncdf4) # package for dealing with netcdf files (a kind of layered raster)
-global_climate<-brick(paste("c:/globalclimate/global_climate.nc",sep="")) # read the global_climate dataset
-Tair_min_january=global_climate[[38]]/10 # 38th layer of global_climate is min January air temperature*10
-Tair_max_january=global_climate[[50]]/10 # 50th layer of global_climate is max January air temperature*10
-RH_min_january=global_climate[[62]]/10 # 62nd layer of global_climate is max January relative humidity*10
-RH_max_january=global_climate[[74]]/10 # 74th layer of global_climate is max January relative humidity*10
-# use WETAIR.rh to get the vapor pressure for January based on min relative humidty and max air temperature
+# read the global_climate dataset
+global_climate<-brick(paste("c:/globalclimate/global_climate.nc",sep="")) 
+ # 38th layer of global_climate is min January air temperature*10
+Tair_min_january=global_climate[[38]]/10
+# 50th layer of global_climate is max January air temperature*10
+Tair_max_january=global_climate[[50]]/10 
+# 62nd layer of global_climate is max January relative humidity*10
+RH_min_january=global_climate[[62]]/10 
+# 74th layer of global_climate is max January relative humidity*10
+RH_max_january=global_climate[[74]]/10 
+# use WETAIR.rh to get the vapor pressure for January based on min
+# relative humidty and max air temperature
 e=WETAIR.rh(rh=RH_min_january,db=Tair_max_january)$e 
-# use the VAPPRS function to get the saturation vapor pressure for the new temperature, Tmin January
+# use the VAPPRS function to get the saturation vapor pressure for
+# the new temperature, Tmin January
 esat=VAPPRS(Tair_min_january) 
-RH_max_january=(e/esat)*100 # compute new relative humidity for minimum air temperature
+# compute new relative humidity for minimum air temperature
+RH_max_january=(e/esat)*100 
 # conditional replace of any values >100 with 100
 values(RH_max_january) <- ifelse(values(RH_max_january > 100), 100, values(RH_max_january)) 
 # now plot the results
 par(mfrow = c(3,2)) # set up for 6 plots in 2 columns
-plot(Tair_max_january,zlim=c(-40,50),main="Max Air Temperature, January") # plot the January max air temperature
-plot(RH_min_january,zlim=c(0,100),main="Min Relative Humidity, January") # plot the January min relative humidity
+# plot the January max air temperature
+plot(Tair_max_january,zlim=c(-40,50),main="Max Air Temperature, January")
+# plot the January min relative humidity
+plot(RH_min_january,zlim=c(0,100),main="Min Relative Humidity, January") 
 plot(e, main="vapor pressure, January")
 plot(esat, main="sat. vapor pressure at Tmin")
-plot(Tair_min_january,zlim=c(-40,50),main="Min Air Temperature, January") # plot the January max air temperature
-plot(RH_max_january,zlim=c(0,100),main="Max Relative Humidity, January") # plot the January min relative humidity
+# plot the January max air temperature
+plot(Tair_min_january,zlim=c(-40,50),main="Min Air Temperature, January") 
+# plot the January min relative humidity
+plot(RH_max_january,zlim=c(0,100),main="Max Relative Humidity, January") 
+
+## ------------------------------------------------------------------------
+#' DRYAIR
+#'
+#' Calculates several properties of dry air and related characteristics shown
+#' as output variables below. The program is based on equations from List, R. J. 1971.
+#' Smithsonian Meteorological Tables. Smithsonian Institution Press. Washington, DC.
+#' WETAIR must be used in conjunction with function VAPPRS.
+#'
+#' The user must supply values for the input variables (db, bp and alt).
+#' If alt is known (-1000 < alt < 20000) but not BP, then set BP=0
+#' @param db Dry bulb temperature (degrees C)
+#' @param bp Barometric pressure (pascal)
+#' @param alt Altitude (m)
+#' @return patmos Standard atmospheric pressure (P)
+#' @return densty Density (kg m-3)
+#' @return visdyn Dynamic viscosity (kg m-1 s-1)
+#' @return viskin Kinematic viscosity (m2 s-1)
+#' @return difvpr Diffusivity of water vapour in air (m2 s-1)
+#' @return thcond Thermal conductivity (W m-1 K-1)
+#' @return htovpr Latent heat of vapourisation of water (J kg-1)
+#' @return tcoeff Temperature coefficient of volume expansion (K-1)
+#' @return ggroup Group of variables in Grashof number (1-m3 -K)
+#' @return bbemit black body emittance (W m-2)
+#' @return emtmax Wave length of maximum emittance (m)
+#' @export
+DRYAIR <- function(db=db, bp=0, alt=0){
+  tstd=273.15
+  pstd=101325.
+  patmos=pstd*((1-(0.0065*alt/288))^(1/0.190284))
+  bp=rep(bp,length(patmos))
+  bp[bp<=0]=patmos[bp<=0]
+  densty=bp/(287.04*(db+tstd))
+  visnot=1.8325E-5
+  tnot=296.16
+  c=120.
+  visdyn=(visnot*((tnot+c)/(db+tstd+c)))*(((db+tstd)/tnot)^1.5)
+  viskin=visdyn/densty
+  difvpr=2.26E-5*(((db+tstd)/tstd)^1.81)*(1.E5/bp)
+  thcond=0.02425+(7.038E-5*db)
+  htovpr=2.5012E6-2.3787E3*db
+  tcoeff=1./(db+tstd)
+  ggroup=0.0980616*tcoeff/(viskin*viskin)
+  bbemit=5.670367E-8*((db+tstd)^4)
+  emtmax=2.897E-3/(db+tstd)
+  return(list(patmos=patmos, densty=densty, visdyn=visdyn, viskin=viskin, difvpr=difvpr,
+    thcond=thcond, htovpr=htovpr, tcoeff=tcoeff, ggroup=ggroup, bbemit=bbemit, emtmax=emtmax))
+}
+
+## ------------------------------------------------------------------------
+#' WETAIR
+#'
+#' Calculates several properties of humid air as output variables below. The program
+#' is based on equations from List, R. J. 1971. Smithsonian Meteorological Tables. Smithsonian
+#' Institution Press. Washington, DC. WETAIR must be used in conjunction with function VAPPRS.
+#'
+#' Input variables are shown below. The user must supply known values for DB and BP 
+#' (BP at one standard atmosphere is 101 325 pascals). Values for the remaining variables
+#' are determined by whether the user has either (1) psychrometric data (WB or RH),
+#' or (2) hygrometric data (DP)
+#'
+#' (1) Psychrometric data:
+#' If WB is known but not RH, then set RH=-1 and DP=999
+#' If RH is known but not WB then set WB=0 and DP=999
+#'
+#' (2) Hygrometric data:
+#' If DP is known then set WB = 0 and RH = 0.
+#' @param db Dry bulb temperature (degrees C)
+#' @param wb Wet bulb temperature (degrees C)
+#' @param rh Relative humidity (\%)
+#' @param dp Dew point temperature (degrees C)
+#' @param bp Barometric pressure (pascal)
+#' @return e Vapour pressure (P)
+#' @return esat Saturation vapour pressure (P)
+#' @return vd Vapour density (kg m-3)
+#' @return rw Mixing ration (kg kg-1)
+#' @return tvir Virtual temperature (K)
+#' @return tvinc Virtual temperature increment (K)
+#' @return denair Hourly predictions of the soil moisture under the maximum specified shade
+#' @return cp Specific heat of air at constant pressure (J kg-1 K-1)
+#' @return wtrpot Water potential (P)
+#' @return Relative humidity (\%)
+#' @export
+WETAIR <- function(db=db, wb=db, rh=0, dp=999, bp=101325){
+
+  tk = db + 273.15
+  esat = VAPPRS(db)
+  if(dp < 999.0){
+    e = VAPPRS(dp)
+    rh = (e / esat) * 100
+  }else{
+    if(min(rh) > -1){
+      e = esat * rh / 100
+    }else{
+      wbd = db - wb
+      wbsat = VAPPRS(wb)
+      dltae = 0.000660 * (1.0 + 0.00115 * wb) * bp * wbd
+      e = wbsat - dltae
+      rh = (e / esat) * 100
+    }
+  }
+  rw = ((0.62197 * 1.0053 * e) / (bp - 1.0053 * e))
+  vd = e * 0.018016 / (0.998 * 8.31434 * tk)
+  tvir = tk * ((1.0 + rw / (18.016 / 28.966)) / (1.0 + rw))
+  tvinc = tvir - tk
+  denair = 0.0034838 * bp / (0.999 * tvir)
+  cp = (1004.84 + (rw * 1846.40)) / (1.0 + rw)
+  if (min(rh)<=0.0){
+    wtrpot = -999
+  }else{
+    wtrpot = 4.615e+5 * tk * log(rh / 100.0)
+  }
+  return(list(e=e, esat=esat, vd=vd, rw=rw, tvinc=tvinc, denair=denair, cp=cp,
+  wtrpot=wtrpot, rh=rh))
+}
+
+## ------------------------------------------------------------------------
+#' VAPPRS
+#'
+#' Calculates saturation vapour pressure for a given air temperature.
+#' @param db Dry bulb temperature (degrees C)
+#' @return esat Saturation vapour pressure (P)
+#' @export
+VAPPRS <- function(db=db){
+  t=db+273.16
+  loge=t
+  loge[t<=273.16]=-9.09718*(273.16/t[t<=273.16]-1.)-3.56654*log10(273.16/t[t<=273.16])+
+  .876793*(1.-t[t<=273.16]/273.16)+log10(6.1071)
+  loge[t>273.16]=-7.90298*(373.16/t[t>273.16]-1.)+5.02808*log10(373.16/t[t>273.16])-
+  1.3816E-07*(10.^(11.344*(1.-t[t>273.16]/373.16))-1.)+8.1328E-03*(10.^(-3.49149*(373.16
+  /t[t>273.16]-1.))-1.)+log10(1013.246)
+  esat=(10.^loge)*100
+  return(esat)
+}
 

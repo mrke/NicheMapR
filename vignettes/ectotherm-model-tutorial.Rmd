@@ -28,8 +28,17 @@ As with the microclimate model tutorial, this first example involves the most ba
 library(NicheMapR)
 ```
 
+```{r, echo = FALSE}
+#a=getLoadedDLLs()
+#if(is.loaded("microclimate", "MICROCLIMATE", type = "FORTRAN")==TRUE){
+#  dyn.unload(a$MICROCLIMATE[[2]])
+#dyn.unload(a$ECTOTHERM[[2]])
+#}
+```
+
 ```{r}
-micro<-micro_global(loc = "Kuranda, Queensland", runmoist=1)
+library(NicheMapR)
+micro<-micro_global(loc = "Townsville, Queensland", runmoist=1)
 ecto<-ectotherm()
 ```
 
@@ -235,18 +244,18 @@ The capacity to compute body temperature, metabolic rates, activity times and so
 
 The preliminary computations made in this tutorial can provide the starting point for an energy budget analysis that could ultimately allow you to predict reproductive success and survival rates, key vital rates from which to infer distribution and abundance. One of the most powerful ways of achieving a full mass balance and life cycle trajectory is by using the Dynamic Energy Budget model (Kooijman, 2010), the 'standard model' of which is optionally implemented in the **ectotherm** model. 
 
-Below is an example for the Eastern Water Skink (default settings for the DEB model), as developed in Schwarzkopf et al. (in press). Note the intersting pattern of annual foraging - under the DEB mode the animal only forages when it is stomach is below a certain percentage full, 75% by default). The sudden drops in mass in the plot of wet mass through time are when the animal reproduces. If you run this yourself, check the output of **masbal**, which will have values for all variables, and also the **debout**, **yearout** and **yearsout** outputs described in the help section for the **ectotherm** function. See vignette ... for more details on how to work with the DEB model in NicheMapR.
+Below is an example for the Eastern Water Skink (default settings for the DEB model), as developed in Schwarzkopf et al. 2016. Note the intersting pattern of annual foraging - under the DEB mode the animal only forages when it is stomach is below a certain percentage full, 75% by default). The sudden drops in mass in the plot of wet mass through time are when the animal reproduces. If you run this yourself, check the output of **masbal**, which will have values for all variables, and also the **debout**, **yearout** and **yearsout** outputs described in the help section for the **ectotherm** function. See vignette ... for more details on how to work with the DEB model in NicheMapR.
 
 ```{r, fig.width=7, fig.height=5, fig.show = "hold"}
 # run the microclimate model daily for 5 years
 timeinterval<-365
-nyears<-5
-micro<-micro_global(loc = "Kuranda, Queensland", timeinterval = timeinterval, nyears = nyears,
+nyears<-6
+micro<-micro_global(loc = "Townsville, Queensland", timeinterval = timeinterval, nyears = nyears,
   runmoist = 1)
 
 # run the ectotherm model with the DEB model turned on and in viviparous mode, simulating the
 # Eastern Water Skink, Eulamprus quoyii
-ecto<-ectotherm(DEB = 1, mindepth = 4, viviparous = 1)
+ecto<-ectotherm(DEB = 1, viviparous = 1)
 
 metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 environ<-as.data.frame(ecto$environ) # activity, Tb and environment
@@ -298,4 +307,4 @@ Kearney, M., and W. P. Porter. 2004. Mapping the fundamental niche: physiology, 
 
 Kooijman, S. A. L. M. 2010. Dynamic Energy Budget Theory for Metabolic Organisation. Cambridge University Press, Great Britain.
 
-Schwarzkopf, L., M. J. Caley, and M. R. Kearney. in press. One lump or two? Explaining a major latitudinal transition in reproductive allocation in a viviparous lizard. Functional Ecology.
+Schwarzkopf, L., M. J. Caley, and M. R. Kearney. 2016. One lump or two? Explaining a major latitudinal transition in reproductive allocation in a viviparous lizard. Functional Ecology. DOI: 10.1111/1365-2435.12622
