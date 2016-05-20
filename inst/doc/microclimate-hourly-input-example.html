@@ -83,6 +83,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>First load the NicheMapR package and also the zoo package, from which we’ll use the na.approx function to fill in missing data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(NicheMapR)
 <span class="kw">library</span>(zoo)</code></pre></div>
+<pre><code>## 
+## Attaching package: 'zoo'</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     as.Date, as.Date.numeric</code></pre>
 <p>Also included in this package is a table of summary information on all the SCAN sites, <code>SCANsites</code>. Have a look at the first 5 by using the ‘head’ function:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(SCANsites)</code></pre></div>
 <pre><code>##    network  id state                 name      lat        lon elev
@@ -223,7 +228,7 @@ micro&lt;-<span class="kw">micro_global</span>(<span class="dt">loc=</span><span
 ## extracting soil moisture data 
 ## running microclimate model for 365 days by 1 years at site long -115.09763 lat 33.6547 
 ##    user  system elapsed 
-##    1.95    0.00    1.95</code></pre>
+##     1.9     0.0     1.9</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># append dates</span>
 tzone=<span class="kw">paste</span>(<span class="st">&quot;Etc/GMT&quot;</span>,TZoffset,<span class="dt">sep=</span><span class="st">&quot;&quot;</span>) <span class="co"># doing it this way ignores daylight savings!</span>
 dates=<span class="kw">seq</span>(<span class="kw">ISOdate</span>(ystart,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dt">tz=</span>tzone)-<span class="dv">3600</span>*<span class="dv">12</span>, <span class="kw">ISOdate</span>((ystart+nyears),<span class="dv">1</span>,<span class="dv">1</span>,<span class="dt">tz=</span>tzone)-<span class="dv">3600</span>*<span class="dv">13</span>, <span class="dt">by=</span><span class="st">&quot;hours&quot;</span>)

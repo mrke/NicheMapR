@@ -6,12 +6,14 @@ knitr::opts_chunk$set(
 ## ------------------------------------------------------------------------
 library(NicheMapR)
 
+## ---- echo = FALSE-------------------------------------------------------
+#a=getLoadedDLLs()
+#if(is.loaded("microclimate", "MICROCLIMATE", type = "FORTRAN")==TRUE){
+#  dyn.unload(a$MICROCLIMATE[[2]])
+#dyn.unload(a$ECTOTHERM[[2]])
+#}
+
 ## ------------------------------------------------------------------------
-a=getLoadedDLLs()
-if(is.loaded("microclimate", "MICROCLIMATE", type = "FORTRAN")==TRUE){
-  dyn.unload(a$MICROCLIMATE[[2]])
-dyn.unload(a$ECTOTHERM[[2]])
-}
 library(NicheMapR)
 micro<-micro_global(loc = "Townsville, Queensland", runmoist=1)
 ecto<-ectotherm()
@@ -112,7 +114,7 @@ with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
 ## ---- fig.width=7, fig.height=5, fig.show = "hold"-----------------------
 # run the microclimate model daily for 5 years
 timeinterval<-365
-nyears<-1
+nyears<-6
 micro<-micro_global(loc = "Townsville, Queensland", timeinterval = timeinterval, nyears = nyears,
   runmoist = 1)
 
