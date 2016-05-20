@@ -59,6 +59,7 @@ Proceedings of the National Academy of Sciences 106:19666-19672.
 with additional rough calculations for water loss. Note this model is only relevant for
 conditions where there is no solar radiation and air/ground/sky temperatures are equal.
 Originally coded into R from Excel by John Baumgartner.
+Requires the NicheMapR functions WETAIR, DRYAIR and VAPPRS
 }
 \details{
 Note that the parameter 'stress' is a fudge factor that accounts for physiological thermoregulatory
