@@ -12,6 +12,7 @@ microdaily                | -                 | 0 (off) or 1 (on) | run in daily
 runshade                  | -                 | 0 (off) or 1 (on) | run the model twice, once for each shade level
 runmoist                  | -                 | 0 (off) or 1 (on) | run soil moisture model
 snowmodel                 | -                 | 0 (off) or 1 (on) | run the snow model
+hourly                    | -                 | 0 (off) or 1 (on) | run the model from hourly weather inputs
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
@@ -54,7 +55,7 @@ tabl <- "
 SLES                      | -                 | 0-1               | substrate longwave IR emissivity$^1$ 
 REFLS                      | -                 | 0-1               | substrate solar reflectivity$^1$ 
 CMH2O                     | cm                | 0.1-2             | precipitable cm H$_2$O in air column
-TAI                       | -                 | 1-julnum          | aerosol optical extinction coefficients$^21$ 
+TAI                       | -                 | 1-julnum          | aerosol optical extinction coefficients$^{1,2}$ 
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
@@ -65,11 +66,11 @@ tabl <- "
 ALTT                      | m                 | 0-10,000          | altitude
 slope                     | decimal degrees   | 0-90              | slope
 azmuth                    | decimal degrees   | 0-360             | aspect (0 is north)
-hori                      | decimal degrees   | 0-90              | horizon angle 
-VIEWF                     | -                 | 0-1               | view factor to sky$^1$ 
-MINSHADES                 | %                 | 0-100             | minimum shade$^2$  
-MAXSHADES                 | %                 | 0-100             | maximum shade$^{2,3}$ 
-PCTWETS                   | %                 | 0-100             | percentage of substrate unit area that is wet$^{2,4}$  
+hori                      | decimal degrees   | 0-90              | horizon angles$^1$  
+VIEWF                     | -                 | 0-1               | view factor to sky$^2$ 
+MINSHADES                 | %                 | 0-100             | minimum shade$^3$  
+MAXSHADES                 | %                 | 0-100             | maximum shade$^{3,4}$ 
+PCTWETS                   | %                 | 0-100             | percentage of substrate unit area that is wet$^{3,5}$  
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
@@ -101,6 +102,12 @@ CCMAXX                    | %                 | 0-100             | maximum clou
 RAINFALL                  | mm                | 0-2000            | daily total rainfall; vector of length = julnum
 tannulrun                 | &deg;C            | -80 - +60         | daily deep soil temperature; vector of length = julnum
 moists                    | decimal %         | 0-1               | predefined soil daily moisture profile through time$^4$
+TAIRhr                    | &deg;C            | -80 - +60         | hourly air temperature (at reference height, Refhyt)$^5$
+RHhr                      | %                 | 0-100             | hourly relative humidity (at reference height, Refhyt)$^5$
+WNhr                      | m s$^{-1}$        | 0-100             | hourly wind speed (at reference height, Refhyt)$^5$
+CLDhr                     | %                 | 0-100             | hourly cloud cover$^5$
+SOLRhr                    | W m$^{2}$         | 0-1367            | hourly solar radiation$^5$
+RAINhr                    | mm                | 0-2000            | hourly rainfall$^5$
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 

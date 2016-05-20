@@ -53,7 +53,7 @@ plot(optical[,2]~optical[,1],type='l',ylab=expression(paste("solar spectral irra
 The factor $\left( {\frac{a}{r}} \right) ^2$ is approximated in the model as $1+2\epsilon \cos (\omega d)$ where $\omega=\frac{2 \pi} {365}$, $\omega$ is the eccentricity of the earth’s orbit (default value of 0.01675) and *d* is the day of the year (1-365). From the astronomical triangle, the term $\cos Z = \cos \phi \cos \delta h + \sin \phi \sin \delta$, where $\phi$ is the latitude, $\delta$ is the solar declination and *h* is the solar hour angle. The solar declination (the latitude on earth where the sun is directly overhead on a given day) is $\delta = \arcsin (0.39784993 \sin \zeta)$ where the ecliptic longitude of the earth in its orbit is $\zeta = \omega (*d* - 80 ) + 2 \epsilon [\sin (\omega d) - \sin (\omega 80) ]$. The solar hour angle (the angular distance of the sun relative to the zenith crossing; the right ascension for an observer at a particular location and time of day) is $h = 15(t_d – t_{sn})$ degrees, with $t_d$ the local standard time of day and tsn the local standard time of true solar noon. The value of $t_{sn}$ is calculated by adding/subtracting 4 min for each degree of longitude west/east of the reference longitude for the local time zone. The hour angle at sunset $H_+=\arccos [-\tan \delta \tan \phi ]$ while the hour angle at sunrise $H_-=-H_+$. In the polar zones, where the (absolute) latitude $\phi$>66°30', there may be no sunrise/sunset but rather a long day ($H_+ = \pi$) or a long night ($H_+ = 0$).
 
 ## 2.2 Terrestrial Radiation
-Solar radiation reaching the earth, i.e. terrestrial radiation, varies from extra-terrestrial radiation because of scattering, reflection and absorption of radiation by the atmosphere. It may thus include a direct $I_\lambda$ and a scattered component $D_\lambda$ (skylight or sky radiation), where global terrestrial radiation $G_{\lambda} =I{\lambda}+D{_\lambda\lambda}$. The total radiant energy from the sun G is obtained by integrating across all emitted wavelengths, thus $G = I + D$. If the zenith angle $Z$ is between 170 and 88°, twilight conditions are assumed and $G = D = 10^{(41.34615384-0.423076923 Z)0.00146}$ based on the regression in (Rozenberg 1966, p. 19). Otherwise, G is computed by calculating monochromatic irradiance for the direct and diffuse components and then integrating across all wavelengths using the trapezoidal rule.
+Solar radiation reaching the earth, i.e. terrestrial radiation, varies from extra-terrestrial radiation because of scattering, reflection and absorption of radiation by the atmosphere. It may thus include a direct $I_\lambda$ and a scattered component $D_\lambda$ (skylight or sky radiation), where global terrestrial radiation $G_{\lambda} =I{\lambda}+D{_\lambda\lambda}$. The total radiant energy from the sun G is obtained by integrating across all emitted wavelengths, thus $G = I + D$. If the zenith angle $Z$ is between 90 and 88°, twilight conditions are assumed and $G = D = 10^{(41.34615384-0.423076923 Z)0.00146}$ based on the regression in (Rozenberg 1966, p. 19). Otherwise, G is computed by calculating monochromatic irradiance for the direct and diffuse components and then integrating across all wavelengths using the trapezoidal rule.
 
 ### 2.2.1 Direct Component of Terrestrial Radiation
 The direct, horizontal plane component of terrestrial solar radiation is calculated as
@@ -143,11 +143,11 @@ The total or ‘global’ solar radiation finally reaching the earth’s surface
 
 $$Q_{solar} = G = \int_0^{\inf} G_\lambda d \lambda = \int_0^{\inf} (I_\lambda+D_\lambda) d\lambda= I + D$$ 
 
-and depends on the solar zenith angle, the elevation (atmospheric pressure), the albedo of the underlying surface $A$ and the optical properties of the atmosphere. In the NicheMapR microclimate model, it is summed over 11 wavelengths from 0.290 to 4 $\mu m$. Adjustments for cloud cover are made according to the Angstrom formula (formula 5.33 on P. 177 of Linacre 1992) $Q_{solar,cld} = Q_{solar} (0.36 + 0.64 (\frac{1 - P_{cld}}{100})$ where $P_{cld}$ is the percentage cloud cover.
+and depends on the solar zenith angle, the elevation (atmospheric pressure), the albedo of the underlying surface $A$ and the optical properties of the atmosphere. In the NicheMapR microclimate model, it is summed over 111 wavelengths from 0.290 to 4 $\mu m$. Adjustments for cloud cover are made according to the Angstrom formula (formula 5.33 on P. 177 of Linacre 1992) $Q_{solar,cld} = Q_{solar} (0.36 + 0.64 (\frac{1 - P_{cld}}{100})$ where $P_{cld}$ is the percentage cloud cover.
 
 # 3. Longwave radiation
 
-Longwave radiation is a major route of heat exchange in terrestrial environments. All objects in a habitat emit longwave radiation at a rate proportional to the 4th power of their temperature, $Q_{IR} = \sigma \epsilon T^4$ where $\sigma$ is the Stefan Boltzman constant ($W m^{2} K^{-4}$), $\epsilon$ is the emissivity and $T$ is the object’s temperature in Kelvin. The heat budget at the ground surface depends in part on the longwave radiation received from the sky and surrounding objects (e.g. hills and shade from vegetation) as well as the longwave radiation it emits. The following equations are used for computing infra-red radiation exchange in the NicheMapR microclimate model.
+Longwave radiation is a major route of heat exchange in terrestrial environments. All objects in a habitat emit longwave radiation at a rate proportional to the 4th power of their temperature, $Q_{IR} = \sigma \epsilon T^4$ where $\sigma$ is the Stefan-Boltzmann constant ($W m^{-2} K^{-4}$), $\epsilon$ is the emissivity and $T$ is the object’s temperature in Kelvin. The heat budget at the ground surface depends in part on the longwave radiation received from the sky and surrounding objects (e.g. hills and shade from vegetation) as well as the longwave radiation it emits. The following equations are used for computing infra-red radiation exchange in the NicheMapR microclimate model.
 
 For longwave radiation from clear skies, ARAD, the sky emissivity is approximated as $\epsilon_{SKY} = 1.72 \left( \frac{e_A}{T_A} \right)^{\frac{1}{7}}$ (Campbell Gaylson S. and Norman 1998, eqn 10.10), where $T_A$ is the shaded air temperature (at reference height, i.e. 1.2 m) in Kelvin and $e_A$ is the vapour pressure of the air in kilopascals (see section 5). Thus, given a percentage cloud clover $CLD$, 
 
@@ -155,7 +155,7 @@ $$A_{RAD}= \sigma \epsilon_{SKY} (T_A+273)^4 (1-\frac{CLD}{100}).$$
 
 Cloud longwave radiation $C_RAD$ is  approximated from $T_A$ assuming an emissivity $\epsilon$ of 1, thus 
 
-$$C_{RAD} = \sigma \epsilon_{CLD} (T_A+273)^4 \frac{CLD}{100}$$ 
+$$C_{RAD} = \sigma \epsilon_{CLD} (T_A-2+273)^4 \frac{CLD}{100}$$ 
 
 and the total radiation from the sky, given a percentage shade from vegetation or other objects $SHD$, is 
 
@@ -174,10 +174,10 @@ $$Q_{IR,HILL} = \sigma \epsilon_{HILL} (T_A+273)^4 (1-VIEWF).$$
 
 Finally, given a computed ground surface temperature Tsurf, and assuming shaded ground radiates at shaded air temperature, radiation emitted from the ground 
 
-$$Q_{IR,GND} = \sigma \epsilon_{GND} (T_{surf}+273)^4 \left( 1-\frac{SHD}{100} \right) + C_{RAD} \frac{SHD}{100}.$$
+$$Q_{IR,GND} = \sigma \epsilon_{GND} (T_{surf}+273)^4 \left( 1-\frac{SHD}{100} \right) + \sigma \epsilon_{GND} (T_A+273)^4 \frac{SHD}{100}.$$
 
 The net longwave radiation gain for the substrate heat budget is therefore 
-$$Q_IR= (Q_{IR,SKY} + Q_{IR,VEG}) VIEWF + Q_{IR,HILL} (1 - VIEWF) - Q_{IR,GND}$$
+$$Q_{IR}= (Q_{IR,SKY} + Q_{IR,VEG}) VIEWF + Q_{IR,HILL} (1 - VIEWF) - Q_{IR,GND}$$
 
 and the effective ‘sky temperature’, an output of the microclimate model, 
 
@@ -223,11 +223,11 @@ $$T_{loc} = T_{z_0} + (T_{ref}-T_{z_0}) \ln ( \frac{ z_{loc}}{z_0}+1).$$
 
 If experimental data are specified for the three segment velocity profile, i.e. $z_1$, $z_2$, $z_{0,1}$ and $z_{0,2}$ are non-zero, then MICROSEGMT is called instead of MICRO. The computations are similar except that now 
 $$u_1^* = 0.4 u_1/ \ln (\frac{ z_1}{z_{0,1}}+1),$$
-$$u_2^* = 0.4u_2/ \ln (\frac{z_2}{z_0}+1),$$
+$$u_2^* = 0.4 u_2/ \ln (\frac{z_2}{z_0}+1),$$
 with 
-$$u_1 = \frac{u^*}{0.4} ln (\frac{z_1}{z_{0,1}}+1)$$
+$$u_1 = \frac{u_2^*}{0.4} ln (\frac{z_1}{z_{0,1}}+1)$$
 and 
-$$u_2 = \frac{u_1^*}{0.4} ln (\frac{z_2}{z_{0,2}}+1).$$
+$$u_2 = \frac{u}{0.4} ln (\frac{z_2}{z_{0,2}}+1).$$
 Then 
 $$S_{t_s} = 0.62 / \left(\frac{z_0 u_2^*}{12} \right) ^{0.45}$$
 and
@@ -260,7 +260,8 @@ WETAIR uses VAPPRS to compute vapour pressure for the current relative humidity 
 
 HUMID uses DRYAIR and WETAIR to adjust relative humidity from the reference height to the local height. EVAP uses DRYAIR and WETAIR to compute the vapour density at 100% relative humidity and at the current humidity, and then determines evaporation from the surface according to the equation $m_{evap} = \frac{P_{wet}}{100} h_d (v_{d,surf}  - v_{d,air})$, where $P_{wet}$ is the % of the unit surface area that is acting as a free water surface. 
 
-The mass transfer  coefficient $h_d = \frac{h_c}{c_p \rho_{air}} \left( \frac{0.71}{0.60} \right)^{0.666}$ and the convective heat transfer coefficient $h_c = \max(|\frac{Q_{conv}}{T_{loc}-T_{ref}}|,0.5)$ are both computed in DSUB.
+The mass transfer  coefficient $h_d = \frac{h_c}{c_p \rho_{air}} \left( \frac{0.71}{0.60} \right)^{0.666}$ and the convective heat transfer coefficient $h_c = \max(|\frac{Q_{conv}}{T_{loc}-T_{ref}}|,0.5)$ are both computed in DSUB. $h_d$ is computed from the Chilton-Colborn analogy (Bird et al, 2002), which assumes that the temperature and humidity profile shapes are the same shape.
+
 Finally, $m_{evap}$ is converted to energy lost/gained as heat by evaporation/condensation $Q_{evap} = m_{evap} \Delta H_{vap}$ where the latent heat of vaporisation is computed as $\Delta H_{vap} = 10 ^ 3 (2500.8 - 2.36 T_{surf} + 0.0016 T_{surf}^2 - 0.00006 T_{surf}^3)$ if the surface temperature $T_{surf}$ > 0 °C, and $\Delta H_{vap} = 10^3 (2834.1 - 0.29 T_{surf} + 0.004 T_{surf}^2)$ if $T_{surf} \leq 0 °C$.
 
 # 7. Soil heat balance and soil thermal properties
@@ -269,7 +270,7 @@ The soil temperature change through depth z and time t is described by the one-d
 
 $$\large{ \frac{dT}{dt} = \frac{ k }{ \rho c } \frac{ \delta^2 T }{ \delta z^2} }$$
 
-(Carslaw and Jaeger 1959) and requires one initial condition and two boundary conditions for its solution. The initial condition (soil temperature profile) is either the mean daily reference air temperature or (when doing daily simulations) the temperature profile at the end of the previous day. The deep soil boundary condition is obtained by assuming it is the mean annual air temperature. The remaining boundary condition at the soil surface is obtained by equating the energy conducted to the soil surface to the net heat transfer to the surface by solar radiation, infrared radiation, convection and evaporation, i.e. a unit area energy balance for the soil surface
+(Carslaw and Jaeger 1959) and requires one initial condition and two boundary conditions for its solution. The initial condition (soil temperature profile) is either 1) the mean daily reference air temperature for all soil nodes or 2) (when doing daily simulations) the temperature profile at the end of the previous day. In the former case, three replicate days are run with the ending profile of the first day being the initial condition for the second day and the end of the second day being the initial condition for the third day to establish a steady periodic temperature profile for the soil. The deep soil boundary condition is obtained by assuming it is the mean annual air temperature. The remaining boundary condition at the soil surface is obtained by equating the energy conducted to the soil surface to the net heat transfer to the surface by solar radiation, infrared radiation, convection and evaporation, i.e. a unit area energy balance for the soil surface
 
 $$\large{ Q_{cond} = -k_{so} \frac{\delta T }{ \delta z}|_{z_0} = Q_{solar} + Q_{IR} + Q_{conv} - Q_{evap} }$$
 
@@ -309,19 +310,19 @@ Carslaw HS, Jaeger JC. 1959. Conduction of heat in solids. Oxford University Pre
 
 Dave JV, Furakawa PM. 1967. Scattered radiation in the ozone absorption bands at selected levels of a terrestrial Rayleigh atmosphere. Americal Meteorological Society.  
 
-Dave JV, Warten RM. 1968. Program for computing the Stokes parameters of the radiation emerging from a plane-parallel, non-absorbing, Rayleigh atmosphere. Palo Alto, California: IBM Scientific Center. Report no.  
+Dave JV, Warten RM. 1968. Program for computing the Stokes parameters of the radiation emerging from a plane-parallel, non-absorbing, Rayleigh atmosphere. Palo Alto, California: IBM Scientific Center.  
 
 Dozier J, Bruno J, Downey P. 1981. A faster solution to the horizon problem. Computers and Geosciences 7:145-151.
 
-Elterman L. 1968. UV, visible and IR attenuation for altitudes to 59 km. Bedford, Mass.: U. S. Airforce Cambridge Research Laboratory. Report no.  
+Elterman L. 1968. UV, visible and IR attenuation for altitudes to 59 km. Bedford, Mass.: U. S. Airforce Cambridge Research Laboratory.  
 
----. 1970. Vertical-attenuation model with eight surface meteorological ranges 2 to 13 kilometers. Bedford, Mass.: U. S. Airforce Cambridge Research Laboratory. Report no.  
+---. 1970. Vertical-attenuation model with eight surface meteorological ranges 2 to 13 kilometers. Bedford, Mass.: U. S. Airforce Cambridge Research Laboratory.
 
 Gates DM, Harrop WJ. 1963. Infrared transmission of the atmosphere to solar radiation. Applied Optics 2:887-898.  
 
 Kearney MR, Porter WP. 2016. NicheMapR - an R package for biophysical modelling: the microclimate model. Ecography in review.
 
-Koepke P, Hess M, Schult I, Shettle EP. 1997. Global Aerosol Data Set. Hamburg: Max-Planck-Institut für Meteorologie. Report no.  
+Koepke P, Hess M, Schult I, Shettle EP. 1997. Global Aerosol Data Set. Hamburg: Max-Planck-Institut für Meteorologie. 
 
 Linacre E. 1992. Climate data and resources. Routledge.  
 
@@ -335,7 +336,7 @@ Robinson N. 1966. Solar Radiation. Elsevier.
 
 Rozenberg GV. 1966. Twilight: A Study in Atmospheric Optics. Plenum Press.  
 
-Tracy CR, Welch WR, Pinshow B, Kearney MR, Porter WP. 2016. Properties of air: A manual for use in biophysical ecology. Madison: The University of Wisconsin. Report no.  
+Tracy CR, Welch WR, Pinshow B, Kearney MR, Porter WP. 2016. Properties of air: A manual for use in biophysical ecology. Madison: The University of Wisconsin.
 
-Tracy CR, Welch WR, Porter WP. 1980. Properties of air: A manual for use in biophysical ecology. Madison: The University of Wisconsin. Report no.  
+Tracy CR, Welch WR, Porter WP. 1980. Properties of air: A manual for use in biophysical ecology. Madison: The University of Wisconsin. 
 

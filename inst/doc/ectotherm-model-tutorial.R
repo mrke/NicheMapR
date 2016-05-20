@@ -7,7 +7,13 @@ knitr::opts_chunk$set(
 library(NicheMapR)
 
 ## ------------------------------------------------------------------------
-micro<-micro_global(loc = "Kuranda, Queensland", runmoist=1)
+a=getLoadedDLLs()
+if(is.loaded("microclimate", "MICROCLIMATE", type = "FORTRAN")==TRUE){
+  dyn.unload(a$MICROCLIMATE[[2]])
+dyn.unload(a$ECTOTHERM[[2]])
+}
+library(NicheMapR)
+micro<-micro_global(loc = "Townsville, Queensland", runmoist=1)
 ecto<-ectotherm()
 
 ## ---- echo=FALSE, results='asis'-----------------------------------------
@@ -106,13 +112,13 @@ with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
 ## ---- fig.width=7, fig.height=5, fig.show = "hold"-----------------------
 # run the microclimate model daily for 5 years
 timeinterval<-365
-nyears<-5
-micro<-micro_global(loc = "Kuranda, Queensland", timeinterval = timeinterval, nyears = nyears,
+nyears<-1
+micro<-micro_global(loc = "Townsville, Queensland", timeinterval = timeinterval, nyears = nyears,
   runmoist = 1)
 
 # run the ectotherm model with the DEB model turned on and in viviparous mode, simulating the
 # Eastern Water Skink, Eulamprus quoyii
-ecto<-ectotherm(DEB = 1, mindepth = 4, viviparous = 1)
+ecto<-ectotherm(DEB = 1, viviparous = 1)
 
 metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 environ<-as.data.frame(ecto$environ) # activity, Tb and environment
