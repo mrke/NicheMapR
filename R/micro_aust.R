@@ -260,73 +260,79 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
   rainfrac=0.5,
   shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",barcoo="",quadrangle=1,hourly=0) {
   #
-  # loc="Nyrripi, Northern Territory"
-  # timeinterval=365
-  # ystart=1990
-  # yfinish=1990
-  # soiltype=4
-  # REFL=0.15
-  # slope=0
-  # aspect=0
-  # DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
-  # minshade=0
-  # maxshade=90
-  # Usrhyt=.01
-  # runshade=1
-  # clearsky=0
-  # rungads=1
-  # write_input=0
-  # writecsv=0
-  # manualshade=1
-  # soildata=1
-  # terrain=0
-  # dailywind=1
-  # adiab_cor=1
-  # warm=0
-  # spatial="c:/Australian Environment/"
-  # vlsci=0
-  # loop=0
-  # ERR=1.5
-  # RUF=0.004
-  # EC=0.0167238
-  # SLE=0.95
-  # Thcond=2.5
-  # Density=2560
-  # SpecHeat=870
-  # BulkDensity=1300
-  # PCTWET=0
-  # rainwet=1.5
-  # cap=1
-  # CMH2O=1
-  # hori=rep(0,24)
-  # TIMAXS=c(1.0, 1.0, 0.0, 0.0)
-  # TIMINS=c(0, 0, 1, 1)
-  # timezone=0
-  # runmoist=1
-  # PE=rep(1.1,19)
-  # KS=rep(0.0037,19)
-  # BB=rep(4.5,19)
-  # BD=rep(1.3,19)
-  # Clay=20
-  # SatWater=rep(0.26,10)
-  # maxpool=10000
-  # rainmult=1
-  # evenrain=0
-  # SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
-  # L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
-  #     4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
-  #     0,0)*10000
-  # LAI=0.1
-  # snowmodel=0
-  # snowtemp=1.5
-  # snowdens=0.375
-  # densfun=c(0,0)
-  # snowmelt=0.9
-  # undercatch=1
-  # rainmelt=0.0125
-  # rainfrac=0.5
-  # shore=0
-  # tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
+#   loc="Nyrripi, Northern Territory"
+#   timeinterval=365
+#   ystart=1990
+#   yfinish=1990
+#   nyears=1
+#   soiltype=4
+#   REFL=0.15
+#   slope=0
+#   aspect=0
+#   DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
+#   minshade=0
+#   maxshade=90
+#   Usrhyt=.01
+#   runshade=1
+#   clearsky=0
+#   rungads=1
+#   write_input=0
+#   writecsv=0
+#   manualshade=1
+#   soildata=1
+#   terrain=0
+#   dailywind=1
+#   adiab_cor=1
+#   warm=0
+#   spatial="c:/Australian Environment/"
+#   vlsci=0
+#   loop=0
+#   ERR=1.5
+#   RUF=0.004
+#   EC=0.0167238
+#   SLE=0.95
+#   Thcond=2.5
+#   Density=2560
+#   SpecHeat=870
+#   BulkDensity=1300
+#   PCTWET=0
+#   rainwet=1.5
+#   cap=1
+#   CMH2O=1
+#   hori=rep(0,24)
+#   TIMAXS=c(1.0, 1.0, 0.0, 0.0)
+#   TIMINS=c(0, 0, 1, 1)
+#   timezone=0
+#   runmoist=1
+#   PE=rep(1.1,19)
+#   KS=rep(0.0037,19)
+#   BB=rep(4.5,19)
+#   BD=rep(1.3,19)
+#   Clay=20
+#   SatWater=rep(0.26,10)
+#   maxpool=10000
+#   rainmult=1
+#   evenrain=0
+#   SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
+#   L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
+#       4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
+#       0,0)*10000
+#   LAI=0.1
+#   snowmodel=0
+#   snowtemp=1.5
+#   snowdens=0.375
+#   densfun=c(0,0)
+#   snowmelt=0.9
+#   undercatch=1
+#   rainmelt=0.0125
+#   rainfrac=0.5
+#   shore=0
+#   tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
+#   scenario="Access 1.3"
+#   year=2070
+#   barcoo=""
+#   quadrangle=1
+#   hourly=0
   if(vlsci==0){
     library(RODBC)
   }
@@ -858,6 +864,8 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
       juldaysn2<-juldaysn[1:round(nyears2*12)]
     } #end vlsci check
     dim<-ndays
+    maxshades=rep(maxshade,dim)
+    minshades=rep(minshade,dim)
     juldays<-seq(daystart,dim,1)
     julday<-rep(seq(1,365),nyears)
     juday<-julday[1:dim]

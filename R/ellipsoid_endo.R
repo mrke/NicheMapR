@@ -139,7 +139,8 @@ ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, furco
   upcrit <- coreT - (mouseelephant*stress*Rtotal)
   lowcrit <- coreT - mouseelephant * Rtotal
   Qgen <- (coreT - airT) / Rtotal
-  QgenFinal <- ifelse(Qgen < mouseelephant, mouseelephant, Qgen)
+  QgenFinal <- Qgen
+  QgenFinal[QgenFinal<mouseelephant]<-mouseelephant
   mlO2ph <- QgenFinal / 20.1 * 3600
   esat <- VAPPRS(coreT)
   Qresp_gph <- (mlO2ph / 0.2094 / O2eff) * (WETAIR(db = coreT, rh = 100)$vd - WETAIR(db = airT, rh = rh)$vd) / 1000
@@ -147,13 +148,21 @@ ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, furco
   Qresp_W <- ((Qresp_gph / 3600) * conv_H2O_loss) / 1000
   Qresp_kjph <- Qresp_W / 1000 * 3600
   PctBasal <- QgenFinal / mouseelephant * 100
-  status <- ifelse(Qgen > mouseelephant, 1, ifelse(Qgen < stress * mouseelephant, 3, 2)) # 1 = cold, 2 = happy, 3 = stress
+  status<-Qgen
+  status[status>mouseelephant]<--100000000
+  status[status<stress * mouseelephant]<--300000000
+  status[status<100000000*-1]<--200000000
+  status[status==100000000*-1]<-1
+  status[status==300000000*-1]<-3
+  status[status==200000000*-1]<-2
   H2Oloss_W <- (Qgen * -1) + mouseelephant
   H2O_gph <- (((H2Oloss_W) * 1000) / conv_H2O_loss) * 3600
   H2O_gph[H2O_gph<0]<-0
-  massph_percent <- ifelse(H2O_gph < 0, 0, ((H2O_gph / 1000) / mass) * 100)
-  timetodeath <- ifelse(H2O_gph < 0, NA, 1 / (H2O_gph / (mass * 0.15 * 1000)))
-
+  massph_percent<-H2O_gph
+  massph_percent[massph_percent<0]<-0
+  timetodeath<-massph_percent
+  massph_percent[massph_percent!=0]<-((H2O_gph / 1000) / mass) * 100
+  timetodeath[timetodeath!=0]<-1 / (H2O_gph / (mass * 0.15 * 1000))
   results<-cbind(airT, windspd, rh, coreT, upcrit, lowcrit, Qresp_gph, Qresp_W, Qresp_kjph, skinT, Qgen,
            QgenFinal, mlO2ph, PctBasal, status, H2Oloss_W, H2O_gph,
            massph_percent, timetodeath)
