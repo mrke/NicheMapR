@@ -28,12 +28,15 @@ As with the microclimate model tutorial, this first example involves the most ba
 library(NicheMapR)
 ```
 
+```{r, echo = FALSE}
+#a=getLoadedDLLs()
+#if(is.loaded("microclimate", "MICROCLIMATE", type = "FORTRAN")==TRUE){
+#  dyn.unload(a$MICROCLIMATE[[2]])
+#dyn.unload(a$ECTOTHERM[[2]])
+#}
+```
+
 ```{r}
-a=getLoadedDLLs()
-if(is.loaded("microclimate", "MICROCLIMATE", type = "FORTRAN")==TRUE){
-  dyn.unload(a$MICROCLIMATE[[2]])
-dyn.unload(a$ECTOTHERM[[2]])
-}
 library(NicheMapR)
 micro<-micro_global(loc = "Townsville, Queensland", runmoist=1)
 ecto<-ectotherm()
@@ -246,7 +249,7 @@ Below is an example for the Eastern Water Skink (default settings for the DEB mo
 ```{r, fig.width=7, fig.height=5, fig.show = "hold"}
 # run the microclimate model daily for 5 years
 timeinterval<-365
-nyears<-1
+nyears<-6
 micro<-micro_global(loc = "Townsville, Queensland", timeinterval = timeinterval, nyears = nyears,
   runmoist = 1)
 
