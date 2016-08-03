@@ -24,7 +24,7 @@ This document is Appendix 1 for the NicheMapR microclimate model software note (
 ```{r message=FALSE, fig.width=8, fig.height=3,echo=FALSE, results='asis', fig.align='center', fig.cap='Stucture of the NicheMapR microclimate model Fortran program. Solid boxes are subroutines and dashed boxes are functions.', fig.pos='!h'}
 library(png)
 library(grid)
-img <- readPNG("C:/Users/mrke/Manuscripts/microclimate software note/Fig1.png")
+img <- readPNG("Fig1.png")
  grid.raster(img)
 ```
 
@@ -41,7 +41,7 @@ The SOLRAD subroutine used in the NicheMapR microclimate model for calculating c
 The total solar irradiance reaching an imaginary plane perpendicular to the sun's rays at the outer edge of the atmosphere is obtained by integrating across all wavelengths of radiation emitted by the sun after correcting for the distance of the earth from the sun and for the angle at which the sun is shining on that plane. Thus, the wavelength-specific irradiance reaching this plane is $$ \large{ I_\lambda = S_\lambda \left( {\frac{a}{r}} \right) ^2 \cos Z } $$ where $S_\lambda$ is solar spectral irradiance reaching a plane perpendicular to the incoming radiation at one astronomical unit from the sun (Fig. 2, data stored internally in SOLRAD), *a* is the length of the long (semi-major) axis of the earth's elliptical orbit around the sun, *r* is the distance between the earth and the sun and *Z* is the angle between the sun's rays and a line extending perpendicular to the imaginary plane (so no direct radiation is received by this plane if *Z* > 90$^\circ$, but see below for twilight conditions).
 
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6, fig.align='center', fig.cap='Solar spectral irradiance as a function of wavelength'}
-optical<-read.csv("c:/git/NicheMapR/OPTICAL.csv")
+optical<-read.csv("OPTICAL.csv")
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(mar = c(5,5,4,2) + 0.1)
 ylab=expression(paste("solar spectral irradiance,  W m"^{-2}))
@@ -73,8 +73,8 @@ plot(optical[,4]~optical[,1],type='l',ylab="optical thickness, cm",xlab="wavelen
 Total atmospheric ozone shows significant seasonal and latitudinal variations, and is assumed to follow the variation in Figure 4 (data from Robinson 1966, p. 114). A correction factor of the ratio of the latitude/season-specific ozone to the reference level (0.34 cm) is thus applied to the elevation-adjusted extinction term for ozone (Fig. 4).
 
 ```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=10, fig.align='center', fig.cap='Seasonal, latitudinal and altitudinal correction factors for atmospheric ozone', fig.subcap=c('seasonal and latitudinal correction factors','altitudinal correction factors')}
-altfct<-read.csv("c:/git/NicheMapR/ALTFCT.csv")
-oz<-read.csv("c:/git/NicheMapR/OZ.csv")
+altfct<-read.csv("ALTFCT.csv")
+oz<-read.csv("OZ.csv")
 par(mfrow = c(2,1)) # set up for 2 plots in 1 columns
 for(i in 2:13){
   if(i==2){
@@ -296,7 +296,9 @@ Snow melt occurs according to the heat load as computed by the heat budget for t
 
 # 10. References
 
-Anderson E. 2006. Snow Accumulation and Ablation Model – SNOW-17  
+Anderson E. 2006. Snow Accumulation and Ablation Model - SNOW-17  
+
+Bird, R. B. et al. 2002. Transport Phenomena. - Wiley and Sons.
 
 Campbell GS. 1985. Soil Physics with Basic: Transport Models for Soil-Plant Systems. Amsterdam: Elsevier.  
 
@@ -314,19 +316,19 @@ Dozier J, Bruno J, Downey P. 1981. A faster solution to the horizon problem. Com
 
 Elterman L. 1968. UV, visible and IR attenuation for altitudes to 59 km. Bedford, Mass.: U. S. Airforce Cambridge Research Laboratory.  
 
----. 1970. Vertical-attenuation model with eight surface meteorological ranges 2 to 13 kilometers. Bedford, Mass.: U. S. Airforce Cambridge Research Laboratory.
+---. 1970. Vertical-attenuation model with eight surface meteorological ranges 2 to 13 kilometers. Bedford, Mass.: U. S. Airforce Cambridge Research Laboratory.  
 
 Gates DM, Harrop WJ. 1963. Infrared transmission of the atmosphere to solar radiation. Applied Optics 2:887-898.  
 
 Kearney MR, Porter WP. 2016. NicheMapR - an R package for biophysical modelling: the microclimate model. Ecography in review.
 
-Koepke P, Hess M, Schult I, Shettle EP. 1997. Global Aerosol Data Set. Hamburg: Max-Planck-Institut für Meteorologie. 
+Koepke P, Hess M, Schult I, Shettle EP. 1997. Global Aerosol Data Set. Hamburg: Max-Planck-Institut für Meteorologie.  
 
 Linacre E. 1992. Climate data and resources. Routledge.  
 
 McCullough EC, Porter WP. 1971. Computing clear day solar radiation spectra for the terrestrial ecological environment. Ecology 52:1008-1015.  
 
-Neteler M, Bowman MH, Landa M, Metz M. 2012. GRASS GIS: A multi-purpose open source GIS. Environmental Modelling & Software 31:124–113.  
+Neteler M, Bowman MH, Landa M, Metz M. 2012. GRASS GIS: A multi-purpose open source GIS. Environmental Modelling & Software 31:124-113.  
 
 Rasmussen R, et al. 2012. How Well Are We Measuring Snow: The NOAA/FAA/NCAR Winter Precipitation Test Bed. Bulletin of the American Meteorological Society 93:811-829.  
 
@@ -334,7 +336,6 @@ Robinson N. 1966. Solar Radiation. Elsevier.
 
 Rozenberg GV. 1966. Twilight: A Study in Atmospheric Optics. Plenum Press.  
 
-Tracy CR, Welch WR, Pinshow B, Kearney MR, Porter WP. 2016. Properties of air: A manual for use in biophysical ecology. Madison: The University of Wisconsin.
+Tracy CR, Welch WR, Pinshow B, Kearney MR, Porter WP. 2016. Properties of air: A manual for use in biophysical ecology. Madison: The University of Wisconsin.  
 
-Tracy CR, Welch WR, Porter WP. 1980. Properties of air: A manual for use in biophysical ecology. Madison: The University of Wisconsin. 
-
+Tracy CR, Welch WR, Porter WP. 1980. Properties of air: A manual for use in biophysical ecology. Madison: The University of Wisconsin.  
