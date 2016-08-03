@@ -1,4 +1,4 @@
-#' Australian implementation of the microclimate model.
+#' New Zealand implementation of the microclimate model.
 #'
 #' An implementation of the Niche Mapper microclimate model that uses the AWAP daily weather database
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
@@ -98,7 +98,7 @@
 #'
 #' \strong{ Snow mode parameters:}
 #'
-#' \code{snowmodel}{ = 0, run the snow model 1=yes, 0=no (note that this may cause slower runs)}\cr\cr
+#' \code{snowmodel}{ = 1, run the snow model 1=yes, 0=no (note that this may cause slower runs)}\cr\cr
 #' \code{snowtemp}{ = 1.5, Temperature (deg C) at which precipitation falls as snow}\cr\cr
 #' \code{snowdens}{ = 0.375, snow density (mg/m3), overridden by }
 #' \code{densfun}\cr\cr
@@ -240,12 +240,12 @@
 #'     (deg C)",col=i,type = "l")
 #'  }
 #'}
-micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart=1990,yfinish=1990,
+micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfinish=2000,
   nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,
   DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
   minshade=0,maxshade=90,Refhyt=1.2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
   runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,manualshade=1,
-  soildata=1,terrain=0,dailywind=1,adiab_cor=1,warm=0,spatial="c:/Australian Environment/",vlsci=0,
+  soildata=0,terrain=0,dailywind=1,adiab_cor=1,warm=0,spatial="C:/Spatial_Data/Climate/New Zealand/weather",vlsci=0,
   ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2560,SpecHeat=870,BulkDensity=1300,
   PCTWET=0,rainwet=1.5,cap=1,CMH2O=1.,hori=rep(0,24),
   TIMAXS=c(1.0, 1.0, 0.0, 0.0),TIMINS=c(0, 0, 1, 1),timezone=0,
@@ -256,14 +256,14 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
     4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
     0,0)*10000,
   LAI=0.1,
-  snowmodel=0,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
+  snowmodel=1,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
   shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",barcoo="",quadrangle=1,hourly=0) {
   #
-#   loc="Nyrripi, Northern Territory"
+#   loc="Athurs Pass, New Zealand"
 #   timeinterval=365
-#   ystart=1990
-#   yfinish=1990
+#   ystart=2000
+#   yfinish=2000
 #   nyears=1
 #   soiltype=4
 #   REFL=0.15
@@ -272,19 +272,24 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
 #   DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
 #   minshade=0
 #   maxshade=90
+#   Refhyt=1.2
 #   Usrhyt=.01
-#   runshade=1
+# Z01=0
+# Z02=0
+# ZH1=0
+# ZH2=0
+# runshade=1
 #   clearsky=0
 #   rungads=1
 #   write_input=0
 #   writecsv=0
 #   manualshade=1
-#   soildata=1
+#   soildata=0
 #   terrain=0
 #   dailywind=1
 #   adiab_cor=1
 #   warm=0
-#   spatial="c:/Australian Environment/"
+#   spatial="C:/Spatial_Data/Climate/New Zealand/weather"
 #   vlsci=0
 #   loop=0
 #   ERR=1.5
@@ -318,7 +323,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
 #       4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
 #       0,0)*10000
 #   LAI=0.1
-#   snowmodel=0
+#   snowmodel=1
 #   snowtemp=1.5
 #   snowdens=0.375
 #   densfun=c(0,0)
@@ -328,14 +333,12 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
 #   rainfrac=0.5
 #   shore=0
 #   tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
-#   scenario="Access 1.3"
+#   scenario=""
 #   year=2070
 #   barcoo=""
 #   quadrangle=1
 #   hourly=0
-  if(vlsci==0){
-    library(RODBC)
-  }
+
   errors<-0
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
@@ -513,9 +516,6 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
 
     ################## time related variables #################################
     nyears<-yfinish-ystart+1
-    if(vlsci==1){
-      ndays<-365*nyears
-    }
 
     juldays12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
     juldaysn<-juldays12 # variable of juldays for when doing multiple years
@@ -533,32 +533,19 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
 
     # now check if doing something other than middle day of each month, and create appropriate vector of julian days
     daystart<-as.integer(ceiling(365/timeinterval/2))
-    if(timeinterval!=12){
-      juldays<-seq(daystart,365,as.integer(floor(365/timeinterval)))
-    }else{
-      juldays<-juldaysn
-    }
-    julnum <- timeinterval*nyears # total days to do
-    julday <- subset(juldays, juldays!=0) # final vector of julian days
-    julday<-rep(julday,nyears)
     idayst <- 1 # start day
-    ida<-timeinterval*nyears # end day
     dates<-Sys.time()-60*60*24
     curyear<-as.numeric(format(dates,"%Y"))
 
     ################## location and terrain #################################
-    if(vlsci==0){
-      f1 <- paste(spatial,"ausclim_rowids.nc",sep="");
-      f2 <- paste(spatial,"ausdem_shift1.tif",sep="");
-      f3 <- paste(spatial,"agg_9secdem.nc",sep="");
-      f4 <- paste(spatial,"Aust9secDEM.tif",sep="");
-    }else{
-      f1 <- "/vlsci/VR0212/shared/Spatial_Data/ausclim_rowids.nc";
-      f2 <- "/vlsci/VR0212/shared/Spatial_Data/ausdem_shift1.tif";
-      f3 <- "/vlsci/VR0212/shared/Spatial_Data/agg_9secdem.nc";
-      f4 <- "/vlsci/VR0212/shared/Spatial_Data/Aust9secDEM.grd";
-    }
-
+      if (!requireNamespace("raster", quietly = TRUE)) {
+        stop("package 'raster' is needed. Please install it.",
+          call. = FALSE)
+      }
+      if (!requireNamespace("ncdf4", quietly = TRUE)) {
+        stop("package 'ncdf4' is needed. Please install it.",
+          call. = FALSE)
+      }
     if(is.numeric(loc)==FALSE){ # use geocode to get location from site name via googlemaps
       if (!requireNamespace("dismo", quietly = TRUE)) {
         stop("dismo needed for the place name geocode function to work. Please install it.",
@@ -566,6 +553,10 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
       }
       if (!requireNamespace("XML", quietly = TRUE)) {
         stop("XML needed for the place name geocode function to work. Please install it.",
+          call. = FALSE)
+      }
+      if (!requireNamespace("proj4", quietly = TRUE)) {
+        stop("package 'proj4' is needed. Please install it.",
           call. = FALSE)
       }
       longlat <- dismo::geocode(loc)[3:4] # assumes first geocode match is correct
@@ -600,118 +591,38 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
       MINSHADES <- rep(0,(timeinterval*nyears))+minshade # daily min shade (%)
     }
 
+    r1<-raster(paste(spatial,'/nz_geo3_km.asc',sep=""))
+    NZDEM<-extract(r1,x)*1000
 
-    if(soildata==1){
-      cat("extracting soil data", '\n')
-      if(vlsci==0){
-        static_soil<-paste(spatial,"static_soil.nc",sep="")
-        emissivities<-paste(spatial,"aus_emissivities.nc",sep="")
-      }else{
-        static_soil<-'/vlsci/VR0212/shared/Spatial_Data/static_soil.nc'
-        emissivities<-'/vlsci/VR0212/shared/Spatial_Data/aus_emissivities.nc'
-      }
-      # read data in from netcdf file
-      static_soil_data<-raster::brick(static_soil)
-      static_soil_vars <- raster::extract(static_soil_data,x)
-      labels<-c('albedo','FAPAR1','FAPAR2','FAPAR3','FAPAR4','FAPAR5','FAPAR6','FAPAR7','FAPAR8','FAPAR9','FAPAR10','FAPAR11','FAPAR12','volwater_Upper','volwater_lower','thick_upper','thick_lower','code')
-      colnames(static_soil_vars)<-labels
-      emissivities_data<-raster::brick(emissivities)
-      SLES2 <- raster::extract(emissivities_data,x)
+    utm<-project(as.matrix(x), "+proj=tmerc +lat_0=0.0 +lon_0=173.0 +k=0.9996 +x_0=1600000.0 +y_0=10000000.0 +datum=WGS84 +units=m")
+    nc<-nc_open(paste(spatial,"/elevslpasphori.nc",sep=""))
+    easting<-ncvar_get(nc,"easting")
+    northing<-ncvar_get(nc,"northing")
+    dist1<-abs(easting-utm[1])
+    index1<-which.min(dist1)
+    dist2<-abs(northing-utm[2])
+    index2<-which.min(dist2)
+    start<-c(index1,index2,1)
+    count<-c(1,1,-1)
+    elevslpasphori<-as.numeric(ncvar_get(nc,varid="variable",start=start,count=count))
+    nc_close(nc)
 
-      # read in other soil related files for working out lumped soil type and properties
-      # such as clay % for getting water potential
-      if(vlsci==0){
-        filename<-paste(spatial,"ppfInterpAll.txt",sep="")
-        ppf<-as.data.frame(read.table(file = filename, sep = ",", header=TRUE))
-        filename<-paste(spatial,"Lumped soil types.txt",sep="")
-        lumped.soil<-as.data.frame(read.table(file = filename, sep = ","))
-        filename<-paste(spatial,"SoilTypeLUT_725_AWAP.csv",sep="")
-        soiltype<-as.data.frame(read.table(file = filename, sep = ","))
-      }else{
-        filename<-'/vlsci/VR0212/shared/Spatial_Data/ppfInterpAll.txt'
-        ppf<-as.data.frame(read.table(file = filename, sep = ",", header=TRUE))
-        filename<-'/vlsci/VR0212/shared/Spatial_Data/Lumped soil types.txt'
-        lumped.soil<-as.data.frame(read.table(file = filename, sep = ","))
-        filename<-'/vlsci/VR0212/shared/Spatial_Data/SoilTypeLUT_725_AWAP.csv'
-        soiltype<-as.data.frame(read.table(file = filename, sep = ","))
-      }
-      soilcode<-subset(soiltype, soiltype[1]==static_soil_vars[18])
-      lumped<-subset(lumped.soil, V4==as.character(soilcode[1,2]))
-      soiltype<-lumped[1,6]
-      soilprop<-subset(ppf, ppf==soilcode[1,2])
-    }else{
-      SLES2 <- rep(SLE,timeinterval*nyears)
-      if(manualshade==0){
-        cat("extracting shade data", '\n')
-        if(vlsci==0){
-          static_soil<-paste(spatial,"static_soil.nc",sep="")
-          emissivities<-paste(spatial,"aus_emissivities.nc",sep="")
-        }else{
-          static_soil<-'/vlsci/VR0212/shared/Spatial_Data/static_soil.nc'
-          emissivities<-'/vlsci/VR0212/shared/Spatial_Data/aus_emissivities.nc'
-        }
-        # read data in from netcdf file
-        static_soil_data<-raster::brick(static_soil)
-        static_soil_vars <- raster::extract(static_soil_data,x)
-        labels<-c('albedo','FAPAR1','FAPAR2','FAPAR3','FAPAR4','FAPAR5','FAPAR6','FAPAR7','FAPAR8','FAPAR9','FAPAR10','FAPAR11','FAPAR12','volwater_Upper','volwater_lower','thick_upper','thick_lower','code')
-        colnames(static_soil_vars)<-labels
-      }
-    }
+    ALTITUDES <- elevslpasphori[1]
+    if(is.na(ALTITUDES)==TRUE){ALTITUDES<-NZDEM}
+
     if(terrain==1){
-      cat("extracting terrain data \n")
-      e<-extent(x[1]-0.05,x[1]+0.05,x[2]-0.05,x[2]+0.05)
-      for(i in 1:24){
-        if(vlsci==0){
-          horifile<-paste(spatial,'horizon',i,'.tif',sep="")
-        }else{
-          horifile<-paste('/vlsci/VR0212/shared/Spatial_Data/','horizon',i,'.tif',sep="")
-        }
-        horiz<-raster::crop(raster::raster(horifile),e)
-        if(i==1){
-          horizons_data<-horiz
-        }else{
-          horizons_data<-raster::stack(horizons_data,horiz)
-        }
-      }
-      HORIZONS <- t(raster::extract(horizons_data,x))
-      if(vlsci==0){
-        elev1<-crop(raster::raster(paste(spatial,'elev.tif',sep="")),e)
-        slope1<-crop(raster::raster(paste(spatial,'slope.tif',sep="")),e)
-        aspect1<-crop(raster::raster(paste(spatial,'aspect.tif',sep="")),e)
-        elevslpasp<-raster::stack(elev1,slope1,aspect1)
-      }else{
-        elev1<-raster::crop(raster(paste('/vlsci/VR0212/shared/Spatial_Data/','elev.tif',sep="")),e)
-        slope1<-raster::crop(raster(paste('/vlsci/VR0212/shared/Spatial_Data/','slope.tif',sep="")),e)
-        aspect1<-raster::crop(raster(paste('/vlsci/VR0212/shared/Spatial_Data/','aspect.tif',sep="")),e)
-        elevslpasp<-raster::stack(elev1,slope1,aspect1)
-      }
-      ELEVSLPASP <- raster::extract(elevslpasp,x)
-      ELEVSLPASP<-as.matrix((ifelse(is.na(ELEVSLPASP),0,ELEVSLPASP)))
-      ALTITUDES <- ELEVSLPASP[,1]
-      SLOPES <- ELEVSLPASP[,2]
-      AZMUTHS <- ELEVSLPASP[,3]
+      cat("extracting terrain data")
+
+      # now extract terrain data from elevslpasphori.nc
+      # get UTM from dec degrees, NZTM
+      HORIZONS <- elevslpasphori[4:27]
+      SLOPES <- elevslpasphori[2]
+      AZMUTHS <- elevslpasphori[3]
       # the horizons have been arranged so that they go from 0 degrees azimuth (north) clockwise - r.horizon starts
       # in the east and goes counter clockwise!
       HORIZONS <- (ifelse(is.na(HORIZONS),0,HORIZONS))/10 # get rid of na and get back to floating point
       HORIZONS <- data.frame(HORIZONS)
-      VIEWF_all <- 1-rowSums(sin(t(HORIZONS)*pi/180))/length(t(HORIZONS)) # convert horizon angles to radians and calc view factor(s)
-      r1 <- raster::raster(f1)
-      r2 <- raster::raster(f2)
-      r3 <- raster::raster(f3)
-      dbrow <- raster::extract(r1, x)
-      AUSDEM <- raster::extract(r2, x)
-      AGG <- raster::extract(r3, x)
     }else{
-      r1 <- raster::raster(f1)
-      r2 <- raster::raster(f2)
-      r3 <- raster::raster(f3)
-      r4 <- raster::raster(f4)
-      dbrow <- raster::extract(r1, x)
-      AUSDEM <- raster::extract(r2, x)
-      AGG <- raster::extract(r3, x)
-      ALTITUDES <- raster::extract(r4, x)
-      #ALTITUDES <- AUSDEM
-      #cat("using 0.05 res DEM!")
       HORIZONS <- hori
       HORIZONS <- data.frame(HORIZONS)
       VIEWF_all <- rep(1,length(x[,1]))
@@ -730,11 +641,11 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
     }
 
     # setting up for temperature correction using lapse rate given difference between 9sec DEM value and 0.05 deg value
-    if(AUSDEM==-9999 | is.na(AUSDEM)=='TRUE'){
-      delta_elev = AGG - ALTITUDES
-    }else{
-      delta_elev = AUSDEM - ALTITUDES
-    }
+#     if(NZDEM==-9999 | is.na(NZDEM)=='TRUE'){
+#       delta_elev = AGG - ALTITUDES
+#     }else{
+       delta_elev = NZDEM - ALTITUDES
+#     }
     adiab_corr = delta_elev * 0.0058 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
     adiab_corr_max = delta_elev * 0.0077 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
     adiab_corr_min = delta_elev * 0.0039 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
@@ -818,59 +729,73 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
       SOLAR_diff<-getdiff(diffs,SOLCst05)
     }
 
-    cat("extracting climate data", '\n')
-    # connect to server
-    if(vlsci==0){
-      channel2 <- RODBC::odbcConnect("ausclim_predecol")
-      channel <- RODBC::odbcConnect("AWAPDaily")
+    cat("extracting weather data", '\n')
+    # read daily weather
+    yearlist<-seq(ystart,(ystart+(nyears-1)),1)
+    for(j in 1:nyears){ # start loop through years
+      cat(paste('reading weather input for ',yearlist[j],' \n',sep=""))
+      lon_1<-as.numeric(longlat[1])
+      lat_1<-as.numeric(longlat[2])
+      lat<-read.csv('ncdf_lat.csv')[,2]
+      lon<-read.csv('ncdf_lon.csv')[,2]
+      dist1<-abs(lon-lon_1)
+      index1<-which.min(dist1)
+      dist2<-abs(lat-lat_1)
+      index2<-which.min(dist2)
+      start<-c(index1,index2,1)
+      count<-c(1,1,-1)
 
-
-      # preliminary test for incomplete year, if simulation includes the present year
-      yearlist<-seq(ystart,(ystart+(nyears-1)),1)
-      for(j in 1:nyears){ # start loop through years
-        yeartodo<-yearlist[j]
-        lat1<-x[2]-0.024
-        lat2<-x[2]+0.025
-        lon1<-x[1]-0.024
-        lon2<-x[1]+0.025
-        query<-paste("SELECT a.latitude, a.longitude, b.*
-                   FROM [AWAPDaily].[dbo].[latlon] as a
-                   , [AWAPDaily].[dbo].[",yeartodo,"] as b
-                   where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
-                   order by b.day",sep="")
-        output<- sqlQuery(channel,query)
-        if(yearlist[j]<1971){
-          output$vpr<-output$tmin/output$tmin-1
+      if(j==1){
+        Tmax<-as.numeric(ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_Tmax.nc',sep="")),varid="variable",start=start,count))
+        Tmin<-as.numeric(ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_Tmin.nc',sep="")),varid="variable",start=start,count))
+        VP<-as.numeric(ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_VP.nc',sep="")),varid="variable",start=start,count))
+        Rain<-as.numeric(ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_Rain.nc',sep="")),varid="variable",start=start,count))
+        SoilM<-as.numeric(ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_SoilM.nc',sep="")),varid="variable",start=start,count))
+        Wind<-as.numeric(ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_Wind.nc',sep="")),varid="variable",start=start,count))
+        clear<-as.numeric(ncvar_get(nc_open(paste(spatial,"/",'clearsky.nc',sep="")),varid="variable",start=start,count))
+        Rad<-as.numeric(ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_Rad.nc',sep="")),varid="variable",start=start,count))
+        if(length(Rad)==366){# add day for leap year if needed
+          clear<-c(clear[1:59],clear[59],clear[60:365])
         }
-        if(yearlist[j]>1989){
-          output$sol<-as.numeric(as.character(output$sol))
-        }else{
-          output$sol<-output$tmin/output$tmin-1
+        cloud<-(1-Rad/clear)*100
+        cloud[cloud<0]<-0
+        cloud[cloud>100]<-100
+        CCMAXX<-as.numeric(cloud)
+      }else{
+        Tmax<-as.numeric(c(Tmax,ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_Tmax.nc',sep="")),varid="variable",start=start,count)))
+        Tmin<-as.numeric(c(Tmin,ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_Tmin.nc',sep="")),varid="variable",start=start,count)))
+        VP<-as.numeric(c(VP,ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_VP.nc',sep="")),varid="variable",start=start,count)))
+        Rain<-as.numeric(c(Rain,ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_Rain.nc',sep="")),varid="variable",start=start,count)))
+        SoilM<-as.numeric(c(SoilM,ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_SoilM.nc',sep="")),varid="variable",start=start,count)))
+        Wind<-as.numeric(c(Wind,ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_Wind.nc',sep="")),varid="variable",start=start,count)) )
+        Rad<-as.numeric(ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_Rad.nc',sep="")),varid="variable",start=start,count))
+        if(length(Rad)==366){# add day for leap year if needed
+          clear<-c(clear[1:59],clear[59],clear[60:365])
         }
-        if(nrow(output)>365){
-          # fix leap years
-          output<-output[-60,]
-        }
-        if(j==1){
-          results<-output
-        }else{
-          results<-rbind(results,output)
-        }
+        cloud<-(1-Rad/clear)*100
+        cloud[cloud<0]<-0
+        cloud[cloud>100]<-100
+        CCMAXX<-as.numeric(c(CCMAXX,cloud))
       }
+    }
 
-      nyears2<-nrow(results)/365
-      ndays<-nrow(results)
-      juldaysn2<-juldaysn[juldaysn<=ndays]
-      juldaysn2<-juldaysn[1:round(nyears2*12)]
-    } #end vlsci check
-    dim<-ndays
-    maxshades=rep(maxshade,dim)
-    minshades=rep(minshade,dim)
-    juldays<-seq(daystart,dim,1)
-    julday<-rep(seq(1,365),nyears)
-    juday<-julday[1:dim]
+    CCMINN<-CCMAXX
+    Wind[Wind==0]<-0.1
+
+    ndays<-length(Tmax)
+    julnum<-ndays
+    juldays<-seq(daystart,julnum,1)
+    julday <- subset(juldays, juldays!=0)
+    #julday<-rep(julday,nyears)
     ida<-ndays
     idayst <- 1 # start month
+    # end preliminary test for incomplete year, if simulation includes the present year
+
+    tzone<-paste("Etc/GMT-12",sep="") # doing it this way ignores daylight savings!
+    dim<-length(seq(ISOdate(ystart,1,1,tz=tzone)-3600*12, ISOdate((ystart+nyears),1,1,tz=tzone)-3600*13, by="days"))
+    maxshades=rep(maxshade,dim)
+    minshades=rep(minshade,dim)
+
     # end preliminary test for incomplete year, if simulation includes the present year
 
     if((soildata==1 & nrow(soilprop)>0)|soildata==0){
@@ -887,7 +812,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
         shademax<-maxshades
       }
 
-      if(is.na(dbrow)!=TRUE & is.na(ALTITUDES)!=TRUE){
+      if(is.na(ALTITUDES)!=TRUE){
 
         if(rungads==1){
           ####### get solar attenuation due to aerosols with program GADS #####################
@@ -905,155 +830,14 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
           TAI<-c(0.0670358341290886,0.0662612704779235,0.065497075238002,0.0647431301168489,0.0639993178022531,0.0632655219571553,0.0625416272145492,0.0611230843885423,0.0597427855962549,0.0583998423063099,0.0570933810229656,0.0558225431259535,0.0545864847111214,0.0533843764318805,0.0522154033414562,0.0499736739981675,0.047855059159556,0.0458535417401334,0.0439633201842001,0.0421788036108921,0.0404946070106968,0.0389055464934382,0.0374066345877315,0.0359930755919066,0.0346602609764008,0.0334037648376212,0.0322193394032758,0.0311029105891739,0.0300505736074963,0.0290585886265337,0.0281233764818952,0.0272415144391857,0.0264097320081524,0.0256249068083005,0.0248840604859789,0.0241843546829336,0.0235230870563317,0.0228976873502544,0.0223057135186581,0.0217448478998064,0.0212128934421699,0.0207077699817964,0.0202275105711489,0.0197702578594144,0.0193342605242809,0.0189178697551836,0.0177713140039894,0.0174187914242432,0.0170790495503944,0.0167509836728154,0.0164335684174899,0.0161258546410128,0.0158269663770596,0.0155360978343254,0.0152525104459325,0.0149755299703076,0.0147045436435285,0.0144389973831391,0.0141783930434343,0.0134220329447663,0.0131772403830191,0.0129356456025128,0.0126970313213065,0.0124612184223418,0.0122280636204822,0.01199745718102,0.0115436048739351,0.0110993711778668,0.0108808815754663,0.0106648652077878,0.0104513876347606,0.0102405315676965,0.00982708969547694,0.00962473896278535,0.00903679230300494,0.00884767454432418,0.0083031278398166,0.00796072474935954,0.00755817587626185,0.00718610751850881,0.00704629977586921,0.00684663903049612,0.00654155580333479,0.00642947339729728,0.00627223096874308,0.00603955966866779,0.00580920937536261,0.00568506186880564,0.00563167068287251,0.00556222005081865,0.00550522989971023,0.00547395763028062,0.0054478983436216,0.00541823364504573,0.00539532163908382,0.00539239864119488,0.00541690124712384,0.00551525885358836,0.00564825853509463,0.00577220185074264,0.00584222986640171,0.00581645238345584,0.00566088137411449,0.00535516862329704,0.00489914757707667,0.00432017939770409,0.0036813032251836,0.00309019064543606,0.00270890436501562,0.00276446109239711,0.00356019862584603)
         } #end check if running gads
 
-
-        if(vlsci==0){
-          yearlist<-seq(ystart,(ystart+(nyears-1)),1)
-          for(j in 1:nyears){ # start loop through years
-            yeartodo<-yearlist[j]
-            lat1<-x[2]-0.024
-            lat2<-x[2]+0.025
-            lon1<-x[1]-0.024
-            lon2<-x[1]+0.025
-            query<-paste("SELECT a.latitude, a.longitude, b.*
-                       FROM [AWAPDaily].[dbo].[latlon] as a
-                       , [AWAPDaily].[dbo].[",yeartodo,"] as b
-                       where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
-                       order by b.day",sep="")
-            output<- sqlQuery(channel,query)
-            if(yearlist[j]<1971){
-              output$vpr<-output$tmin/output$tmin-1
-            }
-            if(yearlist[j]>1989){
-              output$sol<-as.numeric(as.character(output$sol))
-            }else{
-              output$sol<-output$tmin/output$tmin-1
-            }
-
-            if(nrow(output)>365){
-              # fix leap years
-              output<-output[-60,]
-            }
-            if(j==1){
-              results<-output
-            }else{
-              results<-rbind(results,output)
-            }
-          }
-          if(dailywind==1){
-            channel <- RODBC::odbcConnect("dailywind")
-            if(min(yearlist)<1975){
-              # get mean of 1975-1984
-              for(j in 1:10){ # start loop through years
-                yeartodo<-1974+j
-                lat1<-x[2]-0.024
-                lat2<-x[2]+0.025
-                lon1<-x[1]-0.024
-                lon2<-x[1]+0.025
-                query<-paste("SELECT a.latitude, a.longitude, b.*
-                         FROM [dailywind].[dbo].[latlon] as a
-                         , [dailywind].[dbo].[",yeartodo,"] as b
-                         where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
-                         order by b.day",sep="")
-                output<- sqlQuery(channel,query)
-
-                if(nrow(output)>365){
-                  # fix leap years
-                  output<-output[-60,]
-                }
-                if(j==1){
-                  dwindmean<-output
-                }else{
-                  dwindmean<-cbind(dwindmean,output[,5])
-                }
-              }
-              dwindmean<-cbind(dwindmean[,1:4],rowMeans(dwindmean[,5:14]))
-              colnames(dwindmean)[5]<-'wind'
-            }
-            for(j in 1:nyears){ # start loop through years
-              yeartodo<-yearlist[j]
-              if(yeartodo<1975){
-                output<-dwindmean
-              }else{
-                lat1<-x[2]-0.024
-                lat2<-x[2]+0.025
-                lon1<-x[1]-0.024
-                lon2<-x[1]+0.025
-                query<-paste("SELECT a.latitude, a.longitude, b.*
-                         FROM [dailywind].[dbo].[latlon] as a
-                         , [dailywind].[dbo].[",yeartodo,"] as b
-                         where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
-                         order by b.day",sep="")
-                output<- sqlQuery(channel,query)
-
-                if(nrow(output)>365){
-                  # fix leap years
-                  output<-output[-60,]
-                }
-              }
-              if(j==1){
-                dwind<-output
-              }else{
-                dwind<-rbind(dwind,output)
-              }
-            }
-            dwind<-dwind$wind/15.875
-          }
-        }else{ #vlsci==1
-          load(paste(barcoo,'TMAXX.bin',sep=''))
-          TMAXX <- as.matrix(data[quadrangle,2:7301])
-          load(paste(barcoo,'TMINN.bin',sep=''))
-          TMINN <- as.matrix(data[quadrangle,2:7301])
-          load(paste(barcoo,'RHMAXX.bin',sep=''))
-          RHMAXX <- as.numeric(as.matrix(data[quadrangle,2:7301]))
-          load(paste(barcoo,'RHMINN.bin',sep=''))
-          RHMINN <- as.numeric(as.matrix(data[quadrangle,2:7301]))
-          load(paste(barcoo,'CCMAXX.bin',sep=''))
-          CCMAXX <- as.numeric(as.matrix(data[quadrangle,2:7301]))
-          load(paste(barcoo,'CCMINN.bin',sep=''))
-          CCMINN <- as.numeric(as.matrix(data[quadrangle,2:7301]))
-
-          load(paste(barcoo,'RAINFALL.bin',sep=''))
-          RAINFALL <- as.matrix(data[quadrangle,2:7301])
-
-          RHMAXX<-t(RHMAXX)
-          RHMINN<-t(RHMINN)
-          CCMAXX<-t(CCMAXX)
-          CCMINN<-t(CCMINN)
-          TMAXX<-t(as.data.frame(TMAXX[((ystart-1989)*365-364):((yfinish-1989)*365)]))
-          TMINN<-t(as.data.frame(TMINN[((ystart-1989)*365-364):((yfinish-1989)*365)]))
-          RHMAXX<-t(as.data.frame(RHMAXX[((ystart-1989)*365-364):((yfinish-1989)*365)]))
-          RHMINN<-t(as.data.frame(RHMINN[((ystart-1989)*365-364):((yfinish-1989)*365)]))
-          CCMAXX<-t(as.data.frame(CCMAXX[((ystart-1989)*365-364):((yfinish-1989)*365)]))
-          CCMINN<-t(as.data.frame(CCMINN[((ystart-1989)*365-364):((yfinish-1989)*365)]))
-          RAINFALL<-t(as.data.frame(RAINFALL[((ystart-1989)*365-364):((yfinish-1989)*365)]))
-
-          if(dailywind==1){
-
-            load(paste(barcoo,'dwind.bin',sep=''))
-            dwind<- as.matrix(data[quadrangle,2:7301])
-            dwind<-t(as.data.frame(dwind[((ystart-1989)*365-364):((yfinish-1989)*365)]))
-            #WNMINN<-WNMAXX
-          }
-          if(adiab_cor==1){
-            TMAXX<-TMAXX+adiab_corr_max
-            TMINN<-TMINN+adiab_corr_min
-          }
-        } #end vlsci check
-        if(vlsci==0){
-          if(adiab_cor==1){
-            TMAXX<-as.matrix(results$tmax+adiab_corr_max)
-            TMINN<-as.matrix(results$tmin+adiab_corr_min)
-          }else{
-            TMAXX<-as.matrix(results$tmax)
-            TMINN<-as.matrix(results$tmin)
-          }
-          if(scenario!=""){
-            TMAXX=TMAXX+TMAXX_diff
-            TMINN=TMINN+TMINN_diff
-          }
-          RAINFALL<-results$rr
-          dim<-length(RAINFALL)
-          output_AWAPDaily<-results
+        if(adiab_cor==1){
+          TMAXX<-as.matrix(Tmax+adiab_corr_max)
+          TMINN<-as.matrix(Tmin+adiab_corr_min)
+        }else{
+          TMAXX<-as.matrix(Tmaxx)
+          TMINN<-as.matrix(Tminn)
+        }
+        RAINFALL<-Rain
 
           if(scenario!=""){
             # first work out for each site the new predicted rainfall amount for each month - use this to adjust for fact that will underestimate chcange
@@ -1118,331 +902,44 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
             RAINFALL=newRAINFALL
           }
 
-        }
-
-        # cloud cover
-        if(vlsci==0){
-          if(ystart>1989 & sum(results[,9],na.rm=TRUE)>0){ # solar radiation data available
-            query<-paste("SELECT a.*
-                       FROM [ausclim].[dbo].[clearskysol] as a
-                       where (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
-                       ",sep="")
-            output_ausclim<- sqlQuery(channel,query)
-
-            if(nrow(output_ausclim)==0){ #no satellite coverage, get data from ausclim
-              clouds<-paste("select cloud1,cloud2,cloud3,cloud4,cloud5,cloud6,cloud7,cloud8,cloud9,cloud10,cloud11,cloud12 FROM cloudcover WHERE i = ",dbrow,sep="")
-              #CCMAXX <- dbGetQuery(con,statement=clouds)*100
-              if(vlsci==0){
-                CCMAXX<- sqlQuery(channel2,clouds)*100
-              }
-              CCMINN <- CCMAXX
-              CCMAXX1 <-suppressWarnings(spline(juldays12,CCMAXX,n=timeinterval,xmin=1,xmax=365,method="periodic"))
-              CCMAXX <- rep(CCMAXX1$y,nyears)
-              CCMINN <- CCMAXX
-            }else{
-              weekly_sol<-cbind(1:52,t(output_ausclim[3:54]))
-              daily_sol <-suppressWarnings(spline(seq(3,361,7),weekly_sol[,2],n=365,xmin=1,xmax=365,method="periodic"))
-              daily_sol<-as.numeric(daily_sol$y)
-              if(yfinish==curyear){ # if it's the current year, then make sure daily_sol goes however far into the year we are
-                daily_sol<-c(rep(daily_sol,nyears-1),daily_sol[1:(ndays-(nyears-1)*365)])
-              }else{
-                daily_sol<-rep(daily_sol,nyears)
-              }
-              if(is.na(output_AWAPDaily[1,9])==TRUE){
-                output_AWAPDaily[1,9]=mean(output_AWAPDaily[,9],na.rm=TRUE)
-              }
-              if(is.na(output_AWAPDaily[dim,9])==TRUE){
-                output_AWAPDaily[nrow(output_AWAPDaily),9]=mean(output_AWAPDaily[,9],na.rm=TRUE)
-              }
-              solar<-zoo::na.approx(output_AWAPDaily[,9])
-              if(scenario!=""){
-                solar=solar*SOLAR_diff
-              }
-              cloud<-(1-as.data.frame(solar)/as.data.frame(daily_sol))*100
-              cloud[cloud<0]<-0
-              cloud[cloud>100]<-100
-              cloud<-as.matrix(cbind(output_AWAPDaily[,4],cloud))
-              CCMAXX<-cloud[,2]
-              CCMINN<-CCMAXX
-            }
-          }else{
-            #           clouds<-paste("select cloud1,cloud2,cloud3,cloud4,cloud5,cloud6,cloud7,cloud8,cloud9,cloud10,cloud11,cloud12 FROM cloudcover WHERE i = ",dbrow,sep="")
-            #           #CCMAXX <- dbGetQuery(con,statement=clouds)*100
-            #           CCMAXX<- sqlQuery(channel2,clouds)*100
-            #           CCMINN <- CCMAXX
-            #           CCMAXX1 <-spline(juldays12,CCMAXX,n=timeinterval,xmin=1,xmax=365,method="periodic")
-            #           CCMAXX <- rep(CCMAXX1$y,nyears)
-            #           CCMINN <- CCMAXX
-            datestart1<-"01/01/1990" # day, month, year
-            datefinish1<-"31/12/2014" # day, month, year
-            datestart1<-strptime(datestart1, "%d/%m/%Y") # convert to date format
-            datefinish1<-strptime(datefinish1, "%d/%m/%Y") # convert to date format
-            yearstart1<-as.numeric(format(datestart1, "%Y")) # yet year start
-            yearfinish1<-as.numeric(format(datefinish1, "%Y")) # yet year finish
-            years1<-seq(yearstart1,yearfinish1,1) # get sequence of years to d0
-            juldaystart<-datestart1$yday+1 # get Julian day of year at start
-            juldayfinish<-datefinish1$yday+1 # get Julian day of year at finish
-            years1<-seq(yearstart1,yearfinish1,1) # get sequence of years to do
-
-            for(i in 1:length(years1)){ # start loop through years
-              # syntax for query
-
-              if(length(years1)==1){ # doing a period within a year
-                query<-paste("SELECT a.latitude, a.longitude, b.*
-    FROM [AWAPDaily].[dbo].[latlon] as a
-  , [AWAPDaily].[dbo].[",years1[i],"] as b
-  where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day between ",juldaystart," and ",juldayfinish,")
-  order by b.day",sep="")
-              }else{
-                if(i==1){ # doing first year, start at day requested
-                  query<-paste("SELECT a.latitude, a.longitude, b.*
-  FROM [AWAPDaily].[dbo].[latlon] as a
-  , [AWAPDaily].[dbo].[",years1[i],"] as b
-  where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day >= ",juldaystart,")
-  order by b.day",sep="")
-                }else{
-                  if(i==length(years1)){ # doing last year, only go up to last day requested
-                    query<-paste("SELECT a.latitude, a.longitude, b.*
-  FROM [AWAPDaily].[dbo].[latlon] as a
-  , [AWAPDaily].[dbo].[",years1[i],"] as b
-  where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day <= ",juldayfinish,")
-  order by b.day",sep="")
-                  }else{ # doing in between years, so get all data for this year
-                    query<-paste("SELECT a.latitude, a.longitude, b.*
-  FROM [AWAPDaily].[dbo].[latlon] as a
-  , [AWAPDaily].[dbo].[",years1[i],"] as b
-  where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
-  order by b.day",sep="")
-                  }}}
-
-
-              # exectue query and concatenate if necessary
-              if(i==1){
-                output1<- sqlQuery(channel,query)
-              }else{
-                output1<-rbind(output1,sqlQuery(channel,query))
-              }
-            } # end loop through years
-            query<-paste("SELECT a.*
-                       FROM [ausclim].[dbo].[clearskysol] as a
-                       where (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
-                       ",sep="")
-            output_ausclim<- sqlQuery(channel,query)
-
-            weekly_sol<-cbind(1:52,t(output_ausclim[3:54]))
-            daily_sol <-suppressWarnings(spline(seq(3,361,7),weekly_sol[,2],n=365,xmin=1,xmax=365,method="periodic"))
-            daily_sol<-as.numeric(daily_sol$y)
-            dates11<-seq(datestart1,datefinish1,"days")
-            output1$dates<-dates11
-            for(yr in 1:length(years1)){
-              ndays<-nrow(subset(output1,format(output1$dates,"%Y")==as.character(yearstart1-1+yr)))
-              clear<-daily_sol
-              if(ndays==366){# add day for leap year if needed
-                clear<-c(daily_sol[1:59],daily_sol[59],daily_sol[60:365])
-              }
-              if(yr==1){
-                all_clear<-clear
-              }else{
-                all_clear<-c(all_clear,clear)
-              }
-            }
-            output1$clearsky<-all_clear
-            glm_sol<-coefficients(with(output1,glm(sol~rr+tmax+tmin+day+clearsky)))
-
-            dates12<-seq(as.Date(paste(ystart,"-","01-01",sep="")),as.Date(paste(yfinish,"-","12-31",sep="")),"days")
-            dates12<-subset(dates12, format(dates12, "%m/%d")!= "02/29") # remove leap years
-
-            results$dates<-dates12
-            for(yr in 1:length(nyears)){
-              ndays<-nrow(subset(results,format(results$dates,"%Y")==as.character(ystart-1+yr)))
-              clear<-daily_sol
-              if(ndays==366){# add day for leap year if needed
-                clear<-c(daily_sol[1:59],daily_sol[59],daily_sol[60:365])
-              }
-              if(yr==1){
-                all_clear<-clear
-              }else{
-                all_clear<-c(all_clear,clear)
-              }
-            }
-            output_AWAPDaily$clearsky<-all_clear
-
-            output_AWAPDaily[,9]<-glm_sol[1]+glm_sol[2]*output_AWAPDaily$rr+glm_sol[3]*output_AWAPDaily$tmax+glm_sol[4]*output_AWAPDaily$tmin+glm_sol[5]*output_AWAPDaily$day+glm_sol[6]*output_AWAPDaily$clearsky
-            if(scenario!=""){
-              output_AWAPDaily[,9]=output_AWAPDaily[,9]*SOLAR_diff
-            }
-            cloud<-(1-as.data.frame(output_AWAPDaily$sol)/as.data.frame(output_AWAPDaily$clearsky))*100
-            cloud[cloud<0]<-0
-            cloud[cloud>100]<-100
-            cloud<-as.matrix(cbind(output_AWAPDaily[,4],cloud))
-            CCMAXX<-cloud[,2]
-            CCMINN<-CCMAXX
-
-          }# end check for year 1990 or later
-          if(ystart>1970){ #vapour pressure data available
-            if(is.na(output_AWAPDaily[1,8])==TRUE){
-              output_AWAPDaily[1,8]=mean(output_AWAPDaily[,8],na.rm=TRUE)
-            }
-            VAPRES<-zoo::na.approx(output_AWAPDaily[,8])
-            VAPRES<-VAPRES*100 # convert from hectopascals to pascals
-            TMAXK<-TMAXX+273.15
-            loge<-TMAXK
-            loge[loge>273.16]<- -7.90298*(373.16/TMAXK[loge>273.16]-1.)+5.02808*log10(373.16/TMAXK[loge>273.16])-1.3816E-07*(10.^(11.344*(1.-TMAXK[loge>273.16]/373.16))-1.)+8.1328E-03*(10.^(-3.49149*(373.16/TMAXK[loge>273.16]-1.))-1.)+log10(1013.246)
-            loge[loge<=273.16]<- -9.09718*(273.16/TMAXK[loge<=273.16]-1.)-3.56654*log10(273.16/TMAXK[loge<=273.16])+.876793*(1.-TMAXK[loge<=273.16]/273.16)+log10(6.1071)
-            estar<-(10.^loge)*100.
-            RHMINN<-(VAPRES/estar)*100
-            if(scenario!=""){
-              RHMINN<-RHMINN+RH_diff
-            }
-            RHMINN[RHMINN>100]<-100
-            RHMINN[RHMINN<0]<-0.01
-            #RHMINN
-            TMINK<-TMINN+273.15
-            loge<-TMINK
-            loge[loge>273.16]<- -7.90298*(373.16/TMINK[loge>273.16]-1.)+5.02808*log10(373.16/TMINK[loge>273.16])-1.3816E-07*(10.^(11.344*(1.-TMINK[loge>273.16]/373.16))-1.)+8.1328E-03*(10.^(-3.49149*(373.16/TMINK[loge>273.16]-1.))-1.)+log10(1013.246)
-            loge[loge<=273.16]<- -9.09718*(273.16/TMINK[loge<=273.16]-1.)-3.56654*log10(273.16/TMINK[loge<=273.16])+.876793*(1.-TMINK[loge<=273.16]/273.16)+log10(6.1071)
-            estar<-(10.^loge)*100.
-            RHMAXX<-(VAPRES/estar)*100
-            if(scenario!=""){
-              RHMAXX<-RHMAXX+RH_diff
-            }
-            RHMAXX[RHMAXX>100]<-100
-            RHMAXX[RHMAXX<0]<-0.01
-          }else{
-
-            if(exists("output1")==FALSE){
-
-              datestart1<-"01/01/1990" # day, month, year
-              datefinish1<-"31/12/2014" # day, month, year
-              datestart1<-strptime(datestart1, "%d/%m/%Y") # convert to date format
-              datefinish1<-strptime(datefinish1, "%d/%m/%Y") # convert to date format
-              yearstart1<-as.numeric(format(datestart1, "%Y")) # yet year start
-              yearfinish1<-as.numeric(format(datefinish1, "%Y")) # yet year finish
-              years1<-seq(yearstart1,yearfinish1,1) # get sequence of years to d0
-              juldaystart<-datestart1$yday+1 # get Julian day of year at start
-              juldayfinish<-datefinish1$yday+1 # get Julian day of year at finish
-              years1<-seq(yearstart1,yearfinish1,1) # get sequence of years to do
-
-              for(i in 1:length(years1)){ # start loop through years
-                # syntax for query
-
-                if(length(years1)==1){ # doing a period within a year
-                  query<-paste("SELECT a.latitude, a.longitude, b.*
-    FROM [AWAPDaily].[dbo].[latlon] as a
-  , [AWAPDaily].[dbo].[",years1[i],"] as b
-  where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day between ",juldaystart," and ",juldayfinish,")
-  order by b.day",sep="")
-                }else{
-                  if(i==1){ # doing first year, start at day requested
-                    query<-paste("SELECT a.latitude, a.longitude, b.*
-  FROM [AWAPDaily].[dbo].[latlon] as a
-  , [AWAPDaily].[dbo].[",years1[i],"] as b
-  where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day >= ",juldaystart,")
-  order by b.day",sep="")
-                  }else{
-                    if(i==length(years1)){ # doing last year, only go up to last day requested
-                      query<-paste("SELECT a.latitude, a.longitude, b.*
-  FROM [AWAPDaily].[dbo].[latlon] as a
-  , [AWAPDaily].[dbo].[",years1[i],"] as b
-  where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day <= ",juldayfinish,")
-  order by b.day",sep="")
-                    }else{ # doing in between years, so get all data for this year
-                      query<-paste("SELECT a.latitude, a.longitude, b.*
-  FROM [AWAPDaily].[dbo].[latlon] as a
-  , [AWAPDaily].[dbo].[",years1[i],"] as b
-  where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
-  order by b.day",sep="")
-                    }}}
-
-
-                # exectue query and concatenate if necessary
-                if(i==1){
-                  output1<- sqlQuery(channel,query)
-                }else{
-                  output1<-rbind(output1,sqlQuery(channel,query))
-                }
-              } # end loop through years
-            }
-            glm_vpr<-coefficients(with(output1,glm(vpr~rr+tmax+tmin+day)))
-
-
-            output_AWAPDaily[,8]<-glm_vpr[1]+glm_vpr[2]*output_AWAPDaily$rr+glm_vpr[3]*output_AWAPDaily$tmax+glm_vpr[4]*output_AWAPDaily$tmin+glm_vpr[5]*output_AWAPDaily$day
-
-            VAPRES<-zoo::na.approx(output_AWAPDaily[,8])
-            VAPRES<-VAPRES*100 # convert from hectopascals to pascals
-            TMAXK<-TMAXX+273.15
-            loge<-TMAXK
-            loge[loge>273.16]<- -7.90298*(373.16/TMAXK[loge>273.16]-1.)+5.02808*log10(373.16/TMAXK[loge>273.16])-1.3816E-07*(10.^(11.344*(1.-TMAXK[loge>273.16]/373.16))-1.)+8.1328E-03*(10.^(-3.49149*(373.16/TMAXK[loge>273.16]-1.))-1.)+log10(1013.246)
-            loge[loge<=273.16]<- -9.09718*(273.16/TMAXK[loge<=273.16]-1.)-3.56654*log10(273.16/TMAXK[loge<=273.16])+.876793*(1.-TMAXK[loge<=273.16]/273.16)+log10(6.1071)
-            estar<-(10.^loge)*100.
-            RHMINN<-(VAPRES/estar)*100
-            if(scenario!=""){
-              RHMINN<-RHMINN+RH_diff
-            }
-            RHMINN[RHMINN>100]<-100
-            RHMINN[RHMINN<0]<-0.01
-            #RHMINN
-            TMINK<-TMINN+273.15
-            loge<-TMINK
-            loge[loge>273.16]<- -7.90298*(373.16/TMINK[loge>273.16]-1.)+5.02808*log10(373.16/TMINK[loge>273.16])-1.3816E-07*(10.^(11.344*(1.-TMINK[loge>273.16]/373.16))-1.)+8.1328E-03*(10.^(-3.49149*(373.16/TMINK[loge>273.16]-1.))-1.)+log10(1013.246)
-            loge[loge<=273.16]<- -9.09718*(273.16/TMINK[loge<=273.16]-1.)-3.56654*log10(273.16/TMINK[loge<=273.16])+.876793*(1.-TMINK[loge<=273.16]/273.16)+log10(6.1071)
-            estar<-(10.^loge)*100.
-            RHMAXX<-(VAPRES/estar)*100
-            if(scenario!=""){
-              RHMAXX<-RHMAXX+RH_diff
-            }
-            RHMAXX[RHMAXX>100]<-100
-            RHMAXX[RHMAXX<0]<-0.01
-
-
-          }#end check for year is 1971 or later
-        } #end vlsci check
-        # AUSCLIM query statements
-        clouds<-paste("select cloud1,cloud2,cloud3,cloud4,cloud5,cloud6,cloud7,cloud8,cloud9,cloud10,cloud11,cloud12 FROM cloudcover WHERE i = ",dbrow,sep="")
-        maxwinds<-paste("select maxwind1,maxwind2,maxwind3,maxwind4,maxwind5,maxwind6,maxwind7,maxwind8,maxwind9,maxwind10,maxwind11,maxwind12 FROM maxwind WHERE i = ",dbrow,sep="")
-        minwinds<-paste("select minwind1,minwind2,minwind3,minwind4,minwind5,minwind6,minwind7,minwind8,minwind9,minwind10,minwind11,minwind12 FROM minwind WHERE i = ",dbrow,sep="")
-        maxhumidities<-paste("select maxhum1,maxhum2,maxhum3,maxhum4,maxhum5,maxhum6,maxhum7,maxhum8,maxhum9,maxhum10,maxhum11,maxhum12 FROM maxhum WHERE i = ",dbrow,sep="")
-        minhumidities<-paste("select minhum1,minhum2,minhum3,minhum4,minhum5,minhum6,minhum7,minhum8,minhum9,minhum10,minhum11,minhum12 FROM minhum WHERE i = ",dbrow,sep="")
-        rainfall<-paste("select rainfall1,rainfall2,rainfall3,rainfall4,rainfall5,rainfall6,rainfall7,rainfall8,rainfall9,rainfall10,rainfall11,rainfall12 FROM rainfall WHERE i = ",dbrow,sep="")
-        rainydays<-paste("select rainy1,rainy2,rainy3,rainy4,rainy5,rainy6,rainy7,rainy8,rainy9,rainy10,rainy11,rainy12 FROM rainydays WHERE i = ",dbrow,sep="")
-
+        VAPRES<-VP*100 # convert from hectopascals to pascals
+        TMAXK<-TMAXX+273.15
+        loge<-TMAXK
+        loge[loge>273.16]<- -7.90298*(373.16/TMAXK[loge>273.16]-1.)+5.02808*log10(373.16/TMAXK[loge>273.16])-1.3816E-07*(10.^(11.344*(1.-TMAXK[loge>273.16]/373.16))-1.)+8.1328E-03*(10.^(-3.49149*(373.16/TMAXK[loge>273.16]-1.))-1.)+log10(1013.246)
+        loge[loge<=273.16]<- -9.09718*(273.16/TMAXK[loge<=273.16]-1.)-3.56654*log10(273.16/TMAXK[loge<=273.16])+.876793*(1.-TMAXK[loge<=273.16]/273.16)+log10(6.1071)
+        estar<-(10.^loge)*100.
+        RHMINN<-(VAPRES/estar)*100
+        RHMINN[RHMINN>100]<-100
+        RHMINN[RHMINN<0]<-0.01
+        #RHMINN
+        TMINK<-TMINN+273.15
+        loge<-TMINK
+        loge[loge>273.16]<- -7.90298*(373.16/TMINK[loge>273.16]-1.)+5.02808*log10(373.16/TMINK[loge>273.16])-1.3816E-07*(10.^(11.344*(1.-TMINK[loge>273.16]/373.16))-1.)+8.1328E-03*(10.^(-3.49149*(373.16/TMINK[loge>273.16]-1.))-1.)+log10(1013.246)
+        loge[loge<=273.16]<- -9.09718*(273.16/TMINK[loge<=273.16]-1.)-3.56654*log10(273.16/TMINK[loge<=273.16])+.876793*(1.-TMINK[loge<=273.16]/273.16)+log10(6.1071)
+        estar<-(10.^loge)*100.
+        RHMAXX<-(VAPRES/estar)*100
+        RHMAXX[RHMAXX>100]<-100
+        RHMAXX[RHMAXX<0]<-0.01
 
         ALLMINTEMPS<-TMINN
         ALLMAXTEMPS<-TMAXX
         ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
-        if(vlsci==0){
-          WNMAXX <- sqlQuery(channel2,maxwinds)
-          WNMINN <- sqlQuery(channel2,minwinds)
-        }else{
-          if(dailywind!=1){
 
-            load(paste(barcoo,'WNMAXX.bin',sep=''))
-            WNMAXX <- as.numeric(as.matrix(data[quadrangle,2:7301]))
-            load(paste(barcoo,'WNMINN.bin',sep=''))
-            WNMINN<-as.numeric(as.matrix(data[quadrangle,2:7301]))
+        WNMAXX <- Wind
+        WNMINN <- Wind
 
-            WNMAXX<-t(WNMAXX)
-            WNMINN<-t(WNMINN)
-            WNMAXX<-t(as.data.frame(WNMAXX[((ystart-1989)*365-364):((yfinish-1989)*365)]))
-            WNMINN<-t(as.data.frame(WNMINN[((ystart-1989)*365-364):((yfinish-1989)*365)]))
-          }
-        }
-        if(dailywind!=1 ){
-          WNMAXX1 <-suppressWarnings(spline(juldays12,WNMAXX,n=timeinterval,xmin=1,xmax=365,method="periodic"))
-          WNMAXX<-rep(WNMAXX1$y,nyears)
-          WNMINN1 <-suppressWarnings(spline(juldays12,WNMINN,n=timeinterval,xmin=1,xmax=365,method="periodic"))
-          WNMINN<-rep(WNMINN1$y,nyears)
-          if(scenario!=""){
-            WNMAXX=WNMAXX*WIND_diff
-            WNMINN=WNMINN*WIND_diff
-          }
-        }
+
 
         if(soildata==1){
-          SLES1<-suppressWarnings(spline(juldays12,SLES,n=timeinterval,xmin=1,xmax=365,method="periodic"))
+          #           uppermoist1<-spline(juldaysn2,moistupper,n=ndays,xmin=1,xmax=ndays,method="periodic")
+          #           lowermoist1<-spline(juldaysn2,moistlower,n=ndays,xmin=1,xmax=ndays,method="periodic")
+          #           uppermoists<-uppermoist1$y
+          #           lowermoists<-lowermoist1$y
+
+          SLES1<-spline(juldays12,SLES,n=timeinterval,xmin=1,xmax=365,method="periodic")
           SLES<-rep(SLES1$y,nyears)
           SLES<-SLES[1:ndays]
-          maxshades1 <-suppressWarnings(spline(juldays12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic"))
+          maxshades1 <-spline(juldays12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
           MAXSHADES<-rep(maxshades1$y*100,nyears)
           MAXSHADES<-MAXSHADES[1:ndays]
           if(manualshade==1){
@@ -1455,7 +952,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
           }
         }else{
           if(manualshade==0){
-            maxshades1 <-suppressWarnings(spline(juldays12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic"))
+            maxshades1 <-spline(juldays12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
             MAXSHADES<-rep(maxshades1$y*100,nyears)
             minshades <- rep(minshade,365)
             minshades <- rep(minshades,nyears)
@@ -1471,6 +968,8 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
           soilwet<-RAINFALL
           soilwet[soilwet<=rainwet] = 0
           soilwet[soilwet>0] = 90
+          #PCTWET <- uppermoists*pctwet_mult
+          #PCTWET <- uppermoists*soilprop$A_01bar*pctwet_mult*100
           PCTWET<-pmax(soilwet,PCTWET)
         }else{
           REFLS <- (1:(dim))*0+REFL
@@ -1481,30 +980,56 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
           PCTWET<-pmax(soilwet,PCTWET)
         }
 
-        Numtyps <- 10 # number of substrate types
-        Nodes <- matrix(data = 0, nrow = 10, ncol = dim) # deepest nodes for each substrate type
-        Nodes[1:10,] <- c(1:10) # deepest nodes for each substrate type
 
-        if(timezone==1){
-          if(!require(geonames)){
-            stop('package "geonames" is required.')
-          }
-          ALREF<-(GNtimezone(longlat[2],longlat[1])[4])*-15
-        }else{
-          ALREF <- abs(trunc(x[1]))
-        }
+
+
+
+        #         if(soildata==1){
+        #           # extra code for soil moisture start
+        #           Intrvls <-(1:julnum) # user-supplied last Julian day in each time interval sequence
+        #           Numint <- julnum  # number of time intervals
+        #           Numtyps <- 4
+        #           depinterval<-findInterval(upperdep*100, DEP)
+        #           deepnode1<-depinterval
+        #           depinterval<-findInterval(lowerdep*100, DEP)
+        #           deepnode2<-depinterval
+        #           deepnode3<-10
+        #           toprow<-rep(deepnode1,julnum)
+        #           middlerow<-rep(deepnode2,julnum)
+        #           bottomrow<-rep(deepnode3,julnum)
+        #           Nodes <- matrix(data = 0, nrow = 10, ncol = 7300) # deepest nodes for each substrate type
+        #           Nodes[1,1:julnum]<-3
+        #           Nodes[2,1:julnum]<-toprow
+        #           Nodes[3,1:julnum]<-middlerow
+        #           Nodes[4,1:julnum]<-bottomrow
+        #         }else{
+        Intrvls<-rep(0,dim)
+        Intrvls[1] <- 1 # user-supplied last Julian day in each time interval sequence
+        Numtyps <- 1 # number of substrate types
+        Numint <- 1  # number of time intervals
+        Nodes <- matrix(data = 0, nrow = 10, ncol = dim) # deepest nodes for each substrate type
+        Nodes[1,1] <- 10. # deepest nodes for each substrate type
+        #         }
+
+
+        ALREF <- abs(trunc(x[1]))
+
 
         HEMIS <- ifelse(x[2]<0,2.,1.)
         ALAT <- abs(trunc(x[2]))
         AMINUT <- (abs(x[2])-ALAT)*60
         ALONG <- abs(trunc(x[1]))
         ALMINT <- (abs(x[1])-ALONG)*60
-        ALTT<-ALTITUDES
+        if(adiab_cor==1){
+          ALTT<-ALTITUDES
+        }else{
+          ALTT<-NZDEM
+        }
         SLOPE<-SLOPES
         AZMUTH<-AZMUTHS
 
         avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
-        soilinit<-rep(avetemp,20)
+        soilinit<-rep(avetemp,length(DEP))
         tannul<-mean(unlist(ALLTEMPS))
 
         if(nyears==1){
@@ -1516,10 +1041,12 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
           }else{
             avetemp<-rowMeans(cbind(TMAXX, TMINN), na.rm=TRUE)
           }
+          #library("TTR")
+          #tannulrun<-SMA(avetemp,n=365)
           if(length(TMAXX)<365){
             tannulrun<-rep((sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2),length(TMAXX))
           }else{
-            tannulrun<-raster::movingFun(avetemp,n=365,fun=mean,type='to')
+            tannulrun<-movingFun(avetemp,n=365,fun=mean,type='to')
             yearone<-rep((sum(TMAXX[1:365])+sum(TMINN[1:365]))/(365*2),365)
             tannulrun[1:365]<-yearone
             # SST
@@ -1537,50 +1064,15 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
         #- a -
         #  Open water   0.1
         #Smooth, level, grass-covered   0.15
-        #Row crops   0.2
+        #Row crops 	0.2
         #Low bushes with a few trees 	0.2
         #Heavy trees 	0.25
         #Several buildings 	0.25
         #Hilly, mountainous terrain 	0.25
-        if(dailywind!=1){
-          WNMINN<-WNMINN*(1.2/10)^0.15*.1 # reduce min wind further because have only 9am/3pm values to get max/min
-          WNMAXX<-WNMAXX*(1.2/10)^0.15
-          WNMINN<-WNMINN#*3.25 # for snow
-          WNMAXX<-WNMAXX#*3.25 # for snow
-          cat('min wind * 0.1 \n')
-          #cat('max wind * 2.0 for snow ')
-        }else{
-          if(snowmodel==0){
-            WNMAXX<-dwind*(1.2/2)^0.15
-            WNMINN<-WNMAXX
-            WNMAXX<-WNMAXX*2#*3.5#*5
-            WNMINN<-WNMINN*0.5#1.5#*3.5#*2
-            cat('min wind * 0.5 \n')
-            cat('max wind * 2 \n')
-          }else{
-            WNMAXX<-dwind*(1.2/2)^0.15#*3.25
-            WNMINN<-WNMAXX
-            WNMAXX<-WNMAXX*2#*2.5#*3.5#*5
-            WNMINN<-WNMINN*0.5#*3#1.5#*3.5#*2
-            WNMINN[WNMINN<0.1]<-0.1
-            #cat('min wind * 0.5 * 1.5 for snow \n')
-            #cat('max wind * 2 * 2.5 for snow \n')
-          }
-        }
-        if(vlsci==0){
-          CCMINN<-CCMINN*0.5
-          CCMAXX<-CCMAXX*2
-          CCMINN[CCMINN>100]<-100
-          CCMAXX[CCMAXX>100]<-100
-        }
-        if(clearsky==1){
-          CCMINN=CCMINN*0
-          CCMAXX=CCMAX*0
-          cat('running for clear sky conditions')
-        }else{
-          cat('min cloud * 0.5 \n')
-          cat('max cloud * 2 \n')
-        }
+        WNMAXX<-WNMAXX*(1.2/2)^0.15
+        WNMINN<-WNMINN*(1.2/2)^0.15
+
+
         # impose uniform warming
         TMAXX<-TMAXX+warm
         TMINN<-TMINN+warm
