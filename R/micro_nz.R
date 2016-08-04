@@ -568,6 +568,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
     }
     library(raster)
     library(proj4)
+    library(ncdf4)
     # get the local timezone reference longitude
     if(timezone==1){ # this now requires registration
       if(!require(geonames, quietly = TRUE)){
