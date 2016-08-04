@@ -258,7 +258,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
   LAI=0.1,
   snowmodel=0,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
-  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",barcoo="",quadrangle=1,hourly=0) {
+  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",barcoo="",quadrangle=1,hourly=0, uid = "", pwd = "") {
   #
 #   loc="Nyrripi, Northern Territory"
 #   timeinterval=365
@@ -821,8 +821,8 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
     cat("extracting climate data", '\n')
     # connect to server
     if(vlsci==0){
-      channel2 <- RODBC::odbcConnect("ausclim_predecol")
-      channel <- RODBC::odbcConnect("AWAPDaily")
+      channel2 <- RODBC::odbcConnect("ausclim_predecol", uid = uid, pwd = pwd)
+      channel <- RODBC::odbcConnect("AWAPDaily", uid = uid, pwd = pwd)
 
 
       # preliminary test for incomplete year, if simulation includes the present year
@@ -940,7 +940,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
             }
           }
           if(dailywind==1){
-            channel <- RODBC::odbcConnect("dailywind")
+            channel <- RODBC::odbcConnect("dailywind", uid = uid, pwd = pwd)
             if(min(yearlist)<1975){
               # get mean of 1975-1984
               for(j in 1:10){ # start loop through years
