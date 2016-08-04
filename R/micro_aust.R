@@ -1667,7 +1667,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
         CLDhr=rep(0,24*dim)
         SOLRhr=rep(0,24*dim)
         RAINhr=rep(0,24*dim)
-        ZENhr=rep(0,24*dim)
+        ZENhr=rep(-1,24*dim)
 
         julday1=matrix(data = 0., nrow = dim, ncol = 1)
         SLES1=matrix(data = 0., nrow = dim, ncol = 1)
