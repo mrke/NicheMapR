@@ -756,9 +756,9 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
         Wind<-as.numeric(ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_Wind.nc',sep="")),varid="variable",start=start,count))
         clear<-as.numeric(ncvar_get(nc_open(paste(spatial,"/",'clearsky.nc',sep="")),varid="variable",start=start,count))
         Rad<-as.numeric(ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_Rad.nc',sep="")),varid="variable",start=start,count))
-#         if(length(Rad)==366){# add day for leap year if needed
-#           clear<-c(clear[1:59],clear[59],clear[60:365])
-#         }
+        if(length(Rad)==366){# add day for leap year if needed
+          clear<-c(clear[1:59],clear[59],clear[60:365])
+        }
         cloud<-(1-Rad/clear)*100
         cloud[cloud<0]<-0
         cloud[cloud>100]<-100
@@ -770,10 +770,11 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
         Rain<-as.numeric(c(Rain,ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_Rain.nc',sep="")),varid="variable",start=start,count)))
         SoilM<-as.numeric(c(SoilM,ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_SoilM.nc',sep="")),varid="variable",start=start,count)))
         Wind<-as.numeric(c(Wind,ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_Wind.nc',sep="")),varid="variable",start=start,count)) )
+        clear<-as.numeric(ncvar_get(nc_open(paste(spatial,"/",'clearsky.nc',sep="")),varid="variable",start=start,count))
         Rad<-as.numeric(ncvar_get(nc_open(paste(spatial,"/",yearlist[j],'_Rad.nc',sep="")),varid="variable",start=start,count))
-#         if(length(Rad)==366){# add day for leap year if needed
-#           clear<-c(clear[1:59],clear[59],clear[60:365])
-#         }
+        if(length(Rad)==366){# add day for leap year if needed
+          clear<-c(clear[1:59],clear[59],clear[60:365])
+        }
         cloud<-(1-Rad/clear)*100
         cloud[cloud<0]<-0
         cloud[cloud>100]<-100
