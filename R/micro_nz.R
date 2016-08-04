@@ -738,8 +738,8 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
       cat(paste('reading weather input for ',yearlist[j],' \n',sep=""))
       lon_1<-as.numeric(longlat[1])
       lat_1<-as.numeric(longlat[2])
-      lat<-read.csv(paste0(spatial,'ncdf_lat.csv'))[,2]
-      lon<-read.csv(paste0(spatial,'ncdf_lon.csv'))[,2]
+      lat<-read.csv(paste0(spatial,'/ncdf_lat.csv'))[,2]
+      lon<-read.csv(paste0(spatial,'/ncdf_lon.csv'))[,2]
       dist1<-abs(lon-lon_1)
       index1<-which.min(dist1)
       dist2<-abs(lat-lat_1)
