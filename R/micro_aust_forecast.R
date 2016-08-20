@@ -843,15 +843,15 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
         RAINhr<-forecast$prec1
         ZENhr<-forecast$zeniths
 
-        TMAXX<-aggregate(TAIRhr,by=list(forecast$d_1),max)[1:2,2] # maximum air temperatures (deg C)
-        TMINN<-aggregate(TAIRhr,by=list(forecast$d_1),min)[1:2,2] # minimum air temperatures (deg C)
-        RAINFALL<-aggregate(RAINhr,by=list(forecast$d_1),sum)[1:2,2] # monthly mean rainfall (mm)
-        CCMAXX<-aggregate(CLDhr,by=list(forecast$d_1),max)[1:2,2] # max cloud cover (%)
-        CCMINN<-aggregate(CLDhr,by=list(forecast$d_1),min)[1:2,2] # min cloud cover (%)
-        RHMAXX<-aggregate(RHhr,by=list(forecast$d_1),max)[1:2,2] # max relative humidity (%)
-        RHMINN<-aggregate(RHhr,by=list(forecast$d_1),min)[1:2,2] # min relative humidity (%)
-        WNMAXX<-aggregate(WNhr,by=list(forecast$d_1),max)[1:2,2] # max wind speed (m/s)
-        WNMINN<-aggregate(WNhr,by=list(forecast$d_1),min)[1:2,2] # min wind speed (m/s
+        TMAXX<-aggregate(TAIRhr,by=list(forecast$d_1),max)[1:dim,2] # maximum air temperatures (deg C)
+        TMINN<-aggregate(TAIRhr,by=list(forecast$d_1),min)[1:dim,2] # minimum air temperatures (deg C)
+        RAINFALL<-aggregate(RAINhr,by=list(forecast$d_1),sum)[1:dim,2] # monthly mean rainfall (mm)
+        CCMAXX<-aggregate(CLDhr,by=list(forecast$d_1),max)[1:dim,2] # max cloud cover (%)
+        CCMINN<-aggregate(CLDhr,by=list(forecast$d_1),min)[1:dim,2] # min cloud cover (%)
+        RHMAXX<-aggregate(RHhr,by=list(forecast$d_1),max)[1:dim,2] # max relative humidity (%)
+        RHMINN<-aggregate(RHhr,by=list(forecast$d_1),min)[1:dim,2] # min relative humidity (%)
+        WNMAXX<-aggregate(WNhr,by=list(forecast$d_1),max)[1:dim,2] # max wind speed (m/s)
+        WNMINN<-aggregate(WNhr,by=list(forecast$d_1),min)[1:dim,2] # min wind speed (m/s
         WNMINN<-WNMINN*(1.2/10)^0.15
         WNMAXX<-WNMAXX*(1.2/10)^0.15
 
@@ -863,10 +863,10 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
           MAXSHADES<-rep(maxshades1$y*100,nyears)
           MAXSHADES<-MAXSHADES[1:ndays]
           if(manualshade==1){
-            maxshades <- rep(maxshade,2)
+            maxshades <- rep(maxshade,dim)
             maxshades <- rep(maxshades,nyears)
             MAXSHADES<-maxshades
-            minshades <- rep(minshade,2)
+            minshades <- rep(minshade,dim)
             minshades <- rep(minshades,nyears)
             MINSHADES<-minshades
           }
