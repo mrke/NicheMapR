@@ -742,7 +742,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
     system(cmd)
     forecast<-read.csv('forecast.csv')
     setwd(prevdir)
-    ndays<-2
+    ndays<-3
     julnum<-ndays
 
     julday<-c(forecast[1,2],forecast[1,2]+1) # middle day of each month
