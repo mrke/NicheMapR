@@ -533,11 +533,11 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
     }else{
       juldays<-juldaysn
     }
-    julnum <- 2 # total days to do
+    julnum <- 3 # total days to do
     julday <- subset(juldays, juldays!=0) # final vector of julian days
     julday<-rep(julday,nyears)
     idayst <- 1 # start day
-    ida<-2 # end day
+    ida<-3 # end day
     dates<-Sys.time()-60*60*24
     curyear<-as.numeric(format(dates,"%Y"))
 
@@ -841,7 +841,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
         IRhr<-forecast$lw
         SOLRhr<-forecast$sw
         RAINhr<-forecast$prec1
-        ZENhr<-rep(-1,length(RAINhr))
+        ZENhr<-forecast$zeniths
 
         TMAXX<-aggregate(TAIRhr,by=list(forecast$d_1),max)[1:2,2] # maximum air temperatures (deg C)
         TMINN<-aggregate(TAIRhr,by=list(forecast$d_1),min)[1:2,2] # minimum air temperatures (deg C)
