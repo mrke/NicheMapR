@@ -47,6 +47,7 @@
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 #' \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
 #' \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
+#' \code{getdata}{ = 1, option to use latest forecast extraction}\cr\cr
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
@@ -259,7 +260,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
   LAI=0.1,
   snowmodel=0,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
-  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",barcoo="",quadrangle=1, hourly=1) {
+  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",barcoo="",quadrangle=1, hourly=1, getdata=1) {
   #
   # loc="Nyrripi, Northern Territory"
   # timeinterval=365
@@ -738,8 +739,10 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
 
     prevdir<-getwd()
     setwd('Y:')
+    if(getdata==1){
     cmd<-paste("R --no-save --args ",longlat[1]," ",longlat[2]," < latest_forecast.R",sep='')
     system(cmd)
+    }
     forecast<-read.csv('forecast.csv')
     setwd(prevdir)
     ndays<-3
