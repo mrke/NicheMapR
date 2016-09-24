@@ -1034,7 +1034,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
         AZMUTH<-AZMUTHS
 
         avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
-        soilinit<-rep(avetemp,length(DEP))
+        soilinit<-rep(avetemp,20)
         tannul<-mean(unlist(ALLTEMPS))
 
         if(nyears==1){
