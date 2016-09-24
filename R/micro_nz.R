@@ -90,6 +90,7 @@
 #' \code{SatWater}{ = rep(0.26,10), # volumetric water content at saturation (0.1 bar matric potential) (m3/m3)}\cr\cr
 #' \code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
 #' \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
+#' \code{rainoff}{ = 0, Rain offset (mm), used to induce constant extra input}\cr\cr
 #' \code{evenrain}{ = 0, Spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)}\cr\cr
 #' \code{SoilMoist_Init}{ = c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3), initial soil water content at each soil node, m3/m3}\cr\cr
 #' \code{L}{ = c(0,0,8.2,8.0,7.8,7.4,7.1,6.4,5.8,4.8,4.0,1.8,0.9,0.6,0.8,0.4,0.4,0,0)*10000, root density (m/m3), (19 values descending through soil for specified soil nodes in parameter}
@@ -842,7 +843,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
           TMAXX<-as.matrix(Tmaxx)
           TMINN<-as.matrix(Tminn)
         }
-        RAINFALL<-Rain
+        RAINFALL<-Rain+rainoff
 
           if(scenario!=""){
             # first work out for each site the new predicted rainfall amount for each month - use this to adjust for fact that will underestimate chcange
