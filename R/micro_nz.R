@@ -783,6 +783,14 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
         CCMAXX<-as.numeric(c(CCMAXX,cloud))
       }
     }
+    nc_close(paste(spatial,"/",yearlist[j],'_Tmax.nc',sep=""))
+    nc_close(paste(spatial,"/",yearlist[j],'_Tmin.nc',sep=""))
+    nc_close(paste(spatial,"/",yearlist[j],'_VP.nc',sep=""))
+    nc_close(paste(spatial,"/",yearlist[j],'_Rain.nc',sep=""))
+    nc_close(paste(spatial,"/",yearlist[j],'_SoilM.nc',sep=""))
+    nc_close(paste(spatial,"/",yearlist[j],'_Wind.nc',sep=""))
+    nc_close(paste(spatial,"/",yearlist[j],'_clearsky.nc',sep=""))
+    nc_close(paste(spatial,"/",yearlist[j],'_Rad.nc',sep=""))
 
     CCMINN<-CCMAXX
     Wind<-Wind*windfac
