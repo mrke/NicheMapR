@@ -340,7 +340,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
         Please input a positive value.", '\n')
     errors<-1
   }
-  if(BulkDensity<0){
+  if(min(BulkDensity)<0){
     cat("ERROR: Bulk density value (BulkDensity) is negative.
         Please input a positive value.", '\n')
     errors<-1

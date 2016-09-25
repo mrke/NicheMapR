@@ -423,7 +423,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
         Please input a positive value.", '\n')
     errors<-1
   }
-  if(BulkDensity<0){
+  if(min(BulkDensity)<0){
     cat("ERROR: Bulk density value (BulkDensity) is negative.
         Please input a positive value.", '\n')
     errors<-1
