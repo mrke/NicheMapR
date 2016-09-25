@@ -752,7 +752,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
 
       if(j==1){
         nc<-nc_open(paste(spatial,"/",yearlist[j],'_Tmax.nc',sep=""))
-        Tmax<-as.numeric(ncvar_get(nc),varid="variable",start=start,count))
+        Tmax<-as.numeric(ncvar_get(nc_open(nc),varid="variable",start=start,count))
         nc_close(nc)
         nc<-nc_open(paste(spatial,"/",yearlist[j],'_Tmin.nc',sep=""))
         Tmin<-as.numeric(ncvar_get(nc_open(nc),varid="variable",start=start,count))
@@ -797,9 +797,9 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
         SoilM<-as.numeric(c(SoilM,ncvar_get(nc_open(nc),varid="variable",start=start,count)))
         nc_close(nc)
         nc<-nc_open(paste(spatial,"/",yearlist[j],'_Wind.nc',sep=""))
-        Wind<-as.numeric(c(Wind,ncvar_get(nc_open(nc),varid="variable",start=start,count)) )
+        Wind<-as.numeric(c(Wind,ncvar_get(nc_open(nc),varid="variable",start=start,count)))
         nc_close(nc)
-        clear<-as.numeric(ncvar_get(nc_clearsky),varid="variable",start=start,count))
+        clear<-as.numeric(ncvar_get(nc_open(nc_clearsky),varid="variable",start=start,count))
         nc<-nc_open(paste(spatial,"/",yearlist[j],'_Rad.nc',sep=""))
         Rad<-as.numeric(ncvar_get(nc_open(nc),varid="variable",start=start,count))
         nc_close(nc)
