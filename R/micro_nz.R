@@ -767,9 +767,9 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
         SoilM<-as.numeric(ncvar_get(nc,varid="variable",start=start,count))
         nc_close(nc)
         if(yearlist[j]>=1997){
-        nc<-nc_open(paste(spatial,"/",yearlist[j],'_Wind.nc',sep=""))
-        Wind<-as.numeric(ncvar_get(nc,varid="variable",start=start,count))
-        nc_close(nc)
+         nc<-nc_open(paste(spatial,"/",yearlist[j],'_Wind.nc',sep=""))
+         Wind<-as.numeric(ncvar_get(nc,varid="variable",start=start,count))
+         nc_close(nc)
         }else{
           Wind<-Tmax*0+1.5
         }
@@ -800,10 +800,10 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
         nc<-nc_open(paste(spatial,"/",yearlist[j],'_SoilM.nc',sep=""))
         SoilM<-as.numeric(c(SoilM,ncvar_get(nc,varid="variable",start=start,count)))
         nc_close(nc)
-        nc<-nc_open(paste(spatial,"/",yearlist[j],'_Wind.nc',sep=""))
         if(yearlist[j]>=1997){
-        Wind<-as.numeric(c(Wind,ncvar_get(nc,varid="variable",start=start,count)))
-        nc_close(nc)
+         nc<-nc_open(paste(spatial,"/",yearlist[j],'_Wind.nc',sep=""))
+         Wind<-as.numeric(c(Wind,ncvar_get(nc,varid="variable",start=start,count)))
+         nc_close(nc)
         }else{
           Wind<-Tmax*0+1.5
         }
