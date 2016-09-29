@@ -771,7 +771,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
          Wind<-as.numeric(ncvar_get(nc,varid="variable",start=start,count))
          nc_close(nc)
         }else{
-          Wind<-Tmax*0+1.5
+          Wind<-Tmax*0+3
         }
         clear<-as.numeric(ncvar_get(nc_clearsky,varid="variable",start=start,count))
         nc<-nc_open(paste(spatial,"/",yearlist[j],'_Rad.nc',sep=""))
@@ -805,7 +805,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
          Wind<-as.numeric(c(Wind,ncvar_get(nc,varid="variable",start=start,count)))
          nc_close(nc)
         }else{
-          Wind<-Tmax*0+1.5
+          Wind<-Tmax*0+3
         }
         clear<-as.numeric(ncvar_get(nc_clearsky,varid="variable",start=start,count))
         nc<-nc_open(paste(spatial,"/",yearlist[j],'_Rad.nc',sep=""))
