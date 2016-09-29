@@ -128,6 +128,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{rainact}{ = 0, Activity is limited by rainfall? 1=yes, 0=no, threshold rainfall for activity set by \code{actrainthresh}}\cr}
 \item{\code{actrainthresh}{ = 0.1, Threshold (mm) of rain causing activity if \code{rainact}=1}\cr}
 \item{\code{soilnode}{ = 4., Soil node (1-10, corresponding to values in \code{DEP}) at which eggs are laid (overridden if \code{frogbreed}=1)}\cr}
+\item{\code{aquabask}{ = 0, If aquatic, does it bask? 0=no, stay at water temp, 1=yes, when not hungry, 2=all the time}\cr}
 }
 \strong{ Thermal physiological parameters:}
 
@@ -272,7 +273,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \strong{ Life stage-specific parameter allocation:}
 \itemize{
 \item{\code{thermal_stages}{ = matrix(data = c(rep(ctmin,8),rep(ctmax,8),rep(VTMIN,8),rep(VTMAX,8),rep(TBASK,8),rep(TPREF,8)), nrow = 8, ncol = 6), Stage specific thermal thresholds (ctmin,ctmax,VTMIN,VTMAX,TBASK,TPREF)}\cr}
-\item{\code{behav_stages}{ = matrix(data = c(rep(dayact,8),rep(nocturn,8),rep(crepus,8),rep(burrow,8),rep(shdburrow,8),rep(mindepth,8),rep(maxdepth,8),rep(CkGrShad,8),rep(climb,8),rep(fosorial,8),rep(rainact,8),rep(actrainthresh,8),rep(breedactthresh,8),rep(flyer,8)), nrow = 8, ncol = 14), Stage specific behaviour dayact,nocturn,crepus,burrow,shdburrow,mindepth,maxdepth,CkGrShad,climb,fosorial,rainact,actrainthresh,breedactthresh,flyer)}\cr}
+\item{\code{behav_stages}{ = matrix(data = c(rep(dayact,8),rep(nocturn,8),rep(crepus,8),rep(burrow,8),rep(shdburrow,8),rep(mindepth,8),rep(maxdepth,8),rep(CkGrShad,8),rep(climb,8),rep(fosorial,8),rep(rainact,8),rep(actrainthresh,8),rep(breedactthresh,8),rep(flyer,8),rep(aquabask,8)), nrow = 8, ncol = 15), Stage specific behaviour dayact,nocturn,crepus,burrow,shdburrow,mindepth,maxdepth,CkGrShad,climb,fosorial,rainact,actrainthresh,breedactthresh,flyer,aquabask)}\cr}
 \item{\code{water_stages}{ = matrix(data = c(rep(skinwet,8),rep(extref,8),rep(PFEWAT,8),rep(PTUREA,8),rep(FoodWater,8),rep(minwater,8),rep(raindrink,8),rep(gutfill,8)), nrow = 8, ncol = 8), Stage-specific water budget parameters (skinwet,extref,PFEWAT,PTUREA,FoodWater,minwater,raindrink,gutfill)}\cr}
 \item{\code{arrhenius}{ = matrix(data = matrix(data = c(rep(TA,8),rep(TAL,8),rep(TAH,8),rep(TL,8),rep(TH,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (TA,TAL,TAH,TL,TH)}\cr}
 }
