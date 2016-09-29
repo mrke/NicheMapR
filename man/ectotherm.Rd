@@ -141,7 +141,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \itemize{
 \item{\code{PFEWAT}{ = 73, Fecal water content (\%)}\cr}
 \item{\code{PTUREA}{ = 0, Water in excreted nitrogenous waste (\%)}\cr}
-\item{\code{FoodWater}{ = 82, Wwater content of food (\%)}\cr}
+\item{\code{FoodWater}{ = 82, Water content of food (\%)}\cr}
 \item{\code{minwater}{ = 15, Minimum tolerated dehydration (\% of wet mass) - prohibits foraging if greater than this}\cr}
 \item{\code{gutfill}{ = 75.,}\cr}
 \item{\code{raindrink}{ = 0., Gut fill (\%) at which satiation occurs - if greater than 100\%, animal always tries to forage}\cr}

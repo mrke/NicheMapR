@@ -30,7 +30,7 @@ Usrhyt = 0.01, ...)
 
 \item{maxshade}{Maximum shade level to us (\%)}
 
-\item{Usrhyt}{Local height (cm) at which air temperature, wind speed and humidity are to be computed for organism of interest}
+\item{Usrhyt}{Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest}
 
 \item{...}{Additional arguments, see Details}
 }
@@ -148,7 +148,7 @@ metout/shadmet variables:
 \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
 \item 6 RH  - relative humidity (\%) at reference height (specified by 'Refhyt', 1.2m default)
 \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
-\item 8 VREF - wind speed (m/s) at reference height (specified by 'Refhyt', 1.2cm default)
+\item 8 VREF - wind speed (m/s) at reference height (specified by 'Refhyt', 1.2m default)
 \item 9 SNOWMELT - snowmelt (mm)
 \item 10 POOLDEP - water pooling on surface (mm)
 \item 11 PCTWET - soil surface wetness (\%)
