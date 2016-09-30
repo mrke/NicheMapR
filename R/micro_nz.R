@@ -741,7 +741,6 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
       # change diff to a proportion, multiply by change in air temp to get overall
       # proportional change, and add to one to get the multiplier
       VP_diff2<-1+(VP_diff/100)*TMAXX_diff
-      VP<-VP*VP_diff2 # modify the predicted VP by this factor
 
       ################ wind ############################
 
@@ -902,6 +901,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
         if(scenario!=""){
           TMAXX=TMAXX+TMAXX_diff
           TMINN=TMINN+TMINN_diff
+          VP<-VP*VP_diff2 # modify the predicted VP by this factor
         }
         RAINFALL<-Rain+rainoff
 
