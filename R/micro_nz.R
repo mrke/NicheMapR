@@ -262,84 +262,84 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
   rainfrac=0.5,
   shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",barcoo="",quadrangle=1,hourly=0, rainoff=0) {
   #
-#   loc="Athurs Pass, New Zealand"
-#   timeinterval=365
-#   ystart=2000
-#   yfinish=2000
-#   nyears=1
-#   soiltype=4
-#   REFL=0.15
-#   slope=0
-#   aspect=0
-#   DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
-#   minshade=0
-#   maxshade=90
-#   Refhyt=1.2
-#   Usrhyt=.01
-# Z01=0
-# Z02=0
-# ZH1=0
-# ZH2=0
-# runshade=1
-#   clearsky=0
-#   rungads=1
-#   write_input=0
-#   writecsv=0
-#   manualshade=1
-#   soildata=0
-#   terrain=0
-#   dailywind=1
-#   adiab_cor=1
-#   warm=0
-#   spatial="C:/Spatial_Data/Climate/New Zealand/weather"
-#   vlsci=0
-#   loop=0
-#   ERR=1.5
-#   RUF=0.004
-#   EC=0.0167238
-#   SLE=0.95
-#   Thcond=2.5
-#   Density=2560
-#   SpecHeat=870
-#   BulkDensity=1300
-#   PCTWET=0
-#   rainwet=1.5
-#   cap=1
-#   CMH2O=1
-#   hori=rep(0,24)
-#   TIMAXS=c(1.0, 1.0, 0.0, 0.0)
-#   TIMINS=c(0, 0, 1, 1)
-#   timezone=0
-#   runmoist=1
-#   PE=rep(1.1,19)
-#   KS=rep(0.0037,19)
-#   BB=rep(4.5,19)
-#   BD=rep(1.3,19)
-#   Clay=20
-#   SatWater=rep(0.26,10)
-#   maxpool=10000
-#   rainmult=1
-#   evenrain=0
-#   SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
-#   L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
-#       4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
-#       0,0)*10000
-#   LAI=0.1
-#   snowmodel=1
-#   snowtemp=1.5
-#   snowdens=0.375
-#   densfun=c(0,0)
-#   snowmelt=0.9
-#   undercatch=1
-#   rainmelt=0.0125
-#   rainfrac=0.5
-#   shore=0
-#   tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
-#   scenario=""
-#   year=2070
-#   barcoo=""
-#   quadrangle=1
-#   hourly=0
+  #   loc="Athurs Pass, New Zealand"
+  #   timeinterval=365
+  #   ystart=2000
+  #   yfinish=2000
+  #   nyears=1
+  #   soiltype=4
+  #   REFL=0.15
+  #   slope=0
+  #   aspect=0
+  #   DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
+  #   minshade=0
+  #   maxshade=90
+  #   Refhyt=1.2
+  #   Usrhyt=.01
+  # Z01=0
+  # Z02=0
+  # ZH1=0
+  # ZH2=0
+  # runshade=1
+  #   clearsky=0
+  #   rungads=1
+  #   write_input=0
+  #   writecsv=0
+  #   manualshade=1
+  #   soildata=0
+  #   terrain=0
+  #   dailywind=1
+  #   adiab_cor=1
+  #   warm=0
+  #   spatial="C:/Spatial_Data/Climate/New Zealand/weather"
+  #   vlsci=0
+  #   loop=0
+  #   ERR=1.5
+  #   RUF=0.004
+  #   EC=0.0167238
+  #   SLE=0.95
+  #   Thcond=2.5
+  #   Density=2560
+  #   SpecHeat=870
+  #   BulkDensity=1300
+  #   PCTWET=0
+  #   rainwet=1.5
+  #   cap=1
+  #   CMH2O=1
+  #   hori=rep(0,24)
+  #   TIMAXS=c(1.0, 1.0, 0.0, 0.0)
+  #   TIMINS=c(0, 0, 1, 1)
+  #   timezone=0
+  #   runmoist=1
+  #   PE=rep(1.1,19)
+  #   KS=rep(0.0037,19)
+  #   BB=rep(4.5,19)
+  #   BD=rep(1.3,19)
+  #   Clay=20
+  #   SatWater=rep(0.26,10)
+  #   maxpool=10000
+  #   rainmult=1
+  #   evenrain=0
+  #   SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
+  #   L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
+  #       4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
+  #       0,0)*10000
+  #   LAI=0.1
+  #   snowmodel=1
+  #   snowtemp=1.5
+  #   snowdens=0.375
+  #   densfun=c(0,0)
+  #   snowmelt=0.9
+  #   undercatch=1
+  #   rainmelt=0.0125
+  #   rainfrac=0.5
+  #   shore=0
+  #   tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
+  #   scenario=""
+  #   year=2070
+  #   barcoo=""
+  #   quadrangle=1
+  #   hourly=0
 
   errors<-0
 
@@ -540,14 +540,14 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
     curyear<-as.numeric(format(dates,"%Y"))
 
     ################## location and terrain #################################
-      if (!requireNamespace("raster", quietly = TRUE)) {
-        stop("package 'raster' is needed. Please install it.",
-          call. = FALSE)
-      }
-      if (!requireNamespace("ncdf4", quietly = TRUE)) {
-        stop("package 'ncdf4' is needed. Please install it.",
-          call. = FALSE)
-      }
+    if (!requireNamespace("raster", quietly = TRUE)) {
+      stop("package 'raster' is needed. Please install it.",
+        call. = FALSE)
+    }
+    if (!requireNamespace("ncdf4", quietly = TRUE)) {
+      stop("package 'ncdf4' is needed. Please install it.",
+        call. = FALSE)
+    }
     if(is.numeric(loc)==FALSE){ # use geocode to get location from site name via googlemaps
       if (!requireNamespace("dismo", quietly = TRUE)) {
         stop("dismo needed for the place name geocode function to work. Please install it.",
@@ -645,11 +645,11 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
     }
 
     # setting up for temperature correction using lapse rate given difference between 9sec DEM value and 0.05 deg value
-#     if(NZDEM==-9999 | is.na(NZDEM)=='TRUE'){
-#       delta_elev = AGG - ALTITUDES
-#     }else{
-       delta_elev = NZDEM - ALTITUDES
-#     }
+    #     if(NZDEM==-9999 | is.na(NZDEM)=='TRUE'){
+    #       delta_elev = AGG - ALTITUDES
+    #     }else{
+    delta_elev = NZDEM - ALTITUDES
+    #     }
     adiab_corr = delta_elev * 0.0058 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
     adiab_corr_max = delta_elev * 0.0077 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
     adiab_corr_min = delta_elev * 0.0039 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
@@ -658,17 +658,26 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
       cat("generate climate change scenario", '\n')
       # diff spline function
       getdiff<-function(diffs,grid){
+        leapyears<-seq(1972,2060,4)
+        yearstodo<-seq(ystart,ystart*nyears)
         diff1<-(unlist(diffs[1])+unlist(diffs[12]))/2
 
         # generate list of days
         for(ys in 1:nyears){
-          day<-c(1,15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5, 365)
-          day.leap<-c(1,15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5, 366)
+          if(yearstodo[ys]%in%leapyears){
+            day<-c(1,15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5, 366)
+          }else{
+            day<-     c(1,15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5, 365)
+          }
           if(ys==1){
             days2=day
             days=day
           }else{
-            days2=c(days2,(day+365*(ys-1)))
+            if(yearstodo[ys]%in%leapyears){
+              days2=c(days2,(day+366*(ys-1)))
+            }else{
+              days2=c(days2,(day+365*(ys-1)))
+            }
             days=c(days,day)
           }
         }
@@ -701,36 +710,46 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
 
       ########### Max and Min Air Temps ################
 
-      load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","maxTst05_",scenario,"_",year,".Rda",sep="")) #maxTst05
+      TMEAN<-stack(paste(spatial,"/CC/TMEAN_",year,"_",scenario,".nc",sep="")) # air temperature shift
 
-      diffs<-extract(maxTst05,x)
-      TMAXX_diff<-getdiff(diffs,maxTst05)
+      diffs<-extract(TMEAN,x)
+      TMAXX_diff <- getdiff(diffs,TMEAN)
+      TMINN_diff <- TMAXX_diff
 
-      load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","minTst05_",scenario,"_",year,".Rda",sep="")) #minTst05
+      ################ VP ############################
 
-      diffs<-extract(minTst05,x)
-      TMINN_diff<-getdiff(diffs,minTst05)
+      # We are given a value of % change in absolute humidity per change in degree C of
+      # air temperature, for each season. So we need to extract these values, spline them
+      # to monthly (making sure we slide the days back by 30 days for the interpolation
+      # because the values are centred within each season). Then we get the
 
-      ################ RH ############################
+      AH<-stack(paste0(spatial,"/CC/AHCC_SUM.nc"),paste0(spatial,"/CC/AHCC_AUT.nc"),paste0(spatial,"/CC/AHCC_WIN.nc"),paste0(spatial,"/CC/AHCC_SPR.nc"))
 
-      load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","RHst05_",scenario,"_",year,".Rda",sep="")) #maxTst05
+      diffs<-extract(AH,x) # extract seasonal values
+      diff1<-(diffs[1]+diffs[4])/2 # get mean of first and last
+      diffs3=c(diff1,diffs,diff1) # make vector of 6, with the start and end being the mean of the first and last
+      day<-c(15, 46, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349) # middle day of each month
+      day0<-c(1,45,135,225,315,365) # days for seasonal interpolation
+      f<-approxfun(x=day0, y=diffs3) # use approxfun for the linear interpolation
+      sp_diff<-f(seq(1,365)) # spline across year
+      sp_diff<-cbind(seq(1,365)-30,sp_diff) # add days of year offset by 30 days
+      sp_diff[1:30,1]<-336:365 # replace the first 30 days with the last 30 days of year
+      sp_diff<-sp_diff[order(sp_diff[,1]),] # reorder per ay
+      diffs<-sp_diff[day,2] # extract the value for the middle day of each month
+      VP_diff<-getdiff(diffs,AH) # now use the 'getdiffs' function to spline 365 days for however many years
 
-      diffs<-extract(RHst05,x)
-      RH_diff<-getdiff(diffs,RHst05)
+      # change diff to a proportion, multiply by change in air temp to get overall
+      # proportional change, and add to one to get the multiplier
+      VP_diff2<-1+(VP_diff/100)*TMAXX_diff
+      VP<-VP*VP_diff2 # modify the predicted VP by this factor
 
       ################ wind ############################
 
-      load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","PT_VELst05_",scenario,"_",year,".Rda",sep=""))
-
-      diffs<-extract(PT_VELst05,x)
-      WIND_diff<-getdiff(diffs,PT_VELst05)
+      WIND_diff<-1
 
       ############# SOLAR/CLOUD COVER ##################
 
-      load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","SOLCst05_",scenario,"_",year,".Rda",sep=""))
-
-      diffs<-extract(SOLCst05,x)
-      SOLAR_diff<-getdiff(diffs,SOLCst05)
+      SOLAR_diff<-1
     }
 
     cat("extracting weather data", '\n')
@@ -767,9 +786,9 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
         SoilM<-as.numeric(ncvar_get(nc,varid="variable",start=start,count))
         nc_close(nc)
         if(yearlist[j]>=1997){
-         nc<-nc_open(paste(spatial,"/",yearlist[j],'_Wind.nc',sep=""))
-         Wind<-as.numeric(ncvar_get(nc,varid="variable",start=start,count))
-         nc_close(nc)
+          nc<-nc_open(paste(spatial,"/",yearlist[j],'_Wind.nc',sep=""))
+          Wind<-as.numeric(ncvar_get(nc,varid="variable",start=start,count))
+          nc_close(nc)
         }else{
           Wind<-Tmax*0+3
         }
@@ -801,9 +820,9 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
         SoilM<-as.numeric(c(SoilM,ncvar_get(nc,varid="variable",start=start,count)))
         nc_close(nc)
         if(yearlist[j]>=1997){
-         nc<-nc_open(paste(spatial,"/",yearlist[j],'_Wind.nc',sep=""))
-         Wind<-as.numeric(c(Wind,ncvar_get(nc,varid="variable",start=start,count)))
-         nc_close(nc)
+          nc<-nc_open(paste(spatial,"/",yearlist[j],'_Wind.nc',sep=""))
+          Wind<-as.numeric(c(Wind,ncvar_get(nc,varid="variable",start=start,count)))
+          nc_close(nc)
         }else{
           Wind<-Tmax*0+3
         }
@@ -880,70 +899,40 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
           TMAXX<-as.matrix(Tmaxx)
           TMINN<-as.matrix(Tminn)
         }
+        if(scenario!=""){
+          TMAXX=TMAXX+TMAXX_diff
+          TMINN=TMINN+TMINN_diff
+        }
         RAINFALL<-Rain+rainoff
 
-          if(scenario!=""){
-            # first work out for each site the new predicted rainfall amount for each month - use this to adjust for fact that will underestimate chcange
-            # using proportion becasue 0 x % is still 0
-            # add columns with days, months and years
-            RAIN_current<-as.data.frame(RAINFALL)
-            dates<-seq(ISOdate(ystart,1,1,tz=paste("Etc/GMT-",10,sep=""))-3600*12, ISOdate((ystart+nyears),1,1,tz=paste("Etc/GMT-",10,sep=""))-3600*13, by="days")
-            dates=subset(dates, format(dates, "%m/%d")!= "02/29") # remove leap years
-            RAINFALL_sum<-aggregate(RAIN_current, by=list(format(dates,"%m-%Y")),FUN=sum)
-            dates2<-RAINFALL_sum$Group.1
-            RAINFALL_sum<-RAINFALL_sum[order(as.Date(paste("01-",RAINFALL_sum$Group.1,sep=""),"%m-%Y")),2]
+        if(scenario!=""){
+          RAIN_current<-as.data.frame(RAINFALL)
+          dates<-seq(ISOdate(ystart,1,1,tz=paste("Etc/GMT-",10,sep=""))-3600*12, ISOdate((ystart+nyears),1,1,tz=paste("Etc/GMT-",10,sep=""))-3600*13, by="days")
+          RAINFALL_sum<-aggregate(RAIN_current, by=list(format(dates,"%m-%Y")),FUN=sum)
+          dates2<-RAINFALL_sum$Group.1
+          RAINFALL_sum<-RAINFALL_sum[order(as.Date(paste("01-",RAINFALL_sum$Group.1,sep=""),"%m-%Y")),2]
 
-            load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","RAINst05_",scenario,"_",year,".Rda",sep=""))
-            diffs<-rep(extract(RAINst05,x),nyears)
+          RAIN<-stack(paste(spatial,"/CC/RAIN_",year,"_",scenario,".nc",sep="")) # rainfall shift
+          diffs<-rep(extract(RAIN,x),nyears)
 
-            if(is.na(diffs[1])==TRUE){
-              print("no data")
-              # find the nearest cell with data
-              NArem<-RAINst05[[1]] # don't need to re-do this within bioregion loop
-              NArem<-Which(!is.na(NArem), cells=TRUE)
-              dist<-distanceFromPoints(RAINst05[[1]],y)
-              distNA<-extract(dist,NArem)
-              cellsR<-cbind(distNA,NArem)
-              distmin<-which.min(distNA)
-              cellrep<-cellsR[distmin,2]
-              diffs<-rep(extract(RAINst05,cellrep),nyears)
-            }
+          rainfall_new<-(RAINFALL_sum+RAINFALL_sum*(diffs/100))
 
-            rainfall_new<-(RAINFALL_sum*diffs)
+          rainfall_new[rainfall_new < 0 ]= 0 # get rid of any negative rainfall values
 
-            rainfall_new[rainfall_new < 0 ]= 0 # get rid of any negative rainfall values
+          #########Now get predicted change in rainfall (could also get this from OzClim or ClimSim layer)#############
+          Diff_prop<-rainfall_new/RAINFALL_sum # proportion change
+          Diff_prop[Diff_prop=='NaN']= 0
+          Diff_prop[Diff_prop=='Inf']= 0 ## If was previously no rainfall and now is rainfall need to alter code so this is simply added
 
-            ## Now extract predicted change in mm
-            load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","RAINst05_mm_",scenario,"_",year,".Rda",sep=""))
-            rainfall_change_mm<-rep(extract(RAINst05_mm,x),nyears)
-
-            #########Now get predicted change in rainfall (could also get this from OzClim or ClimSim layer)#############
-            Diff_prop<-rainfall_new/RAINFALL_sum # proportion change
-            Diff_prop[Diff_prop=='NaN']= 0
-            Diff_prop[Diff_prop=='Inf']= 0 ## If was previously no rainfall and now is rainfall need to alter code so this is simply added
-
-            newRAINFALL=rep(NA,length(RAINFALL))
-            for (k in 1:length(RAINFALL)){ # loop through each sites applying monthly % changes
-              month<-which(dates2==format(dates[k],"%m-%Y"))
-              # Test if predicted rainfall matches up - use rainfall_change_mm layer
-              Rain_adj<-rainfall_change_mm[month]
-
-              # test for if proportional change is 0 (because current rainfall is 0)
-              #but rainfall predicted to increase
-              if(Diff_prop[month]==0 & Rain_adj > 1){ # couldn't get proportion as no current rain days but need to add rain
-                print('new rain days needed')
-                # previously no rain, randomly select a day and put all rain on it
-                listD<-seq(1,length(newRAINFALL),1)
-                altD<-sample(listD,1)
-                newRAINFALL[altD]<-Rain_adj/30
-              }else{
-                newRAINFALL[k]<-RAINFALL[k]*Diff_prop[month]
-              }
-            } # end of loop through each day
-            newRAINFALL[newRAINFALL<0.1]<-0
-            newRAINFALL[is.na(newRAINFALL)]<-0
-            RAINFALL=newRAINFALL
-          }
+          newRAINFALL=rep(NA,length(RAINFALL))
+          for (k in 1:length(RAINFALL)){ # loop through each sites applying monthly % changes
+            month<-which(dates2==format(dates[k],"%m-%Y"))
+            newRAINFALL[k]<-RAINFALL[k]*Diff_prop[month]
+          } # end of loop through each day
+          newRAINFALL[newRAINFALL<0.1]<-0
+          newRAINFALL[is.na(newRAINFALL)]<-0
+          RAINFALL=newRAINFALL
+        }
 
         VAPRES<-VP*100 # convert from hectopascals to pascals
         TMAXK<-TMAXX+273.15
