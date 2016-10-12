@@ -10,7 +10,7 @@
 #' @return PWP Permanent Wilting Point (m3/m3, %) Based on model 2 in Table 7 of Rab et al. 2011 (cited above)
 #' @usage soil.hydro(soilpro)
 #' @export
-soil.hydro<-function(soilpro = as.data.frame(soilpro), DEP = soilpro[,1]){
+soil.hydro <- function(soilpro = as.data.frame(soilpro), DEP = soilpro[,1]){
 
   # field capacity, model 6 from Table 6 of Rab et al. (2011).
   FC<-(7.561+1.176*soilpro$clay-0.009843*soilpro$clay^2+0.2132*soilpro$silt)/100
