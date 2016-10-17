@@ -1,13 +1,21 @@
 #' Soil hydrological properties calculator
 #'
-#' A function to compute soil hydrological properties from information on bulk density and soil texture (clay/silt/sand composition) at particular depths, with capacity to spline results to other depths (used in NicheMapR). Calculations are based on equations in Campbell, G. S. 1985. Soil Physics with Basic: Transport Models for Soil-Plant Systems. Elsevier, Amsterdam, and Rab, M. A., S. Chandra, P. D. Fisher, N. J. Robinson, M. Kitching, C. D. Aumann, and M. Imhof. 2011. Modelling and prediction of soil water contents at field capacity and permanent wilting point of dryland cropping soils. Soil Research 49:389-407.
-#' @param soilpro Matrix of n x 5 matrix of soil composition with the following columns 1. depth (cm), 2. bulk density (Mg/m3), 3. clay (%), 4. silt (%), 5. clay (%)
+#' A function to compute soil hydrological properties from information on bulk
+#' density and soil texture (clay/silt/sand composition) at particular depths,
+#' with capacity to spline results to other depths (used in NicheMapR).
+#' Calculations are based on equations in Campbell, G. S. 1985. Soil Physics
+#' with Basic: Transport Models for Soil-Plant Systems. Elsevier, Amsterdam,
+#' and Rab, M. A., S. Chandra, P. D. Fisher, N. J. Robinson, M. Kitching, C. D.
+#' Aumann, and M. Imhof. 2011. Modelling and prediction of soil water contents at
+#' field capacity and permanent wilting point of dryland cropping soils. Soil
+#' Research 49:389-407.
+#' @param soilpro Matrix of n x 5 matrix of soil composition with the following columns 1. depth (cm), 2. bulk density (Mg/m3), 3. clay (\%), 4. silt (\%), 5. clay (\%)
 #' @return PE air entry water potential (J/kg), Campbell (1985) eq. 5.12, p. 46
 #' @return BB Campbell's b parameter, Campbell (1985) eq. 5.11, p. 45
 #' @return BD bulk density, Mg/m3
 #' @return KS saturated hydraulic conductivity (kg s / m3), Campbell (1985) eq. 6.12, p. 54
-#' @return FC Field capacity (m3/m3, %) Based on model 6 in Table 6 of Rab, M. A., S. Chandra, P. D. Fisher, N. J. Robinson, M. Kitching, C. D. Aumann, and M. Imhof. 2011. Modelling and prediction of soil water contents at field capacity and permanent wilting point of dryland cropping soils. Soil Research 49:389-407.
-#' @return PWP Permanent Wilting Point (m3/m3, %) Based on model 2 in Table 7 of Rab et al. 2011 (cited above)
+#' @return FC Field capacity (m3/m3, \%) Based on model 6 in Table 6 of Rab, M. A., S. Chandra, P. D. Fisher, N. J. Robinson, M. Kitching, C. D. Aumann, and M. Imhof. 2011. Modelling and prediction of soil water contents at field capacity and permanent wilting point of dryland cropping soils. Soil Research 49:389-407.
+#' @return PWP Permanent Wilting Point (m3/m3, \%) Based on model 2 in Table 7 of Rab et al. 2011 (cited above)
 #' @usage soil.hydro(soilpro)
 #' @export
 soil.hydro <- function(soilpro = as.data.frame(soilpro), DEP = soilpro[,1]){
