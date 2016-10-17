@@ -79,7 +79,8 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{ystrt}{ = 0, Year of the simulation to start at - will loop back over earlier periods at the end, useful for exploring cohort effects when running a life cycle with the DEB model}\cr}
 \item{\code{enberr}{ = 0.0002, Factor by which the mass is multiplied to obtain a tolerance level for the heat budget solution}\cr}
 \item{\code{live=}{ = 1, Live (metabolism/behaviour) or dead animal?}\cr}
-\item{\code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr}
+\item{\code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1 = yes, 0 = no}\cr}
+\item{\code{write_csv}{ = 0, Write csv files of final output? 0 = no, 1= just yearout and yearsout, 2 = all output}\cr}
 \item{\code{startday}{ = 1, Julian day of year at which simulation starts}\cr}
 }
 \strong{ Environmental inputs:}
@@ -143,6 +144,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{PTUREA}{ = 0, Water in excreted nitrogenous waste (\%)}\cr}
 \item{\code{FoodWater}{ = 82, Water content of food (\%)}\cr}
 \item{\code{minwater}{ = 15, Minimum tolerated dehydration (\% of wet mass) - prohibits foraging if greater than this}\cr}
+\item{\code{dessdeath}{ = 35, Maximum tolerated dehydration (\% of wet mass) - causes death if greater than this}\cr}
 \item{\code{gutfill}{ = 75.,}\cr}
 \item{\code{raindrink}{ = 0., Gut fill (\%) at which satiation occurs - if greater than 100\%, animal always tries to forage}\cr}
 }
