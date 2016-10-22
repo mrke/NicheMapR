@@ -16,6 +16,9 @@
 get.global.climate <- function(folder="c:/globalclimate"){
 ANSWER<-readline(prompt = "This function downloads and extracts 0.5 GB of data, type 'y' if you want to continue: ")
 if(substr(ANSWER, 1, 1) == "y"){
+  # check if user put a slash at end, remove if so
+  if(substr(folder, nchar(folder), nchar(folder)) == "/"){folder <- substr(folder, 1, nchar(folder)-1)}
+  if(substr(folder, nchar(folder)-1, nchar(folder)) == "\\"){folder <- substr(folder, 1, nchar(folder)-2)}
   if(dir.exists(folder)==FALSE){
     dir.create(folder)
   }
