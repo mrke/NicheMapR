@@ -32,6 +32,7 @@ runshade<-1 # run the model twice, once for each shade level (1) or just for the
 runmoist<-1 # run soil moisture model (0=no, 1=yes)?
 snowmodel<-1 # run the snow model (0=no, 1=yes)? - note that this runs slower
 hourly<-1 # run the model with hourly input data
+rainhourly<-1 # run the model with hourly rainfall input data
 microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day
 
 ## ------------------------------------------------------------------------
