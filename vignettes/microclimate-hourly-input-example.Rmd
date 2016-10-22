@@ -68,6 +68,7 @@ runshade<-1 # run the model twice, once for each shade level (1) or just for the
 runmoist<-1 # run soil moisture model (0=no, 1=yes)?
 snowmodel<-1 # run the snow model (0=no, 1=yes)? - note that this runs slower
 hourly<-1 # run the model with hourly input data
+rainhourly<-1 # run the model with hourly rainfall input data
 microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day
 ```
 
@@ -313,7 +314,7 @@ The data inputs are all ready now and they need to be sent to the Fortran progra
 
 ```{r}
 # microclimate input parameters list
-microinput<-c(julnum,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly)
+microinput<-c(julnum,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly)
 
 # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
 microin<-list(microinput=microinput,tides=tides,julday=julday,SLES=SLES,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX,TMINN=TMINN,RHMAXX=RHMAXX,RHMINN=RHMINN,CCMAXX=CCMAXX,CCMINN=CCMINN,WNMAXX=WNMAXX,WNMINN=WNMINN,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,REFLS=REFLS,PCTWET=PCTWET,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists,RAINFALL=RAINFALL,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI)
