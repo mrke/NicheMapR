@@ -48,7 +48,6 @@ TZoffset<-site$`GMT offset` # the offset from Greenwich Mean Time, in hours
 ystart=2015 # start yeaar
 yfinish=2015 # end year
 nyears=yfinish-ystart+1 # number of years to run
-
 ```
 
 The SCAN data for Ford Dry Lake is included as a preloaded datatable too, ```SCAN_FordDryLake_2015```. We will now create a new variable called ```weather``` based on this dataset:
@@ -68,7 +67,7 @@ runshade<-1 # run the model twice, once for each shade level (1) or just for the
 runmoist<-1 # run soil moisture model (0=no, 1=yes)?
 snowmodel<-1 # run the snow model (0=no, 1=yes)? - note that this runs slower
 hourly<-1 # run the model with hourly input data
-rainhourly<-1 # run the model with hourly rainfall input data
+rainhourly<-1 # run the model with hourly rainfall input data (irrelevant if hourly=1)
 microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day
 ```
 
@@ -139,7 +138,7 @@ TAI<-predict(a,data.frame(LAMBDA))
 
 ### Time-independent microclimate model variables
 
-Now we need to specify hourly air temperature, wind speed, relative humidity, solar radiation, precipitation and cloud cover. The first 5 come directly from the SCAN dataset, but this dataset doesn't include cloud cover so we will have to estimate it as described below. 
+Now we need to specify hourly air temperature, wind speed, relative humidity, solar radiation, precipitation and cloud cover. The first 5 come directly from the SCAN dataset, but this dataset doesn't include cloud cover so we will have to estimate it as described below. Also, it is possible to supply precomputed zenith angles for when your simulation doesn't start at midnight. But, if you don't need to supply them, you give the model a vector of negative values.
 
 To start with, we need to use the ```na.approx``` function from the ```zoo``` package to interpolate NA values.
 
@@ -167,6 +166,7 @@ RHhr<-weather$RHUM.I<-na.approx(weather$RHUM.I)
 SOLRhr<-weather$SRADV.H<-na.approx(weather$SRADV.H)
 RAINhr<-weather$PRCP.H<-na.approx(weather$PRCP.H*25.4) # convert rainfall from inches to mm
 WNhr<-weather$WSPDV.H<-na.approx(weather$WSPDV.H*0.44704) # convert wind speed from miles/hour to m/s
+ZENhr<-TAIRhr*0-1 # negative zenith angles to force model to compute them
 ```
 
 Now we run the microclimate model using the ```micro_global``` function with the option ```clearsky``` set to 1 to obtain 365 days of clear sky solar radiation which we can then use in comparison to the observed solar radiation to infer cloud cover.
@@ -317,7 +317,7 @@ The data inputs are all ready now and they need to be sent to the Fortran progra
 microinput<-c(julnum,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly)
 
 # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
-microin<-list(microinput=microinput,tides=tides,julday=julday,SLES=SLES,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX,TMINN=TMINN,RHMAXX=RHMAXX,RHMINN=RHMINN,CCMAXX=CCMAXX,CCMINN=CCMINN,WNMAXX=WNMAXX,WNMINN=WNMINN,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,REFLS=REFLS,PCTWET=PCTWET,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists,RAINFALL=RAINFALL,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI)
+microin<-list(microinput=microinput,tides=tides,julday=julday,SLES=SLES,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX,TMINN=TMINN,RHMAXX=RHMAXX,RHMINN=RHMINN,CCMAXX=CCMAXX,CCMINN=CCMINN,WNMAXX=WNMAXX,WNMINN=WNMINN,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,REFLS=REFLS,PCTWET=PCTWET,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists,RAINFALL=RAINFALL,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI)
 
 micro<-microclimate(microin) # run the model in Fortran
 ```
