@@ -34,6 +34,7 @@
 #'
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 #' \code{hourly}{ = 1, Run the model with hourly input weather data (1) or with min/max values (0)}\cr\cr
+#' \code{rainhourly}{ = 1, Run the model with hourly input rainfall data (1) or with daily totals (0)}\cr\cr
 #' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
 #' \code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
@@ -260,7 +261,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
   LAI=0.1,
   snowmodel=0,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
-  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",barcoo="",quadrangle=1, hourly=1, getdata=1) {
+  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",barcoo="",quadrangle=1, hourly=1, rainhourly = 0, getdata=1) {
   #
   # loc="Nyrripi, Northern Territory"
   # timeinterval=365
@@ -1045,7 +1046,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
         ALAT<-as.numeric(ALAT)
 
         # microclimate input parameters list
-        microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly)
+        microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly)
 
         julday1=matrix(data = 0., nrow = dim, ncol = 1)
         SLES1=matrix(data = 0., nrow = dim, ncol = 1)
