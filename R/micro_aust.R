@@ -1752,6 +1752,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
           write.table(L,file="micro csv input/L.csv", sep = ",", col.names = NA, qmethod = "double")
           write.table(LAI,file="micro csv input/LAI.csv", sep = ",", col.names = NA, qmethod = "double")
           write.table(tides,file="micro csv input/tides.csv", sep = ",", col.names = NA, qmethod = "double")
+          write.table(TAIRhr,file="micro csv input/RHhr.csv", sep = ",", col.names = NA, qmethod = "double")
           write.table(RHhr,file="micro csv input/RHhr.csv", sep = ",", col.names = NA, qmethod = "double")
           write.table(WNhr,file="micro csv input/WNhr.csv", sep = ",", col.names = NA, qmethod = "double")
           write.table(CLDhr,file="micro csv input/CLDhr.csv", sep = ",", col.names = NA, qmethod = "double")
