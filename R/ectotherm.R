@@ -183,6 +183,7 @@
 #' \item{\code{y_EV_l}{ = 0.95, yield of imago reserve on larval structure (mol/mol)}\cr}
 #' \item{\code{S_instar}{ = c(2.660,2.310,1.916,0), stress at instar n: L_n^2/ L_n-1^2 (-)}\cr}
 #' \item{\code{s_j}{ = 0.999, Reprod buffer/structure ratio at pupation as fraction of max}\cr}
+#' \item{\code{L_b}{ = 0.0611, Structural length at birth (cm)}\cr}
 #'}
 #' \strong{ Inital conditions for DEB model:}
 #' \itemize{
@@ -492,7 +493,7 @@ T_REF=20,TA=8817,TAL=5.0e+04,TAH=9.0+04,TL=279,TH=306,
     d_V=0.3,d_E=0.3,d_Egg=0.3,mu_X=525000,mu_E=585000,mu_V=500000,mu_P=480000,
 kap_X_P=0.1,n_X=c(1,1.8,0.5,0.15),n_E=c(1,1.8,0.5,0.15),n_V=c(1,1.8,0.5,0.15),n_P=c(1,1.8,0.5,0.15),
 n_M_nitro=c(1,4/5,3/5,4/5),metab_mode=0,stages=7,y_EV_l=0.95,S_instar=c(2.660,2.310,1.916,0),
-  s_j=0.999,v_init=3e-9,E_init=E_0/v_init,E_H_init=0,stage=0,aestivate=0,depress=0.3,
+  s_j=0.999,L_b=0.06148,v_init=3e-9,E_init=E_0/v_init,E_H_init=0,stage=0,aestivate=0,depress=0.3,
 clutchsize=5,clutch_ab=c(0,0),viviparous=0,minclutch=0,batch=1,photostart=3,photofinish=1,
 daylengthstart=12.5,daylengthfinish=13.,photodirs=1,photodirf=0,frogbreed=0,frogstage=0,
 reset=0,breedactthresh=1,breedrainthresh=0,breedtempthresh=200,breedtempcum=24*7,ma=1e-4,mi=0,mh=0.5,
@@ -735,7 +736,7 @@ flyer=0,flyspeed=5,flymetab=0.1035,dessdeath=35,write_csv=0){
   microyear<-1
 
   ectoinput<-as.matrix(c(ALT,FLTYPE,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,AMASS,EMISAN,absan,RQ,rinsul,lometry,live,TIMBAS,Flshcond,Spheat,Andens,ABSMAX,ABSMIN,FATOSK,FATOSB,FATOBJ,VTMAX,VTMIN,DELTAR,SKINW,peyes,xbas,extref,TPREF,ptcond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,tdigpr,maxshd,minshd,ctmax,ctmin,behav,julday,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,julstart,monthly,customallom,M_1,M_2,M_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,minwater,microyear,container,flyer,flyspeed,dim,maxdepth,ctminthresh,ctkill,gutfill,mindepth,TBASK,TEMERGE,F_m,SUBTK,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,breedtempthresh,breedtempcum,contwet,warmsig,aquabask,dessdeath,write_csv))
-  debmod<-c(clutchsize,andens_deb,d_V,d_Egg,mu_X,mu_E,mu_V,mu_P,T_REF,z,kap,kap_X,p_M,v,E_G,kap_R,E_sm,del_M,h_a,V_init_baby,E_init_baby,k_J,E_Hb,E_Hj,E_Hp,clutch_ab[2],batch,breedrainthresh,photostart,photofinish,daylengthstart,daylengthfinish,photodirs,photodirf,clutch_ab[1],frogbreed,frogstage,eta_O,JM_JO,E_0,kap_X_P,PTUREA1,PFEWAT1,wO,w_N,FoodWater1,f,s_G,K,X,metab_mode,stages,y_EV_l,s_j,startday,raindrink,reset,ma,mi,mh,aestivate,depress,minclutch)
+  debmod<-c(clutchsize,andens_deb,d_V,d_Egg,mu_X,mu_E,mu_V,mu_P,T_REF,z,kap,kap_X,p_M,v,E_G,kap_R,E_sm,del_M,h_a,V_init_baby,E_init_baby,k_J,E_Hb,E_Hj,E_Hp,clutch_ab[2],batch,breedrainthresh,photostart,photofinish,daylengthstart,daylengthfinish,photodirs,photodirf,clutch_ab[1],frogbreed,frogstage,eta_O,JM_JO,E_0,kap_X_P,PTUREA1,PFEWAT1,wO,w_N,FoodWater1,f,s_G,K,X,metab_mode,stages,y_EV_l,s_j,startday,raindrink,reset,ma,mi,mh,aestivate,depress,minclutch,L_b)
   deblast<-c(iyear,countday,v_init,E_init,ms_init,cumrepro_init,q_init,hs_init,cumbatch_init,V_baby_init,E_baby_init,E_H_init,stage)
 
   origjulday<-metout[,1]

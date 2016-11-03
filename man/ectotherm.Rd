@@ -217,6 +217,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{y_EV_l}{ = 0.95, yield of imago reserve on larval structure (mol/mol)}\cr}
 \item{\code{S_instar}{ = c(2.660,2.310,1.916,0), stress at instar n: L_n^2/ L_n-1^2 (-)}\cr}
 \item{\code{s_j}{ = 0.999, Reprod buffer/structure ratio at pupation as fraction of max}\cr}
+\item{\code{L_b}{ = 0.0611, Structural length at birth (cm)}\cr}
 }
 \strong{ Inital conditions for DEB model:}
 \itemize{
