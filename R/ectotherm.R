@@ -299,7 +299,7 @@
 #' \item 9 QIROUT - infrared radiation lost (W)
 #' \item 10 QCONV - heat lost by convection (W)
 #' \item 11 QCOND - heat lost by conduction (W)
-#' \item 12 ENB - energy balance (degrees C)
+#' \item 12 ENB - energy balance (W)
 #' \item 13 NTRY - iterations required for solution to heat balance equation
 #'}
 #' masbal variables:
