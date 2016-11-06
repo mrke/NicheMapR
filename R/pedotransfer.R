@@ -84,22 +84,34 @@ pedotransfer <- function(soilpro = as.data.frame(soilpro), model = 0, DEP = soil
 
   if(model == 0){ # use Cosby et al. (1984) equations
 
-    regress<-read.csv('Cosby1984_Table5.csv', stringsAsFactors = FALSE)
-
     # Campbell's b parameter
-    BB <- clay * Cosby1984_Table5$slope[1] + Cosby1984_Table5$intercept[1]
+    BB <- clay * Cosby1984Tbl5$slope[1] + Cosby1984Tbl5$intercept[1]
     BB <- log10(10^(BB)/10.2) # un-log, convert to J/kg, relog
 
 
     # air entry water potential (J/kg)
-    PE <- sand * Cosby1984_Table5$slope[2] + Cosby1984_Table5$intercept[2]
+    PE <- sand * Cosby1984Tbl5$slope[2] + Cosby1984Tbl5$intercept[2]
     PE <- 10^(PE)/10.2 # un-log, convert to J/kg
 
     # saturated hydraulic conductivity (kg s / m3), Campbell (1985) eq. 6.12, p. 54
-    KS <- sand * Cosby1984_Table5$slope[3] + Cosby1984_Table5$intercept[3]
+    KS <- sand * Cosby1984Tbl5$slope[3] + Cosby1984Tbl5$intercept[3]
     KS <- 10^(KS)*0.0007196666 # un-log, convert to kg s m-3
   }
 
+  if(model == 0){ # use Cosby et al. (1984) equations
+
+    # Campbell's b parameter
+    BB <- clay * Cosby1984Tbl4$slope[1] + sand * Cosby1984Tbl4$slope[2] + Cosby1984Tbl4$intercept[1]
+    BB <- log10(10^(BB)/10.2) # un-log, convert to J/kg, relog
+
+    # air entry water potential (J/kg)
+    PE <- sand * Cosby1984Tbl4$slope[3] + silt * Cosby1984Tbl4$slope[4] + Cosby1984Tbl4$intercept[3]
+    PE <- 10^(PE)/10.2 # un-log, convert to J/kg
+
+    # saturated hydraulic conductivity (kg s / m3), Campbell (1985) eq. 6.12, p. 54
+    KS <- sand * Cosby1984Tbl4$slope[5] + clay * Cosby1984Tbl4$slope[6] + Cosby1984Tbl4$intercept[5]
+    KS <- 10^(KS)*0.0007196666 # un-log, convert to kg s m-3
+  }
   if(model == 1){ # use Campbell (1985) equations
 
     # particle diameters from Campbell (1985) p. 10
