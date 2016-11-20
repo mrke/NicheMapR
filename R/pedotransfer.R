@@ -48,7 +48,7 @@ pedotransfer <- function(soilpro = as.data.frame(soilpro), model = 1, DEP = soil
     DEP2<-as.data.frame(floor(DEP2))
     colnames(DEP2)<-"DEPTH"
 
-    BD_spline <-spline(soil_depths,BD,n=201,xmin=0,xmax=200,method='natural')
+    BD_spline <-spline(soil_depths,soilpro$BD,n=201,xmin=0,xmax=200,method='natural')
     BD_spline<-as.data.frame(cbind(BD_spline$x,BD_spline$y))
     colnames(BD_spline)<-c('DEPTH','VALUE')
     BD<-merge(DEP2,BD_spline)
