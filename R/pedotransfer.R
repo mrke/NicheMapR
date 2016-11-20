@@ -28,7 +28,7 @@
 #' @export
 pedotransfer <- function(soilpro = as.data.frame(soilpro), model = 1, DEP = soilpro[,1]){
 
-  soil_depths<-soilpro$depth
+  soil_depths<-soilpro[,1]
   nodeout = length(DEP)*2-2
 
   # spline to new depths if needed
@@ -48,13 +48,13 @@ pedotransfer <- function(soilpro = as.data.frame(soilpro), model = 1, DEP = soil
     DEP2<-as.data.frame(floor(DEP2))
     colnames(DEP2)<-"DEPTH"
 
-    BD_spline <-spline(soil_depths,soilpro$BD,n=201,xmin=0,xmax=200,method='natural')
+    BD_spline <-spline(soil_depths,soilpro[,2],n=201,xmin=0,xmax=200,method='natural')
     BD_spline<-as.data.frame(cbind(BD_spline$x,BD_spline$y))
     colnames(BD_spline)<-c('DEPTH','VALUE')
     BD<-merge(DEP2,BD_spline)
     BD<-c(BD[1,2],BD[,2])
 
-    sand_spline <-spline(soil_depths,soilpro$sand,n=201,xmin=0,xmax=200,method='natural')
+    sand_spline <-spline(soil_depths,soilpro[,5],n=201,xmin=0,xmax=200,method='natural')
     sand_spline<-as.data.frame(cbind(sand_spline$x,sand_spline$y))
     colnames(sand_spline)<-c('DEPTH','VALUE')
     sand<-merge(DEP2,sand_spline)
@@ -62,7 +62,7 @@ pedotransfer <- function(soilpro = as.data.frame(soilpro), model = 1, DEP = soil
     sand[sand<0]<-0
     sand[sand>100]<-100
 
-    silt_spline <-spline(soil_depths,soilpro$silt,n=201,xmin=0,xmax=200,method='natural')
+    silt_spline <-spline(soil_depths,soilpro[,4],n=201,xmin=0,xmax=200,method='natural')
     silt_spline<-as.data.frame(cbind(silt_spline$x,silt_spline$y))
     colnames(silt_spline)<-c('DEPTH','VALUE')
     silt<-merge(DEP2,silt_spline)
@@ -70,7 +70,7 @@ pedotransfer <- function(soilpro = as.data.frame(soilpro), model = 1, DEP = soil
     silt[silt<0]<-0
     silt[silt>100]<-100
 
-    clay_spline <-spline(soil_depths,soilpro$clay,n=201,xmin=0,xmax=200,method='natural')
+    clay_spline <-spline(soil_depths,soilpro[,3],n=201,xmin=0,xmax=200,method='natural')
     clay_spline<-as.data.frame(cbind(clay_spline$x,clay_spline$y))
     colnames(clay_spline)<-c('DEPTH','VALUE')
     clay<-merge(DEP2,clay_spline)
