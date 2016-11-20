@@ -2,7 +2,7 @@
 #'
 #' A function to compute soil hydrological properties from information on bulk
 #' density and soil composition (clay/silt/sand composition) at particular depths,
-#' with capacity to spline results to other depths (used in NicheMapR).
+#' with capacity to spline results to other depths.
 #' Calculations of Campbell's b, air-entry potential and hydraulic conductivity
 #' are based on either on equations in Campbell, G. S. 1985. Soil Physics
 #' with Basic: Transport Models for Soil-Plant Systems. Elsevier, Amsterdam,
@@ -14,7 +14,7 @@
 #' and prediction of soil water contents at field capacity and permanent wilting
 #' point of dryland cropping soils. Soil Research 49:389-407.
 #' @param soilpro Matrix of n x 5 matrix of soil composition with the following columns 1. depth (cm), 2. bulk density (Mg/m3), 3. clay (\%), 4. silt (\%), 5. sand (\%)
-#' @param model Choice of equation to compute soil hydraulic parameters, 0 for Cosby et al. (1984), 1 for Campbell (1985)
+#' @param model Choice of equation to compute soil hydraulic parameters (see details)
 #' @param DEP sequence of depths at which results are required, within the range provided by column 1 of input table 'soilpro'
 #' @return PE air entry water potential (J/kg), Campbell (1985) eq. 5.12, p. 46 or Cosby et al. (1984) Table 5
 #' @return BB Campbell's b parameter, Campbell (1985) eq. 5.11, p. 45 or Cosby et al. (1984) Table 5
@@ -22,15 +22,18 @@
 #' @return KS saturated hydraulic conductivity (kg s / m3), Campbell (1985) eq. 6.12, p. 54 or Cosby et al. (1984) Table 5
 #' @return FC Field capacity (m3/m3, \%) Based on model 6 in Table 6 of Rab, M. A., S. Chandra, P. D. Fisher, N. J. Robinson, M. Kitching, C. D. Aumann, and M. Imhof. 2011. Modelling and prediction of soil water contents at field capacity and permanent wilting point of dryland cropping soils. Soil Research 49:389-407.
 #' @return PWP Permanent Wilting Point (m3/m3, \%) Based on model 2 in Table 7 of Rab et al. 2011 (cited above)
-#' @usage pedotransfer(soilpro, 0, DEP)
+#' @usage pedotransfer(soilpro, 1, DEP)
+#' @details
+#' \code{model}{ = 1, choose the pedotransfer function to use; 0 for Cosby et al. (1984) univariate regression (their Table 5), for Cosby et al. (1984) multivariate regression (their Table 4), or 2 for Campbell (1985)}\cr\cr
 #' @export
-pedotransfer <- function(soilpro = as.data.frame(soilpro), model = 0, DEP = soilpro[,1]){
+pedotransfer <- function(soilpro = as.data.frame(soilpro), model = 1, DEP = soilpro[,1]){
+
+  soil_depths<-soilpro$depth
+  nodeout = length(DEP)*2-2
 
   # spline to new depths if needed
   if(nodeout != length(DEP) & nodeout != 0){
 
-    soil_depths<-soilpro$depth
-    nodeout = length(DEP)*2-2
     # find half-way points between given depths
     DEP2<-rep(0,nodeout)
     j<-1
@@ -82,7 +85,7 @@ pedotransfer <- function(soilpro = as.data.frame(soilpro), model = 0, DEP = soil
   # permanent wilting point, model 2, Table 7 of Rab et al. (2011)
   PWP<-(-1.304+1.117*clay-0.009309*clay^2)/100
 
-  if(model == 0){ # use Cosby et al. (1984) equations
+  if(model == 0){ # use Cosby et al. (1984) equations, from Table 5
 
     # Campbell's b parameter
     BB <- clay * Cosby1984Tbl5$slope[1] + Cosby1984Tbl5$intercept[1]
@@ -98,7 +101,7 @@ pedotransfer <- function(soilpro = as.data.frame(soilpro), model = 0, DEP = soil
     KS <- 10^(KS)*0.0007196666 # un-log, convert to kg s m-3
   }
 
-  if(model == 0){ # use Cosby et al. (1984) equations
+  if(model == 1){ # use Cosby et al. (1984) equations, from Table 4
 
     # Campbell's b parameter
     BB <- clay * Cosby1984Tbl4$slope[1] + sand * Cosby1984Tbl4$slope[2] + Cosby1984Tbl4$intercept[1]
@@ -112,7 +115,7 @@ pedotransfer <- function(soilpro = as.data.frame(soilpro), model = 0, DEP = soil
     KS <- sand * Cosby1984Tbl4$slope[5] + clay * Cosby1984Tbl4$slope[6] + Cosby1984Tbl4$intercept[5]
     KS <- 10^(KS)*0.0007196666 # un-log, convert to kg s m-3
   }
-  if(model == 1){ # use Campbell (1985) equations
+  if(model == 2){ # use Campbell (1985) equations
 
     # particle diameters from Campbell (1985) p. 10
     dclay<-0.001 #mm
@@ -143,6 +146,5 @@ pedotransfer <- function(soilpro = as.data.frame(soilpro), model = 0, DEP = soil
     # saturated hydraulic conductivity (kg s / m3), Campbell (1985) eq. 6.12, p. 54
     KS<-0.004*(1.3/blkdens)^(1.3*b)*exp(-6.9*clay/100-3.7*silt/100)
   }
-
   return<-list(BD = BD, BB = BB, KS = KS, PE = PE, FC = FC, PWP = PWP)
 }
