@@ -503,7 +503,6 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     # creating the shade array
     MAXSHADES <- rep(0,(timeinterval*nyears))+maxshade # daily max shade (%)
     MINSHADES <- rep(0,(timeinterval*nyears))+minshade # daily min shade (%)
-
     if(soiltype==0){ # simulating rock so turn of soil moisture model and set density equal to bulk density
       BulkDensity<-Density
       cap=0
@@ -794,7 +793,9 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     RAINFALL1[1:dim]<-RAINFALL
     tannul1[1:dim]<-tannul
     moists1[1:10,1:dim]<-moists
-
+    if(length(LAI)<dim){
+     LAI<-rep(LAI[1],dim)
+    }
     if(shore==0){
       tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
     }

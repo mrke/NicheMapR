@@ -601,7 +601,6 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
       MINSHADES <- rep(0,(timeinterval*nyears))+minshade # daily min shade (%)
     }
 
-
     if(soildata==1){
       cat("extracting soil data", '\n')
       if(vlsci==0){
@@ -1711,7 +1710,9 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
         RAINFALL1[1:dim]<-RAINFALL
         tannul1[1:dim]<-tannul
         moists1[1:10,1:dim]<-moists
-
+        if(length(LAI)<dim){
+         LAI<-rep(LAI[1],dim)
+        }
         if(shore==0){
           tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
         }
