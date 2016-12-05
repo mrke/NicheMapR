@@ -174,7 +174,7 @@
 #' \itemize{
 #' \item  1 JULDAY - day of year
 #' \item  2 TIME - time of day (mins)
-#' \item  3-113 290, ..., 4000 - irradiance (W/m2) at each of 111 wavelengths from 290 to 4000 nm
+#' \item  3-113 290, ..., 4000 - irradiance (W/(m2 nm)) at each of 111 wavelengths from 290 to 4000 nm
 #' }
 #' }
 #' @examples
