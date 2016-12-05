@@ -83,7 +83,10 @@ microclimate <- function(micro) {
     humid=matrix(data = 0., nrow = 24*julnum, ncol = 12),
     shadhumid=matrix(data = 0., nrow = 24*julnum, ncol = 12),
     soilpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),
-    shadpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),PACKAGE = "microclimate")
+    shadpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),
+    drlam=matrix(data = 0., nrow = 24*julnum, ncol = 113),
+    drrlam=matrix(data = 0., nrow = 24*julnum, ncol = 113),
+    srlam=matrix(data = 0., nrow = 24*julnum, ncol = 113),PACKAGE = "microclimate")
 
 dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
  }else{
@@ -139,7 +142,10 @@ dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
     humid=matrix(data = 0., nrow = 24*julnum, ncol = 12),
     shadhumid=matrix(data = 0., nrow = 24*julnum, ncol = 12),
     soilpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),
-    shadpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),PACKAGE = "MICROCLIMATE")
+    shadpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),
+    drlam=matrix(data = 0., nrow = 24*julnum, ncol = 113),
+    drrlam=matrix(data = 0., nrow = 24*julnum, ncol = 113),
+    srlam=matrix(data = 0., nrow = 24*julnum, ncol = 113), PACKAGE = "MICROCLIMATE")
 
   # need to load and unload the microclimate dll or else it crashes second time round - probably due to memory leak
 #if(is.loaded("microclimate", "MICROCLIMATE", type = "FORTRAN")){
@@ -158,6 +164,9 @@ dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
   shadhumid <- matrix(data = 0., nrow = 24*julnum, ncol = 12)
   soilpot <- matrix(data = 0., nrow = 24*julnum, ncol = 12)
   shadpot <- matrix(data = 0., nrow = 24*julnum, ncol = 12)
+  drlam <- matrix(data = 0., nrow = 24*julnum, ncol = 113)
+  drrlam <- matrix(data = 0., nrow = 24*julnum, ncol = 113)
+  srlam <- matrix(data = 0., nrow = 24*julnum, ncol = 113)
   storage.mode(metout)<-"double"
   storage.mode(shadmet)<-"double"
   storage.mode(soil)<-"double"
@@ -168,6 +177,9 @@ dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
   storage.mode(shadhumid)<-"double"
   storage.mode(soilpot)<-"double"
   storage.mode(shadpot)<-"double"
+  storage.mode(drlam)<-"double"
+  storage.mode(drrlam)<-"double"
+  storage.mode(srlam)<-"double"
   metout<-a$metout
   shadmet<-a$shadmet
   soil<-a$soil
@@ -178,6 +190,9 @@ dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
   shadhumid<-a$shadhumid
   soilpot<-a$soilpot
   shadpot<-a$shadpot
+  drlam<-a$drlam
+  drrlam<-a$drrlam
+  srlam<-a$srlam
   metout.names<-c("JULDAY","TIME","TALOC","TAREF","RHLOC","RH","VLOC","VREF","SNOWMELT","POOLDEP","PCTWET","ZEN","SOLR","TSKYC","DEW","FROST","SNOWFALL","SNOWDEP")
   colnames(metout)<-metout.names
   colnames(shadmet)<-metout.names
@@ -193,5 +208,9 @@ dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
   colnames(shadhumid)<-humid.names
   colnames(soilpot)<-pot.names
   colnames(shadpot)<-pot.names
+  drlam.colnames<-c("JULDAY","TIME","290","295","300","305","310","315","320","330","340","350","360","370","380","390","400","420","440","460","480","500","520","540","560","580","600","620","640","660","680","700","720","740","760","780","800","820","840","860","880","900","920","940","960","980","1000","1020","1080","1100","1120","1140","1160","1180","1200","1220","1240","1260","1280","1300","1320","1380","1400","1420","1440","1460","1480","1500","1540","1580","1600","1620","1640","1660","1700","1720","1780","1800","1860","1900","1950","2000","2020","2050","2100","2120","2150","2200","2260","2300","2320","2350","2380","2400","2420","2450","2490","2500","2600","2700","2800","2900","3000","3100","3200","3300","3400","3500","3600","3700","3800","3900","4000")
+  colnames(drlam)<-drlam.colnames
+  colnames(drrlam)<-drlam.colnames
+  colnames(srlam)<-drlam.colnames
   return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot))
 }
