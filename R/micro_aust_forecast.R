@@ -37,6 +37,8 @@
 #' \code{rainhourly}{ = 1, Run the model with hourly input rainfall data (1) or with daily totals (0)}\cr\cr
 #' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
 #' \code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+#' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?
+#' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{manualshade}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
@@ -167,6 +169,13 @@
 #' \item  2 TIME - time of day (mins)
 #' \item  3-12 RH0cm ... - soil relative humidity (decimal \%), at each of the 10 specified depths
 #' }
+#'
+#' drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar) variables:
+#' \itemize{
+#' \item  1 JULDAY - day of year
+#' \item  2 TIME - time of day (mins)
+#' \item  3-113 290, ..., 4000 - irradiance (W/m2) at each of 111 wavelengths from 290 to 4000 nm
+#' }
 #' }
 #' @examples
 #'micro<-micro_aust() # run the model with default location and settings
@@ -261,7 +270,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
   LAI=0.1,
   snowmodel=0,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
-  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",barcoo="",quadrangle=1, hourly=1, rainhourly = 0, getdata=1) {
+  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",barcoo="",quadrangle=1, hourly=1, rainhourly = 0, getdata=1, lamb = 0, IUV = 0) {
   #
   # loc="Nyrripi, Northern Territory"
 #   timeinterval=365
@@ -1056,7 +1065,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
         ALAT<-as.numeric(ALAT)
 
         # microclimate input parameters list
-        microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly)
+        microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV)
 
         julday1=matrix(data = 0., nrow = dim, ncol = 1)
         SLES1=matrix(data = 0., nrow = dim, ncol = 1)
@@ -1181,8 +1190,14 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
           humid[,3:12]<-0.99
           shadhumid[,3:12]<-0.99
         }
-
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,forecast=forecast))
+        if(lamb == 1){
+          drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
+          drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
+          srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,forecast=forecast,drlam=drlam,drrlam=drrlam,srlam=srlam))
+        }else{
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,forecast=forecast))
+        }
       } # end of check for na sites
     } # end of check if soil data is being used but no soil data returned
   } # end error trapping

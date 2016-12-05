@@ -41,6 +41,8 @@
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 #' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
 #' \code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+#' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?
+#' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #'
@@ -158,6 +160,13 @@
 #' \item  2 TIME - time of day (mins)
 #' \item  3-12 RH0cm ... - soil relative humidity (decimal \%), at each of the 10 specified depths
 #' }
+#'
+#' drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar) variables:
+#' \itemize{
+#' \item  1 JULDAY - day of year
+#' \item  2 TIME - time of day (mins)
+#' \item  3-113 290, ..., 4000 - irradiance (W/m2) at each of 111 wavelengths from 290 to 4000 nm
+#' }
 #' }
 #' @examples
 #'micro<-micro_global() # run the model with default location and settings
@@ -251,7 +260,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
   LAI=0.1,
   snowmodel=0,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
-  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)) {
+  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3), lamb = 0, IUV = 0) {
   SoilMoist=SoilMoist_Init
   errors<-0
 
@@ -513,10 +522,10 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       BD<-rep(BulkDensity/1000,19) # soil bulk density, Mg/m3
     }else{
       if(soiltype<12){ # use soil properties as specified in Campbell and Norman 1998 Table 9.1
-      PE<-rep(CampNormTbl9_1[soiltype,4],19) #air entry potential J/kg
-      KS<-rep(CampNormTbl9_1[soiltype,6],19) #saturated conductivity, kg s/m3
-      BB<-rep(CampNormTbl9_1[soiltype,5],19) #soil 'b' parameter
-      BD<-rep(BulkDensity/1000,19) # soil bulk density, Mg/m3
+        PE<-rep(CampNormTbl9_1[soiltype,4],19) #air entry potential J/kg
+        KS<-rep(CampNormTbl9_1[soiltype,6],19) #saturated conductivity, kg s/m3
+        BB<-rep(CampNormTbl9_1[soiltype,5],19) #soil 'b' parameter
+        BD<-rep(BulkDensity/1000,19) # soil bulk density, Mg/m3
       }
     }
 
@@ -547,7 +556,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     RHMAXX <- CLIMATE[,74:85]/10
     CCMINN <- CLIMATE[,86:97]/10
     if(clearsky==1){
-     CCMINN=CCMINN*0
+      CCMINN=CCMINN*0
     }
     CCMAXX <- CCMINN
     if(runmoist==0){
@@ -757,7 +766,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     RAINhr=rep(0,24*dim)
     ZENhr=rep(-1,24*dim)
     # microclimate input parameters list
-    microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly)
+    microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV)
 
     julday1=matrix(data = 0., nrow = dim, ncol = 1)
     SLES1=matrix(data = 0., nrow = dim, ncol = 1)
@@ -794,7 +803,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     tannul1[1:dim]<-tannul
     moists1[1:10,1:dim]<-moists
     if(length(LAI)<dim){
-     LAI<-rep(LAI[1],dim)
+      LAI<-rep(LAI[1],dim)
     }
     if(shore==0){
       tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
@@ -883,7 +892,13 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       humid[,3:12]<-0.99
       shadhumid[,3:12]<-0.99
     }
-
-    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
+    if(lamb == 1){
+      drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
+      drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
+      srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
+      return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
+    }else{
+      return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
+    }
   } # end error trapping
 } # end of NicheMapR_Setup_micro function
