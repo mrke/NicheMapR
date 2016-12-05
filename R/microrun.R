@@ -212,5 +212,9 @@ dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
   colnames(drlam)<-drlam.colnames
   colnames(drrlam)<-drlam.colnames
   colnames(srlam)<-drlam.colnames
-  return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot))
+  if(micro$microinput[43]!=1){
+    return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot))
+  }else{
+    return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, drlam=drlam, drrlam=drrlam, srlam=srlam))
+  }
 }
