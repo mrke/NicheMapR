@@ -1521,7 +1521,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
           tannulrun<-rep(avetemp,365)
         }else{
           if(nrow(TMAXX)==1){
-            avetemp<-colMeans(cbind(TMAXX, TMINN), na.rm=TRUE)
+            avetemp<-rowMeans(t(rbind(TMAXX, TMINN)), na.rm=TRUE)
           }else{
             avetemp<-rowMeans(cbind(TMAXX, TMINN), na.rm=TRUE)
           }
