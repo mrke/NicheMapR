@@ -541,7 +541,7 @@ flyer=0,flyspeed=5,flymetab=0.1035,dessdeath=35,write_csv=0, aestdepth=7){
   countday<-1 #initializing day counter
 
   if(microin!="none"){
-  cat('reading microclimate input \n')
+  message('reading microclimate input \n')
   RAINFALL<-as.matrix(read.csv(file=paste(microin,'rainfall.csv',sep=""),sep=","))[,2]
   dim=length(RAINFALL)
   metout<-read.csv(file=paste(microin,'metout.csv',sep=""),sep=",")[,-1]
@@ -802,7 +802,7 @@ flyer=0,flyspeed=5,flymetab=0.1035,dessdeath=35,write_csv=0, aestdepth=7){
       if(dir.exists("ecto csv input")==FALSE){
         dir.create("ecto csv input")
       }
-    cat('writing input csv files \n')
+    message('writing input csv files \n')
     write.csv(ectoinput, file = "ecto csv input/ectoinput.csv")
     write.csv(debmod, file = "ecto csv input/debmod.csv")
     write.csv(deblast, file = "ecto csv input/deblast.csv")
@@ -831,7 +831,7 @@ flyer=0,flyspeed=5,flymetab=0.1035,dessdeath=35,write_csv=0, aestdepth=7){
   }
   ecto<-list(dim=dim,ectoinput=ectoinput,metout=metout,shadmet=shadmet,soil=soil,shadsoil=shadsoil,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,DEP=DEP,RAINFALL=RAINFALL,iyear=iyear,countday=countday,debmod=debmod,deblast=deblast,foodwaters=foodwaters,foodlevels=foodlevels,wetlandTemps=wetlandTemps,wetlandDepths=wetlandDepths,arrhenius=arrhenius,thermal_stages=thermal_stages,behav_stages=behav_stages,water_stages=water_stages,maxshades=maxshades,S_instar=S_instar)
 
-  cat('running ectotherm model ... \n')
+  message('running ectotherm model ... \n')
 
   ptm <- proc.time() # Start timing
   ectout<-ectorun(ecto)
