@@ -266,170 +266,170 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   if(DEP[2]-DEP[1]>3 | DEP[3]-DEP[2]>3){
-    cat("warning, nodes might be too far apart near the surface, try a different spacing if the program is crashing \n")
+    message("warning, nodes might be too far apart near the surface, try a different spacing if the program is crashing \n")
   }
   if(timeinterval<12 | timeinterval > 365){
-    cat("ERROR: the variable 'timeinterval' is out of bounds.
+    message("ERROR: the variable 'timeinterval' is out of bounds.
         Please enter a correct value (12 - 365).", '\n')
     errors<-1
   }
   if(is.numeric(loc[1])){
     if(loc[1]>180 | loc[2] > 90){
-      cat("ERROR: Latitude or longitude (longlat) is out of bounds.
+      message("ERROR: Latitude or longitude (longlat) is out of bounds.
         Please enter a correct value.", '\n')
       errors<-1
     }
   }
   if(timezone%in%c(0,1)==FALSE){
-    cat("ERROR: the variable 'timezone' be either 0 or 1.
+    message("ERROR: the variable 'timezone' be either 0 or 1.
       Please correct.", '\n')
     errors<-1
   }
   if(rungads%in%c(0,1)==FALSE){
-    cat("ERROR: the variable 'rungads' be either 0 or 1.
+    message("ERROR: the variable 'rungads' be either 0 or 1.
       Please correct.", '\n')
     errors<-1
   }
   if(Clay<0){
-    cat("ERROR: Clay density value (Clay) is negative.
+    message("ERROR: Clay density value (Clay) is negative.
       Please input a positive value.", '\n')
     errors<-1
   }
   if(write_input%in%c(0,1)==FALSE){
-    cat("ERROR: the variable 'write_input' be either 0 or 1.
+    message("ERROR: the variable 'write_input' be either 0 or 1.
       Please correct.", '\n')
     errors<-1
   }
   if(EC<0.0034 | EC > 0.058){
-    cat("ERROR: the eccentricity variable (EC) is out of bounds.
+    message("ERROR: the eccentricity variable (EC) is out of bounds.
         Please enter a correct value (0.0034 - 0.058).", '\n')
     errors<-1
   }
   if(RUF<0.0001){
-    cat("ERROR: The roughness height (RUF) is too small ( < 0.0001).
+    message("ERROR: The roughness height (RUF) is too small ( < 0.0001).
         Please enter a larger value.", '\n')
     errors<-1
   }
   if(RUF>2){
-    cat("ERROR: The roughness height (RUF) is too large ( > 2).
+    message("ERROR: The roughness height (RUF) is too large ( > 2).
         Please enter a smaller value.", '\n')
     errors<-1
   }
   if(DEP[1]!=0){
-    cat("ERROR: First soil node (DEP[1]) must = 0 cm.
+    message("ERROR: First soil node (DEP[1]) must = 0 cm.
         Please correct", '\n')
     errors<-1
   }
   if(length(DEP)!=10){
-    cat("ERROR: You must enter 10 different soil depths.", '\n')
+    message("ERROR: You must enter 10 different soil depths.", '\n')
     errors<-1
   }
   for(i in 1:9){
     if(DEP[i+1]<=DEP[i]){
-      cat("ERROR: Soil depth (DEP array) is not in ascending size", '\n')
+      message("ERROR: Soil depth (DEP array) is not in ascending size", '\n')
       errors<-1
     }
   }
   if(DEP[10]>500){
-    cat("ERROR: Deepest soil depth (DEP array) is too large (<=500 cm)", '\n')
+    message("ERROR: Deepest soil depth (DEP array) is too large (<=500 cm)", '\n')
     errors<-1
   }
   if(Thcond<0){
-    cat("ERROR: Thermal variable conductivity (THCOND) is negative.
+    message("ERROR: Thermal variable conductivity (THCOND) is negative.
         Please input a positive value.", '\n')
     errors<-1
   }
   if(Density<0){
-    cat("ERROR: Density variable (Density) is negative.
+    message("ERROR: Density variable (Density) is negative.
         Please input a positive value.", '\n')
     errors<-1
   }
   if(SpecHeat<0){
-    cat("ERROR: Specific heat variable (SpecHeat) is negative.
+    message("ERROR: Specific heat variable (SpecHeat) is negative.
         Please input a positive value.", '\n')
     errors<-1
   }
   if(min(BulkDensity)<0){
-    cat("ERROR: Bulk density value (BulkDensity) is negative.
+    message("ERROR: Bulk density value (BulkDensity) is negative.
         Please input a positive value.", '\n')
     errors<-1
   }
   if(REFL<0 | REFL>1){
-    cat("ERROR: Soil reflectivity value (REFL) is out of bounds.
+    message("ERROR: Soil reflectivity value (REFL) is out of bounds.
         Please input a value between 0 and 1.", '\n')
     errors<-1
   }
   if(slope<0 | slope>90){
-    cat("ERROR: Slope value (slope) is out of bounds.
+    message("ERROR: Slope value (slope) is out of bounds.
         Please input a value between 0 and 90.", '\n')
     errors<-1
   }
   if(aspect<0 | aspect>365){
-    cat("ERROR: Aspect value (aspect) is out of bounds.
+    message("ERROR: Aspect value (aspect) is out of bounds.
         Please input a value between 0 and 365.", '\n')
     errors<-1
   }
   if(max(hori)>90 | min(hori)<0){
-    cat("ERROR: At least one of your horizon angles (hori) is out of bounds.
+    message("ERROR: At least one of your horizon angles (hori) is out of bounds.
         Please input a value between 0 and 90", '\n')
     errors<-1
   }
   if(length(hori)!=24){
-    cat("ERROR: You must enter 24 horizon angle values.", '\n')
+    message("ERROR: You must enter 24 horizon angle values.", '\n')
     errors<-1
   }
   if(SLE<0.5 | SLE > 1){
-    cat("ERROR: Emissivity (SLE) is out of bounds.
+    message("ERROR: Emissivity (SLE) is out of bounds.
         Please enter a correct value (0.05 - 1.00).", '\n')
     errors<-1
   }
   if(ERR<0){
-    cat("ERROR: Error bound (ERR) is too small.
+    message("ERROR: Error bound (ERR) is too small.
         Please enter a correct value (> 0.00).", '\n')
     errors<-1
   }
   if(Usrhyt<RUF){
-    cat("ERROR: Reference height (Usrhyt) smaller than roughness height (RUF).
+    message("ERROR: Reference height (Usrhyt) smaller than roughness height (RUF).
         Please use a larger height above the surface.", '\n')
     errors<-1
   }
   if(Usrhyt<0.005 | Usrhyt>Refhyt){
-    cat("ERROR: Reference height (Usrhyt) is out of bounds.
+    message("ERROR: Reference height (Usrhyt) is out of bounds.
         Please enter a correct value (0.005 - Refhyt).", '\n')
     errors<-1
   }
   if(CMH2O<0.5 | CMH2O>2){
-    cat("ERROR: Preciptable water in air column (CMH2O) is out of bounds.
+    message("ERROR: Preciptable water in air column (CMH2O) is out of bounds.
         Please enter a correct value (0.1 - 2).", '\n')
     errors<-1
   }
   if(max(TIMAXS)>24 | min(TIMAXS)<0){
-    cat("ERROR: At least one of your times of weather maxima (TIMAXS) is out of bounds.
+    message("ERROR: At least one of your times of weather maxima (TIMAXS) is out of bounds.
         Please input a value between 0 and 24", '\n')
     errors<-1
   }
   if(max(TIMINS)>24 | min(TIMINS)<0){
-    cat("ERROR: At least one of your times of weather minima (TIMINS) is out of bounds.
+    message("ERROR: At least one of your times of weather minima (TIMINS) is out of bounds.
         Please input a value between 0 and 24", '\n')
     errors<-1
   }
   if(minshade>maxshade | minshade==maxshade){
-    cat("ERROR: Your value for minimum shade (minshade) is greater than or equal to the maximum shade (maxshade).
+    message("ERROR: Your value for minimum shade (minshade) is greater than or equal to the maximum shade (maxshade).
         Please correct this.", '\n')
     errors<-1
   }
   if(minshade>100 | minshade<0){
-    cat("ERROR: Your value for minimum shade (minshade) is out of bounds.
+    message("ERROR: Your value for minimum shade (minshade) is out of bounds.
         Please input a value between 0 and 100.", '\n')
     errors<-1
   }
   if(maxshade>100 | maxshade<0){
-    cat("ERROR: Your value for maximum shade (maxshade) is out of bounds.
+    message("ERROR: Your value for maximum shade (maxshade) is out of bounds.
         Please input a value between 0 and 100.", '\n')
     errors<-1
   }
   if(soiltype<0 | soiltype>11){
-    cat("ERROR: the soil type must range between 1 and 11.
+    message("ERROR: the soil type must range between 1 and 11.
       Please correct.", '\n')
     errors<-1
   }
@@ -532,14 +532,14 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     # load global climate files
     gcfolder<-paste(.libPaths()[1],"/gcfolder.rda",sep="")
     if(file.exists(gcfolder)==FALSE){
-      cat("You don't appear to have the global climate data set - \n run function get.global.climate(folder = 'folder you want to put it in') .....\n exiting function micro_global")
+      message("You don't appear to have the global climate data set - \n run function get.global.climate(folder = 'folder you want to put it in') .....\n exiting function micro_global")
       opt <- options(show.error.messages=FALSE)
       on.exit(options(opt))
       stop()
     }
     load(gcfolder)
 
-    cat("extracting climate data", '\n')
+    message("extracting climate data", '\n')
     global_climate<-raster::brick(paste(folder,"/global_climate.nc",sep=""))
     CLIMATE <- raster::extract(global_climate,x)
     ALTT<-as.numeric(CLIMATE[,1]) # convert from km to m
@@ -562,11 +562,11 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     if(runmoist==0){
       # extract soil moisture
       soilmoisture<-suppressWarnings(raster::brick(paste(folder,"/soilw.mon.ltm.v2.nc",sep="")))
-      cat("extracting soil moisture data", '\n')
+      message("extracting soil moisture data", '\n')
       SoilMoist<-raster::extract(soilmoisture,x)/1000 # this is originally in mm/m
     }
     if(is.na(max(SoilMoist, ALTT, CLIMATE))==TRUE){
-      cat("Sorry, there is no environmental data for this location")
+      message("Sorry, there is no environmental data for this location")
       stop()
     }
 
@@ -862,7 +862,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     }else{
       location<-loc
     }
-    cat(paste('running microclimate model for',timeinterval,'days by',nyears,'years at site',location,'\n'))
+    message(paste('running microclimate model for',timeinterval,'days by',nyears,'years at site',location,'\n'))
     ptm <- proc.time() # Start timing
     microut<-microclimate(micro)
     print(proc.time() - ptm) # Stop the clock
