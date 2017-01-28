@@ -835,7 +835,7 @@ flyer=0,flyspeed=5,flymetab=0.1035,dessdeath=35,write_csv=0, aestdepth=7){
 
   ptm <- proc.time() # Start timing
   ectout<-ectorun(ecto)
-  print(proc.time() - ptm) # Stop the clock
+  message(paste0('runtime ', (proc.time() - ptm)[3], ' seconds')) # Stop the clock
 
   environ<-ectout$environ[1:(dim*24),]
   enbal<-ectout$enbal[1:(dim*24),]

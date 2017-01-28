@@ -1163,7 +1163,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
         message(paste('running microclimate model for',dim,'days by',nyears,'years at site',location,'\n'))
         ptm <- proc.time() # Start timing
         microut<-microclimate(micro)
-        print(proc.time() - ptm) # Stop the clock
+        message(paste0('runtime ', (proc.time() - ptm)[3], ' seconds')) # Stop the clock
 
         metout<-microut$metout # retrieve above ground microclimatic conditions, min shade
         shadmet<-microut$shadmet # retrieve above ground microclimatic conditions, max shade
