@@ -9,7 +9,7 @@
 #' @param db Dry bulb temperature (degrees C)
 #' @param bp Barometric pressure (pascal)
 #' @param alt Altitude (m)
-#' @return patmos Standard atmospheric pressure (P)
+#' @return patmos Standard atmospheric pressure (Pa)
 #' @return densty Density (kg m-3)
 #' @return visdyn Dynamic viscosity (kg m-1 s-1)
 #' @return viskin Kinematic viscosity (m2 s-1)
