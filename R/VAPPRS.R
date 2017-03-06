@@ -2,7 +2,7 @@
 #'
 #' Calculates saturation vapour pressure for a given air temperature.
 #' @param db Dry bulb temperature (degrees C)
-#' @return esat Saturation vapour pressure (P)
+#' @return esat Saturation vapour pressure (Pa)
 #' @export
 VAPPRS <- function(db=db){
   t=db+273.16

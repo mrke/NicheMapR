@@ -9,15 +9,15 @@
 #' @param db Dry bulb temperature (degrees C)
 #' @param dp Dew point temperature (degrees C)
 #' @param bp Barometric pressure (pascal)
-#' @return e Vapour pressure (P)
-#' @return esat Saturation vapour pressure (P)
+#' @return e Vapour pressure (Pa)
+#' @return esat Saturation vapour pressure (Pa)
 #' @return vd Vapour density (kg m-3)
 #' @return rw Mixing ration (kg kg-1)
 #' @return tvir Virtual temperature (K)
 #' @return tvinc Virtual temperature increment (K)
 #' @return denair Hourly predictions of the soil moisture under the maximum specified shade
 #' @return cp Specific heat of air at constant pressure (J kg-1 K-1)
-#' @return wtrpot Water potential (P)
+#' @return wtrpot Water potential (Pa)
 #' @return Relative humidity (\%)
 #' @export
 WETAIR.dp <- function(db=db, dp=dp, bp=101325){
