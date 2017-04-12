@@ -207,6 +207,9 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
     dVdt = V_pres*rdot
     if(dVdt<0){
       dVdt=0
+      starve=dVdt*-1*mu_V*d_V/w_V
+    }else{
+      starve=0
     }
   }
   V=V_pres+dVdt
@@ -245,7 +248,7 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
   }
   p_X = p_A/kap_X #J food eaten per hour
   p_C = (E_m*(vT/L_pres+k_Mdot*(1+L_T/L_pres))*(E_scaled*g)/(E_scaled+g))*V_pres #equation 2.20 DEB3
-  p_R = (1-kap)*p_C-p_J
+  p_R = (1-kap)*p_C-p_J-starve
 
   #maturation
   if(E_H_pres<E_Hp){
