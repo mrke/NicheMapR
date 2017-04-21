@@ -35,6 +35,8 @@
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 #' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
 #' \code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+#' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
+#' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{manualshade}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
@@ -63,7 +65,7 @@
 #' \code{SpecHeat}{ = 870, Soil minerals specific heat (J/kg-K)}\cr\cr
 #' \code{BulkDensity}{ = 1300, Soil bulk density (kg/m3)}\cr\cr
 #' \code{PCTWET}{ = 0, \% of ground surface area acting as a free water surface}\cr\cr
-#' \code{rainwet}{ = 1.5, mm of rainfall causing the ground to be 90% wet for the day}\cr\cr
+#' \code{rainwet}{ = 1.5, mm of rainfall causing the ground to be 90\% wet for the day}\cr\cr
 #' \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
 #' \code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
 #' \code{hori}{ = rep(0,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr

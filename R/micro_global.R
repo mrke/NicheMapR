@@ -19,6 +19,10 @@
 #' @param maxshade Maximum shade level to us (\%)
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
 #' @param ... Additional arguments, see Details
+#' @usage micro_global(loc = "Madison, Wisconsin USA", timeinterval = 12, nyears = 1, soiltype = 4,
+#' REFL = 0.15, slope = 0, aspect = 0,
+#' DEP = c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
+#' Usrhyt = 0.01, ...)
 #' @return metout The above ground micrometeorological conditions under the minimum specified shade
 #' @return shadmet The above ground micrometeorological conditions under the maximum specified shade
 #' @return soil Hourly predictions of the soil temperatures under the minimum specified shade
@@ -29,20 +33,15 @@
 #' @return shadpot Hourly predictions of the soil water potential under the maximum specified shade
 #' @return humid Hourly predictions of the soil humidity under the minimum specified shade
 #' @return shadhumid Hourly predictions of the soil humidity under the maximum specified shade
-#' @usage micro_global(loc = "Madison, Wisconsin USA", timeinterval = 12, nyears = 1, soiltype = 4,
-#' REFL = 0.15, slope = 0, aspect = 0,
-#' DEP = c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
-#' Usrhyt = 0.01, ...)
-#' @export
-#' @details
 #'
-#' \strong{ Parameters controling how the model runs:}\cr\cr
+#' @details
+#' \strong{Parameters controling how the model runs:}\cr\cr
 #'
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 #' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
 #' \code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
-#' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?
-#' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)
+#' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
+#' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #'
@@ -243,6 +242,7 @@
 #'     (deg C)",col=i,type = "l")
 #'  }
 #'}
+#' @export
 micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,soiltype=4,
   REFL=0.15,slope=0,aspect=0,
   DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
