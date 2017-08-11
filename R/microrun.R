@@ -14,7 +14,6 @@
 #' @return shadhumid Hourly predictions of the soil humidity under the maximum specified shade
 #' @return sunsnow Hourly predictions of the snow temperature under the minimum specified shade
 #' @return shdsnow Hourly predictions of the snow temperature under the maximum specified shade
-#' @useDynLib "MICROCLIMATE"
 #' @export
 microclimate <- function(micro) {
   julnum<-micro$microinput[1]
@@ -23,7 +22,7 @@ microclimate <- function(micro) {
   # the vignette build isn't happening, the model is just being run under normal cirumstances, so the
   # second block is run. Presumably this would be avoided if source code was part of the package rather
   # than working with foreign DLLs
-os = Sys.info()['sysname']
+  os = Sys.info()['sysname']
   if (os == "Windows") {
       if (R.Version()$arch=="x86_64") {
         libpath='/NicheMapR/libs/win/x64/microclimate.dll'
