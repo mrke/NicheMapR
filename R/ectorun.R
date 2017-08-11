@@ -49,17 +49,6 @@ ectorun <- function(ecto) {
       libpath='/NicheMapR/libs/mac/ECTOTHERM.so'
   }
 
-
-  # if(Sys.info()['sysname']=="Windows"){
-  #   if(R.Version()$arch=="x86_64"){
-  #    libpath='/NicheMapR/libs/x64/ectotherm.dll'
-  #   }else{
-  #    libpath='/NicheMapR/libs/i386/ectotherm.dll'
-  #   }
-  # }else{
-  #   libpath='/NicheMapR/libs/ectotherm.so'
-  # }
-
  if(is.loaded("ectotherm", "ECTOTHERM", type = "FORTRAN")==FALSE){
     dyn.load(paste(lib.loc = .libPaths()[1],libpath,sep=""))
     a <- .Fortran("ectotherm",
@@ -114,7 +103,7 @@ ectorun <- function(ecto) {
       as.double(ecto$soilmoist),
       as.double(ecto$shadmoist),
       as.double(ecto$soilpot),
-      as.double(ecto$shadpot),
+    f as.double(ecto$shadpot),
       as.double(ecto$humid),
       as.double(ecto$shadhumid),
       as.double(ecto$DEP),

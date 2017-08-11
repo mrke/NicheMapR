@@ -35,16 +35,6 @@ microclimate <- function(micro) {
       libpath='/NicheMapR/libs/mac/MICROCLIMATE.so'
   }
 
-
-  # if(Sys.info()['sysname']=="Windows"){
-  #   if(R.Version()$arch=="x86_64"){
-  #     libpath='/NicheMapR/libs/x64/microclimate.dll'
-  #   }else{
-  #     libpath='/NicheMapR/libs/i386/microclimate.dll'
-  #   }
-  # }else{
-  #   libpath='/NicheMapR/libs/MICROCLIMATE.so'
-  # }
   if(is.loaded("microclimate", "MICROCLIMATE", type = "FORTRAN")==FALSE){
     dyn.load(paste(lib.loc = .libPaths()[1],libpath,sep=""))
     a <- .Fortran("microclimate",
