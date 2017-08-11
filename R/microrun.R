@@ -106,7 +106,7 @@ microclimate <- function(micro) {
       srlam=matrix(data = 0., nrow = 24*julnum, ncol = 113),PACKAGE = "microclimate")
 
     dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
-  }else{
+  } else{
 
     a <- .Fortran("microclimate",
       as.integer(julnum),
@@ -167,11 +167,8 @@ microclimate <- function(micro) {
       srlam=matrix(data = 0., nrow = 24*julnum, ncol = 113), PACKAGE = "MICROCLIMATE")
 
     # need to load and unload the microclimate dll or else it crashes second time round - probably due to memory leak
-    #if(is.loaded("microclimate", "MICROCLIMATE", type = "FORTRAN")){
-    library.dynam.unload("MICROCLIMATE", path.package("NicheMapR"))
-    #}
-    library.dynam("MICROCLIMATE", "NicheMapR", lib.loc = .libPaths()[1])
-    #dyn.unload(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/microclimate.dll',sep=""))
+    dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
+    dyn.load(paste(lib.loc = .libPaths()[1],libpath,sep=""))
   }
   metout <- matrix(data = 0., nrow = 24*julnum, ncol = 18)
   shadmet <- matrix(data = 0., nrow = 24*julnum, ncol = 18)
