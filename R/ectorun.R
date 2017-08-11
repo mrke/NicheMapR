@@ -31,7 +31,6 @@
 #' @param water_stages Stage-specific water related parameters
 #' @param MAXSHADES Maximum shade levels
 #' @param S_instar For the Insect DEB model
-#' @useDynLib "ECTOTHERM"
 #' @export
 ectorun <- function(ecto) {
 
