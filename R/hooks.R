@@ -33,17 +33,10 @@ handleLibs <- function(action) {
   ecto_loaded <- is.loaded("ectotherm", "ECTOTHERM", type = "FORTRAN")
 
   if (action == "load") {
-    if (!micro_loaded) {
-        dyn.load(micro_lib)
-    }
-    if (!ecto_loaded) {
-        dyn.load(ecto_lib)
-    }
-  } else if (action == "unload")
-    if (micro_loaded) {
-        dyn.unload(micro_lib)
-    }
-    if (ecto_loaded) {
-        dyn.unload(ecto_lib)
-    }
+    if (!micro_loaded) { dyn.load(micro_lib) }
+    if (!ecto_loaded) { dyn.load(ecto_lib) }
+  } else if (action == "unload") {
+    if (micro_loaded) { dyn.unload(micro_lib) }
+    if (ecto_loaded) { dyn.unload(ecto_lib) }
+  }
 }
