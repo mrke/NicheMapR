@@ -103,7 +103,7 @@ ectorun <- function(ecto) {
       as.double(ecto$soilmoist),
       as.double(ecto$shadmoist),
       as.double(ecto$soilpot),
-    f as.double(ecto$shadpot),
+      as.double(ecto$shadpot),
       as.double(ecto$humid),
       as.double(ecto$shadhumid),
       as.double(ecto$DEP),
