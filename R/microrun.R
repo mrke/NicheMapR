@@ -23,15 +23,29 @@ microclimate <- function(micro) {
   # the vignette build isn't happening, the model is just being run under normal cirumstances, so the
   # second block is run. Presumably this would be avoided if source code was part of the package rather
   # than working with foreign DLLs
-  if(Sys.info()['sysname']=="Windows"){
-    if(R.Version()$arch=="x86_64"){
-      libpath='/NicheMapR/libs/x64/microclimate.dll'
-    }else{
-      libpath='/NicheMapR/libs/i386/microclimate.dll'
-    }
-  }else{
-    libpath='/NicheMapR/libs/MICROCLIMATE.so'
+os = Sys.info()['sysname']
+  if (os == "Windows") {
+      if (R.Version()$arch=="x86_64") {
+        libpath='/NicheMapR/libs/win/x64/microclimate.dll'
+      } else {
+        libpath='/NicheMapR/libs/win/i386/microclimate.dll'
+      }
+  } else if (os == "Linux") {
+      libpath='/NicheMapR/libs/linux/MICROCLIMATE.so'
+  } else if (os == "Darwin") {
+      libpath='/NicheMapR/libs/mac/MICROCLIMATE.so'
   }
+
+
+  # if(Sys.info()['sysname']=="Windows"){
+  #   if(R.Version()$arch=="x86_64"){
+  #     libpath='/NicheMapR/libs/x64/microclimate.dll'
+  #   }else{
+  #     libpath='/NicheMapR/libs/i386/microclimate.dll'
+  #   }
+  # }else{
+  #   libpath='/NicheMapR/libs/MICROCLIMATE.so'
+  # }
   if(is.loaded("microclimate", "MICROCLIMATE", type = "FORTRAN")==FALSE){
     dyn.load(paste(lib.loc = .libPaths()[1],libpath,sep=""))
     a <- .Fortran("microclimate",

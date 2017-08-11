@@ -37,15 +37,29 @@ ectorun <- function(ecto) {
 
   dim<-ecto$dim
 
-  if(Sys.info()['sysname']=="Windows"){
-    if(R.Version()$arch=="x86_64"){
-     libpath='/NicheMapR/libs/x64/ectotherm.dll'
-    }else{
-     libpath='/NicheMapR/libs/i386/ectotherm.dll'
-    }
-  }else{
-    libpath='/NicheMapR/libs/ectotherm.so'
+os = Sys.info()['sysname']
+  if (os == "Windows") {
+      if (R.Version()$arch=="x86_64") {
+        libpath='/NicheMapR/libs/win/x64/ectotherm.dll'
+      } else {
+        libpath='/NicheMapR/libs/win/i386/ectotherm.dll'
+      }
+  } else if (os == "Linux") {
+      libpath='/NicheMapR/libs/linux/ECTOTHERM.so'
+  } else if (os == "Darwin") {
+      libpath='/NicheMapR/libs/mac/ECTOTHERM.so'
   }
+
+
+  # if(Sys.info()['sysname']=="Windows"){
+  #   if(R.Version()$arch=="x86_64"){
+  #    libpath='/NicheMapR/libs/x64/ectotherm.dll'
+  #   }else{
+  #    libpath='/NicheMapR/libs/i386/ectotherm.dll'
+  #   }
+  # }else{
+  #   libpath='/NicheMapR/libs/ectotherm.so'
+  # }
 
  if(is.loaded("ectotherm", "ECTOTHERM", type = "FORTRAN")==FALSE){
    dyn.load(paste(lib.loc = .libPaths()[1],libpath,sep=""))
