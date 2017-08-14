@@ -14,7 +14,6 @@
 #' @return shadhumid Hourly predictions of the soil humidity under the maximum specified shade
 #' @return sunsnow Hourly predictions of the snow temperature under the minimum specified shade
 #' @return shdsnow Hourly predictions of the snow temperature under the maximum specified shade
-#' @useDynLib "MICROCLIMATE"
 #' @export
 microclimate <- function(micro) {
   julnum<-micro$microinput[1]
@@ -23,7 +22,7 @@ microclimate <- function(micro) {
   # the vignette build isn't happening, the model is just being run under normal cirumstances, so the
   # second block is run. Presumably this would be avoided if source code was part of the package rather
   # than working with foreign DLLs
-os = Sys.info()['sysname']
+  os = Sys.info()['sysname']
   if (os == "Windows") {
       if (R.Version()$arch=="x86_64") {
         libpath='/NicheMapR/libs/win/x64/microclimate.dll'
@@ -36,16 +35,6 @@ os = Sys.info()['sysname']
       libpath='/NicheMapR/libs/mac/MICROCLIMATE.so'
   }
 
-
-  # if(Sys.info()['sysname']=="Windows"){
-  #   if(R.Version()$arch=="x86_64"){
-  #     libpath='/NicheMapR/libs/x64/microclimate.dll'
-  #   }else{
-  #     libpath='/NicheMapR/libs/i386/microclimate.dll'
-  #   }
-  # }else{
-  #   libpath='/NicheMapR/libs/MICROCLIMATE.so'
-  # }
   if(is.loaded("microclimate", "MICROCLIMATE", type = "FORTRAN")==FALSE){
     dyn.load(paste(lib.loc = .libPaths()[1],libpath,sep=""))
     a <- .Fortran("microclimate",
@@ -107,7 +96,7 @@ os = Sys.info()['sysname']
       srlam=matrix(data = 0., nrow = 24*julnum, ncol = 113),PACKAGE = "microclimate")
 
     dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
-  }else{
+  } else{
 
     a <- .Fortran("microclimate",
       as.integer(julnum),
@@ -168,11 +157,8 @@ os = Sys.info()['sysname']
       srlam=matrix(data = 0., nrow = 24*julnum, ncol = 113), PACKAGE = "MICROCLIMATE")
 
     # need to load and unload the microclimate dll or else it crashes second time round - probably due to memory leak
-    #if(is.loaded("microclimate", "MICROCLIMATE", type = "FORTRAN")){
-    library.dynam.unload("MICROCLIMATE", path.package("NicheMapR"))
-    #}
-    library.dynam("MICROCLIMATE", "NicheMapR", lib.loc = .libPaths()[1])
-    #dyn.unload(paste(lib.loc = .libPaths()[1],'/NicheMapR/libs/x64/microclimate.dll',sep=""))
+    dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
+    dyn.load(paste(lib.loc = .libPaths()[1],libpath,sep=""))
   }
   metout <- matrix(data = 0., nrow = 24*julnum, ncol = 18)
   shadmet <- matrix(data = 0., nrow = 24*julnum, ncol = 18)
