@@ -12,6 +12,8 @@
 #' @return shadpot Hourly predictions of the soil water potential under the maximum specified shade
 #' @return humid Hourly predictions of the soil humidity under the minimum specified shade
 #' @return shadhumid Hourly predictions of the soil humidity under the maximum specified shade
+#' @return plant Hourly predictions of plant variables under the minimum specified shade
+#' @return shadplant Hourly predictions of plant variables under the maximum specified shade
 #' @return sunsnow Hourly predictions of the snow temperature under the minimum specified shade
 #' @return shdsnow Hourly predictions of the snow temperature under the maximum specified shade
 #' @export
@@ -89,6 +91,8 @@ microclimate <- function(micro) {
       shadhumid=matrix(data = 0., nrow = 24*julnum, ncol = 12),
       soilpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),
       shadpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),
+      plant=matrix(data = 0., nrow = 24*julnum, ncol = 14),
+      shadplant=matrix(data = 0., nrow = 24*julnum, ncol = 14),
       sunsnow=matrix(data = 0., nrow = 24*julnum, ncol = 11),
       shdsnow=matrix(data = 0., nrow = 24*julnum, ncol = 11),
       drlam=matrix(data = 0., nrow = 24*julnum, ncol = 113),
@@ -150,6 +154,8 @@ microclimate <- function(micro) {
       shadhumid=matrix(data = 0., nrow = 24*julnum, ncol = 12),
       soilpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),
       shadpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),
+      plant=matrix(data = 0., nrow = 24*julnum, ncol = 14),
+      shadplant=matrix(data = 0., nrow = 24*julnum, ncol = 14),
       sunsnow=matrix(data = 0., nrow = 24*julnum, ncol = 11),
       shdsnow=matrix(data = 0., nrow = 24*julnum, ncol = 11),
       drlam=matrix(data = 0., nrow = 24*julnum, ncol = 113),
@@ -170,6 +176,8 @@ microclimate <- function(micro) {
   shadhumid <- matrix(data = 0., nrow = 24*julnum, ncol = 12)
   soilpot <- matrix(data = 0., nrow = 24*julnum, ncol = 12)
   shadpot <- matrix(data = 0., nrow = 24*julnum, ncol = 12)
+  plant <- matrix(data = 0., nrow = 24*julnum, ncol = 14)
+  shadplant <- matrix(data = 0., nrow = 24*julnum, ncol = 14)
   sunsnow <- matrix(data = 0., nrow = 24*julnum, ncol = 11)
   shdsnow <- matrix(data = 0., nrow = 24*julnum, ncol = 11)
   drlam <- matrix(data = 0., nrow = 24*julnum, ncol = 113)
@@ -185,6 +193,8 @@ microclimate <- function(micro) {
   storage.mode(shadhumid)<-"double"
   storage.mode(soilpot)<-"double"
   storage.mode(shadpot)<-"double"
+  storage.mode(plant)<-"double"
+  storage.mode(shadplant)<-"double"
   storage.mode(sunsnow)<-"double"
   storage.mode(shdsnow)<-"double"
   storage.mode(drlam)<-"double"
@@ -200,6 +210,8 @@ microclimate <- function(micro) {
   shadhumid<-a$shadhumid
   soilpot<-a$soilpot
   shadpot<-a$shadpot
+  plant<-a$plant
+  shadplant<-a$shadplant
   sunsnow<-a$sunsnow
   shdsnow<-a$shdsnow
   drlam<-a$drlam
@@ -214,12 +226,15 @@ microclimate <- function(micro) {
   moist.names<-c("JULDAY","TIME",paste("WC",micro$DEP,"cm", sep = ""))
   humid.names<-c("JULDAY","TIME",paste("RH",micro$DEP,"cm", sep = ""))
   pot.names<-c("JULDAY","TIME",paste("PT",micro$DEP,"cm", sep = ""))
+  plant.names<-c("JULDAY","TIME","TRANS","LEAFPOT",paste("RPOT",micro$DEP,"cm", sep = ""))
   colnames(soilmoist)<-moist.names
   colnames(shadmoist)<-moist.names
   colnames(humid)<-humid.names
   colnames(shadhumid)<-humid.names
   colnames(soilpot)<-pot.names
   colnames(shadpot)<-pot.names
+  colnames(plant)<-plant.names
+  colnames(shadplant)<-plant.names
   snow.names<-c("JULDAY","TIME",paste("D",micro$DEP[1:9],"cm", sep = ""))
   colnames(sunsnow)<-snow.names
   colnames(shdsnow)<-snow.names
@@ -229,15 +244,15 @@ microclimate <- function(micro) {
   colnames(srlam)<-drlam.colnames
   if(micro$microinput[43]!=1){
     if(micro$microinput[36]!=1){
-      return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, sunsnow=sunsnow, shdsnow=shdsnow))
+      return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, plant = plant, shadplant = shadplant, sunsnow=sunsnow, shdsnow=shdsnow))
     }else{
-      return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, sunsnow=sunsnow, shdsnow=shdsnow))
+      return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, plant = plant, shadplant = shadplant,  sunsnow=sunsnow, shdsnow=shdsnow))
     }
   }else{
     if(micro$microinput[36]!=1){
-      return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, drlam=drlam, drrlam=drrlam, srlam=srlam))
+      return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, plant = plant, shadplant = shadplant,  drlam=drlam, drrlam=drrlam, srlam=srlam))
     }else{
-      return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, sunsnow=sunsnow, shdsnow=shdsnow, drlam=drlam, drrlam=drrlam, srlam=srlam))
+      return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, plant = plant, shadplant = shadplant,  sunsnow=sunsnow, shdsnow=shdsnow, drlam=drlam, drrlam=drrlam, srlam=srlam))
     }
   }
 }
