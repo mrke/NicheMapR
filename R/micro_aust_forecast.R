@@ -24,6 +24,8 @@
 #' @return shadpot Hourly predictions of the soil water potential under the maximum specified shade
 #' @return humid Hourly predictions of the soil humidity under the minimum specified shade
 #' @return shadhumid Hourly predictions of the soil humidity under the maximum specified shade
+#' @return plant Hourly predictions of plant transpiration, leaf water potential and root water potential under the minimum specified shade
+#' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
 #' @usage micro_aust(loc = "Melbourne, Australia", timeinterval = 365, ystart = 1990, yfinish = 1990, soiltype = 4,
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
@@ -97,6 +99,13 @@
 #' \code{evenrain}{ = 0, Spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)}\cr\cr
 #' \code{SoilMoist_Init}{ = c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3), initial soil water content at each soil node, m3/m3}\cr\cr
 #' \code{L}{ = c(0,0,8.2,8.0,7.8,7.4,7.1,6.4,5.8,4.8,4.0,1.8,0.9,0.6,0.8,0.4,0.4,0,0)*10000, root density (m/m3), (19 values descending through soil for specified soil nodes in parameter}
+#' \code{R1}{ = 0.001, root radius, m}\cr\cr
+#' \code{RW}{ = 2.5e+10, resistance per unit length of root, m3 kg-1 s-1}\cr\cr
+#' \code{RL}{ = 2e+6, resistance per unit length of leaf, m3 kg-1 s-1}\cr\cr
+#' \code{PC}{ = -1500, critical leaf water potential for stomatal closure, J kg-1}\cr\cr
+#' \code{SP}{ = 10, stability parameter for stomatal closure equation, -}\cr\cr
+#' \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
+#' \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
 #' \code{DEP}
 #' { and points half way between)}\cr\cr
 #' \code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET}\cr\cr
@@ -168,6 +177,15 @@
 #' \item  1 JULDAY - day of year
 #' \item  2 TIME - time of day (mins)
 #' \item  3-12 RH0cm ... - soil relative humidity (decimal \%), at each of the 10 specified depths
+#' }
+#'
+#' plant and shadplant variables:
+#' \itemize{
+#' \item  1 JULDAY - day of year
+#' \item  2 TIME - time of day (mins)
+#' \item  3 TRANS - plant transpiration rate (kg/m2/s)
+#' \item  4 LEAFPOT - leaf water potentail (J/kg)
+#' \item  5-14 RPOT0cm ... - root water potentail (J/kg), at each of the 10 specified depths
 #' }
 #'
 #' drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar) variables:
@@ -267,7 +285,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
   SoilMoist_Init=c(0.1,0.12,0.15,0.3,0.4,0.4,0.4,0.4,0.4,0.4),
   L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
     4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
-    0,0)*10000,
+    0,0)*10000, R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
   LAI=0.1,
   snowmodel=0,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
@@ -1066,7 +1084,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
         ALAT<-as.numeric(ALAT)
 
         # microclimate input parameters list
-        microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV)
+        microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT)
 
         julday1=matrix(data = 0., nrow = dim, ncol = 1)
         SLES1=matrix(data = 0., nrow = dim, ncol = 1)
@@ -1177,6 +1195,8 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
           shadhumid<-microut$shadhumid # retrieve soil humidity, maximum shade
           soilpot<-microut$soilpot # retrieve soil water potential, minimum shade
           shadpot<-microut$shadpot # retrieve soil water potential, maximum shade
+          plant<-microut$plant # retrieve plant output, minimum shade
+          shadplant<-microut$shadplant # retrieve plant output, maximum shade
         }else{
           soilpot<-soil
           soilmoist<-soil
@@ -1184,20 +1204,24 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
           shadmoist<-soil
           humid<-soil
           shadhumid<-soil
+          plant<-soil
+          shadplant<-soil
           soilpot[,3:12]<-0
           soilmoist[,3:12]<-0.5
           shadpot[,3:12]<-0
           shadmoist[,3:12]<-0.5
           humid[,3:12]<-0.99
           shadhumid[,3:12]<-0.99
+          plant[,3:14]<-0
+          shadplant[,3:14]<-0
         }
         if(lamb == 1){
           drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
           drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
           srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,forecast=forecast,drlam=drlam,drrlam=drrlam,srlam=srlam))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,forecast=forecast,drlam=drlam,drrlam=drrlam,srlam=srlam))
         }else{
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,forecast=forecast))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,forecast=forecast))
         }
       } # end of check for na sites
     } # end of check if soil data is being used but no soil data returned
