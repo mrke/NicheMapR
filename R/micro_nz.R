@@ -1333,8 +1333,8 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
           shadmoist<-soil
           humid<-soil
           shadhumid<-soil
-          plant<-soil
-          shadplant<-soil
+          plant<-cbind(soil,soil[,3:4])
+          shadplant<-cbind(soil,soil[,3:4])
           soilpot[,3:12]<-0
           soilmoist[,3:12]<-0.5
           shadpot[,3:12]<-0
