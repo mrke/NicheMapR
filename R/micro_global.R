@@ -906,8 +906,8 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
           shadmoist<-soil
           humid<-soil
           shadhumid<-soil
-          plant<-soil
-          shadplant<-soil
+          plant<-cbind(soil,soil[,3:4])
+          shadplant<-cbind(soil,soil[,3:4])
           soilpot[,3:12]<-0
           soilmoist[,3:12]<-0.5
           shadpot[,3:12]<-0
