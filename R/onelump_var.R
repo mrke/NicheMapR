@@ -32,7 +32,7 @@
 #' @return Te Final (steady state) temperature (°C), if conditions remained constant indefinately
 #' @return tau Time constant (s)
 #' @return dTc Rate of change of core temperature (°C/s)
-#' @usage ode(y = Tb_init, times = times, func = onelump_var, parms = indata)
+#' @usage ode(y = Tb_init, t = times, func = onelump_var, parms = indata)
 #' @examples
 #' library(NicheMapR)
 #' library(deSolve)
