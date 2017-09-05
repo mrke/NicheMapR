@@ -14,7 +14,7 @@ DRYAIR(db = db, bp = 0, alt = 0)
 \item{alt}{Altitude (m)}
 }
 \value{
-patmos Standard atmospheric pressure (P)
+patmos Standard atmospheric pressure (Pa)
 
 densty Density (kg m-3)
 

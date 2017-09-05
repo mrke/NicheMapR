@@ -62,6 +62,8 @@ ectotherm(amass, lometry, ABSMAX, ABSMIN, VTMAX, VTMIN, TBASK, TEMERGE, ctmax, c
 \item{extref}{= 20, \% oxygen extraction efficiency, for respiratory water loss}
 
 \item{DELTAR}{= 0.1, Temperature difference (deg C) between expired and inspired air, for computing respiratory water loss}
+
+\item{aestdepth}{= 10, Depth (soil node #) to which animal retreats if burrowing and aestivating due to desiccation}
 }
 \description{
 An implementation of the Niche Mapper ectotherm model that computes body temperature, water loss,
@@ -128,7 +130,8 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{fosorial}{ = 0, Fossorial activity? 1=yes, 0=no (this option hasn't been tested)}\cr}
 \item{\code{rainact}{ = 0, Activity is limited by rainfall? 1=yes, 0=no, threshold rainfall for activity set by \code{actrainthresh}}\cr}
 \item{\code{actrainthresh}{ = 0.1, Threshold (mm) of rain causing activity if \code{rainact}=1}\cr}
-\item{\code{soilnode}{ = 4., Soil node (1-10, corresponding to values in \code{DEP}) at which eggs are laid (overridden if \code{frogbreed}=1)}\cr}
+\item{\code{soilnode}{ = 4, Soil node (1-10, corresponding to values in \code{DEP}) at which eggs are laid (overridden if \code{frogbreed}=1)}\cr}
+\item{\code{eggshade}{ = 0, are eggs laid in shade? 0=no, 1=yes}\cr}
 \item{\code{aquabask}{ = 0, If aquatic, does it bask? 0=no, stay at water temp, 1=yes, when not hungry, 2=all the time}\cr}
 }
 \strong{ Thermal physiological parameters:}
@@ -272,6 +275,12 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{contwet}{ = 80, \% of container surface acting as a free water exchanger}\cr}
 \item{\code{wetlandTemps}{ = matrix(data = 0., nrow = 24*dim, ncol = 1), Matrix of hourly wetland temperaures (deg C)}\cr}
 \item{\code{wetlandDepths}{ = matrix(data = 0., nrow = 24*dim, ncol = 1), Matrix of hourly wetland depths (cm)}\cr}
+\item{\code{GLMtemps}{ = matrix(data = 0., nrow = 24*dim, ncol = 20), Matrix of hourly wetland temperatures (C) with depth}\cr}
+\item{\code{GLMO2s}{ = matrix(data = 0., nrow = 24*dim, ncol = 20), Matrix of hourly wetland PO2 (kPa) with depth}\cr}
+\item{\code{GLMsalts}{ = matrix(data = 0., nrow = 24*dim, ncol = 20), Matrix of hourly wetland salinity (ppm) with depth}\cr}
+\item{\code{GLMpHs}{ = matrix(data = 0., nrow = 24*dim, ncol = 20), Matrix of hourly wetland pH with depth}\cr}
+\item{\code{GLMfoods}{ = matrix(data = 0., nrow = 24*dim, ncol = 20), Matrix of hourly wetland food density (J/cm3) with depth}\cr}
+\item{\code{pO2thresh}{ = 10, Oxygen partial pressure tolerance threshold}\cr}
 }
 \strong{ Life stage-specific parameter allocation:}
 \itemize{

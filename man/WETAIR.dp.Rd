@@ -14,9 +14,9 @@ WETAIR.dp(db = db, dp = dp, bp = 101325)
 \item{bp}{Barometric pressure (pascal)}
 }
 \value{
-e Vapour pressure (P)
+e Vapour pressure (Pa)
 
-esat Saturation vapour pressure (P)
+esat Saturation vapour pressure (Pa)
 
 vd Vapour density (kg m-3)
 
@@ -30,7 +30,7 @@ denair Hourly predictions of the soil moisture under the maximum specified shade
 
 cp Specific heat of air at constant pressure (J kg-1 K-1)
 
-wtrpot Water potential (P)
+wtrpot Water potential (Pa)
 
 Relative humidity (\%)
 }
