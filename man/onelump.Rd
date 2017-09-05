@@ -25,7 +25,7 @@ onelump(t, Tc_init, thresh, mass, geom, Tair, Trad, vel, Qsol, Zen, ...)
 
 \item{Zen}{= 20, zenith angle of sun (90 is below horizon), degrees}
 
-\item{flshcond}{= 0.5, Thermal conductivity of flesh (W/mK, range: 0.412-2.8)}
+\item{kflesh}{= 0.5, Thermal conductivity of flesh (W/mK, range: 0.412-2.8)}
 
 \item{q}{= 0, metabolic heat production rate W/m3}
 

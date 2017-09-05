@@ -124,9 +124,9 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
     L <- V ^ (1 / 3) # characteristic dimension, m
     # FLAT PLATE geometry
     if (geom == 0) {
-      ALENTH <- (V / shape_a * shape_b) ^ (1 / 3) # length, m
-      AWIDTH <- ALENTH * shape_a # width, m
-      AHEIT <- ALENTH * shape_b # height, m
+      ALENTH <- (V / shape_b * shape_c) ^ (1 / 3) # length, m
+      AWIDTH <- ALENTH * shape_b # width, m
+      AHEIT <- ALENTH * shape_c # height, m
       ATOT <-
         ALENTH * AWIDTH * 2 + ALENTH * AHEIT * 2 + AWIDTH * AHEIT * 2 # total area, m2
       ASILN <- ALENTH * AWIDTH # max silhouette area, m2
@@ -142,8 +142,8 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
 
     # CYLINDER geometry
     if (geom == 1) {
-      R1 <- (V / (pi * shape_a * 2)) ^ (1 / 3) # radius, m
-      ALENTH <- 2 * R1 * shape_a # length, m
+      R1 <- (V / (pi * shape_b * 2)) ^ (1 / 3) # radius, m
+      ALENTH <- 2 * R1 * shape_c # length, m
       ATOT <- 2 * pi * R1 ^ 2 + 2 * pi * R1 * ALENTH # total surface area, m2
       AWIDTH <- 2 * R1 # width, m
       ASILN <- AWIDTH * ALENTH # max silhouette area, m2
@@ -160,9 +160,9 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
 
     # Ellipsoid geometry
     if (geom == 2) {
-      A1 <- ((3 / 4) * V / (pi * shape_a * shape_b)) ^ 0.333 # axis A, m
-      B1 <- A1 * shape_a # axis B, m
-      C1 <- A1 * shape_b # axis C, m
+      A1 <- ((3 / 4) * V / (pi * shape_b * shape_c)) ^ 0.333 # axis A, m
+      B1 <- A1 * shape_b # axis B, m
+      C1 <- A1 * shape_c # axis C, m
       P1 <- 1.6075 # a constant
       ATOT <-
         (4 * pi * (((A1 ^ P1 * B1 ^ P1 + A1 ^ P1 * C1 ^ P1 + B1 ^ P1 * C1 ^ P1)

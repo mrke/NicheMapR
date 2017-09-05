@@ -21,7 +21,7 @@ ode(y = Tb_init, times = times, func = onelump_var, parms = indata)
 
 \item{q}{metabolic rate (W/m3)}
 
-\item{flshcond}{conductivity of flesh (W/mK)}
+\item{kflesh}{conductivity of flesh (W/mK)}
 
 \item{geom}{Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coeffs')}
 
@@ -96,11 +96,11 @@ colnames(microclimate) <- c('dates', 'JULDAY', 'TIME', 'TALOC', 'TA1.2m', 'VLOC'
 spheat <- 3342 # specific heat of flesh, J/kg-C
 rho <- 1000 # animal density, kg/m3
 q <- 0 # metabolic rate, W/m3
-flshcond <- 0.32 # thermal conductivity of flesh, W/mK
+kflesh <- 0.32 # thermal conductivity of flesh, W/mK
 geom <- 1 # shape, -
 posture <- 'n' # pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?
-shape_a <- 4 # shape coefficient a, -
-shape_b <- 2/3 # shape coefficient b, -
+shape_b <- 4 # shape coefficient a, -
+shape_c <- 2/3 # shape coefficient b, -
 shape_coefs <- c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743)
 fatosk <- 0.4 # solar configuration factor to sky, -
 fatosb <- 0.4 # solar configuration factor to substrate, -
@@ -131,7 +131,7 @@ for (i in 1:length(juldays)) {
   Zenf <- approxfun(time, c(microclim[, 8], 90), rule = 2)
 
   t = seq(1, 3600 * 24, 60) # sequence of times for predictions (1 min intervals)
-  indata<-list(abs = abs, emis = emis, abs_sub = abs_sub, press = press, mass = mass, spheat = spheat, rho = rho, q = q, flshcond = flshcond, geom = geom, posture = posture, shape_a = shape_a, shape_b = shape_b, shape_coefs = shape_coefs, pctdif = pctdif, fatosk = fatosk, fatosb = fatosb)
+  indata<-list(abs = abs, emis = emis, abs_sub = abs_sub, press = press, mass = mass, spheat = spheat, rho = rho, q = q, kflesh = kflesh, geom = geom, posture = posture, shape_b = shape_b, shape_c = shape_c, shape_coefs = shape_coefs, pctdif = pctdif, fatosk = fatosk, fatosb = fatosb)
 
   Tb_init<-Tairf(1) # set inital Tb as air temperature
 

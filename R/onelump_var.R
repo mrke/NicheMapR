@@ -62,8 +62,8 @@
 #' kflesh <- 0.32 # thermal conductivity of flesh, W/mK
 #' geom <- 1 # shape, -
 #' posture <- 'n' # pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?
-#' shape_a <- 4 # shape coefficient a, -
-#' shape_b <- 2/3 # shape coefficient b, -
+#' shape_b <- 4 # shape coefficient a, -
+#' shape_c <- 2/3 # shape coefficient b, -
 #' shape_coefs <- c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743)
 #' fatosk <- 0.4 # solar configuration factor to sky, -
 #' fatosb <- 0.4 # solar configuration factor to substrate, -
@@ -94,7 +94,7 @@
 #'   Zenf <- approxfun(time, c(microclim[, 8], 90), rule = 2)
 #'
 #'   t = seq(1, 3600 * 24, 60) # sequence of times for predictions (1 min intervals)
-#'   indata<-list(abs = abs, emis = emis, abs_sub = abs_sub, press = press, mass = mass, spheat = spheat, rho = rho, q = q, kflesh = kflesh, geom = geom, posture = posture, shape_a = shape_a, shape_b = shape_b, shape_coefs = shape_coefs, pctdif = pctdif, fatosk = fatosk, fatosb = fatosb)
+#'   indata<-list(abs = abs, emis = emis, abs_sub = abs_sub, press = press, mass = mass, spheat = spheat, rho = rho, q = q, kflesh = kflesh, geom = geom, posture = posture, shape_b = shape_b, shape_c = shape_c, shape_coefs = shape_coefs, pctdif = pctdif, fatosk = fatosk, fatosb = fatosb)
 #'
 #'   Tb_init<-Tairf(1) # set inital Tb as air temperature
 #'
@@ -138,9 +138,9 @@ onelump_var <- function(t, y, indata) {
     L <- V ^ (1 / 3) # characteristic dimension, m
     # FLAT PLATE geometry
     if (geom == 0) {
-      ALENTH <- (V / shape_a * shape_b) ^ (1 / 3) # length, m
-      AWIDTH <- ALENTH * shape_a # width, m
-      AHEIT <- ALENTH * shape_b # height, m
+      ALENTH <- (V / shape_b * shape_c) ^ (1 / 3) # length, m
+      AWIDTH <- ALENTH * shape_b # width, m
+      AHEIT <- ALENTH * shape_c # height, m
       ATOT <-
         ALENTH * AWIDTH * 2 + ALENTH * AHEIT * 2 + AWIDTH * AHEIT * 2 # total area, m2
       ASILN <- ALENTH * AWIDTH # max silhouette area, m2
@@ -156,8 +156,8 @@ onelump_var <- function(t, y, indata) {
 
     # CYLINDER geometry
     if (geom == 1) {
-      R1 <- (V / (pi * shape_a * 2)) ^ (1 / 3) # radius, m
-      ALENTH <- 2 * R1 * shape_a # length, m
+      R1 <- (V / (pi * shape_b * 2)) ^ (1 / 3) # radius, m
+      ALENTH <- 2 * R1 * shape_c # length, m
       ATOT <- 2 * pi * R1 ^ 2 + 2 * pi * R1 * ALENTH # total surface area, m2
       AWIDTH <- 2 * R1 # width, m
       ASILN <- AWIDTH * ALENTH # max silhouette area, m2
@@ -174,9 +174,9 @@ onelump_var <- function(t, y, indata) {
 
     # Ellipsoid geometry
     if (geom == 2) {
-      A1 <- ((3 / 4) * V / (pi * shape_a * shape_b)) ^ 0.333 # axis A, m
-      B1 <- A1 * shape_a # axis B, m
-      C1 <- A1 * shape_b # axis C, m
+      A1 <- ((3 / 4) * V / (pi * shape_b * shape_c)) ^ 0.333 # axis A, m
+      B1 <- A1 * shape_b # axis B, m
+      C1 <- A1 * shape_c # axis C, m
       P1 <- 1.6075 # a constant
       ATOT <-
         (4 * pi * (((A1 ^ P1 * B1 ^ P1 + A1 ^ P1 * C1 ^ P1 + B1 ^ P1 * C1 ^ P1)
