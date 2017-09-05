@@ -4,7 +4,7 @@
 \alias{onelump_var}
 \title{One-lump Transient Heat Budget (for use with deSolve package)}
 \usage{
-ode(y = Tb_init, times = times, func = onelump_var, parms = indata)
+ode(y = Tb_init, t = times, func = onelump_var, parms = indata)
 }
 \arguments{
 \item{t}{time intervals (s) at which output is required}
