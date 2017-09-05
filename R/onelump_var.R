@@ -34,8 +34,8 @@
 #' @return dTc Rate of change of core temperature (°C/s)
 #' @usage ode(y = Tb_init, t = times, func = onelump_var, parms = indata)
 #' @examples
+#' library(deSolve) # note due to some kind of bug in deSolve, it must be loaded before NicheMapR!
 #' library(NicheMapR)
-#' library(deSolve)
 #'
 #' # get microclimate data
 #' loc <- "Alice Springs, Australia"
