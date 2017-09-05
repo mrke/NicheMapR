@@ -29,6 +29,8 @@ onelump(t, Tc_init, thresh, mass, geom, Tair, Trad, vel, Qsol, Zen, ...)
 
 \item{q}{= 0, metabolic heat production rate W/m3}
 
+\item{spheat}{= 0.85, Specific heat of flesh J/(kg-K)}
+
 \item{emis}{= 0.95, Emissivity of animal (0-1)}
 
 \item{abs}{= 0.85, solar absorptivity, decimal percent}
@@ -50,8 +52,6 @@ onelump(t, Tc_init, thresh, mass, geom, Tair, Trad, vel, Qsol, Zen, ...)
 \item{press}{= 101325, air pressure (Pa)}
 
 \item{amass}{= 500, animal mass (g)}
-
-\item{Spheat}{= 0.85, Specific heat of flesh J/(kg-K)}
 
 \item{shape_coefs}{= c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom allometry coefficients. Operates if lometry=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}
 }

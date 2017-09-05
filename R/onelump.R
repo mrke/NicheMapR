@@ -96,11 +96,11 @@
 #' text(93, 28, "vel = 1.0 m/s")
 #' @export
 onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
-  geom = 2, Tair = 30, Trad=30, vel = 0.1, Qsol = 500, Zen=20, flshcond = 0.5,
-  q = 0, spheat = 3073, emis = 0.95, rho = 932, abs=0.85,
-  customallom = c(10.4713,0.688,0.425,0.85,3.798,.683,0.694,0.743),
-  shape_b=0.5, shape_c=0.5, posture = 'n', fatosk = 0.4, fatosb = 0.4,
-  abs_sub = 0.2, pctdif = 0.1, press = 101325){
+  geom = 2, Tair = 30, Trad=30, vel = 0.1, Qsol = 500, Zen = 20, flshcond = 0.5,
+  q = 0, spheat = 3073, emis = 0.95, rho = 932, abs = 0.85,
+  customallom = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
+  shape_b = 0.5, shape_c = 0.5, posture = 'n', fatosk = 0.4, fatosb = 0.4,
+  abs_sub = 0.8, pctdif = 0.1, press = 101325){
     sigma <- 5.67e-8 #Stefan-Boltzman, W/(m.K)
     Zenith <- Zen * pi / 180 # zenith angle in radians
     Tc <- Tc_init
