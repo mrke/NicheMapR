@@ -8,7 +8,7 @@
 #' @param thresh = 29, threshold temperature (°C) at which summary statistics are wanted
 #' @param amass = 500, animal mass (g)
 #' @param geom = 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'customallom')
-#' @param flshcond = 0.5, Thermal conductivity of flesh (W/mK, range: 0.412-2.8)
+#' @param kflesh = 0.5, Thermal conductivity of flesh (W/mK, range: 0.412-2.8)
 #' @param q = 0, metabolic heat production rate W/m3
 #' @param spheat = 0.85, Specific heat of flesh J/(kg-K)
 #' @param emis = 0.95, Emissivity of animal (0-1)
@@ -96,7 +96,7 @@
 #' text(93, 28, "vel = 1.0 m/s")
 #' @export
 onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
-  geom = 2, Tair = 30, Trad=30, vel = 0.1, Qsol = 500, Zen = 20, flshcond = 0.5,
+  geom = 2, Tair = 30, Trad=30, vel = 0.1, Qsol = 500, Zen = 20, kflesh = 0.5,
   q = 0, spheat = 3073, emis = 0.95, rho = 932, abs = 0.85,
   customallom = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
   shape_b = 0.5, shape_c = 0.5, posture = 'n', fatosk = 0.4, fatosb = 0.4,
@@ -172,7 +172,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
       S2 <-
         (A1 ^ 2 * B1 ^ 2 * C1 ^ 2) / (A1 ^ 2 * B1 ^ 2 + A1 ^ 2 * C1 ^ 2 + B1 ^
             2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
-      flshcond <-
+      kflesh <-
         0.5 + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
     }
 
@@ -345,12 +345,12 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
     hc <- hc_comb
     if (geom == 2) {
       j <-
-        (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * flshcond) + Tair) + hr * ATOT *
-            ((q * S2) / (2 * flshcond) + Trad)) / C
+        (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * kflesh) + Tair) + hr * ATOT *
+            ((q * S2) / (2 * kflesh) + Trad)) / C
     } else{
       j <-
-        (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * flshcond) + Tair) + hr *
-            ATOT * ((q * S2) / (2 * flshcond) + Trad)) / C
+        (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * kflesh) + Tair) + hr *
+            ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C
     }
     kTc <- ATOT * (Tc * hc + Tc * hr) / C
     k <- ATOT * (hc + hr) / C
