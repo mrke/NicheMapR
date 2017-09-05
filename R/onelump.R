@@ -10,7 +10,7 @@
 #' @param geom = 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'customallom')
 #' @param flshcond = 0.5, Thermal conductivity of flesh (W/mK, range: 0.412-2.8)
 #' @param q = 0, metabolic heat production rate W/m3
-#' @param Spheat = 0.85, Specific heat of flesh J/(kg-K)
+#' @param spheat = 0.85, Specific heat of flesh J/(kg-K)
 #' @param emis = 0.95, Emissivity of animal (0-1)
 #' @param abs = 0.85, solar absorptivity, decimal percent
 #' @param shape_coefs = c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom allometry coefficients. Operates if lometry=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun
@@ -359,8 +359,6 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
     Tc <- (Tci - Tcf) * exp(-1 * k * t) + Tcf # Tc at time t
     tau <- (rho * V * spheat) / (ATOT * (hc + hr)) # time constant
     dTc <- j - kTc
-  timethresh<-log((thresh-Tcf)/(Tci-Tcf))/(-1*k)
-  tau<-(rho*V*Spheat)/(ATOT*(hc+hr)) # time constant
-  dTc<-j-k*Tc
+    timethresh <- log((thresh - Tcf) / (Tci - Tcf)) / (-1 * k)
   return(list(Tc = Tc, Tcf = Tcf, tau = tau, dTc = dTc, timethresh = timethresh))
 }
