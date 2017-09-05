@@ -11,7 +11,7 @@
 #' @param spheat specific heat of flesh (J/kg-C)
 #' @param rho animal density (kg/m3)
 #' @param q  metabolic rate (W/m3)
-#' @param flshcond conductivity of flesh (W/mK)
+#' @param kflesh conductivity of flesh (W/mK)
 #' @param geom Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coeffs')
 #' @param posture pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?
 #' @param abs animal solar absorptivity (-)
@@ -59,7 +59,7 @@
 #' spheat <- 3342 # specific heat of flesh, J/kg-C
 #' rho <- 1000 # animal density, kg/m3
 #' q <- 0 # metabolic rate, W/m3
-#' flshcond <- 0.32 # thermal conductivity of flesh, W/mK
+#' kflesh <- 0.32 # thermal conductivity of flesh, W/mK
 #' geom <- 1 # shape, -
 #' posture <- 'n' # pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?
 #' shape_a <- 4 # shape coefficient a, -
@@ -94,7 +94,7 @@
 #'   Zenf <- approxfun(time, c(microclim[, 8], 90), rule = 2)
 #'
 #'   t = seq(1, 3600 * 24, 60) # sequence of times for predictions (1 min intervals)
-#'   indata<-list(abs = abs, emis = emis, abs_sub = abs_sub, press = press, mass = mass, spheat = spheat, rho = rho, q = q, flshcond = flshcond, geom = geom, posture = posture, shape_a = shape_a, shape_b = shape_b, shape_coefs = shape_coefs, pctdif = pctdif, fatosk = fatosk, fatosb = fatosb)
+#'   indata<-list(abs = abs, emis = emis, abs_sub = abs_sub, press = press, mass = mass, spheat = spheat, rho = rho, q = q, kflesh = kflesh, geom = geom, posture = posture, shape_a = shape_a, shape_b = shape_b, shape_coefs = shape_coefs, pctdif = pctdif, fatosk = fatosk, fatosb = fatosb)
 #'
 #'   Tb_init<-Tairf(1) # set inital Tb as air temperature
 #'
@@ -186,7 +186,7 @@ onelump_var <- function(t, y, indata) {
       S2 <-
         (A1 ^ 2 * B1 ^ 2 * C1 ^ 2) / (A1 ^ 2 * B1 ^ 2 + A1 ^ 2 * C1 ^ 2 + B1 ^
             2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
-      flshcond <-
+      kflesh <-
         0.5 + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
     }
 
@@ -359,12 +359,12 @@ onelump_var <- function(t, y, indata) {
     hc <- hc_comb
     if (geom == 2) {
       j <-
-        (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * flshcond) + Tair) + hr * ATOT *
-            ((q * S2) / (2 * flshcond) + Trad)) / C
+        (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * kflesh) + Tair) + hr * ATOT *
+            ((q * S2) / (2 * kflesh) + Trad)) / C
     } else{
       j <-
-        (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * flshcond) + Tair) + hr *
-            ATOT * ((q * S2) / (2 * flshcond) + Trad)) / C
+        (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * kflesh) + Tair) + hr *
+            ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C
     }
     kTc <- ATOT * (Tc * hc + Tc * hr) / C
     k <- ATOT * (hc + hr) / C
