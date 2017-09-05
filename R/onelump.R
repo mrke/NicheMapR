@@ -103,9 +103,8 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
   abs_sub = 0.2, pctdif = 0.1, press = 101325){
     sigma <- 5.67e-8 #Stefan-Boltzman, W/(m.K)
     Zenith <- Zen * pi / 180 # zenith angle in radians
-    Tc <- y
+    Tc <- Tc_init
     Tskin <- Tc + 0.1
-    RHskin <- 100 # assume saturated air near skin surface
     vel[vel < 0.01] <-
       0.01 # don't let wind speed go too low - always some free convection
     S2 <-
