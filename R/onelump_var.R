@@ -138,9 +138,9 @@ onelump_var <- function(t, y, indata) {
     L <- V ^ (1 / 3) # characteristic dimension, m
     # FLAT PLATE geometry
     if (geom == 0) {
-      ALENTH <- (V / shape_b * shape_c) ^ (1 / 3) # length, m
-      AWIDTH <- ALENTH * shape_b # width, m
-      AHEIT <- ALENTH * shape_c # height, m
+      AHEIT <- (V / (shape_b * shape_c)) ^ (1 / 3) # length, m
+      AWIDTH <- AHEIT * shape_b # width, m
+      ALENTH <- AHEIT * shape_c # height, m
       ATOT <-
         ALENTH * AWIDTH * 2 + ALENTH * AHEIT * 2 + AWIDTH * AHEIT * 2 # total area, m2
       ASILN <- ALENTH * AWIDTH # max silhouette area, m2
@@ -157,7 +157,7 @@ onelump_var <- function(t, y, indata) {
     # CYLINDER geometry
     if (geom == 1) {
       R1 <- (V / (pi * shape_b * 2)) ^ (1 / 3) # radius, m
-      ALENTH <- 2 * R1 * shape_c # length, m
+      ALENTH <- 2 * R1 * shape_b # length, m
       ATOT <- 2 * pi * R1 ^ 2 + 2 * pi * R1 * ALENTH # total surface area, m2
       AWIDTH <- 2 * R1 # width, m
       ASILN <- AWIDTH * ALENTH # max silhouette area, m2
