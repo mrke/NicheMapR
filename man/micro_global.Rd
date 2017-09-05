@@ -54,6 +54,10 @@ shadpot Hourly predictions of the soil water potential under the maximum specifi
 humid Hourly predictions of the soil humidity under the minimum specified shade
 
 shadhumid Hourly predictions of the soil humidity under the maximum specified shade
+
+plant Hourly predictions of plant transpiration, leaf water potential and root water potential under the minimum specified shade
+
+shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
 }
 \description{
 An implementation of the Niche Mapper microclimate model that uses the global climate database
@@ -65,11 +69,13 @@ Koepke, P., M. Hess, I. Schult, and E. P. Shettle. 1997. Global Aerosol Data Set
 by choosing the option 'rungads<-1'
 }
 \details{
-\strong{ Parameters controling how the model runs:}\cr\cr
+\strong{Parameters controling how the model runs:}\cr\cr
 
 \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
 \code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+\code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
+\code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
 \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 
@@ -116,6 +122,13 @@ by choosing the option 'rungads<-1'
 \code{evenrain}{ = 0, Spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)}\cr\cr
 \code{SoilMoist_Init}{ = c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3), initial soil water content at each soil node, m3/m3}\cr\cr
 \code{L}{ = c(0,0,8.2,8.0,7.8,7.4,7.1,6.4,5.8,4.8,4.0,1.8,0.9,0.6,0.8,0.4,0.4,0,0)*10000, root density (m/m3), (19 values descending through soil for specified soil nodes in parameter}
+\code{R1}{ = 0.001, root radius, m}\cr\cr
+\code{RW}{ = 2.5e+10, resistance per unit length of root, m3 kg-1 s-1}\cr\cr
+\code{RL}{ = 2e+6, resistance per unit length of leaf, m3 kg-1 s-1}\cr\cr
+\code{PC}{ = -1500, critical leaf water potential for stomatal closure, J kg-1}\cr\cr
+\code{SP}{ = 10, stability parameter for stomatal closure equation, -}\cr\cr
+\code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
+\code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
 \code{DEP}
 { and points half way between)}\cr\cr
 \code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET}\cr\cr
@@ -186,6 +199,22 @@ humid and shadhumid variables:
 \item  1 JULDAY - day of year
 \item  2 TIME - time of day (mins)
 \item  3-12 RH0cm ... - soil relative humidity (decimal \%), at each of the 10 specified depths
+}
+
+plant and shadplant variables:
+\itemize{
+\item  1 JULDAY - day of year
+\item  2 TIME - time of day (mins)
+\item  3 TRANS - plant transpiration rate (kg/m2/s)
+\item  4 LEAFPOT - leaf water potentail (J/kg)
+\item  5-14 RPOT0cm ... - root water potentail (J/kg), at each of the 10 specified depths
+}
+
+drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar) variables:
+\itemize{
+\item  1 JULDAY - day of year
+\item  2 TIME - time of day (mins)
+\item  3-113 290, ..., 4000 - irradiance (W/(m2 nm)) at each of 111 wavelengths from 290 to 4000 nm
 }
 }
 }
