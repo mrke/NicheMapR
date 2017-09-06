@@ -14,6 +14,7 @@
 #' @param kflesh conductivity of flesh (W/mK)
 #' @param geom Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coeffs')
 #' @param posture pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?
+#' @param orient does the object orient toward the sun? (0,1)
 #' @param abs animal solar absorptivity (-)
 #' @param emis emissivity of skin (-)
 #' @param shape_b Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid
@@ -62,6 +63,7 @@
 #' kflesh <- 0.32 # thermal conductivity of flesh, W/mK
 #' geom <- 1 # shape, -
 #' posture <- 'n' # pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?
+#' orient <- 1 # does the object orient toward the sun? (0,1)
 #' shape_b <- 4 # shape coefficient a, -
 #' shape_c <- 2/3 # shape coefficient b, -
 #' shape_coefs <- c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743)
@@ -242,7 +244,11 @@ onelump_var <- function(t, y, indata) {
     if (max(Zen) >= 89) {
       Qnorm <- 0
     } else{
-      Qnorm <- (Qsol / cos(Zenith))
+      if(orient == 1){
+       Qnorm <- (Qsol / cos(Zenith))
+      }else{
+       Qnorm <- Qsol
+      }
     }
     if (Qnorm > 1367) {
       Qnorm <-

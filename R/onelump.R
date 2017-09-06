@@ -17,6 +17,7 @@
 #' @param shape_b = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid
 #' @param shape_c = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid
 #' @param posture = 'n' pointing normal 'n', parallel 'p' to the sun's rays, or 'b' in between?
+#' @param orient does the object orient toward the sun? (0,1)
 #' @param fatosk = 0.4, Configuration factor to sky (-) for infrared calculations
 #' @param fatosb = 0.4, Configuration factor to subsrate for infrared calculations
 #' @param abs_sub = 0.2, substrate solar reflectivity, decimal percent
@@ -99,7 +100,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
   geom = 2, Tair = 30, Trad=30, vel = 0.1, Qsol = 500, Zen = 20, kflesh = 0.5,
   q = 0, spheat = 3073, emis = 0.95, rho = 932, abs = 0.85,
   customallom = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
-  shape_b = 0.5, shape_c = 0.5, posture = 'n', fatosk = 0.4, fatosb = 0.4,
+  shape_b = 0.5, shape_c = 0.5, posture = 'n', orient = 1, fatosk = 0.4, fatosb = 0.4,
   abs_sub = 0.8, pctdif = 0.1, press = 101325){
     sigma <- 5.67e-8 #Stefan-Boltzman, W/(m.K)
     Zenith <- Zen * pi / 180 # zenith angle in radians
@@ -228,7 +229,11 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
     if (max(Zen) >= 89) {
       Qnorm <- 0
     } else{
-      Qnorm <- (Qsol / cos(Zenith))
+      if(orient == 1){
+       Qnorm <- (Qsol / cos(Zenith))
+      }else{
+       Qnorm <- Qsol
+      }
     }
     if (Qnorm > 1367) {
       Qnorm <-
