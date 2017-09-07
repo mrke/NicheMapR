@@ -27,6 +27,8 @@ ode(y = Tb_init, t = times, func = onelump_var, parms = indata)
 
 \item{posture}{pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?}
 
+\item{orient}{does the object orient toward the sun? (0,1)}
+
 \item{abs}{animal solar absorptivity (-)}
 
 \item{emis}{emissivity of skin (-)}
@@ -71,8 +73,8 @@ estimate environmental conditions at particular time intervals.
 Michael Kearney, Raymond Huey and Warren Porter developed this R function and example in September 2017.
 }
 \examples{
+library(deSolve) # note due to some kind of bug in deSolve, it must be loaded before NicheMapR!
 library(NicheMapR)
-library(deSolve)
 
 # get microclimate data
 loc <- "Alice Springs, Australia"
@@ -99,6 +101,7 @@ q <- 0 # metabolic rate, W/m3
 kflesh <- 0.32 # thermal conductivity of flesh, W/mK
 geom <- 1 # shape, -
 posture <- 'n' # pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?
+orient <- 1 # does the object orient toward the sun? (0,1)
 shape_b <- 4 # shape coefficient a, -
 shape_c <- 2/3 # shape coefficient b, -
 shape_coefs <- c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743)
