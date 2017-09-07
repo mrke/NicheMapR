@@ -29,9 +29,11 @@ onelump(t, Tc_init, thresh, mass, geom, Tair, Trad, vel, Qsol, Zen, ...)
 
 \item{q}{= 0, metabolic heat production rate W/m3}
 
-\item{spheat}{= 0.85, Specific heat of flesh J/(kg-K)}
+\item{spheat}{= 3073, Specific heat of flesh J/(kg-K)}
 
 \item{emis}{= 0.95, Emissivity of animal (0-1)}
+
+\item{rho}{= 932, animal density (kg/m3)}
 
 \item{abs}{= 0.85, solar absorptivity, decimal percent}
 
