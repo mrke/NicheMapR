@@ -1,111 +1,125 @@
-#' One-lump Transient Heat Budget for Constant Environment
+#' One-lump Transient Heat Budget (for use with deSolve package)
 #'
 #' Transient, 'one-lump', heat budget for computing rate of change of temperature
-#' under a constant environment
+#' under environmental conditions that vary with time, using interpolation functions to
+#' estimate environmental conditions at particular time intervals.
 #' Michael Kearney, Raymond Huey and Warren Porter developed this R function and example in September 2017.
-#' @param t = seq(1,3600,60), time intervals (s) at which output is required
-#' @param Tc_init = 5, initial temperature (°C) Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)
-#' @param thresh = 29, threshold temperature (°C) at which summary statistics are wanted
-#' @param amass = 500, animal mass (g)
-#' @param geom = 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'customallom')
-#' @param kflesh = 0.5, Thermal conductivity of flesh (W/mK, range: 0.412-2.8)
-#' @param q = 0, metabolic heat production rate W/m3
-#' @param spheat = 3073, Specific heat of flesh J/(kg-K)
-#' @param rho = 932, animal density (kg/m3)
-#' @param emis = 0.95, Emissivity of animal (0-1)
-#' @param abs = 0.85, solar absorptivity, decimal percent
-#' @param shape_coefs = c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom allometry coefficients. Operates if lometry=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun
-#' @param shape_b = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid
-#' @param shape_c = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid
-#' @param posture = 'n' pointing normal 'n', parallel 'p' to the sun's rays, or 'b' in between?
+#' @param t time intervals (s) at which output is required
+#' @param Tc_init initial temperature (°C) Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)
+#' @param press air pressure (Pa)
+#' @param mass mass (g)
+#' @param spheat specific heat of flesh (J/kg-C)
+#' @param rho animal density (kg/m3)
+#' @param q  metabolic rate (W/m3)
+#' @param kflesh conductivity of flesh (W/mK)
+#' @param geom Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coeffs')
+#' @param posture pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?
 #' @param orient does the object orient toward the sun? (0,1)
-#' @param fatosk = 0.4, Configuration factor to sky (-) for infrared calculations
-#' @param fatosb = 0.4, Configuration factor to subsrate for infrared calculations
-#' @param abs_sub = 0.2, substrate solar reflectivity, decimal percent
-#' @param pctdif = 0.1, proportion of solar energy that is diffuse (rather than direct beam)
-#' @param Tair = 30, air temperature (°C)
-#' @param Trad = 30, radiant temperature (°C), averaging ground and sky
-#' @param vel = 0.1, wind speed (m/s)
-#' @param Qsol = 500, solar radiation (W/m2)
-#' @param Zen = 20, zenith angle of sun (90 is below horizon), degrees
-#' @param press = 101325, air pressure (Pa)
-#' @return Tc Core temperature (deg C)
-#' @return Tcf Final (steady state) temperature (deg C), if conditions remained constant indefinately
+#' @param abs animal solar absorptivity (-)
+#' @param emis emissivity of skin (-)
+#' @param shape_b Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid
+#' @param shape_c Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid
+#' @param shape_coefs Custom surface area coefficients. Operates if posture = 5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun
+#' @param pctdif proportion of solar energy that is diffuse (-)
+#' @param fatosk solar configuration factor to sky (-)
+#' @param fatosb solar configuration factor to substrate (-)
+#' @param abs_sub substrate solar absorptivity (-)
+#' @param Tairf air temperature function with time, generated by 'approxfun' (°C)
+#' @param Tradf radiant temperature function with time, generated by 'approxfun'(°C), averaging ground and sky
+#' @param velf wind speed function with time, generated by 'approxfun' (m/s)
+#' @param Qsolf radiation function with time, generated by 'approxfun' (W/m2)
+#' @param Zenf zenith angle of sun function with time, generated by 'approxfun' (90 is below horizon), degrees
+#' @return Tc Core temperature (°C)
+#' @return Te Final (steady state) temperature (°C), if conditions remained constant indefinately
 #' @return tau Time constant (s)
-#' @return dTc Rate of change of core temperature (deg C/s)
-#' @return timethresh Time to reach specified threshold body temperature (s)
-#' @usage onelump(t, Tc_init, thresh, mass, geom, Tair, Trad, vel, Qsol, Zen, ...)
+#' @return dTc Rate of change of core temperature (°C/s)
+#' @usage ode(y = Tb_init, t = times, func = onelump_var, parms = indata)
 #' @examples
+#' library(deSolve) # note due to some kind of bug in deSolve, it must be loaded before NicheMapR!
 #' library(NicheMapR)
 #'
-#' # compare heating rates of a variety of different-sized objects
+#' # get microclimate data
+#' loc <- "Alice Springs, Australia"
+#' micro <- micro_global(loc = loc) # run the model with default location and settings
+#' metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
+#' soil <- as.data.frame(micro$soil) # soil temperatures, minimum shade
 #'
-#' t=seq(1,3600*2,60) # times (in seconds) to report back values - every minute for 2 hrs
-#' tmins <- t/60
+#' # append dummy dates
+#' days <- rep(seq(1, 12), 24)
+#' days <- days[order(days)]
+#' dates <- days + metout$TIME / 60 / 24 - 1 # dates for hourly output
+#' dates2 <- seq(1, 12, 1) # dates for daily output
+#' metout <- cbind(dates, metout)
+#' soil <- cbind(dates, soil)
 #'
-#' par(mfrow = c(1,2))
-#' mass <- 5
-#' Tc_init <- 20
-#' geom <- 3
-#' Tair <- 20
-#' Trad <- Tair
-#' vel <- 1
-#' Qsol <- 500
-#' Zen <- 20
-#' abs <- 0.85
+#' # combine relevant input fields
+#' microclimate <- cbind(metout[, 1:5], metout[, 8], soil[, 4], metout[, 13:15], metout[, 6])
+#' colnames(microclimate) <- c('dates', 'JULDAY', 'TIME', 'TALOC', 'TA1.2m', 'VLOC', 'TS', 'ZEN', 'SOLR', 'TSKYC', 'RHLOC')
 #'
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, thresh = 29, mass = mass,
-#'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
-#' plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 32), ylab = 'Temperature, °C',xlab='time, s', las = 1)
-#' text(80, 29, "    5000 g")
-#' text(80, 25, "5 g")
-#' text (40, 20.5, "Tair for both sizes", col = "blue")
-#' text(90, 28, "   vel = 1.0 m/s")
-#' text(90, 24, "     vel = 1.0 m/s")
+#' # define animal parameters - here simulating a 1000 g cylinder
+#' spheat <- 3342 # specific heat of flesh, J/kg-C
+#' rho <- 1000 # animal density, kg/m3
+#' q <- 0 # metabolic rate, W/m3
+#' kflesh <- 0.32 # thermal conductivity of flesh, W/mK
+#' geom <- 1 # shape, -
+#' posture <- 'n' # pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?
+#' orient <- 1 # does the object orient toward the sun? (0,1)
+#' shape_b <- 4 # shape coefficient a, -
+#' shape_c <- 2/3 # shape coefficient b, -
+#' shape_coefs <- c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743)
+#' fatosk <- 0.4 # solar configuration factor to sky, -
+#' fatosb <- 0.4 # solar configuration factor to substrate, -
+#' abs <- 0.9 # animal solar absorptivity, -
+#' emis <- 0.95 # emissivity of skin, -
+#' mass <- 1000 # mass, g
+#' abs_sub <- 0.8 # substrate solar absorptivity, -
+#' press <- 101325 # air pressure, Pa
+#' pctdif <- 0.1 # proportion of solar energy that is diffuse, -
 #'
-#' mass <- 5000
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, thresh = 29, mass = mass,
-#'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
-#' points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
-#' abline(Tair,0, lty = 1, col = 'blue')
-#' abline(h = Tair + .1, lty = 2, col = 'blue')
+#' # loop through middle day of each month
+#' juldays = c(15, 46, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349)
+#' mons = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
 #'
-#' mass <- 5
-#' Tair <- 25
-#' Trad <- Tair
-#' vel <-0.5
+#' for (i in 1:length(juldays)) {
+#'   simday = juldays[i]
+#'   microclim <- subset(microclimate, microclimate$JULDAY == simday)
 #'
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, thresh = 29, mass = mass,
-#'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
-#' plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,32),ylab='Temperature, °C',xlab='time, s', las = 1)
-#' abline(h = Tair, lty = 1, col = 'blue')
+#'   # use approxfun to create interpolations for the required environmental variables
+#'   time <- seq(0, 60 * 24, 60) #60 minute intervals from microclimate output
+#'   time <- time * 60 # minutes to seconds
+#'   Qsolf <- approxfun(time, c(microclim[, 9], (microclim[1, 9] + microclim[24, 9]) /
+#'       2), rule = 2)
+#'   # approximate radiant temperature as the average of sky and substrate temperature
+#'   Tradf <- approxfun(time, rowMeans(cbind(c(microclim[, 7], (microclim[1, 7] + microclim[24, 7]) / 24), c(microclim[, 10], (microclim[1, 10] + microclim[24, 10]) / 24)), na.rm = TRUE), rule = 2)
+#'   velf <- approxfun(time, c(microclim[, 6], (microclim[1, 6] + microclim[24, 6]) / 2), rule = 2)
+#'   Tairf <- approxfun(time, c(microclim[, 4], (microclim[1, 4] + microclim[24, 4]) / 2), rule = 2)
+#'   Zenf <- approxfun(time, c(microclim[, 8], 90), rule = 2)
 #'
-#' mass <- 5000
-#' Tair <- 20
-#' Trad <- Tair
-#' vel <-1
+#'   t = seq(1, 3600 * 24, 60) # sequence of times for predictions (1 min intervals)
+#'   indata<-list(abs = abs, emis = emis, abs_sub = abs_sub, press = press, mass = mass, spheat = spheat, rho = rho, q = q, kflesh = kflesh, geom = geom, posture = posture, shape_b = shape_b, shape_c = shape_c, shape_coefs = shape_coefs, pctdif = pctdif, fatosk = fatosk, fatosb = fatosb)
 #'
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, thresh = 29, mass = mass,
-#'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
-#' points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
-#' abline(h = Tair, lty = 2, col = 'blue')
+#'   Tb_init<-Tairf(1) # set inital Tb as air temperature
 #'
-#' text(65, 31, "5 g")
-#' text(80, 29, "5000 g")
-#' text(60, 20.5, "Tair for large animal", col = "blue")
-#' text(63, 25.4, "Tair for small animal", col = "blue")
-#' text(80, 30.1, "vel = 0.5 m/s")
-#' text(93, 28, "vel = 1.0 m/s")
+#'   Tbs_ode <- as.data.frame(ode(y = Tb_init, times = times, func = onelump_var, parms = indata))
+#'   colnames(Tbs_ode) <- c('time', 'Tb', 'Tbf', 'tau', 'dTdt')
+#'   Tbs_ode$time <- Tbs_ode$time / 3600
+#'
+#'   with(Tbs_ode, plot(Tb ~ time, type = 'l', col = '1', ylim = c(-10, 80), xlim = c(0, 23), ylab='Temperature, °C',xlab = 'hour of day', main = paste0(loc, ", ", mons[i], ", ", mass," g")))
+#'   with(Tbs_ode, points(Te ~ time, type = 'l', col = '2'))
+#'   points(Tairf(times) ~ hours, type = 'l', col = 'blue', lty = 2)
+#'   legend(0,70, c("Tb", "Te", "Tair"), lty = c(1, 1, 2), lwd = c(2.5, 2.5, 2.5), col = c("black", "red", "blue"))
+#' }
 #' @export
-onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
-  geom = 2, Tair = 30, Trad=30, vel = 0.1, Qsol = 500, Zen = 20, kflesh = 0.5,
-  q = 0, spheat = 3073, emis = 0.95, rho = 932, abs = 0.85,
-  customallom = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
-  shape_b = 0.5, shape_c = 0.5, posture = 'n', orient = 1, fatosk = 0.4, fatosb = 0.4,
-  abs_sub = 0.8, pctdif = 0.1, press = 101325){
+onelump_var <- function(t, y, indata) {
+  with(as.list(c(indata, y)), {
     sigma <- 5.67e-8 #Stefan-Boltzman, W/(m.K)
+    Tair <- Tairf(t)
+    vel <- velf(t)
+    Qsol <- Qsolf(t)
+    Trad <- Tradf(t)
+    Zen <- Zenf(t)
     Zenith <- Zen * pi / 180 # zenith angle in radians
-    Tc <- Tc_init
+    Tc <- y
     Tskin <- Tc + 0.1
     vel[vel < 0.01] <-
       0.01 # don't let wind speed go too low - always some free convection
@@ -365,6 +379,12 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
     Tc <- (Tci - Tcf) * exp(-1 * k * t) + Tcf # Tc at time t
     tau <- (rho * V * spheat) / (ATOT * (hc + hr)) # time constant
     dTc <- j - kTc
-    timethresh <- log((thresh - Tcf) / (Tci - Tcf)) / (-1 * k)
-  return(list(Tc = Tc, Tcf = Tcf, tau = tau, dTc = dTc, timethresh = timethresh))
+
+    list(
+      y = dTc,
+      x = Tcf,
+      z = tau,
+      zz = dTc
+    )
+  })
 }
