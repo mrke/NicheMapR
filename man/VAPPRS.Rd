@@ -10,7 +10,7 @@ VAPPRS(db = db)
 \item{db}{Dry bulb temperature (degrees C)}
 }
 \value{
-esat Saturation vapour pressure (P)
+esat Saturation vapour pressure (Pa)
 }
 \description{
 Calculates saturation vapour pressure for a given air temperature.

@@ -29,6 +29,14 @@ shadpot Hourly predictions of the soil water potential under the maximum specifi
 humid Hourly predictions of the soil humidity under the minimum specified shade
 
 shadhumid Hourly predictions of the soil humidity under the maximum specified shade
+
+plant Hourly predictions of plant variables under the minimum specified shade
+
+shadplant Hourly predictions of plant variables under the maximum specified shade
+
+sunsnow Hourly predictions of the snow temperature under the minimum specified shade
+
+shdsnow Hourly predictions of the snow temperature under the maximum specified shade
 }
 \description{
 R wrapper for Fortran binary of Niche Mapper microclimate model
