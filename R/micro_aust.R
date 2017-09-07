@@ -1601,7 +1601,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
         }
         if(clearsky==1){
           CCMINN=CCMINN*0
-          CCMAXX=CCMAX*0
+          CCMAXX=CCMAXX*0
           message('running for clear sky conditions')
         }else{
           message('min cloud * 0.5 \n')

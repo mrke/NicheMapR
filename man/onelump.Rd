@@ -4,22 +4,20 @@
 \alias{onelump}
 \title{One-lump Transient Heat Budget for Constant Environment}
 \usage{
-onelump(t, Tc_init, thresh, AMASS, lometry, Tair, Trad, vel, Qsol, Zen, ...)
+onelump(t, Tc_init, thresh, mass, geom, Tair, Trad, vel, Qsol, Zen, ...)
 }
 \arguments{
 \item{t}{= seq(1,3600,60), time intervals (s) at which output is required}
 
-\item{Tc_init}{= 5, initial temperature (degrees C) Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)}
+\item{Tc_init}{= 5, initial temperature (°C) Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)}
 
-\item{thresh}{= 29, threshold temperature (degrees C) at which summary statistics are wanted}
+\item{thresh}{= 29, threshold temperature (°C) at which summary statistics are wanted}
 
-\item{AMASS}{= 500, animal mass (g)}
+\item{geom}{= 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'customallom')}
 
-\item{lometry}{= 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'customallom')}
+\item{Tair}{= 30, air temperature (°C)}
 
-\item{Tair}{= 30, air temperature (degrees C)}
-
-\item{Trad}{= 30, radiant temperature (degrees C), averaging ground and sky}
+\item{Trad}{= 30, radiant temperature (°C), averaging ground and sky}
 
 \item{vel}{= 0.1, wind speed (m/s)}
 
@@ -27,19 +25,17 @@ onelump(t, Tc_init, thresh, AMASS, lometry, Tair, Trad, vel, Qsol, Zen, ...)
 
 \item{Zen}{= 20, zenith angle of sun (90 is below horizon), degrees}
 
-\item{Flshcond}{= 0.5, Thermal conductivity of flesh (W/mK, range: 0.412-2.8)}
+\item{kflesh}{= 0.5, Thermal conductivity of flesh (W/mK, range: 0.412-2.8)}
 
 \item{q}{= 0, metabolic heat production rate W/m3}
 
-\item{Spheat}{= 0.85, Specific heat of flesh J/(kg-K)}
+\item{spheat}{= 3073, Specific heat of flesh J/(kg-K)}
 
-\item{EMISAN}{= 0.95, Emissivity of animal (0-1)}
+\item{emis}{= 0.95, Emissivity of animal (0-1)}
 
-\item{ABS}{= 0.85, solar absorptivity, decimal percent}
+\item{rho}{= 932, animal density (kg/m3)}
 
-\item{customallom}{= c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom allometry coefficients. Operates if lometry=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}
-
-\item{shape_a}{= 1., Proportionality factor (-) for going from volume to area, keep this 1 (redundant parameter that should be removed)}
+\item{abs}{= 0.85, solar absorptivity, decimal percent}
 
 \item{shape_b}{= 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid}
 
@@ -47,17 +43,21 @@ onelump(t, Tc_init, thresh, AMASS, lometry, Tair, Trad, vel, Qsol, Zen, ...)
 
 \item{posture}{= 'n' pointing normal 'n', parallel 'p' to the sun's rays, or 'b' in between?}
 
-\item{FATOSK}{= 0.4, Configuration factor to sky (-) for infrared calculations}
+\item{orient}{does the object orient toward the sun? (0,1)}
 
-\item{FATOSB}{= 0.4, Configuration factor to subsrate for infrared calculations}
+\item{fatosk}{= 0.4, Configuration factor to sky (-) for infrared calculations}
 
-\item{sub_reflect}{= 0.2, substrate solar reflectivity, decimal percent}
+\item{fatosb}{= 0.4, Configuration factor to subsrate for infrared calculations}
 
-\item{PCTDIF}{= 0.1, proportion of solar energy that is diffuse (rather than direct beam)}
+\item{abs_sub}{= 0.2, substrate solar reflectivity, decimal percent}
+
+\item{pctdif}{= 0.1, proportion of solar energy that is diffuse (rather than direct beam)}
 
 \item{press}{= 101325, air pressure (Pa)}
 
-\item{VTMIN}{= 24, Voluntary thermal minimum, degrees C (lower body temperature for foraging)}
+\item{amass}{= 500, animal mass (g)}
+
+\item{shape_coefs}{= c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom allometry coefficients. Operates if lometry=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}
 }
 \value{
 Tc Core temperature (deg C)
@@ -73,33 +73,68 @@ timethresh Time to reach specified threshold body temperature (s)
 \description{
 Transient, 'one-lump', heat budget for computing rate of change of temperature
 under a constant environment
-Michael Kearney & Warren Porter developed this R function in July 2014.
+Michael Kearney, Raymond Huey and Warren Porter developed this R function and example in September 2017.
 }
 \examples{
+library(NicheMapR)
+
 # compare heating rates of a variety of different-sized objects
 
 t=seq(1,3600*2,60) # times (in seconds) to report back values - every minute for 2 hrs
+tmins <- t/60
 
-masses=c(1,50,100,500,1000) # masses of 5 objects to consider
+par(mfrow = c(1,2))
+mass <- 5
+Tc_init <- 20
+geom <- 3
+Tair <- 20
+Trad <- Tair
+vel <- 1
+Qsol <- 500
+Zen <- 20
+abs <- 0.85
 
-# loop through masses and plot warming curves for the 5 objects, starting at 5 degrees C, no solar
-for(i in 1:5){
-Tbs<-onelump(t=t, Tc_init=5, thresh=29, AMASS=masses[i], lometry=2, Tair=30, Trad=30, vel=0.1, Qsol=0, Zen=20)
- if(i==1){
-  plot(Tbs$Tc~t,type='l',col=i,ylim=c(0,50),ylab='Temperature, deg C',xlab='time, s', main='30 degrees air, no solar radiation')
- }else{
-  points(Tbs$Tc~t,type='l',col=i)
- }
-}
+Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, thresh = 29, mass = mass,
+  geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
+plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 32), ylab = 'Temperature, °C',xlab='time, s', las = 1)
+text(80, 29, "    5000 g")
+text(80, 25, "5 g")
+text (40, 20.5, "Tair for both sizes", col = "blue")
+text(90, 28, "   vel = 1.0 m/s")
+text(90, 24, "     vel = 1.0 m/s")
 
-# repeat analysis, but with sun on the objects
-for(i in 1:5){
-Tbs<-onelump(t=t, Tc_init=5, thresh=29, AMASS=masses[i], lometry=2, Tair=30, Trad=30, vel=0.1, Qsol=1000, Zen=20)
- if(i==1){
-  plot(Tbs$Tc~t,type='l',col=i,ylim=c(0,50),ylab='Temperature, deg C',xlab='time, s', main='30 degrees air, strong solar radiation field')
- }else{
-  points(Tbs$Tc~t,type='l',col=i)
- }
-}
+mass <- 5000
+Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, thresh = 29, mass = mass,
+  geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
+points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
+abline(Tair,0, lty = 1, col = 'blue')
+abline(h = Tair + .1, lty = 2, col = 'blue')
+
+mass <- 5
+Tair <- 25
+Trad <- Tair
+vel <-0.5
+
+Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, thresh = 29, mass = mass,
+  geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
+plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,32),ylab='Temperature, °C',xlab='time, s', las = 1)
+abline(h = Tair, lty = 1, col = 'blue')
+
+mass <- 5000
+Tair <- 20
+Trad <- Tair
+vel <-1
+
+Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, thresh = 29, mass = mass,
+  geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
+points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
+abline(h = Tair, lty = 2, col = 'blue')
+
+text(65, 31, "5 g")
+text(80, 29, "5000 g")
+text(60, 20.5, "Tair for large animal", col = "blue")
+text(63, 25.4, "Tair for small animal", col = "blue")
+text(80, 30.1, "vel = 0.5 m/s")
+text(93, 28, "vel = 1.0 m/s")
 }
 
