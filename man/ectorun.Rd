@@ -45,6 +45,16 @@ ectorun(ecto)
 
 \item{wetlandDepths}{Depth of water body}
 
+\item{GLMtemps}{General Lake Model water temperatures}
+
+\item{GLMO2s}{General Lake Model water O2 partial pressures}
+
+\item{GLMsalts}{General Lake Model water salinities}
+
+\item{GLMpHs}{General Lake Model water pHs}
+
+\item{GLMfoods}{General Lake Model water food densities}
+
 \item{arrhenius}{Arrhenius thermal response}
 
 \item{thermal_stages}{Stage-specific thermal physiology}
