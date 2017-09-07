@@ -41,6 +41,8 @@ onelump(t, Tc_init, thresh, mass, geom, Tair, Trad, vel, Qsol, Zen, ...)
 
 \item{posture}{= 'n' pointing normal 'n', parallel 'p' to the sun's rays, or 'b' in between?}
 
+\item{orient}{does the object orient toward the sun? (0,1)}
+
 \item{fatosk}{= 0.4, Configuration factor to sky (-) for infrared calculations}
 
 \item{fatosb}{= 0.4, Configuration factor to subsrate for infrared calculations}
