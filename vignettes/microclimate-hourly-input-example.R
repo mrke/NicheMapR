@@ -71,6 +71,8 @@ slope<-0. # slope (degrees, range 0-90)
 azmuth<-180. # aspect (degrees, 0 = North, range 0-360)
 hori<-rep(0,24) # enter the horizon angles (degrees) so that they go from 0 degrees azimuth (north) clockwise in 15 degree intervals
 VIEWF <- 1-sum(sin(hori*pi/180))/length(hori) # convert horizon angles to radians and calc view factor(s)
+lamb <- 0 # Return wavelength-specific solar radiation output?
+IUV <- 0 # Use gamma function for scattered solar radiation? (computationally intensive)
 PCTWET<-0 # percentage of surface area acting as a free water surface (%)
 CMH2O <- 1. # precipitable cm H2O in air column, 0.1 = VERY DRY; 1.0 = MOIST AIR CONDITIONS; 2.0 = HUMID, TROPICAL CONDITIONS (note this is for the whole atmospheric profile, not just near the ground)
 TIMAXS <- c(1.0, 1.0, 0.0, 0.0)   # Time of Maximums for Air Wind RelHum Cloud (h), air & Wind max's relative to solar noon, humidity and cloud cover max's relative to sunrise
@@ -205,6 +207,13 @@ KS[10:19]<-CampNormTbl9_1[soiltype,6] #saturated conductivity, kg s/m3
 BB[10:19]<-CampNormTbl9_1[soiltype,5] #soil 'b' parameter
 
 L<-c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,0,0)*10000 # root density at each node, mm/m3 (from Campell 1985 Soil Physics with Basic, p. 131)
+R1 <- 0.001 #root radius, m}\cr\cr
+RW <- 2.5e+10 #resistance per unit length of root, m3 kg-1 s-1
+RL <- 2e+6 #resistance per unit length of leaf, m3 kg-1 s-1
+PC <- -1500 #critical leaf water potential for stomatal closure, J kg-1
+SP <- 10 #stability parameter for stomatal closure equation, -
+IM <- 1e-06 #maximum allowable mass balance error, kg
+MAXCOUNT <- 500 #maximum iterations for mass balance, -
 LAI<-0.1 # leaf area index, used to partition traspiration/evaporation from PET
 rainmult<-1 # rainfall multiplier to impose catchment
 maxpool<-10 # max depth for water pooling on the surface, mm (to account for runoff)
@@ -224,102 +233,4 @@ rainmelt<-0.0125 # parameter in equation from Anderson's SNOW-17 model that melt
 ## ------------------------------------------------------------------------
 # intertidal simulation input vector (col 1 = tide in(1)/out(0), col 2 = sea water temperature in deg C, col 3 = % wet from wave splash)
 tides<-matrix(data = 0., nrow = 24*julnum, ncol = 3) # matrix for tides
-
-## ------------------------------------------------------------------------
-# microclimate input parameters list
-microinput<-c(julnum,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly)
-
-# all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
-microin<-list(microinput=microinput,tides=tides,julday=julday,SLES=SLES,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX,TMINN=TMINN,RHMAXX=RHMAXX,RHMINN=RHMINN,CCMAXX=CCMAXX,CCMINN=CCMINN,WNMAXX=WNMAXX,WNMINN=WNMINN,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,REFLS=REFLS,PCTWET=PCTWET,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists,RAINFALL=RAINFALL,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI)
-
-micro<-microclimate(microin) # run the model in Fortran
-
-## ------------------------------------------------------------------------
-# retrieve ouptut
-dates=weather$datetime[1:nrow(micro$metout)]
-metout<-as.data.frame(micro$metout) # retrieve above ground microclimatic conditions, min shade
-shadmet<-as.data.frame(micro$shadmet) # retrieve above ground microclimatic conditions, max shade
-soil<-as.data.frame(micro$soil) # retrieve soil temperatures, minimum shade
-shadsoil<-as.data.frame(micro$shadsoil) # retrieve soil temperatures, maximum shade
-soilmoist<-as.data.frame(micro$soilmoist) # retrieve soil moisture, minimum shade
-shadmoist<-as.data.frame(micro$shadmoist) # retrieve soil moisture, maximum shade
-humid<-as.data.frame(micro$humid) # retrieve soil humidity, minimum shade
-shadhumid<-as.data.frame(micro$shadhumid) # retrieve soil humidity, maximum shade
-soilpot<-as.data.frame(micro$soilpot) # retrieve soil water potential, minimum shade
-shadpot<-as.data.frame(micro$shadpot) # retrieve soil water potential, maximum shade
-
-# append dates
-metout<-cbind(dates,metout)
-shadmet<-cbind(dates,shadmet)
-soil<-cbind(dates,soil)
-shadsoil<-cbind(dates,shadsoil)
-soilmoist<-cbind(dates,soilmoist)
-shadmoist<-cbind(dates,shadmoist)
-humid<-cbind(dates,humid)
-shadhumid<-cbind(dates,shadhumid)
-soilpot<-cbind(dates,soilpot)
-shadpot<-cbind(dates,shadpot)
-
-## ---- fig.width=7, fig.height=10-----------------------------------------
-# choose a time window to plot
-tstart=as.POSIXct("2015-05-01",format="%Y-%m-%d")
-tfinish=as.POSIXct("2015-07-31",format="%Y-%m-%d")
-
-# set up plot parameters
-par(mfrow = c(5,1)) # set up for 6 plots in 1 columns
-par(oma = c(2,1,2,2) + 0.1) # margin spacing stuff
-par(mar = c(3,3,1,1) + 0.1) # margin spacing stuff
-par(mgp = c(2,1,0) ) # margin spacing stuff
-
-# plot the soil temperatures
-plot(dates,soil$D5cm,type='l',ylim=c(-10,70),xlim=c(tstart,tfinish),xaxt = "n",ylab=expression("soil temperature (" * degree * C *")"),xlab="")
-points(weather$datetime,weather$STO.I_2,type='l',col="red")
-axis.POSIXct(side = 1, x = micro_shd$dates, at = seq(tstart,tfinish, "weeks"), format = "%d-%m",  las = 2)
-text(tstart,10,"5cm",col="black",pos=4,cex=1.5)
-abline(0,0,lty=2,col='light blue')
-#points(dates,metout$SNOWDEP,type='h',col='light blue')
-plot(dates,soil$D10cm,type='l',ylim=c(-10,70),xlim=c(tstart,tfinish),xaxt = "n",ylab=expression("soil temperature (" * degree * C *")"),xlab="")
-points(weather$datetime,weather$STO.I_4,type='l',col="red")
-axis.POSIXct(side = 1, x = micro_shd$dates, at = seq(tstart,tfinish, "weeks"), format = "%d-%m",  las = 2)
-text(tstart,10,"10cm",col="black",pos=4,cex=1.5)
-abline(0,0,lty=2,col='light blue')
-plot(dates,soil$D20cm,type='l',ylim=c(-10,70),xlim=c(tstart,tfinish),xaxt = "n",ylab=expression("soil temperature (" * degree * C *")"),xlab="")
-points(weather$datetime,weather$STO.I_8,type='l',col="red")
-axis.POSIXct(side = 1, x = micro_shd$dates, at = seq(tstart,tfinish, "weeks"), format = "%d-%m",  las = 2)
-text(tstart,10,"20cm",col="black",pos=4,cex=1.5)
-abline(0,0,lty=2,col='light blue')
-plot(dates,soil$D50cm,type='l',ylim=c(-10,70),xlim=c(tstart,tfinish),xaxt = "n",ylab=expression("soil temperature (" * degree * C *")"),xlab="")
-points(weather$datetime,weather$STO.I_20,type='l',col="red")
-axis.POSIXct(side = 1, x = micro_shd$dates, at = seq(tstart,tfinish, "weeks"), format = "%d-%m",  las = 2)
-text(tstart,10,"50cm",col="black",pos=4,cex=1.5)
-abline(0,0,lty=2,col='light blue')
-plot(dates,soil$D100cm,type='l',ylim=c(-10,70),xlim=c(tstart,tfinish),xaxt = "n",ylab=expression("soil temperature (" * degree * C *")"),xlab="")
-points(weather$datetime,weather$STO.I_40,type='l',col="red")
-axis.POSIXct(side = 1, x = micro_shd$dates, at = seq(tstart,tfinish, "weeks"), format = "%d-%m",  las = 2)
-abline(0,0,lty=2,col='light blue')
-text(tstart,10,"100cm",col="black",pos=4,cex=1.5)
-mtext(site$name,outer = TRUE)
-
-# plot the soil moisture
-plot(dates,soilmoist$WC5cm*100,type='l',ylim=c(0,60),xaxt = "n",xlim=c(tstart,tfinish),col="blue",ylab="soil moisture (%)",xlab="")
-axis.POSIXct(side = 1, x = micro_shd$dates, at = seq(tstart,tfinish, "weeks"), format = "%d-%m",  las = 2)
-points(weather$datetime,weather$SMS.I_2,type='l',col="red")
-text(tstart,40,"5cm",col="black",pos=4,cex=1.5)
-plot(dates,soilmoist$WC10cm*100,type='l',ylim=c(0,60),xaxt = "n",xlim=c(tstart,tfinish),col="blue",ylab="soil moisture (%)",xlab="")
-axis.POSIXct(side = 1, x = micro_shd$dates, at = seq(tstart,tfinish, "weeks"), format = "%d-%m",  las = 2)
-points(weather$datetime,weather$SMS.I_4,type='l',col="red")
-text(tstart,40,"10cm",col="black",pos=4,cex=1.5)
-plot(dates,soilmoist$WC20cm*100,type='l',ylim=c(0,60),xaxt = "n",xlim=c(tstart,tfinish),col="blue",ylab="soil moisture (%)",xlab="")
-axis.POSIXct(side = 1, x = micro_shd$dates, at = seq(tstart,tfinish, "weeks"), format = "%d-%m",  las = 2)
-points(weather$datetime,weather$SMS.I_8,type='l',col="red")
-text(tstart,40,"20cm",col="black",pos=4,cex=1.5)
-plot(dates,soilmoist$WC50cm*100,type='l',ylim=c(0,60),xaxt = "n",xlim=c(tstart,tfinish),col="blue",ylab="soil moisture (%)",xlab="")
-axis.POSIXct(side = 1, x = micro_shd$dates, at = seq(tstart,tfinish, "weeks"), format = "%d-%m",  las = 2)
-points(weather$datetime,weather$SMS.I_20,type='l',col="red")
-text(tstart,40,"50cm",col="black",pos=4,cex=1.5)
-plot(dates,soilmoist$WC100cm*100,type='l',ylim=c(0,100),xaxt = "n",xlim=c(tstart,tfinish),col="blue",ylab="soil moisture (%)",xlab="")
-axis.POSIXct(side = 1, x = micro_shd$dates, at = seq(tstart,tfinish, "weeks"), format = "%d-%m",  las = 2)
-points(weather$datetime,weather$SMS.I_40,type='l',col="red")
-text(tstart,40,"100cm",col="black",pos=4,cex=1.5)
-mtext(site$name,outer = TRUE)
 
