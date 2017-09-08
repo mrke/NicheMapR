@@ -75,6 +75,8 @@ slope<-0. # slope (degrees, range 0-90)
 azmuth<-180. # aspect (degrees, 0 = North, range 0-360)
 hori<-rep(0,24) # enter the horizon angles (degrees) so that they go from 0 degrees azimuth (north) clockwise in 15 degree intervals
 VIEWF <- 1-sum(sin(hori*pi/180))/length(hori) # convert horizon angles to radians and calc view factor(s)
+lamb <- 0 # Return wavelength-specific solar radiation output?
+IUV <- 0 # Use gamma function for scattered solar radiation? (computationally intensive)
 minshade<-0. # minimum available shade (%)
 maxshade<-90. # maximum available shade (%)
 PCTWET<-0 # percentage of surface area acting as a free water surface (%)
@@ -161,6 +163,13 @@ KS<-rep(0.0058,19) #saturated conductivity, kg s/m3
 BB<-rep(1.7,19) #soil 'b' parameter
 BD<-rep(1.3,19) # soil bulk density, Mg/m3
 L<-c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,0,0)*10000 # root density at each node, mm/m3 (from Campell 1985 Soil Physics with Basic, p. 131)
+R1 <- 0.001 #root radius, m}\cr\cr
+RW <- 2.5e+10 #resistance per unit length of root, m3 kg-1 s-1
+RL <- 2e+6 #resistance per unit length of leaf, m3 kg-1 s-1
+PC <- -1500 #critical leaf water potential for stomatal closure, J kg-1
+SP <- 10 #stability parameter for stomatal closure equation, -
+IM <- 1e-06 #maximum allowable mass balance error, kg
+MAXCOUNT <- 500 #maximum iterations for mass balance, -
 LAI<-0.1 # leaf area index, used to partition traspiration/evaporation from PET
 rainmult<-1 # rainfall multiplier to impose catchment
 maxpool<-10 # max depth for water pooling on the surface, mm (to account for runoff)
@@ -191,7 +200,7 @@ tides<-matrix(data = 0., nrow = 24*julnum, ncol = 3) # matrix for tides
 ### Collating all input parameters
 ```{r}
 # input parameter vector
-microinput<-c(julnum,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly)
+microinput<-c(julnum,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT)
 
 # Final input list - all these variables are expected by the input argument of the Fortran microclimate subroutine
 micro<-list(microinput=microinput,tides=tides,julday=julday,SLES=SLES,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX,TMINN=TMINN,RHMAXX=RHMAXX,RHMINN=RHMINN,CCMAXX=CCMAXX,CCMINN=CCMINN,WNMAXX=WNMAXX,WNMINN=WNMINN,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,REFLS=REFLS,PCTWET=PCTWET,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists,RAINFALL=RAINFALL,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI)
