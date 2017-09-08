@@ -113,9 +113,7 @@ by choosing the option 'rungads<-1'
 \code{BB}{ = rep(4.5,19), Campbell's soil 'b' parameter (-) (19 values descending through soil for specified soil nodes in parameter}
 \code{DEP}
 { and points half way between)}\cr\cr
-\code{BD}{ = rep(1.3,19), Soil bulk density (kg/m3)  (19 values descending through soil for specified soil nodes in parameter}
-\code{DEP}
-{ and points half way between)}\cr\cr
+\code{BD}{ = rep(1.3,19), Soil bulk density (kg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
 \code{Clay}{ = 20, Clay content for matric potential calculations (\%)}\cr\cr
 \code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
 \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
@@ -129,8 +127,6 @@ by choosing the option 'rungads<-1'
 \code{SP}{ = 10, stability parameter for stomatal closure equation, -}\cr\cr
 \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
 \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
-\code{DEP}
-{ and points half way between)}\cr\cr
 \code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET}\cr\cr
 
 \strong{ Snow mode parameters:}
