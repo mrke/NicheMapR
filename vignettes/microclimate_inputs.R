@@ -56,6 +56,8 @@ SLES                      | -                 | 0-1               | substrate lo
 REFLS                      | -                 | 0-1               | substrate solar reflectivity$^1$ 
 CMH2O                     | cm                | 0.1-2             | precipitable cm H$_2$O in air column
 TAI                       | -                 | 1-julnum          | aerosol optical extinction coefficients$^{1,2}$ 
+lamb                     | -                | 0-1             | flag to eturn wavelength-specific solar radiation output
+IUV                      | -                | 0-1             | flag to use gamma function for scattered solar radiation$^{3}$
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
@@ -135,6 +137,13 @@ KS                        | kg s m$^{-3}$        | 1 x $10^{-5}$     | saturated
 BB                        | -                    | 1.7-7.6           | Campbell's 'b' parameter; vector of 19 values$^{1}$
 BD                        | Mg m$^{-3}$          | >0                | bulk density (should be matched to same variable in the soilprops matrix)
 L                         | m$^{3}$ m$^{-3}$     | 0-90              | root density; vector of 19 values$^{1}$  
+R1                        | m                    | 0-90              | root radius  
+RW                        | m$^{3}$ kg$^{-1}$ s$^{-1}$     | 0-90              | resistance per unit length of root  
+RL                        | m$^{3}$ kg$^{-1}$ s$^{-1}$     | 0-90              | resistance per unit length of leaf  
+PC                        | J kg$^{-1}$          | 0-90              | critical leaf water potential for stomatal closure  
+SP                        | -                    | >0                | stability parameter for stomatal closure equation
+IM                        | kg                   | >0                | maximum allowable mass balance error
+MAXCOUNT                  | -                    | >0                | maximum iterations for mass balance
 LAI                       | -                    | 0-90              | leaf area index, used to partition traspiration/evaporation from PET 
 rainmult                  | -                    | >0                | rainfall multiplier to impose a catchment 
 maxpool                   | mm                   | >0                | max depth for surface water pooling$^{2}$  
@@ -161,7 +170,7 @@ tabl <- "
 ------------------------- | -------------------- | ------------------ | --------------
 tides[1:julnum,1]         | -                    | 0 or 1             | tide in (1) or out(0); vector of length julnum
 tides[1:julnum,2]         | &deg;C               | -80 - 80           | sea water temperature; vector of length julnum
-tides[1:julnum,3]         | -                    | -                  | % surface wetness from wave splash; vector of length julnum
+tides[1:julnum,3]         | %                    | -                  | % surface wetness from wave splash; vector of length julnum
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
