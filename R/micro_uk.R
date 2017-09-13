@@ -282,98 +282,98 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
   rainfrac=0.5,
   shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",barcoo="",quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0) {
   #
-  loc="London, UK"
-  timeinterval=365
-  ystart=2015
-  yfinish=2015
-  nyears=1
-  soiltype=4
-  REFL=0.15
-  slope=0
-  aspect=0
-  DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
-  minshade=0
-  maxshade=90
-  Refhyt=1.2
-  Usrhyt=.01
-  Z01=0
-  Z02=0
-  ZH1=0
-  ZH2=0
-  runshade=1
-  clearsky=0
-  rungads=1
-  write_input=0
-  writecsv=0
-  manualshade=1
-  soildata=0
-  terrain=0
-  dailywind=1
-  adiab_cor=1
-  warm=0
-  spatial="C:/CHESS"
-  vlsci=0
-  loop=0
-  ERR=1.5
-  RUF=0.004
-  EC=0.0167238
-  SLE=0.95
-  Thcond=2.5
-  Density=2560
-  SpecHeat=870
-  BulkDensity=1300
-  PCTWET=0
-  rainwet=1.5
-  cap=1
-  CMH2O=1
-  hori=rep(0,24)
-  TIMAXS=c(1.0, 1.0, 0.0, 0.0)
-  TIMINS=c(0, 0, 1, 1)
-  timezone=0
-  runmoist=1
-  PE=rep(1.1,19)
-  KS=rep(0.0037,19)
-  BB=rep(4.5,19)
-  BD=rep(1.3,19)
-  Clay=20
-  SatWater=rep(0.26,10)
-  maxpool=10000
-  rainmult=1
-  evenrain=0
-  SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
-  L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
-    4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
-    0,0)*10000
-  LAI=0.1
-  snowmodel=1
-  snowtemp=1.5
-  snowdens=0.375
-  densfun=c(0,0)
-  snowmelt=0.9
-  undercatch=1
-  rainmelt=0.0125
-  rainfrac=0.5
-  shore=0
-  tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
-  scenario=""
-  year=2070
-  barcoo=""
-  quadrangle=1
-  hourly=0
-  rainhour = 0
-  rainoff=0
-  lamb = 0
-  IUV = 0
-  R1 = 0.001
-  RW = 2.5e+10
-  RL = 2e+6
-  PC = -1500
-  SP = 10
-  IM = 1e-06
-  MAXCOUNT = 500
-  errors<-0
-  windfac=1
-  rainhourly = 0
+  # loc="London, UK"
+  # timeinterval=365
+  # ystart=2015
+  # yfinish=2015
+  # nyears=1
+  # soiltype=4
+  # REFL=0.15
+  # slope=0
+  # aspect=0
+  # DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
+  # minshade=0
+  # maxshade=90
+  # Refhyt=1.2
+  # Usrhyt=.01
+  # Z01=0
+  # Z02=0
+  # ZH1=0
+  # ZH2=0
+  # runshade=1
+  # clearsky=0
+  # rungads=1
+  # write_input=0
+  # writecsv=0
+  # manualshade=1
+  # soildata=0
+  # terrain=0
+  # dailywind=1
+  # adiab_cor=1
+  # warm=0
+  # spatial="C:/CHESS"
+  # vlsci=0
+  # loop=0
+  # ERR=1.5
+  # RUF=0.004
+  # EC=0.0167238
+  # SLE=0.95
+  # Thcond=2.5
+  # Density=2560
+  # SpecHeat=870
+  # BulkDensity=1300
+  # PCTWET=0
+  # rainwet=1.5
+  # cap=1
+  # CMH2O=1
+  # hori=rep(0,24)
+  # TIMAXS=c(1.0, 1.0, 0.0, 0.0)
+  # TIMINS=c(0, 0, 1, 1)
+  # timezone=0
+  # runmoist=1
+  # PE=rep(1.1,19)
+  # KS=rep(0.0037,19)
+  # BB=rep(4.5,19)
+  # BD=rep(1.3,19)
+  # Clay=20
+  # SatWater=rep(0.26,10)
+  # maxpool=10000
+  # rainmult=1
+  # evenrain=0
+  # SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
+  # L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
+  #   4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
+  #   0,0)*10000
+  # LAI=0.1
+  # snowmodel=1
+  # snowtemp=1.5
+  # snowdens=0.375
+  # densfun=c(0,0)
+  # snowmelt=0.9
+  # undercatch=1
+  # rainmelt=0.0125
+  # rainfrac=0.5
+  # shore=0
+  # tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
+  # scenario=""
+  # year=2070
+  # barcoo=""
+  # quadrangle=1
+  # hourly=0
+  # rainhour = 0
+  # rainoff=0
+  # lamb = 0
+  # IUV = 0
+  # R1 = 0.001
+  # RW = 2.5e+10
+  # RL = 2e+6
+  # PC = -1500
+  # SP = 10
+  # IM = 1e-06
+  # MAXCOUNT = 500
+   errors<-0
+  # windfac=1
+  # rainhourly = 0
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   if(DEP[2]-DEP[1]>3 | DEP[3]-DEP[2]>3){
     cat("warning, nodes might be too far apart near the surface, try a different spacing if the program is crashing \n")
@@ -756,6 +756,10 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
         nc<-nc_open(paste(spatial,"/chess_tas_",yearlist[j],month[jj],'.nc',sep=""))
         tas<-as.numeric(ncvar_get(nc,varid="tas",start=start,count))
         nc_close(nc)
+        # air pressure, pa
+        nc<-nc_open(paste(spatial,"/chess_psurf_",yearlist[j],month[jj],'.nc',sep=""))
+        psurf<-as.numeric(ncvar_get(nc,varid="psurf",start=start,count))
+        nc_close(nc)
         # specific humdity, kg/m3
         nc<-nc_open(paste(spatial,"/chess_huss_",yearlist[j],month[jj],'.nc',sep=""))
         huss<-as.numeric(ncvar_get(nc,varid="huss",start=start,count))
@@ -780,6 +784,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
           Hum <- huss # humidity, kg/m3
           Rain <- precip * 3600 * 24 # mm/day
           solar <- rsds
+          press <- psurf # pa
         }else{ # subsequent months - concatenate
           Tmax <- c(Tmax, tas - 273.15 + dtr/2) # maximum air temperature, deg C
           Tmin <- c(Tmin, tas - 273.15 - dtr/2) # minimum air temperature, deg C
@@ -787,15 +792,18 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
           Hum <- c(Hum, huss) # humidity, kg/m3
           Rain <- c(Rain, precip * 3600 * 24) # mm/day
           solar <- c(solar, rsds)
+          press <- c(press, psurf) # pa
         }
       }
     }
-    Tmax <- Tmax[1:365]
-    Tmin <- Tmin[1:365]
-    solar <- solar[1:365]
-    Wind <- Wind[1:365]
-    Rain <- Rain[1:365]
-    Hum <- Hum[1:365]
+    #Tmax <- Tmax[1:365]
+    #Tmin <- Tmin[1:365]
+    #solar <- solar[1:365]
+    #Wind <- Wind[1:365]
+    #Rain <- Rain[1:365]
+    #Hum <- Hum[1:365]
+    #press <- press[1:365]
+    #press <- rep(103125, 365)
 
     # compute clear sky solar for the site of interest, for cloud cover computation below
     micro_clearsky <- micro_global(loc = c(lon_1, lat_1), clearsky = 1, timeinterval = 365)
@@ -874,12 +882,15 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
         }
         RAINFALL<-Rain+rainoff
 
-        vd <- WETAIR(db = TMAXX, rh = 100)$vd
-        RHMINN <- (Hum / vd) * 100
+        # convert from specific humidity to relative humidity
+        es <- WETAIR(db = TMAXX, rh = 100)$esat
+        e <- Hum * press / (0.378 * Hum + 0.622)
+        RHMINN <- (e / es) * 100
         RHMINN[RHMINN>100]<-100
         RHMINN[RHMINN<0]<-0.01
-        vd <- WETAIR(db = TMINN, rh = 100)$vd
-        RHMAXX <- (Hum / vd) * 100
+        es <- WETAIR(db = TMINN, rh = 100)$esat
+        e <- Hum * press / (0.378 * Hum + 0.622)
+        RHMAXX <- (e / es) * 100
         RHMAXX[RHMAXX>100]<-100
         RHMAXX[RHMAXX<0]<-0.01
 
