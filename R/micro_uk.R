@@ -613,22 +613,21 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       MINSHADES <- rep(0,(timeinterval*nyears))+minshade # daily min shade (%)
     }
 
-    #ALTITUDES <- elevslpasphori[1]
-    gcfolder<-paste(.libPaths()[1],"/gcfolder.rda",sep="")
-    if(file.exists(gcfolder)==FALSE){
-      message("You don't appear to have the global climate data set - \n run function get.global.climate(folder = 'folder you want to put it in') .....\n exiting function micro_global")
-      opt <- options(show.error.messages=FALSE)
-      on.exit(options(opt))
-      stop()
+    ConvertCoordinates <- function(easting,northing) {
+      out = cbind(easting,northing)
+      mask = !is.na(easting)
+      sp <-  sp::spTransform(sp::SpatialPoints(list(easting[mask],northing[mask]),proj4string=sp::CRS(bng)),sp::CRS(wgs84))
+      out[mask,]=sp@coords
+      out
     }
-    load(gcfolder)
-    global_climate<-raster::brick(paste(folder,"/global_climate.nc",sep=""))
-    message("extracting climate data", '\n')
-    global_climate<-raster::brick(paste(folder,"/global_climate.nc",sep=""))
-    CLIMATE <- raster::extract(global_climate,x)
-    ALTT<-as.numeric(CLIMATE[,1]) # convert from km to m
-    ALTITUDES <- ALTT
-    UKDEM <- ALTT
+    # conversion parameters for UTM to lat/lon
+    wgs84 = "+init=epsg:4326"
+    bng = '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000
++ellps=airy +datum=OSGB36 +units=m +no_defs'
+    sp <-  sp::spTransform(sp::SpatialPoints(x,proj4string=sp::CRS(wgs84)),sp::CRS(bng))
+    x2 <- sp@coords
+    UKDEM <-extract(raster(paste0(spatial,"/terr1000.tif")), x2)
+    ALTITUDES <- extract(raster(paste0(spatial,"/terr50.tif")), x2)
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-UKDEM}
 
     if(terrain==1){
@@ -675,14 +674,6 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
     # read daily weather - first get location in netcdf file for retrieval
     yearlist<-seq(ystart,(ystart+(nyears-1)),1)
 
-    # function to get lat/lon coordinates from UTM
-    ConvertCoordinates <- function(easting,northing) {
-      out = cbind(easting,northing)
-      mask = !is.na(easting)
-      sp <-  sp::spTransform(sp::SpatialPoints(list(easting[mask],northing[mask]),proj4string=sp::CRS(bng)),sp::CRS(wgs84))
-      out[mask,]=sp@coords
-      out
-    }
     # conversion parameters for UTM to lat/lon
     wgs84 = "+init=epsg:4326"
     bng = '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000
