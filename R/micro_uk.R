@@ -188,86 +188,72 @@
 #'
 #' }
 #' @examples
-#'micro<-micro_aust() # run the model with default location and settings
+#' library(NicheMapR)
+#' micro<-micro_uk(runshade = 0) # run the model with default location and settings
 #'
-#'metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
-#'shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
-#'soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
-#'shadsoil<-as.data.frame(micro$shadsoil) # soil temperatures, maximum shade
+#' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
+#' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
+#' soilmoist<-as.data.frame(micro$soilmoist) # soil temperatures, minimum shade
 #'
-#'# append dates
-#'days<-rep(seq(1,12),24)
-#'days<-days[order(days)]
-#'dates<-days+metout$TIME/60/24-1 # dates for hourly output
-#'dates2<-seq(1,12,1) # dates for daily output
+#' # append dates
+#' ystart <- 2015
+#' yfinish <- 2015
+#' nyears <- yfinish-ystart+1
+#' tzone<-paste("Etc/GMT+",0,sep="")
+#' dates<-seq(ISOdate(ystart,1,1,tz=tzone)-3600*12, ISOdate((ystart+nyears),1,1,tz=tzone)-3600*13, by="hours")
 #'
-#'plotmetout<-cbind(dates,metout)
-#'plotsoil<-cbind(dates,soil)
-#'plotshadmet<-cbind(dates,shadmet)
-#'plotshadsoil<-cbind(dates,shadsoil)
+#' metout <- cbind(dates,metout)
+#' soil <- cbind(dates,soil)
+#' soilmoist <- cbind(dates, soilmoist)
+#' minshade<-micro$minshade
 #'
-#'minshade<-micro$minshade
-#'maxshade<-micro$maxshade
+#' # plotting above-ground conditions in minimum shade
+#' with(metout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Temperature (deg C)"
+#' , type = "l",main=paste("air and sky temperature, ",minshade,"% shade",sep=""), ylim = c(-20, 60))})
+#' with(metout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Temperature (deg C)"
+#' , type = "l",lty=2,col='blue')})
+#' with(metout,{points(TSKYC ~ dates,xlab = "Date and Time", ylab = "Temperature (deg C)"
+#' ,  type = "l",col='light blue',main=paste("sky temperature, ",minshade,"% shade",sep=""))})
+#' with(metout,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
+#' , type = "l",ylim=c(0,100),main=paste("humidity, ",minshade,"% shade",sep=""))})
+#' with(metout,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
+#' , type = "l",col='blue',lty=2,ylim=c(0,100))})
+#' with(metout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
+#' ,  type = "l",main="wind speed")})
+#' with(metout,{points(VLOC ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
+#' ,  type = "l",lty=2,col='blue')})
+#' with(metout,{plot(SOLR ~ dates,xlab = "Date and Time", ylab = "Solar Radiation (W/m2)"
+#' ,  type = "l",main="solar radiation")})
+#' with(metout,{plot(SNOWDEP ~ dates,xlab = "Date and Time", ylab = "Snow Depth (cm)"
+#' ,  type = "l",main="snow depth")})
 #'
-#'# plotting above-ground conditions in minimum shade
-#'with(plotmetout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)"
-#', type = "l",main=paste("air temperature, ",minshade,"% shade",sep=""))})
-#'with(plotmetout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)"
-#', type = "l",lty=2,col='blue')})
-#'with(plotmetout,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
-#', type = "l",ylim=c(0,100),main=paste("humidity, ",minshade,"% shade",sep=""))})
-#'with(plotmetout,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
-#', type = "l",col='blue',lty=2,ylim=c(0,100))})
-#'with(plotmetout,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (deg C)"
-#',  type = "l",main=paste("sky temperature, ",minshade,"% shade",sep=""))})
-#'with(plotmetout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-#',  type = "l",main="wind speed")})
-#'with(plotmetout,{points(VLOC ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-#',  type = "l",lty=2,col='blue')})
-#'with(plotmetout,{plot(ZEN ~ dates,xlab = "Date and Time", ylab = "Zenith Angle of Sun (deg)"
-#',  type = "l",main="solar angle, sun")})
-#'with(plotmetout,{plot(SOLR ~ dates,xlab = "Date and Time", ylab = "Solar Radiation (W/m2)"
-#',  type = "l",main="solar radiation")})
-#'
-#'# plotting soil temperature for minimum shade
-#'for(i in 1:10){
+#' # plotting soil temperature
+#' for(i in 1:10){
 #'  if(i==1){
-#'    plot(plotsoil[,i+3]~plotsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature (deg C)"
+#'    plot(soil[,i+3]~soil[,1],xlab = "Date and Time", ylab = "Soil Temperature (deg C)"
 #'    ,col=i,type = "l",main=paste("soil temperature ",minshade,"% shade",sep=""))
 #'  }else{
-#'    points(plotsoil[,i+3]~plotsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature
+#'    points(soil[,i+3]~soil[,1],xlab = "Date and Time", ylab = "Soil Temperature
 #'     (deg C)",col=i,type = "l")
 #'  }
-#'}
+#' }
 #'
-#'# plotting above-ground conditions in maximum shade
-#'with(plotshadmet,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)"
-#', type = "l",main="air temperature, sun")})
-#'with(plotshadmet,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)"
-#', type = "l",lty=2,col='blue')})
-#'with(plotshadmet,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
-#', type = "l",ylim=c(0,100),main="humidity, shade")})
-#'with(plotshadmet,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
-#', type = "l",col='blue',lty=2,ylim=c(0,100))})
-#'with(plotshadmet,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (deg C)",
-#'  type = "l",main="sky temperature, shade")})
-#'
-#'# plotting soil temperature for maximum shade
-#'for(i in 1:10){
+#' # plotting soil moisture
+#' for(i in 1:10){
 #'  if(i==1){
-#'    plot(plotshadsoil[,i+3]~plotshadsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature
-#'     (deg C)",col=i,type = "l",main=paste("soil temperature ",maxshade,"% shade",sep=""))
+#'    plot(soilmoist[,i+3]~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture (% volumetric)"
+#'    ,col=i,type = "l",main=paste("soil moisture ",minshade,"% shade",sep=""))
 #'  }else{
-#'    points(plotshadsoil[,i+3]~plotshadsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature
-#'     (deg C)",col=i,type = "l")
+#'    points(soilmoist[,i+3]~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture
+#'     (%)",col=i,type = "l")
 #'  }
-#'}
+#' }
 micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
   nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,
   DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
   minshade=0,maxshade=90,Refhyt=1.2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
   runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,manualshade=1,
-  soildata=0,terrain=0,dailywind=1,windfac=1,adiab_cor=1,warm=0,spatial="C:/Spatial_Data/Climate/New Zealand/weather",vlsci=0,
+  soildata=0,terrain=0,dailywind=1,windfac=1,adiab_cor=1,warm=0,spatial="C:/CHESS",vlsci=0,
   ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2560,SpecHeat=870,BulkDensity=1300,
   PCTWET=0,rainwet=1.5,cap=1,CMH2O=1.,hori=rep(0,24),
   TIMAXS=c(1.0, 1.0, 0.0, 0.0),TIMINS=c(0, 0, 1, 1),timezone=0,
@@ -281,7 +267,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
   snowmodel=1,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
   shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",barcoo="",quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0) {
-  #
+
   # loc="London, UK"
   # timeinterval=365
   # ystart=2015
@@ -371,11 +357,12 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
   # SP = 10
   # IM = 1e-06
   # MAXCOUNT = 500
-   errors<-0
   # windfac=1
   # rainhourly = 0
+
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
-  if(DEP[2]-DEP[1]>3 | DEP[3]-DEP[2]>3){
+   errors<-0
+   if(DEP[2]-DEP[1]>3 | DEP[3]-DEP[2]>3){
     cat("warning, nodes might be too far apart near the surface, try a different spacing if the program is crashing \n")
   }
   if(timeinterval<12 | timeinterval > 365){
@@ -626,22 +613,6 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       MINSHADES <- rep(0,(timeinterval*nyears))+minshade # daily min shade (%)
     }
 
-    # r1<-raster(paste(spatial,'/nz_geo3_km.asc',sep=""))
-    # UKDEM<-extract(r1,x)*1000
-    #
-    # utm<-project(as.matrix(x), "+proj=tmerc +lat_0=0.0 +lon_0=173.0 +k=0.9996 +x_0=1600000.0 +y_0=10000000.0 +datum=WGS84 +units=m")
-    # nc<-nc_open(paste(spatial,"/elevslpasphori.nc",sep=""))
-    # easting<-ncvar_get(nc,"easting")
-    # northing<-ncvar_get(nc,"northing")
-    # dist1<-abs(easting-utm[1])
-    # index1<-which.min(dist1)
-    # dist2<-abs(northing-utm[2])
-    # index2<-which.min(dist2)
-    # start<-c(index1,index2,1)
-    # count<-c(1,1,-1)
-    # elevslpasphori<-as.numeric(ncvar_get(nc,varid="variable",start=start,count=count))
-    # nc_close(nc)
-
     #ALTITUDES <- elevslpasphori[1]
     gcfolder<-paste(.libPaths()[1],"/gcfolder.rda",sep="")
     if(file.exists(gcfolder)==FALSE){
@@ -796,14 +767,6 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
         }
       }
     }
-    #Tmax <- Tmax[1:365]
-    #Tmin <- Tmin[1:365]
-    #solar <- solar[1:365]
-    #Wind <- Wind[1:365]
-    #Rain <- Rain[1:365]
-    #Hum <- Hum[1:365]
-    #press <- press[1:365]
-    #press <- rep(103125, 365)
 
     # compute clear sky solar for the site of interest, for cloud cover computation below
     micro_clearsky <- micro_global(loc = c(lon_1, lat_1), clearsky = 1, timeinterval = 365)
@@ -812,7 +775,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
     if(length(solar)==366){# add day for leap year if needed
       clearsky_mean<-c(clearsky_mean[1:59],clearsky_mean[59],clearsky_mean[60:365])
     }
-    cloud <- 1-solar/clearsky_mean
+    cloud <- (1-solar/clearsky_mean) * 100
     cloud[cloud<0]<-0
     cloud[cloud>100]<-100
     CCMAXX<-as.numeric(cloud)
