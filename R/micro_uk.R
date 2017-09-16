@@ -1,6 +1,6 @@
 #' United Kingdom implementation of the microclimate model.
 #'
-#' An implementation of the Niche Mapper microclimate model that uses the CHESS daily weather database. Currently uses the following files, and needs all 12 for a given year: dtr, tas, huss, precip, rsds, sfcWind
+#' An implementation of the Niche Mapper microclimate model that uses the CHESS daily weather database. Specifically uses the following files, and needs all 12 for a given year: dtr, tas, huss, precip, rsds, sfcWind, psurf. Also uses the OS Terrain 50 DEM (assumes file name is 'terr50.tif'), which was aggregated to 1km to match met data for lapse-rate correction (assumes file name is 'terr1000.tif').
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param ystart First year to run
@@ -26,7 +26,7 @@
 #' @return shadhumid Hourly predictions of the soil humidity under the maximum specified shade
 #' @return plant Hourly predictions of plant transpiration, leaf water potential and root water potential under the minimum specified shade
 #' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
-#' @usage micro_aust(loc = "Melbourne, Australia", timeinterval = 365, ystart = 1990, yfinish = 1990, soiltype = 4,
+#' @usage micro_UK(loc = "London, UK", timeinterval = 365, ystart = 2015, yfinish = 2015, soiltype = 4,
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export
