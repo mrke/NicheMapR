@@ -538,20 +538,9 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     nyears<-yfinish-ystart+1
 
     juldays12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
-    juldaysn<-juldays12 # variable of juldays for when doing multiple years
-    if(nyears>1 & timeinterval==365){ # create sequence of days for splining across multiple years
-      for(i in 1:(nyears-1)){
-        juldaysn<-c(juldaysn,(juldays12+365*i))
-      }
-    }
 
-    if(timeinterval<365){
-      microdaily<-0 # run microclimate model as normal, where each day is iterated 3 times starting with the initial condition of uniform soil temp at mean monthly temperature
-    }else{
-      microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
-    }
+    microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
 
-    # now check if doing something other than middle day of each month, and create appropriate vector of julian days
     daystart<-as.integer(ceiling(365/timeinterval/2))
     idayst <- 1 # start day
     dates<-Sys.time()-60*60*24
@@ -605,13 +594,6 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     ALONG <- abs(trunc(x[1]))
     ALMINT <- (abs(x[1])-ALONG)*60
     azmuth<-aspect
-
-    if(soildata==0){
-      soilprop<-cbind(0,0)
-      # creating the shade array
-      MAXSHADES <- rep(0,(timeinterval*nyears))+maxshade # daily max shade (%)
-      MINSHADES <- rep(0,(timeinterval*nyears))+minshade # daily min shade (%)
-    }
 
     #GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]]
     USADEM <- extract(raster(paste0(spatial,"/PRISM_us_dem_4km_asc.asc")), x)
@@ -920,7 +902,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
 
         if(nyears==1){
           avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
-          tannulrun<-rep(avetemp,365)
+          tannulrun<-rep(avetemp,ndays)
         }else{
           if(nrow(TMAXX)==1){
             avetemp<-colMeans(cbind(TMAXX, TMINN), na.rm=TRUE)
