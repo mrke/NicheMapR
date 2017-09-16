@@ -249,24 +249,24 @@
 #'  }
 #' }
 micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfinish=2016,
-                      nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,
-                      DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
-                      minshade=0,maxshade=90,Refhyt=1.2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
-                      runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,manualshade=1,
-                      soildata=0,terrain=0,dailywind=1,windfac=1,adiab_cor=1,warm=0,spatial="N:/USA",vlsci=0,
-                      ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2560,SpecHeat=870,BulkDensity=1300,
-                      PCTWET=0,rainwet=1.5,cap=1,CMH2O=1.,hori=rep(0,24),
-                      TIMAXS=c(1.0, 1.0, 0.0, 0.0),TIMINS=c(0, 0, 1, 1),timezone=0,
-                      runmoist=1,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(1.3,19),Clay=20,
-                      SatWater=rep(0.26,10),maxpool=10000,rainmult=1,evenrain=0,
-                      SoilMoist_Init=c(0.1,0.12,0.15,0.3,0.4,0.4,0.4,0.4,0.4,0.4),
-                      L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
-                          4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
-                          0,0)*10000, R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
-                      LAI=0.1,
-                      snowmodel=1,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
-                      rainfrac=0.5,
-                      shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",barcoo="",quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0) {
+  nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,
+  DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
+  minshade=0,maxshade=90,Refhyt=1.2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
+  runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,manualshade=1,
+  soildata=0,terrain=0,dailywind=1,windfac=1,adiab_cor=1,warm=0,spatial="N:/USA",vlsci=0,
+  ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2560,SpecHeat=870,BulkDensity=1300,
+  PCTWET=0,rainwet=1.5,cap=1,CMH2O=1.,hori=rep(0,24),
+  TIMAXS=c(1.0, 1.0, 0.0, 0.0),TIMINS=c(0, 0, 1, 1),timezone=0,
+  runmoist=1,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(1.3,19),Clay=20,
+  SatWater=rep(0.26,10),maxpool=10000,rainmult=1,evenrain=0,
+  SoilMoist_Init=c(0.1,0.12,0.15,0.3,0.4,0.4,0.4,0.4,0.4,0.4),
+  L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
+    4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
+    0,0)*10000, R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
+  LAI=0.1,
+  snowmodel=1,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
+  rainfrac=0.5,
+  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",barcoo="",quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0) {
 
   # loc="Madison, Wisconsin"
   # timeinterval=365
@@ -560,24 +560,24 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     ################## location and terrain #################################
     if (!requireNamespace("raster", quietly = TRUE)) {
       stop("package 'raster' is needed. Please install it.",
-           call. = FALSE)
+        call. = FALSE)
     }
     if (!requireNamespace("ncdf4", quietly = TRUE)) {
       stop("package 'ncdf4' is needed. Please install it.",
-           call. = FALSE)
+        call. = FALSE)
     }
     if(is.numeric(loc)==FALSE){ # use geocode to get location from site name via googlemaps
       if (!requireNamespace("dismo", quietly = TRUE)) {
         stop("dismo needed for the place name geocode function to work. Please install it.",
-             call. = FALSE)
+          call. = FALSE)
       }
       if (!requireNamespace("XML", quietly = TRUE)) {
         stop("XML needed for the place name geocode function to work. Please install it.",
-             call. = FALSE)
+          call. = FALSE)
       }
       if (!requireNamespace("proj4", quietly = TRUE)) {
         stop("package 'proj4' is needed. Please install it.",
-             call. = FALSE)
+          call. = FALSE)
       }
       longlat <- dismo::geocode(loc)[3:4] # assumes first geocode match is correct
       if(nrow(longlat>1)){longlat<-longlat[1,]}
@@ -677,40 +677,74 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     start<-c(index2,index1,1)
     count<-c(1,1,-1)
 
-
     for(j in 1:nyears){ # start loop through years
-      cat(paste('reading weather input for ',yearlist[j], ' \n',sep=""))
-      # minimum daily temperature, K
-      nc<-nc_open(paste(spatial,"/tmmn_",yearlist[j],'.nc',sep=""))
-      tmin<-as.numeric(ncvar_get(nc,varid="air_temperature",start=start,count))
-      nc_close(nc)
-      # maximum daily temperature, K
-      nc<-nc_open(paste(spatial,"/tmmx_",yearlist[j],'.nc',sep=""))
-      tmax<-as.numeric(ncvar_get(nc,varid="air_temperature",start=start,count))
-      nc_close(nc)
-      # minimum daily relative humidity, %
-      nc<-nc_open(paste(spatial,"/rmin_",yearlist[j],'.nc',sep=""))
-      rhmin<-as.numeric(ncvar_get(nc,varid="relative_humidity",start=start,count))
-      nc_close(nc)
-      # maximum daily relative humidity, %
-      nc<-nc_open(paste(spatial,"/rmax_",yearlist[j],'.nc',sep=""))
-      rhmax<-as.numeric(ncvar_get(nc,varid="relative_humidity",start=start,count))
-      nc_close(nc)
-      # daily precipitation, mm
-      nc<-nc_open(paste(spatial,"/pr_",yearlist[j],'.nc',sep=""))
-      Rain<-as.numeric(ncvar_get(nc,varid="precipitation_amount",start=start,count))
-      nc_close(nc)
-      # daily solar radiation, W/m2 (averaged over day)
-      nc<-nc_open(paste(spatial,"/srad_",yearlist[j],'.nc',sep=""))
-      solar<-as.numeric(ncvar_get(nc,varid="surface_downwelling_shortwave_flux_in_air",start=start,count))
-      nc_close(nc)
-      # daily wind speed, m/s
-      nc<-nc_open(paste(spatial,"/vs_",yearlist[j],'.nc',sep=""))
-      Wind<-as.numeric(ncvar_get(nc,varid="wind_speed",start=start,count))
-      nc_close(nc)
-      # compute final values
-      Tmax <- tmax - 273.15 # maximum air temperature, deg C
-      Tmin <- tmin - 273.15 # minimum air temperature, deg C
+      if(j == 1){
+        cat(paste('reading weather input for ',yearlist[j], ' \n',sep=""))
+        # minimum daily temperature, K
+        nc<-nc_open(paste(spatial,"/tmmn_",yearlist[j],'.nc',sep=""))
+        tmin<-as.numeric(ncvar_get(nc,varid="air_temperature",start=start,count))
+        nc_close(nc)
+        # maximum daily temperature, K
+        nc<-nc_open(paste(spatial,"/tmmx_",yearlist[j],'.nc',sep=""))
+        tmax<-as.numeric(ncvar_get(nc,varid="air_temperature",start=start,count))
+        nc_close(nc)
+        # minimum daily relative humidity, %
+        nc<-nc_open(paste(spatial,"/rmin_",yearlist[j],'.nc',sep=""))
+        rhmin<-as.numeric(ncvar_get(nc,varid="relative_humidity",start=start,count))
+        nc_close(nc)
+        # maximum daily relative humidity, %
+        nc<-nc_open(paste(spatial,"/rmax_",yearlist[j],'.nc',sep=""))
+        rhmax<-as.numeric(ncvar_get(nc,varid="relative_humidity",start=start,count))
+        nc_close(nc)
+        # daily precipitation, mm
+        nc<-nc_open(paste(spatial,"/pr_",yearlist[j],'.nc',sep=""))
+        Rain<-as.numeric(ncvar_get(nc,varid="precipitation_amount",start=start,count))
+        nc_close(nc)
+        # daily solar radiation, W/m2 (averaged over day)
+        nc<-nc_open(paste(spatial,"/srad_",yearlist[j],'.nc',sep=""))
+        solar<-as.numeric(ncvar_get(nc,varid="surface_downwelling_shortwave_flux_in_air",start=start,count))
+        nc_close(nc)
+        # daily wind speed, m/s
+        nc<-nc_open(paste(spatial,"/vs_",yearlist[j],'.nc',sep=""))
+        Wind<-as.numeric(ncvar_get(nc,varid="wind_speed",start=start,count))
+        nc_close(nc)
+        # compute final values
+        Tmax <- tmax - 273.15 # maximum air temperature, deg C
+        Tmin <- tmin - 273.15 # minimum air temperature, deg C
+      }else{
+        cat(paste('reading weather input for ',yearlist[j], ' \n',sep=""))
+        # minimum daily temperature, K
+        nc<-nc_open(paste(spatial,"/tmmn_",yearlist[j],'.nc',sep=""))
+        tmin<-as.numeric(ncvar_get(nc,varid="air_temperature",start=start,count))
+        nc_close(nc)
+        # maximum daily temperature, K
+        nc<-nc_open(paste(spatial,"/tmmx_",yearlist[j],'.nc',sep=""))
+        tmax<-as.numeric(ncvar_get(nc,varid="air_temperature",start=start,count))
+        nc_close(nc)
+        # minimum daily relative humidity, %
+        nc<-nc_open(paste(spatial,"/rmin_",yearlist[j],'.nc',sep=""))
+        rhmin<-c(rhmin, as.numeric(ncvar_get(nc,varid="relative_humidity",start=start,count)))
+        nc_close(nc)
+        # maximum daily relative humidity, %
+        nc<-nc_open(paste(spatial,"/rmax_",yearlist[j],'.nc',sep=""))
+        rhmax<-c(rhmax, as.numeric(ncvar_get(nc,varid="relative_humidity",start=start,count)))
+        nc_close(nc)
+        # daily precipitation, mm
+        nc<-nc_open(paste(spatial,"/pr_",yearlist[j],'.nc',sep=""))
+        Rain<-c(Rain, as.numeric(ncvar_get(nc,varid="precipitation_amount",start=start,count)))
+        nc_close(nc)
+        # daily solar radiation, W/m2 (averaged over day)
+        nc<-nc_open(paste(spatial,"/srad_",yearlist[j],'.nc',sep=""))
+        solar<-c(solar, as.numeric(ncvar_get(nc,varid="surface_downwelling_shortwave_flux_in_air",start=start,count)))
+        nc_close(nc)
+        # daily wind speed, m/s
+        nc<-nc_open(paste(spatial,"/vs_",yearlist[j],'.nc',sep=""))
+        Wind<-c(wind, as.numeric(ncvar_get(nc,varid="wind_speed",start=start,count)))
+        nc_close(nc)
+        # compute final values
+        Tmax <- c(Tmax, tmax - 273.15) # maximum air temperature, deg C
+        Tmin <- c(Tmin, tmin - 273.15) # minimum air temperature, deg C
+      }
     }
 
     # compute clear sky solar for the site of interest, for cloud cover computation below
@@ -1156,4 +1190,4 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       } # end of check for na sites
     } # end of check if soil data is being used but no soil data returned
   } # end error trapping
-  } # end of NicheMapR_Setup_micro function
+} # end of NicheMapR_Setup_micro function
