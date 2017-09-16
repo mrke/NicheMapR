@@ -760,7 +760,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
 
     # end preliminary test for incomplete year, if simulation includes the present year
 
-    if((soildata==1 & nrow(soilprop)>0)|soildata==0){
+    #if((soildata==1 & nrow(soilprop)>0)|soildata==0){
 
       if(soildata==1){
         # get static soil data into arrays
@@ -1170,6 +1170,6 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
           return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
         }
       } # end of check for na sites
-    } # end of check if soil data is being used but no soil data returned
+    #} # end of check if soil data is being used but no soil data returned
   } # end error trapping
 } # end of NicheMapR_Setup_micro function

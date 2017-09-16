@@ -538,20 +538,9 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
     nyears<-yfinish-ystart+1
 
     juldays12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
-    juldaysn<-juldays12 # variable of juldays for when doing multiple years
-    if(nyears>1 & timeinterval==365){ # create sequence of days for splining across multiple years
-      for(i in 1:(nyears-1)){
-        juldaysn<-c(juldaysn,(juldays12+365*i))
-      }
-    }
 
-    if(timeinterval<365){
-      microdaily<-0 # run microclimate model as normal, where each day is iterated 3 times starting with the initial condition of uniform soil temp at mean monthly temperature
-    }else{
-      microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
-    }
+    microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
 
-    # now check if doing something other than middle day of each month, and create appropriate vector of julian days
     daystart<-as.integer(ceiling(365/timeinterval/2))
     idayst <- 1 # start day
     dates<-Sys.time()-60*60*24
@@ -605,13 +594,6 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
     ALONG <- abs(trunc(x[1]))
     ALMINT <- (abs(x[1])-ALONG)*60
     azmuth<-aspect
-
-    if(soildata==0){
-      soilprop<-cbind(0,0)
-      # creating the shade array
-      MAXSHADES <- rep(0,(timeinterval*nyears))+maxshade # daily max shade (%)
-      MINSHADES <- rep(0,(timeinterval*nyears))+minshade # daily min shade (%)
-    }
 
     ConvertCoordinates <- function(easting,northing) {
       out = cbind(easting,northing)
@@ -790,7 +772,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
 
     # end preliminary test for incomplete year, if simulation includes the present year
 
-    if((soildata==1 & nrow(soilprop)>0)|soildata==0){
+    #if((soildata==1 & nrow(soilprop)>0)|soildata==0){
 
       if(soildata==1){
         # get static soil data into arrays
@@ -932,7 +914,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
 
         if(nyears==1){
           avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
-          tannulrun<-rep(avetemp,365)
+          tannulrun<-rep(avetemp,ndays)
         }else{
           if(nrow(TMAXX)==1){
             avetemp<-colMeans(cbind(TMAXX, TMINN), na.rm=TRUE)
@@ -1200,6 +1182,6 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
           return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
         }
       } # end of check for na sites
-    } # end of check if soil data is being used but no soil data returned
+    #} # end of check if soil data is being used but no soil data returned
   } # end error trapping
 } # end of NicheMapR_Setup_micro function
