@@ -736,7 +736,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     leapyears<-seq(1972,2060,4)
     for(j in 1:nyears){
       if(yearlist[j]%in%leapyears){# add day for leap year if needed
-        clearsky_mean<-c(clearsky_mean[1:59],clearsky_mean[59],clearsky_mean[60:365])
+        clearsky_mean<-c(clearsky_mean1[1:59],clearsky_mean1[59],clearsky_mean1[60:365])
       }else{
         clearsky_mean <- clearsky_mean1
       }
