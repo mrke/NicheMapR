@@ -1,6 +1,6 @@
 #' USA implementation of the microclimate model.
 #'
-#' An implementation of the Niche Mapper microclimate model that uses the CHESS daily weather database. Currently uses the following files, and needs all 12 for a given year: dtr, tas, huss, precip, rsds, sfcWind
+#' An implementation of the Niche Mapper microclimate model that uses the University of Idaho Gridded Surface Meteorological Data (UofI METDATA) daily weather database https://www.northwestknowledge.net/metdata/data/, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "PRISM_us_dem_4km_asc.asc".
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param ystart First year to run
@@ -26,7 +26,7 @@
 #' @return shadhumid Hourly predictions of the soil humidity under the maximum specified shade
 #' @return plant Hourly predictions of plant transpiration, leaf water potential and root water potential under the minimum specified shade
 #' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
-#' @usage micro_aust(loc = "Melbourne, Australia", timeinterval = 365, ystart = 1990, yfinish = 1990, soiltype = 4,
+#' @usage micro_USA(loc = "Madison Wisconsin, USA", timeinterval = 365, ystart = 1990, yfinish = 1990, soiltype = 4,
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export
@@ -189,14 +189,14 @@
 #' }
 #' @examples
 #' library(NicheMapR)
-#' micro<-micro_USA(runshade = 0) # run the model with default location and settings
+#' micro<-micro_USA(runshade = 0, ystart = 2014, yfinish = 2016) # run the model with default location and settings for 2014 to 2016
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
 #' soilmoist<-as.data.frame(micro$soilmoist) # soil temperatures, minimum shade
 #'
 #' # append dates
-#' ystart <- 2016
+#' ystart <- 2014
 #' yfinish <- 2016
 #' nyears <- yfinish-ystart+1
 #' tzone<-paste("Etc/GMT+",0,sep="")
@@ -613,10 +613,10 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       MINSHADES <- rep(0,(timeinterval*nyears))+minshade # daily min shade (%)
     }
 
-
-    USADEM <- 0#extract(raster(paste0(spatial,"/terr1000.tif")), x)
-    ALTITUDES <-0# extract(raster(paste0(spatial,"/terr50.tif")), x)
-    if(is.na(ALTITUDES)==TRUE){ALTITUDES<-UKDEM}
+    #GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]]
+    USADEM <- extract(raster(paste0(spatial,"/PRISM_us_dem_4km_asc.asc")), x)
+    ALTITUDES <-NA# extract(raster(paste0(spatial,"/terr50.tif")), x)
+    if(is.na(ALTITUDES)==TRUE){ALTITUDES<-USADEM}
 
     if(terrain==1){
       cat("extracting terrain data")
@@ -649,7 +649,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     }
 
     # setting up for temperature correction using lapse rate given difference between 9sec DEM value and 0.05 deg value
-    #     if(UKDEM==-9999 | is.na(UKDEM)=='TRUE'){
+    #     if(USADEM==-9999 | is.na(USADEM)=='TRUE'){
     #       delta_elev = AGG - ALTITUDES
     #     }else{
     delta_elev = USADEM - ALTITUDES
