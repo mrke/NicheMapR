@@ -732,11 +732,21 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     # compute clear sky solar for the site of interest, for cloud cover computation below
     micro_clearsky <- micro_global(loc = c(lon_1, lat_1), clearsky = 1, timeinterval = 365)
     clearsky <- micro_clearsky$metout[,c(1, 13)]
-    clearsky_mean <- aggregate(clearsky[,2], by = list(clearsky[,1]), FUN = mean)[,2]
-    if(length(solar)==366){# add day for leap year if needed
-      clearsky_mean<-c(clearsky_mean[1:59],clearsky_mean[59],clearsky_mean[60:365])
+    clearsky_mean1 <- aggregate(clearsky[,2], by = list(clearsky[,1]), FUN = mean)[,2]
+    leapyears<-seq(1972,2060,4)
+    for(j in 1:nyears){
+      if(yearlist[j]%in%leapyears){# add day for leap year if needed
+        clearsky_mean<-c(clearsky_mean[1:59],clearsky_mean[59],clearsky_mean[60:365])
+      }else{
+        clearsky_mean <- clearsky_mean1
+      }
+      if(j==1){
+        allclearsky <- clearsky_mean
+      }else{
+        allclearsky <- c(allclearsky, clearsky_mean)
+      }
     }
-    cloud <- (1-solar/clearsky_mean) * 100
+    cloud <- (1-solar/allclearsky) * 100
     cloud[cloud<0]<-0
     cloud[cloud>100]<-100
     CCMAXX<-as.numeric(cloud)
