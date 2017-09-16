@@ -739,7 +739,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
         nc_close(nc)
         # daily wind speed, m/s
         nc<-nc_open(paste(spatial,"/vs_",yearlist[j],'.nc',sep=""))
-        Wind<-c(wind, as.numeric(ncvar_get(nc,varid="wind_speed",start=start,count)))
+        Wind<-c(Wind, as.numeric(ncvar_get(nc,varid="wind_speed",start=start,count)))
         nc_close(nc)
         # compute final values
         Tmax <- c(Tmax, tmax - 273.15) # maximum air temperature, deg C
