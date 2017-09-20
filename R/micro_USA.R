@@ -51,6 +51,7 @@
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 #' \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
 #' \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
+#' \code{opendap}{ = 0, query met grids via opendap (does not work on PC)}\cr\cr
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
@@ -266,7 +267,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
   LAI=0.1,
   snowmodel=1,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
-  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",barcoo="",quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0) {
+  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",barcoo="",quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0, opendap = 0) {
 
   # loc="Madison, Wisconsin"
   # timeinterval=365
@@ -640,93 +641,159 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     adiab_corr_max = delta_elev * 0.0077 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
     adiab_corr_min = delta_elev * 0.0039 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
 
-    cat("extracting weather data", '\n')
-    # read daily weather - first get location in netcdf file for retrieval
-    yearlist<-seq(ystart,(ystart+(nyears-1)),1)
+    if(opendap == 1){
+      cat("extracting weather data", "\\n")
+      baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/MET/"
+      yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
 
+      nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
+                          ".nc"))
+      lon <- ncvar_get(nc, "lon")
+      lat <- ncvar_get(nc, "lat")
+      flat=match(abs(lat-longlat[2])<1/48,1)
+      latindex=which(flat %in% 1)
+      flon=match(abs(lon+longlat[1])<1/48,1)
+      lonindex=which(flon %in% 1)
+      start <- c(latindex,lonindex,1)
+      count <- c(1, 1, -1)
 
-    # read in an arbitrary nc file to get coordinates
-    nc<-nc_open(paste(spatial,"/tmmx_",yearlist[1],'.nc',sep=""))
-    lon<-matrix(ncvar_get(nc,"lon"))
-    lat<-matrix(ncvar_get(nc,"lat"))
-    # find closest lon/lat in nc file to user-specified site and define position for retrieval
-    lon_1<-as.numeric(longlat[1])
-    lat_1<-as.numeric(longlat[2])
-    dist1<-abs(lon-lon_1)
-    index1<-which.min(dist1)
-    dist2<-abs(lat-lat_1)
-    index2<-which.min(dist2)
-    start<-c(index2,index1,1)
-    count<-c(1,1,-1)
+      tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
+                                   start = start, count))
+      nc_close(nc)
+      nc <- nc_open(paste0(baseurl, "tmmx/tmmx_", yearlist[j],
+                          ".nc"))
+      tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
+                                   start = start, count))
+      nc_close(nc)
+      nc <- nc_open(paste0(baseurl, "rmin/rmin_", yearlist[j],
+                          ".nc"))
+      rhmin <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
+                                    start = start, count))
+      nc_close(nc)
+      nc <- nc_open(paste0(baseurl, "rmax/rmax_", yearlist[j],
+                          ".nc"))
+      rhmax <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
+                                    start = start, count))
+      nc_close(nc)
+      nc <- nc_open(paste0(baseurl, "pr/pr_", yearlist[j],
+                          ".nc"))
+      Rain <- as.numeric(ncvar_get(nc, varid = "precipitation_amount",
+                                   start = start, count))
+      nc_close(nc)
+      nc <- nc_open(paste0(baseurl, "srad/srad_", yearlist[j],
+                          ".nc"))
+      solar <- as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
+                                    start = start, count))
+      nc_close(nc)
+      nc <- nc_open(paste0(baseurl, "vs/vs_", yearlist[j],
+                          ".nc"))
+      Wind <- as.numeric(ncvar_get(nc, varid = "wind_speed",
+                                   start = start, count))
+      nc_close(nc)
+      Tmax <- tmax - 273.15
+      Tmin <- tmin - 273.15
 
-    for(j in 1:nyears){ # start loop through years
-      if(j == 1){
-        cat(paste('reading weather input for ',yearlist[j], ' \n',sep=""))
-        # minimum daily temperature, K
-        nc<-nc_open(paste(spatial,"/tmmn_",yearlist[j],'.nc',sep=""))
-        tmin<-as.numeric(ncvar_get(nc,varid="air_temperature",start=start,count))
+    }else{
+
+    cat("extracting weather data", "\\n")
+    yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
+    nc <- nc_open(paste(spatial, "/tmmx_", yearlist[1], ".nc",
+                        sep = ""))
+    lon <- matrix(ncvar_get(nc, "lon"))
+    lat <- matrix(ncvar_get(nc, "lat"))
+    lon_1 <- as.numeric(longlat[1])
+    lat_1 <- as.numeric(longlat[2])
+    dist1 <- abs(lon - lon_1)
+    index1 <- which.min(dist1)
+    dist2 <- abs(lat - lat_1)
+    index2 <- which.min(dist2)
+    start <- c(index2, index1, 1)
+    count <- c(1, 1, -1)
+    for (j in 1:nyears) {
+      if (j == 1) {
+        cat(paste("reading weather input for ", yearlist[j],
+                  " \\n", sep = ""))
+        nc <- nc_open(paste(spatial, "/tmmn_", yearlist[j],
+                            ".nc", sep = ""))
+        tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
+                                     start = start, count))
         nc_close(nc)
-        # maximum daily temperature, K
-        nc<-nc_open(paste(spatial,"/tmmx_",yearlist[j],'.nc',sep=""))
-        tmax<-as.numeric(ncvar_get(nc,varid="air_temperature",start=start,count))
+        nc <- nc_open(paste(spatial, "/tmmx_", yearlist[j],
+                            ".nc", sep = ""))
+        tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
+                                     start = start, count))
         nc_close(nc)
-        # minimum daily relative humidity, %
-        nc<-nc_open(paste(spatial,"/rmin_",yearlist[j],'.nc',sep=""))
-        rhmin<-as.numeric(ncvar_get(nc,varid="relative_humidity",start=start,count))
+        nc <- nc_open(paste(spatial, "/rmin_", yearlist[j],
+                            ".nc", sep = ""))
+        rhmin <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
+                                      start = start, count))
         nc_close(nc)
-        # maximum daily relative humidity, %
-        nc<-nc_open(paste(spatial,"/rmax_",yearlist[j],'.nc',sep=""))
-        rhmax<-as.numeric(ncvar_get(nc,varid="relative_humidity",start=start,count))
+        nc <- nc_open(paste(spatial, "/rmax_", yearlist[j],
+                            ".nc", sep = ""))
+        rhmax <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
+                                      start = start, count))
         nc_close(nc)
-        # daily precipitation, mm
-        nc<-nc_open(paste(spatial,"/pr_",yearlist[j],'.nc',sep=""))
-        Rain<-as.numeric(ncvar_get(nc,varid="precipitation_amount",start=start,count))
+        nc <- nc_open(paste(spatial, "/pr_", yearlist[j],
+                            ".nc", sep = ""))
+        Rain <- as.numeric(ncvar_get(nc, varid = "precipitation_amount",
+                                     start = start, count))
         nc_close(nc)
-        # daily solar radiation, W/m2 (averaged over day)
-        nc<-nc_open(paste(spatial,"/srad_",yearlist[j],'.nc',sep=""))
-        solar<-as.numeric(ncvar_get(nc,varid="surface_downwelling_shortwave_flux_in_air",start=start,count))
+        nc <- nc_open(paste(spatial, "/srad_", yearlist[j],
+                            ".nc", sep = ""))
+        solar <- as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
+                                      start = start, count))
         nc_close(nc)
-        # daily wind speed, m/s
-        nc<-nc_open(paste(spatial,"/vs_",yearlist[j],'.nc',sep=""))
-        Wind<-as.numeric(ncvar_get(nc,varid="wind_speed",start=start,count))
+        nc <- nc_open(paste(spatial, "/vs_", yearlist[j],
+                            ".nc", sep = ""))
+        Wind <- as.numeric(ncvar_get(nc, varid = "wind_speed",
+                                     start = start, count))
         nc_close(nc)
-        # compute final values
-        Tmax <- tmax - 273.15 # maximum air temperature, deg C
-        Tmin <- tmin - 273.15 # minimum air temperature, deg C
-      }else{
-        cat(paste('reading weather input for ',yearlist[j], ' \n',sep=""))
-        # minimum daily temperature, K
-        nc<-nc_open(paste(spatial,"/tmmn_",yearlist[j],'.nc',sep=""))
-        tmin<-as.numeric(ncvar_get(nc,varid="air_temperature",start=start,count))
-        nc_close(nc)
-        # maximum daily temperature, K
-        nc<-nc_open(paste(spatial,"/tmmx_",yearlist[j],'.nc',sep=""))
-        tmax<-as.numeric(ncvar_get(nc,varid="air_temperature",start=start,count))
-        nc_close(nc)
-        # minimum daily relative humidity, %
-        nc<-nc_open(paste(spatial,"/rmin_",yearlist[j],'.nc',sep=""))
-        rhmin<-c(rhmin, as.numeric(ncvar_get(nc,varid="relative_humidity",start=start,count)))
-        nc_close(nc)
-        # maximum daily relative humidity, %
-        nc<-nc_open(paste(spatial,"/rmax_",yearlist[j],'.nc',sep=""))
-        rhmax<-c(rhmax, as.numeric(ncvar_get(nc,varid="relative_humidity",start=start,count)))
-        nc_close(nc)
-        # daily precipitation, mm
-        nc<-nc_open(paste(spatial,"/pr_",yearlist[j],'.nc',sep=""))
-        Rain<-c(Rain, as.numeric(ncvar_get(nc,varid="precipitation_amount",start=start,count)))
-        nc_close(nc)
-        # daily solar radiation, W/m2 (averaged over day)
-        nc<-nc_open(paste(spatial,"/srad_",yearlist[j],'.nc',sep=""))
-        solar<-c(solar, as.numeric(ncvar_get(nc,varid="surface_downwelling_shortwave_flux_in_air",start=start,count)))
-        nc_close(nc)
-        # daily wind speed, m/s
-        nc<-nc_open(paste(spatial,"/vs_",yearlist[j],'.nc',sep=""))
-        Wind<-c(Wind, as.numeric(ncvar_get(nc,varid="wind_speed",start=start,count)))
-        nc_close(nc)
-        # compute final values
-        Tmax <- c(Tmax, tmax - 273.15) # maximum air temperature, deg C
-        Tmin <- c(Tmin, tmin - 273.15) # minimum air temperature, deg C
+        Tmax <- tmax - 273.15
+        Tmin <- tmin - 273.15
       }
+      else {
+        cat(paste("reading weather input for ", yearlist[j],
+                  " \\n", sep = ""))
+        nc <- nc_open(paste(spatial, "/tmmn_", yearlist[j],
+                            ".nc", sep = ""))
+        tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
+                                     start = start, count))
+        nc_close(nc)
+        nc <- nc_open(paste(spatial, "/tmmx_", yearlist[j],
+                            ".nc", sep = ""))
+        tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
+                                     start = start, count))
+        nc_close(nc)
+        nc <- nc_open(paste(spatial, "/rmin_", yearlist[j],
+                            ".nc", sep = ""))
+        rhmin <- c(rhmin, as.numeric(ncvar_get(nc, varid = "relative_humidity",
+                                               start = start, count)))
+        nc_close(nc)
+        nc <- nc_open(paste(spatial, "/rmax_", yearlist[j],
+                            ".nc", sep = ""))
+        rhmax <- c(rhmax, as.numeric(ncvar_get(nc, varid = "relative_humidity",
+                                               start = start, count)))
+        nc_close(nc)
+        nc <- nc_open(paste(spatial, "/pr_", yearlist[j],
+                            ".nc", sep = ""))
+        Rain <- c(Rain, as.numeric(ncvar_get(nc, varid = "precipitation_amount",
+                                             start = start, count)))
+        nc_close(nc)
+        nc <- nc_open(paste(spatial, "/srad_", yearlist[j],
+                            ".nc", sep = ""))
+        solar <- c(solar, as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
+                                               start = start, count)))
+        nc_close(nc)
+        nc <- nc_open(paste(spatial, "/vs_", yearlist[j],
+                            ".nc", sep = ""))
+        Wind <- c(Wind, as.numeric(ncvar_get(nc, varid = "wind_speed",
+                                             start = start, count)))
+        nc_close(nc)
+        Tmax <- c(Tmax, tmax - 273.15)
+        Tmin <- c(Tmin, tmin - 273.15)
+      }
+    }
+
     }
 
     # compute clear sky solar for the site of interest, for cloud cover computation below
