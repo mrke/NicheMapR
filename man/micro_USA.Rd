@@ -83,6 +83,7 @@ An implementation of the Niche Mapper microclimate model that uses the Universit
 \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
 \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
+\code{opendap}{ = 0, query met grids via opendap (does not work on PC)}\cr\cr
 
 \strong{ General additional parameters:}\cr\cr
 \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
