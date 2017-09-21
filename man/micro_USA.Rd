@@ -275,10 +275,10 @@ for(i in 1:10){
 # plotting soil moisture
 for(i in 1:10){
  if(i==1){
-   plot(soilmoist[,i+3]~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture (\% volumetric)"
+   plot(soilmoist[,i+3]*100~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture (\% volumetric)"
    ,col=i,type = "l",main=paste("soil moisture ",minshade,"\% shade",sep=""))
  }else{
-   points(soilmoist[,i+3]~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture
+   points(soilmoist[,i+3]*100~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture
     (\%)",col=i,type = "l")
  }
 }
