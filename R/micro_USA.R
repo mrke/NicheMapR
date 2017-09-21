@@ -242,10 +242,10 @@
 #' # plotting soil moisture
 #' for(i in 1:10){
 #'  if(i==1){
-#'    plot(soilmoist[,i+3]~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture (% volumetric)"
+#'    plot(soilmoist[,i+3]*100~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture (% volumetric)"
 #'    ,col=i,type = "l",main=paste("soil moisture ",minshade,"% shade",sep=""))
 #'  }else{
-#'    points(soilmoist[,i+3]~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture
+#'    points(soilmoist[,i+3]*100~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture
 #'     (%)",col=i,type = "l")
 #'  }
 #' }
@@ -840,7 +840,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     }
 
     # compute clear sky solar for the site of interest, for cloud cover computation below
-    micro_clearsky <- micro_global(loc = c(lon_1, lat_1), clearsky = 1, timeinterval = 365)
+    micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, timeinterval = 365)
     clearsky <- micro_clearsky$metout[,c(1, 13)]
     clearsky_mean1 <- aggregate(clearsky[,2], by = list(clearsky[,1]), FUN = mean)[,2]
     leapyears<-seq(1972,2060,4)
