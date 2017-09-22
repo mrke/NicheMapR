@@ -814,13 +814,13 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
 
 
     # compute clear sky solar for the site of interest, for cloud cover computation below
-    micro_clearsky <- micro_global(loc = c(lon_1, lat_1), clearsky = 1, timeinterval = 365)
+    micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, timeinterval = 365)
     clearsky <- micro_clearsky$metout[,c(1, 13)]
-    clearsky_mean<-c(clearsky_mean1[1:59],clearsky_mean1[59],clearsky_mean1[60:365])
+    clearsky_mean1 <- aggregate(clearsky[,2], by = list(clearsky[,1]), FUN = mean)[,2]
     leapyears<-seq(1972,2060,4)
     for(j in 1:nyears){
       if(yearlist[j]%in%leapyears){# add day for leap year if needed
-        clearsky_mean<-c(clearsky_mean[1:59],clearsky_mean[59],clearsky_mean[60:365])
+        clearsky_mean<-c(clearsky_mean1[1:59],clearsky_mean1[59],clearsky_mean1[60:365])
       }else{
         clearsky_mean <- clearsky_mean1
       }
