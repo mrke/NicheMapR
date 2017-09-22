@@ -271,7 +271,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
 
   # loc="London, UK"
   # timeinterval=365
-  # ystart=2015
+  # ystart=2013
   # yfinish=2015
   # nyears=1
   # soiltype=4
