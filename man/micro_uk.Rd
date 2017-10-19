@@ -84,6 +84,7 @@ An implementation of the Niche Mapper microclimate model that uses the CHESS dai
 \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
 \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
 \code{opendap}{ = 0, query met grids via opendap (does not work on PC)}\cr\cr
+\code{soilgrids}{ = 1, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 
 \strong{ General additional parameters:}\cr\cr
 \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
@@ -130,7 +131,7 @@ An implementation of the Niche Mapper microclimate model that uses the CHESS dai
 \code{rainoff}{ = 0, Rain offset (mm), used to induce constant extra input}\cr\cr
 \code{evenrain}{ = 0, Spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)}\cr\cr
 \code{SoilMoist_Init}{ = c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3), initial soil water content at each soil node, m3/m3}\cr\cr
-\code{L}{ = c(0,0,8.2,8.0,7.8,7.4,7.1,6.4,5.8,4.8,4.0,1.8,0.9,0.6,0.8,0.4,0.4,0,0)*10000, root density (m/m3), (19 values descending through soil for specified soil nodes in parameter}
+\code{L}{ = c(0,0,8.2,8.0,7.8,7.4,7.1,6.4,5.8,4.8,4.0,1.8,0.9,0.6,0.8,0.4,0.4,0,0)*10000, root density (m/m3), (19 values descending through soil for specified soil nodes in parameter}\cr\cr
 \code{R1}{ = 0.001, root radius, m}\cr\cr
 \code{RW}{ = 2.5e+10, resistance per unit length of root, m3 kg-1 s-1}\cr\cr
 \code{RL}{ = 2e+6, resistance per unit length of leaf, m3 kg-1 s-1}\cr\cr
