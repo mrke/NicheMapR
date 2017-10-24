@@ -15,7 +15,7 @@ ode(y = Tb_init, t = times, func = onelump_var, parms = indata)
 
 \item{mass}{mass (g)}
 
-\item{spheat}{specific heat of flesh (J/kg-C)}
+\item{cp}{specific heat of flesh (J/kg-C)}
 
 \item{rho}{animal density (kg/m3)}
 
@@ -95,7 +95,7 @@ microclimate <- cbind(metout[, 1:5], metout[, 8], soil[, 4], metout[, 13:15], me
 colnames(microclimate) <- c('dates', 'JULDAY', 'TIME', 'TALOC', 'TA1.2m', 'VLOC', 'TS', 'ZEN', 'SOLR', 'TSKYC', 'RHLOC')
 
 # define animal parameters - here simulating a 1000 g cylinder
-spheat <- 3342 # specific heat of flesh, J/kg-C
+cp <- 3342 # specific heat of flesh, J/kg-C
 rho <- 1000 # animal density, kg/m3
 q <- 0 # metabolic rate, W/m3
 kflesh <- 0.32 # thermal conductivity of flesh, W/mK
@@ -134,7 +134,7 @@ for (i in 1:length(juldays)) {
   Zenf <- approxfun(time, c(microclim[, 8], 90), rule = 2)
 
   t = seq(1, 3600 * 24, 60) # sequence of times for predictions (1 min intervals)
-  indata<-list(abs = abs, emis = emis, abs_sub = abs_sub, press = press, mass = mass, spheat = spheat, rho = rho, q = q, kflesh = kflesh, geom = geom, posture = posture, shape_b = shape_b, shape_c = shape_c, shape_coefs = shape_coefs, pctdif = pctdif, fatosk = fatosk, fatosb = fatosb)
+  indata<-list(abs = abs, emis = emis, abs_sub = abs_sub, press = press, mass = mass, cp = cp, rho = rho, q = q, kflesh = kflesh, geom = geom, posture = posture, shape_b = shape_b, shape_c = shape_c, shape_coefs = shape_coefs, pctdif = pctdif, fatosk = fatosk, fatosb = fatosb)
 
   Tb_init<-Tairf(1) # set inital Tb as air temperature
 
