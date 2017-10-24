@@ -91,6 +91,7 @@ tmins <- t/60
 
 par(mfrow = c(1,2))
 mass <- 5
+x_shell <- 0.001
 Tc_init <- 20
 Tsh_init <- 20.1
 Ts_init <- 20.2
@@ -102,7 +103,7 @@ Qsol <- 500
 Zen <- 20
 abs <- 0.85
 
-Tbs<-twolump(t=t, abs = abs, Tc_init = Tc_init, Tsh_init = Tsh_init, Ts_init = Ts_init, mass = mass, x_shell,
+Tbs<-twolump(t=t, abs = abs, Tc_init = Tc_init, Tsh_init = Tsh_init, Ts_init = Ts_init, mass = mass, x_shell = x_shell,
   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 32), ylab = 'Temperature, °C',xlab='time, s', las = 1)
 text(80, 29, "    5000 g")
@@ -112,8 +113,7 @@ text(90, 28, "   vel = 1.0 m/s")
 text(90, 24, "     vel = 1.0 m/s")
 
 mass <- 5000
-x_shell <- 0.001
-Tbs<-twolump(t=t, abs = abs, Tc_init = Tc_init, Tsh_init = Tsh_init, Ts_init = Ts_init, mass = mass, x_shell,
+Tbs<-twolump(t=t, abs = abs, Tc_init = Tc_init, Tsh_init = Tsh_init, Ts_init = Ts_init, mass = mass, x_shell = x_shell,
   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
 abline(Tair,0, lty = 1, col = 'blue')
@@ -124,7 +124,7 @@ Tair <- 25
 Trad <- Tair
 vel <-0.5
 
-Tbs<-twolump(t=t, abs = abs, Tc_init = Tc_init, Tsh_init = Tsh_init, Ts_init = Ts_init, mass = mass, x_shell,
+Tbs<-twolump(t=t, abs = abs, Tc_init = Tc_init, Tsh_init = Tsh_init, Ts_init = Ts_init, mass = mass, x_shell = x_shell,
   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,32),ylab='Temperature, °C',xlab='time, s', las = 1)
 abline(h = Tair, lty = 1, col = 'blue')
@@ -134,7 +134,7 @@ Tair <- 20
 Trad <- Tair
 vel <-1
 
-Tbs<-twolump(t=t, abs = abs, Tc_init = Tc_init, Tsh_init = Tsh_init, Ts_init = Ts_init, mass = mass, x_shell,
+Tbs<-twolump(t=t, abs = abs, Tc_init = Tc_init, Tsh_init = Tsh_init, Ts_init = Ts_init, mass = mass, x_shell = x_shell,
   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
 abline(h = Tair, lty = 2, col = 'blue')
