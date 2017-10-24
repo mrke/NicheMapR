@@ -8,7 +8,7 @@
 #' @param Tc_init initial temperature (°C) Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)
 #' @param press air pressure (Pa)
 #' @param mass mass (g)
-#' @param spheat specific heat of flesh (J/kg-C)
+#' @param cp specific heat of flesh (J/kg-C)
 #' @param rho animal density (kg/m3)
 #' @param q  metabolic rate (W/m3)
 #' @param kflesh conductivity of flesh (W/mK)
@@ -57,7 +57,7 @@
 #' colnames(microclimate) <- c('dates', 'JULDAY', 'TIME', 'TALOC', 'TA1.2m', 'VLOC', 'TS', 'ZEN', 'SOLR', 'TSKYC', 'RHLOC')
 #'
 #' # define animal parameters - here simulating a 1000 g cylinder
-#' spheat <- 3342 # specific heat of flesh, J/kg-C
+#' cp <- 3342 # specific heat of flesh, J/kg-C
 #' rho <- 1000 # animal density, kg/m3
 #' q <- 0 # metabolic rate, W/m3
 #' kflesh <- 0.32 # thermal conductivity of flesh, W/mK
@@ -96,7 +96,7 @@
 #'   Zenf <- approxfun(time, c(microclim[, 8], 90), rule = 2)
 #'
 #'   t = seq(1, 3600 * 24, 60) # sequence of times for predictions (1 min intervals)
-#'   indata<-list(abs = abs, emis = emis, abs_sub = abs_sub, press = press, mass = mass, spheat = spheat, rho = rho, q = q, kflesh = kflesh, geom = geom, posture = posture, shape_b = shape_b, shape_c = shape_c, shape_coefs = shape_coefs, pctdif = pctdif, fatosk = fatosk, fatosb = fatosb)
+#'   indata<-list(abs = abs, emis = emis, abs_sub = abs_sub, press = press, mass = mass, cp = cp, rho = rho, q = q, kflesh = kflesh, geom = geom, posture = posture, shape_b = shape_b, shape_c = shape_c, shape_coefs = shape_coefs, pctdif = pctdif, fatosk = fatosk, fatosb = fatosb)
 #'
 #'   Tb_init<-Tairf(1) # set inital Tb as air temperature
 #'
@@ -134,7 +134,7 @@ onelump_var <- function(t, y, indata) {
 
     # geometry section ############################################################
     m <- mass / 1000 # convert mass to kg
-    C <- m * spheat # thermal capacitance, J/K
+    C <- m * cp # thermal capacitance, J/K
     V <- m / rho # volume, m3
     Qgen <- q * V # total metabolic heat, J
     L <- V ^ (1 / 3) # characteristic dimension, m
@@ -357,28 +357,24 @@ onelump_var <- function(t, y, indata) {
       NUfre = 2 + 0.60 * Raylei
     }
     hc_free <- NUfre * THCOND / L # convection coefficent, forced
-    hc_comb <- hc_free + hc_forced
-    Rconv <- 1 / (hc_comb * ATOT)
-    Nu <- hc_comb * L / THCOND # Nu combined
-
-    hr <- 4 * emis * sigma * ((Tc + Trad) / 2 + 273) ^ 3 # radiation resistance
-    hc <- hc_comb
-    if (geom == 2) {
-      j <-
-        (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * kflesh) + Tair) + hr * ATOT *
-            ((q * S2) / (2 * kflesh) + Trad)) / C
-    } else{
-      j <-
-        (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * kflesh) + Tair) + hr *
-            ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C
+    hc <- hc_free + hc_forced # combined convection coefficient
+    Nu <- hc * L / THCOND # Nu combined
+    Rconv <- 1 / (hc * ATOT) # convective resistance, eq. 5 of Kearney, Huey and Porter 2017 Appendix 1
+   
+    hr <- 4 * emis * sigma * ((Tc + Trad) / 2 + 273.15) ^ 3 # radiation resistance, eq. 49 of Kearney, Huey and Porter 2017 Appendix 1
+    
+    if(geom == 2){ # ellipsoid
+      j <- (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * kflesh) + Tair) + hr * ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
+    }else{ # assume cylinder
+      j <- (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * kflesh) + Tair) + hr * ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
     }
-    kTc <- ATOT * (Tc * hc + Tc * hr) / C
-    k <- ATOT * (hc + hr) / C
-    Tcf <- j / k # final Tc
-    Tci <- Tc
-    Tc <- (Tci - Tcf) * exp(-1 * k * t) + Tcf # Tc at time t
-    tau <- (rho * V * spheat) / (ATOT * (hc + hr)) # time constant
-    dTc <- j - kTc
+    kTc <- ATOT * (Tc * hc + Tc * hr) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
+    k <- ATOT * (hc + hr) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
+    Tcf <- j / k # final Tc = j/k
+    Tci <- Tc # initial temperature
+    Tc <- (Tci - Tcf) * exp(-1 * k * t) + Tcf # Tc at time t, Eq. 1 of Kearney, Huey and Porter 2017 Appendix 1
+    tau <- 1/k # time constant
+    dTc <- j - kTc # rate of temperature change (deg C/sec)
 
     list(
       y = dTc,

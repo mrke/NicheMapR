@@ -1,16 +1,20 @@
-#' One-lump Transient Heat Budget for Constant Environment
+#' two-lump Transient Heat Budget (for use with deSolve package)
 #'
 #' Transient, 'one-lump', heat budget for computing rate of change of temperature
 #' under a constant environment
 #' Michael Kearney, Raymond Huey and Warren Porter developed this R function and example in September 2017.
 #' @param t = seq(1,3600,60), time intervals (s) at which output is required
-#' @param Tc_init = 5, initial temperature (°C)
-#' @param thresh = 29, threshold temperature (°C) at which summary statistics are wanted
+#' @param Tc_init = 5, initial core temperature (°C) 
+#' @param Tsh_init = 5.1, initial shell temperature (°C) 
+#' @param Ts_init = 5.2, initial surface temperature (°C) 
 #' @param amass = 500, animal mass (g)
+#' @param x_shell = 0.001, shell thickness, m
 #' @param geom = 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'customallom')
-#' @param kflesh = 0.5, Thermal conductivity of flesh (W/mK, range: 0.412-2.8)
+#' @param k_inner = 0.5, Thermal conductivity of inner shell (W/mK, range: 0.412-2.8)
+#' @param k_outer = 0.5, Thermal conductivity of outer shell (W/mK, range: 0.412-2.8)
 #' @param q = 0, metabolic heat production rate W/m3
-#' @param cp = 3073, Specific heat of flesh J/(kg-K)
+#' @param cp_inner = 3073, Specific heat of flesh J/(kg-K)
+#' @param cp_outer = 3073, Specific heat of outer shell J/(kg-K)
 #' @param rho = 932, animal density (kg/m3)
 #' @param emis = 0.95, Emissivity of animal (0-1)
 #' @param abs = 0.85, solar absorptivity, decimal percent
@@ -33,8 +37,7 @@
 #' @return Tcf Final (steady state) temperature (deg C), if conditions remained constant indefinately
 #' @return tau Time constant (s)
 #' @return dTc Rate of change of core temperature (deg C/s)
-#' @return timethresh Time to reach specified threshold body temperature (s)
-#' @usage onelump(t, Tc_init, thresh, mass, geom, Tair, Trad, vel, Qsol, Zen, ...)
+#' @usage twolump(t, Tc_init, Tsh_init, Ts_init, mass, geom, Tair, Trad, vel, Qsol, Zen, ...)
 #' @examples
 #' library(NicheMapR)
 #'
@@ -46,6 +49,8 @@
 #' par(mfrow = c(1,2))
 #' mass <- 5
 #' Tc_init <- 20
+#' Tsh_init <- 20.1
+#' Ts_init <- 20.2
 #' geom <- 3
 #' Tair <- 20
 #' Trad <- Tair
@@ -54,7 +59,7 @@
 #' Zen <- 20
 #' abs <- 0.85
 #'
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, thresh = 29, mass = mass,
+#' Tbs<-twolump(t=t, abs = abs, Tc_init = Tc_init, Tsh_init = Tsh_init, Ts_init = Ts_init, mass = mass, x_shell,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 32), ylab = 'Temperature, °C',xlab='time, s', las = 1)
 #' text(80, 29, "    5000 g")
@@ -64,7 +69,8 @@
 #' text(90, 24, "     vel = 1.0 m/s")
 #'
 #' mass <- 5000
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, thresh = 29, mass = mass,
+#' x_shell <- 0.001
+#' Tbs<-twolump(t=t, abs = abs, Tc_init = Tc_init, Tsh_init = Tsh_init, Ts_init = Ts_init, mass = mass, x_shell,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
 #' abline(Tair,0, lty = 1, col = 'blue')
@@ -75,7 +81,7 @@
 #' Trad <- Tair
 #' vel <-0.5
 #'
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, thresh = 29, mass = mass,
+#' Tbs<-twolump(t=t, abs = abs, Tc_init = Tc_init, Tsh_init = Tsh_init, Ts_init = Ts_init, mass = mass, x_shell,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,32),ylab='Temperature, °C',xlab='time, s', las = 1)
 #' abline(h = Tair, lty = 1, col = 'blue')
@@ -85,7 +91,7 @@
 #' Trad <- Tair
 #' vel <-1
 #'
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, thresh = 29, mass = mass,
+#' Tbs<-twolump(t=t, abs = abs, Tc_init = Tc_init, Tsh_init = Tsh_init, Ts_init = Ts_init, mass = mass, x_shell,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
 #' abline(h = Tair, lty = 2, col = 'blue')
@@ -97,17 +103,18 @@
 #' text(80, 30.1, "vel = 0.5 m/s")
 #' text(93, 28, "vel = 1.0 m/s")
 #' @export
-onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
-  geom = 2, Tair = 30, Trad=30, vel = 0.1, Qsol = 500, Zen = 20, kflesh = 0.5,
-  q = 0, cp = 3073, emis = 0.95, rho = 932, abs = 0.85,
+twolump<-function(t = seq(1, 3600, 60), Tc_init = 5, Tsh_init = 5.1, Ts_init = 5.2, mass = 500, x_shell = 0.001,
+  geom = 2, Tair = 30, Trad=30, vel = 0.1, Qsol = 500, Zen = 20, k_inner = 0.5, k_outer = 0.5,
+  q = 0, cp_inner = 3073, cp_outer = 3073, emis = 0.95, rho = 932, abs = 0.85,
   customallom = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
   shape_b = 0.5, shape_c = 0.5, posture = 'n', orient = 1, fatosk = 0.4, fatosb = 0.4,
   abs_sub = 0.8, pctdif = 0.1, press = 101325){
   
   sigma <- 5.67e-8 #Stefan-Boltzman, W/(m.K)
   Zenith <- Zen * pi / 180 # zenith angle in radians
-  Tc <- Tc_init
-  Tskin <- Tc + 0.1
+  Tc <- Tc_init # core temperature, deg C
+  Tsh <- Tsh_init # skin temperature
+  Ts <- Ts_init # surface temperature
   vel[vel < 0.01] <- 0.01 # don't let wind speed go too low - always some free convection
   S2 <- 0.0001 # shape factor, arbitrary initialization, because not defined except for ellipsoid
   DENSTY <- press / (287.04 * (Tair + 273)) # air density, kg/m3
@@ -115,59 +122,74 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
   VISDYN <- (1.8325 * 10 ^ -5 * ((296.16 + 120) / ((Tair + 273.15) + 120))) * (((Tair + 273.15) / 296.16) ^ 1.5) # dynamic viscosity of air, kg/(m.s)
   
   # geometry section ############################################################
-  m <- mass / 1000 # convert mass to kg
-  C <- m * cp # thermal capacitance, J/K
+  m <- mass / 1000 # convert mass to kg  C<-m*cp # thermal capacitance, J/K
+  C <- m * cp_inner # thermal capacitance, J/K
   V <- m / rho # volume, m3
   Qgen <- q * V # total metabolic heat, J
   L <- V ^ (1 / 3) # characteristic dimension, m
+  V_inner <- (L - shell) * 3
+  V_shell <- V - V_inner
+  Cs <- V_shell * rho * cp_shell
+  Cc <- V_inner * rho * cp_inner  
   
   # FLAT PLATE geometry
   if (geom == 0) {
     AHEIT <- (V / (shape_b * shape_c)) ^ (1 / 3) # length, m
     AWIDTH <- AHEIT * shape_b # width, m
     ALENTH <- AHEIT * shape_c # height, m
+    V_inner <- (AWIDTH - x_shell) * (ALENTH - x_shell) * (AHEIT - x_shell)
+    V_shell <- V - V_inner
+    Cs <- V_shell * rho * cp
+    Cc <- V_inner * rho * cp
     ATOT <- ALENTH * AWIDTH * 2 + ALENTH * AHEIT * 2 + AWIDTH * AHEIT * 2 # total area, m2
     ASILN <- ALENTH * AWIDTH # max silhouette area, m2
     ASILP <- AWIDTH * AHEIT # min silhouette area, m2
     L <- AHEIT # characteristic dimension, m
     if (AWIDTH <= ALENTH) {
       L <- AWIDTH
-    }else{
+    } else{
       L <- ALENTH
     }
     R <- ALENTH / 2 # 'radius', m
   }
   
-  # CYLINDER geometry
-  if (geom == 1) {
+  # CYLINDER geometry      
+  if(geom == 1){
     R1 <- (V / (pi * shape_b * 2)) ^ (1 / 3) # radius, m
     ALENTH <- 2 * R1 * shape_b # length, m
-    ATOT <- 2 * pi * R1 ^ 2 + 2 * pi * R1 * ALENTH # total surface area, m2
+    V_inner <- pi * (R1 - x_shell) ^ 2 * (ALENTH - x_shell)
+    V_shell <- V - V_inner
+    Cs <- V_shell * rho * cp
+    Cc <- V_inner * rho * cp  
+    ATOT<- 2 * pi * R1 ^ 2 + 2 * pi * R1 * ALENTH # total surface area, m2
     AWIDTH <- 2 * R1 # width, m
     ASILN <- AWIDTH * ALENTH # max silhouette area, m2
     ASILP <- pi * R1 ^ 2 # min silhouette area, m2
     L <- ALENTH # characteristic dimension, m
     R2 <- L / 2
-    if (R1 > R2) {
-      # choose shortest dimension as R
+    if(R1 > R2){ # choose shortest dimension as R
       R <- R2
-    } else{
+    }else{
       R <- R1
     }
   }
   
   # Ellipsoid geometry
-  if (geom == 2) {
-    A1 <- ((3 / 4) * V / (pi * shape_b * shape_c)) ^ 0.333 # axis A, m
+  if(geom == 2){
+    A1<-((3 /4 ) * V / (pi * shape_b * shape_c)) ^ (1 / 3) # axis A, m   
     B1 <- A1 * shape_b # axis B, m
     C1 <- A1 * shape_c # axis C, m
+    V_inner <- (4 / 3) * pi * (A1 - x_shell) * (B1 - x_shell) * (C1 - x_shell)
+    V_shell <- V - V_inner
+    Cs <- V_shell * rho * cp
+    Cc <- V_inner * rho * cp 
     P1 <- 1.6075 # a constant
-    ATOT <- (4 * pi * (((A1 ^ P1 * B1 ^ P1 + A1 ^ P1 * C1 ^ P1 + B1 ^ P1 * C1 ^ P1)        ) / 3) ^ (1 / P1)) # total surface area, m2
+    ATOT <- (4 * pi * (((A1 ^ P1 * B1 ^ P1 + A1 ^ P1 * C1 ^ P1 + B1 ^ P1 * C1 ^ P1)) / 3) ^ (1 / P1)) # total surface area, m2
     ASILN <- max(pi * A1 * C1, pi * B1 * C1) # max silhouette area, m2
     ASILP <- min(pi * A1 * C1, pi * B1 * C1) # min silhouette area, m2
     S2 <- (A1 ^ 2 * B1 ^ 2 * C1 ^ 2) / (A1 ^ 2 * B1 ^ 2 + A1 ^ 2 * C1 ^ 2 + B1 ^ 2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
-    kflesh <- 0.5# + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
-  }
+    kflesh <- 0.5 # + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
+  }              
   
   # Lizard geometry - DESERT IGUANA (PORTER ET AL. 1973 OECOLOGIA)
   if (geom == 3) {
@@ -267,7 +289,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
   }
   hc_forced <- NUfor * THCOND / L # convection coefficent, forced
   
-  GR <- abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Tskin - Tair) / VISDYN ^ 2) # Grashof number
+  GR <- abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Ts - Tair) / VISDYN ^ 2) # Grashof number
   Raylei <- GR * PR # Rayleigh number
   
   # get Nusselt for Free Convect
@@ -313,18 +335,32 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
   
   hr <- 4 * emis * sigma * ((Tc + Trad) / 2 + 273.15) ^ 3 # radiation resistance, eq. 49 of Kearney, Huey and Porter 2017 Appendix 1
   
-  if(geom == 2){ # ellipsoid
-    j <- (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * kflesh) + Tair) + hr * ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
-  }else{ # assume cylinder
-    j <- (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * kflesh) + Tair) + hr * ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
-  }
-  kTc <- ATOT * (Tc * hc + Tc * hr) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
-  k <- ATOT * (hc + hr) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
-  Tcf <- j / k # final Tc = j/k
-  Tci <- Tc # initial temperature
-  Tc <- (Tci - Tcf) * exp(-1 * k * t) + Tcf # Tc at time t, Eq. 1 of Kearney, Huey and Porter 2017 Appendix 1
-  tau <- 1/k # time constant
-  dTc <- j - kTc # rate of temperature change (deg C/sec)
-  timethresh <- log((thresh - Tcf) / (Tci - Tcf)) / (-1 * k) # time to reach threshold
-  return(list(Tc = Tc, Tcf = Tcf, tau = tau, dTc = dTc, timethresh = timethresh))
+  Rrad <- 1 / (hr * ATOT)
+  Rconv <- 1 / (hc * ATOT)
+  
+  Rs <- x_shell / (k_shell * ATOT) # resistance of skin
+  Qgen <- 0
+  Qresp <- 0
+  m_bl <- 0.012 / 1000 / 60 / 1e-6 # blood flow rate kg/s/m3
+  V_bl <- ATOT * 0.1 # blood volume
+  Rb <- 1 / (m_bl * cp * V_bl) # blood resistance
+  F <- 1 / (Cc * Rb) # from eq 110 and 111
+  H <- (Qgen - Qresp) / Cc # from eq 110 and 111
+  Ts <- (-1 * H + F * Tc) / F # from eq 112
+  Tsh <- (Qabs + Trad / Rrad + Tair / Rconv + 2 * Ts / Rs) / (1 / Rrad + 1 / Rconv + 2 / Rs) # eq 106
+  A <- (1 / Cs) * (1 / Rb + 2 / Rs - (2 / Rs) / (Rs / (2 * Rrad) + Rs / (2 * Rconv) + 1)) #eq 109 part 2
+  B <- 1 / (Rb * Cs) # eq 109 part 3
+  P1 <- (-1 * (F + A) + ((F + A) ^ 2 - 4 * F * A + 4 * F * B) ^ (1 / 2)) / 2 # eq 123
+  P2 <- (-1 * (F + A) - ((F + A) ^ 2 - 4 * F * A + 4 * F * B) ^ (1 / 2)) / 2 # eq 123
+  D <- (Qabs + Trad / Rrad + Tair / Rconv) / ((Rs / (2 * Rrad) + Rs / (2 * Rconv) + 1) * Cs) #eq 109 part 4
+  alpha <- (Tco + (A + D) / (B - A)) # from eq 132
+  beta <- F * Tso + (H * B - F * D) / (B - A) # from eq 133
+  C1 <- (alpha * (P2 + F) - beta) / (P2 - P1) # from eq 134
+  C2 <- (beta - alpha * (P1 + F)) / (P2 - P1) # from eq 135
+  Tcf <- -1 * (F * D + A * H) / (F * (B - A)) # from eq 128
+  Tc <- C1 * exp(P1 * t) + C2 * exp(P2 * t) + Tcf # from eq 128
+  dTc <- (Qgen - Qresp - (Tc - Ts) / Rb) / Cc # from eq 103
+  dTs <- ((Tc - Ts) / Rb - (Ts - Tsh) / (Rs / 2)) / Cs # from eq 104
+  
+  return(list(Tc=Tc,Tcf=Tcf,Tsh=Tsh,dTc=dTc,dTs=dTs))
 }
