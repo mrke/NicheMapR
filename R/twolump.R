@@ -129,7 +129,7 @@ twolump<-function(t = seq(1, 3600, 60), Tc_init = 5, Tsh_init = 5.1, Ts_init = 5
   L <- V ^ (1 / 3) # characteristic dimension, m
   V_inner <- (L - x_shell) ^ 3
   V_shell <- V - V_inner
-  Cs <- V_shell * rho * cp_shell
+  Cs <- V_shell * rho * cp_outer
   Cc <- V_inner * rho * cp_inner  
   
   # FLAT PLATE geometry
