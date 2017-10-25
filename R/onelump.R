@@ -5,20 +5,19 @@
 #' Michael Kearney, Raymond Huey and Warren Porter developed this R function and example in September 2017.
 #' @param t = seq(1,3600,60), time intervals (s) at which output is required
 #' @param Tc_init = 5, initial temperature (°C)
-#' @param thresh = 29, threshold temperature (°C) at which summary statistics are wanted
-#' @param amass = 500, animal mass (g)
-#' @param geom = 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'customallom')
-#' @param kflesh = 0.5, Thermal conductivity of flesh (W/mK, range: 0.412-2.8)
+#' @param mass = 500, animal mass (g)
+#' @param rho = 932, animal density (kg/m3)
 #' @param q = 0, metabolic heat production rate W/m3
 #' @param cp = 3073, Specific heat of flesh J/(kg-K)
-#' @param rho = 932, animal density (kg/m3)
+#' @param kflesh = 0.5, Thermal conductivity of flesh (W/mK, range: 0.412-2.8)
 #' @param emis = 0.95, Emissivity of animal (0-1)
 #' @param abs = 0.85, solar absorptivity, decimal percent
-#' @param shape_coefs = c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom allometry coefficients. Operates if lometry=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun
+#' @param geom = 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coefs')
 #' @param shape_b = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid
 #' @param shape_c = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid
+#' @param shape_coefs = c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom shape coefficients. Operates if geom=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun
 #' @param posture = 'n' pointing normal 'n', parallel 'p' to the sun's rays, or 'b' in between?
-#' @param orient does the object orient toward the sun? (0,1)
+#' @param orient = 1, does the object orient toward the sun? (0,1)
 #' @param fatosk = 0.4, Configuration factor to sky (-) for infrared calculations
 #' @param fatosb = 0.4, Configuration factor to subsrate for infrared calculations
 #' @param abs_sub = 0.2, substrate solar reflectivity, decimal percent
@@ -33,8 +32,7 @@
 #' @return Tcf Final (steady state) temperature (deg C), if conditions remained constant indefinately
 #' @return tau Time constant (s)
 #' @return dTc Rate of change of core temperature (deg C/s)
-#' @return timethresh Time to reach specified threshold body temperature (s)
-#' @usage onelump(t, Tc_init, thresh, mass, geom, Tair, Trad, vel, Qsol, Zen, ...)
+#' @usage onelump(t, Tc_init, mass, geom, Tair, Trad, vel, Qsol, Zen, ...)
 #' @examples
 #' library(NicheMapR)
 #'
@@ -54,7 +52,7 @@
 #' Zen <- 20
 #' abs <- 0.85
 #'
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, thresh = 29, mass = mass,
+#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 32), ylab = 'Temperature, °C',xlab='time, s', las = 1)
 #' text(80, 29, "    5000 g")
@@ -64,7 +62,7 @@
 #' text(90, 24, "     vel = 1.0 m/s")
 #'
 #' mass <- 5000
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, thresh = 29, mass = mass,
+#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
 #' abline(Tair,0, lty = 1, col = 'blue')
@@ -75,7 +73,7 @@
 #' Trad <- Tair
 #' vel <-0.5
 #'
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, thresh = 29, mass = mass,
+#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,32),ylab='Temperature, °C',xlab='time, s', las = 1)
 #' abline(h = Tair, lty = 1, col = 'blue')
@@ -85,7 +83,7 @@
 #' Trad <- Tair
 #' vel <-1
 #'
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, thresh = 29, mass = mass,
+#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
 #' abline(h = Tair, lty = 2, col = 'blue')
@@ -97,10 +95,10 @@
 #' text(80, 30.1, "vel = 0.5 m/s")
 #' text(93, 28, "vel = 1.0 m/s")
 #' @export
-onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
+onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
   geom = 2, Tair = 30, Trad=30, vel = 0.1, Qsol = 500, Zen = 20, kflesh = 0.5,
   q = 0, cp = 3073, emis = 0.95, rho = 932, abs = 0.85,
-  customallom = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
+  shape_coefs = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
   shape_b = 0.5, shape_c = 0.5, posture = 'n', orient = 1, fatosk = 0.4, fatosb = 0.4,
   abs_sub = 0.8, pctdif = 0.1, press = 101325){
   
@@ -108,9 +106,9 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
   Zenith <- Zen * pi / 180 # zenith angle in radians
   Tc <- Tc_init
   Tskin <- Tc + 0.1
-  vel[vel < 0.01] <- 0.01 # don't let wind speed go too low - always some free convection
+  vel[vel < 0.1] <- 0.1 # don't let wind speed go too low
   S2 <- 0.0001 # shape factor, arbitrary initialization, because not defined except for ellipsoid
-  DENSTY <- press / (287.04 * (Tair + 273)) # air density, kg/m3
+  DENSTY <- press / (287.04 * (Tair + 273.15)) # air density, kg/m3
   THCOND <- 0.02425 + (7.038 * 10 ^ -5 * Tair) # air thermal conductivity, W/(m.K)
   VISDYN <- (1.8325 * 10 ^ -5 * ((296.16 + 120) / ((Tair + 273.15) + 120))) * (((Tair + 273.15) / 296.16) ^ 1.5) # dynamic viscosity of air, kg/(m.s)
   
@@ -318,13 +316,12 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, thresh = 29, mass = 500,
   }else{ # assume cylinder
     j <- (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * kflesh) + Tair) + hr * ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
   }
-  kTc <- ATOT * (Tc * hc + Tc * hr) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
-  k <- ATOT * (hc + hr) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
+  kTc <- ATOT * (Tc * hc + Tc * hr) / C # based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
+  k <- ATOT * (hc + hr) / C # based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
   Tcf <- j / k # final Tc = j/k
   Tci <- Tc # initial temperature
   Tc <- (Tci - Tcf) * exp(-1 * k * t) + Tcf # Tc at time t, Eq. 1 of Kearney, Huey and Porter 2017 Appendix 1
   tau <- 1/k # time constant
   dTc <- j - kTc # rate of temperature change (deg C/sec)
-  timethresh <- log((thresh - Tcf) / (Tci - Tcf)) / (-1 * k) # time to reach threshold
-  return(list(Tc = Tc, Tcf = Tcf, tau = tau, dTc = dTc, timethresh = timethresh))
+  return(list(Tc = Tc, Tcf = Tcf, tau = tau, dTc = dTc))
 }
