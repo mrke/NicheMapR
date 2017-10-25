@@ -112,6 +112,7 @@ q <- 0 # metabolic rate, W/m3
 k_inner <- 0.5 # thermal conductivity of core, W/mK
 k_outer <- 0.5 # thermal conductivity of shell, W/mK
 geom <- 1 # shape, -
+x_shell <- 0.005, thickness of outer shell (m)
 posture <- 'n' # pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?
 orient <- 1 # does the object orient toward the sun? (0,1)
 shape_b <- 4 # shape coefficient a, -
@@ -160,7 +161,7 @@ for (i in 1:length(juldays)) {
   with(Tbs_ode, plot(Tc ~ time, type = 'l', col = '1', ylim = c(-10, 80), xlim = c(0, 23), ylab='Temperature, °C',xlab = 'hour of day', main = paste0(loc, ", ", mons[i], ", ", mass," g")))
   with(Tbs_ode, points(To ~ time, type = 'l', col = '1'))
   with(Tbs_ode, points(Tcf ~ time, type = 'l', col = '2'))
-  points(Tairf(times) ~ hours, type = 'l', col = 'blue', lty = 2)
+  points(Tairf(time) ~ hours, type = 'l', col = 'blue', lty = 2)
   legend(0,70, c("Tc", "To", "Tcf", "Tair"), lty = c(1, 2, 1, 2), lwd = c(2.5, 2.5, 2.5, 2.5), col = c("black", "black", "red", "blue"))
 }
 }
