@@ -9,15 +9,15 @@ onelump(t, Tc_init, mass, geom, Tair, Trad, vel, Qsol, Zen, ...)
 \arguments{
 \item{t}{= seq(1,3600,60), time intervals (s) at which output is required}
 
-\item{Tc_init}{= 5, initial temperature (°C)}
+\item{Tc_init}{= 5, initial temperature (deg C)}
 
 \item{mass}{= 500, animal mass (g)}
 
 \item{geom}{= 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coefs')}
 
-\item{Tair}{= 30, air temperature (°C)}
+\item{Tair}{= 30, air temperature (deg C)}
 
-\item{Trad}{= 30, radiant temperature (°C), averaging ground and sky}
+\item{Trad}{= 30, radiant temperature (deg C), averaging ground and sky}
 
 \item{vel}{= 0.1, wind speed (m/s)}
 
