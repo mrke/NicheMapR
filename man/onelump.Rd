@@ -93,11 +93,11 @@ abs <- 0.85
 Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 32), ylab = 'Temperature, deg C',xlab='time, s', las = 1)
-text(80, 29, "    5000 g")
-text(80, 25, "5 g")
-text (40, 20.5, "Tair for both sizes", col = "blue")
-text(90, 28, "   vel = 1.0 m/s")
-text(90, 24, "     vel = 1.0 m/s")
+text(80, 27, "    5000 g")
+text(80, 24.5, "5 g")
+text(90, 20.5, "Tair for both sizes", col = "blue")
+text(90, 26, "   vel = 1.0 m/s")
+text(90, 23.5, "     vel = 1.0 m/s")"     vel = 1.0 m/s")
 
 mass <- 5000
 Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
@@ -126,11 +126,11 @@ Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
 points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
 abline(h = Tair, lty = 2, col = 'blue')
 
-text(65, 31, "5 g")
-text(80, 29, "5000 g")
-text(60, 20.5, "Tair for large animal", col = "blue")
-text(63, 25.4, "Tair for small animal", col = "blue")
-text(80, 30.1, "vel = 0.5 m/s")
-text(93, 28, "vel = 1.0 m/s")
+text(65, 30.25, "5 g")
+text(85, 27, "5000 g")
+text(90, 20.5, "Tair for large animal", col = "blue")
+text(90, 25.4, "Tair for small animal", col = "blue")
+text(80, 29.25, "vel = 0.5 m/s")
+text(93, 26, "vel = 1.0 m/s")
 }
 
