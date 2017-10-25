@@ -4,7 +4,7 @@
 #' under a constant environment
 #' Michael Kearney, Raymond Huey and Warren Porter developed this R function and example in September 2017.
 #' @param t = seq(1,3600,60), time intervals (s) at which output is required
-#' @param Tc_init = 5, initial temperature (°C)
+#' @param Tc_init = 5, initial temperature (deg C)
 #' @param mass = 500, animal mass (g)
 #' @param rho = 932, animal density (kg/m3)
 #' @param q = 0, metabolic heat production rate W/m3
@@ -22,8 +22,8 @@
 #' @param fatosb = 0.4, Configuration factor to subsrate for infrared calculations
 #' @param abs_sub = 0.2, substrate solar reflectivity, decimal percent
 #' @param pctdif = 0.1, proportion of solar energy that is diffuse (rather than direct beam)
-#' @param Tair = 30, air temperature (°C)
-#' @param Trad = 30, radiant temperature (°C), averaging ground and sky
+#' @param Tair = 30, air temperature (deg C)
+#' @param Trad = 30, radiant temperature (deg C), averaging ground and sky
 #' @param vel = 0.1, wind speed (m/s)
 #' @param Qsol = 500, solar radiation (W/m2)
 #' @param Zen = 20, zenith angle of sun (90 is below horizon), degrees

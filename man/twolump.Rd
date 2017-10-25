@@ -112,7 +112,7 @@ q <- 0 # metabolic rate, W/m3
 k_inner <- 0.5 # thermal conductivity of core, W/mK
 k_outer <- 0.5 # thermal conductivity of shell, W/mK
 geom <- 1 # shape, -
-x_shell <- 0.005, thickness of outer shell (m)
+x_shell <- 0.005 # thickness of outer shell (m)
 posture <- 'n' # pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?
 orient <- 1 # does the object orient toward the sun? (0,1)
 shape_b <- 4 # shape coefficient a, -
