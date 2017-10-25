@@ -4,9 +4,9 @@
 #' under a constant or variable environment
 #' Michael Kearney, Raymond Huey and Warren Porter developed this R function and example in September 2017.
 #' @param t = seq(1,3600,60), time intervals (s) at which output is required
-#' @param Tc_init = 5, initial core temperature (deg C) 
-#' @param Ts_init = 5.1, initial shell temperature (deg C) 
-#' @param To_init = 5.2, initial surface temperature (deg C) 
+#' @param Tc_init = 5, initial core temperature (deg C)
+#' @param Ts_init = 5.1, initial shell temperature (deg C)
+#' @param To_init = 5.2, initial surface temperature (deg C)
 #' @param mass = 500, animal mass (g)
 #' @param rho = 932, animal density (kg/m3)
 #' @param x_shell = 0.001, shell thickness, m
@@ -18,8 +18,8 @@
 #' @param emis = 0.95, Emissivity of animal (0-1)
 #' @param abs = 0.85, solar absorptivity, decimal percent
 #' @param geom = 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coefs')
-#' @param shape_b = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid
-#' @param shape_c = 1/3, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid
+#' @param shape_b = 1/5, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid
+#' @param shape_c = 1/5, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid
 #' @param shape_coefs = c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom shape coefficients. Operates if geom=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun
 #' @param posture = 'n', pointing normal 'n', parallel 'p' to the sun's rays, or 'b' in between?
 #' @param orient = 1, does the object orient toward the sun? (0,1)
@@ -68,12 +68,12 @@
 #' q <- 0 # metabolic rate, W/m3
 #' k_inner <- 0.5 # thermal conductivity of core, W/mK
 #' k_outer <- 0.5 # thermal conductivity of shell, W/mK
-#' geom <- 1 # shape, -
+#' geom <- 2 # shape, -
 #' x_shell <- 0.005 # thickness of outer shell (m)
 #' posture <- 'n' # pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?
 #' orient <- 1 # does the object orient toward the sun? (0,1)
-#' shape_b <- 4 # shape coefficient a, -
-#' shape_c <- 2/3 # shape coefficient b, -
+#' shape_b <- 1/5 # shape coefficient a, -
+#' shape_c <- 1/5 # shape coefficient b, -
 #' shape_coefs <- c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743)
 #' fatosk <- 0.4 # solar configuration factor to sky, -
 #' fatosb <- 0.4 # solar configuration factor to substrate, -
@@ -124,17 +124,11 @@
 #' @export
 twolump<-function(t,y,indata){
   with(as.list(c(indata, y)), {
-#twolump2<-function(t = seq(1, 3600, 60), Tc_init = 5, Ts_init = 5.1, To_init = 5.2, mass = 500, x_shell = 0.001,
-  # geom = 2, Tair = 30, Trad = 30, vel = 0.1, Qsol = 500, Zen = 20, k_inner = 0.5, k_outer = 0.5,
-  # q = 0, cp_inner = 3073, cp_outer = 3073, emis = 0.95, rho = 932, abs = 0.85,
-  # shape_coefs = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
-  # shape_b = 0.5, shape_c = 0.5, posture = 'n', orient = 1, fatosk = 0.4, fatosb = 0.4,
-  # abs_sub = 0.8, pctdif = 0.1, press = 101325){
     Tair<-Tairf(t)
     vel<-velf(t)
     Qsol<-Qsolf(t)
     Trad<-Tradf(t)
-    Zen<-Zenf(t)    
+    Zen<-Zenf(t)
   sigma <- 5.67e-8 #Stefan-Boltzman, W/(m.K)
   Zenith <- Zen * pi / 180 # zenith angle in radians
   Tc <- as.numeric(y[1]) # core temperature, deg C
@@ -145,7 +139,7 @@ twolump<-function(t,y,indata){
   DENSTY <- press / (287.04 * (Tair + 273.15)) # air density, kg/m3
   THCOND <- 0.02425 + (7.038 * 10 ^ -5 * Tair) # air thermal conductivity, W/(m.K)
   VISDYN <- (1.8325 * 10 ^ -5 * ((296.16 + 120) / ((Tair + 273.15) + 120))) * (((Tair + 273.15) / 296.16) ^ 1.5) # dynamic viscosity of air, kg/(m.s)
-  
+
   # geometry section ############################################################
   m <- mass / 1000 # convert mass to kg  C<-m*cp # thermal capacitance, J/K
   C <- m * cp_inner # thermal capacitance, J/K
@@ -155,8 +149,8 @@ twolump<-function(t,y,indata){
   V_inner <- (L - x_shell) ^ 3
   V_shell <- V - V_inner
   Cs <- V_shell * rho * cp_outer
-  Cc <- V_inner * rho * cp_inner  
-  
+  Cc <- V_inner * rho * cp_inner
+
   # FLAT PLATE geometry
   if (geom == 0) {
     AHEIT <- (V / (shape_b * shape_c)) ^ (1 / 3) # length, m
@@ -178,15 +172,15 @@ twolump<-function(t,y,indata){
     }
     R <- ALENTH / 2 # 'radius', m
   }
-  
-  # CYLINDER geometry      
+
+  # CYLINDER geometry
   if(geom == 1){
     R1 <- (V / (pi * shape_b * 2)) ^ (1 / 3) # radius, m
     ALENTH <- 2 * R1 * shape_b # length, m
     V_inner <- pi * (R1 - x_shell) ^ 2 * (ALENTH - x_shell)
     V_shell <- V - V_inner
     Cs <- V_shell * rho * cp_outer
-    Cc <- V_inner * rho * cp_inner  
+    Cc <- V_inner * rho * cp_inner
     ATOT<- 2 * pi * R1 ^ 2 + 2 * pi * R1 * ALENTH # total surface area, m2
     ATOT_inner <- (ATOT / V) * V_shell
     AWIDTH <- 2 * R1 # width, m
@@ -200,10 +194,10 @@ twolump<-function(t,y,indata){
       R <- R1
     }
   }
-  
+
   # Ellipsoid geometry
   if(geom == 2){
-    A1<-((3 /4 ) * V / (pi * shape_b * shape_c)) ^ (1 / 3) # axis A, m   
+    A1<-((3 /4 ) * V / (pi * shape_b * shape_c)) ^ (1 / 3) # axis A, m
     B1 <- A1 * shape_b # axis B, m
     C1 <- A1 * shape_c # axis C, m
     A2 <- A1 - x_shell
@@ -220,8 +214,8 @@ twolump<-function(t,y,indata){
     ASILP <- min(pi * A1 * C1, pi * B1 * C1) # min silhouette area, m2
     S2 <- (A1 ^ 2 * B1 ^ 2 * C1 ^ 2) / (A1 ^ 2 * B1 ^ 2 + A1 ^ 2 * C1 ^ 2 + B1 ^ 2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
     #kflesh <- 0.5 # + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
-  }              
-  
+  }
+
   # Lizard geometry - DESERT IGUANA (PORTER ET AL. 1973 OECOLOGIA)
   if (geom == 3) {
     ATOT <- (10.4713 * mass ^ .688) / 10000. # total surface area, m2
@@ -232,7 +226,7 @@ twolump<-function(t,y,indata){
     ASILP <- (0.694 * mass ^ .743) / 10000. # Min. silhouette area (pointing toward the sun), m2
     R <- L
   }
-  
+
   # Frog geometry - LEOPARD FROG (C.R. TRACY 1976 ECOL. MONOG.)
   if (geom == 4) {
     ATOT <- (12.79 * mass ^ 0.606) / 10000. # total surface area, m2
@@ -247,7 +241,7 @@ twolump<-function(t,y,indata){
     ASILP <- PCTP * ATOT / 100 # Min. silhouette area (pointing toward the sun), m2
     R <- L
   }
-  
+
   # user defined geometry
   if (geom == 5) {
     ATOT <- (shape_coefs[1] * mass ^ shape_coefs[2]) / 10000. # total surface area, m2
@@ -261,7 +255,7 @@ twolump<-function(t,y,indata){
     R <- L
   }
   # end geometry section ############################################################
-  
+
   if (max(Zen) >= 89) {
     Qnorm <- 0
   } else{
@@ -283,10 +277,10 @@ twolump<-function(t,y,indata){
   if (posture == 'b') {
     Qabs <- (Qnorm * (1 - pctdif) * (ASILN + ASILP) / 2 + Qsol * pctdif * fatosk * ATOT + Qsol * (1 - abs_sub) * fatosb * ATOT) * abs
   }
-  
+
   Re <- DENSTY * vel * L / VISDYN # Reynolds number
   PR <- 1005.7 * VISDYN / THCOND # Prandlt number
-  
+
   if (geom == 0) {
     NUfor <- 0.102 * Re ^ 0.675 * PR ^ (1. / 3.)
   }
@@ -322,10 +316,10 @@ twolump<-function(t,y,indata){
     NUfor <- 0.35 * Re ^ (0.6) # Nusselt number, forced convection
   }
   hc_forced <- NUfor * THCOND / L # convection coefficent, forced
-  
+
   GR <- abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (To - Tair) / VISDYN ^ 2) # Grashof number
   Raylei <- GR * PR # Rayleigh number
-  
+
   # get Nusselt for Free Convect
   if (geom == 0) {
     NUfre = 0.55 * Raylei ^ 0.25
@@ -357,7 +351,7 @@ twolump<-function(t,y,indata){
       }
     }
   }
-  
+
   if (geom == 2 | geom == 4) {
     Raylei = (GR ^ 0.25) * (PR ^ 0.333)
     NUfre = 2 + 0.60 * Raylei
@@ -366,11 +360,11 @@ twolump<-function(t,y,indata){
   hc <- hc_free + hc_forced # combined convection coefficient
   Nu <- hc * L / THCOND # Nu combined
   Rconv <- 1 / (hc * ATOT) # convective resistance, eq. 5 of Kearney, Huey and Porter 2017 Appendix 1
-  
+
   hr <- 4 * emis * sigma * ((To + Trad) / 2 + 273.15) ^ 3 # radiation resistance, eq. 49 of Kearney, Huey and Porter 2017 Appendix 1
-  
+
   Rrad <- 1 / (hr * ATOT)
-  
+
   Qresp <- 0
   m_bl <- 0.012 / 1000 / 60 / 1e-6 # blood flow rate kg/s/m3
   V_bl <- ATOT * x_shell # blood volume
@@ -402,7 +396,7 @@ twolump<-function(t,y,indata){
   #Ts
   #To_init
   #To_init = To#dTc <- ((Qgen - Qresp) - (Tc - Ts)/Rb) / Cs
-  dTo <- To - y[3] 
+  dTo <- To - y[3]
   #dTs <- as.numeric(y[2]) - Ts
     list(y = c(dTc[1], dTs[1], dTo[1]), x = Tcf[1])
   })
