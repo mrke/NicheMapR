@@ -145,7 +145,7 @@ for (i in 1:length(juldays)) {
 
   with(Tbs_ode, plot(Tc ~ time, type = 'l', col = '1', ylim = c(-10, 80), xlim = c(0, 23), ylab='Temperature, °C',xlab = 'hour of day', main = paste0(loc, ", ", mons[i], ", ", mass," g")))
   with(Tbs_ode, points(Tcf ~ time, type = 'l', col = '2'))
-  points(Tairf(times) ~ hours, type = 'l', col = 'blue', lty = 2)
+  points(Tairf(time) ~ hours, type = 'l', col = 'blue', lty = 2)
   legend(0,70, c("Tc", "Tcf", "Tair"), lty = c(1, 1, 2), lwd = c(2.5, 2.5, 2.5), col = c("black", "red", "blue"))
 }
 }

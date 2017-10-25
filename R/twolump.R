@@ -69,7 +69,7 @@
 #' k_inner <- 0.5 # thermal conductivity of core, W/mK
 #' k_outer <- 0.5 # thermal conductivity of shell, W/mK
 #' geom <- 1 # shape, -
-#' x_shell <- 0.005, thickness of outer shell (m)
+#' x_shell <- 0.005 # thickness of outer shell (m)
 #' posture <- 'n' # pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?
 #' orient <- 1 # does the object orient toward the sun? (0,1)
 #' shape_b <- 4 # shape coefficient a, -
@@ -167,6 +167,7 @@ twolump<-function(t,y,indata){
     Cs <- V_shell * rho * cp_outer
     Cc <- V_inner * rho * cp_inner
     ATOT <- ALENTH * AWIDTH * 2 + ALENTH * AHEIT * 2 + AWIDTH * AHEIT * 2 # total area, m2
+    ATOT_inner <- (ATOT / V) * V_shell
     ASILN <- ALENTH * AWIDTH # max silhouette area, m2
     ASILP <- AWIDTH * AHEIT # min silhouette area, m2
     L <- AHEIT # characteristic dimension, m
@@ -187,6 +188,7 @@ twolump<-function(t,y,indata){
     Cs <- V_shell * rho * cp_outer
     Cc <- V_inner * rho * cp_inner  
     ATOT<- 2 * pi * R1 ^ 2 + 2 * pi * R1 * ALENTH # total surface area, m2
+    ATOT_inner <- (ATOT / V) * V_shell
     AWIDTH <- 2 * R1 # width, m
     ASILN <- AWIDTH * ALENTH # max silhouette area, m2
     ASILP <- pi * R1 ^ 2 # min silhouette area, m2
@@ -223,6 +225,7 @@ twolump<-function(t,y,indata){
   # Lizard geometry - DESERT IGUANA (PORTER ET AL. 1973 OECOLOGIA)
   if (geom == 3) {
     ATOT <- (10.4713 * mass ^ .688) / 10000. # total surface area, m2
+    ATOT_inner <- (ATOT / V) * V_shell
     AV <- (0.425 * mass ^ .85) / 10000. # ventral surface area, m2
     # NORMAL AND POINTING @ SUN SILHOUETTE AREA: PORTER & TRACY 1984
     ASILN <- (3.798 * mass ^ .683) / 10000. # Max. silhouette area (normal to the sun), m2
@@ -233,6 +236,7 @@ twolump<-function(t,y,indata){
   # Frog geometry - LEOPARD FROG (C.R. TRACY 1976 ECOL. MONOG.)
   if (geom == 4) {
     ATOT <- (12.79 * mass ^ 0.606) / 10000. # total surface area, m2
+    ATOT_inner <- (ATOT / V) * V_shell
     AV <- (0.425 * mass ^ 0.85) / 10000. # ventral surface area, m2
     # NORMAL AND POINTING @ SUN SILHOUETTE AREA: EQ'N 11 TRACY 1976
     ZEN <- 0
@@ -247,6 +251,7 @@ twolump<-function(t,y,indata){
   # user defined geometry
   if (geom == 5) {
     ATOT <- (shape_coefs[1] * mass ^ shape_coefs[2]) / 10000. # total surface area, m2
+    ATOT_inner <- (ATOT / V) * V_shell
     AV <- (shape_coefs[3] * mass ^ shape_coefs[4]) / 10000 # ventral surface area, m2
     # NORMAL AND POINTING @ SUN SILHOUETTE AREA: PORTER & TRACY 1984
     # User must define Max. silhouette area (normal to the sun)
