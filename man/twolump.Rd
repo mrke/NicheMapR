@@ -158,7 +158,7 @@ for (i in 1:length(juldays)) {
   colnames(Tbs_ode) = c("time", "Tc", "Ts", "To", "Tcf")
   Tbs_ode$time <- Tbs_ode$time / 3600 # convert to hours
 
-  with(Tbs_ode, plot(Tc ~ time, type = 'l', col = '1', ylim = c(-10, 80), xlim = c(0, 23), ylab='Temperature, °C',xlab = 'hour of day', main = paste0(loc, ", ", mons[i], ", ", mass," g")))
+  with(Tbs_ode, plot(Tc ~ time, type = 'l', col = '1', ylim = c(-10, 80), xlim = c(0, 23), ylab='Temperature, deg C',xlab = 'hour of day', main = paste0(loc, ", ", mons[i], ", ", mass," g")))
   with(Tbs_ode, points(To ~ time, lty = 2, type = 'l', col = '1'))
   with(Tbs_ode, points(Tcf ~ time, type = 'l', col = '2'))
   points(Tairf(time) ~ hours, type = 'l', col = 'blue', lty = 2)

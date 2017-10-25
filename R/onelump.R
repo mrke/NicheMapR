@@ -54,7 +54,7 @@
 #'
 #' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
-#' plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 32), ylab = 'Temperature, °C',xlab='time, s', las = 1)
+#' plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 32), ylab = 'Temperature, deg C',xlab='time, s', las = 1)
 #' text(80, 29, "    5000 g")
 #' text(80, 25, "5 g")
 #' text (40, 20.5, "Tair for both sizes", col = "blue")
@@ -75,7 +75,7 @@
 #'
 #' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
-#' plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,32),ylab='Temperature, °C',xlab='time, s', las = 1)
+#' plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,32),ylab='Temperature, deg C',xlab='time, s', las = 1)
 #' abline(h = Tair, lty = 1, col = 'blue')
 #'
 #' mass <- 5000
