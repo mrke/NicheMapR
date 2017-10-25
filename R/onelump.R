@@ -13,8 +13,8 @@
 #' @param emis = 0.95, Emissivity of animal (0-1)
 #' @param abs = 0.85, solar absorptivity, decimal percent
 #' @param geom = 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coefs')
-#' @param shape_b = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid
-#' @param shape_c = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid
+#' @param shape_b = 1/5, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid
+#' @param shape_c = 1/5, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid
 #' @param shape_coefs = c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom shape coefficients. Operates if geom=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun
 #' @param posture = 'n' pointing normal 'n', parallel 'p' to the sun's rays, or 'b' in between?
 #' @param orient = 1, does the object orient toward the sun? (0,1)
@@ -44,7 +44,7 @@
 #' par(mfrow = c(1,2))
 #' mass <- 5
 #' Tc_init <- 20
-#' geom <- 3
+#' geom <- 2
 #' Tair <- 20
 #' Trad <- Tair
 #' vel <- 1
@@ -99,9 +99,9 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
   geom = 2, Tair = 30, Trad=30, vel = 0.1, Qsol = 500, Zen = 20, kflesh = 0.5,
   q = 0, cp = 3073, emis = 0.95, rho = 932, abs = 0.85,
   shape_coefs = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
-  shape_b = 0.5, shape_c = 0.5, posture = 'n', orient = 1, fatosk = 0.4, fatosb = 0.4,
+  shape_b = 1/5, shape_c = 1/5, posture = 'n', orient = 1, fatosk = 0.4, fatosb = 0.4,
   abs_sub = 0.8, pctdif = 0.1, press = 101325){
-  
+
   sigma <- 5.67e-8 #Stefan-Boltzman, W/(m.K)
   Zenith <- Zen * pi / 180 # zenith angle in radians
   Tc <- Tc_init
@@ -111,14 +111,14 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
   DENSTY <- press / (287.04 * (Tair + 273.15)) # air density, kg/m3
   THCOND <- 0.02425 + (7.038 * 10 ^ -5 * Tair) # air thermal conductivity, W/(m.K)
   VISDYN <- (1.8325 * 10 ^ -5 * ((296.16 + 120) / ((Tair + 273.15) + 120))) * (((Tair + 273.15) / 296.16) ^ 1.5) # dynamic viscosity of air, kg/(m.s)
-  
+
   # geometry section ############################################################
   m <- mass / 1000 # convert mass to kg
   C <- m * cp # thermal capacitance, J/K
   V <- m / rho # volume, m3
   Qgen <- q * V # total metabolic heat, J
   L <- V ^ (1 / 3) # characteristic dimension, m
-  
+
   # FLAT PLATE geometry
   if (geom == 0) {
     AHEIT <- (V / (shape_b * shape_c)) ^ (1 / 3) # length, m
@@ -135,7 +135,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
     }
     R <- ALENTH / 2 # 'radius', m
   }
-  
+
   # CYLINDER geometry
   if (geom == 1) {
     R1 <- (V / (pi * shape_b * 2)) ^ (1 / 3) # radius, m
@@ -153,7 +153,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
       R <- R1
     }
   }
-  
+
   # Ellipsoid geometry
   if (geom == 2) {
     A1 <- ((3 / 4) * V / (pi * shape_b * shape_c)) ^ 0.333 # axis A, m
@@ -166,7 +166,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
     S2 <- (A1 ^ 2 * B1 ^ 2 * C1 ^ 2) / (A1 ^ 2 * B1 ^ 2 + A1 ^ 2 * C1 ^ 2 + B1 ^ 2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
     kflesh <- 0.5# + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
   }
-  
+
   # Lizard geometry - DESERT IGUANA (PORTER ET AL. 1973 OECOLOGIA)
   if (geom == 3) {
     ATOT <- (10.4713 * mass ^ .688) / 10000. # total surface area, m2
@@ -176,7 +176,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
     ASILP <- (0.694 * mass ^ .743) / 10000. # Min. silhouette area (pointing toward the sun), m2
     R <- L
   }
-  
+
   # Frog geometry - LEOPARD FROG (C.R. TRACY 1976 ECOL. MONOG.)
   if (geom == 4) {
     ATOT <- (12.79 * mass ^ 0.606) / 10000. # total surface area, m2
@@ -190,7 +190,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
     ASILP <- PCTP * ATOT / 100 # Min. silhouette area (pointing toward the sun), m2
     R <- L
   }
-  
+
   # user defined geometry
   if (geom == 5) {
     ATOT <- (shape_coefs[1] * mass ^ shape_coefs[2]) / 10000. # total surface area, m2
@@ -203,7 +203,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
     R <- L
   }
   # end geometry section ############################################################
-  
+
   if (max(Zen) >= 89) {
     Qnorm <- 0
   } else{
@@ -225,10 +225,10 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
   if (posture == 'b') {
     Qabs <- (Qnorm * (1 - pctdif) * (ASILN + ASILP) / 2 + Qsol * pctdif * fatosk * ATOT + Qsol * (1 - abs_sub) * fatosb * ATOT) * abs
   }
-  
+
   Re <- DENSTY * vel * L / VISDYN # Reynolds number
   PR <- 1005.7 * VISDYN / THCOND # Prandlt number
-  
+
   if (geom == 0) {
     NUfor <- 0.102 * Re ^ 0.675 * PR ^ (1. / 3.)
   }
@@ -264,10 +264,10 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
     NUfor <- 0.35 * Re ^ (0.6) # Nusselt number, forced convection
   }
   hc_forced <- NUfor * THCOND / L # convection coefficent, forced
-  
+
   GR <- abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Tskin - Tair) / VISDYN ^ 2) # Grashof number
   Raylei <- GR * PR # Rayleigh number
-  
+
   # get Nusselt for Free Convect
   if (geom == 0) {
     NUfre = 0.55 * Raylei ^ 0.25
@@ -299,7 +299,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
       }
     }
   }
-  
+
   if (geom == 2 | geom == 4) {
     Raylei = (GR ^ 0.25) * (PR ^ 0.333)
     NUfre = 2 + 0.60 * Raylei
@@ -308,9 +308,9 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
   hc <- hc_free + hc_forced # combined convection coefficient
   Nu <- hc * L / THCOND # Nu combined
   Rconv <- 1 / (hc * ATOT) # convective resistance, eq. 5 of Kearney, Huey and Porter 2017 Appendix 1
-  
+
   hr <- 4 * emis * sigma * ((Tc + Trad) / 2 + 273.15) ^ 3 # radiation resistance, eq. 49 of Kearney, Huey and Porter 2017 Appendix 1
-  
+
   if(geom == 2){ # ellipsoid
     j <- (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * kflesh) + Tair) + hr * ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
   }else{ # assume cylinder

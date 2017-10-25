@@ -27,9 +27,9 @@ ode(y = Tb_init, t = times, func = onelump_var, parms = indata)
 
 \item{geom}{= 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coeffs')}
 
-\item{shape_b}{= 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid}
+\item{shape_b}{= 1/5, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid}
 
-\item{shape_c}{= 1/3, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}
+\item{shape_c}{= 1/5, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}
 
 \item{shape_coefs}{= c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom surface area coefficients. Operates if posture = 5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}
 
@@ -99,11 +99,11 @@ cp <- 3342 # specific heat of flesh, J/kg-C
 rho <- 1000 # animal density, kg/m3
 q <- 0 # metabolic rate, W/m3
 kflesh <- 0.5 # thermal conductivity of flesh, W/mK
-geom <- 1 # shape, -
+geom <- 2 # shape, -
 posture <- 'n' # pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?
 orient <- 1 # does the object orient toward the sun? (0,1)
-shape_b <- 4 # shape coefficient a, -
-shape_c <- 2/3 # shape coefficient b, -
+shape_b <- 1/5 # shape coefficient a, -
+shape_c <- 1/5 # shape coefficient b, -
 shape_coefs <- c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743)
 fatosk <- 0.4 # solar configuration factor to sky, -
 fatosb <- 0.4 # solar configuration factor to substrate, -
