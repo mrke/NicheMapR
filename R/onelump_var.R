@@ -355,9 +355,9 @@ onelump_var <- function(t, y, indata) {
     hc_free <- NUfre * THCOND / L # convection coefficent, forced
     hc <- hc_free + hc_forced # combined convection coefficient
     Nu <- hc * L / THCOND # Nu combined
-    Rconv <- 1 / (hc * ATOT) # convective resistance, eq. 5 of Kearney, Huey and Porter 2017 Appendix 1
+    Rconv <- 1 / (hc * ATOT) # convective resistance, eq. 3 of Kearney, Huey and Porter 2017 Appendix 1
 
-    hr <- 4 * emis * sigma * ((Tc + Trad) / 2 + 273.15) ^ 3 # radiation resistance, eq. 49 of Kearney, Huey and Porter 2017 Appendix 1
+    hr <- 4 * emis * sigma * ((Tc + Trad) / 2 + 273.15) ^ 3 # radiation resistance, eq. 47 of Kearney, Huey and Porter 2017 Appendix 1
 
     if(geom == 2){ # ellipsoid
       j <- (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * kflesh) + Tair) + hr * ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
