@@ -182,7 +182,7 @@ twolump<-function(t,y,indata){
     Cs <- V_shell * rho * cp_outer
     Cc <- V_inner * rho * cp_inner
     ATOT<- 2 * pi * R1 ^ 2 + 2 * pi * R1 * ALENTH # total surface area, m2
-    ATOT_inner <- (ATOT / V) * V_shell
+    ATOT_inner <- 2 * pi * (R1 - x_shell) ^ 2 + 2 * pi * (R1 - x_shell) * (ALENTH - x_shell)#(ATOT / V) * V_shell
     AWIDTH <- 2 * R1 # width, m
     ASILN <- AWIDTH * ALENTH # max silhouette area, m2
     ASILP <- pi * R1 ^ 2 # min silhouette area, m2
@@ -368,11 +368,17 @@ twolump<-function(t,y,indata){
   Qresp <- 0
   m_bl <- 0.012 / 1000 / 60 / 1e-6 # blood flow rate kg/s/m3
   V_bl <- ATOT * x_shell # blood volume
-  Rrad <- (To-Trad)/(emis * 0.8 * sigma * ATOT * (To^4-Trad^4))
+  #Rrad <- (To-Trad)/(emis * 0.8 * sigma * ATOT * (To^4-Trad^4))
   Rconv <- 1 / (hc * ATOT)
   Rs <- x_shell / (k_outer * ATOT) # resistance of skin
   Rbl <- 1 / (m_bl * cp_inner * V_bl) # blood resistance
   Rb <- (V_inner ^ (1 / 3)) / (k_inner * ATOT_inner)
+  if(geom == 1){
+      Rb <- (R - x_shell) / (k_inner * ATOT_inner)
+  }
+  if(geom == 2){
+      Rb <- min(A2, B2, C2) / (k_inner * ATOT_inner)
+  }
   F <- 1 / (Cc * Rb) # from eq 110 and 111
   H <- (Qgen - Qresp) / Cc # from eq 110 and 111
   #Ts <- (Qabs + Trad / Rrad + Tair / Rconv + 2 * To / Rs) / (1 / Rrad + 1 / Rconv + 2 / Rs) # eq 106
