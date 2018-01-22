@@ -38,7 +38,7 @@ library(NicheMapR)
 
 ```{r}
 library(NicheMapR)
-micro<-micro_global(loc = "Townsville, Queensland", runmoist=1)
+micro<-micro_global(loc = "Townsville, Queensland", runmoist = 1)
 ecto<-ectotherm()
 ```
 

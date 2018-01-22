@@ -40,7 +40,8 @@
 #'
 #' # get microclimate data
 #' loc <- "Alice Springs, Australia"
-#' micro <- micro_global(loc = loc) # run the model with default location and settings
+#' Usrhyt <- 0.05 # height of midpoint of animal, m
+#' micro <- micro_global(loc = loc, Usrhyt = Usrhyt) # run the model with default location and settings
 #' metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #' soil <- as.data.frame(micro$soil) # soil temperatures, minimum shade
 #'
@@ -362,7 +363,7 @@ onelump_var <- function(t, y, indata) {
     if(geom == 2){ # ellipsoid
       j <- (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * kflesh) + Tair) + hr * ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
     }else{ # assume cylinder
-      j <- (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * kflesh) + Tair) + hr * ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
+      j <- (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * kflesh) + Tair) + hr * ATOT * ((q * R ^ 2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
     }
     kTc <- ATOT * (Tc * hc + Tc * hr) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
     k <- ATOT * (hc + hr) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
