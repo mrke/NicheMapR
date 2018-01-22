@@ -103,7 +103,7 @@ soil <- cbind(dates, soil)
 microclimate <- cbind(metout[, 1:5], metout[, 8], soil[, 4], metout[, 13:15], metout[, 6])
 colnames(microclimate) <- c('dates', 'JULDAY', 'TIME', 'TALOC', 'TA1.2m', 'VLOC', 'TS', 'ZEN', 'SOLR', 'TSKYC', 'RHLOC')
 
-# define animal parameters - here simulating a 1000 g cylinder
+# define animal parameters - here simulating a 1000 g ellipsoid
 cp <- 3342 # specific heat of flesh, J/kg-C
 cp_inner <- cp
 cp_outer <- cp

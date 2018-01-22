@@ -78,7 +78,8 @@ library(NicheMapR)
 
 # get microclimate data
 loc <- "Alice Springs, Australia"
-micro <- micro_global(loc = loc) # run the model with default location and settings
+Usrhyt <- 0.05 # height of midpoint of animal, m
+micro <- micro_global(loc = loc, Usrhyt = Usrhyt) # run the model with default location and settings
 metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 soil <- as.data.frame(micro$soil) # soil temperatures, minimum shade
 

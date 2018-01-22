@@ -42,61 +42,59 @@
 #' tmins <- t/60
 #'
 #' par(mfrow = c(1,2))
-#' mass <- 5
-#' Tc_init <- 20
-#' geom <- 2
-#' Tair <- 20
-#' Trad <- Tair
-#' vel <- 1
-#' Qsol <- 500
-#' Zen <- 20
-#' abs <- 0.85
+#' mass <- 5 # body mass, g
+#' Tc_init <- 20 # initial body temperature, deg C
+#' geom <- 2 # shape (2 = ellipsoid)
+#' Tair <- 20 # air temperature, deg C
+#' Trad <- Tair # radiant temperature, deg C
+#' vel <- 1 # wind speed, m/s
+#' Qsol <- 500 # horizontal plane solar radiation, W/m2
+#' Zen <- 20 # zenith angle of sun, degrees
+#' abs <- 0.85 # solar absorptivity, -
 #'
 #' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
-#' plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 32), ylab = 'Temperature, deg C',xlab='time, s', las = 1)
-#' text(80, 27, "    5000 g")
+#' plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 30), ylab = 'Temperature, deg C',xlab='time, min', las = 1)
+#' text(80, 27, "    500 g")
 #' text(80, 24.5, "5 g")
 #' text(90, 20.5, "Tair for both sizes", col = "blue")
 #' text(90, 26, "   vel = 1.0 m/s")
 #' text(90, 23.5, "     vel = 1.0 m/s")"     vel = 1.0 m/s")
 #'
-#' mass <- 5000
+#' mass <- 500 # body mass, g
 #' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
 #' abline(Tair,0, lty = 1, col = 'blue')
 #' abline(h = Tair + .1, lty = 2, col = 'blue')
 #'
-#' mass <- 5
-#' Tair <- 25
-#' Trad <- Tair
-#' vel <-0.5
+#' mass <- 5 # body mass, g
+#' Tair <- 25 # air temperature, deg C
+#' vel <-0.5 # wind speed, m/s
 #'
 #' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
-#' plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,32),ylab='Temperature, deg C',xlab='time, s', las = 1)
+#' plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,30),ylab='Temperature, deg C',xlab='time, min', las = 1)
 #' abline(h = Tair, lty = 1, col = 'blue')
 #'
-#' mass <- 5000
-#' Tair <- 20
-#' Trad <- Tair
-#' vel <-1
+#' mass <- 500 # body mass, g
+#' Tair <- 20 # air temperature, deg C
+#' vel <-1 # wind speed, m/s
 #'
 #' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
 #' abline(h = Tair, lty = 2, col = 'blue')
 #'
-#' text(65, 30.25, "5 g")
-#' text(85, 27, "5000 g")
+#' text(65, 29.65, "5 g")
+#' text(85, 27, "500 g")
 #' text(90, 20.5, "Tair for large animal", col = "blue")
 #' text(90, 25.4, "Tair for small animal", col = "blue")
-#' text(80, 29.25, "vel = 0.5 m/s")
+#' text(80, 28.65, "vel = 0.5 m/s")
 #' text(93, 26, "vel = 1.0 m/s")
 #' @export
 onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
-  geom = 2, Tair = 30, Trad=30, vel = 0.1, Qsol = 500, Zen = 20, kflesh = 0.5,
+  geom = 2, Tair = 30, Trad = 30, vel = 0.1, Qsol = 500, Zen = 20, kflesh = 0.5,
   q = 0, cp = 3073, emis = 0.95, rho = 932, abs = 0.85,
   shape_coefs = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
   shape_b = 1/5, shape_c = 1/5, posture = 'n', orient = 1, fatosk = 0.4, fatosb = 0.4,
@@ -268,7 +266,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
   GR <- abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Tskin - Tair) / VISDYN ^ 2) # Grashof number
   Raylei <- GR * PR # Rayleigh number
 
-  # get Nusselt for Free Convect
+  # get Nusselt for Free Convection
   if (geom == 0) {
     NUfre = 0.55 * Raylei ^ 0.25
   }
@@ -314,7 +312,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
   if(geom == 2){ # ellipsoid
     j <- (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * kflesh) + Tair) + hr * ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
   }else{ # assume cylinder
-    j <- (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * kflesh) + Tair) + hr * ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
+    j <- (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * kflesh) + Tair) + hr * ATOT * ((q * R ^ 2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
   }
   kTc <- ATOT * (Tc * hc + Tc * hr) / C # based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
   k <- ATOT * (hc + hr) / C # based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
