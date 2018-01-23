@@ -5,9 +5,12 @@
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param ystart First year to run
 #' @param yfinish Last year to run
-#' @param REFL Soil solar reflectance, decimal \%
+#' @param REFL Soil solar reflectance (decimal \%)
+#' @param elev Elevation, if to be user specified (km)
 #' @param slope Slope in degrees
 #' @param aspect Aspect in degrees (0 = north)
+#' @param lapse_min Lapse rate for minimum air temperature (degrees C/km)
+#' @param lapse_max Lapse rate for maximum air temperature (degrees C/km)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
 #' @param soiltype Soil type: Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, user-defined = 12, based on Campbell and Norman 1990 Table 9.1.
 #' @param minshade Minimum shade level to use (\%)
@@ -264,7 +267,7 @@
 #'  }
 #'}
 micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfinish=2000,
-  nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,
+  nyears=1,soiltype=4,REFL=0.15, elev = NA, slope=0,aspect=0, lapse_max = 0.0077, lapse_min = 0.0039,
   DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
   minshade=0,maxshade=90,Refhyt=1.2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
   runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,manualshade=1,
@@ -620,6 +623,9 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
     r1<-raster(paste(spatial,'/nz_geo3_km.asc',sep=""))
     NZDEM<-extract(r1,x)*1000
 
+     if(is.na(elev) == FALSE){
+     ALTITUDES <- elev
+    }else{
     utm<-project(as.matrix(x), "+proj=tmerc +lat_0=0.0 +lon_0=173.0 +k=0.9996 +x_0=1600000.0 +y_0=10000000.0 +datum=WGS84 +units=m")
     nc<-nc_open(paste(spatial,"/elevslpasphori.nc",sep=""))
     easting<-ncvar_get(nc,"easting")
@@ -635,7 +641,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
 
     ALTITUDES <- elevslpasphori[1]
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-NZDEM}
-
+    }
     if(terrain==1){
       cat("extracting terrain data")
 
@@ -672,9 +678,8 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
     #     }else{
     delta_elev = NZDEM - ALTITUDES
     #     }
-    adiab_corr = delta_elev * 0.0058 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
-    adiab_corr_max = delta_elev * 0.0077 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
-    adiab_corr_min = delta_elev * 0.0039 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
+    adiab_corr_max = delta_elev * lapse_max # Adiabatic temperature correction for elevation (C), mean for Australian Alps
+    adiab_corr_min = delta_elev * lapse_min # Adiabatic temperature correction for elevation (C), mean for Australian Alps
 
     if(scenario!=""){
       cat("generate climate change scenario", '\n')
