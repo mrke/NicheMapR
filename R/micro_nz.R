@@ -6,11 +6,9 @@
 #' @param ystart First year to run
 #' @param yfinish Last year to run
 #' @param REFL Soil solar reflectance (decimal \%)
-#' @param elev Elevation, if to be user specified (km)
+#' @param elev Elevation, if to be user specified (m)
 #' @param slope Slope in degrees
 #' @param aspect Aspect in degrees (0 = north)
-#' @param lapse_min Lapse rate for minimum air temperature (degrees C/km)
-#' @param lapse_max Lapse rate for maximum air temperature (degrees C/km)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
 #' @param soiltype Soil type: Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, user-defined = 12, based on Campbell and Norman 1990 Table 9.1.
 #' @param minshade Minimum shade level to use (\%)
@@ -75,6 +73,8 @@
 #' \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
 #' \code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
 #' \code{hori}{ = rep(0,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
+#' \code{lapse_min}{ = 0.0039 Lapse rate for minimum air temperature (degrees C/m)
+#' \code{lapse_max}{ = 0.0077 Lapse rate for maximum air temperature (degrees C/m)
 #' \code{TIMAXS}{ = c(1.0, 1.0, 0.0, 0.0), Time of Maximums for Air Wind RelHum Cloud (h), air & Wind max's relative to solar noon, humidity and cloud cover max's relative to sunrise}\cr\cr
 #' \code{TIMINS}{ = c(0, 0, 1, 1), Time of Minimums for Air Wind RelHum Cloud (h), air & Wind min's relative to sunrise, humidity and cloud cover min's relative to solar noon}\cr\cr
 #' \code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr
