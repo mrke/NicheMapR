@@ -654,7 +654,8 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
       # in the east and goes counter clockwise!
       HORIZONS <- (ifelse(is.na(HORIZONS),0,HORIZONS))/10 # get rid of na and get back to floating point
       HORIZONS <- data.frame(HORIZONS)
-      VIEWF_all <- 1-rowSums(sin(t(HORIZONS)*pi/180))/length(t(HORIZONS)) # convert horizon angles to radians and calc view factor(s)    }else{
+      VIEWF_all <- 1-rowSums(sin(t(HORIZONS)*pi/180))/length(t(HORIZONS)) # convert horizon angles to radians and calc view factor(s)
+      }else{
       HORIZONS <- hori
       HORIZONS <- data.frame(HORIZONS)
       VIEWF_all <- rep(1,length(x[,1]))
