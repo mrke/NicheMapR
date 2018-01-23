@@ -249,9 +249,9 @@ with(plotmetout,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humi
 with(plotmetout,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (deg C)"
 ,  type = "l",main=paste("sky temperature, ",minshade,"\% shade",sep=""))})
 with(plotmetout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-,  type = "l",main="wind speed")})
+,  type = "l",main="wind speed",col='blue)})
 with(plotmetout,{points(VLOC ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-,  type = "l",lty=2,col='blue')})
+,  type = "l",lty=2')})
 with(plotmetout,{plot(ZEN ~ dates,xlab = "Date and Time", ylab = "Zenith Angle of Sun (deg)"
 ,  type = "l",main="solar angle, sun")})
 with(plotmetout,{plot(SOLR ~ dates,xlab = "Date and Time", ylab = "Solar Radiation (W/m2)"
