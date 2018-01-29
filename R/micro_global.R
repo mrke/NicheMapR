@@ -11,6 +11,7 @@
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param nyears The number of years to run
 #' @param REFL Soil solar reflectance, decimal \%
+#' @param elev Elevation, if to be user specified (m)
 #' @param slope Slope in degrees
 #' @param aspect Aspect in degrees (0 = north)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
@@ -66,6 +67,8 @@
 #' \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
 #' \code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
 #' \code{hori}{ = rep(0,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
+#' \code{lapse_min}{ = 0.0039 Lapse rate for minimum air temperature (degrees C/m)
+#' \code{lapse_max}{ = 0.0077 Lapse rate for maximum air temperature (degrees C/m)
 #' \code{TIMAXS}{ = c(1, 1, 0, 0), Time of Maximums for Air Wind RelHum Cloud (h), air & Wind max's relative to solar noon, humidity and cloud cover max's relative to sunrise}\cr\cr
 #' \code{TIMINS}{ = c(0, 0, 1, 1), Time of Minimums for Air Wind RelHum Cloud (h), air & Wind min's relative to sunrise, humidity and cloud cover min's relative to solar noon}\cr\cr
 #' \code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr
@@ -259,7 +262,7 @@
 #'}
 #' @export
 micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,soiltype=4,
-  REFL=0.15,slope=0,aspect=0,
+  REFL=0.15, elev = NA, slope=0,aspect=0, lapse_max = 0.0077, lapse_min = 0.0039,
   DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
   minshade=0,maxshade=90,Refhyt=1.2, Usrhyt=0.01, Z01=0, Z02=0, ZH1=0, ZH2=0,
   runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,
@@ -558,12 +561,20 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     global_climate<-raster::brick(paste(folder,"/global_climate.nc",sep=""))
     CLIMATE <- raster::extract(global_climate,x)
     ALTT<-as.numeric(CLIMATE[,1]) # convert from km to m
+    if(is.na(elev) == FALSE){ # check if user-specified elevation
+     delta_elev <- ALTT - elev # get delta for lapse rate correction
+     ALTT <- elev # now make final elevation the user-specified one
+    }
+    adiab_corr_max <- delta_elev * lapse_max
+    adiab_corr_min <- delta_elev * lapse_min
     RAINFALL <- CLIMATE[,2:13]
     RAINYDAYS <- CLIMATE[,14:25]/10
     WNMAXX <- CLIMATE[,26:37]/10
     WNMINN<-WNMAXX*0.1 # impose diurnal cycle
     TMINN <- CLIMATE[,38:49]/10
     TMAXX <- CLIMATE[,50:61]/10
+    TMAXX<-TMAXX+adiab_corr_max
+    TMINN<-TMINN+adiab_corr_min
     ALLMINTEMPS<-TMINN
     ALLMAXTEMPS<-TMAXX
     ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
