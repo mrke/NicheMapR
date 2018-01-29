@@ -220,13 +220,13 @@ microclimate <- function(micro) {
   metout.names<-c("JULDAY","TIME","TALOC","TAREF","RHLOC","RH","VLOC","VREF","SNOWMELT","POOLDEP","PCTWET","ZEN","SOLR","TSKYC","DEW","FROST","SNOWFALL","SNOWDEP")
   colnames(metout)<-metout.names
   colnames(shadmet)<-metout.names
-  soil.names<-c("JULDAY","TIME",paste("D",micro$DEP,"cm", sep = ""))
+  soil.names<-c("JULDAY","TIME",paste0("D",micro$DEP,"cm"))
   colnames(soil)<-soil.names
   colnames(shadsoil)<-soil.names
-  moist.names<-c("JULDAY","TIME",paste("WC",micro$DEP,"cm", sep = ""))
-  humid.names<-c("JULDAY","TIME",paste("RH",micro$DEP,"cm", sep = ""))
-  pot.names<-c("JULDAY","TIME",paste("PT",micro$DEP,"cm", sep = ""))
-  plant.names<-c("JULDAY","TIME","TRANS","LEAFPOT",paste("RPOT",micro$DEP,"cm", sep = ""))
+  moist.names<-c("JULDAY","TIME",paste0("WC",micro$DEP,"cm"))
+  humid.names<-c("JULDAY","TIME",paste0("RH",micro$DEP,"cm"))
+  pot.names<-c("JULDAY","TIME",paste0("PT",micro$DEP,"cm"))
+  plant.names<-c("JULDAY","TIME","TRANS","LPT",paste0("RPT",micro$DEP,"cm"))
   colnames(soilmoist)<-moist.names
   colnames(shadmoist)<-moist.names
   colnames(humid)<-humid.names
@@ -235,7 +235,7 @@ microclimate <- function(micro) {
   colnames(shadpot)<-pot.names
   colnames(plant)<-plant.names
   colnames(shadplant)<-plant.names
-  snow.names<-c("JULDAY","TIME",paste("D",micro$DEP[1:9],"cm", sep = ""))
+  snow.names<-c("JULDAY","TIME",paste0("D",micro$DEP[1:9],"cm"))
   colnames(sunsnow)<-snow.names
   colnames(shdsnow)<-snow.names
   drlam.colnames<-c("JULDAY","TIME","290","295","300","305","310","315","320","330","340","350","360","370","380","390","400","420","440","460","480","500","520","540","560","580","600","620","640","660","680","700","720","740","760","780","800","820","840","860","880","900","920","940","960","980","1000","1020","1080","1100","1120","1140","1160","1180","1200","1220","1240","1260","1280","1300","1320","1380","1400","1420","1440","1460","1480","1500","1540","1580","1600","1620","1640","1660","1700","1720","1780","1800","1860","1900","1950","2000","2020","2050","2100","2120","2150","2200","2260","2300","2320","2350","2380","2400","2420","2450","2490","2500","2600","2700","2800","2900","3000","3100","3200","3300","3400","3500","3600","3700","3800","3900","4000")

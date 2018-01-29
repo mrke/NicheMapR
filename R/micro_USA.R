@@ -6,6 +6,7 @@
 #' @param ystart First year to run
 #' @param yfinish Last year to run
 #' @param REFL Soil solar reflectance, decimal \%
+#' @param elev Elevation, if to be user specified (m)
 #' @param slope Slope in degrees
 #' @param aspect Aspect in degrees (0 = north)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
@@ -53,7 +54,7 @@
 #' \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
 #' \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
 #' \code{opendap}{ = 0, query met grids via opendap (does not work on PC)}\cr\cr
-#' \code{soilgrids}{ = 1, query soilgrids.org database for soil hydraulic properties?}\cr\cr
+#' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
@@ -74,6 +75,8 @@
 #' \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
 #' \code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
 #' \code{hori}{ = rep(0,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
+#' \code{lapse_min}{ = 0.0039 Lapse rate for minimum air temperature (degrees C/m)
+#' \code{lapse_max}{ = 0.0077 Lapse rate for maximum air temperature (degrees C/m)
 #' \code{TIMAXS}{ = c(1.0, 1.0, 0.0, 0.0), Time of Maximums for Air Wind RelHum Cloud (h), air & Wind max's relative to solar noon, humidity and cloud cover max's relative to sunrise}\cr\cr
 #' \code{TIMINS}{ = c(0, 0, 1, 1), Time of Minimums for Air Wind RelHum Cloud (h), air & Wind min's relative to sunrise, humidity and cloud cover min's relative to solar noon}\cr\cr
 #' \code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr
@@ -252,7 +255,7 @@
 #'  }
 #' }
 micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfinish=2016,
-  nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,
+  nyears=1,soiltype=4,REFL=0.15, elev = NA, slope=0,aspect=0, lapse_max = 0.0077, lapse_min = 0.0039,
   DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
   minshade=0,maxshade=90,Refhyt=1.2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
   runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,manualshade=1,
@@ -270,7 +273,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
   snowmodel=1,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
   shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",
-  barcoo="",quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0, opendap = 0, soilgrids = 1, IR = 0) {
+  barcoo="",quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0, opendap = 0, soilgrids = 0, IR = 0) {
 
   # loc="Madison, Wisconsin"
   # timeinterval=365
@@ -601,9 +604,9 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
 
     #GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]]
     USADEM <- extract(raster(paste0(spatial,"/PRISM_us_dem_4km_asc.asc")), x)
-    ALTITUDES <-NA# extract(raster(paste0(spatial,"/terr50.tif")), x)
+    ALTITUDES <-NA# extract(raster(paste0(spatial,"/terr50.tif")), x) # to do
+    if(is.na(elev) == FALSE){ALTITUDES <- elev} # check if user-specified elevation
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-USADEM}
-
     if(soilgrids == 1){
       require(rjson)
       require(sp)
@@ -663,10 +666,8 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     #     }else{
     delta_elev = USADEM - ALTITUDES
     #     }
-    adiab_corr = delta_elev * 0.0058 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
-    adiab_corr_max = delta_elev * 0.0077 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
-    adiab_corr_min = delta_elev * 0.0039 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
-
+    adiab_corr_max <- delta_elev * lapse_max
+    adiab_corr_min <- delta_elev * lapse_min
     if(opendap == 1){
       cat("extracting weather data", "\n")
       baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/MET/"
@@ -963,7 +964,8 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       RHMAXX <- (e / es) * 100
       RHMAXX[RHMAXX>100]<-100
       RHMAXX[RHMAXX<0]<-0.01
-
+      TMAXX<-TMAXX+adiab_corr_max
+      TMINN<-TMINN+adiab_corr_min
       ALLMINTEMPS<-TMINN
       ALLMAXTEMPS<-TMAXX
       ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)

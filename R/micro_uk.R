@@ -6,6 +6,7 @@
 #' @param ystart First year to run
 #' @param yfinish Last year to run
 #' @param REFL Soil solar reflectance, decimal \%
+#' @param elev Elevation, if to be user specified (m)
 #' @param slope Slope in degrees
 #' @param aspect Aspect in degrees (0 = north)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
@@ -53,7 +54,7 @@
 #' \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
 #' \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
 #' \code{opendap}{ = 0, query met grids via opendap (does not work on PC)}\cr\cr
-#' \code{soilgrids}{ = 1, query soilgrids.org database for soil hydraulic properties?}\cr\cr
+#' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
@@ -74,6 +75,8 @@
 #' \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
 #' \code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
 #' \code{hori}{ = rep(0,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
+#' \code{lapse_min}{ = 0.0039 Lapse rate for minimum air temperature (degrees C/m)
+#' \code{lapse_max}{ = 0.0077 Lapse rate for maximum air temperature (degrees C/m)
 #' \code{TIMAXS}{ = c(1.0, 1.0, 0.0, 0.0), Time of Maximums for Air Wind RelHum Cloud (h), air & Wind max's relative to solar noon, humidity and cloud cover max's relative to sunrise}\cr\cr
 #' \code{TIMINS}{ = c(0, 0, 1, 1), Time of Minimums for Air Wind RelHum Cloud (h), air & Wind min's relative to sunrise, humidity and cloud cover min's relative to solar noon}\cr\cr
 #' \code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr
@@ -252,7 +255,7 @@
 #'  }
 #' }
 micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
-  nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,
+  nyears=1,soiltype=4,REFL=0.15, elev = NA, slope=0,aspect=0, lapse_max = 0.0077, lapse_min = 0.0039,
   DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
   minshade=0,maxshade=90,Refhyt=1.2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
   runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,manualshade=1,
@@ -269,7 +272,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
   LAI=0.1,
   snowmodel=1,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
-  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",barcoo="",quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0, opendap = 0, soilgrids = 1, IR = 0) {
+  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",barcoo="",quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0, opendap = 0, soilgrids = 0, IR = 0) {
 
   # loc="London, UK"
   # timeinterval=365
@@ -614,7 +617,9 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
     UKDEM <-extract(raster(paste0(spatial,"/terr1000.tif")), x2)
     ALTITUDES <- extract(raster(paste0(spatial,"/terr50.tif")), x2)
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-UKDEM}
-
+    if(is.na(elev) == FALSE){ # check if user-specified elevation
+      ALTITUDES <- elev
+    }
     if(terrain==1){
       cat("extracting terrain data")
 
@@ -670,9 +675,8 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
 
 
     delta_elev = UKDEM - ALTITUDES
-    adiab_corr = delta_elev * 0.0058
-    adiab_corr_max = delta_elev * 0.0077
-    adiab_corr_min = delta_elev * 0.0039
+    adiab_corr_max <- delta_elev * lapse_max
+    adiab_corr_min <- delta_elev * lapse_min
     cat("extracting weather data", "\n")
     yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
     wgs84 = "+init=epsg:4326"
@@ -913,13 +917,13 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
         TAI<-c(0.0670358341290886,0.0662612704779235,0.065497075238002,0.0647431301168489,0.0639993178022531,0.0632655219571553,0.0625416272145492,0.0611230843885423,0.0597427855962549,0.0583998423063099,0.0570933810229656,0.0558225431259535,0.0545864847111214,0.0533843764318805,0.0522154033414562,0.0499736739981675,0.047855059159556,0.0458535417401334,0.0439633201842001,0.0421788036108921,0.0404946070106968,0.0389055464934382,0.0374066345877315,0.0359930755919066,0.0346602609764008,0.0334037648376212,0.0322193394032758,0.0311029105891739,0.0300505736074963,0.0290585886265337,0.0281233764818952,0.0272415144391857,0.0264097320081524,0.0256249068083005,0.0248840604859789,0.0241843546829336,0.0235230870563317,0.0228976873502544,0.0223057135186581,0.0217448478998064,0.0212128934421699,0.0207077699817964,0.0202275105711489,0.0197702578594144,0.0193342605242809,0.0189178697551836,0.0177713140039894,0.0174187914242432,0.0170790495503944,0.0167509836728154,0.0164335684174899,0.0161258546410128,0.0158269663770596,0.0155360978343254,0.0152525104459325,0.0149755299703076,0.0147045436435285,0.0144389973831391,0.0141783930434343,0.0134220329447663,0.0131772403830191,0.0129356456025128,0.0126970313213065,0.0124612184223418,0.0122280636204822,0.01199745718102,0.0115436048739351,0.0110993711778668,0.0108808815754663,0.0106648652077878,0.0104513876347606,0.0102405315676965,0.00982708969547694,0.00962473896278535,0.00903679230300494,0.00884767454432418,0.0083031278398166,0.00796072474935954,0.00755817587626185,0.00718610751850881,0.00704629977586921,0.00684663903049612,0.00654155580333479,0.00642947339729728,0.00627223096874308,0.00603955966866779,0.00580920937536261,0.00568506186880564,0.00563167068287251,0.00556222005081865,0.00550522989971023,0.00547395763028062,0.0054478983436216,0.00541823364504573,0.00539532163908382,0.00539239864119488,0.00541690124712384,0.00551525885358836,0.00564825853509463,0.00577220185074264,0.00584222986640171,0.00581645238345584,0.00566088137411449,0.00535516862329704,0.00489914757707667,0.00432017939770409,0.0036813032251836,0.00309019064543606,0.00270890436501562,0.00276446109239711,0.00356019862584603)
       } #end check if running gads
 
-      if(adiab_cor==1){
+      #if(adiab_cor==1){
         TMAXX<-as.matrix(Tmax+adiab_corr_max)
         TMINN<-as.matrix(Tmin+adiab_corr_min)
-      }else{
-        TMAXX<-as.matrix(Tmaxx)
-        TMINN<-as.matrix(Tminn)
-      }
+      # }else{
+      #   TMAXX<-as.matrix(Tmaxx)
+      #   TMINN<-as.matrix(Tminn)
+      # }
       if(scenario!=""){
         TMAXX=TMAXX+TMAXX_diff
         TMINN=TMINN+TMINN_diff

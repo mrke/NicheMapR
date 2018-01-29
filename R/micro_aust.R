@@ -6,6 +6,7 @@
 #' @param ystart First year to run
 #' @param yfinish Last year to run
 #' @param REFL Soil solar reflectance, decimal \%
+#' @param elev Elevation, if to be user specified (m)
 #' @param slope Slope in degrees
 #' @param aspect Aspect in degrees (0 = north)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
@@ -71,6 +72,8 @@
 #' \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
 #' \code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
 #' \code{hori}{ = rep(0,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
+#' \code{lapse_min}{ = 0.0039 Lapse rate for minimum air temperature (degrees C/m)
+#' \code{lapse_max}{ = 0.0077 Lapse rate for maximum air temperature (degrees C/m)
 #' \code{TIMAXS}{ = c(1.0, 1.0, 0.0, 0.0), Time of Maximums for Air Wind RelHum Cloud (h), air & Wind max's relative to solar noon, humidity and cloud cover max's relative to sunrise}\cr\cr
 #' \code{TIMINS}{ = c(0, 0, 1, 1), Time of Minimums for Air Wind RelHum Cloud (h), air & Wind min's relative to sunrise, humidity and cloud cover min's relative to solar noon}\cr\cr
 #' \code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr
@@ -269,7 +272,7 @@
 #'  }
 #'}
 micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart=1990,yfinish=1990,
-  nyears=1,soiltype=4,REFL=0.15,slope=0,aspect=0,
+  nyears=1,soiltype=4,REFL=0.15, elev = NA, slope=0,aspect=0, lapse_max = 0.0077, lapse_min = 0.0039,
   DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
   minshade=0,maxshade=90,Refhyt=1.2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
   runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,manualshade=1,
@@ -737,9 +740,14 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
       dbrow <- raster::extract(r1, x)
       AUSDEM <- raster::extract(r2, x)
       AGG <- raster::extract(r3, x)
-      ALTITUDES <- raster::extract(r4, x)
+      if(is.na(elev) == FALSE){ # check if user-specified elevation
+       ALTITUDES <- elev # use user-specified elevation
+       }else{
+      ALTITUDES <- raster::extract(r4, x) # get elevation from fine res DEM
+       }
       #ALTITUDES <- AUSDEM
       #message("using 0.05 res DEM!")
+       }
       HORIZONS <- hori
       HORIZONS <- data.frame(HORIZONS)
       VIEWF_all <- rep(1,length(x[,1]))
@@ -763,9 +771,8 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
     }else{
       delta_elev = AUSDEM - ALTITUDES
     }
-    adiab_corr = delta_elev * 0.0058 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
-    adiab_corr_max = delta_elev * 0.0077 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
-    adiab_corr_min = delta_elev * 0.0039 # Adiabatic temperature correction for elevation (C), mean for Australian Alps
+    adiab_corr_max <- delta_elev * lapse_max
+    adiab_corr_min <- delta_elev * lapse_min
 
     if(scenario!=""){
       message("generate climate change scenario", '\n')

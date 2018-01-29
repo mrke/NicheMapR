@@ -623,28 +623,27 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
     r1<-raster(paste(spatial,'/nz_geo3_km.asc',sep=""))
     NZDEM<-extract(r1,x)*1000
 
-     if(is.na(elev) == FALSE){
-     ALTITUDES <- elev
+    if(is.na(elev) == FALSE){ # check if user-specified elevation
+      ALTITUDES <- elev
     }else{
-    utm<-project(as.matrix(x), "+proj=tmerc +lat_0=0.0 +lon_0=173.0 +k=0.9996 +x_0=1600000.0 +y_0=10000000.0 +datum=WGS84 +units=m")
-    nc<-nc_open(paste(spatial,"/elevslpasphori.nc",sep=""))
-    easting<-ncvar_get(nc,"easting")
-    northing<-ncvar_get(nc,"northing")
-    dist1<-abs(easting-utm[1])
-    index1<-which.min(dist1)
-    dist2<-abs(northing-utm[2])
-    index2<-which.min(dist2)
-    start<-c(index1,index2,1)
-    count<-c(1,1,-1)
-    elevslpasphori<-as.numeric(ncvar_get(nc,varid="variable",start=start,count=count))
-    nc_close(nc)
+      utm<-project(as.matrix(x), "+proj=tmerc +lat_0=0.0 +lon_0=173.0 +k=0.9996 +x_0=1600000.0 +y_0=10000000.0 +datum=WGS84 +units=m")
+      nc<-nc_open(paste(spatial,"/elevslpasphori.nc",sep=""))
+      easting<-ncvar_get(nc,"easting")
+      northing<-ncvar_get(nc,"northing")
+      dist1<-abs(easting-utm[1])
+      index1<-which.min(dist1)
+      dist2<-abs(northing-utm[2])
+      index2<-which.min(dist2)
+      start<-c(index1,index2,1)
+      count<-c(1,1,-1)
+      elevslpasphori<-as.numeric(ncvar_get(nc,varid="variable",start=start,count=count))
+      nc_close(nc)
 
-    ALTITUDES <- elevslpasphori[1]
-    if(is.na(ALTITUDES)==TRUE){ALTITUDES<-NZDEM}
+      ALTITUDES <- elevslpasphori[1]
+      if(is.na(ALTITUDES)==TRUE){ALTITUDES<-NZDEM}
     }
     if(terrain==1){
       cat("extracting terrain data")
-
       # now extract terrain data from elevslpasphori.nc
       # get UTM from dec degrees, NZTM
       HORIZONS <- elevslpasphori[4:27]
@@ -679,8 +678,8 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
     #     }else{
     delta_elev = NZDEM - ALTITUDES
     #     }
-    adiab_corr_max = delta_elev * lapse_max # Adiabatic temperature correction for elevation (C), mean for Australian Alps
-    adiab_corr_min = delta_elev * lapse_min # Adiabatic temperature correction for elevation (C), mean for Australian Alps
+    adiab_corr_max <- delta_elev * lapse_max # Adiabatic temperature correction for elevation (C)
+    adiab_corr_min <- delta_elev * lapse_min # Adiabatic temperature correction for elevation (C)
 
     if(scenario!=""){
       cat("generate climate change scenario", '\n')
