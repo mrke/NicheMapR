@@ -564,6 +564,8 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     if(is.na(elev) == FALSE){ # check if user-specified elevation
      delta_elev <- ALTT - elev # get delta for lapse rate correction
      ALTT <- elev # now make final elevation the user-specified one
+    }else{
+     delta_elev <- 0
     }
     adiab_corr_max <- delta_elev * lapse_max
     adiab_corr_min <- delta_elev * lapse_min
