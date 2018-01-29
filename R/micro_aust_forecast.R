@@ -756,7 +756,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
        }
       #ALTITUDES <- AUSDEM
       #message("using 0.05 res DEM!")
-       }
+      # }
       HORIZONS <- hori
       HORIZONS <- data.frame(HORIZONS)
       VIEWF_all <- rep(1,length(x[,1]))
