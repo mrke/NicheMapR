@@ -91,10 +91,10 @@ microclimate <- function(micro) {
       shadhumid=matrix(data = 0., nrow = 24*julnum, ncol = 12),
       soilpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),
       shadpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),
-      plant=matrix(data = 0., nrow = 24*julnum, ncol = 14),
-      shadplant=matrix(data = 0., nrow = 24*julnum, ncol = 14),
       sunsnow=matrix(data = 0., nrow = 24*julnum, ncol = 11),
       shdsnow=matrix(data = 0., nrow = 24*julnum, ncol = 11),
+      plant=matrix(data = 0., nrow = 24*julnum, ncol = 14),
+      shadplant=matrix(data = 0., nrow = 24*julnum, ncol = 14),
       drlam=matrix(data = 0., nrow = 24*julnum, ncol = 113),
       drrlam=matrix(data = 0., nrow = 24*julnum, ncol = 113),
       srlam=matrix(data = 0., nrow = 24*julnum, ncol = 113),PACKAGE = "microclimate")
@@ -154,10 +154,10 @@ microclimate <- function(micro) {
       shadhumid=matrix(data = 0., nrow = 24*julnum, ncol = 12),
       soilpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),
       shadpot=matrix(data = 0., nrow = 24*julnum, ncol = 12),
-      plant=matrix(data = 0., nrow = 24*julnum, ncol = 14),
-      shadplant=matrix(data = 0., nrow = 24*julnum, ncol = 14),
       sunsnow=matrix(data = 0., nrow = 24*julnum, ncol = 11),
       shdsnow=matrix(data = 0., nrow = 24*julnum, ncol = 11),
+      plant=matrix(data = 0., nrow = 24*julnum, ncol = 14),
+      shadplant=matrix(data = 0., nrow = 24*julnum, ncol = 14),
       drlam=matrix(data = 0., nrow = 24*julnum, ncol = 113),
       drrlam=matrix(data = 0., nrow = 24*julnum, ncol = 113),
       srlam=matrix(data = 0., nrow = 24*julnum, ncol = 113), PACKAGE = "MICROCLIMATE")
@@ -176,10 +176,10 @@ microclimate <- function(micro) {
   shadhumid <- matrix(data = 0., nrow = 24*julnum, ncol = 12)
   soilpot <- matrix(data = 0., nrow = 24*julnum, ncol = 12)
   shadpot <- matrix(data = 0., nrow = 24*julnum, ncol = 12)
-  plant <- matrix(data = 0., nrow = 24*julnum, ncol = 14)
-  shadplant <- matrix(data = 0., nrow = 24*julnum, ncol = 14)
   sunsnow <- matrix(data = 0., nrow = 24*julnum, ncol = 11)
   shdsnow <- matrix(data = 0., nrow = 24*julnum, ncol = 11)
+  plant <- matrix(data = 0., nrow = 24*julnum, ncol = 14)
+  shadplant <- matrix(data = 0., nrow = 24*julnum, ncol = 14)
   drlam <- matrix(data = 0., nrow = 24*julnum, ncol = 113)
   drrlam <- matrix(data = 0., nrow = 24*julnum, ncol = 113)
   srlam <- matrix(data = 0., nrow = 24*julnum, ncol = 113)
@@ -193,10 +193,10 @@ microclimate <- function(micro) {
   storage.mode(shadhumid)<-"double"
   storage.mode(soilpot)<-"double"
   storage.mode(shadpot)<-"double"
-  storage.mode(plant)<-"double"
-  storage.mode(shadplant)<-"double"
   storage.mode(sunsnow)<-"double"
   storage.mode(shdsnow)<-"double"
+  storage.mode(plant)<-"double"
+  storage.mode(shadplant)<-"double"
   storage.mode(drlam)<-"double"
   storage.mode(drrlam)<-"double"
   storage.mode(srlam)<-"double"
@@ -210,10 +210,10 @@ microclimate <- function(micro) {
   shadhumid<-a$shadhumid
   soilpot<-a$soilpot
   shadpot<-a$shadpot
-  plant<-a$plant
-  shadplant<-a$shadplant
   sunsnow<-a$sunsnow
   shdsnow<-a$shdsnow
+  plant<-a$plant
+  shadplant<-a$shadplant
   drlam<-a$drlam
   drrlam<-a$drrlam
   srlam<-a$srlam
