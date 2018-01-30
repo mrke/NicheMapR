@@ -86,6 +86,7 @@
 #' \code{DEP}
 #' { and points half way between)}\cr\cr
 #' \code{BD}{ = rep(1.3,19), Soil bulk density (kg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
+#' \code{DD}{ = rep(2.56,19), Soil density (kg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
 #' \code{Clay}{ = 20, Clay content for matric potential calculations (\%)}\cr\cr
 #' \code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
 #' \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
@@ -269,7 +270,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
   ERR=2.0,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2560,SpecHeat=870,BulkDensity=1300,
   PCTWET=0,cap=1,CMH2O=1.,hori=rep(0,24),
   TIMAXS=c(1, 1, 0, 0),TIMINS=c(0, 0, 1, 1),timezone=0,
-  runmoist=0,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(1.3,19),Clay=20,
+  runmoist=0,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(BulkDensity/1000,19),DD=rep(Density/1000,19),Clay=20,
   maxpool=10000,rainmult=1,evenrain=0,
   SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3),
   L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
@@ -538,12 +539,14 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       KS<-rep(CampNormTbl9_1[1,6],19) #saturated conductivity, kg s/m3
       BB<-rep(CampNormTbl9_1[1,5],19) #soil 'b' parameter
       BD<-rep(BulkDensity/1000,19) # soil bulk density, Mg/m3
+      DD<-rep(Density/1000,19) # soil density, Mg/m3
     }else{
       if(soiltype<12){ # use soil properties as specified in Campbell and Norman 1998 Table 9.1
         PE<-rep(CampNormTbl9_1[soiltype,4],19) #air entry potential J/kg
         KS<-rep(CampNormTbl9_1[soiltype,6],19) #saturated conductivity, kg s/m3
         BB<-rep(CampNormTbl9_1[soiltype,5],19) #soil 'b' parameter
         BD<-rep(BulkDensity/1000,19) # soil bulk density, Mg/m3
+        DD<-rep(Density/1000,19) # soil density, Mg/m3
       }
     }
 
@@ -837,7 +840,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
     }
     # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
-    micro<-list(tides=tides,microinput=microinput,julday=julday,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI,snowmodel=snowmodel)
+    micro<-list(tides=tides,microinput=microinput,julday=julday,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,DD=DD,L=L,LAI=LAI,snowmodel=snowmodel)
 
     # write all input to csv files in their own folder
     if(write_input==1){
@@ -872,7 +875,9 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       write.table(tannulrun,file="micro csv input/tannulrun.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(PE,file="micro csv input/PE.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(BD,file="micro csv input/BD.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(DD,file="micro csv input/DD.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(BB,file="micro csv input/BB.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(DD,file="micro csv input/DD.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(KS,file="micro csv input/KS.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(L,file="micro csv input/L.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(LAI,file="micro csv input/LAI.csv", sep = ",", col.names = NA, qmethod = "double")
