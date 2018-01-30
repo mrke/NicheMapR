@@ -27,6 +27,7 @@ runshade                  | -                 | 0 (off) or 1 (on) | run the mode
 runmoist                  | -                 | 0 (off) or 1 (on) | run soil moisture model
 snowmodel                 | -                 | 0 (off) or 1 (on) | run the snow model
 hourly                    | -                 | 0 (off) or 1 (on) | run the model from hourly weather inputs
+IR                        | -                 | 0 or 1            | longwave radiation algorithm
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
@@ -212,6 +213,7 @@ PE                        | J kg$^{-1}$          | 0.7-3.7           | air entry
 KS                        | kg s m$^{-3}$        | 1 x $10^{-5}$     | saturated conductivity; vector of 19 values$^{1}$
 BB                        | -                    | 1.7-7.6           | Campbell's 'b' parameter; vector of 19 values$^{1}$
 BD                        | Mg m$^{-3}$          | >0                | bulk density (should be matched to same variable in the soilprops matrix)
+DD                        | Mg m$^{-3}$          | >0                | soil mineral density (should be matched to same variable in the soilprops matrix)
 L                         | m$^{3}$ m$^{-3}$     | 0-90              | root density; vector of 19 values$^{1}$  
 R1                        | m                    | 0-90              | root radius  
 RW                        | m$^{3}$ kg$^{-1}$ s$^{-1}$     | 0-90              | resistance per unit length of root  

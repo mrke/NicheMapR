@@ -28,6 +28,7 @@ runmoist<-1 # run soil moisture model (0=no, 1=yes)?
 snowmodel<-1 # run the snow model (0=no, 1=yes)? - note that this runs slower
 hourly<-0 # run from hourly weather input (0=no, 1=yes)?
 rainhourly<-0 # run from hourly weather input (0=no, 1=yes)?
+IR <- 0 # compute clear-sky longwave radiation using Campbell and Norman (1998) eq. 10.10 (includes humidity)
 ```
 
 ### Time and location parameters
@@ -128,14 +129,12 @@ Nodes[1,1:julnum]<-10 # deepest node for first substrate type
 
 # soil thermal parameters 
 Thcond <- 1.25 # soil minerals thermal conductivity (W/mC)
-Density <- 2560. # soil minerals density (kg/m3)
-SpecHeat <- 870. # soil minerals specific heat (J/kg-K)
-BulkDensity <- 2560. # soil bulk density (kg/m3)
+Density <- 2.560 # soil minerals density (Mg/m3)
+SpecHeat <- 870 # soil minerals specific heat (J/kg-K)
+BulkDensity <- 2.56 # soil bulk density (Mg/m3)
 SatWater <- 0.26 # volumetric water content at saturation (0.1 bar matric potential) (m3/m3)
 Clay <- 20 # clay content for matric potential calculations (%)
 #SoilMoist<-rep(SoilMoist,timeinterval) # soil moisture
-Density<-Density/1000 # density of minerals - convert to Mg/m3
-BulkDensity<-BulkDensity/1000 # density of minerals - convert to Mg/m3
 
 # now make the depth-specific soil properties matrix
 # columns are:
@@ -200,7 +199,7 @@ tides<-matrix(data = 0., nrow = 24*julnum, ncol = 3) # matrix for tides
 ### Collating all input parameters
 ```{r}
 # input parameter vector
-microinput<-c(julnum,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT)
+microinput<-c(julnum,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR)
 
 # Final input list - all these variables are expected by the input argument of the Fortran microclimate subroutine
 micro<-list(microinput=microinput,tides=tides,julday=julday,SLES=SLES,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX,TMINN=TMINN,RHMAXX=RHMAXX,RHMINN=RHMINN,CCMAXX=CCMAXX,CCMINN=CCMINN,WNMAXX=WNMAXX,WNMINN=WNMINN,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,REFLS=REFLS,PCTWET=PCTWET,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists,RAINFALL=RAINFALL,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI)

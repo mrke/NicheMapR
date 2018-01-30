@@ -67,9 +67,9 @@
 #' \code{EC}{ = 0.0167238, Eccenricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)}\cr\cr
 #' \code{SLE}{ = 0.95, Substrate longwave IR emissivity (decimal \%), typically close to 1}\cr\cr
 #' \code{Thcond}{ = 2.5, Soil minerals thermal conductivity (W/mK)}\cr\cr
-#' \code{Density}{ = 2560, Soil minerals density (kg/m3)}\cr\cr
+#' \code{Density}{ = 2.56, Soil minerals density (Mg/m3)}\cr\cr
 #' \code{SpecHeat}{ = 870, Soil minerals specific heat (J/kg-K)}\cr\cr
-#' \code{BulkDensity}{ = 1300, Soil bulk density (kg/m3)}\cr\cr
+#' \code{BulkDensity}{ = 1.3, Soil bulk density (Mg/m3)}\cr\cr
 #' \code{PCTWET}{ = 0, \% of ground surface area acting as a free water surface}\cr\cr
 #' \code{rainwet}{ = 1.5, mm of rainfall causing the ground to be 90\% wet for the day}\cr\cr
 #' \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
@@ -93,10 +93,10 @@
 #' \code{BB}{ = rep(4.5,19), Campbell's soil 'b' parameter (-) (19 values descending through soil for specified soil nodes in parameter}
 #' \code{DEP}
 #' { and points half way between)}\cr\cr
-#' \code{BD}{ = rep(1.3,19), Soil bulk density (kg/m3)  (19 values descending through soil for specified soil nodes in parameter}
+#' \code{BD}{ = rep(1.3,19), Soil bulk density (Mg/m3)  (19 values descending through soil for specified soil nodes in parameter}
 #' \code{DEP}
 #' { and points half way between)}\cr\cr
-#' \code{DD}{ = rep(2.56,19), Soil density (kg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
+#' \code{DD}{ = rep(2.56,19), Soil density (Mg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
 #' \code{DEP}
 #' { and points half way between)}\cr\cr
 #' \code{Clay}{ = 20, Clay content for matric potential calculations (\%)}\cr\cr
@@ -122,7 +122,7 @@
 #'
 #' \code{snowmodel}{ = 1, run the snow model 1=yes, 0=no (note that this may cause slower runs)}\cr\cr
 #' \code{snowtemp}{ = 1.5, Temperature (deg C) at which precipitation falls as snow}\cr\cr
-#' \code{snowdens}{ = 0.375, snow density (mg/m3), overridden by }
+#' \code{snowdens}{ = 0.375, snow density (Mg/m3), overridden by }
 #' \code{densfun}\cr\cr
 #' \code{densfun}{ = c(0,0), slope and intercept of linear model of snow density as a function of day of year - if it is c(0,0) then fixed density used}\cr\cr
 #' \code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
@@ -263,10 +263,10 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
   minshade=0,maxshade=90,Refhyt=1.2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
   runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,manualshade=1,
   soildata=0,terrain=0,dailywind=1,windfac=1,adiab_cor=1,warm=0,spatial="N:/USA",vlsci=0,
-  ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2560,SpecHeat=870,BulkDensity=1300,
+  ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2.56,SpecHeat=870,BulkDensity=1.3,
   PCTWET=0,rainwet=1.5,cap=1,CMH2O=1.,hori=rep(0,24),
   TIMAXS=c(1.0, 1.0, 0.0, 0.0),TIMINS=c(0, 0, 1, 1),timezone=0,
-  runmoist=1,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(BulkDensity/1000,19),DD=rep(Density/1000,19),Clay=20,
+  runmoist=1,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(BulkDensity,19),DD=rep(Density,19),Clay=20,
   SatWater=rep(0.26,10),maxpool=10000,rainmult=1,evenrain=0,
   SoilMoist_Init=c(0.1,0.12,0.15,0.3,0.4,0.4,0.4,0.4,0.4,0.4),
   L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
@@ -315,9 +315,9 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
   # EC=0.0167238
   # SLE=0.95
   # Thcond=2.5
-  # Density=2560
+  # Density=2.56
   # SpecHeat=870
-  # BulkDensity=1300
+  # BulkDensity=1.3
   # PCTWET=0
   # rainwet=1.5
   # cap=1
@@ -631,7 +631,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       BB<-soil.hydro$BB
       BD<-soil.hydro$BD
       KS<-soil.hydro$KS
-      BulkDensity <- BD[seq(1,19,2)]*1000 #soil bulk density, kg/m3
+      BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
     }
 
     if(terrain==1){
@@ -1124,12 +1124,12 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       }
       soilprops<-matrix(data = 0, nrow = 10, ncol = 6)
 
-      soilprops[,1]<-BulkDensity/1000
+      soilprops[,1]<-BulkDensity
       soilprops[,2]<-SatWater
       soilprops[,3]<-Clay
       soilprops[,4]<-Thcond
       soilprops[,5]<-SpecHeat
-      soilprops[,6]<-Density/1000
+      soilprops[,6]<-Density
       #         }
       if(cap==1){
         soilprops[1:2,4]<-0.2
@@ -1141,7 +1141,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
         soilprops[1:2,4]<-0.1
         soilprops[3:4,4]<-0.25
         soilprops[1:4,5]<-1920
-        soilprops[1:4,6]<-1.300
+        soilprops[1:4,6]<-1.3
         soilprops[1:4,1]<-0.7
       }
 
