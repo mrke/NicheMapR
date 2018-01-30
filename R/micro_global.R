@@ -60,9 +60,9 @@
 #' \code{EC}{ = 0.0167238, Eccenricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)}\cr\cr
 #' \code{SLE}{ = 0.95, Substrate longwave IR emissivity (decimal \%), typically close to 1}\cr\cr
 #' \code{Thcond}{ = 2.5, Soil minerals thermal conductivity (W/mK)}\cr\cr
-#' \code{Density}{ = 2560, Soil minerals density (kg/m3)}\cr\cr
+#' \code{Density}{ = 2.56, Soil minerals density (Mg/m3)}\cr\cr
 #' \code{SpecHeat}{ = 870, Soil minerals specific heat (J/kg-K)}\cr\cr
-#' \code{BulkDensity}{ = 1300, Soil bulk density (kg/m3)}\cr\cr
+#' \code{BulkDensity}{ = 1.3, Soil bulk density (mg/m3)}\cr\cr
 #' \code{PCTWET}{ = 0, \% of ground surface area acting as a free water surface}\cr\cr
 #' \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
 #' \code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
@@ -85,8 +85,8 @@
 #' \code{BB}{ = rep(4.5,19), Campbell's soil 'b' parameter (-) (19 values descending through soil for specified soil nodes in parameter}
 #' \code{DEP}
 #' { and points half way between)}\cr\cr
-#' \code{BD}{ = rep(1.3,19), Soil bulk density (kg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
-#' \code{DD}{ = rep(2.56,19), Soil density (kg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
+#' \code{BD}{ = rep(1.3,19), Soil bulk density (Mg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
+#' \code{DD}{ = rep(2.56,19), Soil density (Mg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
 #' \code{Clay}{ = 20, Clay content for matric potential calculations (\%)}\cr\cr
 #' \code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
 #' \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
@@ -106,7 +106,7 @@
 #'
 #' \code{snowmodel}{ = 0, run the snow model 1=yes, 0=no (note that this may cause slower runs)}\cr\cr
 #' \code{snowtemp}{ = 1.5, Temperature (deg C) at which precipitation falls as snow}\cr\cr
-#' \code{snowdens}{ = 0.375, snow density (mg/m3), overridden by }
+#' \code{snowdens}{ = 0.375, snow density (Mg/m3), overridden by }
 #' \code{densfun}{ = c(0,0), slope and intercept of linear model of snow density as a function of day of year - if it is c(0,0) then fixed density used}\cr\cr
 #' \code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
 #' \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
@@ -267,10 +267,10 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
   DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
   minshade=0,maxshade=90,Refhyt=1.2, Usrhyt=0.01, Z01=0, Z02=0, ZH1=0, ZH2=0,
   runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,
-  ERR=2.0,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2560,SpecHeat=870,BulkDensity=1300,
+  ERR=2.0,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2.56,SpecHeat=870,BulkDensity=1.3,
   PCTWET=0,cap=1,CMH2O=1.,hori=rep(0,24),
   TIMAXS=c(1, 1, 0, 0),TIMINS=c(0, 0, 1, 1),timezone=0,
-  runmoist=0,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(BulkDensity/1000,19),DD=rep(Density/1000,19),Clay=20,
+  runmoist=0,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(BulkDensity,19),DD=rep(Density,19),Clay=20,
   maxpool=10000,rainmult=1,evenrain=0,
   SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3),
   L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
@@ -538,15 +538,15 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       PE<-rep(CampNormTbl9_1[1,4],19) #air entry potential J/kg
       KS<-rep(CampNormTbl9_1[1,6],19) #saturated conductivity, kg s/m3
       BB<-rep(CampNormTbl9_1[1,5],19) #soil 'b' parameter
-      BD<-rep(BulkDensity/1000,19) # soil bulk density, Mg/m3
-      DD<-rep(Density/1000,19) # soil density, Mg/m3
+      BD<-rep(BulkDensity,19) # soil bulk density, Mg/m3
+      DD<-rep(Density,19) # soil density, Mg/m3
     }else{
       if(soiltype<12){ # use soil properties as specified in Campbell and Norman 1998 Table 9.1
         PE<-rep(CampNormTbl9_1[soiltype,4],19) #air entry potential J/kg
         KS<-rep(CampNormTbl9_1[soiltype,6],19) #saturated conductivity, kg s/m3
         BB<-rep(CampNormTbl9_1[soiltype,5],19) #soil 'b' parameter
-        BD<-rep(BulkDensity/1000,19) # soil bulk density, Mg/m3
-        DD<-rep(Density/1000,19) # soil density, Mg/m3
+        BD<-rep(BulkDensity,19) # soil bulk density, Mg/m3
+        DD<-rep(Density,19) # soil density, Mg/m3
       }
     }
 
@@ -733,8 +733,6 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     Nodes[2,1:dim]<-9 # deepest node for second substrate type
     REFLS<-rep(REFL,dim) # soil reflectances
     PCTWET<-rep(PCTWET,dim) # soil wetness
-    Density<-Density/1000 # density of minerals - convert to Mg/m3
-    BulkDensity<-BulkDensity/1000 # density of minerals - convert to Mg/m3
     if(runmoist==0){
       moists2<-matrix(nrow= 10, ncol = dim, data=0) # set up an empty vector for soil moisture values through time
       moists2[1,]<-SoilMoist # fill the first row with monthly soil moisture values
