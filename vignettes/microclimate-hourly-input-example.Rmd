@@ -176,8 +176,9 @@ Now we run the microclimate model using the ```micro_global``` function with the
 
 ```{r}
 # run global microclimate model in clear sky mode to get clear sky radiation
-micro <- micro_global(loc = c(Longitude, Latitude),timeinterval = 365, clearsky = 1)
+micro <- micro_global(loc = c(Longitude, Latitude), timeinterval = 365, clearsky = 1)
 # append dates
+metout <- as.data.frame(micro$metout)
 tzone <- paste0("Etc/GMT", TZoffset) # doing it this way ignores daylight savings!
 dates <- seq(ISOdate(ystart, 1, 1, tz = tzone)-3600 * 12, ISOdate((ystart+nyears),1, 1, tz = tzone)-3600 * 13, by="hours")
 clear <- as.data.frame(cbind(dates, as.data.frame(rep(micro$metout[1:(365 * 24),13],nyears))),stringsAsFactors = FALSE)
@@ -191,18 +192,19 @@ clear2 <- clear[, 2]*(maxsol / max(clear[, 2])) # get ratio of max observed to p
 
 # compute cloud cover from ratio of max to observed solar
 sol <- SOLRhr
-sol[sol<5]<-0 # remove very low values
 clr <- clear2
-clr[clr<5]<-0 # remove very low values
-a=((clr-sol)/clr)*100 # get ratio of observed to predicted solar, convert to %
-a[a>100]<-100 # cap max 100%
-a[a<0]<-0 # cap min at 0%
-a[is.na(a)]=0 # replace NA with zero
+zenthresh <- 85
+sol[metout$ZEN > zenthresh] <- NA # remove values for nighttime (and very early morning/late afternoon)
+clr[metout$ZEN > zenthresh] <- NA # remove values for nighttime (and very early morning/late afternoon)
+a <- ((clr - sol) / clr) * 100 # get ratio of observed to predicted solar, convert to %
+a[a > 100] <- 100 # cap max 100%
+a[a < 0] <- 0 # cap min at 0%
+a[is.na(a)] <- 0 # replace NA with zero
 a[is.infinite(a)]=0 # replace infinity with zero
-a[a==0]=NA # change all zeros to NA for na.approx
+a[a == 0] <- NA # change all zeros to NA for na.approx
 a <- na.approx(a, na.rm = FALSE) # apply na.approx, but leave any trailing NAs
-a[is.na(a)]=0 # make trailing NAs zero
-CLDhr <- a # now we have hourly cloud cover
+a[is.na(a)] <- 0 # make trailing NAs zero
+CLDhr <- a # now we have hourly cloud cover 
 ```
 
 We still need to give the model vectors of daily minimum and maximum weather data, even though they are not used when ```hourly``` is set to 1, so the next code chunk summarises the minima and maxima from the hourly data. If you set ```hourly``` to zero, you can see the difference having hourly data makes to the fit of the model to the observed SCAN data on soil temperature and soil moisture.
@@ -272,6 +274,7 @@ PE <- rep(CampNormTbl9_1[soiltype, 4],19) #air entry potential J/kg
 KS <- rep(CampNormTbl9_1[soiltype, 6],19) #saturated conductivity, kg s/m3
 BB <- rep(CampNormTbl9_1[soiltype, 5],19) #soil 'b' parameter
 BD <- rep(BulkDensity, 19) # soil bulk density, Mg/m3
+DD <- rep(Density, 19) # soil mineral density, Mg/m3
 soiltype <- 5 # change deeper nodes to 5 = a silt loam
 PE[10:19]<-CampNormTbl9_1[soiltype, 4] #air entry potential J/kg
 KS[10:19]<-CampNormTbl9_1[soiltype, 6] #saturated conductivity, kg s/m3
