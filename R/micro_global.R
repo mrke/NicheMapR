@@ -874,7 +874,6 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       write.table(BD,file="micro csv input/BD.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(DD,file="micro csv input/DD.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(BB,file="micro csv input/BB.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(DD,file="micro csv input/DD.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(KS,file="micro csv input/KS.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(L,file="micro csv input/L.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(LAI,file="micro csv input/LAI.csv", sep = ",", col.names = NA, qmethod = "double")
