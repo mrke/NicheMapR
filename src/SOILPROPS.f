@@ -1,6 +1,6 @@
       subroutine soilprops(TSOI,ALTT,soilprop,moistt)
 
-      use commondat
+c      use commondat
       IMPLICIT NONE
 
 
