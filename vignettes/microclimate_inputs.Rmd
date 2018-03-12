@@ -37,10 +37,10 @@ cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
-julnum                    | days              | positive integer  | number of days to run the model
-julday                    | day of year       | 1-365             | vector of julian days (length must equal julnum)
-idayst                    | -                 | 1-julnum          | start day (usually 1)
-ida                       | -                 | 1-julnum          | end day (usually value of julnum)
+doynum                    | days              | positive integer  | number of days to run the model
+doy                       | day-of-year       | 1-365             | vector of julian days (length must equal doynum)
+idayst                    | -                 | 1-doynum          | start day (usually 1)
+ida                       | -                 | 1-doynum          | end day (usually value of doynum)
 HEMIS                     | -                 | 1 (N) or 2 (S)    | hemisphere to run
 ALAT                      | degrees           | 0-90              | latitude (degrees)
 AMINUT                    | dec. minutes      | 0-60              | latitude (minutes)
@@ -78,14 +78,14 @@ tabl <- "
 SLES                      | -                 | 0-1               | substrate longwave IR emissivity$^1$ 
 REFLS                      | -                 | 0-1               | substrate solar reflectivity$^1$ 
 CMH2O                     | cm                | 0.1-2             | precipitable cm H$_2$O in air column
-TAI                       | -                 | 1-julnum          | aerosol optical extinction coefficients$^{1,2}$ 
+TAI                       | -                 | 1-doynum          | aerosol optical extinction coefficients$^{1,2}$ 
 lamb                     | -                | 0-1             | flag to eturn wavelength-specific solar radiation output
 IUV                      | -                | 0-1             | flag to use gamma function for scattered solar radiation$^{3}$
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
 
-$^{1}$Vector of length = julnum
+$^{1}$Vector of length = doynum
 
 $^{2}$Vector of length 111 for wavelengths between 290 and 4000 nm. Wavelenghth increments are: 290,295,300,305,310,315,320,330,340,350,360,370,380,390,400,420,440,460,480,500,
 520,540,560,580,600,620,640,660,680,700,720,740,760,780,800,820,840,860,880,900,
@@ -118,7 +118,7 @@ $^{1}$angle to the effective horizon, due to e.g. hills, buildings, in 24 direct
 
 $^{2}$Fraction of sky obscured by terrain
 
-$^{3}$vector of length = julnum
+$^{3}$vector of length = doynum
 
 $^{4}$must be greater than minimum shade
 
@@ -154,10 +154,10 @@ RHMINN                    | %                 | 0-100             | minimum rela
 RHMAXX                    | %                 | 0-100             | maximum relative humidity (at reference height, Refhyt)$^3$
 WNMINN                    | m s$^{-1}$        | 0-100             | minimum wind speed (at reference height, Refhyt)$^3$
 WNMAXX                    | m s$^{-1}$        | 0-100             | maximum wind speed (at reference height, Refhyt)$^3$
-CCMINN                    | %                 | 0-100             | minimum cloud cover; vector of length = julnum
-CCMAXX                    | %                 | 0-100             | maximum cloud cover; vector of length = julnum
-RAINFALL                  | mm                | 0-2000            | daily total rainfall; vector of length = julnum
-tannulrun                 | &deg;C            | -80 - +60         | daily deep soil temperature; vector of length = julnum
+CCMINN                    | %                 | 0-100             | minimum cloud cover; vector of length = doynum
+CCMAXX                    | %                 | 0-100             | maximum cloud cover; vector of length = doynum
+RAINFALL                  | mm                | 0-2000            | daily total rainfall; vector of length = doynum
+tannulrun                 | &deg;C            | -80 - +60         | daily deep soil temperature; vector of length = doynum
 moists                    | decimal %         | 0-1               | predefined soil daily moisture profile through time$^4$
 TAIRhr                    | &deg;C            | -80 - +60         | hourly air temperature (at reference height, Refhyt)$^5$
 RHhr                      | %                 | 0-100             | hourly relative humidity (at reference height, Refhyt)$^5$
@@ -173,11 +173,11 @@ $^{1}$Vector of 4 integers, air temp & wind mins relative to sunrise, humidity a
 
 $^{2}$Vector of 4 integers, air temp & wind maxs relative to solar noon, humidity and cloud cover maxs relative to sunrise - typical TIMAXS vector c(1, 1, 0, 0).
 
-$^{3}$Vector of length = julnum.
+$^{3}$Vector of length = doynum.
 
-$^{4}$Matrix of 10 rows (depths) and julnum columns. The first column is used to specify the initial soil moisture when running the soil moisture model.
+$^{4}$Matrix of 10 rows (depths) and doynum columns. The first column is used to specify the initial soil moisture when running the soil moisture model.
 
-$^{5}$Vector of length = julnum*24.
+$^{5}$Vector of length = doynum*24.
 
 ## Substrate properties
 ```{r table8, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
@@ -196,7 +196,7 @@ soilprops[,6]$^{3}$       | Mg m$^{-3}$          | >0                 | mineral 
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
 
-$^{1}$Matrix of 10 rows (depths) and julnum columns
+$^{1}$Matrix of 10 rows (depths) and doynum columns
 
 $^{2}$The number of nodes specified should correspond with the variable numtypes, and in turn with the number of substrate types specified in soilprops in the soil props matrix. E.g. for a uniform profile, the first row of Nodes would be 10 (deepest soil node - the subsequent nodes all being left as 0), Numtyps would be 1, and only one and only the first row of soilprops would be filled, the rest being zero. At the other extreme, if all nodes were to have a different substrate type, values for a given row of each Nodes column would be 1, 2, ..., 10 and a different value would be specified for each row of each soilprops column.  
 
@@ -258,9 +258,9 @@ $^{2}$For equation from Anderson's SNOW-17 model that melts snow with rainfall a
 tabl <- "
 *Name*                    | *Units *             |	*Allowed Range*   |	*Description*
 ------------------------- | -------------------- | ------------------ | --------------
-tides[1:julnum,1]         | -                    | 0 or 1             | tide in (1) or out(0); vector of length julnum
-tides[1:julnum,2]         | &deg;C               | -80 - 80           | sea water temperature; vector of length julnum
-tides[1:julnum,3]         | %                    | -                  | % surface wetness from wave splash; vector of length julnum
+tides[1:doynum,1]         | -                    | 0 or 1             | tide in (1) or out(0); vector of length doynum
+tides[1:doynum,2]         | &deg;C               | -80 - 80           | sea water temperature; vector of length doynum
+tides[1:doynum,3]         | %                    | -                  | % surface wetness from wave splash; vector of length doynum
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```

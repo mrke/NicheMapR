@@ -124,7 +124,7 @@
 #' \code{snowtemp}{ = 1.5, Temperature (deg C) at which precipitation falls as snow}\cr\cr
 #' \code{snowdens}{ = 0.375, snow density (Mg/m3), overridden by }
 #' \code{densfun}\cr\cr
-#' \code{densfun}{ = c(0,0), slope and intercept of linear model of snow density as a function of day of year - if it is c(0,0) then fixed density used}\cr\cr
+#' \code{densfun}{ = c(0,0), slope and intercept of linear model of snow density as a function of day-of-year - if it is c(0,0) then fixed density used}\cr\cr
 #' \code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
 #' \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
 #' \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
@@ -140,7 +140,7 @@
 #' \strong{Outputs:}
 #' metout/shadmet variables:
 #' \itemize{
-#' \item 1 JULDAY - day of year
+#' \item 1 DOY - day-of-year
 #' \item 2 TIME - time of day (mins)
 #' \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
 #' \item 4 TAREF - air temperature (deg C) at reference height (1.2m)
@@ -161,7 +161,7 @@
 #'}
 #' soil and shadsoil variables:
 #' \itemize{
-#' \item 1 JULDAY - day of year
+#' \item 1 DOY - day-of-year
 #' \item 2 TIME - time of day (mins)
 #' \item 3-12 D0cm ... - soil temperatures at each of the 10 specified depths
 #'
@@ -169,26 +169,26 @@
 #'
 #' soilmoist and shadmoist variables:
 #' \itemize{
-#' \item 1 JULDAY - day of year
+#' \item 1 DOY - day-of-year
 #' \item 2 TIME - time of day (mins)
 #' \item 3-12 WC0cm ... - soil moisuture (m3/m3) at each of the 10 specified depths
 #'}
 #' soilpot and shadpot variables:
 #' \itemize{
-#' \item 1 JULDAY - day of year
+#' \item 1 DOY - day-of-year
 #' \item 2 TIME - time of day (mins)
 #' \item 3-12 PT0cm ... - soil water potential (J/kg = kpa = bar/100) at each of the 10 specified depths
 #' }
 #'
 #' humid and shadhumid variables:
 #' \itemize{
-#' \item  1 JULDAY - day of year
+#' \item  1 DOY - day-of-year
 #' \item  2 TIME - time of day (mins)
 #' \item  3-12 RH0cm ... - soil relative humidity (decimal \%), at each of the 10 specified depths
 #' }
 #' plant and shadplant variables:
 #' \itemize{
-#' \item  1 JULDAY - day of year
+#' \item  1 DOY - day-of-year
 #' \item  2 TIME - time of day (mins)
 #' \item  3 TRANS - plant transpiration rate (kg/m2/s)
 #' \item  4 LEAFPOT - leaf water potentail (J/kg)
@@ -548,7 +548,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     ################## time related variables #################################
     nyears<-yfinish-ystart+1
 
-    juldays12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
+    doys12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
 
     microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
 
@@ -896,10 +896,10 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     Wind[Wind==0]<-0.1
 
     ndays<-length(Tmax)
-    julnum<-ndays
-    juldays<-seq(daystart,julnum,1)
-    julday <- subset(juldays, juldays!=0)
-    #julday<-rep(julday,nyears)
+    doynum<-ndays
+    doys<-seq(daystart,doynum,1)
+    doy <- subset(doys, doys!=0)
+    #doy<-rep(doy,nyears)
     ida<-ndays
     idayst <- 1 # start month
     # end preliminary test for incomplete year, if simulation includes the present year
@@ -978,15 +978,15 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       WNMINN <- Wind
 
       if(soildata==1){
-        #           uppermoist1<-spline(juldaysn2,moistupper,n=ndays,xmin=1,xmax=ndays,method="periodic")
-        #           lowermoist1<-spline(juldaysn2,moistlower,n=ndays,xmin=1,xmax=ndays,method="periodic")
+        #           uppermoist1<-spline(doysn2,moistupper,n=ndays,xmin=1,xmax=ndays,method="periodic")
+        #           lowermoist1<-spline(doysn2,moistlower,n=ndays,xmin=1,xmax=ndays,method="periodic")
         #           uppermoists<-uppermoist1$y
         #           lowermoists<-lowermoist1$y
 
-        SLES1<-spline(juldays12,SLES,n=timeinterval,xmin=1,xmax=365,method="periodic")
+        SLES1<-spline(doys12,SLES,n=timeinterval,xmin=1,xmax=365,method="periodic")
         SLES<-rep(SLES1$y,nyears)
         SLES<-SLES[1:ndays]
-        maxshades1 <-spline(juldays12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
+        maxshades1 <-spline(doys12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
         MAXSHADES<-rep(maxshades1$y*100,nyears)
         MAXSHADES<-MAXSHADES[1:ndays]
         if(manualshade==1){
@@ -999,7 +999,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
         }
       }else{
         if(manualshade==0){
-          maxshades1 <-spline(juldays12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
+          maxshades1 <-spline(doys12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
           MAXSHADES<-rep(maxshades1$y*100,nyears)
           minshades <- rep(minshade,365)
           minshades <- rep(minshades,nyears)
@@ -1028,7 +1028,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       }
 
       Intrvls<-rep(0,dim)
-      Intrvls[1] <- 1 # user-supplied last Julian day in each time interval sequence
+      Intrvls[1] <- 1 # user-supplied last day-of-year in each time interval sequence
       Numtyps <- 1 # number of substrate types
       Numint <- 1  # number of time intervals
       Nodes <- matrix(data = 0, nrow = 10, ncol = dim) # deepest nodes for each substrate type
@@ -1186,7 +1186,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
         RAINhr = rainhour
       }
 
-      julday1=matrix(data = 0., nrow = dim, ncol = 1)
+      doy1=matrix(data = 0., nrow = dim, ncol = 1)
       SLES1=matrix(data = 0., nrow = dim, ncol = 1)
       MAXSHADES1=matrix(data = 0., nrow = dim, ncol = 1)
       MINSHADES1=matrix(data = 0., nrow = dim, ncol = 1)
@@ -1203,7 +1203,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       RAINFALL1=matrix(data = 0, nrow = dim, ncol = 1)
       tannul1=matrix(data = 0, nrow = dim, ncol = 1)
       moists1=matrix(data = 0., nrow = 10, ncol = dim)
-      julday1[1:dim]<-julday
+      doy1[1:dim]<-doy
       SLES1[1:dim]<-SLES
       MAXSHADES1[1:dim]<-MAXSHADES
       MINSHADES1[1:dim]<-MINSHADES
@@ -1225,14 +1225,14 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
         tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
       }
       # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
-      micro<-list(tides=tides,microinput=microinput,julday=julday,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,DD=DD,L=L,LAI=LAI,snowmodel=snowmodel)
+      micro<-list(tides=tides,microinput=microinput,doy=doy,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,DD=DD,L=L,LAI=LAI,snowmodel=snowmodel)
       # write all input to csv files in their own folder
       if(write_input==1){
         if(dir.exists("micro csv input")==FALSE){
           dir.create("micro csv input")
         }
         write.table(as.matrix(microinput), file = "micro csv input/microinput.csv", sep = ",", col.names = NA, qmethod = "double")
-        write.table(julday, file = "micro csv input/julday.csv", sep = ",", col.names = NA, qmethod = "double")
+        write.table(doy, file = "micro csv input/doy.csv", sep = ",", col.names = NA, qmethod = "double")
         write.table(SLES, file = "micro csv input/SLES.csv", sep = ",", col.names = NA, qmethod = "double")
         write.table(DEP, file = "micro csv input/DEP.csv", sep = ",", col.names = NA, qmethod = "double")
         write.table(Nodes, file = "micro csv input/Nodes.csv", sep = ",", col.names = NA, qmethod = "double")
