@@ -13,6 +13,7 @@ runshade                  | -                 | 0 (off) or 1 (on) | run the mode
 runmoist                  | -                 | 0 (off) or 1 (on) | run soil moisture model
 snowmodel                 | -                 | 0 (off) or 1 (on) | run the snow model
 hourly                    | -                 | 0 (off) or 1 (on) | run the model from hourly weather inputs
+IR                        | -                 | 0 or 1            | longwave radiation algorithm
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
@@ -20,10 +21,10 @@ cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
-julnum                    | days              | positive integer  | number of days to run the model
-julday                    | day of year       | 1-365             | vector of julian days (length must equal julnum)
-idayst                    | -                 | 1-julnum          | start day (usually 1)
-ida                       | -                 | 1-julnum          | end day (usually value of julnum)
+doynum                    | days              | positive integer  | number of days to run the model
+doy                       | day-of-year       | 1-365             | vector of julian days (length must equal doynum)
+idayst                    | -                 | 1-doynum          | start day (usually 1)
+ida                       | -                 | 1-doynum          | end day (usually value of doynum)
 HEMIS                     | -                 | 1 (N) or 2 (S)    | hemisphere to run
 ALAT                      | degrees           | 0-90              | latitude (degrees)
 AMINUT                    | dec. minutes      | 0-60              | latitude (minutes)
@@ -55,7 +56,7 @@ tabl <- "
 SLES                      | -                 | 0-1               | substrate longwave IR emissivity$^1$ 
 REFLS                      | -                 | 0-1               | substrate solar reflectivity$^1$ 
 CMH2O                     | cm                | 0.1-2             | precipitable cm H$_2$O in air column
-TAI                       | -                 | 1-julnum          | aerosol optical extinction coefficients$^{1,2}$ 
+TAI                       | -                 | 1-doynum          | aerosol optical extinction coefficients$^{1,2}$ 
 lamb                     | -                | 0-1             | flag to eturn wavelength-specific solar radiation output
 IUV                      | -                | 0-1             | flag to use gamma function for scattered solar radiation$^{3}$
 "
@@ -99,10 +100,10 @@ RHMINN                    | %                 | 0-100             | minimum rela
 RHMAXX                    | %                 | 0-100             | maximum relative humidity (at reference height, Refhyt)$^3$
 WNMINN                    | m s$^{-1}$        | 0-100             | minimum wind speed (at reference height, Refhyt)$^3$
 WNMAXX                    | m s$^{-1}$        | 0-100             | maximum wind speed (at reference height, Refhyt)$^3$
-CCMINN                    | %                 | 0-100             | minimum cloud cover; vector of length = julnum
-CCMAXX                    | %                 | 0-100             | maximum cloud cover; vector of length = julnum
-RAINFALL                  | mm                | 0-2000            | daily total rainfall; vector of length = julnum
-tannulrun                 | &deg;C            | -80 - +60         | daily deep soil temperature; vector of length = julnum
+CCMINN                    | %                 | 0-100             | minimum cloud cover; vector of length = doynum
+CCMAXX                    | %                 | 0-100             | maximum cloud cover; vector of length = doynum
+RAINFALL                  | mm                | 0-2000            | daily total rainfall; vector of length = doynum
+tannulrun                 | &deg;C            | -80 - +60         | daily deep soil temperature; vector of length = doynum
 moists                    | decimal %         | 0-1               | predefined soil daily moisture profile through time$^4$
 TAIRhr                    | &deg;C            | -80 - +60         | hourly air temperature (at reference height, Refhyt)$^5$
 RHhr                      | %                 | 0-100             | hourly relative humidity (at reference height, Refhyt)$^5$
@@ -136,6 +137,7 @@ PE                        | J kg$^{-1}$          | 0.7-3.7           | air entry
 KS                        | kg s m$^{-3}$        | 1 x $10^{-5}$     | saturated conductivity; vector of 19 values$^{1}$
 BB                        | -                    | 1.7-7.6           | Campbell's 'b' parameter; vector of 19 values$^{1}$
 BD                        | Mg m$^{-3}$          | >0                | bulk density (should be matched to same variable in the soilprops matrix)
+DD                        | Mg m$^{-3}$          | >0                | soil mineral density (should be matched to same variable in the soilprops matrix)
 L                         | m$^{3}$ m$^{-3}$     | 0-90              | root density; vector of 19 values$^{1}$  
 R1                        | m                    | 0-90              | root radius  
 RW                        | m$^{3}$ kg$^{-1}$ s$^{-1}$     | 0-90              | resistance per unit length of root  
@@ -168,9 +170,9 @@ cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 tabl <- "
 *Name*                    | *Units *             |	*Allowed Range*   |	*Description*
 ------------------------- | -------------------- | ------------------ | --------------
-tides[1:julnum,1]         | -                    | 0 or 1             | tide in (1) or out(0); vector of length julnum
-tides[1:julnum,2]         | &deg;C               | -80 - 80           | sea water temperature; vector of length julnum
-tides[1:julnum,3]         | %                    | -                  | % surface wetness from wave splash; vector of length julnum
+tides[1:doynum,1]         | -                    | 0 or 1             | tide in (1) or out(0); vector of length doynum
+tides[1:doynum,2]         | &deg;C               | -80 - 80           | sea water temperature; vector of length doynum
+tides[1:doynum,3]         | %                    | -                  | % surface wetness from wave splash; vector of length doynum
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
