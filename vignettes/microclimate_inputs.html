@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Michael R. Kearney" />
 
-<meta name="date" content="2017-09-08" />
+<meta name="date" content="2018-03-12" />
 
 <title>Microclimate Model Input Data</title>
 
@@ -32,7 +32,7 @@
 
 <h1 class="title toc-ignore">Microclimate Model Input Data</h1>
 <h4 class="author"><em>Michael R. Kearney</em></h4>
-<h4 class="date"><em>2017-09-08</em></h4>
+<h4 class="date"><em>2018-03-12</em></h4>
 
 
 
@@ -90,6 +90,12 @@
 <td>0 (off) or 1 (on)</td>
 <td>run the model from hourly weather inputs</td>
 </tr>
+<tr class="odd">
+<td>IR</td>
+<td>-</td>
+<td>0 or 1</td>
+<td>longwave radiation algorithm</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -106,28 +112,28 @@
 </thead>
 <tbody>
 <tr class="odd">
-<td>julnum</td>
+<td>doynum</td>
 <td>days</td>
 <td>positive integer</td>
 <td>number of days to run the model</td>
 </tr>
 <tr class="even">
-<td>julday</td>
-<td>day of year</td>
+<td>doy</td>
+<td>day-of-year</td>
 <td>1-365</td>
-<td>vector of julian days (length must equal julnum)</td>
+<td>vector of julian days (length must equal doynum)</td>
 </tr>
 <tr class="odd">
 <td>idayst</td>
 <td>-</td>
-<td>1-julnum</td>
+<td>1-doynum</td>
 <td>start day (usually 1)</td>
 </tr>
 <tr class="even">
 <td>ida</td>
 <td>-</td>
-<td>1-julnum</td>
-<td>end day (usually value of julnum)</td>
+<td>1-doynum</td>
+<td>end day (usually value of doynum)</td>
 </tr>
 <tr class="odd">
 <td>HEMIS</td>
@@ -271,7 +277,7 @@
 <tr class="even">
 <td>TAI</td>
 <td>-</td>
-<td>1-julnum</td>
+<td>1-doynum</td>
 <td>aerosol optical extinction coefficients<span class="math inline">\(^{1,2}\)</span></td>
 </tr>
 <tr class="odd">
@@ -288,7 +294,7 @@
 </tr>
 </tbody>
 </table>
-<p><span class="math inline">\(^{1}\)</span>Vector of length = julnum</p>
+<p><span class="math inline">\(^{1}\)</span>Vector of length = doynum</p>
 <p><span class="math inline">\(^{2}\)</span>Vector of length 111 for wavelengths between 290 and 4000 nm. Wavelenghth increments are: 290,295,300,305,310,315,320,330,340,350,360,370,380,390,400,420,440,460,480,500, 520,540,560,580,600,620,640,660,680,700,720,740,760,780,800,820,840,860,880,900, 920,940,960,980,1000,1020,1080,1100,1120,1140,1160,1180,1200,1220,1240,1260,1280, 1300,1320,1380,1400,1420,1440,1460,1480,1500,1540,1580,1600,1620,1640,1660,1700, 1720,1780,1800,1860,1900,1950,2000,2020,2050,2100,2120,2150,2200,2260,2300,2320, 2350,2380,2400,2420,2450,2490,2500,2600,2700,2800,2900,3000,3100,3200,3300,3400, 3500,3600,3700,3800,3900,4000</p>
 <p><span class="math inline">\(^{3}\)</span>Computationally intensive</p>
 </div>
@@ -356,7 +362,7 @@
 </table>
 <p><span class="math inline">\(^{1}\)</span>angle to the effective horizon, due to e.g. hills, buildings, in 24 directions from 0 degrees azimuth (north) clockwise in 15 degree intervals</p>
 <p><span class="math inline">\(^{2}\)</span>Fraction of sky obscured by terrain</p>
-<p><span class="math inline">\(^{3}\)</span>vector of length = julnum</p>
+<p><span class="math inline">\(^{3}\)</span>vector of length = doynum</p>
 <p><span class="math inline">\(^{4}\)</span>must be greater than minimum shade</p>
 <p><span class="math inline">\(^{5}\)</span>drives evaporation - set internally when runmoist==1</p>
 </div>
@@ -471,25 +477,25 @@
 <td>CCMINN</td>
 <td>%</td>
 <td>0-100</td>
-<td>minimum cloud cover; vector of length = julnum</td>
+<td>minimum cloud cover; vector of length = doynum</td>
 </tr>
 <tr class="even">
 <td>CCMAXX</td>
 <td>%</td>
 <td>0-100</td>
-<td>maximum cloud cover; vector of length = julnum</td>
+<td>maximum cloud cover; vector of length = doynum</td>
 </tr>
 <tr class="odd">
 <td>RAINFALL</td>
 <td>mm</td>
 <td>0-2000</td>
-<td>daily total rainfall; vector of length = julnum</td>
+<td>daily total rainfall; vector of length = doynum</td>
 </tr>
 <tr class="even">
 <td>tannulrun</td>
 <td>°C</td>
 <td>-80 - +60</td>
-<td>daily deep soil temperature; vector of length = julnum</td>
+<td>daily deep soil temperature; vector of length = doynum</td>
 </tr>
 <tr class="odd">
 <td>moists</td>
@@ -537,9 +543,9 @@
 </table>
 <p><span class="math inline">\(^{1}\)</span>Vector of 4 integers, air temp &amp; wind mins relative to sunrise, humidity and cloud cover mins relative to solar noon - typical TIMINS vector c(0, 0, 1, 1).</p>
 <p><span class="math inline">\(^{2}\)</span>Vector of 4 integers, air temp &amp; wind maxs relative to solar noon, humidity and cloud cover maxs relative to sunrise - typical TIMAXS vector c(1, 1, 0, 0).</p>
-<p><span class="math inline">\(^{3}\)</span>Vector of length = julnum.</p>
-<p><span class="math inline">\(^{4}\)</span>Matrix of 10 rows (depths) and julnum columns. The first column is used to specify the initial soil moisture when running the soil moisture model.</p>
-<p><span class="math inline">\(^{5}\)</span>Vector of length = julnum*24.</p>
+<p><span class="math inline">\(^{3}\)</span>Vector of length = doynum.</p>
+<p><span class="math inline">\(^{4}\)</span>Matrix of 10 rows (depths) and doynum columns. The first column is used to specify the initial soil moisture when running the soil moisture model.</p>
+<p><span class="math inline">\(^{5}\)</span>Vector of length = doynum*24.</p>
 </div>
 <div id="substrate-properties" class="section level2">
 <h2>Substrate properties</h2>
@@ -609,7 +615,7 @@
 </tr>
 </tbody>
 </table>
-<p><span class="math inline">\(^{1}\)</span>Matrix of 10 rows (depths) and julnum columns</p>
+<p><span class="math inline">\(^{1}\)</span>Matrix of 10 rows (depths) and doynum columns</p>
 <p><span class="math inline">\(^{2}\)</span>The number of nodes specified should correspond with the variable numtypes, and in turn with the number of substrate types specified in soilprops in the soil props matrix. E.g. for a uniform profile, the first row of Nodes would be 10 (deepest soil node - the subsequent nodes all being left as 0), Numtyps would be 1, and only one and only the first row of soilprops would be filled, the rest being zero. At the other extreme, if all nodes were to have a different substrate type, values for a given row of each Nodes column would be 1, 2, …, 10 and a different value would be specified for each row of each soilprops column.</p>
 <p><span class="math inline">\(^{3}\)</span>Matrix of 10 rows (depths) and 6 columns</p>
 <p><span class="math inline">\(^{4}\)</span>at a matric potential of 0.1 bar</p>
@@ -657,72 +663,78 @@
 <td>bulk density (should be matched to same variable in the soilprops matrix)</td>
 </tr>
 <tr class="odd">
+<td>DD</td>
+<td>Mg m<span class="math inline">\(^{-3}\)</span></td>
+<td>&gt;0</td>
+<td>soil mineral density (should be matched to same variable in the soilprops matrix)</td>
+</tr>
+<tr class="even">
 <td>L</td>
 <td>m<span class="math inline">\(^{3}\)</span> m<span class="math inline">\(^{-3}\)</span></td>
 <td>0-90</td>
 <td>root density; vector of 19 values<span class="math inline">\(^{1}\)</span></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>R1</td>
 <td>m</td>
 <td>0-90</td>
 <td>root radius</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>RW</td>
 <td>m<span class="math inline">\(^{3}\)</span> kg<span class="math inline">\(^{-1}\)</span> s<span class="math inline">\(^{-1}\)</span></td>
 <td>0-90</td>
 <td>resistance per unit length of root</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>RL</td>
 <td>m<span class="math inline">\(^{3}\)</span> kg<span class="math inline">\(^{-1}\)</span> s<span class="math inline">\(^{-1}\)</span></td>
 <td>0-90</td>
 <td>resistance per unit length of leaf</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>PC</td>
 <td>J kg<span class="math inline">\(^{-1}\)</span></td>
 <td>0-90</td>
 <td>critical leaf water potential for stomatal closure</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>SP</td>
 <td>-</td>
 <td>&gt;0</td>
 <td>stability parameter for stomatal closure equation</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>IM</td>
 <td>kg</td>
 <td>&gt;0</td>
 <td>maximum allowable mass balance error</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>MAXCOUNT</td>
 <td>-</td>
 <td>&gt;0</td>
 <td>maximum iterations for mass balance</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>LAI</td>
 <td>-</td>
 <td>0-90</td>
 <td>leaf area index, used to partition traspiration/evaporation from PET</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>rainmult</td>
 <td>-</td>
 <td>&gt;0</td>
 <td>rainfall multiplier to impose a catchment</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>maxpool</td>
 <td>mm</td>
 <td>&gt;0</td>
 <td>max depth for surface water pooling<span class="math inline">\(^{2}\)</span></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>evenrain</td>
 <td>-</td>
 <td>1 or 2</td>
@@ -811,22 +823,22 @@
 </thead>
 <tbody>
 <tr class="odd">
-<td>tides[1:julnum,1]</td>
+<td>tides[1:doynum,1]</td>
 <td>-</td>
 <td>0 or 1</td>
-<td>tide in (1) or out(0); vector of length julnum</td>
+<td>tide in (1) or out(0); vector of length doynum</td>
 </tr>
 <tr class="even">
-<td>tides[1:julnum,2]</td>
+<td>tides[1:doynum,2]</td>
 <td>°C</td>
 <td>-80 - 80</td>
-<td>sea water temperature; vector of length julnum</td>
+<td>sea water temperature; vector of length doynum</td>
 </tr>
 <tr class="odd">
-<td>tides[1:julnum,3]</td>
+<td>tides[1:doynum,3]</td>
 <td>%</td>
 <td>-</td>
-<td>% surface wetness from wave splash; vector of length julnum</td>
+<td>% surface wetness from wave splash; vector of length doynum</td>
 </tr>
 </tbody>
 </table>
@@ -839,7 +851,7 @@
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

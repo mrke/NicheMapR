@@ -1,7 +1,7 @@
       subroutine snowlayer
-c      use commondat
+      use commondat
       IMPLICIT NONE
-c      EXTERNAL WETAIR
+      EXTERNAL WETAIR
 
 C     Michael Kearney 2012
 C     Computes snow layer and thermal properties
