@@ -548,11 +548,11 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
     ################## time related variables #################################
     nyears<-yfinish-ystart+1
 
-    juldays12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
-    juldaysn<-juldays12 # variable of juldays for when doing multiple years
+    doys12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
+    doysn<-doys12 # variable of doys for when doing multiple years
     if(nyears>1 & timeinterval==365){ # create sequence of days for splining across multiple years
       for(i in 1:(nyears-1)){
-        juldaysn<-c(juldaysn,(juldays12+365*i))
+        doysn<-c(doysn,(doys12+365*i))
       }
     }
 
@@ -562,7 +562,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
       microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
     }
 
-    # now check if doing something other than middle day of each month, and create appropriate vector of julian days
+    # now check if doing something other than middle day of each month, and create appropriate vector of day-of-year
     daystart<-as.integer(ceiling(365/timeinterval/2))
     idayst <- 1 # start day
     dates<-Sys.time()-60*60*24
@@ -875,10 +875,10 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
     Wind[Wind==0]<-0.1
 
     ndays<-length(Tmax)
-    julnum<-ndays
-    juldays<-seq(daystart,julnum,1)
-    julday <- subset(juldays, juldays!=0)
-    #julday<-rep(julday,nyears)
+    doynum<-ndays
+    doys<-seq(daystart,doynum,1)
+    doy <- subset(doys, doys!=0)
+    #doy<-rep(doy,nyears)
     ida<-ndays
     idayst <- 1 # start month
     # end preliminary test for incomplete year, if simulation includes the present year
@@ -994,15 +994,15 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
 
 
         if(soildata==1){
-          #           uppermoist1<-spline(juldaysn2,moistupper,n=ndays,xmin=1,xmax=ndays,method="periodic")
-          #           lowermoist1<-spline(juldaysn2,moistlower,n=ndays,xmin=1,xmax=ndays,method="periodic")
+          #           uppermoist1<-spline(doysn2,moistupper,n=ndays,xmin=1,xmax=ndays,method="periodic")
+          #           lowermoist1<-spline(doysn2,moistlower,n=ndays,xmin=1,xmax=ndays,method="periodic")
           #           uppermoists<-uppermoist1$y
           #           lowermoists<-lowermoist1$y
 
-          SLES1<-spline(juldays12,SLES,n=timeinterval,xmin=1,xmax=365,method="periodic")
+          SLES1<-spline(doys12,SLES,n=timeinterval,xmin=1,xmax=365,method="periodic")
           SLES<-rep(SLES1$y,nyears)
           SLES<-SLES[1:ndays]
-          maxshades1 <-spline(juldays12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
+          maxshades1 <-spline(doys12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
           MAXSHADES<-rep(maxshades1$y*100,nyears)
           MAXSHADES<-MAXSHADES[1:ndays]
           if(manualshade==1){
@@ -1015,7 +1015,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
           }
         }else{
           if(manualshade==0){
-            maxshades1 <-spline(juldays12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
+            maxshades1 <-spline(doys12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
             MAXSHADES<-rep(maxshades1$y*100,nyears)
             minshades <- rep(minshade,365)
             minshades <- rep(minshades,nyears)
@@ -1049,25 +1049,25 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
 
         #         if(soildata==1){
         #           # extra code for soil moisture start
-        #           Intrvls <-(1:julnum) # user-supplied last Julian day in each time interval sequence
-        #           Numint <- julnum  # number of time intervals
+        #           Intrvls <-(1:doynum) # user-supplied last day-of-year in each time interval sequence
+        #           Numint <- doynum  # number of time intervals
         #           Numtyps <- 4
         #           depinterval<-findInterval(upperdep*100, DEP)
         #           deepnode1<-depinterval
         #           depinterval<-findInterval(lowerdep*100, DEP)
         #           deepnode2<-depinterval
         #           deepnode3<-10
-        #           toprow<-rep(deepnode1,julnum)
-        #           middlerow<-rep(deepnode2,julnum)
-        #           bottomrow<-rep(deepnode3,julnum)
+        #           toprow<-rep(deepnode1,doynum)
+        #           middlerow<-rep(deepnode2,doynum)
+        #           bottomrow<-rep(deepnode3,doynum)
         #           Nodes <- matrix(data = 0, nrow = 10, ncol = 7300) # deepest nodes for each substrate type
-        #           Nodes[1,1:julnum]<-3
-        #           Nodes[2,1:julnum]<-toprow
-        #           Nodes[3,1:julnum]<-middlerow
-        #           Nodes[4,1:julnum]<-bottomrow
+        #           Nodes[1,1:doynum]<-3
+        #           Nodes[2,1:doynum]<-toprow
+        #           Nodes[3,1:doynum]<-middlerow
+        #           Nodes[4,1:doynum]<-bottomrow
         #         }else{
         Intrvls<-rep(0,dim)
-        Intrvls[1] <- 1 # user-supplied last Julian day in each time interval sequence
+        Intrvls[1] <- 1 # user-supplied last day-of-year in each time interval sequence
         Numtyps <- 1 # number of substrate types
         Numint <- 1  # number of time intervals
         Nodes <- matrix(data = 0, nrow = 10, ncol = dim) # deepest nodes for each substrate type
@@ -1229,7 +1229,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
          RAINhr = rainhour
         }
 
-        julday1=matrix(data = 0., nrow = dim, ncol = 1)
+        doy1=matrix(data = 0., nrow = dim, ncol = 1)
         SLES1=matrix(data = 0., nrow = dim, ncol = 1)
         MAXSHADES1=matrix(data = 0., nrow = dim, ncol = 1)
         MINSHADES1=matrix(data = 0., nrow = dim, ncol = 1)
@@ -1246,7 +1246,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
         RAINFALL1=matrix(data = 0, nrow = dim, ncol = 1)
         tannul1=matrix(data = 0, nrow = dim, ncol = 1)
         moists1=matrix(data = 0., nrow = 10, ncol = dim)
-        julday1[1:dim]<-julday
+        doy1[1:dim]<-doy
         SLES1[1:dim]<-SLES
         MAXSHADES1[1:dim]<-MAXSHADES
         MINSHADES1[1:dim]<-MINSHADES
@@ -1268,14 +1268,14 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
           tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
         }
         # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
-        micro<-list(tides=tides,microinput=microinput,julday=julday,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,DD=DD,L=L,LAI=LAI,snowmodel=snowmodel)
+        micro<-list(tides=tides,microinput=microinput,doy=doy,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,DD=DD,L=L,LAI=LAI,snowmodel=snowmodel)
         # write all input to csv files in their own folder
         if(write_input==1){
           if(dir.exists("micro csv input")==FALSE){
             dir.create("micro csv input")
           }
           write.table(as.matrix(microinput), file = "micro csv input/microinput.csv", sep = ",", col.names = NA, qmethod = "double")
-          write.table(julday, file = "micro csv input/julday.csv", sep = ",", col.names = NA, qmethod = "double")
+          write.table(doy, file = "micro csv input/doy.csv", sep = ",", col.names = NA, qmethod = "double")
           write.table(SLES, file = "micro csv input/SLES.csv", sep = ",", col.names = NA, qmethod = "double")
           write.table(DEP, file = "micro csv input/DEP.csv", sep = ",", col.names = NA, qmethod = "double")
           write.table(Nodes, file = "micro csv input/Nodes.csv", sep = ",", col.names = NA, qmethod = "double")
