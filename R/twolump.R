@@ -370,7 +370,7 @@ twolump<-function(t,y,indata){
   V_bl <- ATOT * x_shell # blood volume
   #Rrad <- (To-Trad)/(emis * 0.8 * sigma * ATOT * (To^4-Trad^4))
   Rconv <- 1 / (hc * ATOT)
-  Rs <- x_shell / (k_outer * ATOT) # resistance of skin
+  Rs <- (x_shell / 2) / (k_outer * ATOT) # resistance of skin
   Rbl <- 1 / (m_bl * cp_inner * V_bl) # blood resistance
   Rb <- (V_inner ^ (1 / 3)) / (k_inner * ATOT_inner)
   if(geom == 1){

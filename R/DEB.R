@@ -41,14 +41,15 @@
 #' @param mu_V = 500000, Molar Gibbs energy (chemical potential) of structure (J/mol)
 #' @param mu_P = 480000, Molar Gibbs energy (chemical potential) of faeces (J/mol)
 #' @param kap_X_P = 0.1, Faecation efficiency of food to faeces (-)
-#' @param n_X = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in food
-#' @param n_E = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in reserve
-#' @param n_V = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in structure
-#' @param n_P = c(1,1.8,0.5,.15), chem. indices of C, O, H and N in faeces
-#' @param n_M_nitro = c(1,4/5,3/5,4/5), chem. indices of C, O, H and N in nitrogenous waste
+#' @param n_X = c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in food
+#' @param n_E = c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in reserve
+#' @param n_V = c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in structure
+#' @param n_P = c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in faeces
+#' @param fdry = 0.3, Dry mass fraction of food
+#' @param n_M_nitro = c(1,4/5,3/5,4/5), Chem. indices of C, O, H and N in nitrogenous waste
 #' @param stage = 0, Initial stage (0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction)
 #' @param clutchsize = 2, Clutch size (#), overridden by \code{clutch_ab}
-#' @param clutch_ab = c(0.085,0.7), # paramters for relationship between length (cm) and clutch size: clutch size = a*SVL-b, make a and b zero if fixed clutch size
+#' @param clutch_ab = c(0,0), paramters for relationship between length (cm) and clutch size: clutch size = a*SVL-b, make a and b zero if fixed clutch size
 #' @param viviparous = 0, Viviparous reproduction? 1=yes, 0=no (if yes, animal will be held in adult-sided female's body for duration of development and will experience her body temperature
 #' @param minclutch = 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate
 #' @param batch = 1, Invoke Pequerie et al.'s batch laying model?
@@ -133,19 +134,19 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
   kap_R=0.95,k_J=0.002*step,E_Hb=7.359e+04,E_Hj=E_Hb,E_Hp=1.865e+05,h_a=2.16e-11/(step^2),s_G=0.01,
   T_REF=20,TA=8085,TAL=18721,  TAH=9.0+04,TL=288,TH=315,E_0=1.04e+06,f=1,E_sm=1116,K=1,
   andens_deb=1,d_V=0.3,d_E=0.3,d_Egg=0.3,mu_X=525000,mu_E=585000,mu_V=500000,mu_P=480000,kap_X_P=0.1,
-  n_X=c(1,1.8,0.5,.15),n_E=c(1,1.8,0.5,0.15),  n_V=c(1,1.8,0.5,.15),n_P=c(1,1.8,0.5,.15),n_M_nitro=c(1,4/5,3/5,4/5),
+  n_X=c(1,1.8,0.5,.15),n_E=c(1,1.8,0.5,0.15),n_V=c(1,1.8,0.5,.15),n_P=c(1,1.8,0.5,.15),n_M_nitro=c(1,4/5,3/5,4/5),
   clutchsize=2,clutch_ab=c(0.085,0.7),viviparous=0,minclutch=0,batch=1,lambda=1/2,VTMIN=26,VTMAX=39,ma=1e-4,mi=0,mh=0.5,
   arrhenius=matrix(data = matrix(data = c(rep(TA,8),rep(TAL,8),rep(TAH,8),rep(TL,8),rep(TH,8)),nrow = 8, ncol = 5), nrow = 8, ncol = 5),
   acthr=1,X=10,E_pres=6011.93,V_pres=3.9752^3,E_H_pres=73592,q_pres=0,hs_pres=0,surviv_pres=1,Es_pres=0,
-  cumrepro=0,cumbatch=0,p_B_past=0,stage=1,breeding=0,pregnant=0,Tb=33){
+  cumrepro=0,cumbatch=0,p_B_past=0,stage=1,breeding=0,pregnant=0,Tb=33,fdry=0.3){
 
   q_init<-q_pres
   E_H_init<-E_H_pres
   hs_init<-hs_pres
   fecundity<-0
   clutches<-0
-  clutchenergy = E_0*clutchsize
-
+  clutchenergy <- E_0*clutchsize
+  starve <- 0
   #DEB mass balance-related calculations
   n_O<-cbind(n_X,n_V,n_E,n_P) # matrix of composition of organics, i.e. food, structure, reserve and faeces
   CHON<-c(12,1,16,14)
@@ -472,7 +473,7 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
   }
   wetstorage = ((V*E/mu_E)*w_E)/d_V
   #    wetfood(hour) = ((Es(hour)/mu_E)*w_E)/d_V
-  wetfood = Es/21525.37/(1.-0.18)
+  wetfood = Es / 21525.37 / fdry
   wetmass = V*andens_deb+wetgonad+wetstorage+wetfood
   gutfreemass=V*andens_deb+wetgonad+wetstorage
   potfreemass=V*andens_deb+(((V*E_m)/mu_E)*w_E)/d_V # this is the max potential mass if reserve density is at max value
@@ -504,8 +505,8 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
   suriv_pres=surviv_pres
   Es_pres=Es
 
-  deb.names<-c("E_pres","V_pres","E_H_pres","q_pres","hs_pres","surviv_pres","Es_pres","cumrepro","cumbatch","p_B_past","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","wetmass","gutfreemass","gutfull","fecundity","clutches")
-  results_deb<-c(E_pres,V_pres,E_H_pres,q_pres,hs_pres,surviv_pres,Es_pres,cumrepro,cumbatch,p_B_past,O2FLUX,CO2FLUX,MLO2,GH2OMET,DEBQMET,DRYFOOD,FAECES,NWASTE,wetgonad,wetstorage,wetfood,wetmass,gutfreemass,gutfull,fecundity,clutches)
+  deb.names<-c("E_pres","V_pres","E_H_pres","q_pres","hs_pres","surviv_pres","Es_pres","cumrepro","cumbatch","p_B_past","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","wetmass","gutfreemass","gutfull","fecundity","clutches","potfreemass")
+  results_deb<-c(E_pres,V_pres,E_H_pres,q_pres,hs_pres,surviv_pres,Es_pres,cumrepro,cumbatch,p_B_past,O2FLUX,CO2FLUX,MLO2,GH2OMET,DEBQMET,DRYFOOD,FAECES,NWASTE,wetgonad,wetstorage,wetfood,wetmass,gutfreemass,gutfull,fecundity,clutches,potfreemass)
   names(results_deb)<-deb.names
   return(results_deb)
 }
