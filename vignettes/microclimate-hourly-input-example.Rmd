@@ -291,7 +291,7 @@ MAXCOUNT <- 500 #maximum iterations for mass balance, -
 LAI <- 0.1 # leaf area index, used to partition traspiration/evaporation from PET
 rainmult <- 1 # rainfall multiplier to impose catchment
 maxpool <- 10 # max depth for water pooling on the surface, mm (to account for runoff)
-evenrain <- 0 # spread daily rainfall evenly across 24hrs (1) or one event at midnight (2)
+evenrain <- 0 # spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)
 SoilMoist_Init <- rep(0.2, 10) # initial soil water content for each node, m3/m3
 moists <- matrix(nrow = 10, ncol = doynum, data = 0) # set up an empty vector for soil moisture values through time
 moists[1:10,]<-SoilMoist_Init # insert inital soil moisture
