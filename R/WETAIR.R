@@ -22,7 +22,7 @@
 #' @return e Vapour pressure (Pa)
 #' @return esat Saturation vapour pressure (Pa)
 #' @return vd Vapour density (kg m-3)
-#' @return rw Mixing ration (kg kg-1)
+#' @return rw Mixing ratio (kg kg-1)
 #' @return tvir Virtual temperature (K)
 #' @return tvinc Virtual temperature increment (K)
 #' @return denair Hourly predictions of the soil moisture under the maximum specified shade

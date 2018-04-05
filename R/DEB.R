@@ -108,8 +108,8 @@
 #' Tbs=seq(25,35,2.5) # sequence of body temperatures to use
 #'
 #' for(j in 1:length(Tbs)){
-#' debout<-matrix(data = 0, nrow = n, ncol=26)
-#' deb.names<-c("E_pres","V_pres","E_H_pres","q_pres","hs_pres","surviv_pres","Es_pres","cumrepro","cumbatch","p_B_past","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","wetmass","gutfreemass","gutfull","fecundity","clutches")
+#' debout<-matrix(data = 0, nrow = n, ncol=27)
+#' deb.names<-c("E_pres","V_pres","E_H_pres","q_pres","hs_pres","surviv_pres","Es_pres","cumrepro","cumbatch","p_B_past","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","wetmass","gutfreemass","gutfull","fecundity","clutches","potfreemass")
 #' colnames(debout)<-deb.names
 #'
 #' # initialise
