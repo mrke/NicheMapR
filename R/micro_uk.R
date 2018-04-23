@@ -680,19 +680,20 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
     }
 
     if(soilgrids == 1){
+      cat('extracting data from SoilGrids')
       require(rjson)
       require(sp)
       require(GSIF)
-      pnts <- data.frame(lon=longlat[1], lat=longlat[2], id=c("p1"))
+      pnts <- data.frame(lon=x[1], lat=x[2], id=c("p1"))
       coordinates(pnts) <- ~lon+lat
       proj4string(pnts) <- CRS("+proj=longlat +datum=WGS84")
       soilgrids.r <- REST.SoilGrids(c("BLDFIE", "SLTPPT","SNDPPT", "CLYPPT"))
       ov <- over(soilgrids.r, pnts)
+      if(length(ov) > 3){
       soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
       colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
 
       #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
-
       DEP <- c(0., 2.5,  5.,  10,  15, 20., 30.,  60.,  100.,  200.) # Soil nodes (cm)
       soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
       PE<-soil.hydro$PE
@@ -700,8 +701,10 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       BD<-soil.hydro$BD
       KS<-soil.hydro$KS
       BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
+      }else{
+        cat('no SoilGrids data for this site, using user-input soil properties /n')
+      }
     }
-
 
     delta_elev = UKDEM - ALTITUDES
     adiab_corr_max <- delta_elev * lapse_max

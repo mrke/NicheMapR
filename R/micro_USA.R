@@ -62,7 +62,7 @@
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
-#' \code{Refhyt}{ = 1.2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
+#' \code{Refhyt}{ = 2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
 #' \code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
 #' \code{Z01}{ = 0, Top (1st) segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used)}\cr\cr
 #' \code{Z02}{ = 0, 2nd segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
@@ -148,11 +148,11 @@
 #' \item 1 DOY - day-of-year
 #' \item 2 TIME - time of day (mins)
 #' \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-#' \item 4 TAREF - air temperature (deg C) at reference height (specified by 'Refhyt', 1.2m default)
+#' \item 4 TAREF - air temperature (deg C) at reference height (specified by 'Refhyt', 2m default)
 #' \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
-#' \item 6 RH  - relative humidity (\%) at reference height (specified by 'Refhyt', 1.2m default)
+#' \item 6 RH  - relative humidity (\%) at reference height (specified by 'Refhyt', 2m default)
 #' \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
-#' \item 8 VREF - wind speed (m/s) at reference height (specified by 'Refhyt', 1.2m default)
+#' \item 8 VREF - wind speed (m/s) at reference height (specified by 'Refhyt', 2m default)
 #' \item 9 SNOWMELT - snowmelt (mm)
 #' \item 10 POOLDEP - water pooling on surface (mm)
 #' \item 11 PCTWET - soil surface wetness (\%)
@@ -280,7 +280,7 @@
 micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfinish=2016,
   nyears=1,soiltype=4,REFL=0.15, elev = NA, slope=0,aspect=0, lapse_max = 0.0077, lapse_min = 0.0039,
   DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
-  minshade=0,maxshade=90,Refhyt=1.2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
+  minshade=0,maxshade=90,Refhyt=2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
   runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,manualshade=1,
   soildata=0,terrain=0,dailywind=1,windfac=1,adiab_cor=1,warm=0,spatial="N:/USA",
   ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2.56,SpecHeat=870,BulkDensity=1.3,
@@ -310,7 +310,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
   # DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
   # minshade=0
   # maxshade=90
-  # Refhyt=1.2
+  # Refhyt=2
   # Usrhyt=.01
   # Z01=0
   # Z02=0
@@ -629,24 +629,25 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     azmuth<-aspect
 
     #GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]]
-    USADEM <- extract(raster(paste0(spatial,"/metdata_elevationdata.nc")), x)
+    USADEM <- extract(raster(paste0(spatial,"/metdata_elevationdata.nc")), x) # metres above sea level
     ALTITUDES <-NA# extract(raster(paste0(spatial,"/terr50.tif")), x) # to do
     if(is.na(elev) == FALSE){ALTITUDES <- elev} # check if user-specified elevation
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-USADEM}
     if(soilgrids == 1){
+      cat('extracting data from SoilGrids')
       require(rjson)
       require(sp)
       require(GSIF)
-      pnts <- data.frame(lon=longlat[1], lat=longlat[2], id=c("p1"))
+      pnts <- data.frame(lon=x[1], lat=x[2], id=c("p1"))
       coordinates(pnts) <- ~lon+lat
       proj4string(pnts) <- CRS("+proj=longlat +datum=WGS84")
       soilgrids.r <- REST.SoilGrids(c("BLDFIE", "SLTPPT","SNDPPT", "CLYPPT"))
       ov <- over(soilgrids.r, pnts)
+      if(length(ov) > 3){
       soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
       colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
 
       #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
-
       DEP <- c(0., 2.5,  5.,  10,  15, 20., 30.,  60.,  100.,  200.) # Soil nodes (cm)
       soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
       PE<-soil.hydro$PE
@@ -654,6 +655,9 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       BD<-soil.hydro$BD
       KS<-soil.hydro$KS
       BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
+      }else{
+        cat('no SoilGrids data for this site, using user-input soil properties /n')
+      }
     }
 
     if(terrain==1){

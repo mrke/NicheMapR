@@ -56,6 +56,7 @@
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 #' \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
 #' \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
+#' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
 #'
@@ -310,7 +311,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
   snowmodel=1,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
   shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="", year="", barcoo="",
-  quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0, IR = 0, forecast = 0, message = 0, fail = nyears * 24 * 365) {
+  quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0, soilgrids = 0, IR = 0, forecast = 0, message = 0, fail = nyears * 24 * 365) {
   #
   #   loc="Athurs Pass, New Zealand"
   #   timeinterval=365
@@ -701,6 +702,32 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
       VIEWF<-VIEWF_all
     }
 
+    if(soilgrids == 1){
+      cat('extracting data from SoilGrids')
+      require(rjson)
+      require(sp)
+      require(GSIF)
+      pnts <- data.frame(lon=x[1], lat=x[2], id=c("p1"))
+      coordinates(pnts) <- ~lon+lat
+      proj4string(pnts) <- CRS("+proj=longlat +datum=WGS84")
+      soilgrids.r <- REST.SoilGrids(c("BLDFIE", "SLTPPT","SNDPPT", "CLYPPT"))
+      ov <- over(soilgrids.r, pnts)
+      if(length(ov) > 3){
+      soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
+      colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
+
+      #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
+      DEP <- c(0., 2.5,  5.,  10,  15, 20., 30.,  60.,  100.,  200.) # Soil nodes (cm)
+      soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
+      PE<-soil.hydro$PE
+      BB<-soil.hydro$BB
+      BD<-soil.hydro$BD
+      KS<-soil.hydro$KS
+      BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
+      }else{
+        cat('no SoilGrids data for this site, using user-input soil properties /n')
+      }
+    }
     # setting up for temperature correction using lapse rate given difference between 9sec DEM value and 0.05 deg value
     #     if(NZDEM==-9999 | is.na(NZDEM)=='TRUE'){
     #       delta_elev = AGG - ALTITUDES

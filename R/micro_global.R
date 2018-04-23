@@ -51,6 +51,7 @@
 #' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
+#' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
 #'
@@ -293,7 +294,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
   LAI=0.1,
   snowmodel=0,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
-  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3), lamb = 0, IUV = 0, IR = 0, message = 0, fail = nyears * 24 * 365) {
+  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3), lamb = 0, IUV = 0, soilgrids = 0, IR = 0, message = 0, fail = nyears * 24 * 365) {
   SoilMoist=SoilMoist_Init
   errors<-0
 
@@ -567,6 +568,32 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       }
     }
 
+    if(soilgrids == 1){
+      cat('extracting data from SoilGrids')
+      require(rjson)
+      require(sp)
+      require(GSIF)
+      pnts <- data.frame(lon=x[1], lat=x[2], id=c("p1"))
+      coordinates(pnts) <- ~lon+lat
+      proj4string(pnts) <- CRS("+proj=longlat +datum=WGS84")
+      soilgrids.r <- REST.SoilGrids(c("BLDFIE", "SLTPPT","SNDPPT", "CLYPPT"))
+      ov <- over(soilgrids.r, pnts)
+      if(length(ov) > 3){
+      soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
+      colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
+
+      #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
+      DEP <- c(0., 2.5,  5.,  10,  15, 20., 30.,  60.,  100.,  200.) # Soil nodes (cm)
+      soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
+      PE<-soil.hydro$PE
+      BB<-soil.hydro$BB
+      BD<-soil.hydro$BD
+      KS<-soil.hydro$KS
+      BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
+      }else{
+        cat('no SoilGrids data for this site, using user-input soil properties /n')
+      }
+    }
     # load global climate files
     gcfolder<-paste(.libPaths()[1],"/gcfolder.rda",sep="")
     if(file.exists(gcfolder)==FALSE){
