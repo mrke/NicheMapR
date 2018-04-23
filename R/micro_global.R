@@ -36,6 +36,8 @@
 #' @return shadhumid Hourly predictions of the soil humidity under the maximum specified shade
 #' @return plant Hourly predictions of plant transpiration, leaf water potential and root water potential under the minimum specified shade
 #' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
+#' @return sunsnow Hourly predictions of snow temperature under the minimum specified shade
+#' @return shadsnow Hourly predictions snow temperature under the maximum specified shade
 #'
 #' @details
 #' \itemize{
