@@ -126,7 +126,7 @@ metout <- as.data.frame(micro$metout)
 tzone <- paste0("Etc/GMT", TZoffset) # doing it this way ignores daylight savings!
 dates <- seq(ISOdate(ystart, 1, 1, tz = tzone)-3600 * 12, ISOdate((ystart+nyears),1, 1, tz = tzone)-3600 * 13, by="hours")
 clear <- as.data.frame(cbind(dates, as.data.frame(rep(micro$metout[1:(365 * 24),13],nyears))),stringsAsFactors = FALSE)
-doy <- rep(seq(1, 365),nyears)[1:floor(nrow(weather)/24)] # julian days to run
+doy <- rep(seq(1, 365),nyears)[1:floor(nrow(weather)/24)] # days of year to run
 clear <- as.data.frame(clear, stringsAsFactors = FALSE)
 colnames(clear)=c("datetime", "sol")
 
@@ -219,7 +219,7 @@ MAXCOUNT <- 500 #maximum iterations for mass balance, -
 LAI <- 0.1 # leaf area index, used to partition traspiration/evaporation from PET
 rainmult <- 1 # rainfall multiplier to impose catchment
 maxpool <- 10 # max depth for water pooling on the surface, mm (to account for runoff)
-evenrain <- 0 # spread daily rainfall evenly across 24hrs (1) or one event at midnight (2)
+evenrain <- 0 # spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)
 SoilMoist_Init <- rep(0.2, 10) # initial soil water content for each node, m3/m3
 moists <- matrix(nrow = 10, ncol = doynum, data = 0) # set up an empty vector for soil moisture values through time
 moists[1:10,]<-SoilMoist_Init # insert inital soil moisture

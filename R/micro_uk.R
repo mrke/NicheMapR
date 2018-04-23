@@ -31,8 +31,9 @@
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export
-#' @details
 #'
+#' @details
+#' \itemize{
 #' \strong{ Parameters controling how the model runs:}\cr\cr
 #'
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
@@ -54,8 +55,8 @@
 #' \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
 #' \code{opendap}{ = 0, query met grids via opendap (does not work on PC)}\cr\cr
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
-#' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)
-#' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)
+#' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
+#' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
@@ -76,8 +77,8 @@
 #' \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
 #' \code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
 #' \code{hori}{ = rep(0,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
-#' \code{lapse_min}{ = 0.0039 Lapse rate for minimum air temperature (degrees C/m)
-#' \code{lapse_max}{ = 0.0077 Lapse rate for maximum air temperature (degrees C/m)
+#' \code{lapse_min}{ = 0.0039 Lapse rate for minimum air temperature (degrees C/m)}
+#' \code{lapse_max}{ = 0.0077 Lapse rate for maximum air temperature (degrees C/m)}
 #' \code{TIMAXS}{ = c(1.0, 1.0, 0.0, 0.0), Time of Maximums for Air Wind RelHum Cloud (h), air & Wind max's relative to solar noon, humidity and cloud cover max's relative to sunrise}\cr\cr
 #' \code{TIMINS}{ = c(0, 0, 1, 1), Time of Minimums for Air Wind RelHum Cloud (h), air & Wind min's relative to sunrise, humidity and cloud cover min's relative to solar noon}\cr\cr
 #' \code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr
@@ -137,18 +138,19 @@
 #' \code{tides}
 #' { is used to specify tide presence, sea water temperature and presence of wavesplash}\cr\cr
 #' \code{tides}{ = matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (deg C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
+#' }
 #'
 #' \strong{Outputs:}
 #' metout/shadmet variables:
 #' \itemize{
-#' \item 1 JULDAY - day of year
+#' \item 1 DOY - day-of-year
 #' \item 2 TIME - time of day (mins)
 #' \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-#' \item 4 TAREF - air temperature (deg C) at reference height (1.2m)
+#' \item 4 TAREF - air temperature (deg C) at reference height (specified by 'Refhyt', 1.2m default)
 #' \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
-#' \item 6 RH  - relative humidity (\%) at reference height (1.2m)
+#' \item 6 RH  - relative humidity (\%) at reference height (specified by 'Refhyt', 1.2m default)
 #' \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
-#' \item 8 VREF - wind speed (m/s) at reference height (1.2m)
+#' \item 8 VREF - wind speed (m/s) at reference height (specified by 'Refhyt', 1.2m default)
 #' \item 9 SNOWMELT - snowmelt (mm)
 #' \item 10 POOLDEP - water pooling on surface (mm)
 #' \item 11 PCTWET - soil surface wetness (\%)
@@ -162,40 +164,57 @@
 #'}
 #' soil and shadsoil variables:
 #' \itemize{
-#' \item 1 JULDAY - day of year
+#' \item 1 DOY - day-of-year
 #' \item 2 TIME - time of day (mins)
-#' \item 3-12 D0cm ... - soil temperatures at each of the 10 specified depths
+#' \item 3-12 D0cm ... - soil temperature (deg C) at each of the 10 specified depths
+#' }
 #'
 #' if soil moisture model is run i.e. parameter runmoist = 1\cr
 #'
 #' soilmoist and shadmoist variables:
 #' \itemize{
-#' \item 1 JULDAY - day of year
+#' \item 1 DOY - day-of-year
 #' \item 2 TIME - time of day (mins)
 #' \item 3-12 WC0cm ... - soil moisuture (m3/m3) at each of the 10 specified depths
-#'}
+#' }
 #' soilpot and shadpot variables:
 #' \itemize{
-#' \item 1 JULDAY - day of year
+#' \item 1 DOY - day-of-year
 #' \item 2 TIME - time of day (mins)
 #' \item 3-12 PT0cm ... - soil water potential (J/kg = kpa = bar/100) at each of the 10 specified depths
 #' }
-#'
 #' humid and shadhumid variables:
 #' \itemize{
-#' \item  1 JULDAY - day of year
+#' \item  1 DOY - day-of-year
 #' \item  2 TIME - time of day (mins)
 #' \item  3-12 RH0cm ... - soil relative humidity (decimal \%), at each of the 10 specified depths
 #' }
 #' plant and shadplant variables:
 #' \itemize{
-#' \item  1 JULDAY - day of year
+#' \item  1 DOY - day-of-year
 #' \item  2 TIME - time of day (mins)
 #' \item  3 TRANS - plant transpiration rate (kg/m2/s)
 #' \item  4 LEAFPOT - leaf water potentail (J/kg)
 #' \item  5-14 RPOT0cm ... - root water potentail (J/kg), at each of the 10 specified depths
 #' }
 #'
+#' if wavelength-specific solar output is selected i.e. parameter lamb = 1\cr
+#'
+#' sunsnow and shdsnow variables:
+#' \itemize{
+#' \item  1 DOY - day-of-year
+#' \item  2 TIME - time of day (mins)
+#' \item  3-10 SN0cm ... - snow temperature (deg C), at the soil surface and each of the potential 8 layers
+#' }
+#'
+#' if snow model is run i.e. parameter lamb = 1\cr
+#'
+#' solar output variables
+#' drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar) variables:
+#' \itemize{
+#' \item  1 DOY - day-of-year
+#' \item  2 TIME - time of day (mins)
+#' \item  3-113 290, ..., 4000 - irradiance (W/(m2 nm)) at each of 111 wavelengths from 290 to 4000 nm
 #' }
 #' @examples
 #' library(NicheMapR)

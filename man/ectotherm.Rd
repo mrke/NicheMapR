@@ -83,7 +83,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{live=}{ = 1, Live (metabolism/behaviour) or dead animal?}\cr}
 \item{\code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1 = yes, 0 = no}\cr}
 \item{\code{write_csv}{ = 0, Write csv files of final output? 0 = no, 1= just yearout and yearsout, 2 = all output}\cr}
-\item{\code{startday}{ = 1, Julian day of year at which simulation starts}\cr}
+\item{\code{startday}{ = 1, day of year at which simulation starts}\cr}
 }
 \strong{ Environmental inputs:}
 
@@ -308,7 +308,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 
 environ variables:
 \itemize{
-\item 1 JULDAY - day of year
+\item 1 DOY - day of year
 \item 2 YEAR - year of simulation
 \item 3 DAY - day of simulation
 \item 4 TIME - time of day (hours)
@@ -331,7 +331,7 @@ environ variables:
 }
 enbal variables:
 \itemize{
-\item 1 JULDAY - day of year
+\item 1 DOY - day of year
 \item 2 YEAR - year of simulation
 \item 3 DAY - day of simulation
 \item 4 TIME - time of day (hours)
@@ -347,7 +347,7 @@ enbal variables:
 }
 masbal variables:
 \itemize{
-\item 1 JULDAY - day of year
+\item 1 DOY - day of year
 \item 2 YEAR - year of simulation
 \item 3 DAY - day of simulation
 \item 4 TIME - time of day (hours)
@@ -369,7 +369,7 @@ masbal variables:
 }
 debout variables:
 \itemize{
-\item 1 JULDAY - day of year
+\item 1 DOY - day of year
 \item 2 YEAR - year of simulation
 \item 3 DAY - day of simulation
 \item 4 TIME - time of day (hours)
@@ -510,8 +510,9 @@ forage<-subset(environ,ACT==2)
 bask<-subset(environ,ACT==1)
 night<-subset(metout,ZEN==90)
 day<-subset(metout,ZEN!=90)
-with(night,plot(TIME/60~JULDAY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col='dark blue'))
+with(night,plot(TIME/60~DOY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col='dark blue'))
 # nighttime hours
-with(forage,points((TIME-1)~JULDAY,pch=15,cex=2,col='orange')) # foraging Tbs
-with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
+with(forage,points((TIME-1)~DOY,pch=15,cex=2,col='orange')) # foraging Tbs
+with(bask,points((TIME-1)~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
 }
+

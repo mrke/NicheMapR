@@ -131,3 +131,4 @@ text(90, 25.4, "Tair for small animal", col = "blue")
 text(80, 28.65, "vel = 0.5 m/s")
 text(93, 26, "vel = 1.0 m/s")
 }
+
