@@ -235,7 +235,7 @@
 #'with(plotmetout,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (deg C)"
 #',  type = "l",main=paste("sky temperature, ",minshade,"% shade",sep=""))})
 #'with(plotmetout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-#',  type = "l",main="wind speed",col='blue)})
+#',  type = "l",main="wind speed",col='blue',ylim = c(0, 15))})
 #'with(plotmetout,{points(VLOC ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
 #',  type = "l",lty=2')})
 #'with(plotmetout,{plot(ZEN ~ dates,xlab = "Date and Time", ylab = "Zenith Angle of Sun (deg)"

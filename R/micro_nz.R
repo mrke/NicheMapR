@@ -218,7 +218,7 @@
 #' \item  3-113 290, ..., 4000 - irradiance (W/(m2 nm)) at each of 111 wavelengths from 290 to 4000 nm
 #' }
 #' @examples
-#'micro<-micro_aust() # run the model with default location and settings
+#'micro<-micro_nz() # run the model with default location and settings
 #'
 #'metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #'shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
@@ -251,7 +251,7 @@
 #'with(plotmetout,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (deg C)"
 #',  type = "l",main=paste("sky temperature, ",minshade,"% shade",sep=""))})
 #'with(plotmetout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-#',  type = "l",main="wind speed")})
+#',  type = "l",main="wind speed",ylim = c(0, 15))})
 #'with(plotmetout,{points(VLOC ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
 #',  type = "l",lty=2,col='blue')})
 #'with(plotmetout,{plot(ZEN ~ dates,xlab = "Date and Time", ylab = "Zenith Angle of Sun (deg)"
