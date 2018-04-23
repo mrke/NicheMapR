@@ -673,7 +673,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
       if(is.na(ALTITUDES)==TRUE){ALTITUDES<-NZDEM}
     }
     if(terrain==1){
-      cat("extracting terrain data")
+      cat("extracting terrain data \n")
       # now extract terrain data from elevslpasphori.nc
       # get UTM from dec degrees, NZTM
       HORIZONS <- elevslpasphori[4:27]
@@ -703,7 +703,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
     }
 
     if(soilgrids == 1){
-      cat('extracting data from SoilGrids')
+      cat('extracting data from SoilGrids \n')
       require(rjson)
       require(sp)
       require(GSIF)
@@ -834,7 +834,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
       SOLAR_diff<-1
     }
 
-    cat("extracting weather data", '\n')
+    cat("extracting weather data \n")
     # read daily weather
     yearlist<-seq(ystart,(ystart+(nyears-1)),1)
     for(j in 1:nyears){ # start loop through years

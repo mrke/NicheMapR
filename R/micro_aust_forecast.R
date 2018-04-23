@@ -663,7 +663,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
 
 
     if(soildata==1){
-      message("extracting soil data", '\n')
+      message("extracting soil data \n")
       if(vlsci==0){
         static_soil<-paste(spatial,"static_soil.nc",sep="")
         emissivities<-paste(spatial,"aus_emissivities.nc",sep="")
@@ -703,7 +703,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
     }else{
       SLES2 <- rep(SLE,3*nyears)
       if(manualshade==0){
-        message("extracting shade data", '\n')
+        message("extracting shade data \n")
         if(vlsci==0){
           static_soil<-paste(spatial,"static_soil.nc",sep="")
           emissivities<-paste(spatial,"aus_emissivities.nc",sep="")
@@ -796,7 +796,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
     }
 
     if(soilgrids == 1){
-      cat('extracting data from SoilGrids')
+      cat('extracting data from SoilGrids \n')
       require(rjson)
       require(sp)
       require(GSIF)
@@ -829,7 +829,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
     }
     adiab_corr_max <- delta_elev * lapse_max
     adiab_corr_min <- delta_elev * lapse_min
-    message("extracting climate data", '\n')
+    message('extracting climate data \n')
 
     prevdir<-getwd()
     setwd('Y:')

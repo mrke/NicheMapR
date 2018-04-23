@@ -634,7 +634,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     if(is.na(elev) == FALSE){ALTITUDES <- elev} # check if user-specified elevation
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-USADEM}
     if(soilgrids == 1){
-      cat('extracting data from SoilGrids')
+      cat('extracting data from SoilGrids \n')
       require(rjson)
       require(sp)
       require(GSIF)
@@ -661,7 +661,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     }
 
     if(terrain==1){
-      cat("extracting terrain data")
+      cat("extracting terrain data \n")
 
       # now extract terrain data from elevslpasphori.nc
       # get UTM from dec degrees, NZTM
@@ -796,7 +796,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       }
     }else{
 
-      cat("extracting weather data", "\\n")
+      cat("extracting weather data \n")
       yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
       nc <- nc_open(paste(spatial, "/tmmx_", yearlist[1], ".nc",
         sep = ""))
