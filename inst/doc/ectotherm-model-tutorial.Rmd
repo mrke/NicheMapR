@@ -28,17 +28,9 @@ As with the microclimate model tutorial, this first example involves the most ba
 library(NicheMapR)
 ```
 
-```{r, echo = FALSE}
-#a=getLoadedDLLs()
-#if(is.loaded("microclimate", "MICROCLIMATE", type = "FORTRAN")==TRUE){
-#  dyn.unload(a$MICROCLIMATE[[2]])
-#dyn.unload(a$ECTOTHERM[[2]])
-#}
-```
-
 ```{r}
 library(NicheMapR)
-micro<-micro_global(loc = "Townsville, Queensland", runmoist=1)
+micro<-micro_global(loc = "Townsville, Queensland", runmoist = 1)
 ecto<-ectotherm()
 ```
 
@@ -56,7 +48,7 @@ knitr::kable(head(ecto$environ[,1:15], 12), digits = 2)
 
 and includes the following variables:
 
-1. JULDAY - day of year
+1. DOY - day of year
 1. YEAR - year of simulation
 1. DAY - day of simulation
 1. TIME - time of day (hours)
@@ -89,7 +81,7 @@ knitr::kable(head(ecto$enbal, 12), digits = 2)
 
 It quantifies the different pathways of exchange in each hour of the simulation:
 
-1. JULDAY - day of year
+1. DOY - day of year
 1. YEAR - year of simulation
 1. DAY - day of simulation
 1. TIME - time of day (hours)
@@ -117,7 +109,7 @@ knitr::kable(head(ecto$masbal[,1:10], 12))
 knitr::kable(head(ecto$masbal[,11:19], 12))
 ```
 
-1. JULDAY - day of year
+1. DOY - day of year
 1. YEAR - year of simulation
 1. DAY - day of simulation
 1. TIME - time of day (hours)
@@ -181,11 +173,11 @@ forage<-subset(environ,ACT==2)
 bask<-subset(environ,ACT==1)
 night<-subset(metout,ZEN==90)
 day<-subset(metout,ZEN!=90)
-with(night,plot(TIME/60~JULDAY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col=
+with(night,plot(TIME/60~DOY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col=
     'dark blue', main = "Fig. 2 Annual activity window, 90% max shade"))
 # nighttime hours
-with(forage,points((TIME-1)~JULDAY,pch=15,cex=2,col='orange')) # foraging Tbs
-with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
+with(forage,points((TIME-1)~DOY,pch=15,cex=2,col='orange')) # foraging Tbs
+with(bask,points((TIME-1)~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
 
 ```
 
@@ -231,10 +223,10 @@ forage<-subset(environ,ACT==2)
 bask<-subset(environ,ACT==1)
 night<-subset(metout,ZEN==90)
 day<-subset(metout,ZEN!=90)
-with(night,plot(TIME/60~JULDAY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col=
+with(night,plot(TIME/60~DOY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col=
     'dark blue', main = "Fig. 4 Annual activity window, 50% max shade"))
-with(forage,points((TIME-1)~JULDAY,pch=15,cex=2,col='orange')) # foraging Tbs
-with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
+with(forage,points((TIME-1)~DOY,pch=15,cex=2,col='orange')) # foraging Tbs
+with(bask,points((TIME-1)~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
 
 ```
 
@@ -250,8 +242,7 @@ Below is an example for the Eastern Water Skink (default settings for the DEB mo
 # run the microclimate model daily for 5 years
 timeinterval<-365
 nyears<-6
-micro<-micro_global(loc = "Townsville, Queensland", timeinterval = timeinterval, nyears = nyears,
-  runmoist = 1)
+micro<-micro_global(loc = "Townsville, Queensland", timeinterval = timeinterval, nyears = nyears, runmoist = 1)
 
 # run the ectotherm model with the DEB model turned on and in viviparous mode, simulating the
 # Eastern Water Skink, Eulamprus quoyii

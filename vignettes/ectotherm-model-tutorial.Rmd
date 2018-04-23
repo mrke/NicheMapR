@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Ectotherm Model Tutorial}
-  %\VignetteEngine{rmarkdown::render}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -242,8 +242,7 @@ Below is an example for the Eastern Water Skink (default settings for the DEB mo
 # run the microclimate model daily for 5 years
 timeinterval<-365
 nyears<-6
-micro<-micro_global(loc = "Townsville, Queensland", timeinterval = timeinterval, nyears = nyears,
-  runmoist = 1)
+micro<-micro_global(loc = "Townsville, Queensland", timeinterval = timeinterval, nyears = nyears, runmoist = 1)
 
 # run the ectotherm model with the DEB model turned on and in viviparous mode, simulating the
 # Eastern Water Skink, Eulamprus quoyii

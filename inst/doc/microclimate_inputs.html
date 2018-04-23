@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Michael R. Kearney" />
 
-<meta name="date" content="2016-08-03" />
+<meta name="date" content="2018-04-23" />
 
 <title>Microclimate Model Input Data</title>
 
@@ -32,57 +32,69 @@
 
 <h1 class="title toc-ignore">Microclimate Model Input Data</h1>
 <h4 class="author"><em>Michael R. Kearney</em></h4>
-<h4 class="date"><em>2016-08-03</em></h4>
+<h4 class="date"><em>2018-04-23</em></h4>
 
 
 
 <div id="model-mode-settings" class="section level2">
 <h2>Model mode settings</h2>
 <table>
+<colgroup>
+<col width="33%"></col>
+<col width="23%"></col>
+<col width="23%"></col>
+<col width="19%"></col>
+</colgroup>
 <thead>
 <tr class="header">
-<th align="left"><em>Name</em></th>
-<th align="left"><em>Units </em></th>
-<th align="left"><em>Allowed Range</em></th>
-<th align="left"><em>Description</em></th>
+<th><em>Name</em></th>
+<th><em>Units </em></th>
+<th><em>Allowed Range</em></th>
+<th><em>Description</em></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">writecsv</td>
-<td align="left">-</td>
-<td align="left">0 (off) or 1 (on)</td>
-<td align="left">make Fortran program write output as csv files</td>
+<td>writecsv</td>
+<td>-</td>
+<td>0 (off) or 1 (on)</td>
+<td>make Fortran program write output as csv files</td>
 </tr>
 <tr class="even">
-<td align="left">microdaily</td>
-<td align="left">-</td>
-<td align="left">0 (off) or 1 (on)</td>
-<td align="left">run in daily mode (initial conditions from previous day)</td>
+<td>microdaily</td>
+<td>-</td>
+<td>0 (off) or 1 (on)</td>
+<td>run in daily mode (initial conditions from previous day)</td>
 </tr>
 <tr class="odd">
-<td align="left">runshade</td>
-<td align="left">-</td>
-<td align="left">0 (off) or 1 (on)</td>
-<td align="left">run the model twice, once for each shade level</td>
+<td>runshade</td>
+<td>-</td>
+<td>0 (off) or 1 (on)</td>
+<td>run the model twice, once for each shade level</td>
 </tr>
 <tr class="even">
-<td align="left">runmoist</td>
-<td align="left">-</td>
-<td align="left">0 (off) or 1 (on)</td>
-<td align="left">run soil moisture model</td>
+<td>runmoist</td>
+<td>-</td>
+<td>0 (off) or 1 (on)</td>
+<td>run soil moisture model</td>
 </tr>
 <tr class="odd">
-<td align="left">snowmodel</td>
-<td align="left">-</td>
-<td align="left">0 (off) or 1 (on)</td>
-<td align="left">run the snow model</td>
+<td>snowmodel</td>
+<td>-</td>
+<td>0 (off) or 1 (on)</td>
+<td>run the snow model</td>
 </tr>
 <tr class="even">
-<td align="left">hourly</td>
-<td align="left">-</td>
-<td align="left">0 (off) or 1 (on)</td>
-<td align="left">run the model from hourly weather inputs</td>
+<td>hourly</td>
+<td>-</td>
+<td>0 (off) or 1 (on)</td>
+<td>run the model from hourly weather inputs</td>
+</tr>
+<tr class="odd">
+<td>IR</td>
+<td>-</td>
+<td>0 or 1</td>
+<td>longwave radiation algorithm</td>
 </tr>
 </tbody>
 </table>
@@ -92,78 +104,78 @@
 <table>
 <thead>
 <tr class="header">
-<th align="left"><em>Name</em></th>
-<th align="left"><em>Units </em></th>
-<th align="left"><em>Allowed Range</em></th>
-<th align="left"><em>Description</em></th>
+<th><em>Name</em></th>
+<th><em>Units </em></th>
+<th><em>Allowed Range</em></th>
+<th><em>Description</em></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">julnum</td>
-<td align="left">days</td>
-<td align="left">positive integer</td>
-<td align="left">number of days to run the model</td>
+<td>doynum</td>
+<td>days</td>
+<td>positive integer</td>
+<td>number of days to run the model</td>
 </tr>
 <tr class="even">
-<td align="left">julday</td>
-<td align="left">day of year</td>
-<td align="left">1-365</td>
-<td align="left">vector of julian days (length must equal julnum)</td>
+<td>doy</td>
+<td>day-of-year</td>
+<td>1-365</td>
+<td>vector of days of year (length must equal doynum)</td>
 </tr>
 <tr class="odd">
-<td align="left">idayst</td>
-<td align="left">-</td>
-<td align="left">1-julnum</td>
-<td align="left">start day (usually 1)</td>
+<td>idayst</td>
+<td>-</td>
+<td>1-doynum</td>
+<td>start day (usually 1)</td>
 </tr>
 <tr class="even">
-<td align="left">ida</td>
-<td align="left">-</td>
-<td align="left">1-julnum</td>
-<td align="left">end day (usually value of julnum)</td>
+<td>ida</td>
+<td>-</td>
+<td>1-doynum</td>
+<td>end day (usually value of doynum)</td>
 </tr>
 <tr class="odd">
-<td align="left">HEMIS</td>
-<td align="left">-</td>
-<td align="left">1 (N) or 2 (S)</td>
-<td align="left">hemisphere to run</td>
+<td>HEMIS</td>
+<td>-</td>
+<td>1 (N) or 2 (S)</td>
+<td>hemisphere to run</td>
 </tr>
 <tr class="even">
-<td align="left">ALAT</td>
-<td align="left">degrees</td>
-<td align="left">0-90</td>
-<td align="left">latitude (degrees)</td>
+<td>ALAT</td>
+<td>degrees</td>
+<td>0-90</td>
+<td>latitude (degrees)</td>
 </tr>
 <tr class="odd">
-<td align="left">AMINUT</td>
-<td align="left">dec. minutes</td>
-<td align="left">0-60</td>
-<td align="left">latitude (minutes)</td>
+<td>AMINUT</td>
+<td>dec. minutes</td>
+<td>0-60</td>
+<td>latitude (minutes)</td>
 </tr>
 <tr class="even">
-<td align="left">ALONG</td>
-<td align="left">degrees</td>
-<td align="left">0-180</td>
-<td align="left">longitude (degrees)</td>
+<td>ALONG</td>
+<td>degrees</td>
+<td>0-180</td>
+<td>longitude (degrees)</td>
 </tr>
 <tr class="odd">
-<td align="left">ALMINT</td>
-<td align="left">dec. minutes</td>
-<td align="left">0-60</td>
-<td align="left">longitude (minutes)</td>
+<td>ALMINT</td>
+<td>dec. minutes</td>
+<td>0-60</td>
+<td>longitude (minutes)</td>
 </tr>
 <tr class="even">
-<td align="left">ALREF</td>
-<td align="left">degrees</td>
-<td align="left">0-180</td>
-<td align="left">reference longitude (degrees) for time zone</td>
+<td>ALREF</td>
+<td>degrees</td>
+<td>0-180</td>
+<td>reference longitude (degrees) for time zone</td>
 </tr>
 <tr class="odd">
-<td align="left">EC</td>
-<td align="left">-</td>
-<td align="left">0.0034 to 0.058</td>
-<td align="left">eccenricity of the earth’s orbit (presently 0.0167238)</td>
+<td>EC</td>
+<td>-</td>
+<td>0.0034 to 0.058</td>
+<td>eccenricity of the earth’s orbit (presently 0.0167238)</td>
 </tr>
 </tbody>
 </table>
@@ -171,56 +183,62 @@
 <div id="air-and-wind-vertical-profile-parameters" class="section level2">
 <h2>Air and wind vertical profile parameters</h2>
 <table>
+<colgroup>
+<col width="33%"></col>
+<col width="23%"></col>
+<col width="23%"></col>
+<col width="19%"></col>
+</colgroup>
 <thead>
 <tr class="header">
-<th align="left"><em>Name</em></th>
-<th align="left"><em>Units </em></th>
-<th align="left"><em>Allowed Range</em></th>
-<th align="left"><em>Description</em></th>
+<th><em>Name</em></th>
+<th><em>Units </em></th>
+<th><em>Allowed Range</em></th>
+<th><em>Description</em></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">RUF</td>
-<td align="left">m</td>
-<td align="left">0.01-200</td>
-<td align="left">roughness height</td>
+<td>RUF</td>
+<td>m</td>
+<td>0.01-200</td>
+<td>roughness height</td>
 </tr>
 <tr class="even">
-<td align="left">Refhyt</td>
-<td align="left">m</td>
-<td align="left">0.50-10</td>
-<td align="left">reference height for air temp, wind speed and humidity input data</td>
+<td>Refhyt</td>
+<td>m</td>
+<td>0.50-10</td>
+<td>reference height for air temp, wind speed and humidity input data</td>
 </tr>
 <tr class="odd">
-<td align="left">Usrhyt</td>
-<td align="left">m</td>
-<td align="left">&gt; 0.005, &lt; Refhyt</td>
-<td align="left">local height at which to compute air temp, wind speed and humidity</td>
+<td>Usrhyt</td>
+<td>m</td>
+<td>&gt; 0.005, &lt; Refhyt</td>
+<td>local height at which to compute air temp, wind speed and humidity</td>
 </tr>
 <tr class="even">
-<td align="left">Z01</td>
-<td align="left">m</td>
-<td align="left">0 or (&gt; Z02, &lt; ZH2)</td>
-<td align="left">1st segment, roughness height<span class="math inline">\(^1\)</span></td>
+<td>Z01</td>
+<td>m</td>
+<td>0 or (&gt; Z02, &lt; ZH2)</td>
+<td>1st segment, roughness height<span class="math inline">\(^1\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">Z02</td>
-<td align="left">m</td>
-<td align="left">0 or (&gt; RUF, &lt; Z01)</td>
-<td align="left">2nd segment, roughness height<span class="math inline">\(^1\)</span></td>
+<td>Z02</td>
+<td>m</td>
+<td>0 or (&gt; RUF, &lt; Z01)</td>
+<td>2nd segment, roughness height<span class="math inline">\(^1\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">ZH1</td>
-<td align="left">m</td>
-<td align="left">0 or (&gt; ZH2, &lt; Refhyt)</td>
-<td align="left">1st segment, height above surface<span class="math inline">\(^1\)</span></td>
+<td>ZH1</td>
+<td>m</td>
+<td>0 or (&gt; ZH2, &lt; Refhyt)</td>
+<td>1st segment, height above surface<span class="math inline">\(^1\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">ZH2</td>
-<td align="left">m</td>
-<td align="left">0 or (&gt; RUF, &lt; ZH1)</td>
-<td align="left">2nd segment, height above surface<span class="math inline">\(^1\)</span></td>
+<td>ZH2</td>
+<td>m</td>
+<td>0 or (&gt; RUF, &lt; ZH1)</td>
+<td>2nd segment, height above surface<span class="math inline">\(^1\)</span></td>
 </tr>
 </tbody>
 </table>
@@ -231,107 +249,120 @@
 <table>
 <thead>
 <tr class="header">
-<th align="left"><em>Name</em></th>
-<th align="left"><em>Units </em></th>
-<th align="left"><em>Allowed Range</em></th>
-<th align="left"><em>Description</em></th>
+<th><em>Name</em></th>
+<th><em>Units </em></th>
+<th><em>Allowed Range</em></th>
+<th><em>Description</em></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">SLES</td>
-<td align="left">-</td>
-<td align="left">0-1</td>
-<td align="left">substrate longwave IR emissivity<span class="math inline">\(^1\)</span></td>
+<td>SLES</td>
+<td>-</td>
+<td>0-1</td>
+<td>substrate longwave IR emissivity<span class="math inline">\(^1\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">REFLS</td>
-<td align="left">-</td>
-<td align="left">0-1</td>
-<td align="left">substrate solar reflectivity<span class="math inline">\(^1\)</span></td>
+<td>REFLS</td>
+<td>-</td>
+<td>0-1</td>
+<td>substrate solar reflectivity<span class="math inline">\(^1\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">CMH2O</td>
-<td align="left">cm</td>
-<td align="left">0.1-2</td>
-<td align="left">precipitable cm H<span class="math inline">\(_2\)</span>O in air column</td>
+<td>CMH2O</td>
+<td>cm</td>
+<td>0.1-2</td>
+<td>precipitable cm H<span class="math inline">\(_2\)</span>O in air column</td>
 </tr>
 <tr class="even">
-<td align="left">TAI</td>
-<td align="left">-</td>
-<td align="left">1-julnum</td>
-<td align="left">aerosol optical extinction coefficients<span class="math inline">\(^{1,2}\)</span></td>
+<td>TAI</td>
+<td>-</td>
+<td>1-doynum</td>
+<td>aerosol optical extinction coefficients<span class="math inline">\(^{1,2}\)</span></td>
+</tr>
+<tr class="odd">
+<td>lamb</td>
+<td>-</td>
+<td>0-1</td>
+<td>flag to eturn wavelength-specific solar radiation output</td>
+</tr>
+<tr class="even">
+<td>IUV</td>
+<td>-</td>
+<td>0-1</td>
+<td>flag to use gamma function for scattered solar radiation<span class="math inline">\(^{3}\)</span></td>
 </tr>
 </tbody>
 </table>
-<p><span class="math inline">\(^{1}\)</span>Vector of length = julnum</p>
+<p><span class="math inline">\(^{1}\)</span>Vector of length = doynum</p>
 <p><span class="math inline">\(^{2}\)</span>Vector of length 111 for wavelengths between 290 and 4000 nm. Wavelenghth increments are: 290,295,300,305,310,315,320,330,340,350,360,370,380,390,400,420,440,460,480,500, 520,540,560,580,600,620,640,660,680,700,720,740,760,780,800,820,840,860,880,900, 920,940,960,980,1000,1020,1080,1100,1120,1140,1160,1180,1200,1220,1240,1260,1280, 1300,1320,1380,1400,1420,1440,1460,1480,1500,1540,1580,1600,1620,1640,1660,1700, 1720,1780,1800,1860,1900,1950,2000,2020,2050,2100,2120,2150,2200,2260,2300,2320, 2350,2380,2400,2420,2450,2490,2500,2600,2700,2800,2900,3000,3100,3200,3300,3400, 3500,3600,3700,3800,3900,4000</p>
+<p><span class="math inline">\(^{3}\)</span>Computationally intensive</p>
 </div>
 <div id="terrain-and-shading-parameters" class="section level2">
 <h2>Terrain and shading parameters</h2>
 <table>
 <thead>
 <tr class="header">
-<th align="left"><em>Name</em></th>
-<th align="left"><em>Units </em></th>
-<th align="left"><em>Allowed Range</em></th>
-<th align="left"><em>Description</em></th>
+<th><em>Name</em></th>
+<th><em>Units </em></th>
+<th><em>Allowed Range</em></th>
+<th><em>Description</em></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">ALTT</td>
-<td align="left">m</td>
-<td align="left">0-10,000</td>
-<td align="left">altitude</td>
+<td>ALTT</td>
+<td>m</td>
+<td>0-10,000</td>
+<td>altitude</td>
 </tr>
 <tr class="even">
-<td align="left">slope</td>
-<td align="left">decimal degrees</td>
-<td align="left">0-90</td>
-<td align="left">slope</td>
+<td>slope</td>
+<td>decimal degrees</td>
+<td>0-90</td>
+<td>slope</td>
 </tr>
 <tr class="odd">
-<td align="left">azmuth</td>
-<td align="left">decimal degrees</td>
-<td align="left">0-360</td>
-<td align="left">aspect (0 is north)</td>
+<td>azmuth</td>
+<td>decimal degrees</td>
+<td>0-360</td>
+<td>aspect (0 is north)</td>
 </tr>
 <tr class="even">
-<td align="left">hori</td>
-<td align="left">decimal degrees</td>
-<td align="left">0-90</td>
-<td align="left">horizon angles<span class="math inline">\(^1\)</span></td>
+<td>hori</td>
+<td>decimal degrees</td>
+<td>0-90</td>
+<td>horizon angles<span class="math inline">\(^1\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">VIEWF</td>
-<td align="left">-</td>
-<td align="left">0-1</td>
-<td align="left">view factor to sky<span class="math inline">\(^2\)</span></td>
+<td>VIEWF</td>
+<td>-</td>
+<td>0-1</td>
+<td>view factor to sky<span class="math inline">\(^2\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">MINSHADES</td>
-<td align="left">%</td>
-<td align="left">0-100</td>
-<td align="left">minimum shade<span class="math inline">\(^3\)</span></td>
+<td>MINSHADES</td>
+<td>%</td>
+<td>0-100</td>
+<td>minimum shade<span class="math inline">\(^3\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">MAXSHADES</td>
-<td align="left">%</td>
-<td align="left">0-100</td>
-<td align="left">maximum shade<span class="math inline">\(^{3,4}\)</span></td>
+<td>MAXSHADES</td>
+<td>%</td>
+<td>0-100</td>
+<td>maximum shade<span class="math inline">\(^{3,4}\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">PCTWETS</td>
-<td align="left">%</td>
-<td align="left">0-100</td>
-<td align="left">percentage of substrate unit area that is wet<span class="math inline">\(^{3,5}\)</span></td>
+<td>PCTWETS</td>
+<td>%</td>
+<td>0-100</td>
+<td>percentage of substrate unit area that is wet<span class="math inline">\(^{3,5}\)</span></td>
 </tr>
 </tbody>
 </table>
 <p><span class="math inline">\(^{1}\)</span>angle to the effective horizon, due to e.g. hills, buildings, in 24 directions from 0 degrees azimuth (north) clockwise in 15 degree intervals</p>
 <p><span class="math inline">\(^{2}\)</span>Fraction of sky obscured by terrain</p>
-<p><span class="math inline">\(^{3}\)</span>vector of length = julnum</p>
+<p><span class="math inline">\(^{3}\)</span>vector of length = doynum</p>
 <p><span class="math inline">\(^{4}\)</span>must be greater than minimum shade</p>
 <p><span class="math inline">\(^{5}\)</span>drives evaporation - set internally when runmoist==1</p>
 </div>
@@ -340,36 +371,36 @@
 <table>
 <thead>
 <tr class="header">
-<th align="left"><em>Name</em></th>
-<th align="left"><em>Units </em></th>
-<th align="left"><em>Allowed Range</em></th>
-<th align="left"><em>Description</em></th>
+<th><em>Name</em></th>
+<th><em>Units </em></th>
+<th><em>Allowed Range</em></th>
+<th><em>Description</em></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">DEP</td>
-<td align="left">cm</td>
-<td align="left">0-1000</td>
-<td align="left">vector of 10 depths<span class="math inline">\(^1\)</span></td>
+<td>DEP</td>
+<td>cm</td>
+<td>0-1000</td>
+<td>vector of 10 depths<span class="math inline">\(^1\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">ERR</td>
-<td align="left">-</td>
-<td align="left">&gt;0</td>
-<td align="left">integrator error (typically 1.5-2)</td>
+<td>ERR</td>
+<td>-</td>
+<td>&gt;0</td>
+<td>integrator error (typically 1.5-2)</td>
 </tr>
 <tr class="odd">
-<td align="left">tannul</td>
-<td align="left">°C</td>
-<td align="left">-80 - +60</td>
-<td align="left">annual mean temperature</td>
+<td>tannul</td>
+<td>°C</td>
+<td>-80 - +60</td>
+<td>annual mean temperature</td>
 </tr>
 <tr class="even">
-<td align="left">soilinit</td>
-<td align="left">°C</td>
-<td align="left">-80 - +60</td>
-<td align="left">initial substrate temperature profile<span class="math inline">\(^1\)</span></td>
+<td>soilinit</td>
+<td>°C</td>
+<td>-80 - +60</td>
+<td>initial substrate temperature profile<span class="math inline">\(^1\)</span></td>
 </tr>
 </tbody>
 </table>
@@ -379,269 +410,335 @@
 <div id="time-varying-environmental-data" class="section level2">
 <h2>Time varying environmental data</h2>
 <table>
+<colgroup>
+<col width="33%"></col>
+<col width="23%"></col>
+<col width="23%"></col>
+<col width="19%"></col>
+</colgroup>
 <thead>
 <tr class="header">
-<th align="left"><em>Name</em></th>
-<th align="left"><em>Units </em></th>
-<th align="left"><em>Allowed Range</em></th>
-<th align="left"><em>Description</em></th>
+<th><em>Name</em></th>
+<th><em>Units </em></th>
+<th><em>Allowed Range</em></th>
+<th><em>Description</em></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">TIMINS</td>
-<td align="left">h</td>
-<td align="left">0-23</td>
-<td align="left">time of minima for air temp, wind, humidity and cloud cover<span class="math inline">\(^1\)</span></td>
+<td>TIMINS</td>
+<td>h</td>
+<td>0-23</td>
+<td>time of minima for air temp, wind, humidity and cloud cover<span class="math inline">\(^1\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">TIMAXS</td>
-<td align="left">h</td>
-<td align="left">0-23</td>
-<td align="left">time of maxima for air temp, wind, humidity and cloud cover<span class="math inline">\(^2\)</span></td>
+<td>TIMAXS</td>
+<td>h</td>
+<td>0-23</td>
+<td>time of maxima for air temp, wind, humidity and cloud cover<span class="math inline">\(^2\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">TMINN</td>
-<td align="left">°C</td>
-<td align="left">-80 - +60</td>
-<td align="left">minimum air temperature (at reference height, Refhyt)<span class="math inline">\(^3\)</span></td>
+<td>TMINN</td>
+<td>°C</td>
+<td>-80 - +60</td>
+<td>minimum air temperature (at reference height, Refhyt)<span class="math inline">\(^3\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">TMAXX</td>
-<td align="left">°C</td>
-<td align="left">-80 - +60</td>
-<td align="left">maximum air temperature (at reference height, Refhyt)<span class="math inline">\(^3\)</span></td>
+<td>TMAXX</td>
+<td>°C</td>
+<td>-80 - +60</td>
+<td>maximum air temperature (at reference height, Refhyt)<span class="math inline">\(^3\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">RHMINN</td>
-<td align="left">%</td>
-<td align="left">0-100</td>
-<td align="left">minimum relative humidity (at reference height, Refhyt)<span class="math inline">\(^3\)</span></td>
+<td>RHMINN</td>
+<td>%</td>
+<td>0-100</td>
+<td>minimum relative humidity (at reference height, Refhyt)<span class="math inline">\(^3\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">RHMAXX</td>
-<td align="left">%</td>
-<td align="left">0-100</td>
-<td align="left">maximum relative humidity (at reference height, Refhyt)<span class="math inline">\(^3\)</span></td>
+<td>RHMAXX</td>
+<td>%</td>
+<td>0-100</td>
+<td>maximum relative humidity (at reference height, Refhyt)<span class="math inline">\(^3\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">WNMINN</td>
-<td align="left">m s<span class="math inline">\(^{-1}\)</span></td>
-<td align="left">0-100</td>
-<td align="left">minimum wind speed (at reference height, Refhyt)<span class="math inline">\(^3\)</span></td>
+<td>WNMINN</td>
+<td>m s<span class="math inline">\(^{-1}\)</span></td>
+<td>0-100</td>
+<td>minimum wind speed (at reference height, Refhyt)<span class="math inline">\(^3\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">WNMAXX</td>
-<td align="left">m s<span class="math inline">\(^{-1}\)</span></td>
-<td align="left">0-100</td>
-<td align="left">maximum wind speed (at reference height, Refhyt)<span class="math inline">\(^3\)</span></td>
+<td>WNMAXX</td>
+<td>m s<span class="math inline">\(^{-1}\)</span></td>
+<td>0-100</td>
+<td>maximum wind speed (at reference height, Refhyt)<span class="math inline">\(^3\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">CCMINN</td>
-<td align="left">%</td>
-<td align="left">0-100</td>
-<td align="left">minimum cloud cover; vector of length = julnum</td>
+<td>CCMINN</td>
+<td>%</td>
+<td>0-100</td>
+<td>minimum cloud cover; vector of length = doynum</td>
 </tr>
 <tr class="even">
-<td align="left">CCMAXX</td>
-<td align="left">%</td>
-<td align="left">0-100</td>
-<td align="left">maximum cloud cover; vector of length = julnum</td>
+<td>CCMAXX</td>
+<td>%</td>
+<td>0-100</td>
+<td>maximum cloud cover; vector of length = doynum</td>
 </tr>
 <tr class="odd">
-<td align="left">RAINFALL</td>
-<td align="left">mm</td>
-<td align="left">0-2000</td>
-<td align="left">daily total rainfall; vector of length = julnum</td>
+<td>RAINFALL</td>
+<td>mm</td>
+<td>0-2000</td>
+<td>daily total rainfall; vector of length = doynum</td>
 </tr>
 <tr class="even">
-<td align="left">tannulrun</td>
-<td align="left">°C</td>
-<td align="left">-80 - +60</td>
-<td align="left">daily deep soil temperature; vector of length = julnum</td>
+<td>tannulrun</td>
+<td>°C</td>
+<td>-80 - +60</td>
+<td>daily deep soil temperature; vector of length = doynum</td>
 </tr>
 <tr class="odd">
-<td align="left">moists</td>
-<td align="left">decimal %</td>
-<td align="left">0-1</td>
-<td align="left">predefined soil daily moisture profile through time<span class="math inline">\(^4\)</span></td>
+<td>moists</td>
+<td>decimal %</td>
+<td>0-1</td>
+<td>predefined soil daily moisture profile through time<span class="math inline">\(^4\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">TAIRhr</td>
-<td align="left">°C</td>
-<td align="left">-80 - +60</td>
-<td align="left">hourly air temperature (at reference height, Refhyt)<span class="math inline">\(^5\)</span></td>
+<td>TAIRhr</td>
+<td>°C</td>
+<td>-80 - +60</td>
+<td>hourly air temperature (at reference height, Refhyt)<span class="math inline">\(^5\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">RHhr</td>
-<td align="left">%</td>
-<td align="left">0-100</td>
-<td align="left">hourly relative humidity (at reference height, Refhyt)<span class="math inline">\(^5\)</span></td>
+<td>RHhr</td>
+<td>%</td>
+<td>0-100</td>
+<td>hourly relative humidity (at reference height, Refhyt)<span class="math inline">\(^5\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">WNhr</td>
-<td align="left">m s<span class="math inline">\(^{-1}\)</span></td>
-<td align="left">0-100</td>
-<td align="left">hourly wind speed (at reference height, Refhyt)<span class="math inline">\(^5\)</span></td>
+<td>WNhr</td>
+<td>m s<span class="math inline">\(^{-1}\)</span></td>
+<td>0-100</td>
+<td>hourly wind speed (at reference height, Refhyt)<span class="math inline">\(^5\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">CLDhr</td>
-<td align="left">%</td>
-<td align="left">0-100</td>
-<td align="left">hourly cloud cover<span class="math inline">\(^5\)</span></td>
+<td>CLDhr</td>
+<td>%</td>
+<td>0-100</td>
+<td>hourly cloud cover<span class="math inline">\(^5\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">SOLRhr</td>
-<td align="left">W m<span class="math inline">\(^{2}\)</span></td>
-<td align="left">0-1367</td>
-<td align="left">hourly solar radiation<span class="math inline">\(^5\)</span></td>
+<td>SOLRhr</td>
+<td>W m<span class="math inline">\(^{2}\)</span></td>
+<td>0-1367</td>
+<td>hourly solar radiation<span class="math inline">\(^5\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">RAINhr</td>
-<td align="left">mm</td>
-<td align="left">0-2000</td>
-<td align="left">hourly rainfall<span class="math inline">\(^5\)</span></td>
+<td>RAINhr</td>
+<td>mm</td>
+<td>0-2000</td>
+<td>hourly rainfall<span class="math inline">\(^5\)</span></td>
 </tr>
 </tbody>
 </table>
 <p><span class="math inline">\(^{1}\)</span>Vector of 4 integers, air temp &amp; wind mins relative to sunrise, humidity and cloud cover mins relative to solar noon - typical TIMINS vector c(0, 0, 1, 1).</p>
 <p><span class="math inline">\(^{2}\)</span>Vector of 4 integers, air temp &amp; wind maxs relative to solar noon, humidity and cloud cover maxs relative to sunrise - typical TIMAXS vector c(1, 1, 0, 0).</p>
-<p><span class="math inline">\(^{3}\)</span>Vector of length = julnum.</p>
-<p><span class="math inline">\(^{4}\)</span>Matrix of 10 rows (depths) and julnum columns. The first column is used to specify the initial soil moisture when running the soil moisture model.</p>
-<p><span class="math inline">\(^{5}\)</span>Vector of length = julnum*24.</p>
+<p><span class="math inline">\(^{3}\)</span>Vector of length = doynum.</p>
+<p><span class="math inline">\(^{4}\)</span>Matrix of 10 rows (depths) and doynum columns. The first column is used to specify the initial soil moisture when running the soil moisture model.</p>
+<p><span class="math inline">\(^{5}\)</span>Vector of length = doynum*24.</p>
 </div>
 <div id="substrate-properties" class="section level2">
 <h2>Substrate properties</h2>
 <table>
+<colgroup>
+<col width="32%"></col>
+<col width="25%"></col>
+<col width="23%"></col>
+<col width="18%"></col>
+</colgroup>
 <thead>
 <tr class="header">
-<th align="left"><em>Name</em></th>
-<th align="left"><em>Units </em></th>
-<th align="left"><em>Allowed Range</em></th>
-<th align="left"><em>Description</em></th>
+<th><em>Name</em></th>
+<th><em>Units </em></th>
+<th><em>Allowed Range</em></th>
+<th><em>Description</em></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Numtyps</td>
-<td align="left">-</td>
-<td align="left">1-10</td>
-<td align="left">number of substrate types</td>
+<td>Numtyps</td>
+<td>-</td>
+<td>1-10</td>
+<td>number of substrate types</td>
 </tr>
 <tr class="even">
-<td align="left">Nodes<span class="math inline">\(^{1,2}\)</span></td>
-<td align="left">-</td>
-<td align="left">1-10</td>
-<td align="left">nodes where substrate type transitions occur</td>
+<td>Nodes<span class="math inline">\(^{1,2}\)</span></td>
+<td>-</td>
+<td>1-10</td>
+<td>nodes where substrate type transitions occur</td>
 </tr>
 <tr class="odd">
-<td align="left">soilprops[,1]<span class="math inline">\(^{3}\)</span></td>
-<td align="left">Mg m<span class="math inline">\(^{-3}\)</span></td>
-<td align="left">&gt;0</td>
-<td align="left">bulk density (must not exceed mineral density)</td>
+<td>soilprops[,1]<span class="math inline">\(^{3}\)</span></td>
+<td>Mg m<span class="math inline">\(^{-3}\)</span></td>
+<td>&gt;0</td>
+<td>bulk density (must not exceed mineral density)</td>
 </tr>
 <tr class="even">
-<td align="left">soilprops[,2]<span class="math inline">\(^{3}\)</span></td>
-<td align="left">m<span class="math inline">\(^{3}\)</span> m<span class="math inline">\(^{-3}\)</span></td>
-<td align="left">&gt;0</td>
-<td align="left">volumetric water content at saturation<span class="math inline">\(^{4}\)</span></td>
+<td>soilprops[,2]<span class="math inline">\(^{3}\)</span></td>
+<td>m<span class="math inline">\(^{3}\)</span> m<span class="math inline">\(^{-3}\)</span></td>
+<td>&gt;0</td>
+<td>volumetric water content at saturation<span class="math inline">\(^{4}\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">soilprops[,3]<span class="math inline">\(^{3}\)</span></td>
-<td align="left">%</td>
-<td align="left">0-100</td>
-<td align="left">clay content</td>
+<td>soilprops[,3]<span class="math inline">\(^{3}\)</span></td>
+<td>%</td>
+<td>0-100</td>
+<td>clay content</td>
 </tr>
 <tr class="even">
-<td align="left">soilprops[,4]<span class="math inline">\(^{3}\)</span></td>
-<td align="left">W m<span class="math inline">\(^{-1}\)</span> K<span class="math inline">\(^{-1}\)</span></td>
-<td align="left">&gt;0</td>
-<td align="left">thermal conductivity</td>
+<td>soilprops[,4]<span class="math inline">\(^{3}\)</span></td>
+<td>W m<span class="math inline">\(^{-1}\)</span> K<span class="math inline">\(^{-1}\)</span></td>
+<td>&gt;0</td>
+<td>thermal conductivity</td>
 </tr>
 <tr class="odd">
-<td align="left">soilprops[,5]<span class="math inline">\(^{3}\)</span></td>
-<td align="left">J kg<span class="math inline">\(^{-1}\)</span> K<span class="math inline">\(^{-1}\)</span></td>
-<td align="left">&gt;0</td>
-<td align="left">specific heat capacity</td>
+<td>soilprops[,5]<span class="math inline">\(^{3}\)</span></td>
+<td>J kg<span class="math inline">\(^{-1}\)</span> K<span class="math inline">\(^{-1}\)</span></td>
+<td>&gt;0</td>
+<td>specific heat capacity</td>
 </tr>
 <tr class="even">
-<td align="left">soilprops[,6]<span class="math inline">\(^{3}\)</span></td>
-<td align="left">Mg m<span class="math inline">\(^{-3}\)</span></td>
-<td align="left">&gt;0</td>
-<td align="left">mineral density</td>
+<td>soilprops[,6]<span class="math inline">\(^{3}\)</span></td>
+<td>Mg m<span class="math inline">\(^{-3}\)</span></td>
+<td>&gt;0</td>
+<td>mineral density</td>
 </tr>
 </tbody>
 </table>
-<p><span class="math inline">\(^{1}\)</span>Matrix of 10 rows (depths) and julnum columns</p>
+<p><span class="math inline">\(^{1}\)</span>Matrix of 10 rows (depths) and doynum columns</p>
 <p><span class="math inline">\(^{2}\)</span>The number of nodes specified should correspond with the variable numtypes, and in turn with the number of substrate types specified in soilprops in the soil props matrix. E.g. for a uniform profile, the first row of Nodes would be 10 (deepest soil node - the subsequent nodes all being left as 0), Numtyps would be 1, and only one and only the first row of soilprops would be filled, the rest being zero. At the other extreme, if all nodes were to have a different substrate type, values for a given row of each Nodes column would be 1, 2, …, 10 and a different value would be specified for each row of each soilprops column.</p>
 <p><span class="math inline">\(^{3}\)</span>Matrix of 10 rows (depths) and 6 columns</p>
 <p><span class="math inline">\(^{4}\)</span>at a matric potential of 0.1 bar</p>
 </div>
 <div id="soil-moisture-parameters" class="section level2">
 <h2>Soil moisture parameters</h2>
-<table>
+<table style="width:100%;">
+<colgroup>
+<col width="32%"></col>
+<col width="26%"></col>
+<col width="22%"></col>
+<col width="18%"></col>
+</colgroup>
 <thead>
 <tr class="header">
-<th align="left"><em>Name</em></th>
-<th align="left"><em>Units </em></th>
-<th align="left"><em>Allowed Range</em></th>
-<th align="left"><em>Description</em></th>
+<th><em>Name</em></th>
+<th><em>Units </em></th>
+<th><em>Allowed Range</em></th>
+<th><em>Description</em></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">PE</td>
-<td align="left">J kg<span class="math inline">\(^{-1}\)</span></td>
-<td align="left">0.7-3.7</td>
-<td align="left">air entry water potential; vector of 19 values<span class="math inline">\(^{1}\)</span></td>
+<td>PE</td>
+<td>J kg<span class="math inline">\(^{-1}\)</span></td>
+<td>0.7-3.7</td>
+<td>air entry water potential; vector of 19 values<span class="math inline">\(^{1}\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">KS</td>
-<td align="left">kg s m<span class="math inline">\(^{-3}\)</span></td>
-<td align="left">1 x <span class="math inline">\(10^{-5}\)</span></td>
-<td align="left">saturated conductivity; vector of 19 values<span class="math inline">\(^{1}\)</span></td>
+<td>KS</td>
+<td>kg s m<span class="math inline">\(^{-3}\)</span></td>
+<td>1 x <span class="math inline">\(10^{-5}\)</span></td>
+<td>saturated conductivity; vector of 19 values<span class="math inline">\(^{1}\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">BB</td>
-<td align="left">-</td>
-<td align="left">1.7-7.6</td>
-<td align="left">Campbell’s ‘b’ parameter; vector of 19 values<span class="math inline">\(^{1}\)</span></td>
+<td>BB</td>
+<td>-</td>
+<td>1.7-7.6</td>
+<td>Campbell’s ‘b’ parameter; vector of 19 values<span class="math inline">\(^{1}\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">BD</td>
-<td align="left">Mg m<span class="math inline">\(^{-3}\)</span></td>
-<td align="left">&gt;0</td>
-<td align="left">bulk density (should be matched to same variable in the soilprops matrix)</td>
+<td>BD</td>
+<td>Mg m<span class="math inline">\(^{-3}\)</span></td>
+<td>&gt;0</td>
+<td>bulk density (should be matched to same variable in the soilprops matrix)</td>
 </tr>
 <tr class="odd">
-<td align="left">L</td>
-<td align="left">m<span class="math inline">\(^{3}\)</span> m<span class="math inline">\(^{-3}\)</span></td>
-<td align="left">0-90</td>
-<td align="left">root density; vector of 19 values<span class="math inline">\(^{1}\)</span></td>
+<td>DD</td>
+<td>Mg m<span class="math inline">\(^{-3}\)</span></td>
+<td>&gt;0</td>
+<td>soil mineral density (should be matched to same variable in the soilprops matrix)</td>
 </tr>
 <tr class="even">
-<td align="left">LAI</td>
-<td align="left">-</td>
-<td align="left">0-90</td>
-<td align="left">leaf area index, used to partition traspiration/evaporation from PET</td>
+<td>L</td>
+<td>m<span class="math inline">\(^{3}\)</span> m<span class="math inline">\(^{-3}\)</span></td>
+<td>0-90</td>
+<td>root density; vector of 19 values<span class="math inline">\(^{1}\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">rainmult</td>
-<td align="left">-</td>
-<td align="left">&gt;0</td>
-<td align="left">rainfall multiplier to impose a catchment</td>
+<td>R1</td>
+<td>m</td>
+<td>0-90</td>
+<td>root radius</td>
 </tr>
 <tr class="even">
-<td align="left">maxpool</td>
-<td align="left">mm</td>
-<td align="left">&gt;0</td>
-<td align="left">max depth for surface water pooling<span class="math inline">\(^{2}\)</span></td>
+<td>RW</td>
+<td>m<span class="math inline">\(^{3}\)</span> kg<span class="math inline">\(^{-1}\)</span> s<span class="math inline">\(^{-1}\)</span></td>
+<td>0-90</td>
+<td>resistance per unit length of root</td>
 </tr>
 <tr class="odd">
-<td align="left">evenrain</td>
-<td align="left">-</td>
-<td align="left">1 or 2</td>
-<td align="left">even rainfall over 24hrs (1) or one event at midnight (2)</td>
+<td>RL</td>
+<td>m<span class="math inline">\(^{3}\)</span> kg<span class="math inline">\(^{-1}\)</span> s<span class="math inline">\(^{-1}\)</span></td>
+<td>0-90</td>
+<td>resistance per unit length of leaf</td>
+</tr>
+<tr class="even">
+<td>PC</td>
+<td>J kg<span class="math inline">\(^{-1}\)</span></td>
+<td>0-90</td>
+<td>critical leaf water potential for stomatal closure</td>
+</tr>
+<tr class="odd">
+<td>SP</td>
+<td>-</td>
+<td>&gt;0</td>
+<td>stability parameter for stomatal closure equation</td>
+</tr>
+<tr class="even">
+<td>IM</td>
+<td>kg</td>
+<td>&gt;0</td>
+<td>maximum allowable mass balance error</td>
+</tr>
+<tr class="odd">
+<td>MAXCOUNT</td>
+<td>-</td>
+<td>&gt;0</td>
+<td>maximum iterations for mass balance</td>
+</tr>
+<tr class="even">
+<td>LAI</td>
+<td>-</td>
+<td>0-90</td>
+<td>leaf area index, used to partition traspiration/evaporation from PET</td>
+</tr>
+<tr class="odd">
+<td>rainmult</td>
+<td>-</td>
+<td>&gt;0</td>
+<td>rainfall multiplier to impose a catchment</td>
+</tr>
+<tr class="even">
+<td>maxpool</td>
+<td>mm</td>
+<td>&gt;0</td>
+<td>max depth for surface water pooling<span class="math inline">\(^{2}\)</span></td>
+</tr>
+<tr class="odd">
+<td>evenrain</td>
+<td>-</td>
+<td>1 or 2</td>
+<td>even rainfall over 24hrs (1) or one event at midnight (2)</td>
 </tr>
 </tbody>
 </table>
@@ -651,50 +748,56 @@
 <div id="snow-model-parameters" class="section level2">
 <h2>Snow model parameters</h2>
 <table>
+<colgroup>
+<col width="32%"></col>
+<col width="25%"></col>
+<col width="23%"></col>
+<col width="18%"></col>
+</colgroup>
 <thead>
 <tr class="header">
-<th align="left"><em>Name</em></th>
-<th align="left"><em>Units </em></th>
-<th align="left"><em>Allowed Range</em></th>
-<th align="left"><em>Description</em></th>
+<th><em>Name</em></th>
+<th><em>Units </em></th>
+<th><em>Allowed Range</em></th>
+<th><em>Description</em></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">snowtemp</td>
-<td align="left">°C</td>
-<td align="left">-80 - 80</td>
-<td align="left">temperature at which precipitation falls as snow</td>
+<td>snowtemp</td>
+<td>°C</td>
+<td>-80 - 80</td>
+<td>temperature at which precipitation falls as snow</td>
 </tr>
 <tr class="even">
-<td align="left">snowdens</td>
-<td align="left">Mg m<span class="math inline">\(^{-3}\)</span></td>
-<td align="left">0.05-1</td>
-<td align="left">snow density</td>
+<td>snowdens</td>
+<td>Mg m<span class="math inline">\(^{-3}\)</span></td>
+<td>0.05-1</td>
+<td>snow density</td>
 </tr>
 <tr class="odd">
-<td align="left">densfun</td>
-<td align="left">-</td>
-<td align="left">-</td>
-<td align="left">slope &amp; intercept of linear model of snow density<span class="math inline">\(^{1}\)</span></td>
+<td>densfun</td>
+<td>-</td>
+<td>-</td>
+<td>slope &amp; intercept of linear model of snow density<span class="math inline">\(^{1}\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">snowmelt</td>
-<td align="left">decimal %</td>
-<td align="left">0-1</td>
-<td align="left">proportion of calculated snowmelt that doesn’t refreeze</td>
+<td>snowmelt</td>
+<td>decimal %</td>
+<td>0-1</td>
+<td>proportion of calculated snowmelt that doesn’t refreeze</td>
 </tr>
 <tr class="odd">
-<td align="left">undercatch</td>
-<td align="left">-</td>
-<td align="left">&gt;=1</td>
-<td align="left">undercatch multipier for converting rainfall to snow</td>
+<td>undercatch</td>
+<td>-</td>
+<td>&gt;=1</td>
+<td>undercatch multipier for converting rainfall to snow</td>
 </tr>
 <tr class="even">
-<td align="left">rainmelt</td>
-<td align="left">-</td>
-<td align="left">0-2</td>
-<td align="left">parameter for rain melting snow<span class="math inline">\(^{2}\)</span></td>
+<td>rainmelt</td>
+<td>-</td>
+<td>0-2</td>
+<td>parameter for rain melting snow<span class="math inline">\(^{2}\)</span></td>
 </tr>
 </tbody>
 </table>
@@ -704,32 +807,38 @@
 <div id="intertidal-simulation-parameters-currently-experimental-and-untested" class="section level2">
 <h2>Intertidal simulation parameters (currently experimental and untested)</h2>
 <table>
+<colgroup>
+<col width="32%"></col>
+<col width="25%"></col>
+<col width="23%"></col>
+<col width="18%"></col>
+</colgroup>
 <thead>
 <tr class="header">
-<th align="left"><em>Name</em></th>
-<th align="left"><em>Units </em></th>
-<th align="left"><em>Allowed Range</em></th>
-<th align="left"><em>Description</em></th>
+<th><em>Name</em></th>
+<th><em>Units </em></th>
+<th><em>Allowed Range</em></th>
+<th><em>Description</em></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">tides[1:julnum,1]</td>
-<td align="left">-</td>
-<td align="left">0 or 1</td>
-<td align="left">tide in (1) or out(0); vector of length julnum</td>
+<td>tides[1:doynum,1]</td>
+<td>-</td>
+<td>0 or 1</td>
+<td>tide in (1) or out(0); vector of length doynum</td>
 </tr>
 <tr class="even">
-<td align="left">tides[1:julnum,2]</td>
-<td align="left">°C</td>
-<td align="left">-80 - 80</td>
-<td align="left">sea water temperature; vector of length julnum</td>
+<td>tides[1:doynum,2]</td>
+<td>°C</td>
+<td>-80 - 80</td>
+<td>sea water temperature; vector of length doynum</td>
 </tr>
 <tr class="odd">
-<td align="left">tides[1:julnum,3]</td>
-<td align="left">-</td>
-<td align="left">-</td>
-<td align="left">% surface wetness from wave splash; vector of length julnum</td>
+<td>tides[1:doynum,3]</td>
+<td>%</td>
+<td>-</td>
+<td>% surface wetness from wave splash; vector of length doynum</td>
 </tr>
 </tbody>
 </table>
@@ -742,7 +851,7 @@
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>
