@@ -28,4 +28,3 @@ SCANsites
 Summary table of Soil Climate Analysis Network (SCAN) sites.
 }
 \keyword{datasets}
-
