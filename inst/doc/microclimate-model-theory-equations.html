@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Michael Kearney &amp; Warren P. Porter" />
 
-<meta name="date" content="2016-08-03" />
+<meta name="date" content="2018-04-23" />
 
 <title>Underlying theory and equations of the NicheMapR microclimate model</title>
 
@@ -32,11 +32,11 @@
 
 <h1 class="title toc-ignore">Underlying theory and equations of the NicheMapR microclimate model</h1>
 <h4 class="author"><em>Michael Kearney &amp; Warren P. Porter</em></h4>
-<h4 class="date"><em>2016-08-03</em></h4>
+<h4 class="date"><em>2018-04-23</em></h4>
 
 
 
-<p></p>
+
 <div id="introduction" class="section level1">
 <h1>1. Introduction</h1>
 <p>This document is Appendix 1 for the NicheMapR microclimate model software note (Kearney and Porter 2016). It provides a detailed explanation of the underlying theory and equations of the microclimate model used in NicheMapR. All of the calcuations described here are coded in Fortran in a set of subroutines and functions depicted in Figure 1. The Fortran code is compiled as a dynamic link library that can be called from R, as described in Kearney and Porter (2016).</p>
@@ -199,7 +199,7 @@ Seasonal, latitudinal and altitudinal correction factors for atmospheric ozone
 <p>The NicheMapR microclimate model now has the capacity for the user to provide daily inputs for soil moisture levels, or they can be calculated from first principles as a function of rainfall, soil type and transpiration. To calculate the soil water budget, Campbell’s (1985) Program 11.1 (henceforth C11.1) has been integrated. It is used for simulating depth-specific soil moisture, water potential and humidity gradients in the presence of vegetation. C11.1 takes the approach of linearising the differential equation for flow in space, and using a Newton-Raphson procedure to solve the non-linear equations through time. The linearisation through space involves representing the soil as a series of capacitors and resistors (see Campbell G. S. 1985 Fig. 8.5). It uses matric potential as the dependent variable (rather than matric flux potential) and hence is most computationally efficient when soil is relatively dry. The model is well described in Campbell (1985) thus only details specific to the integration with the NicheMapR microclimate model and driving data are provided here.</p>
 <p>C11.1 is included as Fortran subroutine INFIL which is called from the hourly output OSUB (Fig. 1), with the soil temperature computed for a given hour being used to drive the soil moisture calculations. In turn, the calculated soil moisture profile was used in the computation of the next hour’s soil temperatures. The INFIL routine is iterated with a 6 minute step size to increase the accuracy of the solutions (shorter step sizes did not substantially alter the predictions). All daily rainfall is assumed to have occurred in the first hour of the day and the depth of water pooling on the surface is kept track of by the subtracting the amount computed by C11.1 to have infiltrated or evaporated, with a maximum possible pool depth set by the user. If at any stage water was pooled on the surface, the first soil node is set to be saturated, which effects infiltration.</p>
 <p>Potential evaporation was computed by simulating evaporation from a completely wet surface using code of the original version of the NicheMapR model. Following Campbell (1985, equation 12.30), this was partitioned among evaporation and transpiration as a function of leaf area index <span class="math inline">\(LAI\)</span> (a user input). The fractional surface wetness for the next hour’s heat budget was set as the ratio of potential to actual evapotranspiration calculated by C11.1.</p>
-<p>The microclimate model uses 10 user-specified nodes for computing the heat budget. C11.1 was modified to insert extra nodes half way between the original 10 nodes, such that a total of 19 nodes were used for soil moisture calculations. The user input variables specific to C11.1 include, for each of these 19 nodes, the Campbell (or Clapp and Hornberger) exponent <span class="math inline">\(B\)</span>, the air entry potential <span class="math inline">\(P_e\)</span> (<span class="math inline">\(J kg^{-1}\)</span>), the hydraulic conductivity <span class="math inline">\(K_s\)</span> (<span class="math inline">\(kg s m^{-3}\)</span>), the bulk density <span class="math inline">\(\rho_{b}\)</span> (kg <span class="math inline">\(m^{-3}\)</span>) and the root density (<span class="math inline">\(m m^{-3}\)</span>) in addition to the leaf area index <span class="math inline">\(LAI\)</span> already mentioned. All other model parameters for C11.1 were fixed at those suggested by Campbell (1985).</p>
+<p>The microclimate model uses 10 user-specified nodes for computing the heat budget. C11.1 was modified to insert extra nodes half way between the original 10 nodes, such that a total of 19 nodes were used for soil moisture calculations. The user input variables specific to C11.1 include, for each of these 19 nodes, the Campbell (or Clapp and Hornberger) exponent <span class="math inline">\(B\)</span>, the air entry potential <span class="math inline">\(P_e\)</span> (<span class="math inline">\(J kg^{-1}\)</span>), the hydraulic conductivity <span class="math inline">\(K_s\)</span> (<span class="math inline">\(kg s m^{-3}\)</span>), the bulk density <span class="math inline">\(\rho_{b}\)</span> (Mg <span class="math inline">\(m^{-3}\)</span>), the soil mineral density <span class="math inline">\(\rho_{s}\)</span> (Mg <span class="math inline">\(m^{-3}\)</span>) and the root density (<span class="math inline">\(m m^{-3}\)</span>) in addition to the leaf area index <span class="math inline">\(LAI\)</span> already mentioned. All other model parameters for C11.1 were fixed at those suggested by Campbell (1985).</p>
 </div>
 <div id="snow" class="section level1">
 <h1>9. Snow</h1>
@@ -240,7 +240,7 @@ Seasonal, latitudinal and altitudinal correction factors for atmospheric ozone
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

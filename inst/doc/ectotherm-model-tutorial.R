@@ -6,16 +6,9 @@ knitr::opts_chunk$set(
 ## ------------------------------------------------------------------------
 library(NicheMapR)
 
-## ---- echo = FALSE-------------------------------------------------------
-#a=getLoadedDLLs()
-#if(is.loaded("microclimate", "MICROCLIMATE", type = "FORTRAN")==TRUE){
-#  dyn.unload(a$MICROCLIMATE[[2]])
-#dyn.unload(a$ECTOTHERM[[2]])
-#}
-
 ## ------------------------------------------------------------------------
 library(NicheMapR)
-micro<-micro_global(loc = "Townsville, Queensland", runmoist=1)
+micro<-micro_global(loc = "Townsville, Queensland", runmoist = 1)
 ecto<-ectotherm()
 
 ## ---- echo=FALSE, results='asis'-----------------------------------------
@@ -62,11 +55,11 @@ forage<-subset(environ,ACT==2)
 bask<-subset(environ,ACT==1)
 night<-subset(metout,ZEN==90)
 day<-subset(metout,ZEN!=90)
-with(night,plot(TIME/60~JULDAY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col=
+with(night,plot(TIME/60~DOY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col=
     'dark blue', main = "Fig. 2 Annual activity window, 90% max shade"))
 # nighttime hours
-with(forage,points((TIME-1)~JULDAY,pch=15,cex=2,col='orange')) # foraging Tbs
-with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
+with(forage,points((TIME-1)~DOY,pch=15,cex=2,col='orange')) # foraging Tbs
+with(bask,points((TIME-1)~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
 
 
 ## ------------------------------------------------------------------------
@@ -105,18 +98,17 @@ forage<-subset(environ,ACT==2)
 bask<-subset(environ,ACT==1)
 night<-subset(metout,ZEN==90)
 day<-subset(metout,ZEN!=90)
-with(night,plot(TIME/60~JULDAY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col=
+with(night,plot(TIME/60~DOY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col=
     'dark blue', main = "Fig. 4 Annual activity window, 50% max shade"))
-with(forage,points((TIME-1)~JULDAY,pch=15,cex=2,col='orange')) # foraging Tbs
-with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
+with(forage,points((TIME-1)~DOY,pch=15,cex=2,col='orange')) # foraging Tbs
+with(bask,points((TIME-1)~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
 
 
 ## ---- fig.width=7, fig.height=5, fig.show = "hold"-----------------------
 # run the microclimate model daily for 5 years
 timeinterval<-365
 nyears<-6
-micro<-micro_global(loc = "Townsville, Queensland", timeinterval = timeinterval, nyears = nyears,
-  runmoist = 1)
+micro<-micro_global(loc = "Townsville, Queensland", timeinterval = timeinterval, nyears = nyears, runmoist = 1)
 
 # run the ectotherm model with the DEB model turned on and in viviparous mode, simulating the
 # Eastern Water Skink, Eulamprus quoyii

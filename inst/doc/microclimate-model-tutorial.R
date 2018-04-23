@@ -19,8 +19,8 @@ knitr::kable(head(micro$soil[,1:12], 2), digits = 2)
 require(lattice,quietly = TRUE)
 soil<-as.data.frame(micro$soil) # get the soil data
 minshade<-micro$minshade # get the value for minimum shade
-with(subset(soil,JULDAY==196 | JULDAY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
-  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(JULDAY),ylim=c(-20,70),xlab = "Time of Day
+with(subset(soil,DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
+  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY),ylim=c(-20,70),xlab = "Time of Day
   (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type =
     "b", main=paste(minshade,"% shade"))})
 
@@ -29,8 +29,8 @@ micro<-micro_global(loc = "Madison, Wisconsin, USA", runshade = 0, minshade = 50
 
 soil<-as.data.frame(micro$soil) # get the soil data
 minshade<-micro$minshade # get the value for minimum shade
-with(subset(soil,JULDAY==196 | JULDAY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
-  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(JULDAY),ylim=c(-20,70),xlab = "Time of Day
+with(subset(soil,DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
+  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY),ylim=c(-20,70),xlab = "Time of Day
   (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type =
     "b", main=paste(minshade,"% shade"))})
 
@@ -40,8 +40,8 @@ micro<-micro_global(loc = "Madison, Wisconsin, USA", runshade = 0, minshade = 0,
 
 soil<-as.data.frame(micro$soil) # get the soil data
 minshade<-micro$minshade # get the value for minimum shade
-with(subset(soil,JULDAY==196 | JULDAY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
-  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(JULDAY),ylim=c(-20,70),xlab = "Time of Day
+with(subset(soil,DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
+  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY),ylim=c(-20,70),xlab = "Time of Day
   (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type =
     "b", main=paste(minshade,"% shade, 45 degree slope, 180 degrees aspect"))})
 
@@ -51,8 +51,8 @@ micro<-micro_global(loc="Madison, Wisconsin, USA", runshade = 0, minshade = 0, h
 
 soil<-as.data.frame(micro$soil) # get the soil data
 minshade<-micro$minshade # get the value for minimum shade
-with(subset(soil,JULDAY==196 | JULDAY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
-  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(JULDAY),ylim=c(-20,70),xlab = "Time of Day
+with(subset(soil,DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
+  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY),ylim=c(-20,70),xlab = "Time of Day
   (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type =
     "b", main=paste(minshade,"% shade, north-south gully"))})
 
@@ -61,8 +61,8 @@ micro<-micro_global(loc="Madison, Wisconsin, USA", runshade = 0, minshade = 0, s
 
 soil<-as.data.frame(micro$soil) # get the soil data
 minshade<-micro$minshade # get the value for minimum shade
-with(subset(soil,JULDAY==196 | JULDAY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
-  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(JULDAY),ylim=c(-20,70),xlab = "Time of Day
+with(subset(soil,DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm
+  + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY),ylim=c(-20,70),xlab = "Time of Day
   (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type =
     "b", main=paste(minshade,"% shade, rock substrate"))})
 
