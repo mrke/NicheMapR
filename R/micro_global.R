@@ -569,7 +569,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     }
 
     if(soilgrids == 1){
-      cat('extracting data from SoilGrids')
+      cat('extracting data from SoilGrids \n')
       require(rjson)
       require(sp)
       require(GSIF)
@@ -604,7 +604,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     }
     load(gcfolder)
 
-    message("extracting climate data", '\n')
+    message('extracting climate data \n')
     global_climate<-raster::brick(paste(folder,"/global_climate.nc",sep=""))
     CLIMATE <- raster::extract(global_climate,x)
     ALTT<-as.numeric(CLIMATE[,1]) # convert from km to m
@@ -636,7 +636,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     if(runmoist==0){
       # extract soil moisture
       soilmoisture<-suppressWarnings(raster::brick(paste(folder,"/soilw.mon.ltm.v2.nc",sep="")))
-      message("extracting soil moisture data", '\n')
+      message("extracting soil moisture data")
       SoilMoist<-raster::extract(soilmoisture,x)/1000 # this is originally in mm/m
     }
     if(is.na(max(SoilMoist, ALTT, CLIMATE))==TRUE){

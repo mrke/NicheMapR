@@ -653,7 +653,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
     }
 
     if(soildata==1){
-      message("extracting soil data", '\n')
+      message("extracting soil data \n")
       if(vlsci==0){
         static_soil<-paste(spatial,"static_soil.nc",sep="")
         emissivities<-paste(spatial,"aus_emissivities.nc",sep="")
@@ -693,7 +693,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
     }else{
       SLES2 <- rep(SLE,timeinterval*nyears)
       if(manualshade==0){
-        message("extracting shade data", '\n')
+        message("extracting shade data \n")
         if(vlsci==0){
           static_soil<-paste(spatial,"static_soil.nc",sep="")
           emissivities<-paste(spatial,"aus_emissivities.nc",sep="")
@@ -786,7 +786,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
     }
 
     if(soilgrids == 1){
-      cat('extracting data from SoilGrids')
+      cat('extracting data from SoilGrids \n')
       require(rjson)
       require(sp)
       require(GSIF)

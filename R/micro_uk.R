@@ -650,7 +650,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       ALTITUDES <- elev
     }
     if(terrain==1){
-      cat("extracting terrain data")
+      cat("extracting terrain data \n")
 
       # now extract terrain data from elevslpasphori.nc
       # get UTM from dec degrees, NZTM
@@ -680,7 +680,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
     }
 
     if(soilgrids == 1){
-      cat('extracting data from SoilGrids')
+      cat('extracting data from SoilGrids \n')
       require(rjson)
       require(sp)
       require(GSIF)
@@ -709,7 +709,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
     delta_elev = UKDEM - ALTITUDES
     adiab_corr_max <- delta_elev * lapse_max
     adiab_corr_min <- delta_elev * lapse_min
-    cat("extracting weather data", "\n")
+    cat("extracting weather data \n")
     yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
     wgs84 = "+init=epsg:4326"
     bng = "+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000\n+ellps=airy +datum=OSGB36 +units=m +no_defs"
