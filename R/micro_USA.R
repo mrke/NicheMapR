@@ -27,6 +27,8 @@
 #' @return shadhumid Hourly predictions of the soil humidity under the maximum specified shade
 #' @return plant Hourly predictions of plant transpiration, leaf water potential and root water potential under the minimum specified shade
 #' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
+#' @return sunsnow Hourly predictions of snow temperature under the minimum specified shade
+#' @return shadsnow Hourly predictions snow temperature under the maximum specified shade
 #' @usage micro_USA(loc = "Madison Wisconsin, USA", timeinterval = 365, ystart = 1990, yfinish = 1990, soiltype = 4,
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
