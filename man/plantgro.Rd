@@ -28,3 +28,4 @@ plantgro(soilpot = soilpot, soilmoist = soilmoist, root_shallow = 4,
 \description{
 Function to compute plant water content given threshold values of soil water potential at which wilting point and permanent wilting point occurs
 }
+

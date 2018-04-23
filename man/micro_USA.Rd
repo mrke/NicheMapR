@@ -65,6 +65,191 @@ shadplant Hourly predictions of plant transpiration, leaf water potential and ro
 \description{
 An implementation of the Niche Mapper microclimate model that uses the University of Idaho Gridded Surface Meteorological Data (UofI METDATA) daily weather database https://www.northwestknowledge.net/metdata/data/, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "PRISM_us_dem_4km_asc.asc".
 }
+\details{
+\itemize{
+\strong{ Parameters controling how the model runs:}\cr\cr
+
+\code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
+\code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
+\code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+\code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
+\code{IR}{ = 0, Clear-sky longwave radiation computed using Campbell and Norman (1998) eq. 10.10 (includes humidity) (0) or Swinbank formula (1)}\cr\cr
+\code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
+\code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
+\code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
+\code{manualshade}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
+\code{soildata}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
+\code{terrain}{ = 0, Use 250m resolution terrain data? 1=yes, 0=no}\cr\cr
+\code{dailywind}{ = 1, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
+\code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
+\code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
+\code{warm}{ = 0, uniform warming, deg C}\cr\cr
+\code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
+\code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
+\code{opendap}{ = 0, query met grids via opendap (does not work on PC)}\cr\cr
+\code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
+\code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
+\code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
+
+\strong{ General additional parameters:}\cr\cr
+\code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
+\code{Refhyt}{ = 1.2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
+\code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
+\code{Z01}{ = 0, Top (1st) segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used)}\cr\cr
+\code{Z02}{ = 0, 2nd segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
+\code{ZH1}{ = 0, Top of (1st) segment, height above surface(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
+\code{ZH2}{ = 0, 2nd segment, height above surface(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
+\code{EC}{ = 0.0167238, Eccenricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)}\cr\cr
+\code{SLE}{ = 0.95, Substrate longwave IR emissivity (decimal \%), typically close to 1}\cr\cr
+\code{Thcond}{ = 2.5, Soil minerals thermal conductivity (W/mK)}\cr\cr
+\code{Density}{ = 2.56, Soil minerals density (Mg/m3)}\cr\cr
+\code{SpecHeat}{ = 870, Soil minerals specific heat (J/kg-K)}\cr\cr
+\code{BulkDensity}{ = 1.3, Soil bulk density (Mg/m3)}\cr\cr
+\code{PCTWET}{ = 0, \% of ground surface area acting as a free water surface}\cr\cr
+\code{rainwet}{ = 1.5, mm of rainfall causing the ground to be 90\% wet for the day}\cr\cr
+\code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
+\code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
+\code{hori}{ = rep(0,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
+\code{lapse_min}{ = 0.0039 Lapse rate for minimum air temperature (degrees C/m)}
+\code{lapse_max}{ = 0.0077 Lapse rate for maximum air temperature (degrees C/m)}
+\code{TIMAXS}{ = c(1.0, 1.0, 0.0, 0.0), Time of Maximums for Air Wind RelHum Cloud (h), air & Wind max's relative to solar noon, humidity and cloud cover max's relative to sunrise}\cr\cr
+\code{TIMINS}{ = c(0, 0, 1, 1), Time of Minimums for Air Wind RelHum Cloud (h), air & Wind min's relative to sunrise, humidity and cloud cover min's relative to solar noon}\cr\cr
+\code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr
+
+\strong{ Soil moisture mode parameters:}
+
+\code{runmoist}{ = 0, Run soil moisture model? 1=yes, 0=no  1=yes, 0=no (note that this may cause slower runs)}\cr\cr
+\code{PE}{ = rep(1.1,19), Air entry potential (J/kg) (19 values descending through soil for specified soil nodes in parameter}
+\code{DEP}
+{ and points half way between)}\cr\cr
+\code{KS}{ = rep(0.0037,19), Saturated conductivity, (kg s/m3) (19 values descending through soil for specified soil nodes in parameter}
+\code{DEP}
+{ and points half way between)}\cr\cr
+\code{BB}{ = rep(4.5,19), Campbell's soil 'b' parameter (-) (19 values descending through soil for specified soil nodes in parameter}
+\code{DEP}
+{ and points half way between)}\cr\cr
+\code{BD}{ = rep(1.3,19), Soil bulk density (Mg/m3)  (19 values descending through soil for specified soil nodes in parameter}
+\code{DEP}
+{ and points half way between)}\cr\cr
+\code{DD}{ = rep(2.56,19), Soil density (Mg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
+\code{DEP}
+{ and points half way between)}\cr\cr
+\code{Clay}{ = 20, Clay content for matric potential calculations (\%)}\cr\cr
+\code{SatWater}{ = rep(0.26,10), # volumetric water content at saturation (0.1 bar matric potential) (m3/m3)}\cr\cr
+\code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
+\code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
+\code{rainoff}{ = 0, Rain offset (mm), used to induce constant extra input}\cr\cr
+\code{evenrain}{ = 0, Spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)}\cr\cr
+\code{SoilMoist_Init}{ = c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3), initial soil water content at each soil node, m3/m3}\cr\cr
+\code{L}{ = c(0,0,8.2,8.0,7.8,7.4,7.1,6.4,5.8,4.8,4.0,1.8,0.9,0.6,0.8,0.4,0.4,0,0)*10000, root density (m/m3), (19 values descending through soil for specified soil nodes in parameter}\cr\cr
+\code{R1}{ = 0.001, root radius, m}\cr\cr
+\code{RW}{ = 2.5e+10, resistance per unit length of root, m3 kg-1 s-1}\cr\cr
+\code{RL}{ = 2e+6, resistance per unit length of leaf, m3 kg-1 s-1}\cr\cr
+\code{PC}{ = -1500, critical leaf water potential for stomatal closure, J kg-1}\cr\cr
+\code{SP}{ = 10, stability parameter for stomatal closure equation, -}\cr\cr
+\code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
+\code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
+\code{DEP}
+{ and points half way between)}\cr\cr
+\code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET}\cr\cr
+
+\strong{ Snow mode parameters:}
+
+\code{snowmodel}{ = 1, run the snow model 1=yes, 0=no (note that this may cause slower runs)}\cr\cr
+\code{snowtemp}{ = 1.5, Temperature (deg C) at which precipitation falls as snow}\cr\cr
+\code{snowdens}{ = 0.375, snow density (Mg/m3), overridden by }
+\code{densfun}\cr\cr
+\code{densfun}{ = c(0,0), slope and intercept of linear model of snow density as a function of day-of-year - if it is c(0,0) then fixed density used}\cr\cr
+\code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
+\code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
+\code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
+\code{rainfrac}{ = 0.5, fraction of rain that falls on the first day of the month (decimal \% with 0 meaning rain falls evenly) - this parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data)}\cr\cr
+
+\strong{ Intertidal mode parameters:}
+
+\code{shore}{ Include tide effects? If 1, the matrix}
+\code{tides}
+{ is used to specify tide presence, sea water temperature and presence of wavesplash}\cr\cr
+\code{tides}{ = matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (deg C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
+}
+
+\strong{Outputs:}
+metout/shadmet variables:
+\itemize{
+\item 1 DOY - day-of-year
+\item 2 TIME - time of day (mins)
+\item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
+\item 4 TAREF - air temperature (deg C) at reference height (specified by 'Refhyt', 1.2m default)
+\item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
+\item 6 RH  - relative humidity (\%) at reference height (specified by 'Refhyt', 1.2m default)
+\item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
+\item 8 VREF - wind speed (m/s) at reference height (specified by 'Refhyt', 1.2m default)
+\item 9 SNOWMELT - snowmelt (mm)
+\item 10 POOLDEP - water pooling on surface (mm)
+\item 11 PCTWET - soil surface wetness (\%)
+\item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
+\item 13 SOLR - solar radiation (W/m2)
+\item 14 TSKYC - sky radiant temperature (deg C)
+\item 15 DEW - dew presence (0 or 1)
+\item 16 FROST - frost presence (0 or 1)
+\item 17 SNOWFALL - snow predicted to have fallen (cm)
+\item 18 SNOWDEP - predicted snow depth (cm)
+}
+soil and shadsoil variables:
+\itemize{
+\item 1 DOY - day-of-year
+\item 2 TIME - time of day (mins)
+\item 3-12 D0cm ... - soil temperature (deg C) at each of the 10 specified depths
+}
+
+if soil moisture model is run i.e. parameter runmoist = 1\cr
+
+soilmoist and shadmoist variables:
+\itemize{
+\item 1 DOY - day-of-year
+\item 2 TIME - time of day (mins)
+\item 3-12 WC0cm ... - soil moisuture (m3/m3) at each of the 10 specified depths
+}
+soilpot and shadpot variables:
+\itemize{
+\item 1 DOY - day-of-year
+\item 2 TIME - time of day (mins)
+\item 3-12 PT0cm ... - soil water potential (J/kg = kpa = bar/100) at each of the 10 specified depths
+}
+humid and shadhumid variables:
+\itemize{
+\item  1 DOY - day-of-year
+\item  2 TIME - time of day (mins)
+\item  3-12 RH0cm ... - soil relative humidity (decimal \%), at each of the 10 specified depths
+}
+plant and shadplant variables:
+\itemize{
+\item  1 DOY - day-of-year
+\item  2 TIME - time of day (mins)
+\item  3 TRANS - plant transpiration rate (kg/m2/s)
+\item  4 LEAFPOT - leaf water potentail (J/kg)
+\item  5-14 RPOT0cm ... - root water potentail (J/kg), at each of the 10 specified depths
+}
+
+if wavelength-specific solar output is selected i.e. parameter lamb = 1\cr
+
+sunsnow and shdsnow variables:
+\itemize{
+\item  1 DOY - day-of-year
+\item  2 TIME - time of day (mins)
+\item  3-10 SN0cm ... - snow temperature (deg C), at the soil surface and each of the potential 8 layers
+}
+
+if snow model is run i.e. parameter lamb = 1\cr
+
+solar output variables
+drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar) variables:
+\itemize{
+\item  1 DOY - day-of-year
+\item  2 TIME - time of day (mins)
+\item  3-113 290, ..., 4000 - irradiance (W/(m2 nm)) at each of 111 wavelengths from 290 to 4000 nm
+}
+}
 \examples{
 library(NicheMapR)
 micro<-micro_USA(runshade = 0, ystart = 2014, yfinish = 2016) # run the model with default location and settings for 2014 to 2016
@@ -127,3 +312,4 @@ for(i in 1:10){
  }
 }
 }
+

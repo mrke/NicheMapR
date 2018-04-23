@@ -22,7 +22,7 @@ tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
 doynum                    | days              | positive integer  | number of days to run the model
-doy                       | day-of-year       | 1-365             | vector of julian days (length must equal doynum)
+doy                       | day-of-year       | 1-365             | vector of days of year (length must equal doynum)
 idayst                    | -                 | 1-doynum          | start day (usually 1)
 ida                       | -                 | 1-doynum          | end day (usually value of doynum)
 HEMIS                     | -                 | 1 (N) or 2 (S)    | hemisphere to run

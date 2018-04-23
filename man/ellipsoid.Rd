@@ -115,3 +115,4 @@ with(endo,{points(Tcore ~ dates,xlab = "Date and Time",lty=2, type = "l")})
 with(endo,{plot(timetodeath ~ dates,xlab = "Date and Time", ylab = "Time to Death (h)"
 , type = "l",main=paste("Time to Death by Desiccation",sep=""), ylim=c(0,24))})
 }
+
