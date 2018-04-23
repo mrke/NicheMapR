@@ -45,4 +45,3 @@ Institution Press. Washington, DC. WETAIR must be used in conjunction with funct
 The user must supply values for the input variables (db, bp and alt).
 If alt is known (-1000 < alt < 20000) but not BP, then set BP=0
 }
-

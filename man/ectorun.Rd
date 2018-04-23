@@ -70,4 +70,3 @@ ectorun(ecto)
 \description{
 R wrapper for Fortran binary of Niche Mapper microclimate model
 }
-

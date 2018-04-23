@@ -41,4 +41,3 @@ shdsnow Hourly predictions of the snow temperature under the maximum specified s
 \description{
 R wrapper for Fortran binary of Niche Mapper microclimate model
 }
-

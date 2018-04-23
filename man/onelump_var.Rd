@@ -150,4 +150,3 @@ for (i in 1:length(juldays)) {
   legend(0,70, c("Tc", "Tcf", "Tair"), lty = c(1, 1, 2), lwd = c(2.5, 2.5, 2.5), col = c("black", "red", "blue"))
 }
 }
-
