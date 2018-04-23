@@ -24,7 +24,7 @@ esat Saturation vapour pressure (Pa)
 
 vd Vapour density (kg m-3)
 
-rw Mixing ration (kg kg-1)
+rw Mixing ratio (kg kg-1)
 
 tvir Virtual temperature (K)
 
@@ -55,4 +55,3 @@ If RH is known but not WB then set WB=0 and DP=999
 (2) Hygrometric data:
 If DP is known then set WB = 0 and RH = 0.
 }
-
