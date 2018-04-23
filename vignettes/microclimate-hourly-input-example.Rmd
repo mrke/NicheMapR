@@ -182,7 +182,7 @@ metout <- as.data.frame(micro$metout)
 tzone <- paste0("Etc/GMT", TZoffset) # doing it this way ignores daylight savings!
 dates <- seq(ISOdate(ystart, 1, 1, tz = tzone)-3600 * 12, ISOdate((ystart+nyears),1, 1, tz = tzone)-3600 * 13, by="hours")
 clear <- as.data.frame(cbind(dates, as.data.frame(rep(micro$metout[1:(365 * 24),13],nyears))),stringsAsFactors = FALSE)
-doy <- rep(seq(1, 365),nyears)[1:floor(nrow(weather)/24)] # julian days to run
+doy <- rep(seq(1, 365),nyears)[1:floor(nrow(weather)/24)] # days of year to run
 clear <- as.data.frame(clear, stringsAsFactors = FALSE)
 colnames(clear)=c("datetime", "sol")
 

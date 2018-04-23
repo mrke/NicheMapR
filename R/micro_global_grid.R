@@ -216,11 +216,11 @@ micro_global_grid <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyear
     }
     ################## time related variables #################################
 
-    juldays12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
-    juldaysn<-juldays12 # variable of juldays for when doing multiple years
+    DOYs12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
+    DOYsn<-DOYs12 # variable of DOYs for when doing multiple years
     if(nyears>1 & timeinterval==365){ # create sequence of days for splining across multiple years
       for(i in 1:(nyears-1)){
-        juldaysn<-c(juldaysn,(juldays12+365*i))
+        DOYsn<-c(DOYsn,(DOYs12+365*i))
       }
     }
 
@@ -230,16 +230,16 @@ micro_global_grid <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyear
       microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
     }
 
-    # now check if doing something other than middle day of each month, and create appropriate vector of julian days
+    # now check if doing something other than middle day of each month, and create appropriate vector of days of year
     daystart<-as.integer(ceiling(365/timeinterval/2))
     if(timeinterval!=12){
-      juldays<-seq(daystart,365,as.integer(floor(365/timeinterval)))
+      DOYs<-seq(daystart,365,as.integer(floor(365/timeinterval)))
     }else{
-      juldays<-juldaysn
+      DOYs<-DOYsn
     }
-    julnum <- timeinterval*nyears # total days to do
-    julday <- subset(juldays, juldays!=0) # final vector of julian days
-    julday<-rep(julday,nyears)
+    DOYnum <- timeinterval*nyears # total days to do
+    DOY <- subset(DOYs, DOYs!=0) # final vector of days of year
+    DOY<-rep(DOY,nyears)
     idayst <- 1 # start day
     ida<-timeinterval*nyears # end day
 
@@ -372,23 +372,23 @@ micro_global_grid <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyear
     WNMAXX<-WNMAXX*(1.2/10)^0.15
 
     if(timeinterval!=12){ # spline from 12 days to chosen time interval
-      TMAXX1 <-suppressWarnings(spline(juldays12,TMAXX,n=timeinterval,xmin=1,xmax=365,method="periodic"))
+      TMAXX1 <-suppressWarnings(spline(DOYs12,TMAXX,n=timeinterval,xmin=1,xmax=365,method="periodic"))
       TMAXX<-rep(TMAXX1$y,nyears)
-      TMINN1 <-suppressWarnings(spline(juldays12,TMINN,n=timeinterval,xmin=1,xmax=365,method="periodic"))
+      TMINN1 <-suppressWarnings(spline(DOYs12,TMINN,n=timeinterval,xmin=1,xmax=365,method="periodic"))
       TMINN <- rep(TMINN1$y,nyears)
-      RHMAXX1 <-suppressWarnings(spline(juldays12,RHMAXX,n=timeinterval,xmin=1,xmax=365,method="periodic"))
+      RHMAXX1 <-suppressWarnings(spline(DOYs12,RHMAXX,n=timeinterval,xmin=1,xmax=365,method="periodic"))
       RHMAXX <- rep(RHMAXX1$y,nyears)
-      RHMINN1 <-suppressWarnings(spline(juldays12,RHMINN,n=timeinterval,xmin=1,xmax=365,method="periodic"))
+      RHMINN1 <-suppressWarnings(spline(DOYs12,RHMINN,n=timeinterval,xmin=1,xmax=365,method="periodic"))
       RHMINN <- rep(RHMINN1$y,nyears)
-      CCMAXX1 <-suppressWarnings(spline(juldays12,CCMAXX,n=timeinterval,xmin=1,xmax=365,method="periodic"))
+      CCMAXX1 <-suppressWarnings(spline(DOYs12,CCMAXX,n=timeinterval,xmin=1,xmax=365,method="periodic"))
       CCMAXX <- rep(CCMAXX1$y,nyears)
       CCMINN <- CCMAXX
-      WNMAXX1 <-suppressWarnings(spline(juldays12,WNMAXX,n=timeinterval,xmin=1,xmax=365,method="periodic"))
+      WNMAXX1 <-suppressWarnings(spline(DOYs12,WNMAXX,n=timeinterval,xmin=1,xmax=365,method="periodic"))
       WNMAXX<-rep(WNMAXX1$y,nyears)
-      WNMINN1 <-suppressWarnings(spline(juldays12,WNMINN,n=timeinterval,xmin=1,xmax=365,method="periodic"))
+      WNMINN1 <-suppressWarnings(spline(DOYs12,WNMINN,n=timeinterval,xmin=1,xmax=365,method="periodic"))
       WNMINN<-rep(WNMINN1$y,nyears)
       if(runmoist==0){
-        SoilMoist1 <-suppressWarnings(spline(juldays12,SoilMoist,n=timeinterval,xmin=1,xmax=365,method="periodic"))
+        SoilMoist1 <-suppressWarnings(spline(DOYs12,SoilMoist,n=timeinterval,xmin=1,xmax=365,method="periodic"))
         SoilMoist<-rep(SoilMoist1$y,nyears)
       }
     }
@@ -410,7 +410,7 @@ micro_global_grid <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyear
     avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
     soilinit<-rep(avetemp,20)
     tannul<-mean(unlist(ALLTEMPS))
-    tannulrun<-rep(tannul,julnum)
+    tannulrun<-rep(tannul,DOYnum)
 
     daymon<-c(31.,28.,31.,30.,31.,30.,31.,31.,30.,31.,30.,31.) # days in each month
 
@@ -479,7 +479,7 @@ micro_global_grid <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyear
 
     ################ soil properties  ##################################################
 
-    Intrvls <-(1:dim) # user-supplied last Julian day in each time interval sequence
+    Intrvls <-(1:dim) # user-supplied last day of year in each time interval sequence
     Numint <- dim  # number of time intervals
     Numtyps <- 2 # number of soil types
     Nodes <- matrix(data = 0, nrow = 10, ncol = dim) # array of all possible soil nodes for max time span of 20 years
@@ -544,7 +544,7 @@ micro_global_grid <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyear
     # microclimate input parameters list
     microinput<-c(dim,RUF,ERR,Usrhyt,Numtyps,Numint,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun)
 
-    julday1=matrix(data = 0., nrow = dim, ncol = 1)
+    DOY1=matrix(data = 0., nrow = dim, ncol = 1)
     SLES1=matrix(data = 0., nrow = dim, ncol = 1)
     Intrvls1=matrix(data = 0., nrow = dim, ncol = 1)
     MAXSHADES1=matrix(data = 0., nrow = dim, ncol = 1)
@@ -563,7 +563,7 @@ micro_global_grid <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyear
     RAINFALL1=matrix(data = 0, nrow = dim, ncol = 1)
     tannul1=matrix(data = 0, nrow = dim, ncol = 1)
     moists1=matrix(data = 0., nrow = 10, ncol = dim)
-    julday1[1:dim]<-julday
+    DOY1[1:dim]<-DOY
     SLES1[1:dim]<-SLES
     Intrvls1[1:dim]<-Intrvls
     MAXSHADES1[1:dim]<-MAXSHADES
@@ -587,7 +587,7 @@ micro_global_grid <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyear
       tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
     }
     # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
-    micro<-list(tides=tides,microinput=microinput,julday=julday,SLES=SLES1,DEP=DEP,Intrvls=Intrvls1,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,SNOW=SNOW1,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI,snowmodel=snowmodel)
+    micro<-list(tides=tides,microinput=microinput,DOY=DOY,SLES=SLES1,DEP=DEP,Intrvls=Intrvls1,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,SNOW=SNOW1,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,L=L,LAI=LAI,snowmodel=snowmodel)
 
     # write all input to csv files in their own folder
     if(write_input==1){
@@ -595,7 +595,7 @@ micro_global_grid <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyear
         dir.create("micro csv input")
       }
       write.table(as.matrix(microinput), file = "micro csv input/microinput.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(julday, file = "micro csv input/julday.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(DOY, file = "micro csv input/DOY.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(SLES, file = "micro csv input/SLES.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(DEP, file = "micro csv input/DEP.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(Intrvls, file = "micro csv input/Intrvls.csv", sep = ",", col.names = NA, qmethod = "double")

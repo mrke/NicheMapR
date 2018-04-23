@@ -48,7 +48,7 @@
 #' \item{\code{live=}{ = 1, Live (metabolism/behaviour) or dead animal?}\cr}
 #' \item{\code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1 = yes, 0 = no}\cr}
 #' \item{\code{write_csv}{ = 0, Write csv files of final output? 0 = no, 1= just yearout and yearsout, 2 = all output}\cr}
-#' \item{\code{startday}{ = 1, Julian day of year at which simulation starts}\cr}
+#' \item{\code{startday}{ = 1, day of year at which simulation starts}\cr}
 #'}
 #' \strong{ Environmental inputs:}
 #'
@@ -273,7 +273,7 @@
 #'
 #' environ variables:
 #' \itemize{
-#' \item 1 JULDAY - day of year
+#' \item 1 DOY - day of year
 #' \item 2 YEAR - year of simulation
 #' \item 3 DAY - day of simulation
 #' \item 4 TIME - time of day (hours)
@@ -296,7 +296,7 @@
 #'}
 #' enbal variables:
 #' \itemize{
-#' \item 1 JULDAY - day of year
+#' \item 1 DOY - day of year
 #' \item 2 YEAR - year of simulation
 #' \item 3 DAY - day of simulation
 #' \item 4 TIME - time of day (hours)
@@ -312,7 +312,7 @@
 #'}
 #' masbal variables:
 #' \itemize{
-#' \item 1 JULDAY - day of year
+#' \item 1 DOY - day of year
 #' \item 2 YEAR - year of simulation
 #' \item 3 DAY - day of simulation
 #' \item 4 TIME - time of day (hours)
@@ -334,7 +334,7 @@
 #'}
 #' debout variables:
 #' \itemize{
-#' \item 1 JULDAY - day of year
+#' \item 1 DOY - day of year
 #' \item 2 YEAR - year of simulation
 #' \item 3 DAY - day of simulation
 #' \item 4 TIME - time of day (hours)
@@ -474,10 +474,10 @@
 #'bask<-subset(environ,ACT==1)
 #'night<-subset(metout,ZEN==90)
 #'day<-subset(metout,ZEN!=90)
-#'with(night,plot(TIME/60~JULDAY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col='dark blue'))
+#'with(night,plot(TIME/60~DOY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col='dark blue'))
 #' # nighttime hours
-#'with(forage,points((TIME-1)~JULDAY,pch=15,cex=2,col='orange')) # foraging Tbs
-#'with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
+#'with(forage,points((TIME-1)~DOY,pch=15,cex=2,col='orange')) # foraging Tbs
+#'with(bask,points((TIME-1)~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
 #' @export
 ectotherm<-function(amass=40,lometry=3,ABSMAX=0.85,ABSMIN=0.85,VTMAX=34,VTMIN=24,TBASK=17.5,
   TEMERGE=17.5,TPREF=30,ctmax=40,ctmin=6,dayact=1,nocturn=0,crepus=0,CkGrShad=1,burrow=1,climb=0,
@@ -650,19 +650,19 @@ ectotherm<-function(amass=40,lometry=3,ABSMAX=0.85,ABSMIN=0.85,VTMAX=34,VTMIN=24
     GLMsalts<-GLMsalts2
     GLMpHs<-GLMpHs2
     GLMfoods<-GLMfoods2
-    metout.names<-c("JULDAY","TIME","TALOC","TAREF","RHLOC","RH","VLOC","VREF","SOILMOIST3","POOLDEP","TDEEP","ZEN","SOLR","TSKYC","DEW","FROST","SNOWFALL","SNOWDEP")
+    metout.names<-c("DOY","TIME","TALOC","TAREF","RHLOC","RH","VLOC","VREF","SOILMOIST3","POOLDEP","TDEEP","ZEN","SOLR","TSKYC","DEW","FROST","SNOWFALL","SNOWDEP")
     colnames(metout)<-metout.names
     colnames(shadmet)<-metout.names
-    soil.names<-c("JULDAY","TIME",paste("D",DEP,"cm", sep = ""))
+    soil.names<-c("DOY","TIME",paste("D",DEP,"cm", sep = ""))
     colnames(soil)<-soil.names
     colnames(shadsoil)<-soil.names
-    moist.names<-c("JULDAY","TIME",paste("WC",DEP,"cm", sep = ""))
+    moist.names<-c("DOY","TIME",paste("WC",DEP,"cm", sep = ""))
     colnames(soilmoist)<-moist.names
     colnames(shadmoist)<-moist.names
-    pot.names<-c("JULDAY","TIME",paste("PT",DEP,"cm", sep = ""))
+    pot.names<-c("DOY","TIME",paste("PT",DEP,"cm", sep = ""))
     colnames(soilpot)<-pot.names
     colnames(shadpot)<-pot.names
-    hum.names<-c("JULDAY","TIME",paste("RH",DEP,"cm", sep = ""))
+    hum.names<-c("DOY","TIME",paste("RH",DEP,"cm", sep = ""))
     colnames(humid)<-hum.names
     colnames(shadhumid)<-hum.names
   }else{
@@ -705,7 +705,7 @@ ectotherm<-function(amass=40,lometry=3,ABSMAX=0.85,ABSMIN=0.85,VTMAX=34,VTMIN=24
   maxshd<-maxshades[1]
   minshd<-minshade
   behav=c(dayact,nocturn,crepus,rainact,burrow,CkGrShad,climb,fosorial,nofood)
-  julday<-1
+  DOY<-1
 
   # conversions from percent to proportion
   PTUREA1<-PTUREA/100
@@ -769,17 +769,17 @@ ectotherm<-function(amass=40,lometry=3,ABSMAX=0.85,ABSMIN=0.85,VTMAX=34,VTMIN=24
   }
 
   lat<-ectoin[4]
-  julstart<-metout[1,2]
+  DOYstart<-metout[1,2]
   tannul<-as.numeric(mean(soil[,12]))
   monthly<-0
   tester<-0
   microyear<-1
 
-  ectoinput<-as.matrix(c(ALT,FLTYPE,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,AMASS,EMISAN,absan,RQ,rinsul,lometry,live,TIMBAS,Flshcond,Spheat,Andens,ABSMAX,ABSMIN,FATOSK,FATOSB,FATOBJ,VTMAX,VTMIN,DELTAR,SKINW,peyes,xbas,extref,TPREF,ptcond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,tdigpr,maxshd,minshd,ctmax,ctmin,behav,julday,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,julstart,monthly,customallom,M_1,M_2,M_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,minwater,microyear,container,flyer,flyspeed,dim,maxdepth,ctminthresh,ctkill,gutfill,mindepth,TBASK,TEMERGE,F_m,SUBTK,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,breedtempthresh,breedtempcum,contwet,warmsig,aquabask,dessdeath,write_csv,aestdepth,eggshade,pO2thresh))
+  ectoinput<-as.matrix(c(ALT,FLTYPE,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,AMASS,EMISAN,absan,RQ,rinsul,lometry,live,TIMBAS,Flshcond,Spheat,Andens,ABSMAX,ABSMIN,FATOSK,FATOSB,FATOBJ,VTMAX,VTMIN,DELTAR,SKINW,peyes,xbas,extref,TPREF,ptcond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,tdigpr,maxshd,minshd,ctmax,ctmin,behav,DOY,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,DOYstart,monthly,customallom,M_1,M_2,M_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,minwater,microyear,container,flyer,flyspeed,dim,maxdepth,ctminthresh,ctkill,gutfill,mindepth,TBASK,TEMERGE,F_m,SUBTK,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,breedtempthresh,breedtempcum,contwet,warmsig,aquabask,dessdeath,write_csv,aestdepth,eggshade,pO2thresh))
   debmod<-c(clutchsize,andens_deb,d_V,d_Egg,mu_X,mu_E,mu_V,mu_P,T_REF,z,kap,kap_X,p_M,v,E_G,kap_R,E_sm,del_M,h_a,V_init_baby,E_init_baby,k_J,E_Hb,E_Hj,E_Hp,clutch_ab[2],batch,breedrainthresh,photostart,photofinish,daylengthstart,daylengthfinish,photodirs,photodirf,clutch_ab[1],frogbreed,frogstage,eta_O,JM_JO,E_0,kap_X_P,PTUREA1,PFEWAT1,wO,w_N,FoodWater1,f,s_G,K,X,metab_mode,stages,y_EV_l,s_j,startday,raindrink,reset,ma,mi,mh,aestivate,depress,minclutch,L_b)
   deblast<-c(iyear,countday,v_init,E_init,ms_init,cumrepro_init,q_init,hs_init,cumbatch_init,V_baby_init,E_baby_init,E_H_init,stage)
 
-  origjulday<-metout[,1]
+  origDOY<-metout[,1]
   if(ystrt>0){
     metout<-rbind(metout[((ystrt)*365*24+1):(dim*24),],metout[1:((ystrt)*365*24),])
     shadmet<-rbind(shadmet[((ystrt)*365*24+1):(dim*24),],shadmet[1:((ystrt)*365*24),])
@@ -801,16 +801,16 @@ ectotherm<-function(amass=40,lometry=3,ABSMAX=0.85,ABSMIN=0.85,VTMAX=34,VTMIN=24
     maxshades<-c(maxshades[((ystrt)*365+1):(dim)],maxshades[1:((ystrt)*365)])
     RAINFALL<-c(RAINFALL[((ystrt)*365+1):(dim)],RAINFALL[1:((ystrt)*365)])
     foodwaters<-c(foodwaters[((ystrt)*365+1):(dim)],foodwaters[1:((ystrt)*365)])
-    metout[,1]<-origjulday
-    shadmet[,1]<-origjulday
-    soil[,1]<-origjulday
-    shadsoil[,1]<-origjulday
-    soilmoist[,1]<-origjulday
-    shadmoist[,1]<-origjulday
-    soilpot[,1]<-origjulday
-    shadpot[,1]<-origjulday
-    humid[,1]<-origjulday
-    shadhumid[,1]<-origjulday
+    metout[,1]<-origDOY
+    shadmet[,1]<-origDOY
+    soil[,1]<-origDOY
+    shadsoil[,1]<-origDOY
+    soilmoist[,1]<-origDOY
+    shadmoist[,1]<-origDOY
+    soilpot[,1]<-origDOY
+    shadpot[,1]<-origDOY
+    humid[,1]<-origDOY
+    shadhumid[,1]<-origDOY
   }
 
 

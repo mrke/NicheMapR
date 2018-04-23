@@ -55,6 +55,8 @@
 #' \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
 #' \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
 #' \code{getdata}{ = 1, option to use latest forecast extraction}\cr\cr
+#' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)
+#' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
@@ -297,7 +299,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
   snowmodel=0,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
   shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",barcoo="",
-  quadrangle=1, hourly=1, rainhourly = 0, getdata=1, lamb = 0, IUV = 0, IR = 0) {
+  quadrangle=1, hourly=1, rainhourly = 0, getdata=1, lamb = 0, IUV = 0, IR = 0, message = 0, fail = nyears * 24 * 365) {
   #
   # loc="Nyrripi, Northern Territory"
 #   timeinterval=365
@@ -385,6 +387,9 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   if(DEP[2]-DEP[1]>3 | DEP[3]-DEP[2]>3){
     message("warning, nodes might be too far apart near the surface, try a different spacing if the program is crashing \n")
+  }
+  if(DEP[2]-DEP[1]<2){
+    cat("warning, nodes might be too close near the surface, try a different spacing if the program is crashing \n")
   }
   if(timeinterval<12 | timeinterval > 365){
     message("ERROR: the variable 'timeinterval' is out of bounds.
@@ -1096,7 +1101,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
         ALAT<-as.numeric(ALAT)
 
         # microclimate input parameters list
-        microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR)
+        microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail)
 
         doy1=matrix(data = 0., nrow = dim, ncol = 1)
         SLES1=matrix(data = 0., nrow = dim, ncol = 1)

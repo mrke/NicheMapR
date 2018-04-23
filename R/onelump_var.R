@@ -55,7 +55,7 @@
 #'
 #' # combine relevant input fields
 #' microclimate <- cbind(metout[, 1:5], metout[, 8], soil[, 4], metout[, 13:15], metout[, 6])
-#' colnames(microclimate) <- c('dates', 'JULDAY', 'TIME', 'TALOC', 'TA1.2m', 'VLOC', 'TS', 'ZEN', 'SOLR', 'TSKYC', 'RHLOC')
+#' colnames(microclimate) <- c('dates', 'DOY', 'TIME', 'TALOC', 'TA1.2m', 'VLOC', 'TS', 'ZEN', 'SOLR', 'TSKYC', 'RHLOC')
 #'
 #' # define animal parameters - here simulating a 1000 g cylinder
 #' cp <- 3342 # specific heat of flesh, J/kg-C
@@ -78,12 +78,12 @@
 #' pctdif <- 0.1 # proportion of solar energy that is diffuse, -
 #'
 #' # loop through middle day of each month
-#' juldays = c(15, 46, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349)
+#' DOYs = c(15, 46, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349)
 #' mons = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
 #'
-#' for (i in 1:length(juldays)) {
-#'   simday = juldays[i]
-#'   microclim <- subset(microclimate, microclimate$JULDAY == simday)
+#' for (i in 1:length(DOYs)) {
+#'   simday = DOYs[i]
+#'   microclim <- subset(microclimate, microclimate$DOY == simday)
 #'
 #'   # use approxfun to create interpolations for the required environmental variables
 #'   time <- seq(0, 60 * 24, 60) #60 minute intervals from microclimate output
