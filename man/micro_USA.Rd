@@ -67,7 +67,7 @@ sunsnow Hourly predictions of snow temperature under the minimum specified shade
 shadsnow Hourly predictions snow temperature under the maximum specified shade
 }
 \description{
-An implementation of the Niche Mapper microclimate model that uses the University of Idaho Gridded Surface Meteorological Data (UofI METDATA) daily weather database https://www.northwestknowledge.net/metdata/data/, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "PRISM_us_dem_4km_asc.asc".
+An implementation of the Niche Mapper microclimate model that uses the University of Idaho Gridded Surface Meteorological Data (UofI METDATA) daily weather database https://www.northwestknowledge.net/metdata/data/, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "metdata_elevationdata.nc".
 }
 \details{
 \itemize{

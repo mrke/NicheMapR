@@ -695,7 +695,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     adiab_corr_max <- delta_elev * lapse_max
     adiab_corr_min <- delta_elev * lapse_min
     if(opendap == 1){
-      cat("extracting weather data", "/n")
+      cat("extracting weather data \n")
       baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/MET/"
       yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
       for (j in 1:nyears) {
