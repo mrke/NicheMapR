@@ -7,6 +7,7 @@ knitr::opts_chunk$set(
 library(NicheMapR)
 
 micro<-micro_global(loc="Madison, Wisconsin, USA")
+longlat <- c(micro$longlat[1], micro$longlat[2]) # save the longitude and latitude and pass directly below
 
 ## ---- echo=FALSE, results='asis'-----------------------------------------
 knitr::kable(head(micro$metout[,1:9], 2), digits = 2)
@@ -35,7 +36,7 @@ with(subset(soil,DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15
     "b", main=paste(minshade,"% shade"))})
 
 ## ---- fig.width=7, fig.height=6------------------------------------------
-micro<-micro_global(loc = "Madison, Wisconsin, USA", runshade = 0, minshade = 0, slope = 45, aspect
+micro<-micro_global(loc = longlat, runshade = 0, minshade = 0, slope = 45, aspect
   = 180)
 
 soil<-as.data.frame(micro$soil) # get the soil data
@@ -46,7 +47,7 @@ with(subset(soil,DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15
     "b", main=paste(minshade,"% shade, 45 degree slope, 180 degrees aspect"))})
 
 ## ---- fig.width=7, fig.height=6------------------------------------------
-micro<-micro_global(loc="Madison, Wisconsin, USA", runshade = 0, minshade = 0, hori = c(0, 0, 65,
+micro<-micro_global(loc = longlat, runshade = 0, minshade = 0, hori = c(0, 0, 65,
   65, 65, 65, 65, 65, 65, 65, 65, 65, 0, 0, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65))
 
 soil<-as.data.frame(micro$soil) # get the soil data
@@ -57,7 +58,7 @@ with(subset(soil,DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15
     "b", main=paste(minshade,"% shade, north-south gully"))})
 
 ## ---- fig.width=7, fig.height=6------------------------------------------
-micro<-micro_global(loc="Madison, Wisconsin, USA", runshade = 0, minshade = 0, soiltype = 0)
+micro<-micro_global(loc = longlat, runshade = 0, minshade = 0, soiltype = 0)
 
 soil<-as.data.frame(micro$soil) # get the soil data
 minshade<-micro$minshade # get the value for minimum shade
@@ -67,7 +68,7 @@ with(subset(soil,DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15
     "b", main=paste(minshade,"% shade, rock substrate"))})
 
 ## ------------------------------------------------------------------------
-micro<-micro_global(loc="Madison, Wisconsin, USA", runmoist = 1)
+micro<-micro_global(loc = longlat, runmoist = 1)
 
 ## ---- echo=FALSE, results='asis'-----------------------------------------
 knitr::kable(head(micro$soilmoist[,1:9], 2))
@@ -99,7 +100,7 @@ for(i in 1:10){
 }
 
 ## ---- fig.width=7, fig.height=6------------------------------------------
-micro<-micro_global(loc="Madison, Wisconsin, USA", runmoist = 1, soiltype = 11)
+micro<-micro_global(loc = longlat, runmoist = 1, soiltype = 11)
 soilmoist<-as.data.frame(micro$soilmoist) # get the minimum shade soil moisture output
 minshade<-micro$minshade # get the value for minimum shade
 # append dates
@@ -118,7 +119,7 @@ for(i in 1:10){
 
 ## ---- fig.width=7, fig.height=6------------------------------------------
 nyears<-5
-micro<-micro_global(loc="Madison, Wisconsin, USA", runmoist = 1, soiltype = 11, nyears = nyears)
+micro<-micro_global(loc = longlat, runmoist = 1, soiltype = 11, nyears = nyears)
 soilmoist<-as.data.frame(micro$soilmoist) # get the minimum shade soil moisture output
 minshade<-micro$minshade # get the value for minimum shade
 # append dates
@@ -137,7 +138,7 @@ for(i in 1:10){
 
 ## ---- fig.width=7, fig.height=6------------------------------------------
 timeinterval<-365
-micro<-micro_global(loc="Madison, Wisconsin, USA", runmoist = 1, soiltype = 11, timeinterval = timeinterval)
+micro<-micro_global(loc = longlat, runmoist = 1, soiltype = 11, timeinterval = timeinterval)
 soilmoist<-as.data.frame(micro$soilmoist) # get the minimum shade soil moisture output
 minshade<-micro$minshade # get the value for minimum shade
 # append dates
