@@ -1222,7 +1222,9 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       RAINFALL1[1:dim]<-RAINFALL
       tannul1[1:dim]<-tannul
       moists1[1:10,1:dim]<-moists
-
+      if(length(LAI)<dim){
+       LAI<-rep(LAI[1],dim)
+      }
       if(shore==0){
         tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
       }

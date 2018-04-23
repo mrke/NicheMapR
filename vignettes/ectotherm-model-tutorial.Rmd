@@ -30,7 +30,7 @@ library(NicheMapR)
 
 ```{r}
 library(NicheMapR)
-micro<-micro_global(loc = longlat, runmoist = 1)
+micro<-micro_global(loc = "Townsville Queensland", runmoist = 1)
 longlat <- c(micro$longlat[1], micro$longlat[2]) # save the longitude and latitude and pass directly below
 ecto<-ectotherm()
 ```
