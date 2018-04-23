@@ -56,7 +56,7 @@ knitr::kable(head(ecto$environ[,1:15], 12), digits = 2)
 
 and includes the following variables:
 
-1. JULDAY - day of year
+1. DOY - day of year
 1. YEAR - year of simulation
 1. DAY - day of simulation
 1. TIME - time of day (hours)
@@ -89,7 +89,7 @@ knitr::kable(head(ecto$enbal, 12), digits = 2)
 
 It quantifies the different pathways of exchange in each hour of the simulation:
 
-1. JULDAY - day of year
+1. DOY - day of year
 1. YEAR - year of simulation
 1. DAY - day of simulation
 1. TIME - time of day (hours)
@@ -117,7 +117,7 @@ knitr::kable(head(ecto$masbal[,1:10], 12))
 knitr::kable(head(ecto$masbal[,11:19], 12))
 ```
 
-1. JULDAY - day of year
+1. DOY - day of year
 1. YEAR - year of simulation
 1. DAY - day of simulation
 1. TIME - time of day (hours)
@@ -181,11 +181,11 @@ forage<-subset(environ,ACT==2)
 bask<-subset(environ,ACT==1)
 night<-subset(metout,ZEN==90)
 day<-subset(metout,ZEN!=90)
-with(night,plot(TIME/60~JULDAY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col=
+with(night,plot(TIME/60~DOY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col=
     'dark blue', main = "Fig. 2 Annual activity window, 90% max shade"))
 # nighttime hours
-with(forage,points((TIME-1)~JULDAY,pch=15,cex=2,col='orange')) # foraging Tbs
-with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
+with(forage,points((TIME-1)~DOY,pch=15,cex=2,col='orange')) # foraging Tbs
+with(bask,points((TIME-1)~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
 
 ```
 
@@ -231,10 +231,10 @@ forage<-subset(environ,ACT==2)
 bask<-subset(environ,ACT==1)
 night<-subset(metout,ZEN==90)
 day<-subset(metout,ZEN!=90)
-with(night,plot(TIME/60~JULDAY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col=
+with(night,plot(TIME/60~DOY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col=
     'dark blue', main = "Fig. 4 Annual activity window, 50% max shade"))
-with(forage,points((TIME-1)~JULDAY,pch=15,cex=2,col='orange')) # foraging Tbs
-with(bask,points((TIME-1)~JULDAY,pch=15,cex=2,col='light blue')) # basking Tbs
+with(forage,points((TIME-1)~DOY,pch=15,cex=2,col='orange')) # foraging Tbs
+with(bask,points((TIME-1)~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
 
 ```
 
