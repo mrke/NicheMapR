@@ -8,7 +8,8 @@ library(NicheMapR)
 
 ## ------------------------------------------------------------------------
 library(NicheMapR)
-micro<-micro_global(loc = "Townsville, Queensland", runmoist = 1)
+micro<-micro_global(loc = longlat, runmoist = 1)
+longlat <- c(micro$longlat[1], micro$longlat[2]) # save the longitude and latitude and pass directly below
 ecto<-ectotherm()
 
 ## ---- echo=FALSE, results='asis'-----------------------------------------
@@ -108,7 +109,7 @@ with(bask,points((TIME-1)~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
 # run the microclimate model daily for 5 years
 timeinterval<-365
 nyears<-6
-micro<-micro_global(loc = "Townsville, Queensland", timeinterval = timeinterval, nyears = nyears, runmoist = 1)
+micro<-micro_global(loc = longlat, timeinterval = timeinterval, nyears = nyears, runmoist = 1)
 
 # run the ectotherm model with the DEB model turned on and in viviparous mode, simulating the
 # Eastern Water Skink, Eulamprus quoyii

@@ -61,6 +61,10 @@ shadhumid Hourly predictions of the soil humidity under the maximum specified sh
 plant Hourly predictions of plant transpiration, leaf water potential and root water potential under the minimum specified shade
 
 shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
+
+sunsnow Hourly predictions of snow temperature under the minimum specified shade
+
+shadsnow Hourly predictions snow temperature under the maximum specified shade
 }
 \description{
 An implementation of the Niche Mapper microclimate model that uses the CHESS daily weather database. Specifically uses the following files, and needs all 12 for a given year: dtr, tas, huss, precip, rsds, sfcWind, psurf. Also uses the OS Terrain 50 DEM (assumes file name is 'terr50.tif'), which was aggregated to 1km to match met data for lapse-rate correction (assumes file name is 'terr1000.tif').

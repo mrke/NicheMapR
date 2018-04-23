@@ -5,8 +5,10 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Microclimate Model Tutorial}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, echo = FALSE}
@@ -29,6 +31,7 @@ Try running the model for a place of interest to you, as follows:
 library(NicheMapR)
 
 micro<-micro_global(loc="Madison, Wisconsin, USA")
+longlat <- c(micro$longlat[1], micro$longlat[2]) # save the longitude and latitude and pass directly below
 ```
 
 The results are stored as a list in the variable ```micro```. The main ones to focus on for now are
@@ -137,7 +140,7 @@ Notice how, the effect of shade is to not only reduce the daytime soil temperatu
 Slope and aspect have strong effects on microclimates through the effects of direct solar radiation. The default setting is flat ground in the ```NicheMapR``` microclimate model. Here is the effect of a 45 degree southerly slope on the 0% shade simulation:
 
 ```{r, fig.width=7, fig.height=6}
-micro<-micro_global(loc = "Madison, Wisconsin, USA", runshade = 0, minshade = 0, slope = 45, aspect
+micro<-micro_global(loc = longlat, runshade = 0, minshade = 0, slope = 45, aspect
   = 180)
 
 soil<-as.data.frame(micro$soil) # get the soil data
@@ -153,7 +156,7 @@ The strongest effect is on the December soil temperatures.
 Hillshade also has a strong effect on microclimates. Gullies and gorges receive a shorter window of direct solar radiation and have a smaller 'view' of the sky, and so don't cool down as much at night. Horizon angles can be specified to simulated these kinds of effects by supplying in the parameter ```hori``` a vector of 24 horizon angles (angle to nearest hill/cliff) starting due north and continuing clockwise in 15 degree intervals. Here is an example for a steep-sided gully running north-south:
 
 ```{r, fig.width=7, fig.height=6}
-micro<-micro_global(loc="Madison, Wisconsin, USA", runshade = 0, minshade = 0, hori = c(0, 0, 65,
+micro<-micro_global(loc = longlat, runshade = 0, minshade = 0, hori = c(0, 0, 65,
   65, 65, 65, 65, 65, 65, 65, 65, 65, 0, 0, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65))
 
 soil<-as.data.frame(micro$soil) # get the soil data
@@ -175,7 +178,7 @@ The default values are typical for soil minerals as described in Campbell and No
 For simulating rock, ```BulkDensity``` should be set the same as ```Density``` and this can be easily set in ```micro_global``` by setting ```soiltype``` to value 0 (which also sets cap = 0):
 
 ```{r, fig.width=7, fig.height=6}
-micro<-micro_global(loc="Madison, Wisconsin, USA", runshade = 0, minshade = 0, soiltype = 0)
+micro<-micro_global(loc = longlat, runshade = 0, minshade = 0, soiltype = 0)
 
 soil<-as.data.frame(micro$soil) # get the soil data
 minshade<-micro$minshade # get the value for minimum shade
@@ -199,7 +202,7 @@ The soil moisture calculations are made at the 10 user-specified nodes (paramete
 
 Try running the model for your site with the soil moisture model turned on:
 ```{r}
-micro<-micro_global(loc="Madison, Wisconsin, USA", runmoist = 1)
+micro<-micro_global(loc = longlat, runmoist = 1)
 ```
 
 The output tables ```soilmoist``` and ```shadmoist```, which previously were zero, will now have soil moisture values (m3/m3) in them: 
@@ -245,7 +248,7 @@ By default the model uses ```soiltype``` = 4, where Rock = 0, sand = 1, loamy sa
 
 Rerunning with clay as the soil type:
 ```{r, fig.width=7, fig.height=6}
-micro<-micro_global(loc="Madison, Wisconsin, USA", runmoist = 1, soiltype = 11)
+micro<-micro_global(loc = longlat, runmoist = 1, soiltype = 11)
 soilmoist<-as.data.frame(micro$soilmoist) # get the minimum shade soil moisture output
 minshade<-micro$minshade # get the value for minimum shade
 # append dates
@@ -271,7 +274,7 @@ It is  possible to run the model for multiple years by changing the ```nyears```
 
 ```{r, fig.width=7, fig.height=6}
 nyears<-5
-micro<-micro_global(loc="Madison, Wisconsin, USA", runmoist = 1, soiltype = 11, nyears = nyears)
+micro<-micro_global(loc = longlat, runmoist = 1, soiltype = 11, nyears = nyears)
 soilmoist<-as.data.frame(micro$soilmoist) # get the minimum shade soil moisture output
 minshade<-micro$minshade # get the value for minimum shade
 # append dates
@@ -294,7 +297,7 @@ It is also possible to run the model for more frequent intervals than once per m
 Here is an example running the model for 365 days and plotting soil moisture:
 ```{r, fig.width=7, fig.height=6}
 timeinterval<-365
-micro<-micro_global(loc="Madison, Wisconsin, USA", runmoist = 1, soiltype = 11, timeinterval = timeinterval)
+micro<-micro_global(loc = longlat, runmoist = 1, soiltype = 11, timeinterval = timeinterval)
 soilmoist<-as.data.frame(micro$soilmoist) # get the minimum shade soil moisture output
 minshade<-micro$minshade # get the value for minimum shade
 # append dates

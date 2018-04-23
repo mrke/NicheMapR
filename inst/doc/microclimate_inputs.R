@@ -14,6 +14,8 @@ runmoist                  | -                 | 0 (off) or 1 (on) | run soil moi
 snowmodel                 | -                 | 0 (off) or 1 (on) | run the snow model
 hourly                    | -                 | 0 (off) or 1 (on) | run the model from hourly weather inputs
 IR                        | -                 | 0 or 1            | longwave radiation algorithm
+message                   | -                 | 0 or 1            | integrator messages
+fail                      | -                 | integer            | integrator failure count before quitting
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 

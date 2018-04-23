@@ -83,11 +83,6 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>First load the NicheMapR package and also the zoo package, from which we’ll use the na.approx function to fill in missing data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(NicheMapR)
 <span class="kw">library</span>(zoo)</code></pre></div>
-<pre><code>## 
-## Attaching package: 'zoo'</code></pre>
-<pre><code>## The following objects are masked from 'package:base':
-## 
-##     as.Date, as.Date.numeric</code></pre>
 <p>Also included in this package is a table of summary information on all the SCAN sites, <code>SCANsites</code>. Have a look at the first 5 by using the ‘head’ function:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(SCANsites)</code></pre></div>
 <pre><code>##    network  id state                 name      lat        lon elev
@@ -135,7 +130,9 @@ snowmodel &lt;-<span class="st"> </span><span class="dv">1</span> <span class="c
 hourly &lt;-<span class="st"> </span><span class="dv">1</span> <span class="co"># run the model with hourly input data</span>
 rainhourly &lt;-<span class="st"> </span><span class="dv">1</span> <span class="co"># run the model with hourly rainfall input data (irrelevant if hourly = 1)</span>
 microdaily &lt;-<span class="st"> </span><span class="dv">1</span> <span class="co"># run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day</span>
-IR &lt;-<span class="st"> </span><span class="dv">0</span> <span class="co"># compute clear-sky longwave radiation using Campbell and Norman (1998) eq. 10.10 (includes humidity)</span></code></pre></div>
+IR &lt;-<span class="st"> </span><span class="dv">0</span> <span class="co"># compute clear-sky longwave radiation using Campbell and Norman (1998) eq. 10.10 (includes humidity)</span>
+message &lt;-<span class="st"> </span><span class="dv">0</span> <span class="co"># do not allow the Fortran integrator to output warnings</span>
+fail &lt;-<span class="st"> </span><span class="dv">24</span><span class="op">*</span><span class="dv">365</span> <span class="co"># how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)</span></code></pre></div>
 </div>
 <div id="setting-the-times-and-location-info" class="section level3">
 <h3>Setting the times and location info</h3>
@@ -232,7 +229,7 @@ micro &lt;-<span class="st"> </span><span class="kw">micro_global</span>(<span c
 <pre><code>## extracting climate data</code></pre>
 <pre><code>## extracting soil moisture data</code></pre>
 <pre><code>## running microclimate model for 365 days by 1 years at site long -115.09763 lat 33.6547</code></pre>
-<pre><code>## runtime 1.92999999999984 seconds</code></pre>
+<pre><code>## runtime 2.00999999999999 seconds</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># append dates</span>
 metout &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(micro<span class="op">$</span>metout)
 tzone &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;Etc/GMT&quot;</span>, TZoffset) <span class="co"># doing it this way ignores daylight savings!</span>
@@ -358,7 +355,7 @@ tides &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="
 <h3>Running the model</h3>
 <p>The data inputs are all ready now and they need to be sent to the Fortran program. The single-value inputs are collected in on long vector called <code>microinput</code> and then this, together with the longer inputs, are then sent put into a list called <code>microin</code> and passed to the function <code>microclimate</code> which runs the model. We will return the results to a list object called <code>micro</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># microclimate input parameters list</span>
-microinput &lt;-<span class="st"> </span><span class="kw">c</span>(doynum, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR)
+microinput &lt;-<span class="st"> </span><span class="kw">c</span>(doynum, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail)
 
 <span class="co"># all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine</span>
 microin &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">microinput =</span> microinput, <span class="dt">tides =</span> tides, <span class="dt">doy =</span> doy, <span class="dt">SLES =</span> SLES, <span class="dt">DEP =</span> DEP, <span class="dt">Nodes =</span> Nodes, <span class="dt">MAXSHADES =</span> MAXSHADES, <span class="dt">MINSHADES =</span> MINSHADES, <span class="dt">TIMAXS =</span> TIMAXS, <span class="dt">TIMINS =</span> TIMINS, <span class="dt">TMAXX =</span> TMAXX, <span class="dt">TMINN =</span> TMINN, <span class="dt">RHMAXX =</span> RHMAXX, <span class="dt">RHMINN =</span> RHMINN, <span class="dt">CCMAXX =</span> CCMAXX, <span class="dt">CCMINN =</span> CCMINN, <span class="dt">WNMAXX =</span> WNMAXX, <span class="dt">WNMINN =</span> WNMINN, <span class="dt">TAIRhr =</span> TAIRhr, <span class="dt">RHhr =</span> RHhr, <span class="dt">WNhr =</span> WNhr, <span class="dt">CLDhr =</span> CLDhr, <span class="dt">SOLRhr =</span> SOLRhr, <span class="dt">RAINhr =</span> RAINhr, <span class="dt">ZENhr =</span> ZENhr, <span class="dt">REFLS =</span> REFLS, <span class="dt">PCTWET =</span> PCTWET, <span class="dt">soilinit =</span> soilinit, <span class="dt">hori =</span> hori, <span class="dt">TAI =</span> TAI, <span class="dt">soilprops =</span> soilprops, <span class="dt">moists =</span> moists, <span class="dt">RAINFALL =</span> RAINFALL, <span class="dt">tannulrun =</span> tannulrun, <span class="dt">PE =</span> PE, <span class="dt">KS =</span> KS, <span class="dt">BB =</span> BB, <span class="dt">BD =</span> BD, <span class="dt">L =</span> L, <span class="dt">LAI =</span> LAI)
