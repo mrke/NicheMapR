@@ -91,6 +91,7 @@ An implementation of the Niche Mapper microclimate model that uses the AWAP dail
 \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
 \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
+\code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
 
@@ -253,7 +254,7 @@ drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar)
 }
 }
 \examples{
-micro<-micro_aust() # run the model with default location and settings
+micro<-micro_nz() # run the model with default location and settings
 
 metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
@@ -286,7 +287,7 @@ with(plotmetout,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humi
 with(plotmetout,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (deg C)"
 ,  type = "l",main=paste("sky temperature, ",minshade,"\% shade",sep=""))})
 with(plotmetout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-,  type = "l",main="wind speed")})
+,  type = "l",main="wind speed",ylim = c(0, 15))})
 with(plotmetout,{points(VLOC ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
 ,  type = "l",lty=2,col='blue')})
 with(plotmetout,{plot(ZEN ~ dates,xlab = "Date and Time", ylab = "Zenith Angle of Sun (deg)"
