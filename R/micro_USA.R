@@ -1,6 +1,6 @@
 #' USA implementation of the microclimate model.
 #'
-#' An implementation of the Niche Mapper microclimate model that uses the University of Idaho Gridded Surface Meteorological Data (UofI METDATA) daily weather database https://www.northwestknowledge.net/metdata/data/, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "PRISM_us_dem_4km_asc.asc".
+#' An implementation of the Niche Mapper microclimate model that uses the University of Idaho Gridded Surface Meteorological Data (UofI METDATA) daily weather database https://www.northwestknowledge.net/metdata/data/, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "metdata_elevationdata.nc".
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param ystart First year to run
@@ -629,7 +629,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     azmuth<-aspect
 
     #GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]]
-    USADEM <- extract(raster(paste0(spatial,"/PRISM_us_dem_4km_asc.asc")), x)
+    USADEM <- extract(raster(paste0(spatial,"/metdata_elevationdata.nc")), x)
     ALTITUDES <-NA# extract(raster(paste0(spatial,"/terr50.tif")), x) # to do
     if(is.na(elev) == FALSE){ALTITUDES <- elev} # check if user-specified elevation
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-USADEM}
