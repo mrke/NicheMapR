@@ -97,7 +97,7 @@ An implementation of the Niche Mapper microclimate model that uses the Universit
 
 \strong{ General additional parameters:}\cr\cr
 \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
-\code{Refhyt}{ = 1.2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
+\code{Refhyt}{ = 2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
 \code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
 \code{Z01}{ = 0, Top (1st) segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used)}\cr\cr
 \code{Z02}{ = 0, 2nd segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
@@ -183,11 +183,11 @@ metout/shadmet variables:
 \item 1 DOY - day-of-year
 \item 2 TIME - time of day (mins)
 \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-\item 4 TAREF - air temperature (deg C) at reference height (specified by 'Refhyt', 1.2m default)
+\item 4 TAREF - air temperature (deg C) at reference height (specified by 'Refhyt', 2m default)
 \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
-\item 6 RH  - relative humidity (\%) at reference height (specified by 'Refhyt', 1.2m default)
+\item 6 RH  - relative humidity (\%) at reference height (specified by 'Refhyt', 2m default)
 \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
-\item 8 VREF - wind speed (m/s) at reference height (specified by 'Refhyt', 1.2m default)
+\item 8 VREF - wind speed (m/s) at reference height (specified by 'Refhyt', 2m default)
 \item 9 SNOWMELT - snowmelt (mm)
 \item 10 POOLDEP - water pooling on surface (mm)
 \item 11 PCTWET - soil surface wetness (\%)
@@ -254,7 +254,7 @@ drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar)
 }
 \examples{
 library(NicheMapR)
-micro<-micro_USA(runshade = 0, ystart = 2014, yfinish = 2016) # run the model with default location and settings for 2014 to 2016
+micro<-micro_USA(loc = 'Madison Wisconsin, USA', runshade = 0, soilgrids = 1, ystart = 2014, yfinish = 2016) # run the model using SoilGrids data at Madison for 2014 to 2016
 
 metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
@@ -284,7 +284,7 @@ with(metout,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidit
 with(metout,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
 , type = "l",col='blue',lty=2,ylim=c(0,100))})
 with(metout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-,  type = "l",main="wind speed")})
+,  type = "l",main="wind speed",ylim = c(0, 15))})
 with(metout,{points(VLOC ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
 ,  type = "l",lty=2,col='blue')})
 with(metout,{plot(SOLR ~ dates,xlab = "Date and Time", ylab = "Solar Radiation (W/m2)"

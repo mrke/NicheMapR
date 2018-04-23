@@ -284,7 +284,7 @@ with(metout,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidit
 with(metout,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
 , type = "l",col='blue',lty=2,ylim=c(0,100))})
 with(metout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-,  type = "l",main="wind speed")})
+,  type = "l",main="wind speed",ylim = c(0, 15))})
 with(metout,{points(VLOC ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
 ,  type = "l",lty=2,col='blue')})
 with(metout,{plot(SOLR ~ dates,xlab = "Date and Time", ylab = "Solar Radiation (W/m2)"
