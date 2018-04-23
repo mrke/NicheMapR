@@ -192,8 +192,7 @@
 #' \item  5-14 RPOT0cm ... - root water potentail (J/kg), at each of the 10 specified depths
 #' }
 #'
-#' if wavelength-specific solar output is selected i.e. parameter lamb = 1\cr
-#'
+#' if snow model is run i.e. parameter lamb = 1\cr
 #' sunsnow and shdsnow variables:
 #' \itemize{
 #' \item  1 DOY - day-of-year
@@ -201,8 +200,7 @@
 #' \item  3-10 SN0cm ... - snow temperature (deg C), at the soil surface and each of the potential 8 layers
 #' }
 #'
-#' if snow model is run i.e. parameter lamb = 1\cr
-#'
+#' if wavelength-specific solar output is selected i.e. parameter lamb = 1\cr
 #' solar output variables
 #' drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar) variables:
 #' \itemize{
