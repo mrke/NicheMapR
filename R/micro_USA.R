@@ -700,8 +700,8 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
       for (j in 1:nyears) {
         if (j == 1) {
-          nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
-            ".nc"))
+          suppressMessages(nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
+            ".nc")))
           lon <- ncvar_get(nc, "lon")
           lat <- ncvar_get(nc, "lat")
           flat=match(abs(lat-x[2])<1/48,1)
@@ -714,33 +714,33 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
           tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
             start = start, count))
           nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "tmmx/tmmx_", yearlist[j],
-            ".nc"))
+          suppressMessages(nc <- nc_open(paste0(baseurl, "tmmx/tmmx_", yearlist[j],
+            ".nc")))
           tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
             start = start, count))
           nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "rmin/rmin_", yearlist[j],
-            ".nc"))
+          suppressMessages(nc <- nc_open(paste0(baseurl, "rmin/rmin_", yearlist[j],
+            ".nc")))
           rhmin <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
             start = start, count))
           nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "rmax/rmax_", yearlist[j],
-            ".nc"))
+          suppressMessages(nc <- nc_open(paste0(baseurl, "rmax/rmax_", yearlist[j],
+            ".nc")))
           rhmax <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
             start = start, count))
           nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "pr/pr_", yearlist[j],
-            ".nc"))
+          suppressMessages(nc <- nc_open(paste0(baseurl, "pr/pr_", yearlist[j],
+            ".nc")))
           Rain <- as.numeric(ncvar_get(nc, varid = "precipitation_amount",
             start = start, count))
           nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "srad/srad_", yearlist[j],
-            ".nc"))
+          suppressMessages(nc <- nc_open(paste0(baseurl, "srad/srad_", yearlist[j],
+            ".nc")))
           solar <- as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
             start = start, count))
           nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "vs/vs_", yearlist[j],
-            ".nc"))
+          suppressMessages(nc <- nc_open(paste0(baseurl, "vs/vs_", yearlist[j],
+            ".nc")))
           Wind <- as.numeric(ncvar_get(nc, varid = "wind_speed",
             start = start, count))
           nc_close(nc)
