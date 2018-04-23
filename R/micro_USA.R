@@ -695,13 +695,14 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     adiab_corr_max <- delta_elev * lapse_max
     adiab_corr_min <- delta_elev * lapse_min
     if(opendap == 1){
-      cat("extracting weather data", "\n")
+      cat("extracting weather data", "/n")
       baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/MET/"
       yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
       for (j in 1:nyears) {
         if (j == 1) {
-          suppressMessages(nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
-            ".nc")))
+
+          nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
+            ".nc"))
           lon <- ncvar_get(nc, "lon")
           lat <- ncvar_get(nc, "lat")
           flat=match(abs(lat-x[2])<1/48,1)
@@ -714,33 +715,33 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
           tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
             start = start, count))
           nc_close(nc)
-          suppressMessages(nc <- nc_open(paste0(baseurl, "tmmx/tmmx_", yearlist[j],
-            ".nc")))
+          nc <- nc_open(paste0(baseurl, "tmmx/tmmx_", yearlist[j],
+            ".nc"))
           tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
             start = start, count))
           nc_close(nc)
-          suppressMessages(nc <- nc_open(paste0(baseurl, "rmin/rmin_", yearlist[j],
-            ".nc")))
+          nc <- nc_open(paste0(baseurl, "rmin/rmin_", yearlist[j],
+            ".nc"))
           rhmin <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
             start = start, count))
           nc_close(nc)
-          suppressMessages(nc <- nc_open(paste0(baseurl, "rmax/rmax_", yearlist[j],
-            ".nc")))
+          nc <- nc_open(paste0(baseurl, "rmax/rmax_", yearlist[j],
+            ".nc"))
           rhmax <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
             start = start, count))
           nc_close(nc)
-          suppressMessages(nc <- nc_open(paste0(baseurl, "pr/pr_", yearlist[j],
-            ".nc")))
+          nc <- nc_open(paste0(baseurl, "pr/pr_", yearlist[j],
+            ".nc"))
           Rain <- as.numeric(ncvar_get(nc, varid = "precipitation_amount",
             start = start, count))
           nc_close(nc)
-          suppressMessages(nc <- nc_open(paste0(baseurl, "srad/srad_", yearlist[j],
-            ".nc")))
+          nc <- nc_open(paste0(baseurl, "srad/srad_", yearlist[j],
+            ".nc"))
           solar <- as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
             start = start, count))
           nc_close(nc)
-          suppressMessages(nc <- nc_open(paste0(baseurl, "vs/vs_", yearlist[j],
-            ".nc")))
+          nc <- nc_open(paste0(baseurl, "vs/vs_", yearlist[j],
+            ".nc"))
           Wind <- as.numeric(ncvar_get(nc, varid = "wind_speed",
             start = start, count))
           nc_close(nc)
