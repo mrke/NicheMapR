@@ -1,6 +1,6 @@
 Package: NicheMapR
 Title: R implementation of Niche Mapper software for biophysical modelling
-Version: 1.1.3
+Version: 1.1.4
 Authors@R: person("Michael", "Kearney", email = "mrke@unimelb.edu.au", role = c("aut", "cre"))
 Maintainer: Michael Kearney <mrke@unimelb.edu.au>
 Description: This packages provides an interface to a suite of biophysical
@@ -9,7 +9,7 @@ Depends:
     R (>= 3.2.2)
 License: TBA
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Suggests:
     devtools,
     dismo,

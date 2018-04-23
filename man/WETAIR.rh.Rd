@@ -20,7 +20,7 @@ esat Saturation vapour pressure (Pa)
 
 vd Vapour density (kg m-3)
 
-rw Mixing ration (kg kg-1)
+rw Mixing ratio (kg kg-1)
 
 tvir Virtual temperature (K)
 
@@ -43,4 +43,3 @@ Institution Press. Washington, DC. WETAIR must be used in conjunction with funct
 Input variables are shown below. The user must supply known values for rh, db and pb (bp at one standard
 atmosphere is 101 325 pascals).
 }
-
