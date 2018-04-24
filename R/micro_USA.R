@@ -55,8 +55,8 @@
 #' \code{warm}{ = 0, uniform warming, deg C}\cr\cr
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 #' \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
-#' \code{opendap}{ = 0, query met grids via opendap (does not work on PC)}\cr\cr
-#' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
+#' \code{opendap}{ = 1, query met grids via opendap (does not work on PC)}\cr\cr
+#' \code{soilgrids}{ = 1, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
 #'
@@ -656,7 +656,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       KS<-soil.hydro$KS
       BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
       }else{
-        cat('no SoilGrids data for this site, using user-input soil properties /n')
+        cat('no SoilGrids data for this site, using user-input soil properties \n')
       }
     }
 
@@ -754,7 +754,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
         }else{
 
           cat(paste("reading weather input for ", yearlist[j],
-            " /n", sep = ""))
+            " \n", sep = ""))
           nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
             ".nc"))
           tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",

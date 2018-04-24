@@ -818,7 +818,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
       KS<-soil.hydro$KS
       BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
       }else{
-        cat('no SoilGrids data for this site, using user-input soil properties /n')
+        cat('no SoilGrids data for this site, using user-input soil properties \n')
       }
     }
     # setting up for temperature correction using lapse rate given difference between 9sec DEM value and 0.05 deg value

@@ -808,7 +808,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
       KS<-soil.hydro$KS
       BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
       }else{
-        cat('no SoilGrids data for this site, using user-input soil properties /n')
+        cat('no SoilGrids data for this site, using user-input soil properties \n')
       }
     }
     # setting up for temperature correction using lapse rate given difference between 9sec DEM value and 0.05 deg value
@@ -1453,8 +1453,9 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
             VAPRES<-VAPRES*100 # convert from hectopascals to pascals
             TMAXK<-TMAXX+273.15
             loge<-TMAXK
-            loge[loge>273.16]<- -7.90298*(373.16/TMAXK[loge>273.16]-1.)+5.02808*log10(373.16/TMAXK[loge>273.16])-1.3816E-07*(10.^(11.344*(1.-TMAXK[loge>273.16]/373.16))-1.)+8.1328E-03*(10.^(-3.49149*(373.16/TMAXK[loge>273.16]-1.))-1.)+log10(1013.246)
-            loge[loge<=273.16]<- -9.09718*(273.16/TMAXK[loge<=273.16]-1.)-3.56654*log10(273.16/TMAXK[loge<=273.16])+.876793*(1.-TMAXK[loge<=273.16]/273.16)+log10(6.1071)
+            loge2<-loge
+            loge[loge2>273.16]<- -7.90298*(373.16/TMAXK[loge2>273.16]-1.)+5.02808*log10(373.16/TMAXK[loge2>273.16])-1.3816E-07*(10.^(11.344*(1.-TMAXK[loge2>273.16]/373.16))-1.)+8.1328E-03*(10.^(-3.49149*(373.16/TMAXK[loge2>273.16]-1.))-1.)+log10(1013.246)
+            loge[loge2<=273.16]<- -9.09718*(273.16/TMAXK[loge2<=273.16]-1.)-3.56654*log10(273.16/TMAXK[loge2<=273.16])+.876793*(1.-TMAXK[loge2<=273.16]/273.16)+log10(6.1071)
             estar<-(10.^loge)*100.
             RHMINN<-(VAPRES/estar)*100
             if(scenario!=""){
@@ -1465,8 +1466,9 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
             #RHMINN
             TMINK<-TMINN+273.15
             loge<-TMINK
-            loge[loge>273.16]<- -7.90298*(373.16/TMINK[loge>273.16]-1.)+5.02808*log10(373.16/TMINK[loge>273.16])-1.3816E-07*(10.^(11.344*(1.-TMINK[loge>273.16]/373.16))-1.)+8.1328E-03*(10.^(-3.49149*(373.16/TMINK[loge>273.16]-1.))-1.)+log10(1013.246)
-            loge[loge<=273.16]<- -9.09718*(273.16/TMINK[loge<=273.16]-1.)-3.56654*log10(273.16/TMINK[loge<=273.16])+.876793*(1.-TMINK[loge<=273.16]/273.16)+log10(6.1071)
+            loge2<-loge
+            loge[loge2>273.16]<- -7.90298*(373.16/TMINK[loge2>273.16]-1.)+5.02808*log10(373.16/TMINK[loge2>273.16])-1.3816E-07*(10.^(11.344*(1.-TMINK[loge2>273.16]/373.16))-1.)+8.1328E-03*(10.^(-3.49149*(373.16/TMINK[loge2>273.16]-1.))-1.)+log10(1013.246)
+            loge[loge2<=273.16]<- -9.09718*(273.16/TMINK[loge2<=273.16]-1.)-3.56654*log10(273.16/TMINK[loge2<=273.16])+.876793*(1.-TMINK[loge2<=273.16]/273.16)+log10(6.1071)
             estar<-(10.^loge)*100.
             RHMAXX<-(VAPRES/estar)*100
             if(scenario!=""){
