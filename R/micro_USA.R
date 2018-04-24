@@ -296,11 +296,11 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
   snowmodel=1,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
   shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",
-  barcoo="",quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0, opendap = 0, soilgrids = 0, IR = 0, message = 0, fail = nyears * 24 * 365) {
+  quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0, opendap = 0, soilgrids = 0, IR = 0, message = 0, fail = nyears * 24 * 365) {
 
   # loc="Madison, Wisconsin"
   # timeinterval=365
-  # ystart=2016
+  # ystart=2014
   # yfinish=2016
   # nyears=1
   # soiltype=4
@@ -316,7 +316,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
   # Z02=0
   # ZH1=0
   # ZH2=0
-  # runshade=1
+  # runshade=0
   # clearsky=0
   # rungads=1
   # write_input=0
@@ -327,7 +327,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
   # dailywind=1
   # adiab_cor=1
   # warm=0
-  # spatial="N:/USA"
+  # spatial="C:/USA"
   # loop=0
   # ERR=1.5
   # RUF=0.004
@@ -372,8 +372,6 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
   # shore=0
   # tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
   # scenario=""
-  # year=2070
-  # barcoo=""
   # quadrangle=1
   # hourly=0
   # rainhour = 0
@@ -389,6 +387,14 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
   # MAXCOUNT = 500
   # windfac=1
   # rainhourly = 0
+  # opendap = 1
+  # soilgrids = 0
+  # IR = 0
+  # message = 0
+  # fail = nyears * 24 * 365
+  # elev = NA
+  # lapse_max = 0.0077
+  # lapse_min = 0.0039
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
@@ -629,7 +635,24 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     azmuth<-aspect
 
     #GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]]
-    USADEM <- extract(raster(paste0(spatial,"/metdata_elevationdata.nc")), x) # metres above sea level
+    if(opendap == 1){
+      cat("extracting elevation via opendaps \n")
+      baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/MET/"
+          nc <- nc_open(paste0(baseurl, "/elev/metdata_elevationdata.nc"))
+          lon <- ncvar_get(nc, "lon")
+          lat <- ncvar_get(nc, "lat")
+          flat=match(abs(lat-x[2])<1/48,1)
+          latindex=which(flat %in% 1)
+          flon=match(abs(lon-x[1])<1/48,1)
+          lonindex=which(flon %in% 1)
+          start <- c(lonindex,latindex,1)
+          count <- c(1, 1, 1)
+          USADEM <- as.numeric(ncvar_get(nc, varid = "elevation",
+            start = start, count))
+          nc_close(nc)
+    }else{
+     USADEM <- extract(raster(paste0(spatial,"/metdata_elevationdata.nc")), x) # metres above sea level
+    }
     ALTITUDES <-NA# extract(raster(paste0(spatial,"/terr50.tif")), x) # to do
     if(is.na(elev) == FALSE){ALTITUDES <- elev} # check if user-specified elevation
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-USADEM}
@@ -851,8 +874,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
           nc_close(nc)
           Tmax <- tmax - 273.15
           Tmin <- tmin - 273.15
-        }
-        else {
+        } else {
           cat(paste("reading weather input for ", yearlist[j],
             " \n", sep = ""))
           nc <- nc_open(paste(spatial, "/tmmn_", yearlist[j],
@@ -986,12 +1008,12 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
 
       # correct for potential change in RH with elevation-corrected Tair
       es <- WETAIR(db = TMAXX, rh = 100)$esat
-      e <- WETAIR(db = tmax-273.15, rh = rhmin)$e
+      e <- WETAIR(db = Tmax-273.15, rh = rhmin)$e
       RHMINN <- (e / es) * 100
       RHMINN[RHMINN>100]<-100
       RHMINN[RHMINN<0]<-0.01
       es <- WETAIR(db = TMINN, rh = 100)$esat
-      e <- WETAIR(db = tmin-273.15, rh = rhmin)$e
+      e <- WETAIR(db = Tmin-273.15, rh = rhmin)$e
       RHMAXX <- (e / es) * 100
       RHMAXX[RHMAXX>100]<-100
       RHMAXX[RHMAXX<0]<-0.01
