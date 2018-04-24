@@ -578,7 +578,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
       ndays<-365*nyears
     }
 
-    doys12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
+    doys12<-c(15, 46, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349) # middle day of each month
     doysn<-doys12 # variable of doys for when doing multiple years
     if(nyears>1 & timeinterval==365){ # create sequence of days for splining across multiple years
       for(i in 1:(nyears-1)){
@@ -808,9 +808,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
       if(length(ov) > 3){
       soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
       colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
-
       #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
-      DEP <- c(0., 2.5,  5.,  10,  15, 20., 30.,  60.,  100.,  200.) # Soil nodes (cm)
       soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
       PE<-soil.hydro$PE
       BB<-soil.hydro$BB
@@ -1294,4 +1292,4 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
       } # end of check for na sites
     } # end of check if soil data is being used but no soil data returned
   } # end error trapping
-} # end of NicheMapR_Setup_micro function
+} # end of micro_aust_forecast function

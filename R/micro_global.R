@@ -94,7 +94,6 @@
 #' { and points half way between)}\cr\cr
 #' \code{BD}{ = rep(1.3,19), Soil bulk density (Mg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
 #' \code{DD}{ = rep(2.56,19), Soil density (Mg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
-#' \code{Clay}{ = 20, Clay content for matric potential calculations (\%)}\cr\cr
 #' \code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
 #' \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
 #' \code{evenrain}{ = 0, Spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)}\cr\cr
@@ -287,11 +286,9 @@ micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
   SpecHeat = 870, BulkDensity = 1.3, PCTWET = 0, cap = 1, CMH2O = 1, hori=rep(0,24),
   TIMAXS = c(1, 1, 0, 0), TIMINS = c(0, 0, 1, 1), timezone = 0, runmoist = 0,
   PE = rep(1.1, 19), KS = rep(0.0037, 19), BB = rep(4.5, 19), BD = rep(BulkDensity, 19),
-  DD = rep(Density, 19), Clay = 20, maxpool = 10000, rainmult = 1, evenrain = 0,
+  DD = rep(Density, 19), maxpool = 10000, rainmult = 1, evenrain = 0,
   SoilMoist_Init = c(0.1, 0.12, 0.15, 0.2, 0.25, 0.3, 0.3, 0.3, 0.3, 0.3),
-  L=c(0, 0, 8.18990859, 7.991299442, 7.796891252, 7.420411664, 7.059944542, 6.385001059,
-    5.768074989, 4.816673431, 4.0121088, 1.833554792, 0.946862989, 0.635260544, 0.804575,
-    0.43525621, 0.366052856, 0 , 0) * 10000, R1 = 0.001, RW = 2.5e+10, RL = 2e+6,
+  L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000, R1 = 0.001, RW = 2.5e+10, RL = 2e+6,
   PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500, LAI=0.1, snowmodel = 0, snowtemp = 1.5,
   snowdens = 0.375, densfun = c(0, 0), snowmelt = 0.9, undercatch = 1, rainmelt = 0.0125,
   rainfrac = 0.5, shore = 0, tides = matrix(data = 0, nrow = 24 * timeinterval * nyears,
@@ -328,11 +325,6 @@ micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
   if(rungads%in%c(0,1)==FALSE){
     message("ERROR: the variable 'rungads' be either 0 or 1.
       Please correct.", '\n')
-    errors<-1
-  }
-  if(Clay<0){
-    message("ERROR: Clay density value (Clay) is negative.
-      Please input a positive value.", '\n')
     errors<-1
   }
   if(write_input%in%c(0,1)==FALSE){
@@ -479,7 +471,7 @@ micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
 
     ################## time related variables #################################
 
-    doys12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
+    doys12<-c(15, 46, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349) # middle day of each month
     doysn<-doys12 # variable of doys for when doing multiple years
     if(nyears>1 & timeinterval==365){ # create sequence of days for splining across multiple years
       for(i in 1:(nyears-1)){
@@ -584,9 +576,7 @@ micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
       if(length(ov) > 3){
         soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
         colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
-
         #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
-        DEP <- c(0., 2.5,  5.,  10,  15, 20., 30.,  60.,  100.,  200.) # Soil nodes (cm)
         soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
         PE<-soil.hydro$PE
         BB<-soil.hydro$BB
@@ -792,7 +782,6 @@ micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
       moists<-moists2
     }
 
-
     # now make the soil properties matrix
     # columns are:
     #1) bulk density (Mg/m3)
@@ -804,10 +793,10 @@ micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
     soilprops<-matrix(data = 0, nrow = 10, ncol = 6) # create an empty soil properties matrix
     soilprops[1,1]<-BulkDensity # insert soil bulk density to profile 1
     soilprops[2,1]<-BulkDensity # insert soil bulk density to profile 2
-    soilprops[1,2]<-min(0.26,1-BulkDensity/Density) # insert saturated water content to profile 1
-    soilprops[2,2]<-min(0.26,1-BulkDensity/Density) # insert saturated water content to profile 2
-    soilprops[1,3]<-Clay     # insert \% clay to profile 1
-    soilprops[2,3]<-Clay     # insert\% clay to profile 2
+    soilprops[1,2]<-min(0.26, 1 - BulkDensity / Density) # insert saturated water content to profile 1
+    soilprops[2,2]<-min(0.26, 1 - BulkDensity / Density) # insert saturated water content to profile 2
+    soilprops[1,3]<-20 # not used
+    soilprops[2,3]<-20 # not used
     if(cap==1){ # insert thermal conductivity to profile 1, and see if 'organic cap' added on top
       soilprops[1,4]<-0.2 # mineral thermal conductivity
     }else{
@@ -997,4 +986,4 @@ micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
       }
     }
   } # end error trapping
-} # end of NicheMapR_Setup_micro function
+} # end of micro_global function

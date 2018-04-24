@@ -102,8 +102,6 @@
 #' \code{DD}{ = rep(2.56,19), Soil density (Mg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
 #' \code{DEP}
 #' { and points half way between)}\cr\cr
-#' \code{Clay}{ = 20, Clay content for matric potential calculations (\%)}\cr\cr
-#' \code{SatWater}{ = rep(0.26,10), # volumetric water content at saturation (0.1 bar matric potential) (m3/m3)}\cr\cr
 #' \code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
 #' \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
 #' \code{evenrain}{ = 0, Spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)}\cr\cr
@@ -130,7 +128,6 @@
 #' \code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
 #' \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
 #' \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
-#' \code{rainfrac}{ = 0.5, fraction of rain that falls on the first day of the month (decimal \% with 0 meaning rain falls evenly) - this parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data)}\cr\cr
 #'
 #' \strong{ Intertidal mode parameters:}
 #'
@@ -297,15 +294,14 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
   ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2.56,SpecHeat=870,BulkDensity=1.3,
   PCTWET=0,rainwet=1.5,cap=1,CMH2O=1.,hori=rep(0,24),
   TIMAXS=c(1.0, 1.0, 0.0, 0.0),TIMINS=c(0, 0, 1, 1),timezone=0,
-  runmoist=1,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(BulkDensity,19),DD=rep(Density,19),Clay=20,
-  SatWater=rep(0.26,10),maxpool=10000,rainmult=1,evenrain=0,
+  runmoist=1,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(BulkDensity,19),DD=rep(Density,19),
+  maxpool=10000,rainmult=1,evenrain=0,
   SoilMoist_Init=c(0.1,0.12,0.15,0.3,0.4,0.4,0.4,0.4,0.4,0.4),
   L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
     4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
     0,0)*10000, R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
   LAI=0.1,
   snowmodel=0,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
-  rainfrac=0.5,
   shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",
   barcoo="",quadrangle=1,hourly=0,rainhourly=0,rainhour=0, uid = "", pwd = "",
   lamb = 0, IUV = 0, soilgrids = 1, IR = 0, opendap = 1, message = 0, fail = nyears * 24 * 365) {
@@ -363,8 +359,6 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
   #   BB=rep(4.5,19)
   #   BD=rep(1.3,19)
   #   DD=rep(2.56,19)
-  #   Clay=20
-  #   SatWater=rep(0.26,10)
   #   maxpool=10000
   #   rainmult=1
   #   evenrain=0
@@ -380,7 +374,6 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
   #   snowmelt=0.9
   #   undercatch=1
   #   rainmelt=0.0125
-  #   rainfrac=0.5
   #   shore=0
   #   tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
   #   scenario=""
@@ -447,11 +440,6 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
   if(run.gads%in%c(0,1)==FALSE){
     message("ERROR: the variable 'run.gads' be either 0 or 1.
       Please correct.", '\n')
-    errors<-1
-  }
-  if(Clay<0){
-    message("ERROR: Clay density value (Clay) is negative.
-      Please input a positive value.", '\n')
     errors<-1
   }
   if(write_input%in%c(0,1)==FALSE){
@@ -602,7 +590,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
       ndays<-365*nyears
     }
 
-    doys12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
+    doys12<-c(15, 46, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349) # middle day of each month
     doysn<-doys12 # variable of doys for when doing multiple years
     if(nyears>1 & timeinterval==365){ # create sequence of days for splining across multiple years
       for(i in 1:(nyears-1)){
@@ -856,9 +844,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
       if(length(ov) > 3){
         soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
         colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
-
         #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
-        DEP <- c(0., 2.5,  5.,  10,  15, 20., 30.,  60.,  100.,  200.) # Soil nodes (cm)
         soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
         PE<-soil.hydro$PE
         BB<-soil.hydro$BB
@@ -1778,15 +1764,15 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
           }
         }
 
-        REFLS <- (1:(dim))*0+REFL
+        REFLS <- rep(REFL, dim)
         if((soildata==1)&(length(RAINFALL)>0)){
           soilwet<-RAINFALL
           soilwet[soilwet<=rainwet] = 0
           soilwet[soilwet>0] = 90
           PCTWET<-pmax(soilwet,PCTWET)
         }else{
-          REFLS <- (1:(dim))*0+REFL
-          PCTWET <- (1:(dim))*0+PCTWET
+          REFLS <- rep(REFL, dim)
+          PCTWET <- rep(PCTWET, dim)
           soilwet<-RAINFALL
           soilwet[soilwet<=rainwet] = 0
           soilwet[soilwet>0] = 90
@@ -1934,8 +1920,8 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
         soilprops<-matrix(data = 0, nrow = 10, ncol = 6)
 
         soilprops[,1]<-BulkDensity
-        soilprops[,2]<-SatWater
-        soilprops[,3]<-Clay
+        soilprops[,2]<-min(0.26, 1 - BulkDensity / Density) # not used if soil moisture computed
+        soilprops[,3]<-20 # not used
         soilprops[,4]<-Thcond
         soilprops[,5]<-SpecHeat
         soilprops[,6]<-Density
@@ -1943,8 +1929,6 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
         if(cap==1){
           soilprops[1:2,4]<-0.2
           soilprops[1:2,5]<-1920
-          #soilprops[1:2,6]<-1.3
-          #soilprops[1:2,1]<-0.7
         }
         if(cap==2){
           soilprops[1:2,4]<-0.1
@@ -2148,4 +2132,4 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
       } # end of check for na sites
     } # end of check if soil data is being used but no soil data returned
   } # end error trapping
-} # end of NicheMapR_Setup_micro function
+} # end of micro_aust function
