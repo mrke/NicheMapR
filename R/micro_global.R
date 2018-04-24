@@ -78,6 +78,7 @@
 #' \code{TIMAXS}{ = c(1, 1, 0, 0), Time of Maximums for Air Wind RelHum Cloud (h), air & Wind max's relative to solar noon, humidity and cloud cover max's relative to sunrise}\cr\cr
 #' \code{TIMINS}{ = c(0, 0, 1, 1), Time of Minimums for Air Wind RelHum Cloud (h), air & Wind min's relative to sunrise, humidity and cloud cover min's relative to solar noon}\cr\cr
 #' \code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr
+#' \code{TAI}{ = 0, Vector of 111 values, one per wavelenght bin, for solar attenuation - used to overide GADS}\c\c
 #'
 #' \strong{ Soil moisture mode parameters:}
 #'
@@ -277,24 +278,26 @@
 #'  }
 #'}
 #' @export
-micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,soiltype=4,
-  REFL=0.15, elev = NA, slope=0,aspect=0, lapse_max = 0.0077, lapse_min = 0.0039,
-  DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
-  minshade=0,maxshade=90,Refhyt=1.2, Usrhyt=0.01, Z01=0, Z02=0, ZH1=0, ZH2=0,
-  runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,
-  ERR=2.0,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2.56,SpecHeat=870,BulkDensity=1.3,
-  PCTWET=0,cap=1,CMH2O=1.,hori=rep(0,24),
-  TIMAXS=c(1, 1, 0, 0),TIMINS=c(0, 0, 1, 1),timezone=0,
-  runmoist=0,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(BulkDensity,19),DD=rep(Density,19),Clay=20,
-  maxpool=10000,rainmult=1,evenrain=0,
-  SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3),
-  L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
-    4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
-    0,0)*10000, R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
-  LAI=0.1,
-  snowmodel=0,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
-  rainfrac=0.5,
-  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3), lamb = 0, IUV = 0, soilgrids = 0, IR = 0, message = 0, fail = nyears * 24 * 365) {
+micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
+  nyears = 1, soiltype = 4, REFL = 0.15, elev = NA, slope = 0, aspect = 0,
+  lapse_max = 0.0077, lapse_min = 0.0039, DEP=c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200),
+  minshade = 0,maxshade = 90, Refhyt = 1.2, Usrhyt = 0.01, Z01 = 0, Z02 = 0, ZH1 = 0,
+  ZH2 = 0, runshade = 1, clearsky = 0, rungads = 1, write_input = 0, writecsv = 0,
+  ERR = 2.0, RUF = 0.004, EC = 0.0167238, SLE = 0.95, Thcond = 2.5, Density = 2.56,
+  SpecHeat = 870, BulkDensity = 1.3, PCTWET = 0, cap = 1, CMH2O = 1, hori=rep(0,24),
+  TIMAXS = c(1, 1, 0, 0), TIMINS = c(0, 0, 1, 1), timezone = 0, runmoist = 0,
+  PE = rep(1.1, 19), KS = rep(0.0037, 19), BB = rep(4.5, 19), BD = rep(BulkDensity, 19),
+  DD = rep(Density, 19), Clay = 20, maxpool = 10000, rainmult = 1, evenrain = 0,
+  SoilMoist_Init = c(0.1, 0.12, 0.15, 0.2, 0.25, 0.3, 0.3, 0.3, 0.3, 0.3),
+  L=c(0, 0, 8.18990859, 7.991299442, 7.796891252, 7.420411664, 7.059944542, 6.385001059,
+    5.768074989, 4.816673431, 4.0121088, 1.833554792, 0.946862989, 0.635260544, 0.804575,
+    0.43525621, 0.366052856, 0 , 0) * 10000, R1 = 0.001, RW = 2.5e+10, RL = 2e+6,
+  PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500, LAI=0.1, snowmodel = 0, snowtemp = 1.5,
+  snowdens = 0.375, densfun = c(0, 0), snowmelt = 0.9, undercatch = 1, rainmelt = 0.0125,
+  rainfrac = 0.5, shore = 0, tides = matrix(data = 0, nrow = 24 * timeinterval * nyears,
+    ncol = 3), lamb = 0, IUV = 0, soilgrids = 0, IR = 0, message = 0,
+  fail = nyears * 24 * 365, TAI = 0) {
+
   SoilMoist=SoilMoist_Init
   errors<-0
 
@@ -579,17 +582,17 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       soilgrids.r <- REST.SoilGrids(c("BLDFIE", "SLTPPT","SNDPPT", "CLYPPT"))
       ov <- over(soilgrids.r, pnts)
       if(length(ov) > 3){
-      soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
-      colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
+        soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
+        colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
 
-      #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
-      DEP <- c(0., 2.5,  5.,  10,  15, 20., 30.,  60.,  100.,  200.) # Soil nodes (cm)
-      soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
-      PE<-soil.hydro$PE
-      BB<-soil.hydro$BB
-      BD<-soil.hydro$BD
-      KS<-soil.hydro$KS
-      BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
+        #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
+        DEP <- c(0., 2.5,  5.,  10,  15, 20., 30.,  60.,  100.,  200.) # Soil nodes (cm)
+        soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
+        PE<-soil.hydro$PE
+        BB<-soil.hydro$BB
+        BD<-soil.hydro$BD
+        KS<-soil.hydro$KS
+        BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
       }else{
         cat('no SoilGrids data for this site, using user-input soil properties \n')
       }
@@ -610,8 +613,8 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     ALTT<-as.numeric(CLIMATE[,1]) # convert from km to m
     delta_elev <- 0
     if(is.na(elev) == FALSE){ # check if user-specified elevation
-     delta_elev <- ALTT - elev # get delta for lapse rate correction
-     ALTT <- elev # now make final elevation the user-specified one
+      delta_elev <- ALTT - elev # get delta for lapse rate correction
+      ALTT <- elev # now make final elevation the user-specified one
     }
     adiab_corr_max <- delta_elev * lapse_max
     adiab_corr_min <- delta_elev * lapse_min
@@ -752,22 +755,23 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       }
     }#end check doing daily sims
     dim<-length(RAINFALL)
-    if(rungads==1){
-      ####### get solar attenuation due to aerosols with program GADS #####################
-      relhum<-1.
-      optdep.summer<-as.data.frame(rungads(longlat[2],longlat[1],relhum,0))
-      optdep.winter<-as.data.frame(rungads(longlat[2],longlat[1],relhum,1))
-      optdep<-cbind(optdep.winter[,1],rowMeans(cbind(optdep.summer[,2],optdep.winter[,2])))
-      optdep<-as.data.frame(optdep)
-      colnames(optdep)<-c("LAMBDA","OPTDEPTH")
-      a<-lm(OPTDEPTH~poly(LAMBDA, 6, raw=TRUE),data=optdep)
-      LAMBDA<-c(290,295,300,305,310,315,320,330,340,350,360,370,380,390,400,420,440,460,480,500,520,540,560,580,600,620,640,660,680,700,720,740,760,780,800,820,840,860,880,900,920,940,960,980,1000,1020,1080,1100,1120,1140,1160,1180,1200,1220,1240,1260,1280,1300,1320,1380,1400,1420,1440,1460,1480,1500,1540,1580,1600,1620,1640,1660,1700,1720,1780,1800,1860,1900,1950,2000,2020,2050,2100,2120,2150,2200,2260,2300,2320,2350,2380,2400,2420,2450,2490,2500,2600,2700,2800,2900,3000,3100,3200,3300,3400,3500,3600,3700,3800,3900,4000)
-      TAI<-predict(a,data.frame(LAMBDA))
-      ################ end GADS ##################################################
-    }else{ # use the original profile from Elterman, L. 1970. Vertical-attenuation model with eight surface meteorological ranges 2 to 13 kilometers. U. S. Airforce Cambridge Research Laboratory, Bedford, Mass.
-      TAI<-c(0.42,0.415,0.412,0.408,0.404,0.4,0.395,0.388,0.379,0.379,0.379,0.375,0.365,0.345,0.314,0.3,0.288,0.28,0.273,0.264,0.258,0.253,0.248,0.243,0.236,0.232,0.227,0.223,0.217,0.213,0.21,0.208,0.205,0.202,0.201,0.198,0.195,0.193,0.191,0.19,0.188,0.186,0.184,0.183,0.182,0.181,0.178,0.177,0.176,0.175,0.175,0.174,0.173,0.172,0.171,0.17,0.169,0.168,0.167,0.164,0.163,0.163,0.162,0.161,0.161,0.16,0.159,0.157,0.156,0.156,0.155,0.154,0.153,0.152,0.15,0.149,0.146,0.145,0.142,0.14,0.139,0.137,0.135,0.135,0.133,0.132,0.131,0.13,0.13,0.129,0.129,0.128,0.128,0.128,0.127,0.127,0.126,0.125,0.124,0.123,0.121,0.118,0.117,0.115,0.113,0.11,0.108,0.107,0.105,0.103,0.1)
-    } #end check if running gads
-
+    if(length(TAI) < 111){ # no user supplied values, compute with GADS
+      if(rungads==1){
+        ####### get solar attenuation due to aerosols with program GADS #####################
+        relhum<-1.
+        optdep.summer<-as.data.frame(rungads(longlat[2],longlat[1],relhum,0))
+        optdep.winter<-as.data.frame(rungads(longlat[2],longlat[1],relhum,1))
+        optdep<-cbind(optdep.winter[,1],rowMeans(cbind(optdep.summer[,2],optdep.winter[,2])))
+        optdep<-as.data.frame(optdep)
+        colnames(optdep)<-c("LAMBDA","OPTDEPTH")
+        a<-lm(OPTDEPTH~poly(LAMBDA, 6, raw=TRUE),data=optdep)
+        LAMBDA<-c(290,295,300,305,310,315,320,330,340,350,360,370,380,390,400,420,440,460,480,500,520,540,560,580,600,620,640,660,680,700,720,740,760,780,800,820,840,860,880,900,920,940,960,980,1000,1020,1080,1100,1120,1140,1160,1180,1200,1220,1240,1260,1280,1300,1320,1380,1400,1420,1440,1460,1480,1500,1540,1580,1600,1620,1640,1660,1700,1720,1780,1800,1860,1900,1950,2000,2020,2050,2100,2120,2150,2200,2260,2300,2320,2350,2380,2400,2420,2450,2490,2500,2600,2700,2800,2900,3000,3100,3200,3300,3400,3500,3600,3700,3800,3900,4000)
+        TAI<-predict(a,data.frame(LAMBDA))
+        ################ end GADS ##################################################
+      }else{ # use the original profile from Elterman, L. 1970. Vertical-attenuation model with eight surface meteorological ranges 2 to 13 kilometers. U. S. Airforce Cambridge Research Laboratory, Bedford, Mass.
+        TAI<-c(0.42,0.415,0.412,0.408,0.404,0.4,0.395,0.388,0.379,0.379,0.379,0.375,0.365,0.345,0.314,0.3,0.288,0.28,0.273,0.264,0.258,0.253,0.248,0.243,0.236,0.232,0.227,0.223,0.217,0.213,0.21,0.208,0.205,0.202,0.201,0.198,0.195,0.193,0.191,0.19,0.188,0.186,0.184,0.183,0.182,0.181,0.178,0.177,0.176,0.175,0.175,0.174,0.173,0.172,0.171,0.17,0.169,0.168,0.167,0.164,0.163,0.163,0.162,0.161,0.161,0.16,0.159,0.157,0.156,0.156,0.155,0.154,0.153,0.152,0.15,0.149,0.146,0.145,0.142,0.14,0.139,0.137,0.135,0.135,0.133,0.132,0.131,0.13,0.13,0.129,0.129,0.128,0.128,0.128,0.127,0.127,0.126,0.125,0.124,0.123,0.121,0.118,0.117,0.115,0.113,0.11,0.108,0.107,0.105,0.103,0.1)
+      } #end check if running gads
+    }
     ################ soil properties  ##################################################
 
     Numtyps <- 2 # number of soil types
@@ -945,52 +949,52 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
     shadmet<-microut$shadmet # retrieve above ground microclimatic conditions, max shade
     soil<-microut$soil # retrieve soil temperatures, minimum shade
     shadsoil<-microut$shadsoil # retrieve soil temperatures, maximum shade
-        if(runmoist==1){
-          soilmoist<-microut$soilmoist # retrieve soil moisture, minimum shade
-          shadmoist<-microut$shadmoist # retrieve soil moisture, maximum shade
-          humid<-microut$humid # retrieve soil humidity, minimum shade
-          shadhumid<-microut$shadhumid # retrieve soil humidity, maximum shade
-          soilpot<-microut$soilpot # retrieve soil water potential, minimum shade
-          shadpot<-microut$shadpot # retrieve soil water potential, maximum shade
-          plant<-microut$plant # retrieve plant output, minimum shade
-          shadplant<-microut$shadplant # retrieve plant output, maximum shade
-        }else{
-          soilpot<-soil
-          soilmoist<-soil
-          shadpot<-soil
-          shadmoist<-soil
-          humid<-soil
-          shadhumid<-soil
-          plant<-cbind(soil,soil[,3:4])
-          shadplant<-cbind(soil,soil[,3:4])
-          soilpot[,3:12]<-0
-          soilmoist[,3:12]<-0.5
-          shadpot[,3:12]<-0
-          shadmoist[,3:12]<-0.5
-          humid[,3:12]<-0.99
-          shadhumid[,3:12]<-0.99
-          plant[,3:14]<-0
-          shadplant[,3:14]<-0
-        }
-       if(snowmodel == 1){
-          sunsnow <- microut$sunsnow
-          shdsnow <- microut$shdsnow
-        }
-        if(lamb == 1){
-          drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
-          drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
-          srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
-          if(snowmodel == 1){
-           return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
-          }else{
-           return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
-          }
-        }else{
-          if(snowmodel == 1){
-           return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
-          }else{
-           return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
-          }
-        }
+    if(runmoist==1){
+      soilmoist<-microut$soilmoist # retrieve soil moisture, minimum shade
+      shadmoist<-microut$shadmoist # retrieve soil moisture, maximum shade
+      humid<-microut$humid # retrieve soil humidity, minimum shade
+      shadhumid<-microut$shadhumid # retrieve soil humidity, maximum shade
+      soilpot<-microut$soilpot # retrieve soil water potential, minimum shade
+      shadpot<-microut$shadpot # retrieve soil water potential, maximum shade
+      plant<-microut$plant # retrieve plant output, minimum shade
+      shadplant<-microut$shadplant # retrieve plant output, maximum shade
+    }else{
+      soilpot<-soil
+      soilmoist<-soil
+      shadpot<-soil
+      shadmoist<-soil
+      humid<-soil
+      shadhumid<-soil
+      plant<-cbind(soil,soil[,3:4])
+      shadplant<-cbind(soil,soil[,3:4])
+      soilpot[,3:12]<-0
+      soilmoist[,3:12]<-0.5
+      shadpot[,3:12]<-0
+      shadmoist[,3:12]<-0.5
+      humid[,3:12]<-0.99
+      shadhumid[,3:12]<-0.99
+      plant[,3:14]<-0
+      shadplant[,3:14]<-0
+    }
+    if(snowmodel == 1){
+      sunsnow <- microut$sunsnow
+      shdsnow <- microut$shdsnow
+    }
+    if(lamb == 1){
+      drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
+      drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
+      srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
+      if(snowmodel == 1){
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
+      }else{
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
+      }
+    }else{
+      if(snowmodel == 1){
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
+      }else{
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
+      }
+    }
   } # end error trapping
 } # end of NicheMapR_Setup_micro function
