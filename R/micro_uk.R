@@ -55,8 +55,8 @@
 #' \code{warm}{ = 0, uniform warming, deg C}\cr\cr
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 #' \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
-#' \code{opendap}{ = 0, query met grids via opendap (does not work on PC)}\cr\cr
-#' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
+#' \code{opendap}{ = 1, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
+#' \code{soilgrids}{ = 1, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
 #'
@@ -296,102 +296,107 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
   snowmodel=1,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
   shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0,
-  scenario="",year="",barcoo="",quadrangle=1,hourly=0, rainhourly = 0,
-  rainhour = 0, rainoff=0, lamb = 0, IUV = 0, opendap = 0,
-  soilgrids = 0, IR = 0, message = 0, fail = nyears * 24 * 365) {
+  scenario="",year="", hourly=0, rainhourly = 0,
+  rainhour = 0, rainoff=0, lamb = 0, IUV = 0, opendap = 1,
+  soilgrids = 1, IR = 0, message = 0, fail = nyears * 24 * 365) {
 
-  # loc="London, UK"
-  # timeinterval=365
-  # ystart=2013
-  # yfinish=2015
-  # nyears=1
-  # soiltype=4
-  # REFL=0.15
-  # slope=0
-  # aspect=0
-  # DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
-  # minshade=0
-  # maxshade=90
-  # Refhyt=1.2
-  # Usrhyt=.01
-  # Z01=0
-  # Z02=0
-  # ZH1=0
-  # ZH2=0
-  # runshade=1
-  # clearsky=0
-  # rungads=1
-  # write_input=0
-  # writecsv=0
-  # manualshade=1
-  # soildata=0
-  # terrain=0
-  # dailywind=1
-  # adiab_cor=1
-  # warm=0
-  # spatial="C:/CHESS"
-  # loop=0
-  # ERR=1.5
-  # RUF=0.004
-  # EC=0.0167238
-  # SLE=0.95
-  # Thcond=2.5
-  # Density=2.56
-  # SpecHeat=870
-  # BulkDensity=1.3
-  # PCTWET=0
-  # rainwet=1.5
-  # cap=1
-  # CMH2O=1
-  # hori=rep(0,24)
-  # TIMAXS=c(1.0, 1.0, 0.0, 0.0)
-  # TIMINS=c(0, 0, 1, 1)
-  # timezone=0
-  # runmoist=1
-  # PE=rep(1.1,19)
-  # KS=rep(0.0037,19)
-  # BB=rep(4.5,19)
-  # BD=rep(1.3,19)
-  # DD=rep(2.56,19)
-  # Clay=20
-  # SatWater=rep(0.26,10)
-  # maxpool=10000
-  # rainmult=1
-  # evenrain=0
-  # SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
-  # L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
-  #   4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
-  #   0,0)*10000
-  # LAI=0.1
-  # snowmodel=1
-  # snowtemp=1.5
-  # snowdens=0.375
-  # densfun=c(0,0)
-  # snowmelt=0.9
-  # undercatch=1
-  # rainmelt=0.0125
-  # rainfrac=0.5
-  # shore=0
-  # tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
-  # scenario=""
-  # year=2070
-  # barcoo=""
-  # quadrangle=1
-  # hourly=0
-  # rainhour = 0
-  # rainoff=0
-  # lamb = 0
-  # IUV = 0
-  # R1 = 0.001
-  # RW = 2.5e+10
-  # RL = 2e+6
-  # PC = -1500
-  # SP = 10
-  # IM = 1e-06
-  # MAXCOUNT = 500
-  # windfac=1
-  # rainhourly = 0
-
+  loc="London, UK"
+  timeinterval=365
+  ystart=2013
+  yfinish=2015
+  nyears=1
+  soiltype=4
+  REFL=0.15
+  slope=0
+  aspect=0
+  DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
+  minshade=0
+  maxshade=90
+  Refhyt=1.2
+  Usrhyt=.01
+  Z01=0
+  Z02=0
+  ZH1=0
+  ZH2=0
+  runshade=1
+  clearsky=0
+  rungads=1
+  write_input=0
+  writecsv=0
+  manualshade=1
+  soildata=0
+  terrain=0
+  dailywind=1
+  adiab_cor=1
+  warm=0
+  spatial="Q:/CHESS"
+  loop=0
+  ERR=1.5
+  RUF=0.004
+  EC=0.0167238
+  SLE=0.95
+  Thcond=2.5
+  Density=2.56
+  SpecHeat=870
+  BulkDensity=1.3
+  PCTWET=0
+  rainwet=1.5
+  cap=1
+  CMH2O=1
+  hori=rep(0,24)
+  TIMAXS=c(1.0, 1.0, 0.0, 0.0)
+  TIMINS=c(0, 0, 1, 1)
+  timezone=0
+  runmoist=1
+  PE=rep(1.1,19)
+  KS=rep(0.0037,19)
+  BB=rep(4.5,19)
+  BD=rep(1.3,19)
+  DD=rep(2.56,19)
+  Clay=20
+  SatWater=rep(0.26,10)
+  maxpool=10000
+  rainmult=1
+  evenrain=0
+  SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
+  L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
+    4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
+    0,0)*10000
+  LAI=0.1
+  snowmodel=1
+  snowtemp=1.5
+  snowdens=0.375
+  densfun=c(0,0)
+  snowmelt=0.9
+  undercatch=1
+  rainmelt=0.0125
+  rainfrac=0.5
+  shore=0
+  tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
+  scenario=""
+  year=2070
+  hourly=0
+  rainhour = 0
+  rainoff=0
+  lamb = 0
+  IUV = 0
+  R1 = 0.001
+  RW = 2.5e+10
+  RL = 2e+6
+  PC = -1500
+  SP = 10
+  IM = 1e-06
+  MAXCOUNT = 500
+  windfac=1
+  rainhourly = 0
+  opendap = 1
+  soilgrids = 1
+  IR = 0
+  message = 0
+  fail = nyears * 24 * 365
+  elev = NA
+  lapse_max = 0.0077
+  lapse_min = 0.0039
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
   if(DEP[2]-DEP[1]>3 | DEP[3]-DEP[2]>3){
@@ -877,9 +882,10 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
 
 
     # compute clear sky solar for the site of interest, for cloud cover computation below
+    cat("running micro_global to get clear sky solar \n")
     micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, timeinterval = 365)
-    clearsky <- micro_clearsky$metout[,c(1, 13)]
-    clearsky_mean1 <- aggregate(clearsky[,2], by = list(clearsky[,1]), FUN = mean)[,2]
+    clearskyrad <- micro_clearsky$metout[,c(1, 13)]
+    clearsky_mean1 <- aggregate(clearskyrad[,2], by = list(clearskyrad[,1]), FUN = mean)[,2]
     leapyears<-seq(1972,2060,4)
     for(j in 1:nyears){
       if(yearlist[j]%in%leapyears){# add day for leap year if needed
