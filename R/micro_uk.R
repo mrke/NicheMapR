@@ -695,17 +695,17 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       soilgrids.r <- REST.SoilGrids(c("BLDFIE", "SLTPPT","SNDPPT", "CLYPPT"))
       ov <- over(soilgrids.r, pnts)
       if(length(ov) > 3){
-      soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
-      colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
+        soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
+        colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
 
-      #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
-      DEP <- c(0., 2.5,  5.,  10,  15, 20., 30.,  60.,  100.,  200.) # Soil nodes (cm)
-      soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
-      PE<-soil.hydro$PE
-      BB<-soil.hydro$BB
-      BD<-soil.hydro$BD
-      KS<-soil.hydro$KS
-      BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
+        #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
+        DEP <- c(0., 2.5,  5.,  10,  15, 20., 30.,  60.,  100.,  200.) # Soil nodes (cm)
+        soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
+        PE<-soil.hydro$PE
+        BB<-soil.hydro$BB
+        BD<-soil.hydro$BD
+        KS<-soil.hydro$KS
+        BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
       }else{
         cat('no SoilGrids data for this site, using user-input soil properties \n')
       }
@@ -956,8 +956,8 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       } #end check if running gads
 
       #if(adiab_cor==1){
-        TMAXX<-as.matrix(Tmax+adiab_corr_max)
-        TMINN<-as.matrix(Tmin+adiab_corr_min)
+      TMAXX<-as.matrix(Tmax+adiab_corr_max)
+      TMINN<-as.matrix(Tmin+adiab_corr_min)
       # }else{
       #   TMAXX<-as.matrix(Tmaxx)
       #   TMINN<-as.matrix(Tminn)
@@ -1232,7 +1232,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       tannul1[1:dim]<-tannul
       moists1[1:10,1:dim]<-moists
       if(length(LAI)<dim){
-       LAI<-rep(LAI[1],dim)
+        LAI<-rep(LAI[1],dim)
       }
       if(shore==0){
         tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
@@ -1326,26 +1326,26 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
         plant[,3:14]<-0
         shadplant[,3:14]<-0
       }
-       if(snowmodel == 1){
-          sunsnow <- microut$sunsnow
-          shdsnow <- microut$shdsnow
-        }
-        if(lamb == 1){
-          drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
-          drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
-          srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
-          if(snowmodel == 1){
-           return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
-          }else{
-           return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
-          }
+      if(snowmodel == 1){
+        sunsnow <- microut$sunsnow
+        shdsnow <- microut$shdsnow
+      }
+      if(lamb == 1){
+        drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
+        drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
+        srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
+        if(snowmodel == 1){
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
         }else{
-          if(snowmodel == 1){
-           return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
-          }else{
-           return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
-          }
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
         }
+      }else{
+        if(snowmodel == 1){
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
+        }else{
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
+        }
+      }
     } # end of check for na sites
     #} # end of check if soil data is being used but no soil data returned
   } # end error trapping
