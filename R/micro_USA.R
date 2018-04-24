@@ -218,7 +218,7 @@
 #' }
 #' @examples
 #' library(NicheMapR)
-#' micro<-micro_USA(loc = 'Madison Wisconsin, USA', runshade = 0, soilgrids = 1, ystart = 2014, yfinish = 2016) # run the model using SoilGrids data at Madison for 2014 to 2016
+#' micro<-micro_USA(loc = 'Madison Wisconsin, USA', runshade = 0, ystart = 2014, yfinish = 2016) # run the model using SoilGrids data at Madison for 2014 to 2016
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
@@ -296,7 +296,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
   snowmodel=1,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   rainfrac=0.5,
   shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",
-  quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0, opendap = 0, soilgrids = 0, IR = 0, message = 0, fail = nyears * 24 * 365) {
+  quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0, opendap = 1, soilgrids = 1, IR = 0, message = 0, fail = nyears * 24 * 365) {
 
   # loc="Madison, Wisconsin"
   # timeinterval=365
