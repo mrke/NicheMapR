@@ -51,8 +51,10 @@
 #' \code{warm}{ = 0, uniform warming, deg C}\cr\cr
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 #' \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
+#' \code{opendap}{ = 1, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
 #' \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
-#' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
+
+#' \code{soilgrids}{ = 1, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
 
@@ -306,7 +308,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
   rainfrac=0.5,
   shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",
   barcoo="",quadrangle=1,hourly=0,rainhourly=0,rainhour=0, uid = "", pwd = "",
-  lamb = 0, IUV = 0, soilgrids = 0, IR = 0, message = 0, fail = nyears * 24 * 365) {
+  lamb = 0, IUV = 0, soilgrids = 1, IR = 0, opendap = 1, message = 0, fail = nyears * 24 * 365) {
   #
   #   loc="Nyrripi, Northern Territory"
   #   timeinterval=365
@@ -321,18 +323,22 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
   #   minshade=0
   #   maxshade=90
   #   Usrhyt=.01
+  #   Z01=0
+  #   Z02=0
+  #   ZH1=0
+  #   ZH2=0
   #   runshade=1
   #   clearsky=0
   #   run.gads=1
   #   write_input=0
   #   writecsv=0
   #   manualshade=1
-  #   soildata=1
+  #   soildata=0
   #   terrain=0
   #   dailywind=1
   #   adiab_cor=1
   #   warm=0
-  #   spatial="c:/Australian Environment/"
+  #   spatial="w:/"
   #   vlsci=0
   #   loop=0
   #   ERR=1.5
@@ -382,7 +388,30 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
   #   barcoo=""
   #   quadrangle=1
   #   hourly=0
-  if(vlsci==0){
+  # rainhour = 0
+  # rainoff=0
+  # lamb = 0
+  # IUV = 0
+  # R1 = 0.001
+  # RW = 2.5e+10
+  # RL = 2e+6
+  # PC = -1500
+  # SP = 10
+  # IM = 1e-06
+  # MAXCOUNT = 500
+  # windfac=1
+  # rainhourly = 0
+  # opendap = 1
+  # soilgrids = 1
+  # IR = 0
+  # message = 0
+  # fail = nyears * 24 * 365
+  # elev = NA
+  # lapse_max = 0.0077
+  # lapse_min = 0.0039
+  # Refhyt <- 1.2
+
+  if(vlsci==0 | opendap==0){
     library(RODBC)
   }
   errors<-0
@@ -899,9 +928,144 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
       SOLAR_diff<-getdiff(diffs,SOLCst05)
     }
 
+    if(opendap == 1){
     message("extracting climate data", '\n')
+
+    baseurl<-"http://dapds00.nci.org.au/thredds/dodsC/ub8/au/climate/"
+
+ yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
+      for (j in 1:nyears) {
+        if (j == 1) {
+          cat(paste("reading weather input for ", yearlist[j]," \n", sep = ""))
+          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.rad.", yearlist[j],
+            ".nc"))
+          lon <- ncvar_get(nc, "longitude")
+          lat <- ncvar_get(nc, "latitude")
+          flat=match(abs(lat-x[2])<1/44,1)
+          latindex=which(flat %in% 1)
+          flon=match(abs(lon-x[1])<1/44,1)
+          lonindex=which(flon %in% 1)
+          start <- c(latindex,lonindex,1)
+          count <- c(1, 1, -1)
+
+          sol <- as.numeric(ncvar_get(nc, varid = "rad",
+            start = start, count))
+          nc_close(nc)
+          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.tmax.", yearlist[j],
+            ".nc"))
+          tmax <- as.numeric(ncvar_get(nc, varid = "tmax",
+            start = start, count))
+          nc_close(nc)
+          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.tmin.", yearlist[j],
+            ".nc"))
+          tmin <- as.numeric(ncvar_get(nc, varid = "tmin",
+            start = start, count))
+          nc_close(nc)
+          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.vph09.", yearlist[j],
+            ".nc"))
+          vph09 <- as.numeric(ncvar_get(nc, varid = "vph09",
+            start = start, count))
+          nc_close(nc)
+          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.vph15.", yearlist[j],
+            ".nc"))
+          vph15 <- as.numeric(ncvar_get(nc, varid = "vph15",
+            start = start, count))
+          nc_close(nc)
+          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.rain.", yearlist[j],
+            ".nc"))
+          Rain <- as.numeric(ncvar_get(nc, varid = "rain",
+            start = start, count))
+          nc_close(nc)
+        }else{
+
+          cat(paste("reading weather input for ", yearlist[j],
+            " \n", sep = ""))
+          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.rad.", yearlist[j],
+            ".nc"))
+          sol <- c(sol, as.numeric(ncvar_get(nc, varid = "rad",
+            start = start, count)))
+          nc_close(nc)
+          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.tmax.", yearlist[j],
+            ".nc"))
+          tmax <- c(tmax, as.numeric(ncvar_get(nc, varid = "tmax",
+            start = start, count)))
+          nc_close(nc)
+          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.tmin.", yearlist[j],
+            ".nc"))
+          tmin <- c(tmin, as.numeric(ncvar_get(nc, varid = "tmin",
+            start = start, count)))
+          nc_close(nc)
+          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.vph09.", yearlist[j],
+            ".nc"))
+          vph09 <- c(vph09, as.numeric(ncvar_get(nc, varid = "vph09",
+            start = start, count)))
+          nc_close(nc)
+          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.vph15.", yearlist[j],
+            ".nc"))
+          vph15 <- c(vph15, as.numeric(ncvar_get(nc, varid = "vph15",
+            start = start, count)))
+          nc_close(nc)
+          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.rain.", yearlist[j],
+            ".nc"))
+          Rain <- c(Rain, as.numeric(ncvar_get(nc, varid = "rain",
+            start = start, count)))
+          nc_close(nc)
+        }
+      }
+    # compute clear sky solar for the site of interest, for cloud cover computation below
+    cat("running micro_global to get clear sky solar \n")
+    micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, timeinterval = 365)
+    clearskyrad <- micro_clearsky$metout[,c(1, 13)]
+    clearsky_mean1 <- aggregate(clearskyrad[,2], by = list(clearskyrad[,1]), FUN = mean)[,2]
+    leapyears<-seq(1972,2060,4)
+    for(j in 1:nyears){
+      if(yearlist[j]%in%leapyears){# add day for leap year if needed
+        clearsky_mean<-c(clearsky_mean1[1:59],clearsky_mean1[59],clearsky_mean1[60:365])
+      }else{
+        clearsky_mean <- clearsky_mean1
+      }
+      if(j==1){
+        allclearsky <- clearsky_mean
+      }else{
+        allclearsky <- c(allclearsky, clearsky_mean)
+      }
+    }
+    cloud <- (1-sol*10/allclearsky) * 100
+    cloud[cloud<0]<-0
+    cloud[cloud>100]<-100
+    CCMAXX<-as.numeric(cloud)
+    CCMINN<-CCMAXX
+    TMAXX <- tmax
+    TMINN <- tmin
+    ndays<-length(TMAXX)
+    VAPRES_max<-apply(cbind(vph09, vph15), FUN = max, MARGIN = 1)*100 # convert from hectopascals to pascals
+    VAPRES_min<-apply(cbind(vph09, vph15), FUN = min, MARGIN = 1)*100 # convert from hectopascals to pascals
+    TMAXK<-TMAXX+273.15
+    loge<-TMAXK
+    loge2<-loge
+    loge[loge2>273.16]<- -7.90298*(373.16/TMAXK[loge2>273.16]-1.)+5.02808*log10(373.16/TMAXK[loge2>273.16])-1.3816E-07*(10.^(11.344*(1.-TMAXK[loge2>273.16]/373.16))-1.)+8.1328E-03*(10.^(-3.49149*(373.16/TMAXK[loge2>273.16]-1.))-1.)+log10(1013.246)
+    loge[loge2<=273.16]<- -9.09718*(273.16/TMAXK[loge2<=273.16]-1.)-3.56654*log10(273.16/TMAXK[loge2<=273.16])+.876793*(1.-TMAXK[loge2<=273.16]/273.16)+log10(6.1071)
+    estar<-(10.^loge)*100.
+    RHMINN<-(VAPRES_min/estar)*100
+    RHMINN[RHMINN>100]<-100
+    RHMINN[RHMINN<0]<-0.01
+    #RHMINN
+    TMINK<-TMINN+273.15
+    loge<-TMINK
+    loge2<-loge
+    loge[loge2>273.16]<- -7.90298*(373.16/TMAXK[loge2>273.16]-1.)+5.02808*log10(373.16/TMAXK[loge2>273.16])-1.3816E-07*(10.^(11.344*(1.-TMAXK[loge2>273.16]/373.16))-1.)+8.1328E-03*(10.^(-3.49149*(373.16/TMAXK[loge2>273.16]-1.))-1.)+log10(1013.246)
+    loge[loge2<=273.16]<- -9.09718*(273.16/TMAXK[loge2<=273.16]-1.)-3.56654*log10(273.16/TMAXK[loge2<=273.16])+.876793*(1.-TMAXK[loge2<=273.16]/273.16)+log10(6.1071)
+    estar<-(10.^loge)*100.
+    RHMAXX<-(VAPRES_max/estar)*100
+    RHMAXX[RHMAXX>100]<-100
+    RHMAXX[RHMAXX<0]<-0.01
+    WNMAXX <- rep(4, length(ndays))
+    WNMINN <- rep(0.5, length(ndays))
+    RAINFALL <- Rain
+    }
+
     # connect to server
-    if(vlsci==0){
+    if(vlsci==0 & opendap == 0){
       channel2 <- RODBC::odbcConnect("ausclim_predecol", uid = uid, pwd = pwd)
       channel <- RODBC::odbcConnect("AWAPDaily", uid = uid, pwd = pwd)
 
@@ -987,7 +1151,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
         } #end check if running gads
 
 
-        if(vlsci==0){
+        if(vlsci==0 & opendap==0){
           yearlist<-seq(ystart,(ystart+(nyears-1)),1)
           for(j in 1:nyears){ # start loop through years
             yeartodo<-yearlist[j]
@@ -1080,6 +1244,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
             dwind<-dwind$wind/15.875
           }
         }else{ #vlsci==1
+          if(vlsci == 1){
           load(paste(barcoo,'TMAXX.bin',sep=''))
           TMAXX <- as.matrix(data[quadrangle,2:7301])
           load(paste(barcoo,'TMINN.bin',sep=''))
@@ -1119,8 +1284,10 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
             TMAXX<-TMAXX+adiab_corr_max
             TMINN<-TMINN+adiab_corr_min
           }
+         }
         } #end vlsci check
         if(vlsci==0){
+          if(opendap == 0){
           if(adiab_cor==1){
             TMAXX<-as.matrix(results$tmax+adiab_corr_max)
             TMINN<-as.matrix(results$tmin+adiab_corr_min)
@@ -1135,7 +1302,13 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
           RAINFALL<-results$rr
           dim<-length(RAINFALL)
           output_AWAPDaily<-results
-
+          }else{
+            if(adiab_cor==1){
+            TMAXX<-as.matrix(TMAXX+adiab_corr_max)
+            TMINN<-as.matrix(TMINN+adiab_corr_min)
+            }
+            dim <- length(RAINFALL)
+          }
           if(scenario!=""){
             # first work out for each site the new predicted rainfall amount for each month - use this to adjust for fact that will underestimate chcange
             # using proportion becasue 0 x % is still 0
@@ -1202,6 +1375,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
         }
 
         # cloud cover
+        if(opendap==0){
         if(vlsci==0){
           if(ystart>1989 & sum(results[,9],na.rm=TRUE)>0){ # solar radiation data available
             query<-paste("SELECT a.*
@@ -1480,6 +1654,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
 
           }#end check for year is 1971 or later
         } #end vlsci check
+        }
         # AUSCLIM query statements
         clouds<-paste("select cloud1,cloud2,cloud3,cloud4,cloud5,cloud6,cloud7,cloud8,cloud9,cloud10,cloud11,cloud12 FROM cloudcover WHERE i = ",dbrow,sep="")
         maxwinds<-paste("select maxwind1,maxwind2,maxwind3,maxwind4,maxwind5,maxwind6,maxwind7,maxwind8,maxwind9,maxwind10,maxwind11,maxwind12 FROM maxwind WHERE i = ",dbrow,sep="")
@@ -1493,6 +1668,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
         ALLMINTEMPS<-TMINN
         ALLMAXTEMPS<-TMAXX
         ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
+        if(opendap == 0){
         if(vlsci==0){
           WNMAXX <- sqlQuery(channel2,maxwinds)
           WNMINN <- sqlQuery(channel2,minwinds)
@@ -1520,7 +1696,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
             WNMINN=WNMINN*WIND_diff
           }
         }
-
+        }
         if(soildata==1){
           SLES1<-suppressWarnings(spline(doys12,SLES,n=timeinterval,xmin=1,xmax=365,method="periodic"))
           SLES<-rep(SLES1$y,nyears)
@@ -1609,7 +1785,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
           }
         }
 
-
+        if(opendap == 0){
         # correct for fact that wind is measured at 10 m height
         # wind shear equation v / vo = (h / ho)^a
         #where
@@ -1663,6 +1839,13 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
         }else{
           message('min cloud * 0.5 \n')
           message('max cloud * 2 \n')
+        }
+        }else{
+         if(clearsky==1){
+          CCMINN=CCMINN*0
+          CCMAXX=CCMAXX*0
+          message('running for clear sky conditions')
+         }
         }
         # impose uniform warming
         TMAXX<-TMAXX+warm
