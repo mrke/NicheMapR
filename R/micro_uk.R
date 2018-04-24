@@ -702,7 +702,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       KS<-soil.hydro$KS
       BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
       }else{
-        cat('no SoilGrids data for this site, using user-input soil properties /n')
+        cat('no SoilGrids data for this site, using user-input soil properties \n')
       }
     }
 

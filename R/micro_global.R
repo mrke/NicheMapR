@@ -591,7 +591,7 @@ micro_global <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyears=1,s
       KS<-soil.hydro$KS
       BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
       }else{
-        cat('no SoilGrids data for this site, using user-input soil properties /n')
+        cat('no SoilGrids data for this site, using user-input soil properties \n')
       }
     }
     # load global climate files
