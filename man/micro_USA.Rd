@@ -90,8 +90,8 @@ An implementation of the Niche Mapper microclimate model that uses the Universit
 \code{warm}{ = 0, uniform warming, deg C}\cr\cr
 \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
-\code{opendap}{ = 0, query met grids via opendap (does not work on PC)}\cr\cr
-\code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
+\code{opendap}{ = 1, query met grids via opendap (does not work on PC)}\cr\cr
+\code{soilgrids}{ = 1, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
 
@@ -254,7 +254,7 @@ drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar)
 }
 \examples{
 library(NicheMapR)
-micro<-micro_USA(loc = 'Madison Wisconsin, USA', runshade = 0, soilgrids = 1, ystart = 2014, yfinish = 2016) # run the model using SoilGrids data at Madison for 2014 to 2016
+micro<-micro_USA(loc = 'Madison Wisconsin, USA', runshade = 0, ystart = 2014, yfinish = 2016) # run the model using SoilGrids data at Madison for 2014 to 2016
 
 metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
