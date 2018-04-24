@@ -47,14 +47,12 @@
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{manualshade}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
-#' \code{soildata}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
 #' \code{terrain}{ = 0, Use 250m resolution terrain data? 1=yes, 0=no}\cr\cr
 #' \code{dailywind}{ = 1, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 #' \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
 #' \code{warm}{ = 0, uniform warming, deg C}\cr\cr
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
-#' \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
 #' \code{opendap}{ = 1, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
 #' \code{soilgrids}{ = 1, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
@@ -103,8 +101,6 @@
 #' \code{DD}{ = rep(2.56,19), Soil density (Mg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
 #' \code{DEP}
 #' { and points half way between)}\cr\cr
-#' \code{Clay}{ = 20, Clay content for matric potential calculations (\%)}\cr\cr
-#' \code{SatWater}{ = rep(0.26,10), # volumetric water content at saturation (0.1 bar matric potential) (m3/m3)}\cr\cr
 #' \code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
 #' \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
 #' \code{rainoff}{ = 0, Rain offset (mm), used to induce constant extra input}\cr\cr
@@ -132,7 +128,6 @@
 #' \code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
 #' \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
 #' \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
-#' \code{rainfrac}{ = 0.5, fraction of rain that falls on the first day of the month (decimal \% with 0 meaning rain falls evenly) - this parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data)}\cr\cr
 #'
 #' \strong{ Intertidal mode parameters:}
 #'
@@ -282,20 +277,17 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
   DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
   minshade=0,maxshade=90,Refhyt=1.2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
   runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,manualshade=1,
-  soildata=0,terrain=0,dailywind=1,windfac=1,adiab_cor=1,warm=0,spatial="C:/CHESS",
+  terrain=0,dailywind=1,windfac=1,adiab_cor=1,warm=0,spatial="C:/CHESS",
   ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2.56,SpecHeat=870,BulkDensity=1.3,
   PCTWET=0,rainwet=1.5,cap=1,CMH2O=1,hori=rep(0,24),
   TIMAXS=c(1.0, 1.0, 0.0, 0.0),TIMINS=c(0, 0, 1, 1),timezone=0,
-  runmoist=1,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(BulkDensity,19),DD=rep(Density,19),Clay=20,
-  SatWater=rep(0.26,10),maxpool=10000,rainmult=1,evenrain=0,
+  runmoist=1,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(BulkDensity,19),DD=rep(Density,19),
+  maxpool=10000,rainmult=1,evenrain=0,
   SoilMoist_Init=c(0.1,0.12,0.15,0.3,0.4,0.4,0.4,0.4,0.4,0.4),
-  L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
-    4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
-    0,0)*10000, R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
+  L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) *10000, R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
   LAI=0.1,
   snowmodel=1,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
-  rainfrac=0.5,
-  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0,
+  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),
   scenario="",year="", hourly=0, rainhourly = 0,
   rainhour = 0, rainoff=0, lamb = 0, IUV = 0, opendap = 1,
   soilgrids = 1, IR = 0, message = 0, fail = nyears * 24 * 365) {
@@ -324,13 +316,11 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
   write_input=0
   writecsv=0
   manualshade=1
-  soildata=0
   terrain=0
   dailywind=1
   adiab_cor=1
   warm=0
   spatial="Q:/CHESS"
-  loop=0
   ERR=1.5
   RUF=0.004
   EC=0.0167238
@@ -353,8 +343,6 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
   BB=rep(4.5,19)
   BD=rep(1.3,19)
   DD=rep(2.56,19)
-  Clay=20
-  SatWater=rep(0.26,10)
   maxpool=10000
   rainmult=1
   evenrain=0
@@ -370,7 +358,6 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
   snowmelt=0.9
   undercatch=1
   rainmelt=0.0125
-  rainfrac=0.5
   shore=0
   tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
   scenario=""
@@ -425,11 +412,6 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
   if(rungads%in%c(0,1)==FALSE){
     cat("ERROR: the variable 'rungads' be either 0 or 1.
       Please correct.", '\n')
-    errors<-1
-  }
-  if(Clay<0){
-    cat("ERROR: Clay density value (Clay) is negative.
-      Please input a positive value.", '\n')
     errors<-1
   }
   if(write_input%in%c(0,1)==FALSE){
@@ -577,7 +559,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
     ################## time related variables #################################
     nyears<-yfinish-ystart+1
 
-    doys12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
+    doys12<-c(15, 46, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349) # middle day of each month
 
     microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
 
@@ -676,13 +658,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
     hori<-HORIZONS
     row.names(hori)<-NULL
     hori<-as.numeric(as.matrix(hori))
-
-    if(soildata==1){
-      VIEWF<-VIEWF_all
-      SLES<-SLES2
-    }else{
-      VIEWF<-VIEWF_all
-    }
+    VIEWF<-VIEWF_all
 
     if(soilgrids == 1){
       cat('extracting data from SoilGrids \n')
@@ -904,6 +880,10 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
     cloud[cloud>100]<-100
     CCMAXX<-as.numeric(cloud)
     CCMINN<-CCMAXX
+    CCMINN<-CCMINN*0.5
+    CCMAXX<-CCMAXX*2
+    CCMINN[CCMINN>100]<-100
+    CCMAXX[CCMAXX>100]<-100
     Wind<-Wind*windfac
     Wind[Wind==0]<-0.1
 
@@ -911,31 +891,13 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
     doynum<-ndays
     doys<-seq(daystart,doynum,1)
     doy <- subset(doys, doys!=0)
-    #doy<-rep(doy,nyears)
     ida<-ndays
-    idayst <- 1 # start month
-    # end preliminary test for incomplete year, if simulation includes the present year
+    idayst <- 1
 
     tzone<-paste("Etc/GMT-12",sep="") # doing it this way ignores daylight savings!
     dim<-length(seq(ISOdate(ystart,1,1,tz=tzone)-3600*12, ISOdate((ystart+nyears),1,1,tz=tzone)-3600*13, by="days"))
     maxshades=rep(maxshade,dim)
     minshades=rep(minshade,dim)
-
-    # end preliminary test for incomplete year, if simulation includes the present year
-
-    #if((soildata==1 & nrow(soilprop)>0)|soildata==0){
-
-    if(soildata==1){
-      # get static soil data into arrays
-      REFL <- static_soil_vars[,1]  # albedo/reflectances
-      maxshades <- static_soil_vars[,2:13] # assuming FAPAR represents shade
-      shademax<-maxshades
-    }else{
-      if(manualshade==0){
-        maxshades <- static_soil_vars[,2:13] # assuming FAPAR represents shade
-      }
-      shademax<-maxshades
-    }
 
     if(is.na(ALTITUDES)!=TRUE){
 
@@ -955,14 +917,10 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
         TAI<-c(0.0670358341290886,0.0662612704779235,0.065497075238002,0.0647431301168489,0.0639993178022531,0.0632655219571553,0.0625416272145492,0.0611230843885423,0.0597427855962549,0.0583998423063099,0.0570933810229656,0.0558225431259535,0.0545864847111214,0.0533843764318805,0.0522154033414562,0.0499736739981675,0.047855059159556,0.0458535417401334,0.0439633201842001,0.0421788036108921,0.0404946070106968,0.0389055464934382,0.0374066345877315,0.0359930755919066,0.0346602609764008,0.0334037648376212,0.0322193394032758,0.0311029105891739,0.0300505736074963,0.0290585886265337,0.0281233764818952,0.0272415144391857,0.0264097320081524,0.0256249068083005,0.0248840604859789,0.0241843546829336,0.0235230870563317,0.0228976873502544,0.0223057135186581,0.0217448478998064,0.0212128934421699,0.0207077699817964,0.0202275105711489,0.0197702578594144,0.0193342605242809,0.0189178697551836,0.0177713140039894,0.0174187914242432,0.0170790495503944,0.0167509836728154,0.0164335684174899,0.0161258546410128,0.0158269663770596,0.0155360978343254,0.0152525104459325,0.0149755299703076,0.0147045436435285,0.0144389973831391,0.0141783930434343,0.0134220329447663,0.0131772403830191,0.0129356456025128,0.0126970313213065,0.0124612184223418,0.0122280636204822,0.01199745718102,0.0115436048739351,0.0110993711778668,0.0108808815754663,0.0106648652077878,0.0104513876347606,0.0102405315676965,0.00982708969547694,0.00962473896278535,0.00903679230300494,0.00884767454432418,0.0083031278398166,0.00796072474935954,0.00755817587626185,0.00718610751850881,0.00704629977586921,0.00684663903049612,0.00654155580333479,0.00642947339729728,0.00627223096874308,0.00603955966866779,0.00580920937536261,0.00568506186880564,0.00563167068287251,0.00556222005081865,0.00550522989971023,0.00547395763028062,0.0054478983436216,0.00541823364504573,0.00539532163908382,0.00539239864119488,0.00541690124712384,0.00551525885358836,0.00564825853509463,0.00577220185074264,0.00584222986640171,0.00581645238345584,0.00566088137411449,0.00535516862329704,0.00489914757707667,0.00432017939770409,0.0036813032251836,0.00309019064543606,0.00270890436501562,0.00276446109239711,0.00356019862584603)
       } #end check if running gads
 
-      #if(adiab_cor==1){
       TMAXX<-as.matrix(Tmax+adiab_corr_max)
       TMINN<-as.matrix(Tmin+adiab_corr_min)
-      # }else{
-      #   TMAXX<-as.matrix(Tmaxx)
-      #   TMINN<-as.matrix(Tminn)
-      # }
-      if(scenario!=""){
+
+      if(scenario!=""){ # to do - climate change scenarios
         TMAXX=TMAXX+TMAXX_diff
         TMINN=TMINN+TMINN_diff
         VP<-VP*VP_diff2 # modify the predicted VP by this factor
@@ -988,27 +946,6 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       WNMAXX <- Wind
       WNMINN <- Wind
 
-      if(soildata==1){
-        #           uppermoist1<-spline(doysn2,moistupper,n=ndays,xmin=1,xmax=ndays,method="periodic")
-        #           lowermoist1<-spline(doysn2,moistlower,n=ndays,xmin=1,xmax=ndays,method="periodic")
-        #           uppermoists<-uppermoist1$y
-        #           lowermoists<-lowermoist1$y
-
-        SLES1<-spline(doys12,SLES,n=timeinterval,xmin=1,xmax=365,method="periodic")
-        SLES<-rep(SLES1$y,nyears)
-        SLES<-SLES[1:ndays]
-        maxshades1 <-spline(doys12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
-        MAXSHADES<-rep(maxshades1$y*100,nyears)
-        MAXSHADES<-MAXSHADES[1:ndays]
-        if(manualshade==1){
-          maxshades <- rep(maxshade,365)
-          maxshades <- rep(maxshades,nyears)
-          MAXSHADES<-maxshades
-          minshades <- rep(minshade,365)
-          minshades <- rep(minshades,nyears)
-          MINSHADES<-minshades
-        }
-      }else{
         if(manualshade==0){
           maxshades1 <-spline(doys12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
           MAXSHADES<-rep(maxshades1$y*100,nyears)
@@ -1019,26 +956,16 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
           MAXSHADES<-maxshades
           MINSHADES<-minshades
         }
-      }
 
-      REFLS <- (1:(dim))*0+REFL
-      if((soildata==1)&(length(RAINFALL)>0)){
-        soilwet<-RAINFALL
-        soilwet[soilwet<=rainwet] = 0
-        soilwet[soilwet>0] = 90
-        #PCTWET <- uppermoists*pctwet_mult
-        #PCTWET <- uppermoists*soilprop$A_01bar*pctwet_mult*100
-        PCTWET<-pmax(soilwet,PCTWET)
-      }else{
-        REFLS <- (1:(dim))*0+REFL
-        PCTWET <- (1:(dim))*0+PCTWET
+      REFLS <- rep(REFL, dim)
+      PCTWET <- rep(PCTWET, dim)
         soilwet<-RAINFALL
         soilwet[soilwet<=rainwet] = 0
         soilwet[soilwet>0] = 90
         PCTWET<-pmax(soilwet,PCTWET)
-      }
 
-      Intrvls<-rep(0,dim)
+
+      Intrvls<-rep(0, dim)
       Intrvls[1] <- 1 # user-supplied last day-of-year in each time interval sequence
       Numtyps <- 1 # number of substrate types
       Numint <- 1  # number of time intervals
@@ -1046,7 +973,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       Nodes[1,1] <- 10. # deepest nodes for each substrate type
       ALREF <- abs(trunc(x[1]))
 
-      HEMIS <- ifelse(x[2]<0,2.,1.)
+      HEMIS <- ifelse(x[2]<0, 2, 1)
       ALAT <- abs(trunc(x[2]))
       AMINUT <- (abs(x[2])-ALAT)*60
       ALONG <- abs(trunc(x[1]))
@@ -1072,15 +999,12 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
         }else{
           avetemp<-rowMeans(cbind(TMAXX, TMINN), na.rm=TRUE)
         }
-        #library("TTR")
-        #tannulrun<-SMA(avetemp,n=365)
         if(length(TMAXX)<365){
           tannulrun<-rep((sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2),length(TMAXX))
         }else{
           tannulrun<-movingFun(avetemp,n=365,fun=mean,type='to')
           yearone<-rep((sum(TMAXX[1:365])+sum(TMINN[1:365]))/(365*2),365)
           tannulrun[1:365]<-yearone
-          # SST
         }
       }
 
@@ -1108,17 +1032,8 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       TMAXX<-TMAXX+warm
       TMINN<-TMINN+warm
 
-      if(soildata!=1){
-        SLES<-matrix(nrow=dim,data=0)
-        SLES<-SLES+SLE
-      }
-      #quick fix to make it so that MINSHADES is at the user-specified value and MAXSHADES is from the FAPAR database
-      if(soildata==1 & manualshade==0){
-        MINSHADES<-MAXSHADES
-        MINSHADES[1:length(MINSHADES)]<-minshade
-        MINSHADES<-MAXSHADES # this is to make one shade level effectively, as dictated by FAPAR
-        MAXSHADES<-MINSHADES+0.1
-      }
+      SLES<-matrix(nrow=dim,data=0)
+      SLES<-SLES+SLE
 
       moists2<-matrix(nrow=10, ncol = ndays, data=0)
       moists2[1,ndays]<-0.2
@@ -1136,17 +1051,15 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       soilprops<-matrix(data = 0, nrow = 10, ncol = 6)
 
       soilprops[,1]<-BulkDensity
-      soilprops[,2]<-SatWater
-      soilprops[,3]<-Clay
+      soilprops[,2]<-min(0.26, 1 - BulkDensity / Density) # not used if soil moisture computed
+      soilprops[,3]<-20 # not used
       soilprops[,4]<-Thcond
       soilprops[,5]<-SpecHeat
       soilprops[,6]<-Density
-      #         }
+
       if(cap==1){
         soilprops[1:2,4]<-0.2
         soilprops[1:2,5]<-1920
-        #soilprops[1:2,6]<-1.3
-        #soilprops[1:2,1]<-0.7
       }
       if(cap==2){
         soilprops[1:2,4]<-0.1
@@ -1156,22 +1069,6 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
         soilprops[1:4,1]<-0.7
       }
 
-      if(loop>0){
-        TMAXX<-c(TMAXX[((loop)*365+1):(nyears*365)],TMAXX[1:((loop)*365)])
-        TMINN<-c(TMINN[((loop)*365+1):(nyears*365)],TMINN[1:((loop)*365)])
-        RHMAXX<-c(RHMAXX[((loop)*365+1):(nyears*365)],RHMAXX[1:((loop)*365)])
-        RHMINN<-c(RHMINN[((loop)*365+1):(nyears*365)],RHMINN[1:((loop)*365)])
-        CCMAXX<-c(CCMAXX[((loop)*365+1):(nyears*365)],CCMAXX[1:((loop)*365)])
-        CCMINN<-c(CCMINN[((loop)*365+1):(nyears*365)],CCMINN[1:((loop)*365)])
-        WNMAXX<-c(WNMAXX[((loop)*365+1):(nyears*365)],WNMAXX[1:((loop)*365)])
-        WNMINN<-c(WNMINN[((loop)*365+1):(nyears*365)],WNMINN[1:((loop)*365)])
-        PCTWET<-c(PCTWET[((loop)*365+1):(nyears*365)],PCTWET[1:((loop)*365)])
-        moists<-cbind(moists[,((loop)*365+1):(nyears*365)],moists[,1:((loop)*365)])
-        RAINFALL<-c(RAINFALL[((loop)*365+1):(nyears*365)],RAINFALL[1:((loop)*365)])
-
-      }
-
-      # microclimate input parameters listALTT,ALREF,ALMINT,ALONG,AMINUT,ALAT
       ALTT<-as.numeric(ALTT)
       ALREF<-as.numeric(ALREF)
       ALMINT<-as.numeric(ALMINT)
@@ -1235,7 +1132,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
         LAI<-rep(LAI[1],dim)
       }
       if(shore==0){
-        tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
+        tides<-matrix(data = 0, nrow = 24*dim, ncol = 3) # make an empty matrix
       }
       # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
       micro<-list(tides=tides,microinput=microinput,doy=doy,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,DD=DD,L=L,LAI=LAI)
@@ -1347,6 +1244,5 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
         }
       }
     } # end of check for na sites
-    #} # end of check if soil data is being used but no soil data returned
   } # end error trapping
-} # end of NicheMapR_Setup_micro function
+} # end of micro_UK function

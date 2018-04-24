@@ -1,6 +1,6 @@
 #' USA implementation of the microclimate model.
 #'
-#' An implementation of the Niche Mapper microclimate model that uses the University of Idaho Gridded Surface Meteorological Data (UofI METDATA) daily weather database https://www.northwestknowledge.net/metdata/data/, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "metdata_elevationdata.nc".
+#' An implementation of the Niche Mapper microclimate model that uses the GRIDMET daily weather database http://www.climatologylab.org/gridmet.html, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "metdata_elevationdata.nc".
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param ystart First year to run
@@ -47,14 +47,12 @@
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{manualshade}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
-#' \code{soildata}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
 #' \code{terrain}{ = 0, Use 250m resolution terrain data? 1=yes, 0=no}\cr\cr
 #' \code{dailywind}{ = 1, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 #' \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
 #' \code{warm}{ = 0, uniform warming, deg C}\cr\cr
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
-#' \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
 #' \code{opendap}{ = 1, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
 #' \code{soilgrids}{ = 1, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
@@ -103,8 +101,6 @@
 #' \code{DD}{ = rep(2.56,19), Soil density (Mg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
 #' \code{DEP}
 #' { and points half way between)}\cr\cr
-#' \code{Clay}{ = 20, Clay content for matric potential calculations (\%)}\cr\cr
-#' \code{SatWater}{ = rep(0.26,10), # volumetric water content at saturation (0.1 bar matric potential) (m3/m3)}\cr\cr
 #' \code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
 #' \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
 #' \code{rainoff}{ = 0, Rain offset (mm), used to induce constant extra input}\cr\cr
@@ -132,7 +128,6 @@
 #' \code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
 #' \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
 #' \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
-#' \code{rainfrac}{ = 0.5, fraction of rain that falls on the first day of the month (decimal \% with 0 meaning rain falls evenly) - this parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data)}\cr\cr
 #'
 #' \strong{ Intertidal mode parameters:}
 #'
@@ -277,26 +272,28 @@
 #'     (%)",col=i,type = "l")
 #'  }
 #' }
-micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfinish=2016,
-  nyears=1,soiltype=4,REFL=0.15, elev = NA, slope=0,aspect=0, lapse_max = 0.0077, lapse_min = 0.0039,
-  DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
-  minshade=0,maxshade=90,Refhyt=2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
-  runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,manualshade=1,
-  soildata=0,terrain=0,dailywind=1,windfac=1,adiab_cor=1,warm=0,spatial="N:/USA",
-  ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2.56,SpecHeat=870,BulkDensity=1.3,
-  PCTWET=0,rainwet=1.5,cap=1,CMH2O=1.,hori=rep(0,24),
-  TIMAXS=c(1.0, 1.0, 0.0, 0.0),TIMINS=c(0, 0, 1, 1),timezone=0,
-  runmoist=1,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(BulkDensity,19),DD=rep(Density,19),Clay=20,
-  SatWater=rep(0.26,10),maxpool=10000,rainmult=1,evenrain=0,
-  SoilMoist_Init=c(0.1,0.12,0.15,0.3,0.4,0.4,0.4,0.4,0.4,0.4),
-  L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
-    4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
-    0,0)*10000, R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
-  LAI=0.1,
-  snowmodel=1,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
-  rainfrac=0.5,
-  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",
-  quadrangle=1,hourly=0, rainhourly = 0, rainhour = 0, rainoff=0, lamb = 0, IUV = 0, opendap = 1, soilgrids = 1, IR = 0, message = 0, fail = nyears * 24 * 365) {
+micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2016,
+  yfinish = 2016, nyears = 1, soiltype = 4, REFL = 0.15, elev = NA, slope = 0,
+  aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
+  DEP=c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
+  Refhyt = 2, Usrhyt = 0.01, Z01 = 0, Z02 = 0, ZH1 = 0, ZH2 = 0, runshade = 1,
+  clearsky = 0, rungads = 1, write_input = 0, writecsv = 0, manualshade = 1,
+  terrain = 0, dailywind = 1, windfac = 1, adiab_cor = 1, warm = 0,
+  spatial = "N:/USA", ERR = 1.5, RUF = 0.004, EC = 0.0167238, SLE = 0.95,
+  Thcond = 2.5, Density = 2.56, SpecHeat = 870, BulkDensity = 1.3, PCTWET = 0,
+  rainwet = 1.5, cap = 1, CMH2O = 1, hori = rep(0,24), TIMAXS=c(1.0, 1.0, 0.0, 0.0),
+  TIMINS = c(0, 0, 1, 1), timezone = 0, runmoist = 1, PE = rep(1.1, 19),
+  KS = rep(0.0037, 19), BB = rep(4.5, 19), BD = rep(BulkDensity, 19),
+  DD = rep(Density, 19), maxpool = 10000, rainmult = 1, evenrain = 0,
+  SoilMoist_Init = c(0.1, 0.12, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4),
+  L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000,
+  R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
+  LAI = 0.1, snowmodel = 1, snowtemp = 1.5, snowdens = 0.375, densfun = c(0, 0),
+  snowmelt = 0.9, undercatch = 1, rainmelt = 0.0125, shore = 0,
+  tides = matrix(data = 0, nrow = 24 * timeinterval * nyears, ncol = 3),
+  scenario = "", year = "", hourly = 0, rainhourly = 0, rainhour = 0,
+  rainoff = 0, lamb = 0, IUV = 0, opendap = 1, soilgrids = 1, IR = 0, message = 0,
+  fail = nyears * 24 * 365) {
 
   # loc="Madison, Wisconsin"
   # timeinterval=365
@@ -322,13 +319,11 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
   # write_input=0
   # writecsv=0
   # manualshade=1
-  # soildata=0
   # terrain=0
   # dailywind=1
   # adiab_cor=1
   # warm=0
   # spatial="C:/USA"
-  # loop=0
   # ERR=1.5
   # RUF=0.004
   # EC=0.0167238
@@ -351,15 +346,11 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
   # BB=rep(4.5,19)
   # BD=rep(1.3,19)
   # DD=rep(2.56,19)
-  # Clay=20
-  # SatWater=rep(0.26,10)
   # maxpool=10000
   # rainmult=1
   # evenrain=0
   # SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
-  # L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
-  #   4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
-  #   0,0)*10000
+  # L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000
   # LAI=0.1
   # snowmodel=1
   # snowtemp=1.5
@@ -368,11 +359,9 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
   # snowmelt=0.9
   # undercatch=1
   # rainmelt=0.0125
-  # rainfrac=0.5
   # shore=0
   # tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
   # scenario=""
-  # quadrangle=1
   # hourly=0
   # rainhour = 0
   # rainoff=0
@@ -424,11 +413,6 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
   if(rungads%in%c(0,1)==FALSE){
     cat("ERROR: the variable 'rungads' be either 0 or 1.
         Please correct.", '\n')
-    errors<-1
-  }
-  if(Clay<0){
-    cat("ERROR: Clay density value (Clay) is negative.
-        Please input a positive value.", '\n')
     errors<-1
   }
   if(write_input%in%c(0,1)==FALSE){
@@ -626,7 +610,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     }else{  # just use local solar noon
       ALREF <- abs(trunc(x[1]))
     }
-    HEMIS <- ifelse(x[2]<0,2.,1.) # 1 is northern hemisphere
+    HEMIS <- ifelse(x[2]<0, 2, 1) # 1 is northern hemisphere
     # break decimal degree lat/lon into deg and min
     ALAT <- abs(trunc(x[2]))
     AMINUT <- (abs(x[2])-ALAT)*60
@@ -653,7 +637,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     }else{
       USADEM <- extract(raster(paste0(spatial,"/metdata_elevationdata.nc")), x) # metres above sea level
     }
-    ALTITUDES <-NA# extract(raster(paste0(spatial,"/terr50.tif")), x) # to do
+    ALTITUDES <- NA# extract(raster(paste0(spatial,"/terr50.tif")), x) # to do
     if(is.na(elev) == FALSE){ALTITUDES <- elev} # check if user-specified elevation
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-USADEM}
     if(soilgrids == 1){
@@ -669,9 +653,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       if(length(ov) > 3){
         soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
         colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
-
         #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
-        #DEP <- c(0., 2.5,  5.,  10,  15, 20., 30.,  60.,  100.,  200.) # Soil nodes (cm)
         soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
         PE<-soil.hydro$PE
         BB<-soil.hydro$BB
@@ -683,9 +665,8 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       }
     }
 
-    if(terrain==1){
+    if(terrain==1){ # to do
       cat("extracting terrain data \n")
-
       # now extract terrain data from elevslpasphori.nc
       # get UTM from dec degrees, NZTM
       HORIZONS <- elevslpasphori[4:27]
@@ -705,20 +686,10 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     hori<-HORIZONS
     row.names(hori)<-NULL
     hori<-as.numeric(as.matrix(hori))
-
-    if(soildata==1){
-      VIEWF<-VIEWF_all
-      SLES<-SLES2
-    }else{
-      VIEWF<-VIEWF_all
-    }
+    VIEWF<-VIEWF_all
 
     # setting up for temperature correction using lapse rate given difference between 9sec DEM value and 0.05 deg value
-    #     if(USADEM==-9999 | is.na(USADEM)=='TRUE'){
-    #       delta_elev = AGG - ALTITUDES
-    #     }else{
     delta_elev = USADEM - ALTITUDES
-    #     }
     adiab_corr_max <- delta_elev * lapse_max
     adiab_corr_min <- delta_elev * lapse_min
     if(opendap == 1){
@@ -727,7 +698,6 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
       for (j in 1:nyears) {
         if (j == 1) {
-
           nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
             ".nc"))
           lon <- ncvar_get(nc, "lon")
@@ -738,7 +708,6 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
           lonindex=which(flon %in% 1)
           start <- c(latindex,lonindex,1)
           count <- c(1, 1, -1)
-
           tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
             start = start, count))
           nc_close(nc)
@@ -775,7 +744,6 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
           Tmax <- tmax - 273.15
           Tmin <- tmin - 273.15
         }else{
-
           cat(paste("reading weather input for ", yearlist[j],
             " \n", sep = ""))
           nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
@@ -818,7 +786,6 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
         }
       }
     }else{
-
       cat("extracting weather data \n")
       yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
       nc <- nc_open(paste(spatial, "/tmmx_", yearlist[1], ".nc",
@@ -916,9 +883,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
           Tmin <- c(Tmin, tmin - 273.15)
         }
       }
-
     }
-
     # compute clear sky solar for the site of interest, for cloud cover computation below
     cat("running micro_global to get clear sky solar \n")
     micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, timeinterval = 365)
@@ -931,17 +896,21 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       }else{
         clearsky_mean <- clearsky_mean1
       }
-      if(j==1){
+      if(j == 1){
         allclearsky <- clearsky_mean
       }else{
         allclearsky <- c(allclearsky, clearsky_mean)
       }
     }
-    cloud <- (1-sol/allclearsky) * 100
+    cloud <- (1 - sol / allclearsky) * 100
     cloud[cloud<0]<-0
     cloud[cloud>100]<-100
     CCMAXX<-as.numeric(cloud)
     CCMINN<-CCMAXX
+    CCMINN<-CCMINN*0.5
+    CCMAXX<-CCMAXX*2
+    CCMINN[CCMINN>100]<-100
+    CCMAXX[CCMAXX>100]<-100
     Wind<-Wind*windfac
     Wind[Wind==0]<-0.1
 
@@ -949,31 +918,18 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
     doynum<-ndays
     doys<-seq(daystart,doynum,1)
     doy <- subset(doys, doys!=0)
-    #doy<-rep(doy,nyears)
     ida<-ndays
-    idayst <- 1 # start month
-    # end preliminary test for incomplete year, if simulation includes the present year
+    idayst <- 1
 
     tzone<-paste("Etc/GMT-12",sep="") # doing it this way ignores daylight savings!
     dim<-length(seq(ISOdate(ystart,1,1,tz=tzone)-3600*12, ISOdate((ystart+nyears),1,1,tz=tzone)-3600*13, by="days"))
     maxshades=rep(maxshade,dim)
     minshades=rep(minshade,dim)
 
-    # end preliminary test for incomplete year, if simulation includes the present year
-
-    #if((soildata==1 & nrow(soilprop)>0)|soildata==0){
-
-    if(soildata==1){
-      # get static soil data into arrays
-      REFL <- static_soil_vars[,1]  # albedo/reflectances
+    if(manualshade==0){
       maxshades <- static_soil_vars[,2:13] # assuming FAPAR represents shade
-      shademax<-maxshades
-    }else{
-      if(manualshade==0){
-        maxshades <- static_soil_vars[,2:13] # assuming FAPAR represents shade
-      }
-      shademax<-maxshades
     }
+    shademax<-maxshades
 
     if(is.na(ALTITUDES)!=TRUE){
 
@@ -1000,7 +956,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
         TMAXX<-as.matrix(Tmaxx)
         TMINN<-as.matrix(Tminn)
       }
-      if(scenario!=""){
+      if(scenario!=""){ # to do - climate change scenarios
         TMAXX=TMAXX+TMAXX_diff
         TMINN=TMINN+TMINN_diff
         VP<-VP*VP_diff2 # modify the predicted VP by this factor
@@ -1027,55 +983,23 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       WNMAXX <- Wind
       WNMINN <- Wind
 
-      if(soildata==1){
-        #           uppermoist1<-spline(doysn2,moistupper,n=ndays,xmin=1,xmax=ndays,method="periodic")
-        #           lowermoist1<-spline(doysn2,moistlower,n=ndays,xmin=1,xmax=ndays,method="periodic")
-        #           uppermoists<-uppermoist1$y
-        #           lowermoists<-lowermoist1$y
-
-        SLES1<-spline(doys12,SLES,n=timeinterval,xmin=1,xmax=365,method="periodic")
-        SLES<-rep(SLES1$y,nyears)
-        SLES<-SLES[1:ndays]
+      if(manualshade==0){
         maxshades1 <-spline(doys12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
         MAXSHADES<-rep(maxshades1$y*100,nyears)
-        MAXSHADES<-MAXSHADES[1:ndays]
-        if(manualshade==1){
-          maxshades <- rep(maxshade,365)
-          maxshades <- rep(maxshades,nyears)
-          MAXSHADES<-maxshades
-          minshades <- rep(minshade,365)
-          minshades <- rep(minshades,nyears)
-          MINSHADES<-minshades
-        }
+        minshades <- rep(minshade,365)
+        minshades <- rep(minshades,nyears)
+        MINSHADES<-minshades
       }else{
-        if(manualshade==0){
-          maxshades1 <-spline(doys12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
-          MAXSHADES<-rep(maxshades1$y*100,nyears)
-          minshades <- rep(minshade,365)
-          minshades <- rep(minshades,nyears)
-          MINSHADES<-minshades
-        }else{
-          MAXSHADES<-maxshades
-          MINSHADES<-minshades
-        }
+        MAXSHADES<-maxshades
+        MINSHADES<-minshades
       }
 
-      REFLS <- (1:(dim))*0+REFL
-      if((soildata==1)&(length(RAINFALL)>0)){
-        soilwet<-RAINFALL
-        soilwet[soilwet<=rainwet] = 0
-        soilwet[soilwet>0] = 90
-        #PCTWET <- uppermoists*pctwet_mult
-        #PCTWET <- uppermoists*soilprop$A_01bar*pctwet_mult*100
-        PCTWET<-pmax(soilwet,PCTWET)
-      }else{
-        REFLS <- (1:(dim))*0+REFL
-        PCTWET <- (1:(dim))*0+PCTWET
-        soilwet<-RAINFALL
-        soilwet[soilwet<=rainwet] = 0
-        soilwet[soilwet>0] = 90
-        PCTWET<-pmax(soilwet,PCTWET)
-      }
+      REFLS <- rep(REFL, dim)
+      PCTWET <- rep(PCTWET, dim)
+      soilwet<-RAINFALL
+      soilwet[soilwet<=rainwet] = 0
+      soilwet[soilwet>0] = 90
+      PCTWET<-pmax(soilwet,PCTWET)
 
       Intrvls<-rep(0,dim)
       Intrvls[1] <- 1 # user-supplied last day-of-year in each time interval sequence
@@ -1085,7 +1009,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       Nodes[1,1] <- 10. # deepest nodes for each substrate type
       ALREF <- abs(trunc(x[1]))
 
-      HEMIS <- ifelse(x[2]<0,2.,1.)
+      HEMIS <- ifelse(x[2]<0, 2, 1)
       ALAT <- abs(trunc(x[2]))
       AMINUT <- (abs(x[2])-ALAT)*60
       ALONG <- abs(trunc(x[1]))
@@ -1111,15 +1035,12 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
         }else{
           avetemp<-rowMeans(cbind(TMAXX, TMINN), na.rm=TRUE)
         }
-        #library("TTR")
-        #tannulrun<-SMA(avetemp,n=365)
         if(length(TMAXX)<365){
           tannulrun<-rep((sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2),length(TMAXX))
         }else{
           tannulrun<-movingFun(avetemp,n=365,fun=mean,type='to')
           yearone<-rep((sum(TMAXX[1:365])+sum(TMINN[1:365]))/(365*2),365)
           tannulrun[1:365]<-yearone
-          # SST
         }
       }
 
@@ -1139,25 +1060,17 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       #Heavy trees 	0.25
       #Several buildings 	0.25
       #Hilly, mountainous terrain 	0.25
-      WNMAXX<-WNMAXX*(1.2/10)^0.15
-      WNMINN<-WNMINN*(1.2/10)^0.15
+      WNMAXX<-WNMAXX*(2/10)^0.15
+      WNMINN<-WNMINN*(2/10)^0.15
 
 
       # impose uniform warming
       TMAXX<-TMAXX+warm
       TMINN<-TMINN+warm
 
-      if(soildata!=1){
-        SLES<-matrix(nrow=dim,data=0)
-        SLES<-SLES+SLE
-      }
-      #quick fix to make it so that MINSHADES is at the user-specified value and MAXSHADES is from the FAPAR database
-      if(soildata==1 & manualshade==0){
-        MINSHADES<-MAXSHADES
-        MINSHADES[1:length(MINSHADES)]<-minshade
-        MINSHADES<-MAXSHADES # this is to make one shade level effectively, as dictated by FAPAR
-        MAXSHADES<-MINSHADES+0.1
-      }
+
+      SLES<-matrix(nrow = dim, data = 0)
+      SLES<-SLES+SLE
 
       moists2<-matrix(nrow=10, ncol = ndays, data=0)
       moists2[1,ndays]<-0.2
@@ -1175,17 +1088,15 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
       soilprops<-matrix(data = 0, nrow = 10, ncol = 6)
 
       soilprops[,1]<-BulkDensity
-      soilprops[,2]<-SatWater
-      soilprops[,3]<-Clay
+      soilprops[,2]<-min(0.26, 1 - BulkDensity / Density) # not used if soil moisture computed
+      soilprops[,3]<-0.2 # not used
       soilprops[,4]<-Thcond
       soilprops[,5]<-SpecHeat
       soilprops[,6]<-Density
-      #         }
+
       if(cap==1){
         soilprops[1:2,4]<-0.2
         soilprops[1:2,5]<-1920
-        #soilprops[1:2,6]<-1.3
-        #soilprops[1:2,1]<-0.7
       }
       if(cap==2){
         soilprops[1:2,4]<-0.1
@@ -1195,22 +1106,6 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
         soilprops[1:4,1]<-0.7
       }
 
-      if(loop>0){
-        TMAXX<-c(TMAXX[((loop)*365+1):(nyears*365)],TMAXX[1:((loop)*365)])
-        TMINN<-c(TMINN[((loop)*365+1):(nyears*365)],TMINN[1:((loop)*365)])
-        RHMAXX<-c(RHMAXX[((loop)*365+1):(nyears*365)],RHMAXX[1:((loop)*365)])
-        RHMINN<-c(RHMINN[((loop)*365+1):(nyears*365)],RHMINN[1:((loop)*365)])
-        CCMAXX<-c(CCMAXX[((loop)*365+1):(nyears*365)],CCMAXX[1:((loop)*365)])
-        CCMINN<-c(CCMINN[((loop)*365+1):(nyears*365)],CCMINN[1:((loop)*365)])
-        WNMAXX<-c(WNMAXX[((loop)*365+1):(nyears*365)],WNMAXX[1:((loop)*365)])
-        WNMINN<-c(WNMINN[((loop)*365+1):(nyears*365)],WNMINN[1:((loop)*365)])
-        PCTWET<-c(PCTWET[((loop)*365+1):(nyears*365)],PCTWET[1:((loop)*365)])
-        moists<-cbind(moists[,((loop)*365+1):(nyears*365)],moists[,1:((loop)*365)])
-        RAINFALL<-c(RAINFALL[((loop)*365+1):(nyears*365)],RAINFALL[1:((loop)*365)])
-
-      }
-
-      # microclimate input parameters listALTT,ALREF,ALMINT,ALONG,AMINUT,ALAT
       ALTT<-as.numeric(ALTT)
       ALREF<-as.numeric(ALREF)
       ALMINT<-as.numeric(ALMINT)
@@ -1274,7 +1169,7 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
         LAI1<-rep(LAI[1],dim)
       }
       if(shore==0){
-        tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
+        tides<-matrix(data = 0, nrow = 24*dim, ncol = 3) # make an empty matrix
       }
       # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
       micro<-list(tides=tides,microinput=microinput,doy=doy,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,DD=DD,L=L,LAI=LAI1)
@@ -1386,6 +1281,5 @@ micro_USA <- function(loc="Madison, Wisconsin",timeinterval=365,ystart=2016,yfin
         }
       }
     } # end of check for na sites
-    #} # end of check if soil data is being used but no soil data returned
   } # end error trapping
-} # end of NicheMapR_Setup_micro function
+} # end of micro_USA function

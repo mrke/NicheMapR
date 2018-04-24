@@ -90,7 +90,6 @@ An implementation of the Niche Mapper microclimate model that uses the AWAP dail
 \code{warm}{ = 0, uniform warming, deg C}\cr\cr
 \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
-\code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
 \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
@@ -139,8 +138,6 @@ An implementation of the Niche Mapper microclimate model that uses the AWAP dail
 \code{DD}{ = rep(2.56,19), Soil density (Mg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
 \code{DEP}
 { and points half way between)}\cr\cr
-\code{Clay}{ = 20, Clay content for matric potential calculations (\%)}\cr\cr
-\code{SatWater}{ = rep(0.26,10), # volumetric water content at saturation (0.1 bar matric potential) (m3/m3)}\cr\cr
 \code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
 \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
 \code{rainoff}{ = 0, Rain offset (mm), used to induce constant extra input}\cr\cr
@@ -168,7 +165,6 @@ An implementation of the Niche Mapper microclimate model that uses the AWAP dail
 \code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
 \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
 \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
-\code{rainfrac}{ = 0.5, fraction of rain that falls on the first day of the month (decimal \% with 0 meaning rain falls evenly) - this parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data)}\cr\cr
 
 \strong{ Intertidal mode parameters:}
 
