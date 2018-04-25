@@ -57,6 +57,7 @@
 #' \code{soilgrids}{ = 1, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
+#' \code{save}{ = 0, don't save forcing data (0), save the forcing data (1) or read previously saved data (2)}\cr\cr
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
@@ -293,7 +294,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
   tides = matrix(data = 0, nrow = 24 * timeinterval * nyears, ncol = 3),
   scenario = "", year = "", hourly = 0, rainhourly = 0, rainhour = 0,
   rainoff = 0, lamb = 0, IUV = 0, opendap = 1, soilgrids = 1, IR = 0, message = 0,
-  fail = nyears * 24 * 365) {
+  fail = nyears * 24 * 365, save = 0) {
 
   # loc="Madison, Wisconsin"
   # timeinterval=365
@@ -618,6 +619,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
     ALMINT <- (abs(x[1])-ALONG)*60
     azmuth<-aspect
 
+    if(save != 2){
     #GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]]
     if(opendap == 1){
       cat("extracting elevation via opendaps \n")
@@ -637,9 +639,20 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
     }else{
       USADEM <- extract(raster(paste0(spatial,"/metdata_elevationdata.nc")), x) # metres above sea level
     }
+    if(save == 1){
+      cat("saving DEM data for later \n")
+      save(USADEM, file = 'USADEM.Rda')
+    }
+    }
+    if(save == 2){
+      cat("loading DEM data from previous run \n")
+      load('USADEM.Rda')
+    }
+
     ALTITUDES <- NA# extract(raster(paste0(spatial,"/terr50.tif")), x) # to do
     if(is.na(elev) == FALSE){ALTITUDES <- elev} # check if user-specified elevation
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-USADEM}
+    if(save != 2){
     if(soilgrids == 1){
       cat('extracting data from SoilGrids \n')
       require(rjson)
@@ -664,7 +677,22 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
         cat('no SoilGrids data for this site, using user-input soil properties \n')
       }
     }
-
+    }else{
+      cat("loading SoilGrids data from previous run \n")
+      load('PE.Rda')
+      load('BB.Rda')
+      load('BD.Rda')
+      load('KS.Rda')
+      load('BulkDensity.Rda')
+    }
+    if(save == 1){
+      cat("saving SoilGrids data for later \n")
+      save(PE, file = 'PE.Rda')
+      save(BB, file = 'BB.Rda')
+      save(BD, file = 'BD.Rda')
+      save(KS, file = 'KS.Rda')
+      save(BulkDensity, file = 'BulkDensity.Rda')
+    }
     if(terrain==1){ # to do
       cat("extracting terrain data \n")
       # now extract terrain data from elevslpasphori.nc
@@ -692,6 +720,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
     delta_elev = USADEM - ALTITUDES
     adiab_corr_max <- delta_elev * lapse_max
     adiab_corr_min <- delta_elev * lapse_min
+    if(save != 2){
     if(opendap == 1){
       cat("extracting weather data \n")
       baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/MET/"
@@ -902,7 +931,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
         allclearsky <- c(allclearsky, clearsky_mean)
       }
     }
-    cloud <- (1 - sol / allclearsky) * 100
+    cloud <- (1 - solar / allclearsky) * 100
     cloud[cloud<0]<-0
     cloud[cloud>100]<-100
     CCMAXX<-as.numeric(cloud)
@@ -913,6 +942,28 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
     CCMAXX[CCMAXX>100]<-100
     Wind<-Wind*windfac
     Wind[Wind==0]<-0.1
+    if(save == 1){
+      cat("saving met data for later \n")
+      save(CCMAXX, file = 'CCMAXX.Rda')
+      save(CCMINN, file = 'CCMINN.Rda')
+      save(Wind, file = 'Wind.Rda')
+      save(Tmax, file = 'Tmax.Rda')
+      save(Tmin, file = 'Tmin.Rda')
+      save(rhmax, file = 'rhmax.Rda')
+      save(rhmin, file = 'rhmin.Rda')
+      save(Rain, file = 'Rain.Rda')
+    }
+    }else{
+      cat("loading met data from previous run \n")
+      load('CCMAXX.Rda')
+      load('CCMINN.Rda')
+      load('Wind.Rda')
+      load('Tmax.Rda')
+      load('Tmin.Rda')
+      load('rhmax.Rda')
+      load('rhmin.Rda')
+      load('Rain.Rda')
+    }
 
     ndays<-length(Tmax)
     doynum<-ndays
