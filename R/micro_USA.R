@@ -750,6 +750,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
         yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
         for (j in 1:nyears) {
           if (j == 1) {
+            cat(paste("reading weather input for ", yearlist[j], " \n", sep = ""))
             nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
               ".nc"))
             lon <- ncvar_get(nc, "lon")
@@ -796,8 +797,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
             Tmax <- tmax - 273.15
             Tmin <- tmin - 273.15
           }else{
-            cat(paste("reading weather input for ", yearlist[j],
-              " \n", sep = ""))
+            cat(paste("reading weather input for ", yearlist[j], " \n", sep = ""))
             nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
               ".nc"))
             tmin <- retry(as.numeric(ncvar_get(nc, varid = "air_temperature",
@@ -833,7 +833,6 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
             Wind <- c(Wind, retry(as.numeric(ncvar_get(nc, varid = "wind_speed",
               start = start, count))))
             nc_close(nc)
-            wind <- c(Wind, Wind1)
             Tmax <- c(Tmax, tmax - 273.15)
             Tmin <- c(Tmin, tmin - 273.15)
           }
