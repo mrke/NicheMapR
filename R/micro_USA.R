@@ -620,29 +620,43 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
     azmuth<-aspect
 
     if(save != 2){
-    #GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]]
-    if(opendap == 1){
-      cat("extracting elevation via opendaps \n")
-      baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/MET/"
-      nc <- nc_open(paste0(baseurl, "/elev/metdata_elevationdata.nc"))
-      lon <- ncvar_get(nc, "lon")
-      lat <- ncvar_get(nc, "lat")
-      flat=match(abs(lat-x[2])<1/48,1)
-      latindex=which(flat %in% 1)
-      flon=match(abs(lon-x[1])<1/48,1)
-      lonindex=which(flon %in% 1)
-      start <- c(lonindex,latindex,1)
-      count <- c(1, 1, 1)
-      USADEM <- as.numeric(ncvar_get(nc, varid = "elevation",
-        start = start, count))
-      nc_close(nc)
-    }else{
-      USADEM <- extract(raster(paste0(spatial,"/metdata_elevationdata.nc")), x) # metres above sea level
-    }
-    if(save == 1){
-      cat("saving DEM data for later \n")
-      save(USADEM, file = 'USADEM.Rda')
-    }
+      #GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]]
+      if(opendap == 1){
+        cat("extracting elevation via opendaps \n")
+        baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/MET/"
+        nc <- nc_open(paste0(baseurl, "/elev/metdata_elevationdata.nc"))
+        lon <- ncvar_get(nc, "lon")
+        lat <- ncvar_get(nc, "lat")
+        flat=match(abs(lat-x[2])<1/48,1)
+        latindex=which(flat %in% 1)
+        flon=match(abs(lon-x[1])<1/48,1)
+        lonindex=which(flon %in% 1)
+        start <- c(lonindex,latindex,1)
+        count <- c(1, 1, 1)
+        attempts <- 0
+        maxErrors <- 10
+        USADEM = try(eval(as.numeric(ncvar_get(nc, varid = "elevation",
+          start = start, count))))
+        while (isError(retval)) {
+          attempts <- attempts + 1
+          if (attempts >= maxErrors) {
+            cat("tried 10 times to get DEM data and failed \n")
+            stop
+          }
+          Sys.sleep(3) # wait three seconds
+          retval = try(eval(expr))
+        }
+
+        #USADEM <- as.numeric(ncvar_get(nc, varid = "elevation",
+        #  start = start, count))
+        nc_close(nc)
+      }else{
+        USADEM <- extract(raster(paste0(spatial,"/metdata_elevationdata.nc")), x) # metres above sea level
+      }
+      if(save == 1){
+        cat("saving DEM data for later \n")
+        save(USADEM, file = 'USADEM.Rda')
+      }
     }
     if(save == 2){
       cat("loading DEM data from previous run \n")
@@ -653,30 +667,30 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
     if(is.na(elev) == FALSE){ALTITUDES <- elev} # check if user-specified elevation
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-USADEM}
     if(save != 2){
-    if(soilgrids == 1){
-      cat('extracting data from SoilGrids \n')
-      require(rjson)
-      require(sp)
-      require(GSIF)
-      pnts <- data.frame(lon=x[1], lat=x[2], id=c("p1"))
-      coordinates(pnts) <- ~lon+lat
-      proj4string(pnts) <- CRS("+proj=longlat +datum=WGS84")
-      soilgrids.r <- REST.SoilGrids(c("BLDFIE", "SLTPPT","SNDPPT", "CLYPPT"))
-      ov <- over(soilgrids.r, pnts)
-      if(length(ov) > 3){
-        soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
-        colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
-        #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
-        soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
-        PE<-soil.hydro$PE
-        BB<-soil.hydro$BB
-        BD<-soil.hydro$BD
-        KS<-soil.hydro$KS
-        BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
-      }else{
-        cat('no SoilGrids data for this site, using user-input soil properties \n')
+      if(soilgrids == 1){
+        cat('extracting data from SoilGrids \n')
+        require(rjson)
+        require(sp)
+        require(GSIF)
+        pnts <- data.frame(lon=x[1], lat=x[2], id=c("p1"))
+        coordinates(pnts) <- ~lon+lat
+        proj4string(pnts) <- CRS("+proj=longlat +datum=WGS84")
+        soilgrids.r <- REST.SoilGrids(c("BLDFIE", "SLTPPT","SNDPPT", "CLYPPT"))
+        ov <- over(soilgrids.r, pnts)
+        if(length(ov) > 3){
+          soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
+          colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
+          #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
+          soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
+          PE<-soil.hydro$PE
+          BB<-soil.hydro$BB
+          BD<-soil.hydro$BD
+          KS<-soil.hydro$KS
+          BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
+        }else{
+          cat('no SoilGrids data for this site, using user-input soil properties \n')
+        }
       }
-    }
     }else{
       cat("loading SoilGrids data from previous run \n")
       load('PE.Rda')
@@ -721,238 +735,411 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
     adiab_corr_max <- delta_elev * lapse_max
     adiab_corr_min <- delta_elev * lapse_min
     if(save != 2){
-    if(opendap == 1){
-      cat("extracting weather data \n")
-      baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/MET/"
-      yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
-      for (j in 1:nyears) {
-        if (j == 1) {
-          nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
-            ".nc"))
-          lon <- ncvar_get(nc, "lon")
-          lat <- ncvar_get(nc, "lat")
-          flat=match(abs(lat-x[2])<1/48,1)
-          latindex=which(flat %in% 1)
-          flon=match(abs(lon-x[1])<1/48,1)
-          lonindex=which(flon %in% 1)
-          start <- c(latindex,lonindex,1)
-          count <- c(1, 1, -1)
-          tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "tmmx/tmmx_", yearlist[j],
-            ".nc"))
-          tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "rmin/rmin_", yearlist[j],
-            ".nc"))
-          rhmin <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "rmax/rmax_", yearlist[j],
-            ".nc"))
-          rhmax <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "pr/pr_", yearlist[j],
-            ".nc"))
-          Rain <- as.numeric(ncvar_get(nc, varid = "precipitation_amount",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "srad/srad_", yearlist[j],
-            ".nc"))
-          solar <- as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "vs/vs_", yearlist[j],
-            ".nc"))
-          Wind <- as.numeric(ncvar_get(nc, varid = "wind_speed",
-            start = start, count))
-          nc_close(nc)
-          Tmax <- tmax - 273.15
-          Tmin <- tmin - 273.15
+      if(opendap == 1){
+        cat("extracting weather data \n")
+        baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/MET/"
+        yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
+        for (j in 1:nyears) {
+          if (j == 1) {
+            nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
+              ".nc"))
+            lon <- ncvar_get(nc, "lon")
+            lat <- ncvar_get(nc, "lat")
+            flat=match(abs(lat-x[2])<1/48,1)
+            latindex=which(flat %in% 1)
+            flon=match(abs(lon-x[1])<1/48,1)
+            lonindex=which(flon %in% 1)
+            start <- c(latindex,lonindex,1)
+            count <- c(1, 1, -1)
+            attempts <- 0
+            tmin = try(eval(as.numeric(ncvar_get(nc, varid = "air_temperature",
+              start = start, count))))
+            while (isError(tmin)) {
+              attempts <- attempts + 1
+              if (attempts >= maxErrors) {
+                cat("tried 10 times to get tmin data and failed \n")
+                stop
+              }
+              Sys.sleep(3) # wait three seconds
+              retval = try(eval(expr))
+            }
+            #tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
+            #  start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "tmmx/tmmx_", yearlist[j],
+              ".nc"))
+            attempts <- 0
+            tmax = try(eval(as.numeric(ncvar_get(nc, varid = "air_temperature",
+              start = start, count))))
+            while (isError(tmax)) {
+              attempts <- attempts + 1
+              if (attempts >= maxErrors) {
+                cat("tried 10 times to get tmax data and failed \n")
+                stop
+              }
+              Sys.sleep(3) # wait three seconds
+              retval = try(eval(expr))
+            }
+            #tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
+            #  start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "rmin/rmin_", yearlist[j],
+              ".nc"))
+            attempts <- 0
+            rhmin = try(eval(as.numeric(ncvar_get(nc, varid = "relative_humidity",
+              start = start, count))))
+            while (isError(rhmin)) {
+              attempts <- attempts + 1
+              if (attempts >= maxErrors) {
+                cat("tried 10 times to get rhmin data and failed \n")
+                stop
+              }
+              Sys.sleep(3) # wait three seconds
+              retval = try(eval(expr))
+            }
+            #rhmin <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
+            #  start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "rmax/rmax_", yearlist[j],
+              ".nc"))
+            attempts <- 0
+            rhmax = try(eval(as.numeric(ncvar_get(nc, varid = "relative_humidity",
+              start = start, count))))
+            while (isError(rhmax)) {
+              attempts <- attempts + 1
+              if (attempts >= maxErrors) {
+                cat("tried 10 times to get rhmax data and failed \n")
+                stop
+              }
+              Sys.sleep(3) # wait three seconds
+              retval = try(eval(expr))
+            }
+            #rhmax <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
+            #  start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "pr/pr_", yearlist[j],
+              ".nc"))
+            attempts <- 0
+            Rain = try(eval(as.numeric(ncvar_get(nc, varid = "precipitation_amount",
+              start = start, count))))
+            while (isError(Rain)) {
+              attempts <- attempts + 1
+              if (attempts >= maxErrors) {
+                cat("tried 10 times to get Rain data and failed \n")
+                stop
+              }
+              Sys.sleep(3) # wait three seconds
+              retval = try(eval(expr))
+            }
+            #Rain <- as.numeric(ncvar_get(nc, varid = "precipitation_amount",
+            #  start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "srad/srad_", yearlist[j],
+              ".nc"))
+            attempts <- 0
+            solar = try(eval(as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
+              start = start, count))))
+            while (isError(solar)) {
+              attempts <- attempts + 1
+              if (attempts >= maxErrors) {
+                cat("tried 10 times to get rhmax data and failed \n")
+                stop
+              }
+              Sys.sleep(3) # wait three seconds
+              retval = try(eval(expr))
+            }
+            #solar <- as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
+            #  start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "vs/vs_", yearlist[j],
+              ".nc"))
+            attempts <- 0
+            Wind = try(eval(as.numeric(ncvar_get(nc, varid = "wind_speed",
+              start = start, count))))
+            while (isError(Wind)) {
+              attempts <- attempts + 1
+              if (attempts >= maxErrors) {
+                cat("tried 10 times to get Wind data and failed \n")
+                stop
+              }
+              Sys.sleep(3) # wait three seconds
+              retval = try(eval(expr))
+            }
+            #Wind <- as.numeric(ncvar_get(nc, varid = "wind_speed",
+            #  start = start, count))
+            nc_close(nc)
+            Tmax <- tmax - 273.15
+            Tmin <- tmin - 273.15
+          }else{
+            cat(paste("reading weather input for ", yearlist[j],
+              " \n", sep = ""))
+            nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
+              ".nc"))
+            attempts <- 0
+            tmin = try(eval(as.numeric(ncvar_get(nc, varid = "air_temperature",
+              start = start, count))))
+            while (isError(tmin)) {
+              attempts <- attempts + 1
+              if (attempts >= maxErrors) {
+                cat("tried 10 times to get tmin data and failed \n")
+                stop
+              }
+              Sys.sleep(3) # wait three seconds
+              retval = try(eval(expr))
+            }
+            #tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
+            #  start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "tmmx/tmmx_", yearlist[j],
+              ".nc"))
+            attempts <- 0
+            tmax = try(eval(as.numeric(ncvar_get(nc, varid = "air_temperature",
+              start = start, count))))
+            while (isError(tmax)) {
+              attempts <- attempts + 1
+              if (attempts >= maxErrors) {
+                cat("tried 10 times to get tmax data and failed \n")
+                stop
+              }
+              Sys.sleep(3) # wait three seconds
+              retval = try(eval(expr))
+            }
+            #tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
+            #  start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "rmin/rmin_", yearlist[j],
+              ".nc"))
+            attempts <- 0
+            rhmin1 = try(eval(as.numeric(ncvar_get(nc, varid = "relative_humidity",
+              start = start, count))))
+            while (isError(rhmin1)) {
+              attempts <- attempts + 1
+              if (attempts >= maxErrors) {
+                cat("tried 10 times to get rhmin data and failed \n")
+                stop
+              }
+              Sys.sleep(3) # wait three seconds
+              retval = try(eval(expr))
+            }
+            rhmin <- c(rhmin, rhmin1)
+            #rhmin <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
+            #  start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "rmax/rmax_", yearlist[j],
+              ".nc"))
+            attempts <- 0
+            rhmax1 = try(eval(as.numeric(ncvar_get(nc, varid = "relative_humidity",
+              start = start, count))))
+            while (isError(rhmax1)) {
+              attempts <- attempts + 1
+              if (attempts >= maxErrors) {
+                cat("tried 10 times to get rhmax data and failed \n")
+                stop
+              }
+              Sys.sleep(3) # wait three seconds
+              retval = try(eval(expr))
+            }
+            rhmax <- c(rhmax, rhmax1)
+            #rhmax <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
+            #  start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "pr/pr_", yearlist[j],
+              ".nc"))
+            attempts <- 0
+            Rain1 = try(eval(as.numeric(ncvar_get(nc, varid = "precipitation_amount",
+              start = start, count))))
+            while (isError(Rain1)) {
+              attempts <- attempts + 1
+              if (attempts >= maxErrors) {
+                cat("tried 10 times to get Rain data and failed \n")
+                stop
+              }
+              Sys.sleep(3) # wait three seconds
+              retval = try(eval(expr))
+            }
+            Rain <- c(Rain1, Rain)
+            #Rain <- as.numeric(ncvar_get(nc, varid = "precipitation_amount",
+            #  start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "srad/srad_", yearlist[j],
+              ".nc"))
+            attempts <- 0
+            solar1 = try(eval(as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
+              start = start, count))))
+            while (isError(solar1)) {
+              attempts <- attempts + 1
+              if (attempts >= maxErrors) {
+                cat("tried 10 times to get rhmax data and failed \n")
+                stop
+              }
+              Sys.sleep(3) # wait three seconds
+              retval = try(eval(expr))
+            }
+            solar <- c(solar, solar1)
+            #solar <- as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
+            #  start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "vs/vs_", yearlist[j],
+              ".nc"))
+            attempts <- 0
+            Wind1 = try(eval(as.numeric(ncvar_get(nc, varid = "wind_speed",
+              start = start, count))))
+            while (isError(Wind1)) {
+              attempts <- attempts + 1
+              if (attempts >= maxErrors) {
+                cat("tried 10 times to get Wind data and failed \n")
+                stop
+              }
+              Sys.sleep(3) # wait three seconds
+              retval = try(eval(expr))
+            }
+            #Wind <- as.numeric(ncvar_get(nc, varid = "wind_speed",
+            #  start = start, count))
+            nc_close(nc)
+            wind <- c(Wind, Wind1)
+            Tmax <- c(Tmax, tmax - 273.15)
+            Tmin <- c(Tmin, tmin - 273.15)
+          }
+        }
+      }else{
+        cat("extracting weather data \n")
+        yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
+        nc <- nc_open(paste(spatial, "/tmmx_", yearlist[1], ".nc",
+          sep = ""))
+        lon <- matrix(ncvar_get(nc, "lon"))
+        lat <- matrix(ncvar_get(nc, "lat"))
+        lon_1 <- as.numeric(longlat[1])
+        lat_1 <- as.numeric(longlat[2])
+        dist1 <- abs(lon - lon_1)
+        index1 <- which.min(dist1)
+        dist2 <- abs(lat - lat_1)
+        index2 <- which.min(dist2)
+        start <- c(index2, index1, 1)
+        count <- c(1, 1, -1)
+        for (j in 1:nyears) {
+          if (j == 1) {
+            cat(paste("reading weather input for ", yearlist[j],
+              " \n", sep = ""))
+            nc <- nc_open(paste(spatial, "/tmmn_", yearlist[j],
+              ".nc", sep = ""))
+            tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
+              start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/tmmx_", yearlist[j],
+              ".nc", sep = ""))
+            tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
+              start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/rmin_", yearlist[j],
+              ".nc", sep = ""))
+            rhmin <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
+              start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/rmax_", yearlist[j],
+              ".nc", sep = ""))
+            rhmax <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
+              start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/pr_", yearlist[j],
+              ".nc", sep = ""))
+            Rain <- as.numeric(ncvar_get(nc, varid = "precipitation_amount",
+              start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/srad_", yearlist[j],
+              ".nc", sep = ""))
+            solar <- as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
+              start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/vs_", yearlist[j],
+              ".nc", sep = ""))
+            Wind <- as.numeric(ncvar_get(nc, varid = "wind_speed",
+              start = start, count))
+            nc_close(nc)
+            Tmax <- tmax - 273.15
+            Tmin <- tmin - 273.15
+          } else {
+            cat(paste("reading weather input for ", yearlist[j],
+              " \n", sep = ""))
+            nc <- nc_open(paste(spatial, "/tmmn_", yearlist[j],
+              ".nc", sep = ""))
+            tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
+              start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/tmmx_", yearlist[j],
+              ".nc", sep = ""))
+            tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
+              start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/rmin_", yearlist[j],
+              ".nc", sep = ""))
+            rhmin <- c(rhmin, as.numeric(ncvar_get(nc, varid = "relative_humidity",
+              start = start, count)))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/rmax_", yearlist[j],
+              ".nc", sep = ""))
+            rhmax <- c(rhmax, as.numeric(ncvar_get(nc, varid = "relative_humidity",
+              start = start, count)))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/pr_", yearlist[j],
+              ".nc", sep = ""))
+            Rain <- c(Rain, as.numeric(ncvar_get(nc, varid = "precipitation_amount",
+              start = start, count)))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/srad_", yearlist[j],
+              ".nc", sep = ""))
+            solar <- c(solar, as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
+              start = start, count)))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/vs_", yearlist[j],
+              ".nc", sep = ""))
+            Wind <- c(Wind, as.numeric(ncvar_get(nc, varid = "wind_speed",
+              start = start, count)))
+            nc_close(nc)
+            Tmax <- c(Tmax, tmax - 273.15)
+            Tmin <- c(Tmin, tmin - 273.15)
+          }
+        }
+      }
+      # compute clear sky solar for the site of interest, for cloud cover computation below
+      cat("running micro_global to get clear sky solar \n")
+      micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, timeinterval = 365)
+      clearskyrad <- micro_clearsky$metout[,c(1, 13)]
+      clearsky_mean1 <- aggregate(clearskyrad[,2], by = list(clearskyrad[,1]), FUN = mean)[,2]
+      leapyears<-seq(1972,2060,4)
+      for(j in 1:nyears){
+        if(yearlist[j]%in%leapyears){# add day for leap year if needed
+          clearsky_mean<-c(clearsky_mean1[1:59],clearsky_mean1[59],clearsky_mean1[60:365])
         }else{
-          cat(paste("reading weather input for ", yearlist[j],
-            " \n", sep = ""))
-          nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
-            ".nc"))
-          tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "/tmmx/tmmx_", yearlist[j],
-            ".nc"))
-          tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "/rmin/rmin_", yearlist[j],
-            ".nc"))
-          rhmin <- c(rhmin, as.numeric(ncvar_get(nc, varid = "relative_humidity",
-            start = start, count)))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "/rmax/rmax_", yearlist[j],
-            ".nc"))
-          rhmax <- c(rhmax, as.numeric(ncvar_get(nc, varid = "relative_humidity",
-            start = start, count)))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "/pr/pr_", yearlist[j],
-            ".nc"))
-          Rain <- c(Rain, as.numeric(ncvar_get(nc, varid = "precipitation_amount",
-            start = start, count)))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "/srad/srad_", yearlist[j],
-            ".nc"))
-          solar <- c(solar, as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
-            start = start, count)))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "/vs/vs_", yearlist[j],
-            ".nc"))
-          Wind <- c(Wind, as.numeric(ncvar_get(nc, varid = "wind_speed",
-            start = start, count)))
-          nc_close(nc)
-          Tmax <- c(Tmax, tmax - 273.15)
-          Tmin <- c(Tmin, tmin - 273.15)
+          clearsky_mean <- clearsky_mean1
+        }
+        if(j == 1){
+          allclearsky <- clearsky_mean
+        }else{
+          allclearsky <- c(allclearsky, clearsky_mean)
         }
       }
-    }else{
-      cat("extracting weather data \n")
-      yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
-      nc <- nc_open(paste(spatial, "/tmmx_", yearlist[1], ".nc",
-        sep = ""))
-      lon <- matrix(ncvar_get(nc, "lon"))
-      lat <- matrix(ncvar_get(nc, "lat"))
-      lon_1 <- as.numeric(longlat[1])
-      lat_1 <- as.numeric(longlat[2])
-      dist1 <- abs(lon - lon_1)
-      index1 <- which.min(dist1)
-      dist2 <- abs(lat - lat_1)
-      index2 <- which.min(dist2)
-      start <- c(index2, index1, 1)
-      count <- c(1, 1, -1)
-      for (j in 1:nyears) {
-        if (j == 1) {
-          cat(paste("reading weather input for ", yearlist[j],
-            " \n", sep = ""))
-          nc <- nc_open(paste(spatial, "/tmmn_", yearlist[j],
-            ".nc", sep = ""))
-          tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/tmmx_", yearlist[j],
-            ".nc", sep = ""))
-          tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/rmin_", yearlist[j],
-            ".nc", sep = ""))
-          rhmin <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/rmax_", yearlist[j],
-            ".nc", sep = ""))
-          rhmax <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/pr_", yearlist[j],
-            ".nc", sep = ""))
-          Rain <- as.numeric(ncvar_get(nc, varid = "precipitation_amount",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/srad_", yearlist[j],
-            ".nc", sep = ""))
-          solar <- as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/vs_", yearlist[j],
-            ".nc", sep = ""))
-          Wind <- as.numeric(ncvar_get(nc, varid = "wind_speed",
-            start = start, count))
-          nc_close(nc)
-          Tmax <- tmax - 273.15
-          Tmin <- tmin - 273.15
-        } else {
-          cat(paste("reading weather input for ", yearlist[j],
-            " \n", sep = ""))
-          nc <- nc_open(paste(spatial, "/tmmn_", yearlist[j],
-            ".nc", sep = ""))
-          tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/tmmx_", yearlist[j],
-            ".nc", sep = ""))
-          tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/rmin_", yearlist[j],
-            ".nc", sep = ""))
-          rhmin <- c(rhmin, as.numeric(ncvar_get(nc, varid = "relative_humidity",
-            start = start, count)))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/rmax_", yearlist[j],
-            ".nc", sep = ""))
-          rhmax <- c(rhmax, as.numeric(ncvar_get(nc, varid = "relative_humidity",
-            start = start, count)))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/pr_", yearlist[j],
-            ".nc", sep = ""))
-          Rain <- c(Rain, as.numeric(ncvar_get(nc, varid = "precipitation_amount",
-            start = start, count)))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/srad_", yearlist[j],
-            ".nc", sep = ""))
-          solar <- c(solar, as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
-            start = start, count)))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/vs_", yearlist[j],
-            ".nc", sep = ""))
-          Wind <- c(Wind, as.numeric(ncvar_get(nc, varid = "wind_speed",
-            start = start, count)))
-          nc_close(nc)
-          Tmax <- c(Tmax, tmax - 273.15)
-          Tmin <- c(Tmin, tmin - 273.15)
-        }
+      cloud <- (1 - solar / allclearsky) * 100
+      cloud[cloud<0]<-0
+      cloud[cloud>100]<-100
+      CCMAXX<-as.numeric(cloud)
+      CCMINN<-CCMAXX
+      CCMINN<-CCMINN*0.5
+      CCMAXX<-CCMAXX*2
+      CCMINN[CCMINN>100]<-100
+      CCMAXX[CCMAXX>100]<-100
+      Wind<-Wind*windfac
+      Wind[Wind==0]<-0.1
+      if(save == 1){
+        cat("saving met data for later \n")
+        save(CCMAXX, file = 'CCMAXX.Rda')
+        save(CCMINN, file = 'CCMINN.Rda')
+        save(Wind, file = 'Wind.Rda')
+        save(Tmax, file = 'Tmax.Rda')
+        save(Tmin, file = 'Tmin.Rda')
+        save(rhmax, file = 'rhmax.Rda')
+        save(rhmin, file = 'rhmin.Rda')
+        save(Rain, file = 'Rain.Rda')
       }
-    }
-    # compute clear sky solar for the site of interest, for cloud cover computation below
-    cat("running micro_global to get clear sky solar \n")
-    micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, timeinterval = 365)
-    clearskyrad <- micro_clearsky$metout[,c(1, 13)]
-    clearsky_mean1 <- aggregate(clearskyrad[,2], by = list(clearskyrad[,1]), FUN = mean)[,2]
-    leapyears<-seq(1972,2060,4)
-    for(j in 1:nyears){
-      if(yearlist[j]%in%leapyears){# add day for leap year if needed
-        clearsky_mean<-c(clearsky_mean1[1:59],clearsky_mean1[59],clearsky_mean1[60:365])
-      }else{
-        clearsky_mean <- clearsky_mean1
-      }
-      if(j == 1){
-        allclearsky <- clearsky_mean
-      }else{
-        allclearsky <- c(allclearsky, clearsky_mean)
-      }
-    }
-    cloud <- (1 - solar / allclearsky) * 100
-    cloud[cloud<0]<-0
-    cloud[cloud>100]<-100
-    CCMAXX<-as.numeric(cloud)
-    CCMINN<-CCMAXX
-    CCMINN<-CCMINN*0.5
-    CCMAXX<-CCMAXX*2
-    CCMINN[CCMINN>100]<-100
-    CCMAXX[CCMAXX>100]<-100
-    Wind<-Wind*windfac
-    Wind[Wind==0]<-0.1
-    if(save == 1){
-      cat("saving met data for later \n")
-      save(CCMAXX, file = 'CCMAXX.Rda')
-      save(CCMINN, file = 'CCMINN.Rda')
-      save(Wind, file = 'Wind.Rda')
-      save(Tmax, file = 'Tmax.Rda')
-      save(Tmin, file = 'Tmin.Rda')
-      save(rhmax, file = 'rhmax.Rda')
-      save(rhmin, file = 'rhmin.Rda')
-      save(Rain, file = 'Rain.Rda')
-    }
     }else{
       cat("loading met data from previous run \n")
       load('CCMAXX.Rda')
