@@ -637,14 +637,14 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
         maxErrors <- 10
         USADEM = try(eval(as.numeric(ncvar_get(nc, varid = "elevation",
           start = start, count))))
-        while (isError(retval)) {
+        while (isError(USADEM)) {
           attempts <- attempts + 1
           if (attempts >= maxErrors) {
             cat("tried 10 times to get DEM data and failed \n")
             stop
           }
           Sys.sleep(3) # wait three seconds
-          retval = try(eval(expr))
+          USADEM = try(eval(expr))
         }
 
         #USADEM <- as.numeric(ncvar_get(nc, varid = "elevation",
@@ -761,7 +761,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
                 stop
               }
               Sys.sleep(3) # wait three seconds
-              retval = try(eval(expr))
+              tmin = try(eval(expr))
             }
             #tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
             #  start = start, count))
@@ -778,7 +778,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
                 stop
               }
               Sys.sleep(3) # wait three seconds
-              retval = try(eval(expr))
+              tmax = try(eval(expr))
             }
             #tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
             #  start = start, count))
@@ -795,7 +795,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
                 stop
               }
               Sys.sleep(3) # wait three seconds
-              retval = try(eval(expr))
+              rhmin = try(eval(expr))
             }
             #rhmin <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
             #  start = start, count))
@@ -812,7 +812,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
                 stop
               }
               Sys.sleep(3) # wait three seconds
-              retval = try(eval(expr))
+              rhmax = try(eval(expr))
             }
             #rhmax <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
             #  start = start, count))
@@ -829,7 +829,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
                 stop
               }
               Sys.sleep(3) # wait three seconds
-              retval = try(eval(expr))
+              Rain = try(eval(expr))
             }
             #Rain <- as.numeric(ncvar_get(nc, varid = "precipitation_amount",
             #  start = start, count))
@@ -846,7 +846,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
                 stop
               }
               Sys.sleep(3) # wait three seconds
-              retval = try(eval(expr))
+              solar = try(eval(expr))
             }
             #solar <- as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
             #  start = start, count))
@@ -863,7 +863,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
                 stop
               }
               Sys.sleep(3) # wait three seconds
-              retval = try(eval(expr))
+              Wind = try(eval(expr))
             }
             #Wind <- as.numeric(ncvar_get(nc, varid = "wind_speed",
             #  start = start, count))
@@ -885,7 +885,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
                 stop
               }
               Sys.sleep(3) # wait three seconds
-              retval = try(eval(expr))
+              tmin = try(eval(expr))
             }
             #tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
             #  start = start, count))
@@ -902,7 +902,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
                 stop
               }
               Sys.sleep(3) # wait three seconds
-              retval = try(eval(expr))
+              tmax = try(eval(expr))
             }
             #tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
             #  start = start, count))
@@ -919,7 +919,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
                 stop
               }
               Sys.sleep(3) # wait three seconds
-              retval = try(eval(expr))
+              rhmin1 = try(eval(expr))
             }
             rhmin <- c(rhmin, rhmin1)
             #rhmin <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
@@ -937,7 +937,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
                 stop
               }
               Sys.sleep(3) # wait three seconds
-              retval = try(eval(expr))
+              rhmax1 = try(eval(expr))
             }
             rhmax <- c(rhmax, rhmax1)
             #rhmax <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
@@ -955,7 +955,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
                 stop
               }
               Sys.sleep(3) # wait three seconds
-              retval = try(eval(expr))
+              Rain1 = try(eval(expr))
             }
             Rain <- c(Rain1, Rain)
             #Rain <- as.numeric(ncvar_get(nc, varid = "precipitation_amount",
@@ -973,7 +973,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
                 stop
               }
               Sys.sleep(3) # wait three seconds
-              retval = try(eval(expr))
+              solar1 = try(eval(expr))
             }
             solar <- c(solar, solar1)
             #solar <- as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
@@ -991,7 +991,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
                 stop
               }
               Sys.sleep(3) # wait three seconds
-              retval = try(eval(expr))
+              Wind1 = try(eval(expr))
             }
             #Wind <- as.numeric(ncvar_get(nc, varid = "wind_speed",
             #  start = start, count))
