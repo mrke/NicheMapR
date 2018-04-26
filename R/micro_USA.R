@@ -830,7 +830,7 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
             nc_close(nc)
             nc <- nc_open(paste0(baseurl, "vs/vs_", yearlist[j],
               ".nc"))
-            Wind <- c(wind, retry(as.numeric(ncvar_get(nc, varid = "wind_speed",
+            Wind <- c(Wind, retry(as.numeric(ncvar_get(nc, varid = "wind_speed",
               start = start, count))))
             nc_close(nc)
             wind <- c(Wind, Wind1)
