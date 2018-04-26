@@ -158,8 +158,7 @@ An implementation of the Niche Mapper microclimate model that uses the GRIDMET d
 
 \code{snowmodel}{ = 1, run the snow model 1=yes, 0=no (note that this may cause slower runs)}\cr\cr
 \code{snowtemp}{ = 1.5, Temperature (deg C) at which precipitation falls as snow}\cr\cr
-\code{snowdens}{ = 0.375, snow density (Mg/m3), overridden by }
-\code{densfun}\cr\cr
+\code{snowdens}{ = 0.375, snow density (mg/m3), overridden by densfun}\cr\cr
 \code{densfun}{ = c(0,0), slope and intercept of linear model of snow density as a function of day-of-year - if it is c(0,0) then fixed density used}\cr\cr
 \code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
 \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
