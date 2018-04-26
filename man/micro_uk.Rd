@@ -67,7 +67,7 @@ sunsnow Hourly predictions of snow temperature under the minimum specified shade
 shadsnow Hourly predictions snow temperature under the maximum specified shade
 }
 \description{
-An implementation of the Niche Mapper microclimate model that uses the CHESS daily weather database. Specifically uses the following files, and needs all 12 for a given year: dtr, tas, huss, precip, rsds, sfcWind, psurf. Also uses the OS Terrain 50 DEM (assumes file name is 'terr50.tif'), which was aggregated to 1km to match met data for lapse-rate correction (assumes file name is 'terr1000.tif').
+An implementation of the Niche Mapper microclimate model that uses the CHESS daily weather database. Specifically uses the following files, and needs all 12 for a given year: dtr, tas, huss, precip, rsds, sfcWind, psurf. Also uses the OS Terrain 50 DEM (assumes file name is 'terr50.tif'), which was aggregated to 1km to match met data for lapse-rate correction (assumes file name is 'terr1000.tif'). Citation for CHESS data: Robinson, E.L. ; Blyth, E. ; Clark, D.B. ; Comyn-Platt, E. ; Finch, J. ; Rudd, A.C. (2017). Climate hydrology and ecology research support system meteorology dataset for Great Britain (1961-2015) [CHESS-met] v1.2. NERC Environmental Information Data Centre. https://doi.org/10.5285/b745e7b1-626c-4ccc-ac27-56582e77b900
 }
 \details{
 \itemize{

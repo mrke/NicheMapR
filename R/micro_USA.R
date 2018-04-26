@@ -214,7 +214,7 @@
 #' }
 #' @examples
 #' library(NicheMapR)
-#' micro<-micro_USA(loc = 'Madison Wisconsin, USA', runshade = 0, ystart = 2014, yfinish = 2016) # run the model using SoilGrids data at Madison for 2014 to 2016
+#' micro<-micro_usa(loc = 'Madison Wisconsin, USA', runshade = 0, ystart = 2014, yfinish = 2016) # run the model using SoilGrids data at Madison for 2014 to 2016
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
@@ -273,7 +273,7 @@
 #'     (%)",col=i,type = "l")
 #'  }
 #' }
-micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2016,
+micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2016,
   yfinish = 2016, nyears = 1, soiltype = 4, REFL = 0.15, elev = NA, slope = 0,
   aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
   DEP=c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
@@ -1385,4 +1385,4 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
       }
     } # end of check for na sites
   } # end error trapping
-} # end of micro_USA function
+} # end of micro_usa function
