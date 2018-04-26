@@ -622,6 +622,29 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
     if(save != 2){
       #GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]]
       if(opendap == 1){
+        require(utils)
+        require(futile.logger)
+        retry <- function(expr, isError=function(x) "try-error" %in% class(x), maxErrors=5, sleep=0) {
+          attempts = 0
+          retval = try(eval(expr))
+          while (isError(retval)) {
+            attempts = attempts + 1
+            if (attempts >= maxErrors) {
+              msg = sprintf("retry: too many retries [[%s]]", capture.output(str(retval)))
+              flog.fatal(msg)
+              stop(msg)
+            } else {
+              msg = sprintf("retry: error in attempt %i/%i [[%s]]", attempts, maxErrors,
+                capture.output(str(retval)))
+              flog.error(msg)
+              warning(msg)
+            }
+            if (sleep > 0) Sys.sleep(sleep)
+            retval = try(eval(expr))
+          }
+          return(retval)
+        }
+
         cat("extracting elevation via opendaps \n")
         baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/MET/"
         nc <- nc_open(paste0(baseurl, "/elev/metdata_elevationdata.nc"))
@@ -633,22 +656,8 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
         lonindex=which(flon %in% 1)
         start <- c(lonindex,latindex,1)
         count <- c(1, 1, 1)
-        attempts <- 0
-        maxErrors <- 10
-        USADEM = try(eval(as.numeric(ncvar_get(nc, varid = "elevation",
-          start = start, count))))
-        while (isError(USADEM)) {
-          attempts <- attempts + 1
-          if (attempts >= maxErrors) {
-            cat("tried 10 times to get DEM data and failed \n")
-            stop
-          }
-          Sys.sleep(3) # wait three seconds
-          USADEM = try(eval(expr))
-        }
-
-        #USADEM <- as.numeric(ncvar_get(nc, varid = "elevation",
-        #  start = start, count))
+        USADEM <- retry(as.numeric(ncvar_get(nc, varid = "elevation",
+          start = start, count)))
         nc_close(nc)
       }else{
         USADEM <- extract(raster(paste0(spatial,"/metdata_elevationdata.nc")), x) # metres above sea level
@@ -751,122 +760,38 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
             lonindex=which(flon %in% 1)
             start <- c(latindex,lonindex,1)
             count <- c(1, 1, -1)
-            attempts <- 0
-            tmin = try(eval(as.numeric(ncvar_get(nc, varid = "air_temperature",
-              start = start, count))))
-            while (isError(tmin)) {
-              attempts <- attempts + 1
-              if (attempts >= maxErrors) {
-                cat("tried 10 times to get tmin data and failed \n")
-                stop
-              }
-              Sys.sleep(3) # wait three seconds
-              tmin = try(eval(expr))
-            }
-            #tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
-            #  start = start, count))
+            tmin <- retry(as.numeric(ncvar_get(nc, varid = "air_temperature",
+              start = start, count)))
             nc_close(nc)
             nc <- nc_open(paste0(baseurl, "tmmx/tmmx_", yearlist[j],
               ".nc"))
-            attempts <- 0
-            tmax = try(eval(as.numeric(ncvar_get(nc, varid = "air_temperature",
-              start = start, count))))
-            while (isError(tmax)) {
-              attempts <- attempts + 1
-              if (attempts >= maxErrors) {
-                cat("tried 10 times to get tmax data and failed \n")
-                stop
-              }
-              Sys.sleep(3) # wait three seconds
-              tmax = try(eval(expr))
-            }
-            #tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
-            #  start = start, count))
+            tmax <- retry(as.numeric(ncvar_get(nc, varid = "air_temperature",
+              start = start, count)))
             nc_close(nc)
             nc <- nc_open(paste0(baseurl, "rmin/rmin_", yearlist[j],
               ".nc"))
-            attempts <- 0
-            rhmin = try(eval(as.numeric(ncvar_get(nc, varid = "relative_humidity",
-              start = start, count))))
-            while (isError(rhmin)) {
-              attempts <- attempts + 1
-              if (attempts >= maxErrors) {
-                cat("tried 10 times to get rhmin data and failed \n")
-                stop
-              }
-              Sys.sleep(3) # wait three seconds
-              rhmin = try(eval(expr))
-            }
-            #rhmin <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
-            #  start = start, count))
+            rhmin <- retry(as.numeric(ncvar_get(nc, varid = "relative_humidity",
+              start = start, count)))
             nc_close(nc)
             nc <- nc_open(paste0(baseurl, "rmax/rmax_", yearlist[j],
               ".nc"))
-            attempts <- 0
-            rhmax = try(eval(as.numeric(ncvar_get(nc, varid = "relative_humidity",
-              start = start, count))))
-            while (isError(rhmax)) {
-              attempts <- attempts + 1
-              if (attempts >= maxErrors) {
-                cat("tried 10 times to get rhmax data and failed \n")
-                stop
-              }
-              Sys.sleep(3) # wait three seconds
-              rhmax = try(eval(expr))
-            }
-            #rhmax <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
-            #  start = start, count))
+            rhmax <- retry(as.numeric(ncvar_get(nc, varid = "relative_humidity",
+              start = start, count)))
             nc_close(nc)
             nc <- nc_open(paste0(baseurl, "pr/pr_", yearlist[j],
               ".nc"))
-            attempts <- 0
-            Rain = try(eval(as.numeric(ncvar_get(nc, varid = "precipitation_amount",
-              start = start, count))))
-            while (isError(Rain)) {
-              attempts <- attempts + 1
-              if (attempts >= maxErrors) {
-                cat("tried 10 times to get Rain data and failed \n")
-                stop
-              }
-              Sys.sleep(3) # wait three seconds
-              Rain = try(eval(expr))
-            }
-            #Rain <- as.numeric(ncvar_get(nc, varid = "precipitation_amount",
-            #  start = start, count))
+            Rain <- retry(as.numeric(ncvar_get(nc, varid = "precipitation_amount",
+              start = start, count)))
             nc_close(nc)
             nc <- nc_open(paste0(baseurl, "srad/srad_", yearlist[j],
               ".nc"))
-            attempts <- 0
-            solar = try(eval(as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
-              start = start, count))))
-            while (isError(solar)) {
-              attempts <- attempts + 1
-              if (attempts >= maxErrors) {
-                cat("tried 10 times to get rhmax data and failed \n")
-                stop
-              }
-              Sys.sleep(3) # wait three seconds
-              solar = try(eval(expr))
-            }
-            #solar <- as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
-            #  start = start, count))
+            solar <- retry(as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
+              start = start, count)))
             nc_close(nc)
             nc <- nc_open(paste0(baseurl, "vs/vs_", yearlist[j],
               ".nc"))
-            attempts <- 0
-            Wind = try(eval(as.numeric(ncvar_get(nc, varid = "wind_speed",
-              start = start, count))))
-            while (isError(Wind)) {
-              attempts <- attempts + 1
-              if (attempts >= maxErrors) {
-                cat("tried 10 times to get Wind data and failed \n")
-                stop
-              }
-              Sys.sleep(3) # wait three seconds
-              Wind = try(eval(expr))
-            }
-            #Wind <- as.numeric(ncvar_get(nc, varid = "wind_speed",
-            #  start = start, count))
+            Wind <- retry(as.numeric(ncvar_get(nc, varid = "wind_speed",
+              start = start, count)))
             nc_close(nc)
             Tmax <- tmax - 273.15
             Tmin <- tmin - 273.15
@@ -875,126 +800,38 @@ micro_USA <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
               " \n", sep = ""))
             nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
               ".nc"))
-            attempts <- 0
-            tmin = try(eval(as.numeric(ncvar_get(nc, varid = "air_temperature",
-              start = start, count))))
-            while (isError(tmin)) {
-              attempts <- attempts + 1
-              if (attempts >= maxErrors) {
-                cat("tried 10 times to get tmin data and failed \n")
-                stop
-              }
-              Sys.sleep(3) # wait three seconds
-              tmin = try(eval(expr))
-            }
-            #tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
-            #  start = start, count))
+            tmin <- retry(as.numeric(ncvar_get(nc, varid = "air_temperature",
+              start = start, count)))
             nc_close(nc)
             nc <- nc_open(paste0(baseurl, "tmmx/tmmx_", yearlist[j],
               ".nc"))
-            attempts <- 0
-            tmax = try(eval(as.numeric(ncvar_get(nc, varid = "air_temperature",
-              start = start, count))))
-            while (isError(tmax)) {
-              attempts <- attempts + 1
-              if (attempts >= maxErrors) {
-                cat("tried 10 times to get tmax data and failed \n")
-                stop
-              }
-              Sys.sleep(3) # wait three seconds
-              tmax = try(eval(expr))
-            }
-            #tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
-            #  start = start, count))
+            tmax <- retry(as.numeric(ncvar_get(nc, varid = "air_temperature",
+              start = start, count)))
             nc_close(nc)
             nc <- nc_open(paste0(baseurl, "rmin/rmin_", yearlist[j],
               ".nc"))
-            attempts <- 0
-            rhmin1 = try(eval(as.numeric(ncvar_get(nc, varid = "relative_humidity",
+            rhmin <- c(rhmin, retry(as.numeric(ncvar_get(nc, varid = "relative_humidity",
               start = start, count))))
-            while (isError(rhmin1)) {
-              attempts <- attempts + 1
-              if (attempts >= maxErrors) {
-                cat("tried 10 times to get rhmin data and failed \n")
-                stop
-              }
-              Sys.sleep(3) # wait three seconds
-              rhmin1 = try(eval(expr))
-            }
-            rhmin <- c(rhmin, rhmin1)
-            #rhmin <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
-            #  start = start, count))
             nc_close(nc)
             nc <- nc_open(paste0(baseurl, "rmax/rmax_", yearlist[j],
               ".nc"))
-            attempts <- 0
-            rhmax1 = try(eval(as.numeric(ncvar_get(nc, varid = "relative_humidity",
+            rhmax <- c(rhmax, retry(as.numeric(ncvar_get(nc, varid = "relative_humidity",
               start = start, count))))
-            while (isError(rhmax1)) {
-              attempts <- attempts + 1
-              if (attempts >= maxErrors) {
-                cat("tried 10 times to get rhmax data and failed \n")
-                stop
-              }
-              Sys.sleep(3) # wait three seconds
-              rhmax1 = try(eval(expr))
-            }
-            rhmax <- c(rhmax, rhmax1)
-            #rhmax <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
-            #  start = start, count))
             nc_close(nc)
             nc <- nc_open(paste0(baseurl, "pr/pr_", yearlist[j],
               ".nc"))
-            attempts <- 0
-            Rain1 = try(eval(as.numeric(ncvar_get(nc, varid = "precipitation_amount",
+            Rain <- c(Rain, retry(as.numeric(ncvar_get(nc, varid = "precipitation_amount",
               start = start, count))))
-            while (isError(Rain1)) {
-              attempts <- attempts + 1
-              if (attempts >= maxErrors) {
-                cat("tried 10 times to get Rain data and failed \n")
-                stop
-              }
-              Sys.sleep(3) # wait three seconds
-              Rain1 = try(eval(expr))
-            }
-            Rain <- c(Rain1, Rain)
-            #Rain <- as.numeric(ncvar_get(nc, varid = "precipitation_amount",
-            #  start = start, count))
             nc_close(nc)
             nc <- nc_open(paste0(baseurl, "srad/srad_", yearlist[j],
               ".nc"))
-            attempts <- 0
-            solar1 = try(eval(as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
+            solar <- c(solar, retry(as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
               start = start, count))))
-            while (isError(solar1)) {
-              attempts <- attempts + 1
-              if (attempts >= maxErrors) {
-                cat("tried 10 times to get rhmax data and failed \n")
-                stop
-              }
-              Sys.sleep(3) # wait three seconds
-              solar1 = try(eval(expr))
-            }
-            solar <- c(solar, solar1)
-            #solar <- as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
-            #  start = start, count))
             nc_close(nc)
             nc <- nc_open(paste0(baseurl, "vs/vs_", yearlist[j],
               ".nc"))
-            attempts <- 0
-            Wind1 = try(eval(as.numeric(ncvar_get(nc, varid = "wind_speed",
+            Wind <- c(wind, retry(as.numeric(ncvar_get(nc, varid = "wind_speed",
               start = start, count))))
-            while (isError(Wind1)) {
-              attempts <- attempts + 1
-              if (attempts >= maxErrors) {
-                cat("tried 10 times to get Wind data and failed \n")
-                stop
-              }
-              Sys.sleep(3) # wait three seconds
-              Wind1 = try(eval(expr))
-            }
-            #Wind <- as.numeric(ncvar_get(nc, varid = "wind_speed",
-            #  start = start, count))
             nc_close(nc)
             wind <- c(Wind, Wind1)
             Tmax <- c(Tmax, tmax - 273.15)
