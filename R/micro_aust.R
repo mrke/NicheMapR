@@ -1825,7 +1825,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
         }
 
         if(opendap == 0){
-          # correct for fact that wind is measured at 10 m height
+          # correct for fact that wind is measured at 2 m height
           # wind shear equation v / vo = (h / ho)^a
           #where
           #v = the velocity at height h (m/s)
@@ -1843,27 +1843,15 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
           if(dailywind!=1){
             WNMINN<-WNMINN*(1.2/10)^0.15*.1 # reduce min wind further because have only 9am/3pm values to get max/min
             WNMAXX<-WNMAXX*(1.2/10)^0.15
-            WNMINN<-WNMINN#*3.25 # for snow
-            WNMAXX<-WNMAXX#*3.25 # for snow
             message('min wind * 0.1 \n')
-            #message('max wind * 2.0 for snow ')
           }else{
-            if(snowmodel==0){
               WNMAXX<-dwind*(1.2/2)^0.15
               WNMINN<-WNMAXX
-              WNMAXX<-WNMAXX*2#*3.5#*5
-              WNMINN<-WNMINN*0.5#1.5#*3.5#*2
+              WNMAXX<-WNMAXX*2
+              WNMINN<-WNMINN*0.5
+              WNMINN[WNMINN<0.1]<-0.1
               message('min wind * 0.5 \n')
               message('max wind * 2 \n')
-            }else{
-              WNMAXX<-dwind*(1.2/2)^0.15#*3.25
-              WNMINN<-WNMAXX
-              WNMAXX<-WNMAXX*2#*2.5#*3.5#*5
-              WNMINN<-WNMINN*0.5#*3#1.5#*3.5#*2
-              WNMINN[WNMINN<0.1]<-0.1
-              #message('min wind * 0.5 * 1.5 for snow \n')
-              #message('max wind * 2 * 2.5 for snow \n')
-            }
           }
           if(vlsci==0){
             CCMINN<-CCMINN*0.5
