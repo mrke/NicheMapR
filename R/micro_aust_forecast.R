@@ -1174,6 +1174,7 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
         moists1[1:10,1:dim]<-moists
         if(length(LAI)<dim){
          LAI<-rep(LAI[1],dim)
+         LAI1 <- LAI
         }
         if(shore==0){
           tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix

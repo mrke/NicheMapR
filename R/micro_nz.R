@@ -1,6 +1,6 @@
 #' New Zealand implementation of the microclimate model.
 #'
-#' An implementation of the Niche Mapper microclimate model that uses the AWAP daily weather database
+#' An implementation of the Niche Mapper microclimate model that uses the Virtual Climate Station Network (VCSN) for NZ https://www.niwa.co.nz/climate/our-services/virtual-climate-stations
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param ystart First year to run
@@ -1192,6 +1192,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
       moists1[1:10,1:dim]<-moists
       if(length(LAI)<dim){
         LAI<-rep(LAI[1],dim)
+        LAI1 <- LAI
       }
       if(shore==0){
         tides<-matrix(data = 0, nrow = 24*dim, ncol = 3) # make an empty matrix

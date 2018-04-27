@@ -969,7 +969,7 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
       micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, timeinterval = 365)
       clearskyrad <- micro_clearsky$metout[,c(1, 13)]
       clearsky_mean1 <- aggregate(clearskyrad[,2], by = list(clearskyrad[,1]), FUN = mean)[,2]
-      leapyears<-seq(1972,2060,4)
+      leapyears<-seq(1900,2100,4)
       for(j in 1:nyears){
         if(yearlist[j]%in%leapyears){# add day for leap year if needed
           clearsky_mean<-c(clearsky_mean1[1:59],clearsky_mean1[59],clearsky_mean1[60:365])
@@ -1018,8 +1018,24 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
 
     ndays<-length(Tmax)
     doynum<-ndays
-    doys<-seq(daystart,doynum,1)
-    doy <- subset(doys, doys!=0)
+    leapyears<-seq(1900,2100,4)
+    for(k in 1:nyears){
+      if(k==1){
+        cyear<-ystart
+      }else{
+        cyear<-cyear+1
+      }
+      if(cyear %in% leapyears){
+        dinyear <- 366
+      }else{
+        dinyear <- 365
+      }
+      if(k==1){
+        doy <- seq(1,dinyear)
+      }else{
+        doy <- c(doy, seq(1, dinyear))
+      }
+    }
     ida<-ndays
     idayst <- 1
 
@@ -1268,7 +1284,8 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
       tannul1[1:dim]<-tannul
       moists1[1:10,1:dim]<-moists
       if(length(LAI)<dim){
-        LAI1<-rep(LAI[1],dim)
+        LAI<-rep(LAI[1],dim)
+        LAI1 <- LAI
       }
       if(shore==0){
         tides<-matrix(data = 0, nrow = 24*dim, ncol = 3) # make an empty matrix
