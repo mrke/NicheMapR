@@ -67,7 +67,7 @@ sunsnow Hourly predictions of snow temperature under the minimum specified shade
 shadsnow Hourly predictions snow temperature under the maximum specified shade
 }
 \description{
-An implementation of the Niche Mapper microclimate model that uses the AWAP daily weather database
+An implementation of the Niche Mapper microclimate model that uses the Virtual Climate Station Network (VCSN) for NZ https://www.niwa.co.nz/climate/our-services/virtual-climate-stations
 }
 \details{
 \itemize{
