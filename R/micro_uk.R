@@ -701,10 +701,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       "08", "09", "10", "11", "12")
 
     if(opendap ==1){
-      user <- readline(prompt="Enter your CHESS user name: ")
-      pwd <- readline(prompt="Enter your CHESS user password: ")
-
-      baseurl <- paste0("https://",user,":",pwd,"@eip.ceh.ac.uk/thredds/dodsC/public-CHESSDrivingDatadtrDetail02")
+      baseurl <- paste0("https://eip.ceh.ac.uk/thredds/dodsC/public-CHESSDrivingDatadtrDetail02")
       nc <- nc_open(paste0(baseurl, "/chess_dtr_", yearlist[1],
         "12.nc", sep = ""))
       northings <- matrix(ncvar_get(nc, "y"))
@@ -716,22 +713,15 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       northing <- northings
       easting <- rep(eastings[1], length(northing))
       lat <- ConvertCoordinates(easting, northing)[, 2]
-
-
       flat = match(abs(lat - x[2]) < 0.0013,
         1)
-
       latindex = which(flat %in% 1)
       flon = match(abs(lon - x[1]) < 0.0013,
         1)
-
       lonindex = which(flon %in% 1)
-
       start <- c(lonindex, latindex, 1)
       count <- c(1, 1, -1)
-
-      baseurl <- paste0("https://",user,":",pwd,"@eip.ceh.ac.uk/thredds/dodsC/public-CHESSDrivingData")
-
+      baseurl <- paste0("https://eip.ceh.ac.uk/thredds/dodsC/public-CHESSDrivingData")
       for (j in 1:nyears) {
         for (jj in 1:12) {
           cat(paste("reading weather input for ", yearlist[j],
