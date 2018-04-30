@@ -932,6 +932,7 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
         save(Tmin, file = 'Tmin.Rda')
         save(Hum, file = 'Hum.Rda')
         save(Rain, file = 'Rain.Rda')
+        save(press, file = 'press.Rda')
       }
     }else{
       cat("loading met data from previous run \n")
