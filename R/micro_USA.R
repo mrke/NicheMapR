@@ -995,7 +995,6 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
       CCMAXX<-CCMAXX*2
       CCMINN[CCMINN>100]<-100
       CCMAXX[CCMAXX>100]<-100
-      Wind<-Wind*windfac
       Wind[Wind==0]<-0.1
       if(save == 1){
         cat("saving met data for later \n")
@@ -1102,8 +1101,8 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
       ALLMAXTEMPS<-TMAXX
       ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
 
-      WNMAXX <- Wind
-      WNMINN <- Wind
+      WNMAXX <- Wind * windfac
+      WNMINN <- Wind * windfac
 
       if(manualshade==0){
         maxshades1 <-spline(doys12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
