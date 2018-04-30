@@ -57,6 +57,7 @@
 #' \code{soilgrids}{ = 1, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
+#' \code{save}{ = 0, don't save forcing data (0), save the forcing data (1) or read previously saved data (2)}\cr\cr
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
@@ -293,7 +294,7 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
   tides = matrix(data = 0, nrow = 24 * timeinterval * nyears, ncol = 3), hourly = 0,
   rainhourly = 0, rainhour = 0, rainoff = 0, lamb = 0, IUV = 0, opendap = 0,
   soilgrids = 1, IR = 0, message = 0, fail = nyears * 24 * 365, snowcond = 0,
-  intercept = maxshade / 100 * 0.3) {
+  intercept = maxshade / 100 * 0.3, save = 0) {
 
   # loc="London, UK"
   # timeinterval=365
@@ -667,33 +668,49 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
     hori<-as.numeric(as.matrix(hori))
     VIEWF<-VIEWF_all
 
-    if(soilgrids == 1){
-      cat('extracting data from SoilGrids \n')
-      require(rjson)
-      require(sp)
-      require(GSIF)
-      pnts <- data.frame(lon=x[1], lat=x[2], id=c("p1"))
-      coordinates(pnts) <- ~lon+lat
-      proj4string(pnts) <- CRS("+proj=longlat +datum=WGS84")
-      soilgrids.r <- REST.SoilGrids(c("BLDFIE", "SLTPPT","SNDPPT", "CLYPPT"))
-      ov <- over(soilgrids.r, pnts)
-      if(length(ov) > 3){
-        soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
-        colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
+    if(save != 2){
+      if(soilgrids == 1){
+        cat('extracting data from SoilGrids \n')
+        require(rjson)
+        require(sp)
+        require(GSIF)
+        pnts <- data.frame(lon=x[1], lat=x[2], id=c("p1"))
+        coordinates(pnts) <- ~lon+lat
+        proj4string(pnts) <- CRS("+proj=longlat +datum=WGS84")
+        soilgrids.r <- REST.SoilGrids(c("BLDFIE", "SLTPPT","SNDPPT", "CLYPPT"))
+        ov <- over(soilgrids.r, pnts)
+        if(length(ov) > 3){
+          soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
+          colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
 
-        #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
-        DEP <- c(0., 2.5,  5.,  10,  15, 20., 30.,  60.,  100.,  200.) # Soil nodes (cm)
-        soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
-        PE<-soil.hydro$PE
-        BB<-soil.hydro$BB
-        BD<-soil.hydro$BD
-        KS<-soil.hydro$KS
-        BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
-      }else{
-        cat('no SoilGrids data for this site, using user-input soil properties \n')
+          #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
+          DEP <- c(0., 2.5,  5.,  10,  15, 20., 30.,  60.,  100.,  200.) # Soil nodes (cm)
+          soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
+          PE<-soil.hydro$PE
+          BB<-soil.hydro$BB
+          BD<-soil.hydro$BD
+          KS<-soil.hydro$KS
+          BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
+        }else{
+          cat('no SoilGrids data for this site, using user-input soil properties \n')
+        }
       }
+    }else{
+      cat("loading SoilGrids data from previous run \n")
+      load('PE.Rda')
+      load('BB.Rda')
+      load('BD.Rda')
+      load('KS.Rda')
+      load('BulkDensity.Rda')
     }
-
+    if(save == 1){
+      cat("saving SoilGrids data for later \n")
+      save(PE, file = 'PE.Rda')
+      save(BB, file = 'BB.Rda')
+      save(BD, file = 'BD.Rda')
+      save(KS, file = 'KS.Rda')
+      save(BulkDensity, file = 'BulkDensity.Rda')
+    }
     delta_elev = UKDEM - ALTITUDES
     adiab_corr_max <- delta_elev * lapse_max
     adiab_corr_min <- delta_elev * lapse_min
@@ -705,184 +722,227 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
     month <- c("01", "02", "03", "04", "05", "06", "07",
       "08", "09", "10", "11", "12")
 
-    if(opendap != 0){
-      baseurl <- opendap
-      nc <- nc_open(paste0(baseurl, "dtrDetail02/chess_dtr_", yearlist[1],
-        "12.nc", sep = ""))
-      northings <- matrix(ncvar_get(nc, "y"))
-      eastings <- matrix(ncvar_get(nc, "x"))
-      nc_close(nc)
-      easting <- eastings
-      northing <- rep(northings[1], length(easting))
-      lon <- ConvertCoordinates(easting, northing)[, 1]
-      northing <- northings
-      easting <- rep(eastings[1], length(northing))
-      lat <- ConvertCoordinates(easting, northing)[, 2]
-      flat = match(abs(lat - x[2]) < 0.0013,
-        1)
-      latindex = which(flat %in% 1)
-      flon = match(abs(lon - x[1]) < 0.0013,
-        1)
-      lonindex = which(flon %in% 1)
-      start <- c(lonindex, latindex, 1)
-      count <- c(1, 1, -1)
-      for (j in 1:nyears) {
-        for (jj in 1:12) {
-          cat(paste("reading weather input for ", yearlist[j],
-            " month ", month[jj], " \n", sep = ""))
-          nc <- nc_open(paste0(baseurl, "dtrDetail02/chess_dtr_", yearlist[j], month[jj], ".nc"))
-          dtr <- as.numeric(ncvar_get(nc, varid = "dtr",start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "tasDetail02/chess_tas_", yearlist[j], month[jj], ".nc"))
-          tas <- as.numeric(ncvar_get(nc, varid = "tas", start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "psurfDetail02/chess_psurf_", yearlist[j], month[jj], ".nc"))
-          psurf <- as.numeric(ncvar_get(nc, varid = "psurf", start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "hussDetail02/chess_huss_", yearlist[j], month[jj], ".nc"))
-          huss <- as.numeric(ncvar_get(nc, varid = "huss",  start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "precipDetail02/chess_precip_", yearlist[j], month[jj], ".nc"))
-          precip <- as.numeric(ncvar_get(nc, varid = "precip", start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "rsdsDetail02/chess_rsds_", yearlist[j], month[jj], ".nc"))
-          rsds <- as.numeric(ncvar_get(nc, varid = "rsds", start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "sfcWindDetail02/chess_sfcWind_", yearlist[j], month[jj], ".nc"))
-          sfcWind <- as.numeric(ncvar_get(nc, varid = "sfcWind", start = start, count))
-          nc_close(nc)
-          if (j == 1 & jj == 1) {
-            Tmax <- tas - 273.15 + dtr/2
-            Tmin <- tas - 273.15 - dtr/2
-            Wind <- sfcWind
-            Hum <- huss
-            Rain <- precip * 3600 * 24
-            solar <- rsds
-            press <- psurf
+    if(save != 2){
+      if(opendap != 0){
+        require(utils)
+        require(futile.logger)
+        retry <- function(expr, isError=function(x) "try-error" %in% class(x), maxErrors=20, sleep=0) {
+          attempts = 0
+          retval = try(eval(expr))
+          while (isError(retval)) {
+            attempts = attempts + 1
+            if (attempts >= maxErrors) {
+              msg = sprintf("retry: too many retries [[%s]]", capture.output(str(retval)))
+              flog.fatal(msg)
+              stop(msg)
+            } else {
+              msg = sprintf("retry: error in attempt %i/%i [[%s]]", attempts, maxErrors,
+                capture.output(str(retval)))
+              flog.error(msg)
+              warning(msg)
+            }
+            if (sleep > 0) Sys.sleep(sleep)
+            retval = try(eval(expr))
           }
-          else {
-            Tmax <- c(Tmax, tas - 273.15 + dtr/2)
-            Tmin <- c(Tmin, tas - 273.15 - dtr/2)
-            Wind <- c(Wind, sfcWind)
-            Hum <- c(Hum, huss)
-            Rain <- c(Rain, precip * 3600 * 24)
-            solar <- c(solar, rsds)
-            press <- c(press, psurf)
+          return(retval)
+        }
+
+        baseurl <- opendap
+        nc <- nc_open(paste0(baseurl, "dtrDetail02/chess_dtr_", yearlist[1],
+          "12.nc", sep = ""))
+        northings <- retry(matrix(ncvar_get(nc, "y")))
+        eastings <- retry(matrix(ncvar_get(nc, "x")))
+        nc_close(nc)
+        easting <- eastings
+        northing <- rep(northings[1], length(easting))
+        lon <- ConvertCoordinates(easting, northing)[, 1]
+        northing <- northings
+        easting <- rep(eastings[1], length(northing))
+        lat <- ConvertCoordinates(easting, northing)[, 2]
+        flat = match(abs(lat - x[2]) < 0.0013,
+          1)
+        latindex = which(flat %in% 1)
+        flon = match(abs(lon - x[1]) < 0.0013,
+          1)
+        lonindex = which(flon %in% 1)
+        start <- c(lonindex, latindex, 1)
+        count <- c(1, 1, -1)
+        for (j in 1:nyears) {
+          for (jj in 1:12) {
+            cat(paste("reading weather input for ", yearlist[j],
+              " month ", month[jj], " \n", sep = ""))
+            nc <- nc_open(paste0(baseurl, "dtrDetail02/chess_dtr_", yearlist[j], month[jj], ".nc"))
+            dtr <- retry(as.numeric(ncvar_get(nc, varid = "dtr",start = start, count)))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "tasDetail02/chess_tas_", yearlist[j], month[jj], ".nc"))
+            tas <- retry(as.numeric(ncvar_get(nc, varid = "tas", start = start, count)))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "psurfDetail02/chess_psurf_", yearlist[j], month[jj], ".nc"))
+            psurf <- retry(as.numeric(ncvar_get(nc, varid = "psurf", start = start, count)))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "hussDetail02/chess_huss_", yearlist[j], month[jj], ".nc"))
+            huss <- retry(as.numeric(ncvar_get(nc, varid = "huss",  start = start, count)))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "precipDetail02/chess_precip_", yearlist[j], month[jj], ".nc"))
+            precip <- retry(as.numeric(ncvar_get(nc, varid = "precip", start = start, count)))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "rsdsDetail02/chess_rsds_", yearlist[j], month[jj], ".nc"))
+            rsds <- retry(as.numeric(ncvar_get(nc, varid = "rsds", start = start, count)))
+            nc_close(nc)
+            nc <- nc_open(paste0(baseurl, "sfcWindDetail02/chess_sfcWind_", yearlist[j], month[jj], ".nc"))
+            sfcWind <- retry(as.numeric(ncvar_get(nc, varid = "sfcWind", start = start, count)))
+            nc_close(nc)
+            if (j == 1 & jj == 1) {
+              Tmax <- tas - 273.15 + dtr/2
+              Tmin <- tas - 273.15 - dtr/2
+              Wind <- sfcWind
+              Hum <- huss
+              Rain <- precip * 3600 * 24
+              solar <- rsds
+              press <- psurf
+            }
+            else {
+              Tmax <- c(Tmax, tas - 273.15 + dtr/2)
+              Tmin <- c(Tmin, tas - 273.15 - dtr/2)
+              Wind <- c(Wind, sfcWind)
+              Hum <- c(Hum, huss)
+              Rain <- c(Rain, precip * 3600 * 24)
+              solar <- c(solar, rsds)
+              press <- c(press, psurf)
+            }
           }
         }
+      }else{
+        nc <- nc_open(paste(spatial, "/chess_dtr_", yearlist[1],
+          "12.nc", sep = ""))
+        northings <- matrix(ncvar_get(nc, "y"))
+        eastings <- matrix(ncvar_get(nc, "x"))
+        nc_close(nc)
+        easting <- eastings
+        northing <- rep(northings[1], length(easting))
+        lon <- ConvertCoordinates(easting, northing)[, 1]
+        northing <- northings
+        easting <- rep(eastings[1], length(northing))
+        lat <- ConvertCoordinates(easting, northing)[, 2]
+        lon_1 <- as.numeric(longlat[1])
+        lat_1 <- as.numeric(longlat[2])
+        dist1 <- abs(lon - lon_1)
+        index1 <- which.min(dist1)
+        dist2 <- abs(lat - lat_1)
+        index2 <- which.min(dist2)
+        start <- c(index1, index2, 1)
+        count <- c(1, 1, -1)
+        for (j in 1:nyears) {
+          for (jj in 1:12) {
+            cat(paste("reading weather input for ", yearlist[j],
+              " month ", month[jj], " \n", sep = ""))
+            nc <- nc_open(paste(spatial, "/chess_dtr_", yearlist[j],
+              month[jj], ".nc", sep = ""))
+            dtr <- as.numeric(ncvar_get(nc, varid = "dtr",
+              start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/chess_tas_", yearlist[j],
+              month[jj], ".nc", sep = ""))
+            tas <- as.numeric(ncvar_get(nc, varid = "tas",
+              start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/chess_psurf_",
+              yearlist[j], month[jj], ".nc", sep = ""))
+            psurf <- as.numeric(ncvar_get(nc, varid = "psurf",
+              start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/chess_huss_",
+              yearlist[j], month[jj], ".nc", sep = ""))
+            huss <- as.numeric(ncvar_get(nc, varid = "huss",
+              start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/chess_precip_",
+              yearlist[j], month[jj], ".nc", sep = ""))
+            precip <- as.numeric(ncvar_get(nc, varid = "precip",
+              start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/chess_rsds_",
+              yearlist[j], month[jj], ".nc", sep = ""))
+            rsds <- as.numeric(ncvar_get(nc, varid = "rsds",
+              start = start, count))
+            nc_close(nc)
+            nc <- nc_open(paste(spatial, "/chess_sfcWind_",
+              yearlist[j], month[jj], ".nc", sep = ""))
+            sfcWind <- as.numeric(ncvar_get(nc, varid = "sfcWind",
+              start = start, count))
+            nc_close(nc)
+            if (j == 1 & jj == 1) {
+              Tmax <- tas - 273.15 + dtr/2
+              Tmin <- tas - 273.15 - dtr/2
+              Wind <- sfcWind
+              Hum <- huss
+              Rain <- precip * 3600 * 24
+              solar <- rsds
+              press <- psurf
+            }
+            else {
+              Tmax <- c(Tmax, tas - 273.15 + dtr/2)
+              Tmin <- c(Tmin, tas - 273.15 - dtr/2)
+              Wind <- c(Wind, sfcWind)
+              Hum <- c(Hum, huss)
+              Rain <- c(Rain, precip * 3600 * 24)
+              solar <- c(solar, rsds)
+              press <- c(press, psurf)
+            }
+          }
+        }
+      }
+
+
+      # compute clear sky solar for the site of interest, for cloud cover computation below
+      cat("running micro_global to get clear sky solar \n")
+      micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, timeinterval = 365)
+      clearskyrad <- micro_clearsky$metout[,c(1, 13)]
+      clearsky_mean1 <- aggregate(clearskyrad[,2], by = list(clearskyrad[,1]), FUN = mean)[,2]
+      leapyears<-seq(1972,2060,4)
+      for(j in 1:nyears){
+        if(yearlist[j]%in%leapyears){# add day for leap year if needed
+          clearsky_mean<-c(clearsky_mean1[1:59],clearsky_mean1[59],clearsky_mean1[60:365])
+        }else{
+          clearsky_mean <- clearsky_mean1
+        }
+        if(j==1){
+          allclearsky <- clearsky_mean
+        }else{
+          allclearsky <- c(allclearsky, clearsky_mean)
+        }
+      }
+      cloud <- (1-solar/allclearsky) * 100
+      cloud[cloud<0]<-0
+      cloud[cloud>100]<-100
+      CCMAXX<-as.numeric(cloud)
+      CCMINN<-CCMAXX
+      CCMINN<-CCMINN*0.5
+      CCMAXX<-CCMAXX*2
+      CCMINN[CCMINN>100]<-100
+      CCMAXX[CCMAXX>100]<-100
+      Wind<-Wind
+      Wind[Wind==0]<-0.1
+      if(save == 1){
+        cat("saving met data for later \n")
+        save(CCMAXX, file = 'CCMAXX.Rda')
+        save(CCMINN, file = 'CCMINN.Rda')
+        save(Wind, file = 'Wind.Rda')
+        save(Tmax, file = 'Tmax.Rda')
+        save(Tmin, file = 'Tmin.Rda')
+        save(Hum, file = 'Hum.Rda')
+        save(Rain, file = 'Rain.Rda')
       }
     }else{
-      nc <- nc_open(paste(spatial, "/chess_dtr_", yearlist[1],
-        "12.nc", sep = ""))
-      northings <- matrix(ncvar_get(nc, "y"))
-      eastings <- matrix(ncvar_get(nc, "x"))
-      nc_close(nc)
-      easting <- eastings
-      northing <- rep(northings[1], length(easting))
-      lon <- ConvertCoordinates(easting, northing)[, 1]
-      northing <- northings
-      easting <- rep(eastings[1], length(northing))
-      lat <- ConvertCoordinates(easting, northing)[, 2]
-      lon_1 <- as.numeric(longlat[1])
-      lat_1 <- as.numeric(longlat[2])
-      dist1 <- abs(lon - lon_1)
-      index1 <- which.min(dist1)
-      dist2 <- abs(lat - lat_1)
-      index2 <- which.min(dist2)
-      start <- c(index1, index2, 1)
-      count <- c(1, 1, -1)
-      for (j in 1:nyears) {
-        for (jj in 1:12) {
-          cat(paste("reading weather input for ", yearlist[j],
-            " month ", month[jj], " \n", sep = ""))
-          nc <- nc_open(paste(spatial, "/chess_dtr_", yearlist[j],
-            month[jj], ".nc", sep = ""))
-          dtr <- as.numeric(ncvar_get(nc, varid = "dtr",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/chess_tas_", yearlist[j],
-            month[jj], ".nc", sep = ""))
-          tas <- as.numeric(ncvar_get(nc, varid = "tas",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/chess_psurf_",
-            yearlist[j], month[jj], ".nc", sep = ""))
-          psurf <- as.numeric(ncvar_get(nc, varid = "psurf",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/chess_huss_",
-            yearlist[j], month[jj], ".nc", sep = ""))
-          huss <- as.numeric(ncvar_get(nc, varid = "huss",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/chess_precip_",
-            yearlist[j], month[jj], ".nc", sep = ""))
-          precip <- as.numeric(ncvar_get(nc, varid = "precip",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/chess_rsds_",
-            yearlist[j], month[jj], ".nc", sep = ""))
-          rsds <- as.numeric(ncvar_get(nc, varid = "rsds",
-            start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste(spatial, "/chess_sfcWind_",
-            yearlist[j], month[jj], ".nc", sep = ""))
-          sfcWind <- as.numeric(ncvar_get(nc, varid = "sfcWind",
-            start = start, count))
-          nc_close(nc)
-          if (j == 1 & jj == 1) {
-            Tmax <- tas - 273.15 + dtr/2
-            Tmin <- tas - 273.15 - dtr/2
-            Wind <- sfcWind
-            Hum <- huss
-            Rain <- precip * 3600 * 24
-            solar <- rsds
-            press <- psurf
-          }
-          else {
-            Tmax <- c(Tmax, tas - 273.15 + dtr/2)
-            Tmin <- c(Tmin, tas - 273.15 - dtr/2)
-            Wind <- c(Wind, sfcWind)
-            Hum <- c(Hum, huss)
-            Rain <- c(Rain, precip * 3600 * 24)
-            solar <- c(solar, rsds)
-            press <- c(press, psurf)
-          }
-        }
-      }
+      cat("loading met data from previous run \n")
+      load('CCMAXX.Rda')
+      load('CCMINN.Rda')
+      load('Wind.Rda')
+      load('Tmax.Rda')
+      load('Tmin.Rda')
+      load('hum.Rda')
+      load('Rain.Rda')
     }
-
-
-    # compute clear sky solar for the site of interest, for cloud cover computation below
-    cat("running micro_global to get clear sky solar \n")
-    micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, timeinterval = 365)
-    clearskyrad <- micro_clearsky$metout[,c(1, 13)]
-    clearsky_mean1 <- aggregate(clearskyrad[,2], by = list(clearskyrad[,1]), FUN = mean)[,2]
-    leapyears<-seq(1972,2060,4)
-    for(j in 1:nyears){
-      if(yearlist[j]%in%leapyears){# add day for leap year if needed
-        clearsky_mean<-c(clearsky_mean1[1:59],clearsky_mean1[59],clearsky_mean1[60:365])
-      }else{
-        clearsky_mean <- clearsky_mean1
-      }
-      if(j==1){
-        allclearsky <- clearsky_mean
-      }else{
-        allclearsky <- c(allclearsky, clearsky_mean)
-      }
-    }
-    cloud <- (1-solar/allclearsky) * 100
-    cloud[cloud<0]<-0
-    cloud[cloud>100]<-100
-    CCMAXX<-as.numeric(cloud)
-    CCMINN<-CCMAXX
-    CCMINN<-CCMINN*0.5
-    CCMAXX<-CCMAXX*2
-    CCMINN[CCMINN>100]<-100
-    CCMAXX[CCMAXX>100]<-100
-    Wind<-Wind
-    Wind[Wind==0]<-0.1
-
     ndays<-length(Tmax)
     doynum<-ndays
     doys<-seq(daystart,doynum,1)
