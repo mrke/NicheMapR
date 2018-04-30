@@ -943,6 +943,7 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
       load('Tmin.Rda')
       load('hum.Rda')
       load('Rain.Rda')
+      load('press.Rda')
     }
     ndays<-length(Tmax)
     doynum<-ndays
