@@ -817,7 +817,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
       #}
       HORIZONS <- hori
       HORIZONS <- data.frame(HORIZONS)
-      VIEWF_all <- rep(1,length(x[,1]))
+      VIEWF_all <- 1-sum(sin(as.data.frame(hori)*pi/180))/length(hori) # convert horizon angles to radians and calc view factor(s)
       SLOPES<-rep(slope,length(x[,1]))
       AZMUTHS<-rep(aspect,length(x[,1]))
     }
