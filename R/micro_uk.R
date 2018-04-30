@@ -273,120 +273,125 @@
 #'     (%)",col=i,type = "l")
 #'  }
 #' }
-micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
-  nyears=1,soiltype=4,REFL=0.15, elev = NA, slope=0,aspect=0, lapse_max = 0.0077, lapse_min = 0.0039,
-  DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
-  minshade=0,maxshade=90,Refhyt=1.2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
-  runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,manualshade=1,
-  terrain=0,dailywind=1,windfac=1,adiab_cor=1,warm=0,spatial="C:/CHESS",
-  ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2.56,SpecHeat=870,BulkDensity=1.3,
-  PCTWET=0,rainwet=1.5,cap=1,CMH2O=1,hori=rep(0,24),
-  TIMAXS=c(1.0, 1.0, 0.0, 0.0),TIMINS=c(0, 0, 1, 1),timezone=0,
-  runmoist=1,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(BulkDensity,19),DD=rep(Density,19),
-  maxpool=10000,rainmult=1,evenrain=0,
-  SoilMoist_Init=c(0.1,0.12,0.15,0.3,0.4,0.4,0.4,0.4,0.4,0.4),
-  L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) *10000, R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
-  LAI=0.1,
-  snowmodel=1,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
-  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),
-  scenario="",year="", hourly=0, rainhourly = 0,
-  rainhour = 0, rainoff=0, lamb = 0, IUV = 0, opendap = 1,
-  soilgrids = 1, IR = 0, message = 0, fail = nyears * 24 * 365, snowcond = 0, intercept = maxshade / 100 * 0.3) {
+micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
+  yfinish = 2015, nyears = yfinish - ystart + 1, soiltype = 4, REFL = 0.15,
+  elev = NA, slope = 0, aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
+  DEP = c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
+  Refhyt = 1.2, Usrhyt = 0.01, Z01 = 0, Z02 = 0, ZH1 = 0, ZH2 = 0, runshade = 1,
+  clearsky = 0,rungads = 1, write_input = 0, writecsv = 0, manualshade = 1,
+  terrain = 0, dailywind = 1, windfac = 1, adiab_cor = 1, warm = 0, spatial = "Q:/CHESS",
+  ERR = 1.5, RUF = 0.004, EC = 0.0167238, SLE = 0.95, Thcond = 2.5, Density = 2.56,
+  SpecHeat = 870, BulkDensity = 1.3, PCTWET = 0, rainwet = 1.5, cap = 1, CMH2O = 1,
+  hori = rep(0,24), TIMAXS=c(1, 1, 0, 0), TIMINS = c(0, 0, 1, 1), timezone = 0,
+  runmoist = 1, PE = rep(1.1, 19), KS = rep(0.0037, 19), BB = rep(4.5, 19),
+  BD = rep(BulkDensity, 19), DD = rep(Density, 19), maxpool = 10000, rainmult = 1,
+  evenrain = 0, SoilMoist_Init = c(0.1, 0.12, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4),
+  L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000,
+  R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06,
+  MAXCOUNT = 500, LAI = 0.1, snowmodel = 1, snowtemp = 1.5, snowdens = 0.375,
+  densfun = c(0, 0), snowmelt = 0.9, undercatch = 1, rainmelt = 0.0125, shore = 0,
+  tides = matrix(data = 0, nrow = 24 * timeinterval * nyears, ncol = 3), hourly = 0,
+  rainhourly = 0, rainhour = 0, rainoff = 0, lamb = 0, IUV = 0, opendap = 0,
+  soilgrids = 1, IR = 0, message = 0, fail = nyears * 24 * 365, snowcond = 0,
+  intercept = maxshade / 100 * 0.3) {
 
-  loc="London, UK"
-  timeinterval=365
-  ystart=2013
-  yfinish=2015
-  nyears=1
-  soiltype=4
-  REFL=0.15
-  slope=0
-  aspect=0
-  DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
-  minshade=0
-  maxshade=90
-  Refhyt=1.2
-  Usrhyt=.01
-  Z01=0
-  Z02=0
-  ZH1=0
-  ZH2=0
-  runshade=1
-  clearsky=0
-  rungads=1
-  write_input=0
-  writecsv=0
-  manualshade=1
-  terrain=0
-  dailywind=1
-  adiab_cor=1
-  warm=0
-  spatial="Q:/CHESS"
-  ERR=1.5
-  RUF=0.004
-  EC=0.0167238
-  SLE=0.95
-  Thcond=2.5
-  Density=2.56
-  SpecHeat=870
-  BulkDensity=1.3
-  PCTWET=0
-  rainwet=1.5
-  cap=1
-  CMH2O=1
-  hori=rep(0,24)
-  TIMAXS=c(1.0, 1.0, 0.0, 0.0)
-  TIMINS=c(0, 0, 1, 1)
-  timezone=0
-  runmoist=1
-  PE=rep(1.1,19)
-  KS=rep(0.0037,19)
-  BB=rep(4.5,19)
-  BD=rep(1.3,19)
-  DD=rep(2.56,19)
-  maxpool=10000
-  rainmult=1
-  evenrain=0
-  SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
-  L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
-    4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
-    0,0)*10000
-  LAI=0.1
-  snowmodel=1
-  snowtemp=1.5
-  snowdens=0.375
-  densfun=c(0,0)
-  snowmelt=0.9
-  undercatch=1
-  rainmelt=0.0125
-  shore=0
-  tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
-  scenario=""
-  year=2070
-  hourly=0
-  rainhour = 0
-  rainoff=0
-  lamb = 0
-  IUV = 0
-  R1 = 0.001
-  RW = 2.5e+10
-  RL = 2e+6
-  PC = -1500
-  SP = 10
-  IM = 1e-06
-  MAXCOUNT = 500
-  windfac=1
-  rainhourly = 0
-  opendap = 1
-  soilgrids = 1
-  IR = 0
-  message = 0
-  fail = nyears * 24 * 365
-  elev = NA
-  lapse_max = 0.0077
-  lapse_min = 0.0039
+  # loc="London, UK"
+  # timeinterval=365
+  # ystart=2013
+  # yfinish=2015
+  # nyears=1
+  # soiltype=4
+  # REFL=0.15
+  # slope=0
+  # aspect=0
+  # DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
+  # minshade=0
+  # maxshade=90
+  # Refhyt=1.2
+  # Usrhyt=.01
+  # Z01=0
+  # Z02=0
+  # ZH1=0
+  # ZH2=0
+  # runshade=1
+  # clearsky=0
+  # rungads=1
+  # write_input=0
+  # writecsv=0
+  # manualshade=1
+  # terrain=0
+  # dailywind=1
+  # adiab_cor=1
+  # warm=0
+  # spatial="Q:/CHESS"
+  # ERR=1.5
+  # RUF=0.004
+  # EC=0.0167238
+  # SLE=0.95
+  # Thcond=2.5
+  # Density=2.56
+  # SpecHeat=870
+  # BulkDensity=1.3
+  # PCTWET=0
+  # rainwet=1.5
+  # cap=1
+  # CMH2O=1
+  # hori=rep(0,24)
+  # TIMAXS=c(1.0, 1.0, 0.0, 0.0)
+  # TIMINS=c(0, 0, 1, 1)
+  # timezone=0
+  # runmoist=1
+  # PE=rep(1.1,19)
+  # KS=rep(0.0037,19)
+  # BB=rep(4.5,19)
+  # BD=rep(1.3,19)
+  # DD=rep(2.56,19)
+  # maxpool=10000
+  # rainmult=1
+  # evenrain=0
+  # SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
+  # L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
+  #   4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
+  #   0,0)*10000
+  # LAI=0.1
+  # snowmodel=1
+  # snowtemp=1.5
+  # snowdens=0.375
+  # densfun=c(0,0)
+  # snowmelt=0.9
+  # undercatch=1
+  # rainmelt=0.0125
+  # shore=0
+  # tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
+  # hourly=0
+  # rainhour = 0
+  # rainoff=0
+  # lamb = 0
+  # IUV = 0
+  # R1 = 0.001
+  # RW = 2.5e+10
+  # RL = 2e+6
+  # PC = -1500
+  # SP = 10
+  # IM = 1e-06
+  # MAXCOUNT = 500
+  # windfac=1
+  # rainhourly = 0
+  # opendap = 0
+  # soilgrids = 1
+  # IR = 0
+  # message = 0
+  # fail = nyears * 24 * 365
+  # elev = NA
+  # lapse_max = 0.0077
+  # lapse_min = 0.0039
+  # fail = nyears * 24 * 365
+  # snowcond = 0
+  # intercept = maxshade / 100 * 0.3
+
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
+
   if(DEP[2]-DEP[1]>3 | DEP[3]-DEP[2]>3){
     cat("warning, nodes might be too far apart near the surface, try a different spacing if the program is crashing \n")
   }
@@ -700,9 +705,9 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
     month <- c("01", "02", "03", "04", "05", "06", "07",
       "08", "09", "10", "11", "12")
 
-    if(opendap ==1){
-      baseurl <- paste0("https://eip.ceh.ac.uk/thredds/dodsC/public-CHESSDrivingDatadtrDetail02")
-      nc <- nc_open(paste0(baseurl, "/chess_dtr_", yearlist[1],
+    if(opendap != 0){
+      baseurl <- opendap
+      nc <- nc_open(paste0(baseurl, "dtrDetail02/chess_dtr_", yearlist[1],
         "12.nc", sep = ""))
       northings <- matrix(ncvar_get(nc, "y"))
       eastings <- matrix(ncvar_get(nc, "x"))
@@ -721,7 +726,6 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       lonindex = which(flon %in% 1)
       start <- c(lonindex, latindex, 1)
       count <- c(1, 1, -1)
-      baseurl <- paste0("https://eip.ceh.ac.uk/thredds/dodsC/public-CHESSDrivingData")
       for (j in 1:nyears) {
         for (jj in 1:12) {
           cat(paste("reading weather input for ", yearlist[j],
@@ -876,7 +880,7 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
     CCMAXX<-CCMAXX*2
     CCMINN[CCMINN>100]<-100
     CCMAXX[CCMAXX>100]<-100
-    Wind<-Wind*windfac
+    Wind<-Wind
     Wind[Wind==0]<-0.1
 
     ndays<-length(Tmax)
@@ -912,11 +916,6 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       TMAXX<-as.matrix(Tmax+adiab_corr_max)
       TMINN<-as.matrix(Tmin+adiab_corr_min)
 
-      if(scenario!=""){ # to do - climate change scenarios
-        TMAXX=TMAXX+TMAXX_diff
-        TMINN=TMINN+TMINN_diff
-        VP<-VP*VP_diff2 # modify the predicted VP by this factor
-      }
       RAINFALL<-Rain+rainoff
 
       # convert from specific humidity to relative humidity
@@ -938,23 +937,23 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       WNMAXX <- Wind
       WNMINN <- Wind
 
-        if(manualshade==0){
-          maxshades1 <-spline(doys12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
-          MAXSHADES<-rep(maxshades1$y*100,nyears)
-          minshades <- rep(minshade,365)
-          minshades <- rep(minshades,nyears)
-          MINSHADES<-minshades
-        }else{
-          MAXSHADES<-maxshades
-          MINSHADES<-minshades
-        }
+      if(manualshade==0){
+        maxshades1 <-spline(doys12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
+        MAXSHADES<-rep(maxshades1$y*100,nyears)
+        minshades <- rep(minshade,365)
+        minshades <- rep(minshades,nyears)
+        MINSHADES<-minshades
+      }else{
+        MAXSHADES<-maxshades
+        MINSHADES<-minshades
+      }
 
       REFLS <- rep(REFL, dim)
       PCTWET <- rep(PCTWET, dim)
-        soilwet<-RAINFALL
-        soilwet[soilwet<=rainwet] = 0
-        soilwet[soilwet>0] = 90
-        PCTWET<-pmax(soilwet,PCTWET)
+      soilwet<-RAINFALL
+      soilwet[soilwet<=rainwet] = 0
+      soilwet[soilwet>0] = 90
+      PCTWET<-pmax(soilwet,PCTWET)
 
 
       Intrvls<-rep(0, dim)
@@ -1016,8 +1015,8 @@ micro_uk <- function(loc="London, UK",timeinterval=365,ystart=2015,yfinish=2015,
       #Heavy trees 	0.25
       #Several buildings 	0.25
       #Hilly, mountainous terrain 	0.25
-      WNMAXX<-WNMAXX*(1.2/2)^0.15
-      WNMINN<-WNMINN*(1.2/2)^0.15
+      WNMAXX<-WNMAXX*(1.2/2)^0.15 * windfac
+      WNMINN<-WNMINN*(1.2/2)^0.15 * windfac
 
 
       # impose uniform warming
