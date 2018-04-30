@@ -81,7 +81,6 @@ An implementation of the Niche Mapper microclimate model that uses the GRIDMET d
 \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
 \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
-\code{manualshade}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
 \code{terrain}{ = 0, Use 250m resolution terrain data? 1=yes, 0=no}\cr\cr
 \code{dailywind}{ = 1, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
@@ -163,6 +162,8 @@ An implementation of the Niche Mapper microclimate model that uses the GRIDMET d
 \code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
 \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
 \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
+\code{snowcond}{ = 0, effective snow thermal conductivity W/mC (if zero, uses inbuilt function of density)}\cr\cr
+\code{intercept}{ = maxshade / 100 * 0.3, snow interception fraction for when there's shade (0-1)}\cr\cr
 
 \strong{ Intertidal mode parameters:}
 

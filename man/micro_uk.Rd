@@ -162,6 +162,8 @@ An implementation of the Niche Mapper microclimate model that uses the CHESS dai
 \code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
 \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
 \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
+\code{snowcond}{ = 0, effective snow thermal conductivity W/mC (if zero, uses inbuilt function of density)}\cr\cr
+\code{intercept}{ = maxshade / 100 * 0.3, snow interception fraction for when there's shade (0-1)}\cr\cr
 
 \strong{ Intertidal mode parameters:}
 
