@@ -92,6 +92,7 @@ An implementation of the Niche Mapper microclimate model that uses the CHESS dai
 \code{soilgrids}{ = 1, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
+\code{save}{ = 0, don't save forcing data (0), save the forcing data (1) or read previously saved data (2)}\cr\cr
 
 \strong{ General additional parameters:}\cr\cr
 \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
