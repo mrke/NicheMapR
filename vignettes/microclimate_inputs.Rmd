@@ -247,6 +247,8 @@ densfun                   | -                    | -                  | slope & 
 snowmelt                  | decimal %            | 0-1                | proportion of calculated snowmelt that doesn't refreeze  
 undercatch                | -                    | >=1                | undercatch multipier for converting rainfall to snow 
 rainmelt                  | -                    | 0-2                | parameter for rain melting snow$^{2}$ 
+snowcond                  | -                    | >0                 | effective thermal conductivity of snow $W/mK$ 
+intercept                 | -                    | 0-1                | proportion of snow intercepted by vegetation under shaded conditions 
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```

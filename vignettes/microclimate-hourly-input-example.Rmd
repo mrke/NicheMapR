@@ -310,6 +310,8 @@ densfun <- c(0, 0) # slope and intercept of linear model of snow density as a fu
 snowmelt <- 0.9 # proportion of calculated snowmelt that doesn't refreeze
 undercatch <- 1. # undercatch multipier for converting rainfall to snow
 rainmelt <- 0.0125 # parameter in equation from Anderson's SNOW-17 model that melts snow with rainfall as a function of air temp
+snowcond<-0 # effective snow thermal conductivity W/mC (if zero, uses inbuilt function of density)
+intercept<-0 # snow interception fraction for when there's shade (0-1)
 ```
 
 ### Tide parameters
