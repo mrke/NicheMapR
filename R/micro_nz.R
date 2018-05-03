@@ -60,7 +60,7 @@
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #'
-#' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
+#' \code{ERR}{ = 2.5, Integrator error tolerance for soil temperature calculations}\cr\cr
 #' \code{Refhyt}{ = 1.2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
 #' \code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
 #' \code{Z01}{ = 0, Top (1st) segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used)}\cr\cr
@@ -202,7 +202,7 @@
 #' \itemize{
 #' \item  1 DOY - day-of-year
 #' \item  2 TIME - time of day (mins)
-#' \item  3-10 SN0cm ... - snow temperature (deg C), at the soil surface and each of the potential 8 layers
+#' \item  3-10 SN1 ... - snow temperature (deg C), at each of the potential 8 snow layers (layer 8 is always the bottom - need metout$SNOWDEP to interpret which depth in the snow a given layer represents)
 #' }
 #'
 #' if wavelength-specific solar output is selected i.e. parameter lamb = 1\cr
@@ -294,7 +294,7 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
   minshade=0,maxshade=90,Refhyt=1.2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
   runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,manualshade=1,
   terrain=0,dailywind=1,windfac=1,adiab_cor=1,warm=0,spatial="C:/Spatial_Data/Climate/New Zealand/weather",vlsci=0,
-  ERR=1.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2.56,SpecHeat=870,BulkDensity=1.3,
+  ERR=2.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2.56,SpecHeat=870,BulkDensity=1.3,
   PCTWET=0,rainwet=1.5,cap=1,CMH2O=1.,hori=rep(0,24),
   TIMAXS=c(1.0, 1.0, 0.0, 0.0),TIMINS=c(0, 0, 1, 1),timezone=0,
   runmoist=1,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(BulkDensity,19),DD=rep(Density,19),Clay=20,
@@ -1111,24 +1111,23 @@ micro_nz <- function(loc="Dunedin, New Zealand",timeinterval=365,ystart=2000,yfi
         moists2[1:10,]<-SoilMoist_Init
         moists<-moists2
       }
-      soilprops<-matrix(data = 0, nrow = 10, ncol = 6)
+      soilprops<-matrix(data = 0, nrow = 10, ncol = 5)
 
       soilprops[,1]<-BulkDensity
       soilprops[,2]<-min(0.26, 1 - BulkDensity / Density) # not used if soil moisture computed
-      soilprops[,3]<-20 # not used
-      soilprops[,4]<-Thcond
-      soilprops[,5]<-SpecHeat
-      soilprops[,6]<-Density
-      #         }
+      soilprops[,3]<-Thcond
+      soilprops[,4]<-SpecHeat
+      soilprops[,5]<-Density
+
       if(cap==1){
-        soilprops[1:2,4]<-0.2
-        soilprops[1:2,5]<-1920
+        soilprops[1:2,3]<-0.2
+        soilprops[1:2,4]<-1920
       }
       if(cap==2){
-        soilprops[1:2,4]<-0.1
-        soilprops[3:4,4]<-0.25
-        soilprops[1:4,5]<-1920
-        soilprops[1:4,6]<-1.3
+        soilprops[1:2,3]<-0.1
+        soilprops[3:4,3]<-0.25
+        soilprops[1:4,4]<-1920
+        soilprops[1:4,5]<-1.3
         soilprops[1:4,1]<-0.7
       }
 
