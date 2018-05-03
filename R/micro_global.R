@@ -56,7 +56,7 @@
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
 #'
 #' \strong{ General additional parameters:}\cr\cr
-#' \code{ERR}{ = 2.0, Integrator error tolerance for soil temperature calculations}\cr\cr
+#' \code{ERR}{ = 2.5, Integrator error tolerance for soil temperature calculations}\cr\cr
 #' \code{Refhyt}{ = 1.2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
 #' \code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
 #' \code{Z01}{ = 0, Top (1st) segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used)}\cr\cr
@@ -192,7 +192,7 @@
 #' \itemize{
 #' \item  1 DOY - day-of-year
 #' \item  2 TIME - time of day (mins)
-#' \item  3-10 SN0cm ... - snow temperature (deg C), at the soil surface and each of the potential 8 layers
+#' \item  3-10 SN1 ... - snow temperature (deg C), at each of the potential 8 snow layers (layer 8 is always the bottom - need metout$SNOWDEP to interpret which depth in the snow a given layer represents)
 #' }
 #'
 #' if wavelength-specific solar output is selected i.e. parameter lamb = 1\cr
@@ -284,7 +284,7 @@ micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
   lapse_max = 0.0077, lapse_min = 0.0039, DEP=c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200),
   minshade = 0,maxshade = 90, Refhyt = 1.2, Usrhyt = 0.01, Z01 = 0, Z02 = 0, ZH1 = 0,
   ZH2 = 0, runshade = 1, clearsky = 0, rungads = 1, write_input = 0, writecsv = 0,
-  ERR = 2.0, RUF = 0.004, EC = 0.0167238, SLE = 0.95, Thcond = 2.5, Density = 2.56,
+  ERR = 2.5, RUF = 0.004, EC = 0.0167238, SLE = 0.95, Thcond = 2.5, Density = 2.56,
   SpecHeat = 870, BulkDensity = 1.3, PCTWET = 0, cap = 1, CMH2O = 1, hori=rep(0,24),
   TIMAXS = c(1, 1, 0, 0), TIMINS = c(0, 0, 1, 1), timezone = 0, runmoist = 0,
   PE = rep(1.1, 19), KS = rep(0.0037, 19), BB = rep(4.5, 19), BD = rep(BulkDensity, 19),
@@ -792,27 +792,25 @@ micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
     #4) thermal conductivity (W/mK)
     #5) specific heat capacity (J/kg-K)
     #6) mineral density (Mg/m3)
-    soilprops<-matrix(data = 0, nrow = 10, ncol = 6) # create an empty soil properties matrix
+    soilprops<-matrix(data = 0, nrow = 10, ncol = 5) # create an empty soil properties matrix
     soilprops[1,1]<-BulkDensity # insert soil bulk density to profile 1
     soilprops[2,1]<-BulkDensity # insert soil bulk density to profile 2
     soilprops[1,2]<-min(0.26, 1 - BulkDensity / Density) # insert saturated water content to profile 1
     soilprops[2,2]<-min(0.26, 1 - BulkDensity / Density) # insert saturated water content to profile 2
-    soilprops[1,3]<-20 # not used
-    soilprops[2,3]<-20 # not used
     if(cap==1){ # insert thermal conductivity to profile 1, and see if 'organic cap' added on top
-      soilprops[1,4]<-0.2 # mineral thermal conductivity
+      soilprops[1,3]<-0.2 # mineral thermal conductivity
     }else{
-      soilprops[1,4]<-Thcond # mineral thermal conductivity
+      soilprops[1,3]<-Thcond # mineral thermal conductivity
     }
-    soilprops[2,4]<-Thcond # insert thermal conductivity to profile 2
+    soilprops[2,3]<-Thcond # insert thermal conductivity to profile 2
     if(cap==1){ # insert specific heat to profile 1, and see if 'organic cap' added on top
-      soilprops[1,5]<-1920 # mineral heat capacity
+      soilprops[1,4]<-1920 # mineral heat capacity
     }else{
-      soilprops[1,5]<-SpecHeat
+      soilprops[1,4]<-SpecHeat
     }
-    soilprops[2,5]<-SpecHeat # insert specific heat to profile 2
-    soilprops[1,6]<-Density # insert mineral density to profile 1
-    soilprops[2,6]<-Density # insert mineral density to profile 2
+    soilprops[2,4]<-SpecHeat # insert specific heat to profile 2
+    soilprops[1,5]<-Density # insert mineral density to profile 1
+    soilprops[2,5]<-Density # insert mineral density to profile 2
     #########################################################################################
 
     # Next four parameters are segmented velocity profiles due to bushes, rocks etc. on the surface

@@ -95,7 +95,7 @@ An implementation of the Niche Mapper microclimate model that uses the CHESS dai
 \code{save}{ = 0, don't save forcing data (0), save the forcing data (1) or read previously saved data (2)}\cr\cr
 
 \strong{ General additional parameters:}\cr\cr
-\code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
+\code{ERR}{ = 2.5, Integrator error tolerance for soil temperature calculations}\cr\cr
 \code{Refhyt}{ = 1.2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
 \code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
 \code{Z01}{ = 0, Top (1st) segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used)}\cr\cr
@@ -237,7 +237,7 @@ sunsnow and shdsnow variables:
 \itemize{
 \item  1 DOY - day-of-year
 \item  2 TIME - time of day (mins)
-\item  3-10 SN0cm ... - snow temperature (deg C), at the soil surface and each of the potential 8 layers
+\item  3-10 SN1 ... - snow temperature (deg C), at each of the potential 8 snow layers (layer 8 is always the bottom - need metout$SNOWDEP to interpret which depth in the snow a given layer represents)
 }
 
 if wavelength-specific solar output is selected i.e. parameter lamb = 1\cr
