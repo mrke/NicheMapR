@@ -124,7 +124,7 @@
 #' \code{snowmodel}{ = 1, run the snow model 1=yes, 0=no (note that this may cause slower runs)}\cr\cr
 #' \code{snowtemp}{ = 1.5, Temperature (deg C) at which precipitation falls as snow}\cr\cr
 #' \code{snowdens}{ = 0.375, snow density (mg/m3), overridden by densfun}\cr\cr
-#' \code{densfun}{ = c(0,0), slope and intercept of linear model of snow density as a function of day of year - if it is c(0,0) then fixed density used}\cr\cr
+#' \code{densfun}{ = c(0,0,0,0), slope and intercept of model of snow density as a linear function of snowpack age if first two values are nonzero, and following the exponential function of Sturm et al. 2010 J. of Hydromet. 11:1380-1394 if all values are non-zero; if it is c(0,0,0,0) then fixed density used}\cr\cr
 #' \code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
 #' \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
 #' \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
@@ -291,7 +291,7 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
   L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000,
   R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06,
   MAXCOUNT = 500, LAI = 0.1, snowmodel = 1, snowtemp = 1.5, snowdens = 0.375,
-  densfun = c(0, 0), snowmelt = 0.9, undercatch = 1, rainmelt = 0.0125, shore = 0,
+  densfun = c(0, 0, 0, 0), snowmelt = 0.9, undercatch = 1, rainmelt = 0.0125, shore = 0,
   tides = matrix(data = 0, nrow = 24 * timeinterval * nyears, ncol = 3), hourly = 0,
   rainhourly = 0, rainhour = 0, rainoff = 0, lamb = 0, IUV = 0, opendap = 0,
   soilgrids = 1, IR = 0, message = 0, fail = nyears * 24 * 365, snowcond = 0,
@@ -359,7 +359,7 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
   # snowmodel=1
   # snowtemp=1.5
   # snowdens=0.375
-  # densfun=c(0,0)
+  # densfun=c(0,0,0,0)
   # snowmelt=0.9
   # undercatch=1
   # rainmelt=0.0125
