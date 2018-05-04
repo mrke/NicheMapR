@@ -160,6 +160,7 @@
 #' \item 16 FROST - frost presence (0 or 1)
 #' \item 17 SNOWFALL - snow predicted to have fallen (cm)
 #' \item 18 SNOWDEP - predicted snow depth (cm)
+#' \item 19 SNOWDENS - snow density (g/cm3)
 #'}
 #' soil and shadsoil variables:
 #' \itemize{
