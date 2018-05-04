@@ -123,7 +123,7 @@
 #' \code{snowmodel}{ = 1, run the snow model 1=yes, 0=no (note that this may cause slower runs)}\cr\cr
 #' \code{snowtemp}{ = 1.5, Temperature (deg C) at which precipitation falls as snow}\cr\cr
 #' \code{snowdens}{ = 0.375, snow density (mg/m3), overridden by densfun}\cr\cr
-#' \code{densfun}{ = c(0,0), slope and intercept of linear model of snow density as a function of day-of-year - if it is c(0,0) then fixed density used}\cr\cr
+#' \code{densfun}{ = c(0,0,0,0), slope and intercept of model of snow density as a linear function of snowpack age if first two values are nonzero, and following the exponential function of Sturm et al. 2010 J. of Hydromet. 11:1380-1394 if all values are non-zero; if it is c(0,0,0,0) then fixed density used}\cr\cr
 #' \code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
 #' \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
 #' \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
@@ -303,7 +303,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
     4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
     0,0)*10000, R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
   LAI=0.1,
-  snowmodel=0,snowtemp=1.5,snowdens=0.375,densfun=c(0,0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
+  snowmodel=0,snowtemp=1.5,snowdens=0.375,densfun=c(0, 0, 0, 0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
   shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",year="",
   barcoo="",quadrangle=1,hourly=0,rainhourly=0,rainhour=0, uid = "", pwd = "",
   lamb = 0, IUV = 0, soilgrids = 1, IR = 0, opendap = 1, message = 0, fail = nyears * 24 * 365, snowcond = 0, intercept = maxshade / 100 * 0.3) {
@@ -372,7 +372,7 @@ micro_aust <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart
   #   snowmodel=0
   #   snowtemp=1.5
   #   snowdens=0.375
-  #   densfun=c(0,0)
+  #   densfun=c(0,0,0,0)
   #   snowmelt=0.9
   #   undercatch=1
   #   rainmelt=0.0125

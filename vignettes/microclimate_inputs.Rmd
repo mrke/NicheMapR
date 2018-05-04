@@ -242,7 +242,7 @@ tabl <- "
 ------------------------- | -------------------- | ------------------ | --------------
 snowtemp                  | &deg;C               | -80 - 80           | temperature at which precipitation falls as snow
 snowdens                  | Mg m$^{-3}$          | 0.05-1             | snow density
-densfun                   | -                    | -                  | slope & intercept of linear model of snow density$^{1}$ 
+densfun                   | -                    | -                  | parameters of snow density function$^{1}$ 
 snowmelt                  | decimal %            | 0-1                | proportion of calculated snowmelt that doesn't refreeze  
 undercatch                | -                    | >=1                | undercatch multipier for converting rainfall to snow 
 rainmelt                  | -                    | 0-2                | parameter for rain melting snow$^{2}$ 
@@ -252,7 +252,8 @@ intercept                 | -                    | 0-1                | proporti
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
 
-$^{1}$As a function of day of year (1 to 365 in southern hemisphere, 183-182 in northern hemisphere), in units of Mg m$^{-3}$ - if it is c(0,0) then fixed density used 
+$^{1}$ Four values, c(a, b, c, d) representing either 1) slope (a) and intercept (b, Mg m-3) of model of snow density as a linear function of snowpack age (days) if first two values are nonzero, or, if all values are non-zero, b) following the exponential function of Sturm et al. 2010 J. of Hydromet. 11:1380-1394 where density = (a - b) x (1 - exp(-c x depth - d x age)) + b, where a and b are the maximum and minimum densities, respectively, in Mg m-3, and c and d are fitted parameters. If all values are zero, i.e. c(0,0,0,0), then a fixed density is used as specified by parameter snowdens
+
 
 $^{2}$For equation from Anderson's SNOW-17 model that melts snow with rainfall as a function of air temp (typical value 1.25)
 
