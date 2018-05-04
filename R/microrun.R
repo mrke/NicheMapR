@@ -82,9 +82,9 @@ microclimate <- function(micro) {
       as.double(micro$SOLRhr),
       as.double(micro$RAINhr),
       as.double(micro$ZENhr),
-      metout=matrix(data = 0., nrow = 24*doynum, ncol = 18),
+      metout=matrix(data = 0., nrow = 24*doynum, ncol = 19),
       soil=matrix(data = 0., nrow = 24*doynum, ncol = 12),
-      shadmet=matrix(data = 0., nrow = 24*doynum, ncol = 18),
+      shadmet=matrix(data = 0., nrow = 24*doynum, ncol = 19),
       shadsoil=matrix(data = 0., nrow = 24*doynum, ncol = 12),
       soilmoist=matrix(data = 0., nrow = 24*doynum, ncol = 12),
       shadmoist=matrix(data = 0., nrow = 24*doynum, ncol = 12),
@@ -146,9 +146,9 @@ microclimate <- function(micro) {
       as.double(micro$SOLRhr),
       as.double(micro$RAINhr),
       as.double(micro$ZENhr),
-      metout=matrix(data = 0., nrow = 24*doynum, ncol = 18),
+      metout=matrix(data = 0., nrow = 24*doynum, ncol = 19),
       soil=matrix(data = 0., nrow = 24*doynum, ncol = 12),
-      shadmet=matrix(data = 0., nrow = 24*doynum, ncol = 18),
+      shadmet=matrix(data = 0., nrow = 24*doynum, ncol = 19),
       shadsoil=matrix(data = 0., nrow = 24*doynum, ncol = 12),
       soilmoist=matrix(data = 0., nrow = 24*doynum, ncol = 12),
       shadmoist=matrix(data = 0., nrow = 24*doynum, ncol = 12),
@@ -168,8 +168,8 @@ microclimate <- function(micro) {
     dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
     dyn.load(paste(lib.loc = .libPaths()[1],libpath,sep=""))
   }
-  metout <- matrix(data = 0., nrow = 24*doynum, ncol = 18)
-  shadmet <- matrix(data = 0., nrow = 24*doynum, ncol = 18)
+  metout <- matrix(data = 0., nrow = 24*doynum, ncol = 19)
+  shadmet <- matrix(data = 0., nrow = 24*doynum, ncol = 19)
   soil <- matrix(data = 0., nrow = 24*doynum, ncol = 12)
   shadsoil <- matrix(data = 0., nrow = 24*doynum, ncol = 12)
   soilmoist <- matrix(data = 0., nrow = 24*doynum, ncol = 12)
@@ -219,7 +219,7 @@ microclimate <- function(micro) {
   drlam<-a$drlam
   drrlam<-a$drrlam
   srlam<-a$srlam
-  metout.names<-c("DOY","TIME","TALOC","TAREF","RHLOC","RH","VLOC","VREF","SNOWMELT","POOLDEP","PCTWET","ZEN","SOLR","TSKYC","DEW","FROST","SNOWFALL","SNOWDEP")
+  metout.names<-c("DOY","TIME","TALOC","TAREF","RHLOC","RH","VLOC","VREF","SNOWMELT","POOLDEP","PCTWET","ZEN","SOLR","TSKYC","DEW","FROST","SNOWFALL","SNOWDEP","SNOWDENS")
   colnames(metout)<-metout.names
   colnames(shadmet)<-metout.names
   soil.names<-c("DOY","TIME",paste0("D",micro$DEP,"cm"))
