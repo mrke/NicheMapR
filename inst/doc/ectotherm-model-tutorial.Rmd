@@ -5,8 +5,10 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Ectotherm Model Tutorial}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, echo = FALSE}
@@ -30,7 +32,7 @@ library(NicheMapR)
 
 ```{r}
 library(NicheMapR)
-micro<-micro_global(loc = longlat, runmoist = 1)
+micro<-micro_global(loc = "Townsville Queensland", runmoist = 1)
 longlat <- c(micro$longlat[1], micro$longlat[2]) # save the longitude and latitude and pass directly below
 ecto<-ectotherm()
 ```
@@ -191,6 +193,7 @@ Explore what changing the thermal thresholds *CTMIN*, *TEMERGE*, *TBASK*, *VTMIN
 ```{r}
 ecto<-ectotherm(maxshades = rep(50,12))
 ```
+
 ```{r, echo=FALSE, fig.width=7, fig.height=5, fig.show = "hold"}
 # retrieve output
 metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
@@ -278,8 +281,8 @@ forage<-subset(environ,ACT==2)
 bask<-subset(environ,ACT==1)
 night<-subset(cbind(metout,debout$DAY),ZEN==90)
 day<-subset(cbind(metout,debout$DAY),ZEN!=90)
-colnames(night)[20]<-"DAY"
-colnames(day)[20]<-"DAY"
+colnames(night)[21]<-"DAY"
+colnames(day)[21]<-"DAY"
 with(night,plot(TIME/60~DAY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col='dark blue',
   main = "Annual activity windows"))
 with(bask,points((TIME-1)~DAY,pch=15,cex=2,col='light blue')) # basking Tbs

@@ -124,10 +124,9 @@ Numtyps                   | -                    | 1-10               | number o
 Nodes$^{1,2}$             | -                    | 1-10               | nodes where substrate type transitions occur
 soilprops[,1]$^{3}$       | Mg m$^{-3}$          | >0                 | bulk density (must not exceed mineral density)
 soilprops[,2]$^{3}$       | m$^{3}$ m$^{-3}$     | >0                 | volumetric water content at saturation$^{4}$ 
-soilprops[,3]$^{3}$       | %                    | 0-100              | clay content
-soilprops[,4]$^{3}$       | W m$^{-1}$ K$^{-1}$  | >0                 | thermal conductivity
-soilprops[,5]$^{3}$       | J kg$^{-1}$ K$^{-1}$ | >0                 | specific heat capacity
-soilprops[,6]$^{3}$       | Mg m$^{-3}$          | >0                 | mineral density
+soilprops[,3]$^{3}$       | W m$^{-1}$ K$^{-1}$  | >0                 | thermal conductivity
+soilprops[,4]$^{3}$       | J kg$^{-1}$ K$^{-1}$ | >0                 | specific heat capacity
+soilprops[,5]$^{3}$       | Mg m$^{-3}$          | >0                 | mineral density
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
@@ -161,10 +160,12 @@ tabl <- "
 ------------------------- | -------------------- | ------------------ | --------------
 snowtemp                  | &deg;C               | -80 - 80           | temperature at which precipitation falls as snow
 snowdens                  | Mg m$^{-3}$          | 0.05-1             | snow density
-densfun                   | -                    | -                  | slope & intercept of linear model of snow density$^{1}$ 
+densfun                   | -                    | -                  | parameters of snow density function$^{1}$ 
 snowmelt                  | decimal %            | 0-1                | proportion of calculated snowmelt that doesn't refreeze  
 undercatch                | -                    | >=1                | undercatch multipier for converting rainfall to snow 
 rainmelt                  | -                    | 0-2                | parameter for rain melting snow$^{2}$ 
+snowcond                  | -                    | >0                 | effective thermal conductivity of snow $W/mK$ 
+intercept                 | -                    | 0-1                | proportion of snow intercepted by vegetation under shaded conditions 
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 

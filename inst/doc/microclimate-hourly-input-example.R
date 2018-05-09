@@ -67,7 +67,6 @@ Density <- 2.56 # soil minerals density (Mg/m3)
 SpecHeat <- 870 # soil minerals specific heat (J/kg-K)
 BulkDensity <- 1.3 # soil bulk density (Mg/m3)
 SatWater <- 0.26 # volumetric water content at saturation (0.1 bar matric potential) (m3/m3)
-Clay <- 20 # clay content for matric potential calculations (%)
 REFL <- 0.20 # soil reflectance (decimal %)
 ALTT <- Elevation # altitude (m)
 slope <- 0 # slope (degrees, range 0-90)
@@ -156,17 +155,17 @@ CLDhr <- a # now we have hourly cloud cover
 # aggregate hourly data to daily min / max
 CCMAXX <- aggregate(CLDhr, by = list(weather$Date), FUN = max)[,2]#c(100, 100) # max cloud cover (%)
 CCMINN <- aggregate(CLDhr, by = list(weather$Date), FUN = min)[,2]#c(0, 15.62) # min cloud cover (%)
-TMAXX <- aggregate(TAIRhr, by = list(weather$Date), FUN = max)[,2]#c(40.1, 31.6) # maximum air temperatures (deg C)
-TMINN <- aggregate(TAIRhr, by = list(weather$Date), FUN = min)[,2]#c(19.01, 19.57) # minimum air temperatures (deg C)
-RAINFALL <- aggregate(RAINhr, by = list(weather$Date), FUN = sum)[,2]#c(19.01, 19.57) # minimum air temperatures (deg C)
+TMAXX <- aggregate(TAIRhr, by = list(weather$Date), FUN = max)[,2]#c(40.1, 31.6) # maximum air temperatures (°C)
+TMINN <- aggregate(TAIRhr, by = list(weather$Date), FUN = min)[,2]#c(19.01, 19.57) # minimum air temperatures (°C)
+RAINFALL <- aggregate(RAINhr, by = list(weather$Date), FUN = sum)[,2]#c(19.01, 19.57) # minimum air temperatures (°C)
 RHMAXX <- aggregate(RHhr, by = list(weather$Date), FUN = max)[,2]#c(90.16, 80.92) # max relative humidity (%)
 RHMINN <- aggregate(RHhr, by = list(weather$Date), FUN = min)[,2]#c(11.05, 27.9) # min relative humidity (%)
 WNMAXX <- aggregate(WNhr, by = list(weather$Date), FUN = max)[,2]#c(1.35, 2.0) # max wind speed (m/s)
 WNMINN <- aggregate(WNhr, by = list(weather$Date), FUN = min)[,2]#c(0.485, 0.610) # min wind speed (m/s)
 
 ## ------------------------------------------------------------------------
-tannul <- mean(c(TMAXX, TMINN)) # annual mean temperature for getting monthly deep soil temperature (deg C)
-tannulrun <- rep(tannul, doynum) # monthly deep soil temperature (2m) (deg C)
+tannul <- mean(c(TMAXX, TMINN)) # annual mean temperature for getting monthly deep soil temperature (°C)
+tannulrun <- rep(tannul, doynum) # monthly deep soil temperature (2m) (°C)
 # creating the arrays of environmental variables that are assumed not to change with month for this simulation
 MAXSHADES <- rep(maxshade, doynum) # daily max shade (%)
 MINSHADES <- rep(minshade, doynum) # daily min shade (%)
@@ -184,17 +183,15 @@ Nodes[1, 1:doynum]<-10 # deepest node for first substrate type
 # columns are:
 #1) bulk density (Mg/m3)
 #2) volumetric water content at saturation (0.1 bar matric potential) (m3/m3)
-#3) clay content (%)
-#4) thermal conductivity (W/mK)
-#5) specific heat capacity (J/kg-K)
-#6) mineral density (Mg/m3)
-soilprops <- matrix(data = 0, nrow = 10, ncol = 6) # create an empty soil properties matrix
+#3) thermal conductivity (W/mK)
+#4) specific heat capacity (J/kg-K)
+#5) mineral density (Mg/m3)
+soilprops <- matrix(data = 0, nrow = 10, ncol = 5) # create an empty soil properties matrix
 soilprops[1, 1]<-BulkDensity # insert soil bulk density to profile 1
 soilprops[1, 2]<-SatWater # insert saturated water content to profile 1
-soilprops[1, 3]<-Clay     # insert percent clay to profile 1
-soilprops[1, 4]<-Thcond # insert thermal conductivity to profile 1
-soilprops[1, 5]<-SpecHeat # insert specific heat to profile 1
-soilprops[1, 6]<-Density # insert mineral density to profile 1
+soilprops[1, 3]<-Thcond # insert thermal conductivity to profile 1
+soilprops[1, 4]<-SpecHeat # insert specific heat to profile 1
+soilprops[1, 5]<-Density # insert mineral density to profile 1
 soilinit <- rep(tannul, 20) # make iniital soil temps equal to mean annual
 
 ## ------------------------------------------------------------------------
@@ -210,7 +207,7 @@ PE[10:19]<-CampNormTbl9_1[soiltype, 4] #air entry potential J/kg
 KS[10:19]<-CampNormTbl9_1[soiltype, 6] #saturated conductivity, kg s/m3
 BB[10:19]<-CampNormTbl9_1[soiltype, 5] #soil 'b' parameter
 
-L <- c(0, 0, 8.18990859, 7.991299442, 7.796891252, 7.420411664, 7.059944542, 6.385001059, 5.768074989, 4.816673431, 4.0121088, 1.833554792, 0.946862989, 0.635260544, 0.804575, 0.43525621, 0.366052856, 0, 0)*10000 # root density at each node, mm/m3 (from Campell 1985 Soil Physics with Basic, p. 131)
+L <- c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000 # root density at each node, mm/m3 (from Campell 1985 Soil Physics with Basic, p. 131)
 R1 <- 0.001 #root radius, m}\cr\cr
 RW <- 2.5e+10 #resistance per unit length of root, m3 kg-1 s-1
 RL <- 2e+6 #resistance per unit length of leaf, m3 kg-1 s-1
@@ -218,7 +215,7 @@ PC <- -1500 #critical leaf water potential for stomatal closure, J kg-1
 SP <- 10 #stability parameter for stomatal closure equation, -
 IM <- 1e-06 #maximum allowable mass balance error, kg
 MAXCOUNT <- 500 #maximum iterations for mass balance, -
-LAI <- 0.1 # leaf area index, used to partition traspiration/evaporation from PET
+LAI <- rep(0.1, doynum) # leaf area index, used to partition traspiration/evaporation from PET
 rainmult <- 1 # rainfall multiplier to impose catchment
 maxpool <- 10 # max depth for water pooling on the surface, mm (to account for runoff)
 evenrain <- 0 # spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)
@@ -229,21 +226,23 @@ moists[1:10,]<-SoilMoist_Init # insert inital soil moisture
 ## ------------------------------------------------------------------------
 snowtemp <- 1.5 # temperature at which precipitation falls as snow (used for snow model)
 snowdens <- 0.375 # snow density (Mg/m3)
-densfun <- c(0, 0) # slope and intercept of linear model of snow density as a function of day of year - if it is c(0, 0) then fixed density used
-snowmelt <- 0.9 # proportion of calculated snowmelt that doesn't refreeze
-undercatch <- 1. # undercatch multipier for converting rainfall to snow
+densfun <- c(0.5979, 0.2178, 0.001, 0.0038) # slope and intercept of linear model of snow density as a function of day of year - if it is c(0, 0) then fixed density used
+snowmelt <- 1 # proportion of calculated snowmelt that doesn't refreeze
+undercatch <- 1 # undercatch multipier for converting rainfall to snow
 rainmelt <- 0.0125 # parameter in equation from Anderson's SNOW-17 model that melts snow with rainfall as a function of air temp
+snowcond <- 0 # effective snow thermal conductivity W/mC (if zero, uses inbuilt function of density)
+intercept <- 0 # snow interception fraction for when there's shade (0-1)
 
 ## ------------------------------------------------------------------------
-# intertidal simulation input vector (col 1 = tide in(1)/out(0), col 2 = sea water temperature in deg C, col 3 = % wet from wave splash)
-tides <- matrix(data = 0., nrow = 24 * doynum, ncol = 3) # matrix for tides
+# intertidal simulation input vector (col 1 = tide in(1)/out(0), col 2 = sea water temperature in °C, col 3 = % wet from wave splash)
+tides <- matrix(data = 0, nrow = 24 * doynum, ncol = 3) # matrix for tides
 
 ## ------------------------------------------------------------------------
 # microclimate input parameters list
-microinput <- c(doynum, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail)
+microinput <- c(doynum, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept)
 
 # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
-microin <- list(microinput = microinput, tides = tides, doy = doy, SLES = SLES, DEP = DEP, Nodes = Nodes, MAXSHADES = MAXSHADES, MINSHADES = MINSHADES, TIMAXS = TIMAXS, TIMINS = TIMINS, TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN, CCMAXX = CCMAXX, CCMINN = CCMINN, WNMAXX = WNMAXX, WNMINN = WNMINN, TAIRhr = TAIRhr, RHhr = RHhr, WNhr = WNhr, CLDhr = CLDhr, SOLRhr = SOLRhr, RAINhr = RAINhr, ZENhr = ZENhr, REFLS = REFLS, PCTWET = PCTWET, soilinit = soilinit, hori = hori, TAI = TAI, soilprops = soilprops, moists = moists, RAINFALL = RAINFALL, tannulrun = tannulrun, PE = PE, KS = KS, BB = BB, BD = BD, L = L, LAI = LAI)
+microin <- list(microinput = microinput, tides = tides, doy = doy, SLES = SLES, DEP = DEP, Nodes = Nodes, MAXSHADES = MAXSHADES, MINSHADES = MINSHADES, TIMAXS = TIMAXS, TIMINS = TIMINS, TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN, CCMAXX = CCMAXX, CCMINN = CCMINN, WNMAXX = WNMAXX, WNMINN = WNMINN, TAIRhr = TAIRhr, RHhr = RHhr, WNhr = WNhr, CLDhr = CLDhr, SOLRhr = SOLRhr, RAINhr = RAINhr, ZENhr = ZENhr, REFLS = REFLS, PCTWET = PCTWET, soilinit = soilinit, hori = hori, TAI = TAI, soilprops = soilprops, moists = moists, RAINFALL = RAINFALL, tannulrun = tannulrun, PE = PE, KS = KS, BB = BB, BD = BD, DD = DD, L = L, LAI = LAI)
 
 micro <- microclimate(microin) # run the model in Fortran
 
