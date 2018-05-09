@@ -9,7 +9,7 @@ Depends:
     R (>= 3.2.2)
 License: TBA
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Suggests:
     devtools,
     dismo,
@@ -22,7 +22,8 @@ Suggests:
     XML,
     readr,
     rutils,
-    ncdf4
+    ncdf4,
+    soilDB
 VignetteBuilder: knitr
 Vignettes: properties-of-air,ectotherm-model-tutorial,microclimate-model-
     tutorial,microclimate-monthly-input-example,microclimate-inputs,microclimate-
