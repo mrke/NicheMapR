@@ -64,7 +64,7 @@ ZH2 <- 0 # 2nd segment, height above surface(m)
 ### Radiation-related parameters
 ```{r}
 SLE <- 0.96 # substrate longwave IR emissivity (decimal %), typically close to 1
-REFL < -0.10 # substrate solar reflectivity (decimal %)
+REFL <- 0.10 # substrate solar reflectivity (decimal %)
 CMH2O <- 1 # precipitable cm H2O in air column, 0.1 = VERY DRY; 1.0 = MOIST AIR CONDITIONS; 2.0 = HUMID, TROPICAL CONDITIONS (note this is for the whole atmospheric profile, not just near the ground)
 # Aerosol extinction coefficient profile
 # the values extracted from GADS for Madison
