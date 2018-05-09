@@ -25,6 +25,8 @@ Suggests:
     ncdf4,
     soilDB,
     rjson,
+    sp,
+    GSIF,
     futile.logger
 VignetteBuilder: knitr
 Vignettes: properties-of-air,ectotherm-model-tutorial,microclimate-model-
