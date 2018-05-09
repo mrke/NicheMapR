@@ -23,7 +23,7 @@ Suggests:
     readr,
     rutils,
     ncdf4
-VignetteBuilder: rmarkdown
+VignetteBuilder: knitr
 Vignettes: properties-of-air,ectotherm-model-tutorial,microclimate-model-
     tutorial,microclimate-monthly-input-example,microclimate-inputs,microclimate-
     model-theory-equations,microclimate-hourly-input-example
