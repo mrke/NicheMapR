@@ -298,7 +298,7 @@ moists <- matrix(nrow = 10, ncol = doynum, data = 0) # set up an empty vector fo
 moists[1:10,]<-SoilMoist_Init # insert inital soil moisture
 ```
 
-### Snow model paramters
+### Snow model parameters
 
 We also need to specify the snow model parameters - these ones tend to work well in general and at the site being considered there is no snowfall so they will not be of consequence.
 
