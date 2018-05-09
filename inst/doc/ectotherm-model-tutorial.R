@@ -8,7 +8,7 @@ library(NicheMapR)
 
 ## ------------------------------------------------------------------------
 library(NicheMapR)
-micro<-micro_global(loc = longlat, runmoist = 1)
+micro<-micro_global(loc = "Townsville Queensland", runmoist = 1)
 longlat <- c(micro$longlat[1], micro$longlat[2]) # save the longitude and latitude and pass directly below
 ecto<-ectotherm()
 
@@ -144,8 +144,8 @@ forage<-subset(environ,ACT==2)
 bask<-subset(environ,ACT==1)
 night<-subset(cbind(metout,debout$DAY),ZEN==90)
 day<-subset(cbind(metout,debout$DAY),ZEN!=90)
-colnames(night)[20]<-"DAY"
-colnames(day)[20]<-"DAY"
+colnames(night)[21]<-"DAY"
+colnames(day)[21]<-"DAY"
 with(night,plot(TIME/60~DAY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col='dark blue',
   main = "Annual activity windows"))
 with(bask,points((TIME-1)~DAY,pch=15,cex=2,col='light blue')) # basking Tbs
