@@ -9,9 +9,11 @@ C     Michael Kearney 27th Jan 2015
       double precision WD,GR,IM,SE,H,JV,DJ,PP,EP,MW,T,R,DV
      &,VP,KV,ECUR
       double precision RR,RS,PR,BZ,RW,PC,RL,PI,SP,R1,TP,PB,RB
-      real KS,PE,BB,BD,LAI,L,moistt,HA,ET,temp,depth,humid,potent,SW,FL
-      real altt,dpp,pstd,bp,ESAT,VD,RWW,TVIR,TVINC,DENAIR,CPP,WTRPOT
-     & ,RH100,DB,rootpot,leafpot,trans,DD
+      double precision KS,PE,BB,BD,LAI,L,moistt,HA,ET,temp,depth,humid
+     & ,potent,SW,FL
+      double precision altt,dpp,pstd,bp,ESAT,VD,RWW,TVIR,TVINC,DENAIR
+     & ,CPP,WTRPOT
+     & ,RH100,DB,rootpot,leafpot,trans,DD,WB
       double precision SL,PL,FF,E,XP,TR
       Integer M,I,count,maxcount,j,DT
 
@@ -196,14 +198,14 @@ c     start of convergence loop ########################################
       DJ(1)=EP*MW*H(2)/(R*T(I-1)*(1-HA))
       do 4 I=2,M
        RH100 = 100.
-       DB = real(T(I)-273.15,4)
+       DB = T(I)-273.15
        CALL WETAIR(DB,WB,RH100,DPP,BP,ECUR,ESAT,VD,RWW,TVIR,
      & TVINC,DENAIR,CPP,WTRPOT)    
        VP = VD ! VP is vapour density
        KV=0.66*DV(I)*VP*(WS(I)-(WN(I)+WN(I+1))/2)/(Z(I+1)-Z(I))
        JV(I)=KV*(H(I+1)-H(I))
        DJ(I)=MW*H(I)*KV/(R*T(I-1))
-       CP(I)=-1*V(I)*WN(I)/(BB(I)*P(I)*real(DT,4))
+       CP(I)=-1*V(I)*WN(I)/(BB(I)*P(I)*DT)
 c      # Jacobian components
        A(I)=-1*K(I-1)/(Z(I)-Z(I-1))+GR*N(I)*K(I-1)/P(I-1)
        C(I)=-1*K(I+1)/(Z(I+1)-Z(I))
@@ -211,15 +213,15 @@ c      # Jacobian components
      & P(I)+DJ(I-1)+DJ(I)
 c      # mass balance
        F(I)=((P(I)*K(I)-P(I-1)*K(I-1))/(Z(I)-Z(I-1))-(P(I+1)*K(I+1)-P(I)
-     & *K(I))/(Z(I+1)-Z(I)))/N1(I)+V(I)*(WN(I)-W(I))/real(DT,4)-GR*(K(I-
-     &1)-K(I))+JV(I-1)-JV(I)+ real(E(I),4)
+     & *K(I))/(Z(I+1)-Z(I)))/N1(I)+V(I)*(WN(I)-W(I))/DT-GR*(K(I-
+     &1)-K(I))+JV(I-1)-JV(I)+E(I)
        SE=SE+abs(F(I))
 4     continue
 
 c     # Thomas algorithm (Gauss elimination)
       do 5 I=2,(M-1)
        C(I)=C(I)/B(I)
-       if(C(I).eq.0.)then
+       if(C(I).lt.1e-8)then
         C(I)=0.
        endif
        F(I)=F(I)/B(I)
@@ -256,26 +258,25 @@ c     loop until convergence
 c     end of convergence loop ##########################################
 
 c     flux into soil, mm/m2/s (kg/m2/s)
-      SW=real(((P(2)*K(2)-P(3)*K(3))/(N1(2)*(Z(3)-Z(2)))+GR*K(2)
-     &+TR)*real(DT,4),4)
+      SW=((P(2)*K(2)-P(3)*K(3))/(N1(2)*(Z(3)-Z(2)))+GR*K(2)+TR)*DT
 
       W=WN
 
       do 9 I=2,M+1
-       moistt(I-1)=real(WN(I),4)
+       moistt(I-1)=WN(I)
 9     continue
       
-      FL=real((EP*(H(2)-HA)/(1-HA))*real(DT,4),4)
-      humid(1:18)=real(h(2:19),4)
-      potent(1:18)=real(P(2:19),4)
+      FL=(EP*(H(2)-HA)/(1-HA))*DT
+      humid(1:18)=h(2:19)
+      potent(1:18)=P(2:19)
       
 c     output transpiration rate, leaf and root water potential
       do 10 I=2,M
        PR(I) = -1 * (TR * RS(I) - P(I)) ! root water potential, J/kg
 10    continue
-      rootpot(1:18) = real(PR(2:19),4)
-      leafpot = real(PL,4)
-      trans = real(TR,4)
+      rootpot(1:18) = PR(2:19)
+      leafpot = PL
+      trans = TR
       
       RETURN
       END
