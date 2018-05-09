@@ -88,7 +88,7 @@ An implementation of the Niche Mapper microclimate model that uses the AWAP dail
 \code{terrain}{ = 0, Use 250m resolution terrain data? 1=yes, 0=no}\cr\cr
 \code{dailywind}{ = 1, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
-\code{warm}{ = 0, uniform warming, deg C}\cr\cr
+\code{warm}{ = 0, uniform warming, °C}\cr\cr
 \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
 \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
@@ -161,7 +161,7 @@ An implementation of the Niche Mapper microclimate model that uses the AWAP dail
 \strong{ Snow mode parameters:}
 
 \code{snowmodel}{ = 0, run the snow model 1=yes, 0=no (note that this may cause slower runs)}\cr\cr
-\code{snowtemp}{ = 1.5, Temperature (deg C) at which precipitation falls as snow}\cr\cr
+\code{snowtemp}{ = 1.5, Temperature (°C) at which precipitation falls as snow}\cr\cr
 \code{snowdens}{ = 0.375, snow density (mg/m3), overridden by densfun}\cr\cr
 \code{densfun}{ = c(0.5979, 0.2178, 0.001, 0.0038), slope and intercept of model of snow density as a linear function of snowpack age if first two values are nonzero, and following the exponential function of Sturm et al. 2010 J. of Hydromet. 11:1380-1394 if all values are non-zero; if it is c(0,0,0,0) then fixed density used}\cr\cr
 \code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
@@ -176,7 +176,7 @@ An implementation of the Niche Mapper microclimate model that uses the AWAP dail
 \code{shore}{ Include tide effects? If 1, the matrix}
 \code{tides}
 { is used to specify tide presence, sea water temperature and presence of wavesplash}\cr\cr
-\code{tides}{ = matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (deg C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
+\code{tides}{ = matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (°C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
 }
 
 \strong{Outputs:}
@@ -184,8 +184,8 @@ metout/shadmet variables:
 \itemize{
 \item 1 DOY - day-of-year
 \item 2 TIME - time of day (mins)
-\item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-\item 4 TAREF - air temperature (deg C) at reference height (specified by 'Refhyt', 1.2m default)
+\item 3 TALOC - air temperature (°C) at local height (specified by 'Usrhyt' variable)
+\item 4 TAREF - air temperature (°C) at reference height (specified by 'Refhyt', 1.2m default)
 \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
 \item 6 RH  - relative humidity (\%) at reference height (specified by 'Refhyt', 1.2m default)
 \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
@@ -195,7 +195,7 @@ metout/shadmet variables:
 \item 11 PCTWET - soil surface wetness (\%)
 \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
 \item 13 SOLR - solar radiation (W/m2)
-\item 14 TSKYC - sky radiant temperature (deg C)
+\item 14 TSKYC - sky radiant temperature (°C)
 \item 15 DEW - dew presence (0 or 1)
 \item 16 FROST - frost presence (0 or 1)
 \item 17 SNOWFALL - snow predicted to have fallen (cm)
@@ -206,7 +206,7 @@ soil and shadsoil variables:
 \itemize{
 \item 1 DOY - day-of-year
 \item 2 TIME - time of day (mins)
-\item 3-12 D0cm ... - soil temperature (deg C) at each of the 10 specified depths
+\item 3-12 D0cm ... - soil temperature (°C) at each of the 10 specified depths
 }
 
 if soil moisture model is run i.e. parameter runmoist = 1\cr
@@ -243,7 +243,7 @@ sunsnow and shdsnow variables:
 \itemize{
 \item  1 DOY - day-of-year
 \item  2 TIME - time of day (mins)
-\item  3-10 SN1 ... - snow temperature (deg C), at each of the potential 8 snow layers (layer 8 is always the bottom - need metout$SNOWDEP to interpret which depth in the snow a given layer represents)
+\item  3-10 SN1 ... - snow temperature (°C), at each of the potential 8 snow layers (layer 8 is always the bottom - need metout$SNOWDEP to interpret which depth in the snow a given layer represents)
 }
 
 if wavelength-specific solar output is selected i.e. parameter lamb = 1\cr
@@ -278,15 +278,15 @@ minshade<-micro$minshade
 maxshade<-micro$maxshade
 
 # plotting above-ground conditions in minimum shade
-with(plotmetout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)"
+with(plotmetout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (°C)"
 , type = "l",main=paste("air temperature, ",minshade,"\% shade",sep=""))})
-with(plotmetout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)"
+with(plotmetout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (°C)"
 , type = "l",lty=2,col='blue')})
 with(plotmetout,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
 , type = "l",ylim=c(0,100),main=paste("humidity, ",minshade,"\% shade",sep=""))})
 with(plotmetout,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
 , type = "l",col='blue',lty=2,ylim=c(0,100))})
-with(plotmetout,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (deg C)"
+with(plotmetout,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (°C)"
 ,  type = "l",main=paste("sky temperature, ",minshade,"\% shade",sep=""))})
 with(plotmetout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
 ,  type = "l",main="wind speed",ylim = c(0, 15))})
@@ -300,34 +300,34 @@ with(plotmetout,{plot(SOLR ~ dates,xlab = "Date and Time", ylab = "Solar Radiati
 # plotting soil temperature for minimum shade
 for(i in 1:10){
  if(i==1){
-   plot(plotsoil[,i+3]~plotsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature (deg C)"
+   plot(plotsoil[,i+3]~plotsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature (°C)"
    ,col=i,type = "l",main=paste("soil temperature ",minshade,"\% shade",sep=""))
  }else{
    points(plotsoil[,i+3]~plotsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature
-    (deg C)",col=i,type = "l")
+    (°C)",col=i,type = "l")
  }
 }
 
 # plotting above-ground conditions in maximum shade
-with(plotshadmet,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)"
+with(plotshadmet,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (°C)"
 , type = "l",main="air temperature, sun")})
-with(plotshadmet,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)"
+with(plotshadmet,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (°C)"
 , type = "l",lty=2,col='blue')})
 with(plotshadmet,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
 , type = "l",ylim=c(0,100),main="humidity, shade")})
 with(plotshadmet,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
 , type = "l",col='blue',lty=2,ylim=c(0,100))})
-with(plotshadmet,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (deg C)",
+with(plotshadmet,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (°C)",
  type = "l",main="sky temperature, shade")})
 
 # plotting soil temperature for maximum shade
 for(i in 1:10){
  if(i==1){
    plot(plotshadsoil[,i+3]~plotshadsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature
-    (deg C)",col=i,type = "l",main=paste("soil temperature ",maxshade,"\% shade",sep=""))
+    (°C)",col=i,type = "l",main=paste("soil temperature ",maxshade,"\% shade",sep=""))
  }else{
    points(plotshadsoil[,i+3]~plotshadsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature
-    (deg C)",col=i,type = "l")
+    (°C)",col=i,type = "l")
  }
 }
 }

@@ -86,7 +86,7 @@ An implementation of the Niche Mapper microclimate model that uses the CHESS dai
 \code{dailywind}{ = 1, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
-\code{warm}{ = 0, uniform warming, deg C}\cr\cr
+\code{warm}{ = 0, uniform warming, °C}\cr\cr
 \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 \code{opendap}{ = 1, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
 \code{soilgrids}{ = 1, query soilgrids.org database for soil hydraulic properties?}\cr\cr
@@ -157,7 +157,7 @@ An implementation of the Niche Mapper microclimate model that uses the CHESS dai
 \strong{ Snow mode parameters:}
 
 \code{snowmodel}{ = 1, run the snow model 1=yes, 0=no (note that this may cause slower runs)}\cr\cr
-\code{snowtemp}{ = 1.5, Temperature (deg C) at which precipitation falls as snow}\cr\cr
+\code{snowtemp}{ = 1.5, Temperature (°C) at which precipitation falls as snow}\cr\cr
 \code{snowdens}{ = 0.375, snow density (mg/m3), overridden by densfun}\cr\cr
 \code{densfun}{ = c(0.5979, 0.2178, 0.001, 0.0038), slope and intercept of model of snow density as a linear function of snowpack age if first two values are nonzero, and following the exponential function of Sturm et al. 2010 J. of Hydromet. 11:1380-1394 if all values are non-zero; if it is c(0,0,0,0) then fixed density used}\cr\cr
 \code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
@@ -171,7 +171,7 @@ An implementation of the Niche Mapper microclimate model that uses the CHESS dai
 \code{shore}{ Include tide effects? If 1, the matrix}
 \code{tides}
 { is used to specify tide presence, sea water temperature and presence of wavesplash}\cr\cr
-\code{tides}{ = matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (deg C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
+\code{tides}{ = matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (°C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
 }
 
 \strong{Outputs:}
@@ -179,8 +179,8 @@ metout/shadmet variables:
 \itemize{
 \item 1 DOY - day-of-year
 \item 2 TIME - time of day (mins)
-\item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-\item 4 TAREF - air temperature (deg C) at reference height (specified by 'Refhyt', 1.2m default)
+\item 3 TALOC - air temperature (°C) at local height (specified by 'Usrhyt' variable)
+\item 4 TAREF - air temperature (°C) at reference height (specified by 'Refhyt', 1.2m default)
 \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
 \item 6 RH  - relative humidity (\%) at reference height (specified by 'Refhyt', 1.2m default)
 \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
@@ -190,7 +190,7 @@ metout/shadmet variables:
 \item 11 PCTWET - soil surface wetness (\%)
 \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
 \item 13 SOLR - solar radiation (W/m2)
-\item 14 TSKYC - sky radiant temperature (deg C)
+\item 14 TSKYC - sky radiant temperature (°C)
 \item 15 DEW - dew presence (0 or 1)
 \item 16 FROST - frost presence (0 or 1)
 \item 17 SNOWFALL - snow predicted to have fallen (cm)
@@ -201,7 +201,7 @@ soil and shadsoil variables:
 \itemize{
 \item 1 DOY - day-of-year
 \item 2 TIME - time of day (mins)
-\item 3-12 D0cm ... - soil temperature (deg C) at each of the 10 specified depths
+\item 3-12 D0cm ... - soil temperature (°C) at each of the 10 specified depths
 }
 
 if soil moisture model is run i.e. parameter runmoist = 1\cr
@@ -238,7 +238,7 @@ sunsnow and shdsnow variables:
 \itemize{
 \item  1 DOY - day-of-year
 \item  2 TIME - time of day (mins)
-\item  3-10 SN1 ... - snow temperature (deg C), at each of the potential 8 snow layers (layer 8 is always the bottom - need metout$SNOWDEP to interpret which depth in the snow a given layer represents)
+\item  3-10 SN1 ... - snow temperature (°C), at each of the potential 8 snow layers (layer 8 is always the bottom - need metout$SNOWDEP to interpret which depth in the snow a given layer represents)
 }
 
 if wavelength-specific solar output is selected i.e. parameter lamb = 1\cr
@@ -271,11 +271,11 @@ soilmoist <- cbind(dates, soilmoist)
 minshade<-micro$minshade
 
 # plotting above-ground conditions in minimum shade
-with(metout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Temperature (deg C)"
+with(metout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
 , type = "l",main=paste("air and sky temperature, ",minshade,"\% shade",sep=""), ylim = c(-20, 60))})
-with(metout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Temperature (deg C)"
+with(metout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
 , type = "l",lty=2,col='blue')})
-with(metout,{points(TSKYC ~ dates,xlab = "Date and Time", ylab = "Temperature (deg C)"
+with(metout,{points(TSKYC ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
 ,  type = "l",col='light blue',main=paste("sky temperature, ",minshade,"\% shade",sep=""))})
 with(metout,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
 , type = "l",ylim=c(0,100),main=paste("humidity, ",minshade,"\% shade",sep=""))})
@@ -293,11 +293,11 @@ with(metout,{plot(SNOWDEP ~ dates,xlab = "Date and Time", ylab = "Snow Depth (cm
 # plotting soil temperature
 for(i in 1:10){
  if(i==1){
-   plot(soil[,i+3]~soil[,1],xlab = "Date and Time", ylab = "Soil Temperature (deg C)"
+   plot(soil[,i+3]~soil[,1],xlab = "Date and Time", ylab = "Soil Temperature (°C)"
    ,col=i,type = "l",main=paste("soil temperature ",minshade,"\% shade",sep=""))
  }else{
    points(soil[,i+3]~soil[,1],xlab = "Date and Time", ylab = "Soil Temperature
-    (deg C)",col=i,type = "l")
+    (°C)",col=i,type = "l")
  }
 }
 

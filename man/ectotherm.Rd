@@ -17,19 +17,19 @@ ectotherm(amass, lometry, ABSMAX, ABSMIN, VTMAX, VTMIN, TBASK, TEMERGE, ctmax, c
 
 \item{ABSMIN}{= 0.85, Maximum solar absorptivity, decimal percent}
 
-\item{VTMAX}{= 34, Voluntary thermal maximum, degrees C (upper body temperature for foraging and also affects burrow depth selection)}
+\item{VTMAX}{= 34, Voluntary thermal maximum, °C (upper body temperature for foraging and also affects burrow depth selection)}
 
-\item{VTMIN}{= 24, Voluntary thermal minimum, degrees C (lower body temperature for foraging)}
+\item{VTMIN}{= 24, Voluntary thermal minimum, °C (lower body temperature for foraging)}
 
-\item{TBASK}{= 17.5, Minimum basking temperature, degrees C}
+\item{TBASK}{= 17.5, Minimum basking temperature, °C}
 
-\item{TEMERGE}{= 17.5, Temperature at which animal will move to a basking site, degrees C}
+\item{TEMERGE}{= 17.5, Temperature at which animal will move to a basking site, °C}
 
-\item{TPREF}{= 30, Preferred body temperature, degrees C}
+\item{TPREF}{= 30, Preferred body temperature, °C}
 
-\item{ctmax}{= 40, Critical thermal maximum, degrees C (affects burrow depth selection)}
+\item{ctmax}{= 40, Critical thermal maximum, °C (affects burrow depth selection)}
 
-\item{ctmin}{= 6, Critical thermal minimum, degrees C (affects burrow depth selection)}
+\item{ctmin}{= 6, Critical thermal minimum, °C (affects burrow depth selection)}
 
 \item{dayact}{= 1, Diurnal activity allowed?  1=yes, 0=no}
 
@@ -61,7 +61,7 @@ ectotherm(amass, lometry, ABSMAX, ABSMIN, VTMAX, VTMIN, TBASK, TEMERGE, ctmax, c
 
 \item{extref}{= 20, \% oxygen extraction efficiency, for respiratory water loss}
 
-\item{DELTAR}{= 0.1, Temperature difference (deg C) between expired and inspired air, for computing respiratory water loss}
+\item{DELTAR}{= 0.1, Temperature difference (°C) between expired and inspired air, for computing respiratory water loss}
 
 \item{aestdepth}{= 10, Depth (soil node #) to which animal retreats if burrowing and aestivating due to desiccation}
 }
@@ -177,7 +177,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 }
 \strong{ Thermal DEB parameters:}
 \itemize{
-\item{\code{T_REF}{ = 20, Reference temperature for rate correction (deg C)}\cr}
+\item{\code{T_REF}{ = 20, Reference temperature for rate correction (°C)}\cr}
 \item{\code{TA}{ = 8817 Arhhenius temperature}\cr}
 \item{\code{TAL}{ = 50000, Arrhenius temperature for decrease below lower boundary of tolerance range \code{TL}}\cr}
 \item{\code{TAH}{ = 90000, Arrhenius temperature for decrease above upper boundary of tolerance range \code{TH}}\cr}
@@ -273,7 +273,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{conthole}{ = 0, Daily loss of height (mm) due to 'hole' in container (e.g. infiltration to soil, drawdown from water tank)}\cr}
 \item{\code{contonly}{ = 1, Just run the container model and quit?}\cr}
 \item{\code{contwet}{ = 80, \% of container surface acting as a free water exchanger}\cr}
-\item{\code{wetlandTemps}{ = matrix(data = 0., nrow = 24*dim, ncol = 1), Matrix of hourly wetland temperaures (deg C)}\cr}
+\item{\code{wetlandTemps}{ = matrix(data = 0., nrow = 24*dim, ncol = 1), Matrix of hourly wetland temperaures (°C)}\cr}
 \item{\code{wetlandDepths}{ = matrix(data = 0., nrow = 24*dim, ncol = 1), Matrix of hourly wetland depths (cm)}\cr}
 \item{\code{GLMtemps}{ = matrix(data = 0., nrow = 24*dim, ncol = 20), Matrix of hourly wetland temperatures (C) with depth}\cr}
 \item{\code{GLMO2s}{ = matrix(data = 0., nrow = 24*dim, ncol = 20), Matrix of hourly wetland PO2 (kPa) with depth}\cr}
@@ -312,20 +312,20 @@ environ variables:
 \item 2 YEAR - year of simulation
 \item 3 DAY - day of simulation
 \item 4 TIME - time of day (hours)
-\item 5 TC - body temperature (deg C)
+\item 5 TC - body temperature (°C)
 \item 6 SHADE - shade selected (\%)
 \item 7 SOLAR  - solar radiation (W/m2) at animal location
 \item 8 DEP - depth below ground (cm)
 \item 9 ACT - activity state (0=inactive, 1=basking, 2=foraging)
-\item 10 TA - air temperature (deg C) at animal location
+\item 10 TA - air temperature (°C) at animal location
 \item 11 VEL - wind speed (m/s) at animal location
 \item 12 RELHUM - relative humidity (\%) at animal location
 \item 13 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
 \item 14 CONDEP - depth of water body (cm) (may not be simulated or supplied)
-\item 15 WATERTEMP - temperature of water body (deg C) (may not be simulated or supplied)
+\item 15 WATERTEMP - temperature of water body (°C) (may not be simulated or supplied)
 \item 16 DAYLENGTH - day length (hours)
 \item 17 WINGANGLE - wing angle (degrees) for butterfly model
-\item 18 WINGTEMP - wing temperature (degrees C) for butterfly model
+\item 18 WINGTEMP - wing temperature (°C) for butterfly model
 \item 19 FLYING - flying state (1=flying, 0=not flying) for butterfly model
 \item 20 FLYTIME - flying time (hours) for butterfly model
 }
@@ -403,8 +403,8 @@ yearout variables:
 \item 8 MINRESERVE - minimum reserve density (J/cm3)
 \item 9 LASTFOOD - food in last year (kg)
 \item 10 TOTFOOD - total food eaten (kg)
-\item 11 MINTB - minimum body temperature (deg C)
-\item 12 MAXTB - maxmium body temperature (deg C)
+\item 11 MINTB - minimum body temperature (°C)
+\item 12 MAXTB - maxmium body temperature (°C)
 \item 13 Pct_Dess - maximum level of desiccation (/%)
 \item 14 LifeSpan - maximum life span (days)
 \item 15 GenTime - generation time (years)
@@ -418,8 +418,8 @@ yearsout variables:
 \item 2 MaxStg - maximum stage reached in the year
 \item 3 MaxWgt - maximum weight reached in the year (g)
 \item 4 MaxLen - maximum length in the year (mm)
-\item 5 Tmax - maximum annual body temperature (deg C)
-\item 6 Tmin  - minimum annual body temperature (deg C)
+\item 5 Tmax - maximum annual body temperature (°C)
+\item 6 Tmin  - minimum annual body temperature (°C)
 \item 7 MinRes - minimum annual reserve density (J/cm3)
 \item 8 MaxDes - maximum annual desiccation level (% of normal wet body mass)
 \item 9 MinShade - minimum annual shade selected
