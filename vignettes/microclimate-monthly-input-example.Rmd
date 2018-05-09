@@ -160,6 +160,7 @@ PE <- rep(0.7, 19) #air entry potential J/kg
 KS <- rep(0.0058, 19) #saturated conductivity, kg s/m3
 BB <- rep(1.7, 19) #soil 'b' parameter
 BD <- rep(1.3, 19) # soil bulk density, Mg/m3
+DD <- rep(Density, 19)
 L <- c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000 # root density at each node, mm/m3 (from Campell 1985 Soil Physics with Basic, p. 131)
 R1 <- 0.001 #root radius, m}\cr\cr
 RW <- 2.5e+10 #resistance per unit length of root, m3 kg-1 s-1
@@ -168,7 +169,7 @@ PC <- -1500 #critical leaf water potential for stomatal closure, J kg-1
 SP <- 10 #stability parameter for stomatal closure equation, -
 IM <- 1e-06 #maximum allowable mass balance error, kg
 MAXCOUNT <- 500 #maximum iterations for mass balance, -
-LAI <- 0.1 # leaf area index, used to partition traspiration/evaporation from PET
+LAI <- rep(0.1, doynum) # leaf area index, used to partition traspiration/evaporation from PET
 rainmult <- 1 # rainfall multiplier to impose catchment
 maxpool <- 10 # max depth for water pooling on the surface, mm (to account for runoff)
 evenrain <- 1 # spread daily rainfall evenly across 24hrs (1) or one event at midnight (2)
@@ -203,7 +204,7 @@ tides <- matrix(data = 0, nrow = 24 * doynum, ncol = 3) # matrix for tides
 microinput<-c(doynum, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept)
 
 # Final input list - all these variables are expected by the input argument of the Fortran microclimate subroutine
-micro<-list(microinput = microinput, tides = tides, doy = doy, SLES = SLES, DEP = DEP, Nodes = Nodes, MAXSHADES = MAXSHADES, MINSHADES = MINSHADES, TIMAXS = TIMAXS, TIMINS = TIMINS, TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN, CCMAXX = CCMAXX, CCMINN = CCMINN, WNMAXX = WNMAXX, WNMINN = WNMINN, TAIRhr = TAIRhr, RHhr = RHhr, WNhr = WNhr, CLDhr = CLDhr, SOLRhr = SOLRhr, RAINhr = RAINhr, ZENhr = ZENhr, REFLS = REFLS, PCTWET = PCTWET, soilinit = soilinit, hori = hori, TAI = TAI, soilprops = soilprops, moists = moists, RAINFALL = RAINFALL, tannulrun = tannulrun, PE = PE, KS = KS, BB = BB, BD = BD, L = L, LAI = LAI)
+micro<-list(microinput = microinput, tides = tides, doy = doy, SLES = SLES, DEP = DEP, Nodes = Nodes, MAXSHADES = MAXSHADES, MINSHADES = MINSHADES, TIMAXS = TIMAXS, TIMINS = TIMINS, TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN, CCMAXX = CCMAXX, CCMINN = CCMINN, WNMAXX = WNMAXX, WNMINN = WNMINN, TAIRhr = TAIRhr, RHhr = RHhr, WNhr = WNhr, CLDhr = CLDhr, SOLRhr = SOLRhr, RAINhr = RAINhr, ZENhr = ZENhr, REFLS = REFLS, PCTWET = PCTWET, soilinit = soilinit, hori = hori, TAI = TAI, soilprops = soilprops, moists = moists, RAINFALL = RAINFALL, tannulrun = tannulrun, PE = PE, KS = KS, BB = BB, BD = BD, DD = DD, L = L, LAI = LAI)
 ```
 
 ### Executing the microclimate model
