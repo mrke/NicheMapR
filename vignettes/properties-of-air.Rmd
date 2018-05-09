@@ -823,9 +823,9 @@ plotrix::boxed.labels(-5, 75, expression(paste(italic(t)[c]," = ",bgroup("(",fra
 ```
 
 ```
-tc=seq(-20,50,5) # sequence of air temperatures in deg C
+tc=seq(-20,50,5) # sequence of air temperatures in °C
 tf=((9/5)*tc)+32 # compute deg F
-tairs=seq(-40,-20,5) # sequence of air temperatures in deg F
+tairs=seq(-40,-20,5) # sequence of air temperatures in °F
 ```
 
 \pagebreak 

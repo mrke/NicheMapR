@@ -52,7 +52,7 @@
 #' \code{terrain}{ = 0, Use 250m resolution terrain data? 1=yes, 0=no}\cr\cr
 #' \code{dailywind}{ = 1, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
-#' \code{warm}{ = 0, uniform warming, deg C}\cr\cr
+#' \code{warm}{ = 0, uniform warming, °C}\cr\cr
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 #' \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
 #' \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
@@ -62,7 +62,7 @@
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
 #'
 #' \strong{ General additional parameters:}\cr\cr
-#' \code{ERR}{ = 2.5, Integrator error tolerance for soil temperature calculations}\cr\cr
+#' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
 #' \code{Refhyt}{ = 1.2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
 #' \code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
 #' \code{Z01}{ = 0, Top (1st) segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used)}\cr\cr
@@ -125,9 +125,9 @@
 #' \strong{ Snow mode parameters:}
 #'
 #' \code{snowmodel}{ = 0, run the snow model 1=yes, 0=no (note that this may cause slower runs)}\cr\cr
-#' \code{snowtemp}{ = 1.5, Temperature (deg C) at which precipitation falls as snow}\cr\cr
+#' \code{snowtemp}{ = 1.5, Temperature (°C) at which precipitation falls as snow}\cr\cr
 #' \code{snowdens}{ = 0.375, snow density (mg/m3), overridden by densfun}\cr\cr
-#' \code{densfun}{ = c(0,0,0,0), slope and intercept of model of snow density as a linear function of snowpack age if first two values are nonzero, and following the exponential function of Sturm et al. 2010 J. of Hydromet. 11:1380-1394 if all values are non-zero; if it is c(0,0,0,0) then fixed density used}\cr\cr
+#' \code{densfun}{ = c(0.5979, 0.2178, 0.001, 0.0038), slope and intercept of model of snow density as a linear function of snowpack age if first two values are nonzero, and following the exponential function of Sturm et al. 2010 J. of Hydromet. 11:1380-1394 if all values are non-zero; if it is c(0,0,0,0) then fixed density used}\cr\cr
 #' \code{snowmelt}{ = 0.9, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
 #' \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
 #' \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
@@ -140,7 +140,7 @@
 #' \code{shore}{ Include tide effects? If 1, the matrix}
 #' \code{tides}
 #' { is used to specify tide presence, sea water temperature and presence of wavesplash}\cr\cr
-#' \code{tides}{ = matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (deg C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
+#' \code{tides}{ = matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (°C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
 #' }
 #'
 #' \strong{Outputs:}
@@ -148,8 +148,8 @@
 #' \itemize{
 #' \item 1 DOY - day-of-year
 #' \item 2 TIME - time of day (mins)
-#' \item 3 TALOC - air temperature (deg C) at local height (specified by 'Usrhyt' variable)
-#' \item 4 TAREF - air temperature (deg C) at reference height (specified by 'Refhyt', 1.2m default)
+#' \item 3 TALOC - air temperature (°C) at local height (specified by 'Usrhyt' variable)
+#' \item 4 TAREF - air temperature (°C) at reference height (specified by 'Refhyt', 1.2m default)
 #' \item 5 RHLOC - relative humidity (\%) at local height (specified by 'Usrhyt' variable)
 #' \item 6 RH  - relative humidity (\%) at reference height (specified by 'Refhyt', 1.2m default)
 #' \item 7 VLOC - wind speed (m/s) at local height (specified by 'Usrhyt' variable)
@@ -159,7 +159,7 @@
 #' \item 11 PCTWET - soil surface wetness (\%)
 #' \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
 #' \item 13 SOLR - solar radiation (W/m2)
-#' \item 14 TSKYC - sky radiant temperature (deg C)
+#' \item 14 TSKYC - sky radiant temperature (°C)
 #' \item 15 DEW - dew presence (0 or 1)
 #' \item 16 FROST - frost presence (0 or 1)
 #' \item 17 SNOWFALL - snow predicted to have fallen (cm)
@@ -170,7 +170,7 @@
 #' \itemize{
 #' \item 1 DOY - day-of-year
 #' \item 2 TIME - time of day (mins)
-#' \item 3-12 D0cm ... - soil temperature (deg C) at each of the 10 specified depths
+#' \item 3-12 D0cm ... - soil temperature (°C) at each of the 10 specified depths
 #' }
 #'
 #' if soil moisture model is run i.e. parameter runmoist = 1\cr
@@ -207,7 +207,7 @@
 #' \itemize{
 #' \item  1 DOY - day-of-year
 #' \item  2 TIME - time of day (mins)
-#' \item  3-10 SN1 ... - snow temperature (deg C), at each of the potential 8 snow layers (layer 8 is always the bottom - need metout$SNOWDEP to interpret which depth in the snow a given layer represents)
+#' \item  3-10 SN1 ... - snow temperature (°C), at each of the potential 8 snow layers (layer 8 is always the bottom - need metout$SNOWDEP to interpret which depth in the snow a given layer represents)
 #' }
 #'
 #' if wavelength-specific solar output is selected i.e. parameter lamb = 1\cr
@@ -241,15 +241,15 @@
 #'maxshade<-micro$maxshade
 #'
 #'# plotting above-ground conditions in minimum shade
-#'with(plotmetout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)"
+#'with(plotmetout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (°C)"
 #', type = "l",main=paste("air temperature, ",minshade,"% shade",sep=""))})
-#'with(plotmetout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)"
+#'with(plotmetout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (°C)"
 #', type = "l",lty=2,col='blue')})
 #'with(plotmetout,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
 #', type = "l",ylim=c(0,100),main=paste("humidity, ",minshade,"% shade",sep=""))})
 #'with(plotmetout,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
 #', type = "l",col='blue',lty=2,ylim=c(0,100))})
-#'with(plotmetout,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (deg C)"
+#'with(plotmetout,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (°C)"
 #',  type = "l",main=paste("sky temperature, ",minshade,"% shade",sep=""))})
 #'with(plotmetout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
 #',  type = "l",main="wind speed",ylim = c(0, 15))})
@@ -263,135 +263,158 @@
 #'# plotting soil temperature for minimum shade
 #'for(i in 1:10){
 #'  if(i==1){
-#'    plot(plotsoil[,i+3]~plotsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature (deg C)"
+#'    plot(plotsoil[,i+3]~plotsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature (°C)"
 #'    ,col=i,type = "l",main=paste("soil temperature ",minshade,"% shade",sep=""))
 #'  }else{
 #'    points(plotsoil[,i+3]~plotsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature
-#'     (deg C)",col=i,type = "l")
+#'     (°C)",col=i,type = "l")
 #'  }
 #'}
 #'
 #'# plotting above-ground conditions in maximum shade
-#'with(plotshadmet,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)"
+#'with(plotshadmet,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (°C)"
 #', type = "l",main="air temperature, sun")})
-#'with(plotshadmet,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (deg C)"
+#'with(plotshadmet,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (°C)"
 #', type = "l",lty=2,col='blue')})
 #'with(plotshadmet,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
 #', type = "l",ylim=c(0,100),main="humidity, shade")})
 #'with(plotshadmet,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
 #', type = "l",col='blue',lty=2,ylim=c(0,100))})
-#'with(plotshadmet,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (deg C)",
+#'with(plotshadmet,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (°C)",
 #'  type = "l",main="sky temperature, shade")})
 #'
 #'# plotting soil temperature for maximum shade
 #'for(i in 1:10){
 #'  if(i==1){
 #'    plot(plotshadsoil[,i+3]~plotshadsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature
-#'     (deg C)",col=i,type = "l",main=paste("soil temperature ",maxshade,"% shade",sep=""))
+#'     (°C)",col=i,type = "l",main=paste("soil temperature ",maxshade,"% shade",sep=""))
 #'  }else{
 #'    points(plotshadsoil[,i+3]~plotshadsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature
-#'     (deg C)",col=i,type = "l")
+#'     (°C)",col=i,type = "l")
 #'  }
 #'}
 #' @export
-micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=365,ystart=1990,yfinish=1990,
-  nyears=1,soiltype=4,REFL=0.15, elev = NA, slope=0,aspect=0, lapse_max = 0.0077, lapse_min = 0.0039,
-  DEP=c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200),
-  minshade=0,maxshade=90,Refhyt=1.2,Usrhyt=0.01,Z01=0,Z02=0,ZH1=0,ZH2=0,
-  runshade=1,clearsky=0,rungads=1,write_input=0,writecsv=0,manualshade=1,
-  soildata=1,terrain=0,dailywind=1,adiab_cor=1,warm=0,spatial="c:/Australian Environment/",vlsci=0,
-  ERR=2.5,RUF=0.004,EC=0.0167238,SLE=0.95,Thcond=2.5,Density=2.56,SpecHeat=870,BulkDensity=1.3,
-  PCTWET=0,rainwet=1.5,cap=1,CMH2O=1.,hori=rep(0,24),
-  TIMAXS=c(1.0, 1.0, 0.0, 0.0),TIMINS=c(0, 0, 1, 1),timezone=0,
-  runmoist=1,PE=rep(1.1,19),KS=rep(0.0037,19),BB=rep(4.5,19),BD=rep(BulkDensity,19),DD=rep(Density,19),Clay=20,
-  SatWater=rep(0.26,10),maxpool=10000,rainmult=1,evenrain=0,
-  SoilMoist_Init=c(0.1,0.12,0.15,0.3,0.4,0.4,0.4,0.4,0.4,0.4),
-  L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
-    4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
-    0,0)*10000, R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
-  LAI=0.1, snowmodel=0,snowtemp=1.5,snowdens=0.375,densfun=c(0,0, 0, 0),snowmelt=0.9,undercatch=1,rainmelt=0.0125,
-  rainfrac=0.5,
-  shore=0,tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3),loop=0, scenario="",barcoo="",
-  quadrangle=1, hourly=1, rainhourly = 0, getdata=1, lamb = 0, IUV = 0, soilgrids = 0, IR = 0, message = 0, fail = nyears * 24 * 365, snowcond = 0, intercept = maxshade / 100 * 0.3) {
-  #
+micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval = 365,
+  ystart = 1990, yfinish = 1990, nyears = 1, soiltype = 4, REFL = 0.15, elev = NA,
+  slope = 0, aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
+  DEP = c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
+  Refhyt = 1.2, Usrhyt = 0.01, Z01 = 0, Z02 = 0, ZH1 = 0, ZH2 = 0, runshade = 1,
+  clearsky = 0, run.gads = 1, write_input = 0, writecsv = 0, manualshade = 1,
+  soildata = 1, terrain = 0, dailywind = 1, windfac = 1, adiab_cor = 1, warm = 0,
+  spatial = "c:/Australian Environment/", vlsci = 0, ERR = 1.5, RUF = 0.004,
+  EC = 0.0167238, SLE = 0.95, Thcond = 2.5, Density = 2.56, SpecHeat = 870,
+  BulkDensity = 1.3, PCTWET = 0, rainwet = 1.5, cap = 1, CMH2O=1, hori = rep(0, 24),
+  TIMAXS = c(1, 1, 0, 0), TIMINS=c(0, 0, 1, 1), timezone = 0, runmoist = 1,
+  PE = rep(1.1, 19), KS = rep(0.0037, 19), BB = rep(4.5, 19), BD = rep(BulkDensity, 19),
+  DD = rep(Density, 19), maxpool = 10000, rainmult = 1, evenrain = 0,
+  SoilMoist_Init=c(0.1, 0.12, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4),
+  L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000,
+  R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
+  LAI = 0.1, snowmodel = 0, snowtemp = 1.5, snowdens = 0.375,
+  densfun = c(0.5979, 0.2178, 0.001, 0.0038), snowmelt = 1, undercatch = 1,
+  rainmelt = 0.0125, shore = 0,
+  tides = matrix(data = 0, nrow = 24 * timeinterval * nyears, ncol = 3), loop = 0,
+  scenario = "", year = "", barcoo = "", quadrangle = 1, hourly = 0, rainhourly = 0,
+  rainhour = 0, uid = "", pwd = "", lamb = 0, IUV = 0, soilgrids = 1, IR = 0,
+  opendap = 1, message = 0, fail = nyears * 24 * 365, snowcond = 0,
+  intercept = maxshade / 100 * 0.3) {
+
   # loc="Nyrripi, Northern Territory"
-#   timeinterval=365
-#   ystart=1990
-#   yfinish=1990
-#   soiltype=4
-#   REFL=0.15
-#   slope=0
-#   aspect=0
-#   DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
-#   minshade=0
-#   maxshade=90
-#   Usrhyt=.01
-#   Refhyt=1.2
-#   runshade=1
-#   clearsky=0
-#   rungads=1
-#   write_input=0
-#   writecsv=0
-#   manualshade=1
-#   soildata=1
-#   terrain=0
-#   dailywind=1
-#   adiab_cor=1
-#   warm=0
-#   spatial="w:/"
-#   vlsci=0
-#   loop=0
-#   ERR=1.5
-#   RUF=0.004
-#   EC=0.0167238
-#   SLE=0.95
-#   Thcond=2.5
-#   Density=2.56
-#   SpecHeat=870
-#   BulkDensity=1.3
-#   PCTWET=0
-#   rainwet=1.5
-#   cap=1
-#   CMH2O=1
-#   hori=rep(0,24)
-#   TIMAXS=c(1.0, 1.0, 0.0, 0.0)
-#   TIMINS=c(0, 0, 1, 1)
-#   timezone=0
-#   runmoist=1
-#   PE=rep(1.1,19)
-#   KS=rep(0.0037,19)
-#   BB=rep(4.5,19)
-#   BD=rep(1.3,19)
-#   DD=rep(2.56,19)
-#   Clay=20
-#   SatWater=rep(0.26,10)
-#   maxpool=10000
-#   rainmult=1
-#   evenrain=0
-#   SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
-#   L=c(0,0,8.18990859,7.991299442,7.796891252,7.420411664,7.059944542,6.385001059,5.768074989,
-#       4.816673431,4.0121088,1.833554792,0.946862989,0.635260544,0.804575,0.43525621,0.366052856,
-#       0,0)*10000
-#   LAI=0.1
-#   snowmodel=0
-#   snowtemp=1.5
-#   snowdens=0.375
-#   densfun=c(0,0,0,0)
-#   snowmelt=0.9
-#   undercatch=1
-#   rainmelt=0.0125
-#   rainfrac=0.5
-#   shore=0
-#   nyears=1
-#   tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
-#   quadrangle=1
-#   hourly=1
-#   rainhourly = 0
-#   getdata=1
-#   Z01=0
-#   Z02=0
-#   ZH1=0
-#   ZH2=0
+  # timeinterval=365
+  # ystart=2000
+  # yfinish=2001
+  # nyears=yfinish-ystart+1
+  # soiltype=4
+  # REFL=0.15
+  # slope=0
+  # aspect=0
+  # DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
+  # minshade=0
+  # maxshade=90
+  # Usrhyt=.01
+  # Z01=0
+  # Z02=0
+  # ZH1=0
+  # ZH2=0
+  # runshade=1
+  # clearsky=0
+  # run.gads=1
+  # write_input=0
+  # writecsv=0
+  # manualshade=1
+  # soildata=0
+  # terrain=0
+  # dailywind=1
+  # adiab_cor=1
+  # warm=0
+  # spatial="w:/"
+  # vlsci=0
+  # loop=0
+  # ERR=1.5
+  # RUF=0.004
+  # EC=0.0167238
+  # SLE=0.95
+  # Thcond=2.5
+  # Density=2.560
+  # SpecHeat=870
+  # BulkDensity=1.300
+  # PCTWET=0
+  # rainwet=1.5
+  # cap=1
+  # CMH2O=1
+  # hori=rep(0,24)
+  # TIMAXS=c(1.0, 1.0, 0.0, 0.0)
+  # IMINS=c(0, 0, 1, 1)
+  # timezone=0
+  # runmoist=1
+  # PE=rep(1.1,19)
+  # KS=rep(0.0037,19)
+  # BB=rep(4.5,19)
+  # BD=rep(1.3,19)
+  # DD=rep(2.56,19)
+  # maxpool=10000
+  # rainmult=1
+  # evenrain=0
+  # SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
+  # L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000
+  # LAI=0.1
+  # snowmodel=0
+  # snowtemp=1.5
+  # snowdens=0.375
+  # densfun=c(0.5979, 0.2178, 0.001, 0.0038)
+  # snowmelt=1
+  # undercatch=1
+  # rainmelt=0.0125
+  # shore=0
+  # tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
+  # scenario=""
+  # year=2070
+  # barcoo=""
+  # quadrangle=1
+  # hourly=0
+  # rainhour = 0
+  # rainoff=0
+  # lamb = 0
+  # IUV = 0
+  # R1 = 0.001
+  # RW = 2.5e+10
+  # RL = 2e+6
+  # PC = -1500
+  # SP = 10
+  # IM = 1e-06
+  # MAXCOUNT = 500
+  # windfac=1
+  # rainhourly = 0
+  # opendap = 1
+  # soilgrids = 1
+  # IR = 0
+  # message = 0
+  # fail = nyears * 24 * 365
+  # elev = NA
+  # lapse_max = 0.0077
+  # lapse_min = 0.0039
+  # Refhyt <- 1.2
+
   if(vlsci==0){
     library(RODBC)
   }
@@ -939,8 +962,8 @@ micro_aust_forecast <- function(loc="Nyrripi, Northern Territory",timeinterval=3
         RAINhr<-forecast$prec1
         ZENhr<-forecast$zeniths
 
-        TMAXX<-aggregate(TAIRhr,by=list(forecast$d_1),max)[1:dim,2] # maximum air temperatures (deg C)
-        TMINN<-aggregate(TAIRhr,by=list(forecast$d_1),min)[1:dim,2] # minimum air temperatures (deg C)
+        TMAXX<-aggregate(TAIRhr,by=list(forecast$d_1),max)[1:dim,2] # maximum air temperatures (°C)
+        TMINN<-aggregate(TAIRhr,by=list(forecast$d_1),min)[1:dim,2] # minimum air temperatures (°C)
         RAINFALL<-aggregate(RAINhr,by=list(forecast$d_1),sum)[1:dim,2] # monthly mean rainfall (mm)
         CCMAXX<-aggregate(CLDhr,by=list(forecast$d_1),max)[1:dim,2] # max cloud cover (%)
         CCMINN<-aggregate(CLDhr,by=list(forecast$d_1),min)[1:dim,2] # min cloud cover (%)

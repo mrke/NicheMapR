@@ -214,9 +214,9 @@ We still need to give the model vectors of daily minimum and maximum weather dat
 # aggregate hourly data to daily min / max
 CCMAXX <- aggregate(CLDhr, by = list(weather$Date), FUN = max)[,2]#c(100, 100) # max cloud cover (%)
 CCMINN <- aggregate(CLDhr, by = list(weather$Date), FUN = min)[,2]#c(0, 15.62) # min cloud cover (%)
-TMAXX <- aggregate(TAIRhr, by = list(weather$Date), FUN = max)[,2]#c(40.1, 31.6) # maximum air temperatures (deg C)
-TMINN <- aggregate(TAIRhr, by = list(weather$Date), FUN = min)[,2]#c(19.01, 19.57) # minimum air temperatures (deg C)
-RAINFALL <- aggregate(RAINhr, by = list(weather$Date), FUN = sum)[,2]#c(19.01, 19.57) # minimum air temperatures (deg C)
+TMAXX <- aggregate(TAIRhr, by = list(weather$Date), FUN = max)[,2]#c(40.1, 31.6) # maximum air temperatures (°C)
+TMINN <- aggregate(TAIRhr, by = list(weather$Date), FUN = min)[,2]#c(19.01, 19.57) # minimum air temperatures (°C)
+RAINFALL <- aggregate(RAINhr, by = list(weather$Date), FUN = sum)[,2]#c(19.01, 19.57) # minimum air temperatures (°C)
 RHMAXX <- aggregate(RHhr, by = list(weather$Date), FUN = max)[,2]#c(90.16, 80.92) # max relative humidity (%)
 RHMINN <- aggregate(RHhr, by = list(weather$Date), FUN = min)[,2]#c(11.05, 27.9) # min relative humidity (%)
 WNMAXX <- aggregate(WNhr, by = list(weather$Date), FUN = max)[,2]#c(1.35, 2.0) # max wind speed (m/s)
@@ -226,8 +226,8 @@ WNMINN <- aggregate(WNhr, by = list(weather$Date), FUN = min)[,2]#c(0.485, 0.610
 Finally, we need the annual mean temperature and the running mean annual temperature for use as a boundary deep soil condition, as well as daily values of maximum and minimum shade, substrate emissivity and solar reflectance, and surface wetness, which we will keep constant across all days in this simulation. Also, for the deep soil boundary condtion, we only have one year of data so we cannot compute a running 365 day mean of the air temperature and instead we simply use a constant mean annual temperature.
 
 ```{r}
-tannul <- mean(c(TMAXX, TMINN)) # annual mean temperature for getting monthly deep soil temperature (deg C)
-tannulrun <- rep(tannul, doynum) # monthly deep soil temperature (2m) (deg C)
+tannul <- mean(c(TMAXX, TMINN)) # annual mean temperature for getting monthly deep soil temperature (°C)
+tannulrun <- rep(tannul, doynum) # monthly deep soil temperature (2m) (°C)
 # creating the arrays of environmental variables that are assumed not to change with month for this simulation
 MAXSHADES <- rep(maxshade, doynum) # daily max shade (%)
 MINSHADES <- rep(minshade, doynum) # daily min shade (%)
@@ -316,7 +316,7 @@ intercept<-0 # snow interception fraction for when there's shade (0-1)
 Finally, we need to give the model a vector of tide conditions although we are not running the model in intertidal mode so they also will be of no consequence.
 
 ```{r}
-# intertidal simulation input vector (col 1 = tide in(1)/out(0), col 2 = sea water temperature in deg C, col 3 = % wet from wave splash)
+# intertidal simulation input vector (col 1 = tide in(1)/out(0), col 2 = sea water temperature in °C, col 3 = % wet from wave splash)
 tides <- matrix(data = 0., nrow = 24 * doynum, ncol = 3) # matrix for tides
 ```
 
