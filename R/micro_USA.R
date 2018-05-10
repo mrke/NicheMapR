@@ -767,50 +767,42 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
             tmin <- retry(as.numeric(ncvar_get(nc, varid = "air_temperature",
               start = start, count)))
             nc_close(nc)
-            cat("\014")
             cat(paste("tmax weather input for ", yearlist[j], " \n", sep = ""))
             nc <- nc_open(paste0(baseurl, "tmmx/tmmx_", yearlist[j],
               ".nc"))
             tmax <- retry(as.numeric(ncvar_get(nc, varid = "air_temperature",
               start = start, count)))
             nc_close(nc)
-            cat("\014")
             cat(paste("rhmin weather input for ", yearlist[j], " \n", sep = ""))
             nc <- nc_open(paste0(baseurl, "rmin/rmin_", yearlist[j],
               ".nc"))
             rhmin <- retry(as.numeric(ncvar_get(nc, varid = "relative_humidity",
               start = start, count)))
             nc_close(nc)
-            cat("\014")
             cat(paste("rhmax weather input for ", yearlist[j], " \n", sep = ""))
             nc <- nc_open(paste0(baseurl, "rmax/rmax_", yearlist[j],
               ".nc"))
             rhmax <- retry(as.numeric(ncvar_get(nc, varid = "relative_humidity",
               start = start, count)))
             nc_close(nc)
-            cat("\014")
             cat(paste("Rain weather input for ", yearlist[j], " \n", sep = ""))
             nc <- nc_open(paste0(baseurl, "pr/pr_", yearlist[j],
               ".nc"))
             Rain <- retry(as.numeric(ncvar_get(nc, varid = "precipitation_amount",
               start = start, count)))
             nc_close(nc)
-            cat("\014")
             cat(paste("solar weather input for ", yearlist[j], " \n", sep = ""))
             nc <- nc_open(paste0(baseurl, "srad/srad_", yearlist[j],
               ".nc"))
             solar <- retry(as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
               start = start, count)))
             nc_close(nc)
-            cat("\014")
             cat(paste("Wind weather input for ", yearlist[j], " \n", sep = ""))
             nc <- nc_open(paste0(baseurl, "vs/vs_", yearlist[j],
               ".nc"))
-            cat("\014")
             Wind <- retry(as.numeric(ncvar_get(nc, varid = "wind_speed",
               start = start, count)))
             nc_close(nc)
-            cat("\014")
             Tmax <- tmax - 273.15
             Tmin <- tmin - 273.15
           }else{
@@ -821,28 +813,24 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
             tmin <- retry(as.numeric(ncvar_get(nc, varid = "air_temperature",
               start = start, count)))
             nc_close(nc)
-            cat("\014")
             cat(paste("tmax weather input for ", yearlist[j], " \n", sep = ""))
             nc <- nc_open(paste0(baseurl, "tmmx/tmmx_", yearlist[j],
               ".nc"))
             tmax <- retry(as.numeric(ncvar_get(nc, varid = "air_temperature",
               start = start, count)))
             nc_close(nc)
-            cat("\014")
             cat(paste("rmin weather input for ", yearlist[j], " \n", sep = ""))
             nc <- nc_open(paste0(baseurl, "rmin/rmin_", yearlist[j],
               ".nc"))
             rhmin <- c(rhmin, retry(as.numeric(ncvar_get(nc, varid = "relative_humidity",
               start = start, count))))
             nc_close(nc)
-            cat("\014")
             cat(paste("rmax weather input for ", yearlist[j], " \n", sep = ""))
             nc <- nc_open(paste0(baseurl, "rmax/rmax_", yearlist[j],
               ".nc"))
             rhmax <- c(rhmax, retry(as.numeric(ncvar_get(nc, varid = "relative_humidity",
               start = start, count))))
             nc_close(nc)
-            cat("\014")
             cat(paste("Rain weather input for ", yearlist[j], " \n", sep = ""))
             nc <- nc_open(paste0(baseurl, "pr/pr_", yearlist[j],
               ".nc"))
@@ -851,19 +839,16 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
             nc_close(nc)
             nc <- nc_open(paste0(baseurl, "srad/srad_", yearlist[j],
               ".nc"))
-            cat("\014")
             cat(paste("solar weather input for ", yearlist[j], " \n", sep = ""))
             solar <- c(solar, retry(as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
               start = start, count))))
             nc_close(nc)
             nc <- nc_open(paste0(baseurl, "vs/vs_", yearlist[j],
               ".nc"))
-            cat("\014")
             cat(paste("wind weather input for ", yearlist[j], " \n", sep = ""))
             Wind <- c(Wind, retry(as.numeric(ncvar_get(nc, varid = "wind_speed",
               start = start, count))))
             nc_close(nc)
-            cat("\014")
             Tmax <- c(Tmax, tmax - 273.15)
             Tmin <- c(Tmin, tmin - 273.15)
           }
