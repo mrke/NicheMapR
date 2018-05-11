@@ -33,7 +33,6 @@
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export
-#'
 #' @details
 #' \itemize{
 #' \strong{ Parameters controling how the model runs:}\cr\cr
@@ -273,7 +272,7 @@
 #'     (%)",col=i,type = "l")
 #'  }
 #' }
-micro_usa2 <- function(loc = "Madison, Wisconsin", timeinterval = 365, dstart = "01/01/2016", dfinish = "31/12/2016",
+micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, dstart = "01/01/2016", dfinish = "31/12/2016",
   nyears = as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1, soiltype = 4,
   REFL = 0.15, elev = NA, slope = 0, aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
   DEP=c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
