@@ -623,7 +623,7 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, dstart = "
       if(opendap == 1){
         require(utils)
         require(futile.logger)
-        retry <- function(expr, isError=function(x) "try-error" %in% class(x), maxErrors=20, sleep=0) {
+        retry <- function(expr, isError=function(x) "try-error" %in% class(x), maxErrors=50, sleep=1) {
           attempts = 0
           retval = try(eval(expr))
           while (isError(retval)) {
