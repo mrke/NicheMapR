@@ -764,7 +764,7 @@ micro_usa2 <- function(loc = "Madison, Wisconsin", timeinterval = 365, dstart = 
         latindex=which(flat %in% 1)
         flon=match(abs(lon-x[1])<1/48,1)
         lonindex=which(flon %in% 1)
-        start <- c(latindex, lonindex, which(day == startday))
+        start <- c(latindex, lonindex, which(day == startday) - 1)
         count <- c(1, 1, countday)
         Tmin <- retry(as.numeric(ncvar_get(nc, varid = "daily_minimum_temperature", start = start, count))) - 273.15
         nc_close(nc)
