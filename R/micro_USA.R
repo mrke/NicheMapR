@@ -3,8 +3,8 @@
 #' An implementation of the Niche Mapper microclimate model that uses the GRIDMET daily weather database http://www.climatologylab.org/gridmet.html, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "metdata_elevationdata.nc".
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
-#' @param ystart First year to run
-#' @param yfinish Last year to run
+#' @param dstart First day to run, date in format "d-m-Y" e.g. "01-01-2016"
+#' @param dfinish Last day to run, date in format "d-m-Y" e.g. "31-12-2016"
 #' @param REFL Soil solar reflectance, decimal \%
 #' @param elev Elevation, if to be user specified (m)
 #' @param slope Slope in degrees
@@ -29,7 +29,7 @@
 #' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
 #' @return sunsnow Hourly predictions of snow temperature under the minimum specified shade
 #' @return shadsnow Hourly predictions snow temperature under the maximum specified shade
-#' @usage micro_USA(loc = "Madison Wisconsin, USA", timeinterval = 365, ystart = 1990, yfinish = 1990, soiltype = 4,
+#' @usage micro_USA(loc = "Madison Wisconsin, USA", timeinterval = 365, dstart = "01-01-2016", dfinish = "01-01-2016", soiltype = 4,
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export
@@ -135,7 +135,7 @@
 #' \code{shore}{ Include tide effects? If 1, the matrix}
 #' \code{tides}
 #' { is used to specify tide presence, sea water temperature and presence of wavesplash}\cr\cr
-#' \code{tides}{ = matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (°C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
+#' \code{tides}{ = matrix(data = 0, nrow = length(seq(as.POSIXct(dstart, format = "%d/%m/%Y"), as.POSIXct(dfinish, format = "%d/%m/%Y"), by = "days")) * 24, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (°C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
 #' }
 #'
 #' \strong{Outputs:}
@@ -215,18 +215,17 @@
 #' }
 #' @examples
 #' library(NicheMapR)
-#' micro<-micro_usa(loc = 'Madison Wisconsin, USA', runshade = 0, ystart = 2014, yfinish = 2016) # run the model using SoilGrids data at Madison for 2014 to 2016
+#' dstart <- "01/01/2014"
+#' dfinish <- "31/12/2016"
+#' micro<-micro_usa(loc = 'Madison Wisconsin, USA', runshade = 0, dstart = dstart, dfinish = dfinish) # run the model using SoilGrids data at Madison for 2014 to 2016
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
 #' soilmoist<-as.data.frame(micro$soilmoist) # soil temperatures, minimum shade
 #'
 #' # append dates
-#' ystart <- 2014
-#' yfinish <- 2016
-#' nyears <- yfinish-ystart+1
 #' tzone<-paste("Etc/GMT+",0,sep="")
-#' dates<-seq(ISOdate(ystart,1,1,tz=tzone)-3600*12, ISOdate((ystart+nyears),1,1,tz=tzone)-3600*13, by="hours")
+#' dates<-seq(as.POSIXct(dstart, format="%d/%m/%Y",tz=tzone)-3600*12, as.POSIXct(dfinish, format="%d/%m/%Y",1,1,tz=tzone)-3600*13, by="hours")
 #'
 #' metout <- cbind(dates,metout)
 #' soil <- cbind(dates,soil)
@@ -274,9 +273,9 @@
 #'     (%)",col=i,type = "l")
 #'  }
 #' }
-micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2016,
-  yfinish = 2016, nyears = 1, soiltype = 4, REFL = 0.15, elev = NA, slope = 0,
-  aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
+micro_usa2 <- function(loc = "Madison, Wisconsin", timeinterval = 365, dstart = "01/01/2016", dfinish = "31/12/2016",
+  nyears = as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1, soiltype = 4,
+  REFL = 0.15, elev = NA, slope = 0, aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
   DEP=c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
   Refhyt = 2, Usrhyt = 0.01, Z01 = 0, Z02 = 0, ZH1 = 0, ZH2 = 0, runshade = 1,
   clearsky = 0, rungads = 1, write_input = 0, writecsv = 0,
@@ -292,16 +291,16 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
   R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
   LAI = 0.1, snowmodel = 1, snowtemp = 1.5, snowdens = 0.375, densfun = c(0.5979, 0.2178, 0.001, 0.0038),
   snowmelt = 1, undercatch = 1, rainmelt = 0.0125, shore = 0,
-  tides = matrix(data = 0, nrow = 24 * timeinterval * nyears, ncol = 3),
+  tides = matrix(data = 0, nrow = 24 * length(seq(as.POSIXct(dstart, format = "%d/%m/%Y"), as.POSIXct(dfinish, format = "%d/%m/%Y")), ncol = 3)),
   scenario = "", year = "", hourly = 0, rainhourly = 0, rainhour = 0,
   rainoff = 0, lamb = 0, IUV = 0, opendap = 1, soilgrids = 1, IR = 0, message = 0,
   fail = nyears * 24 * 365, save = 0, snowcond = 0, intercept = maxshade / 100 * 0.3) {
 
   # loc="Madison, Wisconsin"
   # timeinterval=365
-  # ystart=2014
-  # yfinish=2016
-  # nyears=1
+  # dstart="01/01/2016"
+  # dfinish="31/12/2016"
+  # nyears=as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1
   # soiltype=4
   # REFL=0.15
   # slope=0
@@ -361,7 +360,7 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
   # undercatch=1
   # rainmelt=0.0125
   # shore=0
-  # tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
+  # tides = matrix(data = 0, nrow = 24 * length(seq(as.POSIXct(dstart, format = "%d/%m/%Y"), as.POSIXct(dfinish, format = "%d/%m/%Y")), ncol = 3))
   # scenario=""
   # hourly=0
   # rainhour = 0
@@ -388,6 +387,9 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
   # snowcond = 0
   # intercept = maxshade / 100 * 0.3
 
+  ystart <- as.numeric(substr(dstart, 7, 10))
+  yfinish <- as.numeric(substr(dfinish, 7, 10))
+  yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
   if(DEP[2]-DEP[1]>3 | DEP[3]-DEP[2]>3){
@@ -561,16 +563,12 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
   if(errors==0){ # continue
 
     ################## time related variables #################################
-    nyears<-yfinish-ystart+1
-
     doys12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
 
     microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
 
     daystart<-as.integer(ceiling(365/timeinterval/2))
     idayst <- 1 # start day
-    dates<-Sys.time()-60*60*24
-    curyear<-as.numeric(format(dates,"%Y"))
 
     ################## location and terrain #################################
     if (!requireNamespace("raster", quietly = TRUE)) {
@@ -748,114 +746,54 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
     if(save != 2){
       if(opendap == 1){
         cat("extracting weather data \n")
-        baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/MET/"
-        yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
-        for (j in 1:nyears) {
-          if (j == 1) {
-            cat(paste("reading weather input for ", yearlist[j], " \n", sep = ""))
-            cat(paste("tmin weather input for ", yearlist[j], " \n", sep = ""))
-            nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
-              ".nc"))
-            lon <- ncvar_get(nc, "lon")
-            lat <- ncvar_get(nc, "lat")
-            flat=match(abs(lat-x[2])<1/48,1)
-            latindex=which(flat %in% 1)
-            flon=match(abs(lon-x[1])<1/48,1)
-            lonindex=which(flon %in% 1)
-            start <- c(latindex,lonindex,1)
-            count <- c(1, 1, -1)
-            tmin <- retry(as.numeric(ncvar_get(nc, varid = "air_temperature",
-              start = start, count)))
-            nc_close(nc)
-            cat(paste("tmax weather input for ", yearlist[j], " \n", sep = ""))
-            nc <- nc_open(paste0(baseurl, "tmmx/tmmx_", yearlist[j],
-              ".nc"))
-            tmax <- retry(as.numeric(ncvar_get(nc, varid = "air_temperature",
-              start = start, count)))
-            nc_close(nc)
-            cat(paste("rhmin weather input for ", yearlist[j], " \n", sep = ""))
-            nc <- nc_open(paste0(baseurl, "rmin/rmin_", yearlist[j],
-              ".nc"))
-            rhmin <- retry(as.numeric(ncvar_get(nc, varid = "relative_humidity",
-              start = start, count)))
-            nc_close(nc)
-            cat(paste("rhmax weather input for ", yearlist[j], " \n", sep = ""))
-            nc <- nc_open(paste0(baseurl, "rmax/rmax_", yearlist[j],
-              ".nc"))
-            rhmax <- retry(as.numeric(ncvar_get(nc, varid = "relative_humidity",
-              start = start, count)))
-            nc_close(nc)
-            cat(paste("Rain weather input for ", yearlist[j], " \n", sep = ""))
-            nc <- nc_open(paste0(baseurl, "pr/pr_", yearlist[j],
-              ".nc"))
-            Rain <- retry(as.numeric(ncvar_get(nc, varid = "precipitation_amount",
-              start = start, count)))
-            nc_close(nc)
-            cat(paste("solar weather input for ", yearlist[j], " \n", sep = ""))
-            nc <- nc_open(paste0(baseurl, "srad/srad_", yearlist[j],
-              ".nc"))
-            solar <- retry(as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
-              start = start, count)))
-            nc_close(nc)
-            cat(paste("Wind weather input for ", yearlist[j], " \n", sep = ""))
-            nc <- nc_open(paste0(baseurl, "vs/vs_", yearlist[j],
-              ".nc"))
-            Wind <- retry(as.numeric(ncvar_get(nc, varid = "wind_speed",
-              start = start, count)))
-            nc_close(nc)
-            Tmax <- tmax - 273.15
-            Tmin <- tmin - 273.15
-          }else{
-            cat(paste("reading weather input for ", yearlist[j], " \n", sep = ""))
-            cat(paste("tmin weather input for ", yearlist[j], " \n", sep = ""))
-            nc <- nc_open(paste0(baseurl, "/tmmn/tmmn_", yearlist[j],
-              ".nc"))
-            tmin <- retry(as.numeric(ncvar_get(nc, varid = "air_temperature",
-              start = start, count)))
-            nc_close(nc)
-            cat(paste("tmax weather input for ", yearlist[j], " \n", sep = ""))
-            nc <- nc_open(paste0(baseurl, "tmmx/tmmx_", yearlist[j],
-              ".nc"))
-            tmax <- retry(as.numeric(ncvar_get(nc, varid = "air_temperature",
-              start = start, count)))
-            nc_close(nc)
-            cat(paste("rmin weather input for ", yearlist[j], " \n", sep = ""))
-            nc <- nc_open(paste0(baseurl, "rmin/rmin_", yearlist[j],
-              ".nc"))
-            rhmin <- c(rhmin, retry(as.numeric(ncvar_get(nc, varid = "relative_humidity",
-              start = start, count))))
-            nc_close(nc)
-            cat(paste("rmax weather input for ", yearlist[j], " \n", sep = ""))
-            nc <- nc_open(paste0(baseurl, "rmax/rmax_", yearlist[j],
-              ".nc"))
-            rhmax <- c(rhmax, retry(as.numeric(ncvar_get(nc, varid = "relative_humidity",
-              start = start, count))))
-            nc_close(nc)
-            cat(paste("Rain weather input for ", yearlist[j], " \n", sep = ""))
-            nc <- nc_open(paste0(baseurl, "pr/pr_", yearlist[j],
-              ".nc"))
-            Rain <- c(Rain, retry(as.numeric(ncvar_get(nc, varid = "precipitation_amount",
-              start = start, count))))
-            nc_close(nc)
-            nc <- nc_open(paste0(baseurl, "srad/srad_", yearlist[j],
-              ".nc"))
-            cat(paste("solar weather input for ", yearlist[j], " \n", sep = ""))
-            solar <- c(solar, retry(as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
-              start = start, count))))
-            nc_close(nc)
-            nc <- nc_open(paste0(baseurl, "vs/vs_", yearlist[j],
-              ".nc"))
-            cat(paste("wind weather input for ", yearlist[j], " \n", sep = ""))
-            Wind <- c(Wind, retry(as.numeric(ncvar_get(nc, varid = "wind_speed",
-              start = start, count))))
-            nc_close(nc)
-            Tmax <- c(Tmax, tmax - 273.15)
-            Tmin <- c(Tmin, tmin - 273.15)
-          }
-        }
+        dates<-Sys.time()-60*60*24
+        curyear<-as.numeric(format(dates,"%Y"))
+        days <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "1900/01/01"), by = 'days')
+        alldays <- seq(as.POSIXct("01/01/1900", format = "%d/%m/%Y", origin = "01/01/1900"), Sys.time()-60*60*24, by = 'days')
+        startday <- which(as.character(format(alldays, "%d/%m/%Y")) == format(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), "%d/%m/%Y"))
+        endday <- which(as.character(format(alldays, "%d/%m/%Y")) == format(as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900"), "%d/%m/%Y"))
+        countday <- endday-startday+1
+        baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_met_"
+        cat(paste0("reading weather input for ", dstart, " to ", dfinish, " \n"))
+        cat(paste0("tmin weather input \n"))
+        nc <- nc_open(paste0(baseurl, "tmmn_1979_CurrentYear_CONUS.nc"))
+        day<-retry(as.numeric(ncvar_get(nc, varid = "day")))
+        lon <- ncvar_get(nc, "lon")
+        lat <- ncvar_get(nc, "lat")
+        flat=match(abs(lat-x[2])<1/48,1)
+        latindex=which(flat %in% 1)
+        flon=match(abs(lon-x[1])<1/48,1)
+        lonindex=which(flon %in% 1)
+        start <- c(latindex, lonindex, which(day == startday))
+        count <- c(1, 1, countday)
+        Tmin <- retry(as.numeric(ncvar_get(nc, varid = "daily_minimum_temperature", start = start, count))) - 273.15
+        nc_close(nc)
+        cat(paste0("tmax weather input \n"))
+        nc <- nc_open(paste0(baseurl, "tmmx_1979_CurrentYear_CONUS.nc"))
+        Tmax <- retry(as.numeric(ncvar_get(nc, varid = "daily_maximum_temperature", start = start, count))) - 273.15
+        nc_close(nc)
+        cat(paste0("rhmin weather input \n"))
+        nc <- nc_open(paste0(baseurl, "rmin_1979_CurrentYear_CONUS.nc"))
+        rhmin <- retry(as.numeric(ncvar_get(nc, varid = "daily_minimum_relative_humidity", start = start, count)))
+        nc_close(nc)
+        cat(paste0("rhmax weather input \n"))
+        nc <- nc_open(paste0(baseurl, "rmax_1979_CurrentYear_CONUS.nc"))
+        rhmax <- retry(as.numeric(ncvar_get(nc, varid = "daily_maximum_relative_humidity", start = start, count)))
+        nc_close(nc)
+        cat(paste0("rain weather input \n"))
+        nc <- nc_open(paste0(baseurl, "pr_1979_CurrentYear_CONUS.nc"))
+        Rain <- retry(as.numeric(ncvar_get(nc, varid = "precipitation_amount", start = start, count)))
+        nc_close(nc)
+        cat(paste0("solar weather input \n"))
+        nc <- nc_open(paste0(baseurl, "srad_1979_CurrentYear_CONUS.nc"))
+        solar <- retry(as.numeric(ncvar_get(nc, varid = "daily_mean_shortwave_radiation_at_surface", start = start, count)))
+        nc_close(nc)
+        cat(paste0("wind weather input \n"))
+        nc <- nc_open(paste0(baseurl, "vs_1979_CurrentYear_CONUS.nc"))
+        Wind <- retry(as.numeric(ncvar_get(nc, varid = "daily_mean_wind_speed", start = start, count)))
+        nc_close(nc)
       }else{
         cat("extracting weather data \n")
-        yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
         nc <- nc_open(paste(spatial, "/tmmx_", yearlist[1], ".nc",
           sep = ""))
         lon <- matrix(ncvar_get(nc, "lon"))
@@ -970,6 +908,10 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
           allclearsky <- c(allclearsky, clearsky_mean)
         }
       }
+      if(opendap == 1){ # truncating if less than whole years requested via opendap
+       cut <- as.numeric(days[1] - as.POSIXct(paste0('01/01/', ystart), format = "%d/%m/%Y") + 1)
+       allclearsky <- allclearsky[cut:(cut+countday-1)]
+      }
       cloud <- (1 - solar / allclearsky) * 100
       cloud[cloud<0]<-0
       cloud[cloud>100]<-100
@@ -1023,11 +965,13 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, ystart = 2
         doy <- c(doy, seq(1, dinyear))
       }
     }
+    if(opendap == 1){ # could be less than whole years
+      doy <- doy[cut:(cut+countday-1)]
+    }
     ida<-ndays
     idayst <- 1
 
-    tzone<-paste("Etc/GMT-12",sep="") # doing it this way ignores daylight savings!
-    dim<-length(seq(ISOdate(ystart,1,1,tz=tzone)-3600*12, ISOdate((ystart+nyears),1,1,tz=tzone)-3600*13, by="days"))
+    dim<-length(Tmin)
     maxshades=rep(maxshade,dim)
     minshades=rep(minshade,dim)
     shademax<-maxshades
