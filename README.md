@@ -3,6 +3,11 @@ R implementation of Niche Mapper software for biophysical modelling
 
 Copyright (C) 2018  Michael R. Kearney and Warren P. Porter
 
+Citation: Kearney, M. R., and W. P. Porter. 2017. NicheMapR - an R 
+package for biophysical modelling: the microclimate model. Ecography 
+40:664–674.
+
+
 This program is free software: you can redistribute it and/or modify it 
 under the terms of the GNU General Public License as published by the 
 Free Software Foundation, either version 3 of the License, or (at your
