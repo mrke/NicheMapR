@@ -1,5 +1,6 @@
 # NicheMapR
 R implementation of Niche Mapper software for biophysical modelling
+
 Copyright (C) 2018  Michael R. Kearney and Warren P. Porter
 
 This program is free software: you can redistribute it and/or modify it 
