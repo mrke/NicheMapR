@@ -657,10 +657,10 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory", timeinterval = 365,
       f3 <- paste(spatial,"agg_9secdem.nc",sep="");
       f4 <- paste(spatial,"Aust9secDEM.tif",sep="");
     }else{
-      f1 <- "/vlsci/VR0212/shared/Spatial_Data/ausclim_rowids.nc";
-      f2 <- "/vlsci/VR0212/shared/Spatial_Data/ausdem_shift1.tif";
-      f3 <- "/vlsci/VR0212/shared/Spatial_Data/agg_9secdem.nc";
-      f4 <- "/vlsci/VR0212/shared/Spatial_Data/Aust9secDEM.grd";
+      f1 <- "/vlsci/VR0212/mrke/Spatial_Data/ausclim_rowids.nc";
+      f2 <- "/vlsci/VR0212/mrke/Spatial_Data/ausdem_shift1.tif";
+      f3 <- "/vlsci/VR0212/mrke/Spatial_Data/agg_9secdem.nc";
+      f4 <- "/vlsci/VR0212/mrke/Spatial_Data/Aust9secDEM.grd";
     }
 
     if(is.numeric(loc)==FALSE){ # use geocode to get location from site name via googlemaps
@@ -710,8 +710,8 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory", timeinterval = 365,
         static_soil<-paste(spatial,"static_soil.nc",sep="")
         emissivities<-paste(spatial,"aus_emissivities.nc",sep="")
       }else{
-        static_soil<-'/vlsci/VR0212/shared/Spatial_Data/static_soil.nc'
-        emissivities<-'/vlsci/VR0212/shared/Spatial_Data/aus_emissivities.nc'
+        static_soil<-'/vlsci/VR0212/mrke/Spatial_Data/static_soil.nc'
+        emissivities<-'/vlsci/VR0212/mrke/Spatial_Data/aus_emissivities.nc'
       }
       # read data in from netcdf file
       static_soil_data<-raster::brick(static_soil)
@@ -731,11 +731,11 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory", timeinterval = 365,
         filename<-paste(spatial,"SoilTypeLUT_725_AWAP.csv",sep="")
         soiltype<-as.data.frame(read.table(file = filename, sep = ","))
       }else{
-        filename<-'/vlsci/VR0212/shared/Spatial_Data/ppfInterpAll.txt'
+        filename<-'/vlsci/VR0212/mrke/Spatial_Data/ppfInterpAll.txt'
         ppf<-as.data.frame(read.table(file = filename, sep = ",", header=TRUE))
-        filename<-'/vlsci/VR0212/shared/Spatial_Data/Lumped soil types.txt'
+        filename<-'/vlsci/VR0212/mrke/Spatial_Data/Lumped soil types.txt'
         lumped.soil<-as.data.frame(read.table(file = filename, sep = ","))
-        filename<-'/vlsci/VR0212/shared/Spatial_Data/SoilTypeLUT_725_AWAP.csv'
+        filename<-'/vlsci/VR0212/mrke/Spatial_Data/SoilTypeLUT_725_AWAP.csv'
         soiltype<-as.data.frame(read.table(file = filename, sep = ","))
       }
       soilcode<-subset(soiltype, soiltype[1]==static_soil_vars[18])
@@ -750,8 +750,8 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory", timeinterval = 365,
           static_soil<-paste(spatial,"static_soil.nc",sep="")
           emissivities<-paste(spatial,"aus_emissivities.nc",sep="")
         }else{
-          static_soil<-'/vlsci/VR0212/shared/Spatial_Data/static_soil.nc'
-          emissivities<-'/vlsci/VR0212/shared/Spatial_Data/aus_emissivities.nc'
+          static_soil<-'/vlsci/VR0212/mrke/Spatial_Data/static_soil.nc'
+          emissivities<-'/vlsci/VR0212/mrke/Spatial_Data/aus_emissivities.nc'
         }
         # read data in from netcdf file
         static_soil_data<-raster::brick(static_soil)
@@ -767,7 +767,7 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory", timeinterval = 365,
         if(vlsci==0){
           horifile<-paste(spatial,'horizon',i,'.tif',sep="")
         }else{
-          horifile<-paste('/vlsci/VR0212/shared/Spatial_Data/','horizon',i,'.tif',sep="")
+          horifile<-paste('/vlsci/VR0212/mrke/Spatial_Data/','horizon',i,'.tif',sep="")
         }
         horiz<-raster::crop(raster::raster(horifile),e)
         if(i==1){
@@ -783,9 +783,9 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory", timeinterval = 365,
         aspect1<-crop(raster::raster(paste(spatial,'aspect.tif',sep="")),e)
         elevslpasp<-raster::stack(elev1,slope1,aspect1)
       }else{
-        elev1<-raster::crop(raster(paste('/vlsci/VR0212/shared/Spatial_Data/','elev.tif',sep="")),e)
-        slope1<-raster::crop(raster(paste('/vlsci/VR0212/shared/Spatial_Data/','slope.tif',sep="")),e)
-        aspect1<-raster::crop(raster(paste('/vlsci/VR0212/shared/Spatial_Data/','aspect.tif',sep="")),e)
+        elev1<-raster::crop(raster(paste('/vlsci/VR0212/mrke/Spatial_Data/','elev.tif',sep="")),e)
+        slope1<-raster::crop(raster(paste('/vlsci/VR0212/mrke/Spatial_Data/','slope.tif',sep="")),e)
+        aspect1<-raster::crop(raster(paste('/vlsci/VR0212/mrke/Spatial_Data/','aspect.tif',sep="")),e)
         elevslpasp<-raster::stack(elev1,slope1,aspect1)
       }
       ELEVSLPASP <- raster::extract(elevslpasp,x)

@@ -2,11 +2,25 @@
 
       use commondat
       IMPLICIT NONE
-
-
       EXTERNAL WETAIR
+      
+C     NicheMapR: software for biophysical mechanistic niche modelling
 
-C     Michael Kearney 2012
+C     Copyright (C) 2018 Michael R. Kearney and Warren P. Porter
+
+c     This program is free software: you can redistribute it and/or modify 
+c     it under the terms of the GNU General Public License as published by 
+c     the Free Software Foundation, either version 3 of the License, or (at
+c      your option) any later version.
+
+c     This program is distributed in the hope that it will be useful, but
+c     WITHOUT ANY WARRANTY; without even the implied warranty of 
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+c     General Public License for more details.
+
+c     You should have received a copy of the GNU General Public License 
+c     along with this program. If not, see http://www.gnu.org/licenses/.
+
 C     Computes variable thermal conductivity with temperature and water content
 c     based on Campbell, G. S., J. D. J. Jungbauer, W. R. Bidlake, and R. D. Hungerford. 1994.
 c     Predicting the effect of temperature on soil thermal conductivity. Soil Science 158:307-313.
@@ -29,13 +43,11 @@ c     Predicting the effect of temperature on soil thermal conductivity. Soil Sc
      & snowage,prevden,cpsnow
      
       INTEGER DAYCT,I,J,II,maxcount
-      INTEGER JULNUM,MOY,Numtyps
+      INTEGER JULNUM,DOY,Numtyps
       INTEGER NON,evenrain,runmoist,runsnow,trouble
       INTEGER I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92,I93
      & ,I94,I95,I96,ij,I97,I98,I99,I100,I101    
       INTEGER IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART,IEND2
-
-C    Day's soil properties
       DIMENSION DENDAY(30),SPDAY(30),TKDAY(30)
       dimension soilprop(10,5),TSOI(30),moistt(10)
       DIMENSION Thconduct(30),Density(30),Spheat(30)
@@ -46,7 +58,7 @@ C    Day's soil properties
       COMMON/SOYVAR2/Thconduct,Density,Spheat
       COMMON/SOYFILS/DENDAY,SPDAY,TKDAY
       COMMON/SOILND/NON
-      COMMON/DAYJUL/JULNUM,MOY
+      COMMON/DAYJUL/JULNUM,DOY
       COMMON/WMAIN/I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92,I93
      & ,I94,I95,I96,I97,I98,I99,I100,I101
       common/soilmoist/condep,rainmult,maxpool
@@ -79,7 +91,7 @@ C    Day's soil properties
       endif
       j=1
       do 2 i=ii,NON ! ii ensures that it starts at soil depth if snow on top 
-       if(i.ge.nodes(j,moy)+ij)then
+       if(i.ge.nodes(j,DOY)+ij)then
         j=j+1
         if(j.gt.numtyps)then
          j=numtyps
@@ -156,7 +168,7 @@ c    # slope of the vapour pressure function centred at focal temperature
        deltax=(e_a2-e_a1)/2
 
 c     # these could vary with soil texture but the relationship isn't strong
-c    # power for liquid recirculation, mean in Table 2 of Campell et al. 1994, excluding peat moss value
+c     # power for liquid recirculation, mean in Table 2 of Campell et al. 1994, excluding peat moss value
 c      q_0=4
 c      q=q_0*(T_K/303.)**2.
 c     using a typical value for 'q' of 4 - program becomes unstable if this is temperature dependent
@@ -222,16 +234,6 @@ C     1 kg/m3 * 1000g/1 kg * 1 m3/1000000.
          else ! linear function
           snowdens=min(0.9167,densfun(1)*snowage+densfun(2))
          endif
-c       JD=JULDAY(MOY)
-C       if(HEMIS.eq.1)then ! rearrange days so 1 is day 180, etc.
-C        if(JD.gt.182)then
-C         snowdens=max(0.1, densfun(1)*(JD-182)+densfun(2)) ! note capping at 0.2 density to avoid crashes
-C        else
-C         snowdens=max(0.1, densfun(1)*(JD+182)+densfun(2)) ! note capping at 0.2 density to avoid crashes
-C        endif
-C       else ! no need to rearrange
-C        snowdens=max(0.1, densfun(1)*JD+densfun(2)) ! note capping at 0.2 density to avoid crashes
-C       endif
        endif
        if(cursnow.ge.minsnow)then ! snow is present
         !if(cursnow.gt.100)then
@@ -241,8 +243,6 @@ C       endif
      &  WTRPOT) ! get specific heat and mixing ratio of humid air at zero C
         cpsnow = (2100*snowdens+(1.005+1.82*(RW/1.+RW))*1000* ! based on https://en.wiktionary.org/wiki/humid_heat
      &   (1-snowdens)) ! compute weighted specific heat accounting for ice vs airm SI units
-c        snowcond2=min((0.0442*EXP(5.181*snowdens)/418.6)*60., ! old function from Anderson paper
-c     &      1/418.6*60)
         snowcond2 = (0.00395+0.00084*(snowdens*1000)-0.0000017756* ! snow thermal conductivity as a function of density (from Aggarwal, R. 2009. Defence Science Journal 59:126–130.)
      &  (snowdens*1000)**2+0.00000000380635*(snowdens*1000)**3)
      & /418.6*60

@@ -7,7 +7,7 @@ Description: This packages provides an interface to a suite of biophysical
     modelling algorithims including the Niche Mapper system.
 Depends:
     R (>= 3.2.1)
-License: TBA
+License: gpl-3.0
 LazyData: true
 RoxygenNote: 5.0.1
 Suggests:
