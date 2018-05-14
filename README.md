@@ -2,10 +2,10 @@
 R implementation of Niche Mapper software for biophysical modelling
 Copyright (C) 2018  Michael R. Kearney and Warren P. Porter
 
-The underlying Fortran source code of this program is free software:
-you can redistribute it and/or modify it under the terms of the GNU 
-General Public License as published by the Free Software Foundation, 
-either version 3 of the License, or (at your option) any later version.
+This program is free software: you can redistribute it and/or modify it 
+under the terms of the GNU General Public License as published by the 
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
