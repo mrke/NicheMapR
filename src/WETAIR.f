@@ -1,14 +1,33 @@
       subroutine wetair(db,wb,rh,dp,bp,e,esat,vd,rw,tvir,tvinc,denair,
      +                  cp,wtrpot)
       implicit none
-C    COPYRIGHT 1997  WARREN P. PORTER,  ALL RIGHTS RESERVED
+      
+C     NicheMapR: software for biophysical mechanistic niche modelling
 
-c  subroutine wetair calculates several properties of humid air.  this version
+C     Copyright (C) 2018 Michael R. Kearney and Warren P. Porter
 
-c  was taken from "properties of air: a manual for use in biophysical ecology
-c  third edition.
-      real tk,db,wb,wbd,wbsat,esat,vapprs,dltae,wtrpot,cp,denair,tvinc
-      real tvir,rw,vd,e,bp,dp,rh
+c     This program is free software: you can redistribute it and/or modify 
+c     it under the terms of the GNU General Public License as published by 
+c     the Free Software Foundation, either version 3 of the License, or (at
+c      your option) any later version.
+
+c     This program is distributed in the hope that it will be useful, but
+c     WITHOUT ANY WARRANTY; without even the implied warranty of 
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+c     General Public License for more details.
+
+c     You should have received a copy of the GNU General Public License 
+c     along with this program. If not, see http://www.gnu.org/licenses/.
+
+c     Subroutine wetair calculates several properties of humid air.  
+c     This version was taken from 
+c     Tracy, C. R., W. R. Welch, B. Pinshow, M. R. Kearney, and W. P. 
+c     Porter. 2016. Properties of air: A manual for use in biophysical ecology. 
+c     5th edition. The University of Wisconsin, Madison. 
+c     which is available as a vignette in the NicheMapR package
+
+      double precision tk,db,wb,wbd,wbsat,esat,vapprs,dltae,wtrpot,cp
+      double precision tvir,rw,vd,e,bp,dp,rh,denair,tvinc
       tk  = db + 273.15
       esat = vapprs(db)
       if (dp .lt. 999.0) go to 100
@@ -30,7 +49,7 @@ c  third edition.
       denair = 0.0034838 * bp / (0.999 * tvir)
       cp = (1004.84 + (rw * 1846.40)) / (1.0 + rw)
       if (rh .le. 0.0) go to 500
-      wtrpot = 4.615e+5 * tk * alog(rh / 100.0)
+      wtrpot = 4.615e+5 * tk * dlog(rh / 100.0)
       go to 600
 500   wtrpot = -999
 600   return

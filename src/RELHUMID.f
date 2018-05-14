@@ -1,8 +1,21 @@
       Subroutine RELHUMID
 
-c    This program uses 2 known temperatures and one known humidity to compute the other humidity.
-c    The temperatures are the reference air temperature, the local animal's air temperature and the reference humidity to compute the local humidity.
+C     NicheMapR: software for biophysical mechanistic niche modelling
 
+C     Copyright (C) 2018 Michael R. Kearney and Warren P. Porter
+
+c     This program is free software: you can redistribute it and/or modify 
+c     it under the terms of the GNU General Public License as published by 
+c     the Free Software Foundation, either version 3 of the License, or (at
+c      your option) any later version.
+
+c     This program is distributed in the hope that it will be useful, but
+c     WITHOUT ANY WARRANTY; without even the implied warranty of 
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+c     General Public License for more details.
+
+c     You should have received a copy of the GNU General Public License 
+c     along with this program. If not, see http://www.gnu.org/licenses/.
       implicit none
       double precision ALT,ALTT,BP,CP,DB,DENAIR,DP,E,ESAT,PATMOS,DENSTY
       double precision RH,RHLOCL,THCOND,HTOVPR,TCOEFF,GGROUP,WB,DIFVPR
@@ -22,16 +35,16 @@ c    The temperatures are the reference air temperature, the local animal's air 
       COMMON/WMAIN/I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92,I93
      & ,I94,I95,I96,I97,I98,I99,I100,I101
 
-c    setting variable values for sub's. dryair, wetair
+c     setting variable values for sub's. dryair, wetair
       WB = 0.
       DP = 999.
-c    altitude, alt, known, but not barometric pressure, bp
+c     altitude, alt, known, but not barometric pressure, bp
       ALT = ALTT
       BP = 0.
-c    Dry bulb temperature is the 2m Tair
+c     Dry bulb temperature is the 2m Tair
       DB = OUT(2)
 
-c    call dryair to get atmospheric pressure, patmos, from altitude, alt, etc. for reference height
+c     call dryair to get atmospheric pressure, patmos, from altitude, alt, etc. for reference height
       call DRYAIR(DB,BP,ALT,PATMOS,DENSTY,VISDYN,VISKIN,DIFVPR,
      *THCOND,HTOVPR,TCOEFF,GGROUP)
 
@@ -39,16 +52,16 @@ c    call dryair to get atmospheric pressure, patmos, from altitude, alt, etc. f
       if(RH.gt.100.)then
             RH= 100.
       endif
-c    get the vapor pressure, e, at Ta, 2m
+c     get the vapor pressure, e, at Ta, 2m
       call WETAIR(DB,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,CP,
      &  WTRPOT)
       vapref = e
-c    get the saturation vapor pressure, esat, at Tlocal
+c     get the saturation vapor pressure, esat, at Tlocal
       RH = 100.
       DB = SIOUT(2)
       call WETAIR(DB,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,CP,
      *  WTRPOT)
-c    Definition of relative humidity using the vapor density at reference height
+c     Definition of relative humidity using the vapor density at reference height
       RHLOCL = (vapref/esat)* 100.
 
       if(RHLOCL.gt.100.)then

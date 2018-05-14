@@ -907,7 +907,7 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, dstart = "
           allclearsky <- c(allclearsky, clearsky_mean)
         }
       }
-      if(opendap == 1){ # truncating if less than whole years requested via opendap
+      if(opendap == 1 & save != 2){ # truncating if less than whole years requested via opendap
        cut <- as.numeric(days[1] - as.POSIXct(paste0('01/01/', ystart), format = "%d/%m/%Y") + 1)
        allclearsky <- allclearsky[cut:(cut+countday-1)]
       }
@@ -964,7 +964,7 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, dstart = "
         doy <- c(doy, seq(1, dinyear))
       }
     }
-    if(opendap == 1){ # could be less than whole years
+    if(opendap == 1 & save != 2){ # could be less than whole years
       doy <- doy[cut:(cut+countday-1)]
     }
     ida<-ndays

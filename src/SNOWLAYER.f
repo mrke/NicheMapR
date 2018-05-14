@@ -3,7 +3,23 @@
       IMPLICIT NONE
       EXTERNAL WETAIR
 
-C     Michael Kearney 2012
+C     NicheMapR: software for biophysical mechanistic niche modelling
+
+C     Copyright (C) 2018 Michael R. Kearney and Warren P. Porter
+
+c     This program is free software: you can redistribute it and/or modify 
+c     it under the terms of the GNU General Public License as published by 
+c     the Free Software Foundation, either version 3 of the License, or (at
+c      your option) any later version.
+
+c     This program is distributed in the hope that it will be useful, but
+c     WITHOUT ANY WARRANTY; without even the implied warranty of 
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+c     General Public License for more details.
+
+c     You should have received a copy of the GNU General Public License 
+c     along with this program. If not, see http://www.gnu.org/licenses/.
+
 C     Computes snow layer and thermal properties
 
       DOUBLE PRECISION daysincesnow,lastday,Thconduct,Density,Spheat
@@ -13,10 +29,9 @@ C     Computes snow layer and thermal properties
       double precision snowdens,snowmelt,snowtemp,cursnow,snowage
      & ,prevden
      
-      INTEGER DAYCT,I,JULNUM,MOY,Numtyps,ITEST,NON,SNON,methour
+      INTEGER DAYCT,I,JULNUM,DOY,Numtyps,ITEST,NON,SNON,methour
       INTEGER I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,maxsnode
       INTEGER I91,I92,I93,I94,I95,I96,I97,I98,I99,I100,I101
-C    Day's soil properties
       DIMENSION DENDAY(30),SPDAY(30),TKDAY(30),snode(8),densfun(4)
       DIMENSION snownode(8),Thconduct(30),Density(30),Spheat(30),TT(30)
 
@@ -24,7 +39,7 @@ C    Day's soil properties
       COMMON/SOYVAR2/Thconduct,Density,Spheat
       COMMON/SOYFILS/DENDAY,SPDAY,TKDAY
       COMMON/SOILND/NON,SNON
-      COMMON/DAYJUL/JULNUM,MOY
+      COMMON/DAYJUL/JULNUM,DOY
       COMMON/WMAIN/I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92,I93
      & ,I94,I95,I96,I97,I98,I99,I100,I101
       COMMON/SNOWPRED/snowtemp,snowdens,snowmelt,snownode,minsnow
@@ -40,7 +55,7 @@ C    Day's soil properties
        maxsnode1=0.
       endif
 
-      methour=int(SIOUT(1)/60)+1+24*(moy-1)
+      methour=int(SIOUT(1)/60)+1+24*(DOY-1)
 
       if(cursnow.lt.minsnow)then
        maxsnode=0
