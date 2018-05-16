@@ -1321,6 +1321,9 @@ micro_nz <- function(loc = "Dunedin, New Zealand", timeinterval = 365, ystart = 
         sunsnow <- microut$sunsnow
         shdsnow <- microut$shdsnow
       }
+      if(max(metout[,1] == 0)){
+        cat("ERROR: the model crashed - try a different error tolerance (ERR) or a different spacing in DEP", '\n')
+      }
       if(lamb == 1){
         drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
         drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance

@@ -795,10 +795,10 @@ micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval
       AUSDEM <- raster::extract(r2, x)
       AGG <- raster::extract(r3, x)
       if(is.na(elev) == FALSE){ # check if user-specified elevation
-       ALTITUDES <- elev # use user-specified elevation
-       }else{
-      ALTITUDES <- raster::extract(r4, x) # get elevation from fine res DEM
-       }
+        ALTITUDES <- elev # use user-specified elevation
+      }else{
+        ALTITUDES <- raster::extract(r4, x) # get elevation from fine res DEM
+      }
       #ALTITUDES <- AUSDEM
       #message("using 0.05 res DEM!")
       # }
@@ -830,15 +830,15 @@ micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval
       soilgrids.r <- REST.SoilGrids(c("BLDFIE", "SLTPPT","SNDPPT", "CLYPPT"))
       ov <- over(soilgrids.r, pnts)
       if(length(ov) > 3){
-      soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
-      colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
-      #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
-      soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
-      PE<-soil.hydro$PE
-      BB<-soil.hydro$BB
-      BD<-soil.hydro$BD
-      KS<-soil.hydro$KS
-      BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
+        soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
+        colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
+        #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
+        soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
+        PE<-soil.hydro$PE
+        BB<-soil.hydro$BB
+        BD<-soil.hydro$BD
+        KS<-soil.hydro$KS
+        BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
       }else{
         cat('no SoilGrids data for this site, using user-input soil properties \n')
       }
@@ -856,8 +856,8 @@ micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval
     prevdir<-getwd()
     setwd('Y:')
     if(getdata==1){
-    cmd<-paste("R --no-save --args ",longlat[1]," ",longlat[2]," < latest_forecast.R",sep='')
-    system(cmd)
+      cmd<-paste("R --no-save --args ",longlat[1]," ",longlat[2]," < latest_forecast.R",sep='')
+      system(cmd)
     }
     forecast<-read.csv('forecast.csv')
     setwd(prevdir)
@@ -1195,8 +1195,8 @@ micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval
         tannul1[1:dim]<-tannul
         moists1[1:10,1:dim]<-moists
         if(length(LAI)<dim){
-         LAI<-rep(LAI[1],dim)
-         LAI1 <- LAI
+          LAI<-rep(LAI[1],dim)
+          LAI1 <- LAI
         }
         if(shore==0){
           tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
@@ -1291,24 +1291,27 @@ micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval
           plant[,3:14]<-0
           shadplant[,3:14]<-0
         }
-       if(snowmodel == 1){
+        if(snowmodel == 1){
           sunsnow <- microut$sunsnow
           shdsnow <- microut$shdsnow
+        }
+        if(max(metout[,1] == 0)){
+          cat("ERROR: the model crashed - try a different error tolerance (ERR) or a different spacing in DEP", '\n')
         }
         if(lamb == 1){
           drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
           drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
           srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
           if(snowmodel == 1){
-           return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
+            return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
           }else{
-           return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
+            return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
           }
         }else{
           if(snowmodel == 1){
-           return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
+            return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
           }else{
-           return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
+            return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
           }
         }
       } # end of check for na sites
