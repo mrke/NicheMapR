@@ -1506,7 +1506,7 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
         ALLMINTEMPS<-TMINN
         ALLMAXTEMPS<-TMAXX
         ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
-        if(opendap == 0){
+        if(opendap == 0 | vlsci == 1){
           WNMAXX <- sqlQuery(channel2,maxwinds)
           WNMINN <- sqlQuery(channel2,minwinds)
           if(dailywind!=1 ){
