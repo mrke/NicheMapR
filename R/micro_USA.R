@@ -2,7 +2,6 @@
 #'
 #' An implementation of the Niche Mapper microclimate model that uses the GRIDMET daily weather database http://www.climatologylab.org/gridmet.html, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "metdata_elevationdata.nc".
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
-#' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param dstart First day to run, date in format "d-m-Y" e.g. "01-01-2016"
 #' @param dfinish Last day to run, date in format "d-m-Y" e.g. "31-12-2016"
 #' @param REFL Soil solar reflectance, decimal \%
@@ -29,7 +28,7 @@
 #' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
 #' @return sunsnow Hourly predictions of snow temperature under the minimum specified shade
 #' @return shadsnow Hourly predictions snow temperature under the maximum specified shade
-#' @usage micro_USA(loc = "Madison Wisconsin, USA", timeinterval = 365, dstart = "01-01-2016", dfinish = "01-01-2016", soiltype = 4,
+#' @usage micro_USA(loc = "Madison Wisconsin, USA", dstart = "01-01-2016", dfinish = "01-01-2016", soiltype = 4,
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export
@@ -272,7 +271,7 @@
 #'     (%)",col=i,type = "l")
 #'  }
 #' }
-micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, dstart = "01/01/2016", dfinish = "31/12/2016",
+micro_usa <- function(loc = "Madison, Wisconsin", dstart = "01/01/2016", dfinish = "31/12/2016",
   nyears = as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1, soiltype = 4,
   REFL = 0.15, elev = NA, slope = 0, aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
   DEP=c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
@@ -290,13 +289,12 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, dstart = "
   R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
   LAI = 0.1, snowmodel = 1, snowtemp = 1.5, snowdens = 0.375, densfun = c(0.5979, 0.2178, 0.001, 0.0038),
   snowmelt = 1, undercatch = 1, rainmelt = 0.0125, shore = 0,
-  tides = matrix(data = 0, nrow = 24 * length(seq(as.POSIXct(dstart, format = "%d/%m/%Y"), as.POSIXct(dfinish, format = "%d/%m/%Y")), ncol = 3)),
+  tides = 0, as.POSIXct(dfinish, format = "%d/%m/%Y")), ncol = 3)),
   scenario = "", year = "", hourly = 0, rainhourly = 0, rainhour = 0,
   rainoff = 0, lamb = 0, IUV = 0, opendap = 1, soilgrids = 1, IR = 0, message = 0,
   fail = nyears * 24 * 365, save = 0, snowcond = 0, intercept = maxshade / 100 * 0.3) {
 
   # loc="Madison, Wisconsin"
-  # timeinterval=365
   # dstart="01/01/2016"
   # dfinish="31/12/2016"
   # nyears=as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1
@@ -359,7 +357,7 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, dstart = "
   # undercatch=1
   # rainmelt=0.0125
   # shore=0
-  # tides = matrix(data = 0, nrow = 24 * length(seq(as.POSIXct(dstart, format = "%d/%m/%Y"), as.POSIXct(dfinish, format = "%d/%m/%Y")), ncol = 3))
+  # tides = 0
   # scenario=""
   # hourly=0
   # rainhour = 0
@@ -396,11 +394,6 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, dstart = "
   }
   if(DEP[2]-DEP[1]<2){
     cat("warning, nodes might be too close near the surface, try a different spacing if the program is crashing \n")
-  }
-  if(timeinterval<12 | timeinterval > 365){
-    cat("ERROR: the variable 'timeinterval' is out of bounds.
-        Please enter a correct value (12 - 365).", '\n')
-    errors<-1
   }
   if(is.numeric(loc[1])){
     if(loc[1]>180 | loc[2] > 90){
@@ -566,7 +559,7 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, dstart = "
 
     microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
 
-    daystart<-as.integer(ceiling(365/timeinterval/2))
+    daystart<-1
     idayst <- 1 # start day
 
     ################## location and terrain #################################
@@ -1114,13 +1107,9 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, dstart = "
       moists<-moists2
 
       if(runmoist==1){
-        if(timeinterval==365){
-          moists2<-matrix(nrow=10, ncol = dim, data=0) # set up an empty vector for soil moisture values through time
-        }else{
-          moists2<-matrix(nrow=10, ncol = timeinterval, data=0) # set up an empty vector for soil moisture values through time
-        }
-        moists2[1:10,]<-SoilMoist_Init
-        moists<-moists2
+       moists2<-matrix(nrow=10, ncol = dim, data=0) # set up an empty vector for soil moisture values through time
+       moists2[1:10,]<-SoilMoist_Init
+       moists<-moists2
       }
       soilprops<-matrix(data = 0, nrow = 10, ncol = 5)
 
@@ -1262,7 +1251,7 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, dstart = "
       }else{
         location<-loc
       }
-      cat(paste('running microclimate model for',timeinterval,'days by',nyears,'years at site',location,'\n'))
+      cat(paste('running microclimate model for',dim,'days from',dstart,' to ', dfinish ' at site ',location,'\n'))
       ptm <- proc.time() # Start timing
       microut<-microclimate(micro)
       print(proc.time() - ptm) # Stop the clock
@@ -1310,15 +1299,15 @@ micro_usa <- function(loc = "Madison, Wisconsin", timeinterval = 365, dstart = "
         drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
         srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
         if(snowmodel == 1){
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
         }else{
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
         }
       }else{
         if(snowmodel == 1){
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP))
         }else{
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP))
         }
       }
     } # end of check for na sites

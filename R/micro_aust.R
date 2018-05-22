@@ -302,13 +302,10 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
   SoilMoist_Init=c(0.1, 0.12, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4),
   L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000,
   R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
-  LAI = 0.1, snowmodel = 0, snowtemp = 1.5, snowdens = 0.375,
-  densfun = c(0.5979, 0.2178, 0.001, 0.0038), snowmelt = 1, undercatch = 1,
-  rainmelt = 0.0125, shore = 0,
-  tides = matrix(data = 0, nrow = 24 * 365 * nyears, ncol = 3), loop = 0,
-  scenario = "", year = "", barcoo = "", quadrangle = 1, hourly = 0, rainhourly = 0,
-  rainhour = 0, uid = "", pwd = "", lamb = 0, IUV = 0, soilgrids = 1, IR = 0,
-  opendap = 1, message = 0, fail = nyears * 24 * 365, snowcond = 0,
+  LAI = 0.1, snowmodel = 0, snowtemp = 1.5, snowdens = 0.375, densfun = c(0.5979, 0.2178, 0.001, 0.0038),
+  snowmelt = 1, undercatch = 1, rainmelt = 0.0125, shore = 0, tides = 0, loop = 0, scenario = "", year = "",
+  barcoo = "", quadrangle = 1, hourly = 0, rainhourly = 0, rainhour = 0, uid = "", pwd = "", lamb = 0,
+  IUV = 0, soilgrids = 1, IR = 0, opendap = 1, message = 0, fail = nyears * 24 * 365, snowcond = 0,
   intercept = maxshade / 100 * 0.3) {
 
   # function to assist with interpolated data in leap years

@@ -2,7 +2,6 @@
 #'
 #' An implementation of the Niche Mapper microclimate model that uses the Virtual Climate Station Network (VCSN) for NZ https://www.niwa.co.nz/climate/our-services/virtual-climate-stations
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
-#' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param ystart First year to run
 #' @param yfinish Last year to run
 #' @param REFL Soil solar reflectance (decimal \%)
@@ -29,7 +28,7 @@
 #' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
 #' @return sunsnow Hourly predictions of snow temperature under the minimum specified shade
 #' @return shadsnow Hourly predictions snow temperature under the maximum specified shade
-#' @usage micro_aust(loc = "Melbourne, Australia", timeinterval = 365, ystart = 1990, yfinish = 1990, soiltype = 4,
+#' @usage micro_aust(loc = "Melbourne, Australia", ystart = 1990, yfinish = 1990, soiltype = 4,
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export
@@ -46,7 +45,6 @@
 #' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
-#' \code{manualshade}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
 #' \code{terrain}{ = 0, Use 250m resolution terrain data? 1=yes, 0=no}\cr\cr
 #' \code{dailywind}{ = 1, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
@@ -136,7 +134,7 @@
 #' \code{shore}{ Include tide effects? If 1, the matrix}
 #' \code{tides}
 #' { is used to specify tide presence, sea water temperature and presence of wavesplash}\cr\cr
-#' \code{tides}{ = matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (°C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
+#' \code{tides}{ = matrix(data = 0., nrow = 24*365*nyears, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (°C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
 #' }
 #'
 #' \strong{Outputs:}
@@ -289,12 +287,12 @@
 #'     (°C)",col=i,type = "l")
 #'  }
 #'}
-micro_nz <- function(loc = "Dunedin, New Zealand", timeinterval = 365, ystart = 2000,
+micro_nz <- function(loc = "Dunedin, New Zealand", ystart = 2000,
   yfinish = 2000, nyears = 1, soiltype = 4, REFL = 0.15, elev = NA, slope = 0,
   aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
   DEP = c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
   Refhyt = 1.2, Usrhyt = 0.01, Z01 = 0, Z02 = 0, ZH1 = 0, ZH2 = 0, runshade = 1,
-  clearsky = 0, rungads = 1, write_input = 0, writecsv = 0, manualshade = 1,
+  clearsky = 0, rungads = 1, write_input = 0, writecsv = 0,
   terrain = 0, dailywind = 1, windfac = 1, adiab_cor = 1, warm = 0,
   spatial = "C:/Spatial_Data/Climate/New Zealand/weather", vlsci = 0, ERR = 1.5,
   RUF = 0.004, EC = 0.0167238, SLE = 0.95, Thcond = 2.5, Density = 2.56,
@@ -302,20 +300,16 @@ micro_nz <- function(loc = "Dunedin, New Zealand", timeinterval = 365, ystart = 
   hori = rep(0, 24), TIMAXS = c(1, 1, 0, 0), TIMINS = c(0, 0, 1, 1), timezone = 0,
   runmoist = 1, PE = rep(1.1, 19), KS = rep(0.0037, 19), BB = rep(4.5, 19),
   BD = rep(BulkDensity, 19), DD = rep(Density, 19), Clay = 20, SatWater = rep(0.26, 10),
-  maxpool = 10000, rainmult = 1, evenrain = 0,
-  SoilMoist_Init = c(0.1, 0.12, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4),
+  maxpool = 10000, rainmult = 1, evenrain = 0, SoilMoist_Init = c(0.1, 0.12, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4),
   L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000,
   R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
-  LAI = 0.1, snowmodel = 1, snowtemp = 1.5, snowdens = 0.375,
-  densfun = c(0.5979, 0.2178, 0.001, 0.0038), snowmelt = 0.9, undercatch = 1,
-  rainmelt = 0.0125, shore = 0,
-  tides = matrix(data = 0, nrow = 24 * timeinterval * nyears, ncol = 3),
-  scenario = "", year="", barcoo="", quadrangle = 1, hourly = 0, rainhourly = 0,
-  rainhour = 0, rainoff = 0, lamb = 0, IUV = 0, soilgrids = 0, IR = 0, forecast = 0,
-  message = 0, fail = nyears * 24 * 365, snowcond = 0, intercept = maxshade / 100 * 0.3) {
+  LAI = 0.1, snowmodel = 1, snowtemp = 1.5, snowdens = 0.375, densfun = c(0.5979, 0.2178, 0.001, 0.0038),
+  snowmelt = 0.9, undercatch = 1, rainmelt = 0.0125, shore = 0, tides = 0, scenario = "", year="",
+  barcoo="", quadrangle = 1, hourly = 0, rainhourly = 0, rainhour = 0, rainoff = 0, lamb = 0, IUV = 0,
+  soilgrids = 0, IR = 0, forecast = 0, message = 0, fail = nyears * 24 * 365, snowcond = 0,
+  intercept = maxshade / 100 * 0.3) {
 
   # loc="Athurs Pass, New Zealand"
-  # timeinterval=365
   # ystart=2000
   # yfinish=2001
   # nyears=yfinish-ystart+1
@@ -336,7 +330,6 @@ micro_nz <- function(loc = "Dunedin, New Zealand", timeinterval = 365, ystart = 
   # run.gads=1
   # write_input=0
   # writecsv=0
-  # manualshade=1
   # soildata=0
   # terrain=0
   # dailywind=1
@@ -381,7 +374,7 @@ micro_nz <- function(loc = "Dunedin, New Zealand", timeinterval = 365, ystart = 
   # undercatch=1
   # rainmelt=0.0125
   # shore=0
-  # tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
+  # tides=0
   # scenario=""
   # year=2070
   # barcoo=""
@@ -420,11 +413,6 @@ micro_nz <- function(loc = "Dunedin, New Zealand", timeinterval = 365, ystart = 
   }
   if(DEP[2]-DEP[1]<2){
     cat("warning, nodes might be too close near the surface, try a different spacing if the program is crashing \n")
-  }
-  if(timeinterval<12 | timeinterval > 365){
-    cat("ERROR: the variable 'timeinterval' is out of bounds.
-        Please enter a correct value (12 - 365).", '\n')
-    errors<-1
   }
   if(is.numeric(loc[1])){
     if(loc[1]>180 | loc[2] > 90){
@@ -586,25 +574,36 @@ micro_nz <- function(loc = "Dunedin, New Zealand", timeinterval = 365, ystart = 
   if(errors==0){ # continue
 
     ################## time related variables #################################
-    nyears<-yfinish-ystart+1
-
+    nyears <- yfinish-ystart+1
+    yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
+    tzone <- paste("Etc/GMT+",10,sep="")
+    dates <- seq(ISOdate(ystart,1,1,tz=tzone)-3600*12, ISOdate((ystart+nyears),1,1,tz=tzone)-3600*13, by="days")
+    dim <- length(dates)
     doys12<-c(15, 46, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349) # middle day of each month
-    doysn<-doys12 # variable of doys for when doing multiple years
-    if(nyears>1 & timeinterval==365){ # create sequence of days for splining across multiple years
-      for(i in 1:(nyears-1)){
-        doysn<-c(doysn,(doys12+365*i))
+    microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
+    daystart<-1
+    maxshades=rep(maxshade,dim)
+    minshades=rep(minshade,dim)
+    leapyears<-seq(1972,2060,4)
+    for(mm in 1:nyears){
+      if(mm == 1){
+        currenty <- ystart
+      }else{
+        currenty <- ystart + mm
+      }
+      if(currenty %in% leapyears){
+        dayoy <- seq(1,366)
+      }else{
+        dayoy <- seq(1,365)
+      }
+      if(mm == 1){
+        doy <- dayoy
+      }else{
+        doy <- c(doy, dayoy)
       }
     }
-
-    if(timeinterval<365){
-      microdaily<-0 # run microclimate model as normal, where each day is iterated 3 times starting with the initial condition of uniform soil temp at mean monthly temperature
-    }else{
-      microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
-    }
-
-    # now check if doing something other than middle day of each month, and create appropriate vector of day-of-year
-    daystart<-as.integer(ceiling(365/timeinterval/2))
     idayst <- 1 # start day
+    ida<-dim # end day
     dates<-Sys.time()-60*60*24
     curyear<-as.numeric(format(dates,"%Y"))
 
@@ -640,6 +639,17 @@ micro_nz <- function(loc = "Dunedin, New Zealand", timeinterval = 365, ystart = 
     library(raster)
     library(proj4)
     library(ncdf4)
+
+    cat("running micro_global to get clear sky solar \n")
+    if(run.gads == 0){
+      TAI <- c(0.0670358341290886,0.0662612704779235,0.065497075238002,0.0647431301168489,0.0639993178022531,0.0632655219571553,0.0625416272145492,0.0611230843885423,0.0597427855962549,0.0583998423063099,0.0570933810229656,0.0558225431259535,0.0545864847111214,0.0533843764318805,0.0522154033414562,0.0499736739981675,0.047855059159556,0.0458535417401334,0.0439633201842001,0.0421788036108921,0.0404946070106968,0.0389055464934382,0.0374066345877315,0.0359930755919066,0.0346602609764008,0.0334037648376212,0.0322193394032758,0.0311029105891739,0.0300505736074963,0.0290585886265337,0.0281233764818952,0.0272415144391857,0.0264097320081524,0.0256249068083005,0.0248840604859789,0.0241843546829336,0.0235230870563317,0.0228976873502544,0.0223057135186581,0.0217448478998064,0.0212128934421699,0.0207077699817964,0.0202275105711489,0.0197702578594144,0.0193342605242809,0.0189178697551836,0.0177713140039894,0.0174187914242432,0.0170790495503944,0.0167509836728154,0.0164335684174899,0.0161258546410128,0.0158269663770596,0.0155360978343254,0.0152525104459325,0.0149755299703076,0.0147045436435285,0.0144389973831391,0.0141783930434343,0.0134220329447663,0.0131772403830191,0.0129356456025128,0.0126970313213065,0.0124612184223418,0.0122280636204822,0.01199745718102,0.0115436048739351,0.0110993711778668,0.0108808815754663,0.0106648652077878,0.0104513876347606,0.0102405315676965,0.00982708969547694,0.00962473896278535,0.00903679230300494,0.00884767454432418,0.0083031278398166,0.00796072474935954,0.00755817587626185,0.00718610751850881,0.00704629977586921,0.00684663903049612,0.00654155580333479,0.00642947339729728,0.00627223096874308,0.00603955966866779,0.00580920937536261,0.00568506186880564,0.00563167068287251,0.00556222005081865,0.00550522989971023,0.00547395763028062,0.0054478983436216,0.00541823364504573,0.00539532163908382,0.00539239864119488,0.00541690124712384,0.00551525885358836,0.00564825853509463,0.00577220185074264,0.00584222986640171,0.00581645238345584,0.00566088137411449,0.00535516862329704,0.00489914757707667,0.00432017939770409,0.0036813032251836,0.00309019064543606,0.00270890436501562,0.00276446109239711,0.00356019862584603)
+    }else{
+      TAI <- 0
+    }
+    micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, TAI = TAI, timeinterval = 365)
+    clearskyrad <- micro_clearsky$metout[,c(1, 13)]
+    clearskysum <- aggregate(clearskyrad[,2], by = list(clearskyrad[,1]), FUN = sum)[,2]
+
     # get the local timezone reference longitude
     if(timezone==1){ # this now requires registration
       if(!require(geonames, quietly = TRUE)){
@@ -736,12 +746,8 @@ micro_nz <- function(loc = "Dunedin, New Zealand", timeinterval = 365, ystart = 
         cat('no SoilGrids data for this site, using user-input soil properties \n')
       }
     }
-    # setting up for temperature correction using lapse rate given difference between 9sec DEM value and 0.05 deg value
-    #     if(NZDEM==-9999 | is.na(NZDEM)=='TRUE'){
-    #       delta_elev = AGG - ALTITUDES
-    #     }else{
+
     delta_elev = NZDEM - ALTITUDES
-    #     }
     adiab_corr_max <- delta_elev * lapse_max # Adiabatic temperature correction for elevation (C)
     adiab_corr_min <- delta_elev * lapse_min # Adiabatic temperature correction for elevation (C)
 
@@ -857,8 +863,6 @@ micro_nz <- function(loc = "Dunedin, New Zealand", timeinterval = 365, ystart = 
       index2<-which.min(dist2)
       start<-c(index1,index2,1)
       count<-c(1,1,-1)
-      nc_clearsky<-nc_open(paste(spatial,"/",'clearsky.nc',sep=""))
-
       if(j==1){
         nc<-nc_open(paste(spatial,"/",yearlist[j],'_Tmax.nc',sep=""))
         Tmax<-as.numeric(ncvar_get(nc,varid="variable",start=start,count))
@@ -882,12 +886,13 @@ micro_nz <- function(loc = "Dunedin, New Zealand", timeinterval = 365, ystart = 
         }else{
           Wind<-Tmax*0+3
         }
-        clear<-as.numeric(ncvar_get(nc_clearsky,varid="variable",start=start,count))
         nc<-nc_open(paste(spatial,"/",yearlist[j],'_Rad.nc',sep=""))
         Rad<-as.numeric(ncvar_get(nc,varid="variable",start=start,count))
         nc_close(nc)
         if(length(Rad)==366){# add day for leap year if needed
-          clear<-c(clear[1:59],clear[59],clear[60:365])
+          clear<-c(clearskysum[1:59],clearskysum[59],clearskysum[60:365])
+        }else{
+          clear<-clearskysum
         }
         cloud<-(1-Rad/clear)*100
         cloud[cloud<0]<-0
@@ -921,7 +926,9 @@ micro_nz <- function(loc = "Dunedin, New Zealand", timeinterval = 365, ystart = 
         Rad<-as.numeric(ncvar_get(nc,varid="variable",start=start,count))
         nc_close(nc)
         if(length(Rad)==366){# add day for leap year if needed
-          clear<-c(clear[1:59],clear[59],clear[60:365])
+          clear<-c(clearskysum[1:59],clearskysum[59],clearskysum[60:365])
+        }else{
+          clear<-clearskysum
         }
         cloud<-(1-Rad/clear)*100
         cloud[cloud<0]<-0
@@ -929,17 +936,11 @@ micro_nz <- function(loc = "Dunedin, New Zealand", timeinterval = 365, ystart = 
         CCMAXX<-as.numeric(c(CCMAXX,cloud))
       }
     }
-    nc_close(nc_clearsky)
     CCMINN<-CCMAXX
     Wind<-Wind*windfac
     Wind[Wind==0]<-0.1
 
-    ndays<-length(Tmax)
-    doynum<-ndays
-    doys<-seq(daystart,doynum,1)
-    doy <- subset(doys, doys!=0)
-    #doy<-rep(doy,nyears)
-    ida<-ndays
+    ida<-dim
     idayst <- 1 # start month
     # end preliminary test for incomplete year, if simulation includes the present year
 
@@ -1038,17 +1039,8 @@ micro_nz <- function(loc = "Dunedin, New Zealand", timeinterval = 365, ystart = 
 
       WNMAXX <- Wind
       WNMINN <- Wind
-
-      if(manualshade==0){
-        maxshades1 <-spline(doys12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
-        MAXSHADES<-rep(maxshades1$y*100,nyears)
-        minshades <- rep(minshade,365)
-        minshades <- rep(minshades,nyears)
-        MINSHADES<-minshades
-      }else{
-        MAXSHADES<-maxshades
-        MINSHADES<-minshades
-      }
+      MAXSHADES<-maxshades
+      MINSHADES<-minshades
 
       REFLS <- rep(REFL, dim)
       PCTWET <- rep(PCTWET, dim)
@@ -1127,8 +1119,8 @@ micro_nz <- function(loc = "Dunedin, New Zealand", timeinterval = 365, ystart = 
       SLES<-matrix(nrow=dim,data=0)
       SLES<-SLES+SLE
 
-      moists2<-matrix(nrow=10, ncol = ndays, data=0)
-      moists2[1,ndays]<-0.2
+      moists2<-matrix(nrow=10, ncol = dim, data=0)
+      moists2[1,dim]<-0.2
       moists<-moists2
 
       if(runmoist==1){
