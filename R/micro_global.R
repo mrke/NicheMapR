@@ -293,8 +293,7 @@ micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
   L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000, R1 = 0.001, RW = 2.5e+10, RL = 2e+6,
   PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500, LAI=0.1, snowmodel = 0, snowtemp = 1.5,
   snowdens = 0.375, densfun = c(0.5979, 0.2178, 0.001, 0.0038), snowmelt = 1, undercatch = 1, rainmelt = 0.0125,
-  rainfrac = 0.5, shore = 0, tides = matrix(data = 0, nrow = 24 * timeinterval * nyears,
-    ncol = 3), lamb = 0, IUV = 0, soilgrids = 0, IR = 0, message = 0,
+  rainfrac = 0.5, shore = 0, tides = 0, lamb = 0, IUV = 0, soilgrids = 0, IR = 0, message = 0,
   fail = nyears * 24 * 365, TAI = 0, snowcond = 0, intercept = maxshade / 100 * 0.3) {
 
   SoilMoist=SoilMoist_Init
