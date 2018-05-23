@@ -41,7 +41,7 @@
 #' \code{hourly}{ = 1, Run the model with hourly input weather data (1) or with min/max values (0)}\cr\cr
 #' \code{rainhourly}{ = 1, Run the model with hourly input rainfall data (1) or with daily totals (0)}\cr\cr
 #' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
-#' \code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+#' \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
 #' \code{IR}{ = 0, Clear-sky longwave radiation computed using Campbell and Norman (1998) eq. 10.10 (includes humidity) (0) or Swinbank formula (1)}\cr\cr
 #' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 #' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
@@ -444,8 +444,8 @@ micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval
       Please correct.", '\n')
     errors<-1
   }
-  if(rungads%in%c(0,1)==FALSE){
-    message("ERROR: the variable 'rungads' be either 0 or 1.
+  if(run.gads%in%c(0,1)==FALSE){
+    message("ERROR: the variable 'run.gads' be either 0 or 1.
       Please correct.", '\n')
     errors<-1
   }
@@ -891,7 +891,7 @@ micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval
 
       if(is.na(dbrow)!=TRUE & is.na(ALTITUDES)!=TRUE){
 
-        if(rungads==1){
+        if(run.gads==1){
           ####### get solar attenuation due to aerosols with program GADS #####################
           relhum<-1.
           optdep.summer<-as.data.frame(rungads(longlat[2],longlat[1],relhum,0))

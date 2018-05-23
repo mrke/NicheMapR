@@ -6,7 +6,7 @@
 #' It also optionally uses a global monthly soil moisture estimate from NOAA CPC Soil Moisture http://140.172.38.100/psd/thredds/catalog/Datasets/cpcsoil/catalog.html
 #' Aerosol attenuation can also be computed based on the Global Aerosol Data Set (GADS)
 #' Koepke, P., M. Hess, I. Schult, and E. P. Shettle. 1997. Global Aerosol Data Set. Max-Planck-Institut for Meteorologie, Hamburg
-#' by choosing the option 'rungads<-1'
+#' by choosing the option 'run.gads<-1'
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param nyears The number of years to run
@@ -44,7 +44,7 @@
 #'
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 #' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
-#' \code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+#' \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
 #' \code{IR}{ = 0, Clear-sky longwave radiation computed using Campbell and Norman (1998) eq. 10.10 (includes humidity) (0) or Swinbank formula (1)}\cr\cr
 #' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 #' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
@@ -283,7 +283,7 @@ micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
   nyears = 1, soiltype = 4, REFL = 0.15, elev = NA, slope = 0, aspect = 0,
   lapse_max = 0.0077, lapse_min = 0.0039, DEP=c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200),
   minshade = 0,maxshade = 90, Refhyt = 1.2, Usrhyt = 0.01, Z01 = 0, Z02 = 0, ZH1 = 0,
-  ZH2 = 0, runshade = 1, clearsky = 0, rungads = 1, write_input = 0, writecsv = 0,
+  ZH2 = 0, runshade = 1, clearsky = 0, run.gads = 1, write_input = 0, writecsv = 0,
   ERR = 1.5, RUF = 0.004, EC = 0.0167238, SLE = 0.95, Thcond = 2.5, Density = 2.56,
   SpecHeat = 870, BulkDensity = 1.3, PCTWET = 0, cap = 1, CMH2O = 1, hori=rep(0,24),
   TIMAXS = c(1, 1, 0, 0), TIMINS = c(0, 0, 1, 1), timezone = 0, runmoist = 0,
@@ -323,8 +323,8 @@ micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
       Please correct.", '\n')
     errors<-1
   }
-  if(rungads%in%c(0,1)==FALSE){
-    message("ERROR: the variable 'rungads' be either 0 or 1.
+  if(run.gads%in%c(0,1)==FALSE){
+    message("ERROR: the variable 'run.gads' be either 0 or 1.
       Please correct.", '\n')
     errors<-1
   }
@@ -747,7 +747,7 @@ micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
     }#end check doing daily sims
     dim<-length(RAINFALL)
     if(length(TAI) < 111){ # no user supplied values, compute with GADS
-      if(rungads==1){
+      if(run.gads==1){
         ####### get solar attenuation due to aerosols with program GADS #####################
         relhum<-1.
         optdep.summer<-as.data.frame(rungads(longlat[2],longlat[1],relhum,0))
