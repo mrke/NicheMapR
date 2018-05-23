@@ -39,7 +39,7 @@
 #'
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 #' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
-#' \code{rungads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+#' \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
 #' \code{IR}{ = 0, Clear-sky longwave radiation computed using Campbell and Norman (1998) eq. 10.10 (includes humidity) (0) or Swinbank formula (1)}\cr\cr
 #' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 #' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
@@ -292,7 +292,7 @@ micro_nz <- function(loc = "Dunedin, New Zealand", ystart = 2000,
   aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
   DEP = c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
   Refhyt = 1.2, Usrhyt = 0.01, Z01 = 0, Z02 = 0, ZH1 = 0, ZH2 = 0, runshade = 1,
-  clearsky = 0, rungads = 1, write_input = 0, writecsv = 0,
+  clearsky = 0, run.gads = 1, write_input = 0, writecsv = 0,
   terrain = 0, dailywind = 1, windfac = 1, adiab_cor = 1, warm = 0,
   spatial = "C:/Spatial_Data/Climate/New Zealand/weather", vlsci = 0, ERR = 1.5,
   RUF = 0.004, EC = 0.0167238, SLE = 0.95, Thcond = 2.5, Density = 2.56,
@@ -426,8 +426,8 @@ micro_nz <- function(loc = "Dunedin, New Zealand", ystart = 2000,
       Please correct.", '\n')
     errors<-1
   }
-  if(rungads%in%c(0,1)==FALSE){
-    cat("ERROR: the variable 'rungads' be either 0 or 1.
+  if(run.gads%in%c(0,1)==FALSE){
+    cat("ERROR: the variable 'run.gads' be either 0 or 1.
       Please correct.", '\n')
     errors<-1
   }
@@ -670,8 +670,8 @@ micro_nz <- function(loc = "Dunedin, New Zealand", ystart = 2000,
 
     soilprop<-cbind(0,0)
     # creating the shade array
-    MAXSHADES <- rep(0,(timeinterval*nyears))+maxshade # daily max shade (%)
-    MINSHADES <- rep(0,(timeinterval*nyears))+minshade # daily min shade (%)
+    MAXSHADES <- rep(0,(dim))+maxshade # daily max shade (%)
+    MINSHADES <- rep(0,(dim))+minshade # daily min shade (%)
 
 
     r1<-raster(paste(spatial,'/nz_geo3_km.asc',sep=""))
@@ -953,7 +953,7 @@ micro_nz <- function(loc = "Dunedin, New Zealand", ystart = 2000,
 
     if(is.na(ALTITUDES)!=TRUE){
 
-      if(rungads==1){
+      if(run.gads==1){
         ####### get solar attenuation due to aerosols with program GADS #####################
         relhum<-1.
         optdep.summer<-as.data.frame(rungads(longlat[2],longlat[1],relhum,0))
@@ -1124,11 +1124,7 @@ micro_nz <- function(loc = "Dunedin, New Zealand", ystart = 2000,
       moists<-moists2
 
       if(runmoist==1){
-        if(timeinterval==365){
-          moists2<-matrix(nrow=10, ncol = dim, data=0) # set up an empty vector for soil moisture values through time
-        }else{
-          moists2<-matrix(nrow=10, ncol = timeinterval, data=0) # set up an empty vector for soil moisture values through time
-        }
+        moists2<-matrix(nrow=10, ncol = dim, data=0) # set up an empty vector for soil moisture values through time
         moists2[1:10,]<-SoilMoist_Init
         moists<-moists2
       }
@@ -1273,7 +1269,7 @@ micro_nz <- function(loc = "Dunedin, New Zealand", ystart = 2000,
       }else{
         location<-loc
       }
-      cat(paste('running microclimate model for',timeinterval,'days by',nyears,'years at site',location,'\n'))
+      cat(paste('running microclimate model for',dim,'days between ',ystart,' and ', yfinish, 'at site ',location,'\n'))
       ptm <- proc.time() # Start timing
       microut<-microclimate(micro)
       print(proc.time() - ptm) # Stop the clock
@@ -1321,15 +1317,15 @@ micro_nz <- function(loc = "Dunedin, New Zealand", ystart = 2000,
         drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
         srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
         if(snowmodel == 1){
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
         }else{
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
         }
       }else{
         if(snowmodel == 1){
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP))
         }else{
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP))
         }
       }
     } # end of check for na sites
