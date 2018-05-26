@@ -1250,7 +1250,7 @@ micro_usa <- function(loc = "Madison, Wisconsin", dstart = "01/01/2016", dfinish
       }else{
         location<-loc
       }
-      cat(paste('running microclimate model for',dim,'days from',dstart,' to ', dfinish ' at site ',location,'\n'))
+      cat(paste('running microclimate model for',dim,'days from',dstart,' to ', dfinish, ' at site ',location,'\n'))
       ptm <- proc.time() # Start timing
       microut<-microclimate(micro)
       print(proc.time() - ptm) # Stop the clock
