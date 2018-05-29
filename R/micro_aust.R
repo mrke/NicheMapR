@@ -614,7 +614,7 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
       if(mm == 1){
         currenty <- ystart
       }else{
-        currenty <- ystart + mm
+        currenty <- ystart + mm - 1
       }
       if(currenty %in% leapyears){
         dayoy <- seq(1,366)
