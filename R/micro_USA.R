@@ -666,7 +666,7 @@ micro_usa <- function(loc = "Madison, Wisconsin", dstart = "01/01/2016", dfinish
     ALTITUDES <- NA# extract(raster(paste0(spatial,"/terr50.tif")), x) # to do
     if(is.na(elev) == FALSE){ALTITUDES <- elev} # check if user-specified elevation
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-USADEM}
-    if(save != 2){
+    if(save != 2 | soilgrids != 0){
       if(soilgrids == 1){
         cat('extracting data from SoilGrids \n')
         require(rjson)
