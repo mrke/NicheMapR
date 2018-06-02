@@ -119,6 +119,7 @@
 #' \code{rainfrac}{ = 0.5, fraction of rain that falls on the first day of the month (decimal \% with 0 meaning rain falls evenly) - this parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data)}\cr\cr
 #' \code{snowcond}{ = 0, effective snow thermal conductivity W/mC (if zero, uses inbuilt function of density)}\cr\cr
 #' \code{intercept}{ = maxshade / 100 * 0.3, snow interception fraction for when there's shade (0-1)}\cr\cr
+#' \code{grasshade}{ = 0, if 1, means shade is removed when snow is present, because shade is cast by grass/low shrubs}\cr\cr
 #'
 #' \strong{ Intertidal mode parameters:}
 #'
@@ -294,7 +295,7 @@ micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
   PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500, LAI=0.1, snowmodel = 0, snowtemp = 1.5,
   snowdens = 0.375, densfun = c(0.5979, 0.2178, 0.001, 0.0038), snowmelt = 1, undercatch = 1, rainmelt = 0.0125,
   rainfrac = 0.5, shore = 0, tides = 0, lamb = 0, IUV = 0, soilgrids = 0, IR = 0, message = 0,
-  fail = nyears * 24 * 365, TAI = 0, snowcond = 0, intercept = maxshade / 100 * 0.3) {
+  fail = nyears * 24 * 365, TAI = 0, snowcond = 0, intercept = maxshade / 100 * 0.4, grasshade = 0) {
 
   SoilMoist=SoilMoist_Init
   errors<-0
@@ -830,7 +831,7 @@ micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
     RAINhr=rep(0,24*dim)
     ZENhr=rep(-1,24*dim)
     # microclimate input parameters list
-    microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept)
+    microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade)
 
     doy1=matrix(data = 0., nrow = dim, ncol = 1)
     SLES1=matrix(data = 0., nrow = dim, ncol = 1)

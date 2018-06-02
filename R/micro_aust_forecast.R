@@ -134,6 +134,7 @@
 #' \code{rainfrac}{ = 0.5, fraction of rain that falls on the first day of the month (decimal \% with 0 meaning rain falls evenly) - this parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data)}\cr\cr
 #' \code{snowcond}{ = 0, effective snow thermal conductivity W/mC (if zero, uses inbuilt function of density)}\cr\cr
 #' \code{intercept}{ = maxshade / 100 * 0.3, snow interception fraction for when there's shade (0-1)}\cr\cr
+#' \code{grasshade}{ = 0, if 1, means shade is removed when snow is present, because shade is cast by grass/low shrubs}\cr\cr
 #'
 #' \strong{ Intertidal mode parameters:}
 #'
@@ -317,7 +318,7 @@ micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval
   scenario = "", year = "", barcoo = "", quadrangle = 1, hourly = 0, rainhourly = 0,
   rainhour = 0, uid = "", pwd = "", lamb = 0, IUV = 0, soilgrids = 1, IR = 0,
   opendap = 1, message = 0, fail = nyears * 24 * 365, snowcond = 0,
-  intercept = maxshade / 100 * 0.3) {
+  intercept = maxshade / 100 * 0.3, grasshade = 0) {
 
   # loc="Nyrripi, Northern Territory"
   # timeinterval=365
@@ -1158,7 +1159,7 @@ micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval
         ALAT<-as.numeric(ALAT)
 
         # microclimate input parameters list
-        microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept)
+        microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade)
 
         doy1=matrix(data = 0., nrow = dim, ncol = 1)
         SLES1=matrix(data = 0., nrow = dim, ncol = 1)
