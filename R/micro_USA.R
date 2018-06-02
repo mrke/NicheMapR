@@ -127,6 +127,7 @@
 #' \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
 #' \code{snowcond}{ = 0, effective snow thermal conductivity W/mC (if zero, uses inbuilt function of density)}\cr\cr
 #' \code{intercept}{ = maxshade / 100 * 0.3, snow interception fraction for when there's shade (0-1)}\cr\cr
+#' \code{grasshade}{ = 0, if 1, means shade is removed when snow is present, because shade is cast by grass/low shrubs}\cr\cr
 #'
 #' \strong{ Intertidal mode parameters:}
 #'
@@ -291,7 +292,7 @@ micro_usa <- function(loc = "Madison, Wisconsin", dstart = "01/01/2016", dfinish
   snowmelt = 1, undercatch = 1, rainmelt = 0.0125, shore = 0, tides = 0,
   scenario = "", year = "", hourly = 0, rainhourly = 0, rainhour = 0,
   rainoff = 0, lamb = 0, IUV = 0, opendap = 1, soilgrids = 1, IR = 0, message = 0,
-  fail = nyears * 24 * 365, save = 0, snowcond = 0, intercept = maxshade / 100 * 0.3) {
+  fail = nyears * 24 * 365, save = 0, snowcond = 0, intercept = maxshade / 100 * 0.4, grasshade = 0) {
 
   # loc="Madison, Wisconsin"
   # dstart="01/01/2016"
@@ -1140,7 +1141,7 @@ micro_usa <- function(loc = "Madison, Wisconsin", dstart = "01/01/2016", dfinish
       ALAT<-as.numeric(ALAT)
 
       # microclimate input parameters list
-      microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept)
+      microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade)
 
       # hourly option set to 0, so make empty vectors
       if(hourly==0){
