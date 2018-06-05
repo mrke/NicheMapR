@@ -29,7 +29,7 @@
 #' @return sunsnow Hourly predictions of snow temperature under the minimum specified shade
 #' @return shadsnow Hourly predictions snow temperature under the maximum specified shade
 #' @usage micro_USA(loc = "Madison Wisconsin, USA", dstart = "01-01-2016", dfinish = "01-01-2016", soiltype = 4,
-#' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
+#' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export
 #' @details
@@ -992,13 +992,13 @@ micro_usa <- function(loc = "Madison, Wisconsin", dstart = "01/01/2016", dfinish
         TMAXX<-as.matrix(Tmax+adiab_corr_max)
         TMINN<-as.matrix(Tmin+adiab_corr_min)
       }else{
-        TMAXX<-as.matrix(Tmaxx)
-        TMINN<-as.matrix(Tminn)
+        TMAXX<-as.matrix(Tmax)
+        TMINN<-as.matrix(Tmin)
       }
-      if(scenario!=""){ # to do - climate change scenarios
-        TMAXX=TMAXX+TMAXX_diff
-        TMINN=TMINN+TMINN_diff
-        VP<-VP*VP_diff2 # modify the predicted VP by this factor
+      if(warm != 0){
+      # impose uniform temperature change
+      TMAXX<-TMAXX+seq(0, dim-1)/(dim-1)*warm
+      TMINN<-TMINN+seq(0, dim-1)/(dim-1)*warm
       }
       RAINFALL<-Rain+rainoff
 
@@ -1013,18 +1013,13 @@ micro_usa <- function(loc = "Madison, Wisconsin", dstart = "01/01/2016", dfinish
       RHMAXX <- (e / es) * 100
       RHMAXX[RHMAXX>100]<-100
       RHMAXX[RHMAXX<0]<-0.01
-      TMAXX<-TMAXX+adiab_corr_max
-      TMINN<-TMINN+adiab_corr_min
+
       ALLMINTEMPS<-TMINN
       ALLMAXTEMPS<-TMAXX
       ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
 
-      WNMAXX <- Wind * windfac
-      WNMINN <- Wind * windfac
-
       MAXSHADES<-maxshades
       MINSHADES<-minshades
-
 
       REFLS <- rep(REFL, dim)
       PCTWET <- rep(PCTWET, dim)
