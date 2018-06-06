@@ -85,7 +85,7 @@
 #'
 #' \strong{ Soil moisture mode parameters:}
 #'
-#' \code{runmoist}{ = 0, Run soil moisture model? 1=yes, 0=no  1=yes, 0=no (note that this may cause slower runs)}\cr\cr
+#' \code{runmoist}{ = 1, Run soil moisture model? 1=yes, 0=no  1=yes, 0=no (note that this may cause slower runs)}\cr\cr
 #' \code{PE}{ = rep(1.1,19), Air entry potential (J/kg) (19 values descending through soil for specified soil nodes in parameter}
 #' \code{DEP}
 #' { and points half way between)}\cr\cr
@@ -1778,7 +1778,7 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
           LAI1 <- LAI
         }
         if(shore==0){
-          tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
+          tides<-matrix(data = 0, nrow = 24*dim, ncol = 3) # make an empty matrix
         }
         # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
         micro<-list(tides=tides,microinput=microinput,doy=doy,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,DD=DD,L=L,LAI=LAI)
