@@ -7,34 +7,34 @@
      &,soil1,shadmet1,shadsoil1,soilmoist1,shadmoist1,humid1,shadhumid1
      &,soilpot1,shadpot1,sunsnow1,shdsnow1,plant1,shadplant1,DRLAMBDA1
      &,DRRLAMBDA1,SRLAMBDA1)
-     
+
 C     NicheMapR: software for biophysical mechanistic niche modelling
 
 C     Copyright (C) 2018 Michael R. Kearney and Warren P. Porter
 
-c     This program is free software: you can redistribute it and/or modify 
-c     it under the terms of the GNU General Public License as published by 
+c     This program is free software: you can redistribute it and/or modify
+c     it under the terms of the GNU General Public License as published by
 c     the Free Software Foundation, either version 3 of the License, or (at
 c      your option) any later version.
 
 c     This program is distributed in the hope that it will be useful, but
-c     WITHOUT ANY WARRANTY; without even the implied warranty of 
-c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+c     WITHOUT ANY WARRANTY; without even the implied warranty of
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 c     General Public License for more details.
 
-c     You should have received a copy of the GNU General Public License 
+c     You should have received a copy of the GNU General Public License
 c     along with this program. If not, see http://www.gnu.org/licenses/.
 
 C     This is a modified version of Warren P. Porter's microclimate mode that is now
-C     called as a subroutine from R. It has been modified from the original version by 
-C     Michael Kearney to handle any time period, to have time-varying soil properties as 
-C     a function of temperature and water, and has an optional full water balance model 
+C     called as a subroutine from R. It has been modified from the original version by
+C     Michael Kearney to handle any time period, to have time-varying soil properties as
+C     a function of temperature and water, and has an optional full water balance model
 C     based on the equations and code of Campbell 1985 Soil Physics with Basic. It includes
-c     an optional snow model that simulates snow accumulation and melt and its effect on 
+c     an optional snow model that simulates snow accumulation and melt and its effect on
 c     soil temperature. It no longer writes out temporary data (to dataky.dat).
 c     The program and associated package is fully described in the publication
-c     Kearney, M. R., and W. P. Porter. 2017. NicheMapR - an R package for biophysical modelling: 
-c     the microclimate model. Ecography 40:664–674.
+c     Kearney, M. R., and W. P. Porter. 2017. NicheMapR - an R package for biophysical modelling:
+c     the microclimate model. Ecography 40:664?674.
 c     The full package is available at http://github.com/mrke/NicheMapR/
 
 C     SOLRAD computes clear sky solar radiation for anywhere
@@ -117,7 +117,7 @@ c     OSUB outputs the microclimate calculations.
       INTEGER IALT,IEND,IEP,IPINT,ISTART,IUV,NOSCAT,IDA,IDAYST,julstnd
       INTEGER microdaily,DOYF,DOYS,DOYF2,DOYS2,runmoist,evenrain,runsnow
       INTEGER errcount
-      
+
       CHARACTER*80 LABL1,LABL2,LABL3
       CHARACTER*3 IBLK,INAME,SYMBOL
       CHARACTER*1 solout,SINE,ANS14,SNSLOP
@@ -186,7 +186,7 @@ c    Variable soil properties data from Iomet1
      &,densfun,snowcond,intercept,snowage,prevden
       common/horizon/hori,azi
       common/soilmoist/condep,rainmult,maxpool
-      common/soilmoist3/runmoist,evenrain,maxcount 
+      common/soilmoist3/runmoist,evenrain,maxcount
       common/soimoist2/rww,pc,rl,sp,r1,im
       common/write/writecsv
       common/snowmod/runsnow,trouble
@@ -197,7 +197,7 @@ c    Variable soil properties data from Iomet1
       common/IR/IRmode
       COMMON/melt/QFREZE,xtrain,qphase,sumphase,sumphase2
       common/errormsg/errout,maxerr,errcount
-      
+
       DATA IBLK/'   '/
       DATA IFINAL/1/
 C    INITIALIZING MONTH OF YEAR COUNTER
@@ -368,12 +368,12 @@ c901    continue
       maxpool=microinput1(34)
       evenrain=int(microinput1(35))
       rainmeltf=microinput1(37)
-      writecsv=1!int(microinput1(38))
+      writecsv=int(microinput1(38))
 c    WRITE(I2,*)i,' ',j,' ',Thconds(i,j),' ',Thconds1(i,j)
       densfun(1)=microinput1(39)
       densfun(2)=microinput1(40)
       densfun(3)=microinput1(41)
-      densfun(4)=microinput1(42)      
+      densfun(4)=microinput1(42)
       prevden=densfun(2)
       hourly=microinput1(43)
       rainhourly=microinput1(44)
@@ -515,7 +515,7 @@ C     USE UNIT 13 FOR HOUR, SOIL DEPTH & SOIL TEMPERATURE OUTPUT
       write(I101,116) "JULDAY",",","TIME",",","TRANS",",","LEAFPOT",","
      &,"RTPOT1",",","RTPOT2",",","RTPOT3",",","RTPOT4",",","RTPOT5",","
      &,"RTPOT6",",","RTPOT7",",","RTPOT8"
-     &,",","RTPOT9",",","RTPOT10"      
+     &,",","RTPOT9",",","RTPOT10"
       OPEN (I95, FILE = 'soilpot.csv')
       write(I95,112) "JULDAY",",","TIME",",","PT1",",","PT2",","
      &,"PT3",",","PT4",",","PT5",",","PT6",",","PT7",",","PT8",","
@@ -526,7 +526,7 @@ C     USE UNIT 13 FOR HOUR, SOIL DEPTH & SOIL TEMPERATURE OUTPUT
      &,"COND1",",","COND2",",","COND3",",","COND4"
       endif
       if(runsnow.eq.1)then
-      OPEN (I7, FILE = 'sunsnow.csv') 
+      OPEN (I7, FILE = 'sunsnow.csv')
       write(I7,113) "JULDAY",",","TIME",",","DEP1",",","DEP2",",","DEP3"
      &,",","DEP4",",","DEP5",",","DEP6",",","DEP7",",","DEP8",",","DEP9"
       endif
@@ -551,7 +551,7 @@ C     USE UNIT 13 FOR HOUR, SOIL DEPTH & SOIL TEMPERATURE OUTPUT
      &,"2420",",","2450",",","2490",",","2500",",","2600",",","2700",","
      &,"2800",",","2900",",","3000",",","3100",",","3200",",","3300",","
      &,"3400",",","3500",",","3600",",","3700",",","3800",",","3900",","
-     &,"4000" 
+     &,"4000"
       OPEN (I98, FILE = 'DRRLAMBDA.csv')
       write(I98,115) "JULDAY",",","TIME",",","290",",","295",",","300"
      &,",","305",",","310",",","315",",","320",",","330",",","340",","
@@ -572,7 +572,7 @@ C     USE UNIT 13 FOR HOUR, SOIL DEPTH & SOIL TEMPERATURE OUTPUT
      &,"2420",",","2450",",","2490",",","2500",",","2600",",","2700",","
      &,"2800",",","2900",",","3000",",","3100",",","3200",",","3300",","
      &,"3400",",","3500",",","3600",",","3700",",","3800",",","3900",","
-     &,"4000" 
+     &,"4000"
       OPEN (I99, FILE = 'SRLAMBDA.csv')
       write(I99,115) "JULDAY",",","TIME",",","290",",","295",",","300"
      &,",","305",",","310",",","315",",","320",",","330",",","340",","
@@ -598,7 +598,7 @@ C     OPEN (I100, FILE = 'plant.csv')
 C     write(I100,116) "JULDAY",",","TIME",",","TRANS",",","LEAFPOT",","
 C    &,"RTPOT1",",","RTPOT2",",","RTPOT3",",","RTPOT4",",","RTPOT5",","
 C    &,"RTPOT6",",","RTPOT7",",","RTPOT8",","
-C    &,"RTPOT9",",","RTPOT10"     
+C    &,"RTPOT9",",","RTPOT10"
       endif
       if(runshade.eq.1)then
 C     USE UNIT I13 FOR above ground micromet OUTPUT when % shade = 100.
@@ -613,10 +613,10 @@ C     USE UNIT 14 FOR HOUR, SOIL DEPTH & SOIL TEMPERATURE OUTPUT when % shade = 
      &,"DEP3",",","DEP4",",","DEP5",",","DEP6",",","DEP7",",","DEP8"
      &,",","DEP9",",","DEP10"
       if(runsnow.eq.1)then
-      OPEN (I8, FILE = 'shdsnow.csv') 
+      OPEN (I8, FILE = 'shdsnow.csv')
       write(I8,113) "JULDAY",",","TIME",",","DEP1",",","DEP2",",","DEP3"
      &,",","DEP4",",","DEP5",",","DEP6",",","DEP7",",","DEP8",",","DEP9"
-      endif        
+      endif
       if(runmoist.eq.1)then
       OPEN (I93, FILE = 'shadmoist.csv')
       write(I93,112) "JULDAY",",","TIME",",","WC1",",","WC2",","
@@ -634,7 +634,7 @@ C     OPEN (I101, FILE = 'shadplant.csv')
 C     write(I101,116) "JULDAY",",","TIME",",","TRANS",",","LEAFPOT",","
 C    &,"RTPOT1",",","RTPOT2",",","RTPOT3",",","RTPOT4",",","RTPOT5",","
 C    &,"RTPOT6",",","RTPOT7",",","RTPOT8"
-C    &,",","RTPOT9",",","RTPOT10"        
+C    &,",","RTPOT9",",","RTPOT10"
       endif
       endif
       endif
@@ -770,7 +770,7 @@ c    goto 1111
        DOYS=(DOY)*24-23
        DOYF=DOY*24
        DOYS2=(DOY)*25-24
-       DOYF2=DOY*25       
+       DOYF2=DOY*25
        TD(12:35)=TAIRhr1(DOYS:DOYF)
        TD(37:60)=RHhr1(DOYS:DOYF)
        TD(62:85)=CLDhr1(DOYS:DOYF)
@@ -786,7 +786,7 @@ c    goto 1111
         TD(161)=ZENhr1(DOYF)
        else
         TD(137:161)=ZENS(DOYS2:DOYF2)
-       endif      
+       endif
        DOYS=(DOY)*25-24
        DOYF=DOY*25
        TD(162:186)=ZSLS(DOYS:DOYF)
@@ -981,7 +981,7 @@ C    LOOPING FOR THE SECOND DAY WITH MAX SHADE
           close (i97)
           close (i98)
           close (i99)
-         endif       
+         endif
          if(runmoist.eq.1)then
           close (i91)
           close (i92)
@@ -1006,7 +1006,7 @@ C    LOOPING FOR THE SECOND DAY WITH MAX SHADE
      &,WNMAXX,WNMINN,TMAXX,TMINN,TANNULRUN,sunsnow,shdsnow
      &,REFLS,moists,intrvls,snowhr,nodes,TDSS,
      &TINS,TARS,RELS,CLDS,VELS,SOLS,ZENS,ZSLS,LAIs,
-     &PCTWET,julday,rainhr,DRLAMBDA,DRRLAMBDA,SRLAMBDA)        
+     &PCTWET,julday,rainhr,DRLAMBDA,DRRLAMBDA,SRLAMBDA)
         RETURN
        ENDIF
       ENDIF
