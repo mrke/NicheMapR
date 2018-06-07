@@ -371,7 +371,7 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
   # CMH2O=1
   # hori=rep(0,24)
   # TIMAXS=c(1.0, 1.0, 0.0, 0.0)
-  # IMINS=c(0, 0, 1, 1)
+  # TIMINS=c(0, 0, 1, 1)
   # timezone=0
   # runmoist=1
   # PE=rep(1.1,19)
@@ -412,8 +412,8 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
   # MAXCOUNT = 500
   # windfac=1
   # rainhourly = 0
-  # opendap = 1
-  # soilgrids = 1
+  # opendap = 0
+  # soilgrids = 0
   # IR = 0
   # message = 0
   # fail = nyears * 24 * 365
@@ -423,6 +423,9 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
   # Refhyt <- 1.2
   # snowcond = 0
   # intercept = maxshade / 100 * 0.3
+  # uid = ""
+  # pwd = ""
+  # grasshade = 0
 
   if(vlsci==0 & opendap==0){
     library(RODBC)
