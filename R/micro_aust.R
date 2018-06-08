@@ -215,6 +215,7 @@
 #' @examples
 #'ystart <- 2014
 #'yfinish <- 2015
+#'nyears <- yfinish - ystart + 1
 #'micro<-micro_aust(loc = 'Nyrripi, Northern Territory', ystart = ystart, yfinish = yfinish, opendap = 1, elev = 0, soildata = 0, runshade = 0) # run the model for the middle of the desert in Australia, using opendap
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
