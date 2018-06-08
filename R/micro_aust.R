@@ -213,7 +213,7 @@
 #' \item  3-113 290, ..., 4000 - irradiance (W/(m2 nm)) at each of 111 wavelengths from 290 to 4000 nm
 #' }
 #' @examples
-#'micro<-micro_aust(loc = 'Nyrripi, Northern Territory', opendap = 1, elev = 0, ystart = 2014, yfinish = 2015) # run the model for the middle of the desert in Australia, using opendap
+#'micro<-micro_aust(loc = 'Nyrripi, Northern Territory', ystart = 2014, yfinish = 2015, opendap = 1, elev = 0, soildata = 0) # run the model for the middle of the desert in Australia, using opendap
 #'
 #'metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #'shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
@@ -428,8 +428,11 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
   # grasshade = 0
 
   if(vlsci==0 & opendap==0){
-    library(RODBC)
+    require(RODBC)
   }
+  if(opendap == 1)
+    require(ncdf4)
+}
   errors<-0
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
