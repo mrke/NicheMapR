@@ -214,8 +214,8 @@
 #' }
 #' @examples
 #' library(NicheMapR)
-#' dstart <- "01/01/2014"
-#' dfinish <- "31/12/2016"
+#' dstart <- "01/01/2016"
+#' dfinish <- "31/12/2017"
 #' micro<-micro_usa(loc = 'Death Valley, California', runshade = 0, soilgrids = 0, dstart = dstart, dfinish = dfinish) # run the model using SoilGrids data at Madison for 2014 to 2016
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
