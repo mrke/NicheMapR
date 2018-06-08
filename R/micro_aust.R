@@ -213,80 +213,62 @@
 #' \item  3-113 290, ..., 4000 - irradiance (W/(m2 nm)) at each of 111 wavelengths from 290 to 4000 nm
 #' }
 #' @examples
-#'micro<-micro_aust(loc = 'Nyrripi, Northern Territory', ystart = 2014, yfinish = 2015, opendap = 1, elev = 0, soildata = 0) # run the model for the middle of the desert in Australia, using opendap
+#'micro<-micro_aust(loc = 'Nyrripi, Northern Territory', ystart = 2014, yfinish = 2015, opendap = 1, elev = 0, soildata = 0, runshade = 0) # run the model for the middle of the desert in Australia, using opendap
 #'
-#'metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
-#'shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
-#'soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
-#'shadsoil<-as.data.frame(micro$shadsoil) # soil temperatures, maximum shade
+#' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
+#' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
+#' soilmoist<-as.data.frame(micro$soilmoist) # soil temperatures, minimum shade
 #'
-#'# append dates
-#'days<-rep(seq(1,12),24)
-#'days<-days[order(days)]
-#'dates<-days+metout$TIME/60/24-1 # dates for hourly output
-#'dates2<-seq(1,12,1) # dates for daily output
+#' # append dates
+#' tzone<-paste("Etc/GMT+",0,sep="")
+#' dates<-seq(ISOdate(ystart,1,1,tz=tzone)-3600*12, ISOdate((ystart+nyears),1,1,tz=tzone)-3600*13, by="hours")
 #'
-#'plotmetout<-cbind(dates,metout)
-#'plotsoil<-cbind(dates,soil)
-#'plotshadmet<-cbind(dates,shadmet)
-#'plotshadsoil<-cbind(dates,shadsoil)
+#' metout <- cbind(dates,metout)
+#' soil <- cbind(dates,soil)
+#' soilmoist <- cbind(dates, soilmoist)
+#' minshade<-micro$minshade
 #'
-#'minshade<-micro$minshade
-#'maxshade<-micro$maxshade
+#' # plotting above-ground conditions in minimum shade
+#' with(metout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
+#' , type = "l",main=paste("air and sky temperature, ",minshade,"% shade",sep=""), ylim = c(-20, 60))})
+#' with(metout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
+#' , type = "l",lty=2,col='blue')})
+#' with(metout,{points(TSKYC ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
+#' ,  type = "l",col='light blue',main=paste("sky temperature, ",minshade,"% shade",sep=""))})
+#' with(metout,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
+#' , type = "l",ylim=c(0,100),main=paste("humidity, ",minshade,"% shade",sep=""))})
+#' with(metout,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
+#' , type = "l",col='blue',lty=2,ylim=c(0,100))})
+#' with(metout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
+#' ,  type = "l",main="wind speed",ylim = c(0, 15))})
+#' with(metout,{points(VLOC ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
+#' ,  type = "l",lty=2,col='blue')})
+#' with(metout,{plot(SOLR ~ dates,xlab = "Date and Time", ylab = "Solar Radiation (W/m2)"
+#' ,  type = "l",main="solar radiation")})
+#' with(metout,{plot(SNOWDEP ~ dates,xlab = "Date and Time", ylab = "Snow Depth (cm)"
+#' ,  type = "l",main="snow depth")})
 #'
-#'# plotting above-ground conditions in minimum shade
-#'with(plotmetout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (°C)"
-#', type = "l",main=paste("air temperature, ",minshade,"% shade",sep=""))})
-#'with(plotmetout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (°C)"
-#', type = "l",lty=2,col='blue')})
-#'with(plotmetout,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
-#', type = "l",ylim=c(0,100),main=paste("humidity, ",minshade,"% shade",sep=""))})
-#'with(plotmetout,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
-#', type = "l",col='blue',lty=2,ylim=c(0,100))})
-#'with(plotmetout,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (°C)"
-#',  type = "l",main=paste("sky temperature, ",minshade,"% shade",sep=""))})
-#'with(plotmetout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-#',  type = "l",main="wind speed",ylim = c(0, 15))})
-#'with(plotmetout,{points(VLOC ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-#',  type = "l",lty=2,col='blue')})
-#'with(plotmetout,{plot(ZEN ~ dates,xlab = "Date and Time", ylab = "Zenith Angle of Sun (deg)"
-#',  type = "l",main="solar angle, sun")})
-#'with(plotmetout,{plot(SOLR ~ dates,xlab = "Date and Time", ylab = "Solar Radiation (W/m2)"
-#',  type = "l",main="solar radiation")})
-#'
-#'# plotting soil temperature for minimum shade
-#'for(i in 1:10){
+#' # plotting soil temperature
+#' for(i in 1:10){
 #'  if(i==1){
-#'    plot(plotsoil[,i+3]~plotsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature (°C)"
+#'    plot(soil[,i+3]~soil[,1],xlab = "Date and Time", ylab = "Soil Temperature (°C)"
 #'    ,col=i,type = "l",main=paste("soil temperature ",minshade,"% shade",sep=""))
 #'  }else{
-#'    points(plotsoil[,i+3]~plotsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature
+#'    points(soil[,i+3]~soil[,1],xlab = "Date and Time", ylab = "Soil Temperature
 #'     (°C)",col=i,type = "l")
 #'  }
-#'}
+#' }
 #'
-#'# plotting above-ground conditions in maximum shade
-#'with(plotshadmet,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (°C)"
-#', type = "l",main="air temperature, sun")})
-#'with(plotshadmet,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Air Temperature (°C)"
-#', type = "l",lty=2,col='blue')})
-#'with(plotshadmet,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
-#', type = "l",ylim=c(0,100),main="humidity, shade")})
-#'with(plotshadmet,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
-#', type = "l",col='blue',lty=2,ylim=c(0,100))})
-#'with(plotshadmet,{plot(TSKYC ~ dates,xlab = "Date and Time", ylab = "Sky Temperature (°C)",
-#'  type = "l",main="sky temperature, shade")})
-#'
-#'# plotting soil temperature for maximum shade
-#'for(i in 1:10){
+#' # plotting soil moisture
+#' for(i in 1:10){
 #'  if(i==1){
-#'    plot(plotshadsoil[,i+3]~plotshadsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature
-#'     (°C)",col=i,type = "l",main=paste("soil temperature ",maxshade,"% shade",sep=""))
+#'    plot(soilmoist[,i+3]*100~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture (% volumetric)"
+#'    ,col=i,type = "l",main=paste("soil moisture ",minshade,"% shade",sep=""))
 #'  }else{
-#'    points(plotshadsoil[,i+3]~plotshadsoil[,1],xlab = "Date and Time", ylab = "Soil Temperature
-#'     (°C)",col=i,type = "l")
+#'    points(soilmoist[,i+3]*100~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture
+#'     (%)",col=i,type = "l")
 #'  }
-#'}
+#' }
 micro_aust <- function(loc= "Nyrripi, Northern Territory",
   ystart = 1990, yfinish = 1990, nyears = 1, soiltype = 4, REFL = 0.15, elev = NA,
   slope = 0, aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
