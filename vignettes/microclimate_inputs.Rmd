@@ -248,6 +248,7 @@ undercatch                | -                    | >=1                | undercat
 rainmelt                  | -                    | 0-2                | parameter for rain melting snow$^{2}$ 
 snowcond                  | -                    | >0                 | effective thermal conductivity of snow $W/mK$ 
 intercept                 | -                    | 0-1                | proportion of snow intercepted by vegetation under shaded conditions 
+grasshade                 | -                    | 0 or 1             | if 1, shade is not present when snow is present (because shade is cast by grass/low veg) 
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
