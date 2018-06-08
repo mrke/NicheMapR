@@ -1121,7 +1121,7 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
         }
         shademax<-maxshades
       }
-      if(is.na(dbrow)!=TRUE & is.na(ALTITUDES)!=TRUE){
+      if((is.na(dbrow)!=TRUE & is.na(ALTITUDES)!=TRUE) | opendap == 1){
         if(run.gads==1){
           ####### get solar attenuation due to aerosols with program GADS #####################
           relhum<-1.
