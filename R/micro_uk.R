@@ -688,9 +688,8 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
         if(length(ov) > 3){
           soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
           colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
-
           #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
-          DEP <- c(0., 2.5,  5.,  10,  15, 20., 30.,  60.,  100.,  200.) # Soil nodes (cm)
+          DEP <- c(0, 2.5, 5, 10, 15, 20, 30, 60, 100, 200) # Soil nodes (cm)
           soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
           PE<-soil.hydro$PE
           BB<-soil.hydro$BB
