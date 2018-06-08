@@ -870,6 +870,8 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
     }else{
       adiab_corr_max <- 0
       adiab_corr_min <- 0
+      ALTITUDES <- elev
+      dbrow <- 1
     }
     if(scenario!=""){
       message("generate climate change scenario", '\n')
