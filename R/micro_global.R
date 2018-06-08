@@ -623,6 +623,17 @@ micro_global <- function(loc = "Madison, Wisconsin USA", timeinterval = 12,
     ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
     RHMINN <- CLIMATE[,62:73]/10
     RHMAXX <- CLIMATE[,74:85]/10
+    # correct for potential change in RH with elevation-corrected Tair
+    es <- WETAIR(db = TMAXX, rh = 100)$esat
+    e <- WETAIR(db = CLIMATE[,50:61]/10, rh = CLIMATE[,62:73]/10)$e
+    RHMINN <- (e / es) * 100
+    RHMINN[RHMINN>100]<-100
+    RHMINN[RHMINN<0]<-0.01
+    es <- WETAIR(db = TMINN, rh = 100)$esat
+    e <- WETAIR(db = CLIMATE[,38:49]/10, rh = CLIMATE[,74:85]/10)$e
+    RHMAXX <- (e / es) * 100
+    RHMAXX[RHMAXX>100]<-100
+    RHMAXX[RHMAXX<0]<-0.01
     CCMINN <- CLIMATE[,86:97]/10
     if(clearsky==1){
       CCMINN=CCMINN*0

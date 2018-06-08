@@ -694,12 +694,12 @@ micro_usa <- function(loc = "Madison, Wisconsin", dstart = "01/01/2016", dfinish
       }
     }else{
       if(soilgrids == 1){
-       cat("loading SoilGrids data from previous run \n")
-       load('PE.Rda')
-       load('BB.Rda')
-       load('BD.Rda')
-       load('KS.Rda')
-       load('BulkDensity.Rda')
+        cat("loading SoilGrids data from previous run \n")
+        load('PE.Rda')
+        load('BB.Rda')
+        load('BD.Rda')
+        load('KS.Rda')
+        load('BulkDensity.Rda')
       }
     }
     if(save == 1){
@@ -903,8 +903,8 @@ micro_usa <- function(loc = "Madison, Wisconsin", dstart = "01/01/2016", dfinish
         }
       }
       if(opendap == 1 & save != 2){ # truncating if less than whole years requested via opendap
-       cut <- as.numeric(days[1] - as.POSIXct(paste0('01/01/', ystart), format = "%d/%m/%Y") + 1)
-       allclearsky <- allclearsky[cut:(cut+countday-1)]
+        cut <- as.numeric(days[1] - as.POSIXct(paste0('01/01/', ystart), format = "%d/%m/%Y") + 1)
+        allclearsky <- allclearsky[cut:(cut+countday-1)]
       }
       cloud <- (1 - solar / allclearsky) * 100
       cloud[cloud<0]<-0
@@ -996,9 +996,9 @@ micro_usa <- function(loc = "Madison, Wisconsin", dstart = "01/01/2016", dfinish
         TMINN<-as.matrix(Tmin)
       }
       if(warm != 0){
-      # impose uniform temperature change
-      TMAXX<-TMAXX+seq(0, dim-1)/(dim-1)*warm
-      TMINN<-TMINN+seq(0, dim-1)/(dim-1)*warm
+        # impose uniform temperature change
+        TMAXX<-TMAXX+seq(0, dim-1)/(dim-1)*warm
+        TMINN<-TMINN+seq(0, dim-1)/(dim-1)*warm
       }
       RAINFALL<-Rain+rainoff
 
@@ -1009,7 +1009,7 @@ micro_usa <- function(loc = "Madison, Wisconsin", dstart = "01/01/2016", dfinish
       RHMINN[RHMINN>100]<-100
       RHMINN[RHMINN<0]<-0.01
       es <- WETAIR(db = TMINN, rh = 100)$esat
-      e <- WETAIR(db = Tmin, rh = rhmin)$e
+      e <- WETAIR(db = Tmin, rh = rhmax)$e
       RHMAXX <- (e / es) * 100
       RHMAXX[RHMAXX>100]<-100
       RHMAXX[RHMAXX<0]<-0.01
@@ -1017,6 +1017,11 @@ micro_usa <- function(loc = "Madison, Wisconsin", dstart = "01/01/2016", dfinish
       ALLMINTEMPS<-TMINN
       ALLMAXTEMPS<-TMAXX
       ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
+
+      WNMAXX <- Wind * windfac
+      WNMINN <- Wind * windfac
+      message('min wind * 0.5 \n')
+      message('max wind * 2 \n')
 
       MAXSHADES<-maxshades
       MINSHADES<-minshades
@@ -1090,12 +1095,6 @@ micro_usa <- function(loc = "Madison, Wisconsin", dstart = "01/01/2016", dfinish
       WNMAXX<-WNMAXX*(2/10)^0.15
       WNMINN<-WNMINN*(2/10)^0.15
 
-
-      # impose uniform warming
-      TMAXX<-TMAXX+warm
-      TMINN<-TMINN+warm
-
-
       SLES<-matrix(nrow = dim, data = 0)
       SLES<-SLES+SLE
 
@@ -1104,9 +1103,9 @@ micro_usa <- function(loc = "Madison, Wisconsin", dstart = "01/01/2016", dfinish
       moists<-moists2
 
       if(runmoist==1){
-       moists2<-matrix(nrow=10, ncol = dim, data=0) # set up an empty vector for soil moisture values through time
-       moists2[1:10,]<-SoilMoist_Init
-       moists<-moists2
+        moists2<-matrix(nrow=10, ncol = dim, data=0) # set up an empty vector for soil moisture values through time
+        moists2[1:10,]<-SoilMoist_Init
+        moists<-moists2
       }
       soilprops<-matrix(data = 0, nrow = 10, ncol = 5)
 

@@ -1241,16 +1241,46 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
               dwind<-t(as.data.frame(dwind[which(dates4 %in% dates3)]))
             }
             if(adiab_cor==1){
+              TMAXX.orig <- TMAXX
+              TMINN.orig <- TMINN
+              RHMAXX.orig <- RHMAXX
+              RHMINN.orig <- RHMINN
               TMAXX<-TMAXX+adiab_corr_max
               TMINN<-TMINN+adiab_corr_min
+              # correct for potential change in RH with elevation-corrected Tair
+              es <- WETAIR(db = TMAXX, rh = 100)$esat
+              e <- WETAIR(db = TMAXX.orig, rh = RHMINN.orig)$e
+              RHMINN <- (e / es) * 100
+              RHMINN[RHMINN>100]<-100
+              RHMINN[RHMINN<0]<-0.01
+              es <- WETAIR(db = TMINN, rh = 100)$esat
+              e <- WETAIR(db = TMINN.orig, rh = RHMAXX.orig)$e
+              RHMAXX <- (e / es) * 100
+              RHMAXX[RHMAXX>100]<-100
+              RHMAXX[RHMAXX<0]<-0.01
             }
           }
         } #end vlsci check
         if(vlsci==0){
           if(opendap == 0){
             if(adiab_cor==1){
+              TMAXX.orig <- TMAXX
+              TMINN.orig <- TMINN
+              RHMAXX.orig <- RHMAXX
+              RHMINN.orig <- RHMINN
               TMAXX<-as.matrix(results$tmax+adiab_corr_max)
               TMINN<-as.matrix(results$tmin+adiab_corr_min)
+              # correct for potential change in RH with elevation-corrected Tair
+              es <- WETAIR(db = TMAXX, rh = 100)$esat
+              e <- WETAIR(db = TMAXX.orig, rh = RHMINN.orig)$e
+              RHMINN <- (e / es) * 100
+              RHMINN[RHMINN>100]<-100
+              RHMINN[RHMINN<0]<-0.01
+              es <- WETAIR(db = TMINN, rh = 100)$esat
+              e <- WETAIR(db = TMINN.orig, rh = RHMAXX.orig)$e
+              RHMAXX <- (e / es) * 100
+              RHMAXX[RHMAXX>100]<-100
+              RHMAXX[RHMAXX<0]<-0.01
             }else{
               TMAXX<-as.matrix(results$tmax)
               TMINN<-as.matrix(results$tmin)
@@ -1263,8 +1293,23 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
             output_AWAPDaily<-results
           }else{
             if(adiab_cor==1){
+              TMAXX.orig <- TMAXX
+              TMINN.orig <- TMINN
+              RHMAXX.orig <- RHMAXX
+              RHMINN.orig <- RHMINN
               TMAXX<-as.matrix(TMAXX+adiab_corr_max)
               TMINN<-as.matrix(TMINN+adiab_corr_min)
+              # correct for potential change in RH with elevation-corrected Tair
+              es <- WETAIR(db = TMAXX, rh = 100)$esat
+              e <- WETAIR(db = TMAXX.orig, rh = RHMINN.orig)$e
+              RHMINN <- (e / es) * 100
+              RHMINN[RHMINN>100]<-100
+              RHMINN[RHMINN<0]<-0.01
+              es <- WETAIR(db = TMINN, rh = 100)$esat
+              e <- WETAIR(db = TMINN.orig, rh = RHMAXX.orig)$e
+              RHMAXX <- (e / es) * 100
+              RHMAXX[RHMAXX>100]<-100
+              RHMAXX[RHMAXX<0]<-0.01
             }
           }
           if(scenario!=""){
