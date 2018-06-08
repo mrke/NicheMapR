@@ -224,7 +224,7 @@
 #'
 #' # append dates
 #' tzone<-paste("Etc/GMT+",0,sep="")
-#' dates<-seq(as.POSIXct(dstart, format="%d/%m/%Y",tz=tzone)-3600*12, as.POSIXct(dfinish, format="%d/%m/%Y",1,1,tz=tzone)-3600*13, by="hours")
+#' dates<-seq(as.POSIXct(dstart, format="%d/%m/%Y",tz=tzone)-3600*12, as.POSIXct(dfinish, format="%d/%m/%Y",tz=tzone)+3600*11, by="hours")
 #'
 #' metout <- cbind(dates,metout)
 #' soil <- cbind(dates,soil)
