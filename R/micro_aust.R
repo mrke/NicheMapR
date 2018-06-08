@@ -430,9 +430,9 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
   if(vlsci==0 & opendap==0){
     require(RODBC)
   }
-  if(opendap == 1)
+  if(opendap == 1){
     require(ncdf4)
-}
+  }
   errors<-0
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
@@ -804,18 +804,18 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
       AGG <- raster::extract(r3, x)
     }else{
       if(opendap == 0){
-      r1 <- raster::raster(f1)
-      r2 <- raster::raster(f2)
-      r3 <- raster::raster(f3)
-      r4 <- raster::raster(f4)
-      dbrow <- raster::extract(r1, x)
-      AUSDEM <- raster::extract(r2, x)
-      AGG <- raster::extract(r3, x)
-      if(is.na(elev) == FALSE){ # check if user-specified elevation
-        ALTITUDES <- elev # use user-specified elevation
-      }else{
-        ALTITUDES <- raster::extract(r4, x) # get elevation from fine res DEM
-      }
+        r1 <- raster::raster(f1)
+        r2 <- raster::raster(f2)
+        r3 <- raster::raster(f3)
+        r4 <- raster::raster(f4)
+        dbrow <- raster::extract(r1, x)
+        AUSDEM <- raster::extract(r2, x)
+        AGG <- raster::extract(r3, x)
+        if(is.na(elev) == FALSE){ # check if user-specified elevation
+          ALTITUDES <- elev # use user-specified elevation
+        }else{
+          ALTITUDES <- raster::extract(r4, x) # get elevation from fine res DEM
+        }
       }
       HORIZONS <- hori
       HORIZONS <- data.frame(HORIZONS)
@@ -860,16 +860,16 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
     }
     # setting up for temperature correction using lapse rate given difference between 9sec DEM value and 0.05 deg value
     if(opendap == 0){
-    if(AUSDEM==-9999 | is.na(AUSDEM)=='TRUE'){
-      delta_elev = AGG - ALTITUDES
+      if(AUSDEM==-9999 | is.na(AUSDEM)=='TRUE'){
+        delta_elev = AGG - ALTITUDES
+      }else{
+        delta_elev = AUSDEM - ALTITUDES
+      }
+      adiab_corr_max <- delta_elev * lapse_max
+      adiab_corr_min <- delta_elev * lapse_min
     }else{
-      delta_elev = AUSDEM - ALTITUDES
-    }
-    adiab_corr_max <- delta_elev * lapse_max
-    adiab_corr_min <- delta_elev * lapse_min
-    }else{
-    adiab_corr_max <- 0
-    adiab_corr_min <- 0
+      adiab_corr_max <- 0
+      adiab_corr_min <- 0
     }
     if(scenario!=""){
       message("generate climate change scenario", '\n')
