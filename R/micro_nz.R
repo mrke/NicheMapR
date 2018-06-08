@@ -1038,8 +1038,11 @@ micro_nz <- function(loc = "Dunedin, New Zealand", ystart = 2000,
       ALLMAXTEMPS<-TMAXX
       ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
 
-      WNMAXX <- Wind
-      WNMINN <- Wind
+      WNMAXX <- Wind * 2
+      WNMINN <- Wind * 0.5
+      message('min wind * 0.5 \n')
+      message('max wind * 2 \n')
+
       MAXSHADES<-maxshades
       MINSHADES<-minshades
 

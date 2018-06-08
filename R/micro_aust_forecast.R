@@ -934,14 +934,6 @@ micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval
           }
         }
 
-        if(adiab_cor==1){
-          TMAXX<-as.matrix(results$tmax+adiab_corr_max)
-          TMINN<-as.matrix(results$tmin+adiab_corr_min)
-        }else{
-          TMAXX<-as.matrix(results$tmax)
-          TMINN<-as.matrix(results$tmin)
-        }
-
         # AUSCLIM query statements
         clouds<-paste("select cloud1,cloud2,cloud3,cloud4,cloud5,cloud6,cloud7,cloud8,cloud9,cloud10,cloud11,cloud12 FROM cloudcover WHERE i = ",dbrow,sep="")
         maxwinds<-paste("select maxwind1,maxwind2,maxwind3,maxwind4,maxwind5,maxwind6,maxwind7,maxwind8,maxwind9,maxwind10,maxwind11,maxwind12 FROM maxwind WHERE i = ",dbrow,sep="")
@@ -962,6 +954,17 @@ micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval
         SOLRhr<-forecast$sw
         RAINhr<-forecast$prec1
         ZENhr<-forecast$zeniths
+
+        if(adiab_cor==1){
+          TAIRhr.orig <- TAIRhr
+          RHhr.orig <- RHhr
+          TAIRhr<-TAIRhr+adiab_corr_max
+          es <- WETAIR(db = TAIRhr, rh = 100)$esat
+          e <- WETAIR(db = TAIRhr.orig, rh = RHhr.orig)$e
+          RHhr <- (e / es) * 100
+          RHhr[RHhr>100]<-100
+          RHhr[RHhr<0]<-0.01
+        }
 
         TMAXX<-aggregate(TAIRhr,by=list(forecast$d_1),max)[1:dim,2] # maximum air temperatures (°C)
         TMINN<-aggregate(TAIRhr,by=list(forecast$d_1),min)[1:dim,2] # minimum air temperatures (°C)

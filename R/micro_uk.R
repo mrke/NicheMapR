@@ -926,7 +926,7 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
       CCMAXX<-CCMAXX*2
       CCMINN[CCMINN>100]<-100
       CCMAXX[CCMAXX>100]<-100
-      Wind<-Wind
+      Wind<-Wind * windfac
       Wind[Wind==0]<-0.1
       if(save == 1){
         cat("saving met data for later \n")
@@ -1010,8 +1010,10 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
       ALLMAXTEMPS<-TMAXX
       ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
 
-      WNMAXX <- Wind
-      WNMINN <- Wind
+      WNMAXX <- Wind * 2
+      WNMINN <- Wind * 0.5
+      message('min wind * 0.5 \n')
+      message('max wind * 2 \n')
 
       if(manualshade==0){
         maxshades1 <-spline(doys12,shademax,n=timeinterval,xmin=1,xmax=365,method="periodic")
@@ -1091,8 +1093,8 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
       #Heavy trees 	0.25
       #Several buildings 	0.25
       #Hilly, mountainous terrain 	0.25
-      WNMAXX<-WNMAXX*(1.2/2)^0.15 * windfac
-      WNMINN<-WNMINN*(1.2/2)^0.15 * windfac
+      WNMAXX<-WNMAXX*(1.2/2)^0.15
+      WNMINN<-WNMINN*(1.2/2)^0.15
 
       SLES<-matrix(nrow=dim,data=0)
       SLES<-SLES+SLE
