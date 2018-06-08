@@ -213,7 +213,7 @@
 #' \item  3-113 290, ..., 4000 - irradiance (W/(m2 nm)) at each of 111 wavelengths from 290 to 4000 nm
 #' }
 #' @examples
-#'micro<-micro_aust() # run the model with default location and settings
+#'micro<-micro_aust(loc = 'Nyrripi, Northern Territory', opendap = 1, elev = 0, ystart = 2014, yfinish = 2015) # run the model for the middle of the desert in Australia, using opendap
 #'
 #'metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #'shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
