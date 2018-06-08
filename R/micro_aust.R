@@ -50,10 +50,10 @@
 #' \code{warm}{ = 0, uniform warming, °C}\cr\cr
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 #' \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
-#' \code{opendap}{ = 1, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
+#' \code{opendap}{ = 0, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
 #' \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
 
-#' \code{soilgrids}{ = 1, query soilgrids.org database for soil hydraulic properties?}\cr\cr
+#' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
 
@@ -306,7 +306,7 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
   LAI = 0.1, snowmodel = 0, snowtemp = 1.5, snowdens = 0.375, densfun = c(0.5979, 0.2178, 0.001, 0.0038),
   snowmelt = 1, undercatch = 1, rainmelt = 0.0125, shore = 0, tides = 0, loop = 0, scenario = "", year = "",
   barcoo = "", quadrangle = 1, hourly = 0, rainhourly = 0, rainhour = 0, uid = "", pwd = "", lamb = 0,
-  IUV = 0, soilgrids = 1, IR = 0, opendap = 1, message = 0, fail = nyears * 24 * 365, snowcond = 0,
+  IUV = 0, soilgrids = 0, IR = 0, opendap = 0, message = 0, fail = nyears * 24 * 365, snowcond = 0,
   intercept = maxshade / 100 * 0.4, grasshade = 0) {
 
   # function to assist with interpolated data in leap years
@@ -800,6 +800,7 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
       AUSDEM <- raster::extract(r2, x)
       AGG <- raster::extract(r3, x)
     }else{
+      if(opendap == 0){
       r1 <- raster::raster(f1)
       r2 <- raster::raster(f2)
       r3 <- raster::raster(f3)
@@ -812,9 +813,7 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
       }else{
         ALTITUDES <- raster::extract(r4, x) # get elevation from fine res DEM
       }
-      #ALTITUDES <- AUSDEM
-      #message("using 0.05 res DEM!")
-      #}
+      }
       HORIZONS <- hori
       HORIZONS <- data.frame(HORIZONS)
       VIEWF_all <- 1-sum(sin(as.data.frame(hori)*pi/180))/length(hori) # convert horizon angles to radians and calc view factor(s)
@@ -857,6 +856,7 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
       }
     }
     # setting up for temperature correction using lapse rate given difference between 9sec DEM value and 0.05 deg value
+    if(opendap == 0){
     if(AUSDEM==-9999 | is.na(AUSDEM)=='TRUE'){
       delta_elev = AGG - ALTITUDES
     }else{
@@ -864,7 +864,10 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
     }
     adiab_corr_max <- delta_elev * lapse_max
     adiab_corr_min <- delta_elev * lapse_min
-
+    }else{
+    adiab_corr_max <- 0
+    adiab_corr_min <- 0
+    }
     if(scenario!=""){
       message("generate climate change scenario", '\n')
       # diff spline function
