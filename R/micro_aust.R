@@ -1257,8 +1257,8 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
         if(vlsci==0){
           if(opendap == 0){
             if(adiab_cor==1){
-              TMAXX.orig <- TMAXX
-              TMINN.orig <- TMINN
+              TMAXX.orig <- results$tmax
+              TMINN.orig <- results$tmin
               RHMAXX.orig <- RHMAXX
               RHMINN.orig <- RHMINN
               TMAXX<-as.matrix(results$tmax+adiab_corr_max)
