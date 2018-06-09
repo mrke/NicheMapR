@@ -1236,21 +1236,8 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
             if(adiab_cor==1){
               TMAXX.orig <- TMAXX
               TMINN.orig <- TMINN
-              RHMAXX.orig <- RHMAXX
-              RHMINN.orig <- RHMINN
               TMAXX<-TMAXX+adiab_corr_max
               TMINN<-TMINN+adiab_corr_min
-              # correct for potential change in RH with elevation-corrected Tair
-              es <- WETAIR(db = TMAXX, rh = 100)$esat
-              e <- WETAIR(db = TMAXX.orig, rh = RHMINN.orig)$e
-              RHMINN <- (e / es) * 100
-              RHMINN[RHMINN>100]<-100
-              RHMINN[RHMINN<0]<-0.01
-              es <- WETAIR(db = TMINN, rh = 100)$esat
-              e <- WETAIR(db = TMINN.orig, rh = RHMAXX.orig)$e
-              RHMAXX <- (e / es) * 100
-              RHMAXX[RHMAXX>100]<-100
-              RHMAXX[RHMAXX<0]<-0.01
             }
           }
         } #end vlsci check
@@ -1259,21 +1246,9 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
             if(adiab_cor==1){
               TMAXX.orig <- results$tmax
               TMINN.orig <- results$tmin
-              RHMAXX.orig <- RHMAXX
-              RHMINN.orig <- RHMINN
               TMAXX<-as.matrix(results$tmax+adiab_corr_max)
               TMINN<-as.matrix(results$tmin+adiab_corr_min)
-              # correct for potential change in RH with elevation-corrected Tair
-              es <- WETAIR(db = TMAXX, rh = 100)$esat
-              e <- WETAIR(db = TMAXX.orig, rh = RHMINN.orig)$e
-              RHMINN <- (e / es) * 100
-              RHMINN[RHMINN>100]<-100
-              RHMINN[RHMINN<0]<-0.01
-              es <- WETAIR(db = TMINN, rh = 100)$esat
-              e <- WETAIR(db = TMINN.orig, rh = RHMAXX.orig)$e
-              RHMAXX <- (e / es) * 100
-              RHMAXX[RHMAXX>100]<-100
-              RHMAXX[RHMAXX<0]<-0.01
+
             }else{
               TMAXX<-as.matrix(results$tmax)
               TMINN<-as.matrix(results$tmin)
@@ -1288,21 +1263,8 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
             if(adiab_cor==1){
               TMAXX.orig <- TMAXX
               TMINN.orig <- TMINN
-              RHMAXX.orig <- RHMAXX
-              RHMINN.orig <- RHMINN
               TMAXX<-as.matrix(TMAXX+adiab_corr_max)
               TMINN<-as.matrix(TMINN+adiab_corr_min)
-              # correct for potential change in RH with elevation-corrected Tair
-              es <- WETAIR(db = TMAXX, rh = 100)$esat
-              e <- WETAIR(db = TMAXX.orig, rh = RHMINN.orig)$e
-              RHMINN <- (e / es) * 100
-              RHMINN[RHMINN>100]<-100
-              RHMINN[RHMINN<0]<-0.01
-              es <- WETAIR(db = TMINN, rh = 100)$esat
-              e <- WETAIR(db = TMINN.orig, rh = RHMAXX.orig)$e
-              RHMAXX <- (e / es) * 100
-              RHMAXX[RHMAXX>100]<-100
-              RHMAXX[RHMAXX<0]<-0.01
             }
           }
           if(scenario!=""){
@@ -1533,6 +1495,21 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
               }
             }#end check for year is 1971 or later
           } #end vlsci check
+        }
+        if(adiab_cor==1){
+          RHMAXX.orig <- RHMAXX
+          RHMINN.orig <- RHMINN
+          # correct for potential change in RH with elevation-corrected Tair
+          es <- WETAIR(db = TMAXX, rh = 100)$esat
+          e <- WETAIR(db = TMAXX.orig, rh = RHMINN.orig)$e
+          RHMINN <- (e / es) * 100
+          RHMINN[RHMINN>100]<-100
+          RHMINN[RHMINN<0]<-0.01
+          es <- WETAIR(db = TMINN, rh = 100)$esat
+          e <- WETAIR(db = TMINN.orig, rh = RHMAXX.orig)$e
+          RHMAXX <- (e / es) * 100
+          RHMAXX[RHMAXX>100]<-100
+          RHMAXX[RHMAXX<0]<-0.01
         }
         # AUSCLIM query statements
         clouds<-paste("select cloud1,cloud2,cloud3,cloud4,cloud5,cloud6,cloud7,cloud8,cloud9,cloud10,cloud11,cloud12 FROM cloudcover WHERE i = ",dbrow,sep="")
