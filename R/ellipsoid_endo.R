@@ -6,7 +6,9 @@
 #' with additional rough calculations for water loss. Note this model is only relevant for
 #' conditions where there is no solar radiation and air/ground/sky temperatures are equal.
 #' Originally coded into R from Excel by John Baumgartner.
-#' Requires the NicheMapR functions WETAIR, DRYAIR and VAPPRS
+#' Requires the NicheMapR functions WETAIR.rh, DRYAIR and VAPPRS
+#' Modified to allow use with rasters 2 Aug 2018
+#' Modified to allow user-specified basal metabolic rates and Q10 effects 2 Aug 2018
 #' @param posture = 4.5, Shape, ratio of long to short axis of a prolate ellipsoid
 #' @param mass = 0.5, Body Mass (kg)
 #' @param coreT = 37, Core temperature (deg C)
@@ -17,6 +19,8 @@
 #' @param airT = 20, Air temperature (deg C)
 #' @param windspd = 1, Wind speed (m/s)
 #' @param rh = 50, Relative humidity (\%)
+#' @param basal = NA, user specified basal metabolic rate (W)
+#' @param basmult = 1, multiplier to adjust mouse-elephant predicted basal metabolic rate
 #' @return
 #' \itemize{
 #' \item 1 AirTemp - Air temperature for calculation (deg C)
@@ -93,9 +97,12 @@
 #'with(endo,{plot(timetodeath ~ dates,xlab = "Date and Time", ylab = "Time to Death (h)"
 #', type = "l",main=paste("Time to Death by Desiccation",sep=""), ylim=c(0,24))})
 ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, furcond = 0.04,
-  O2eff = 0.2, stress = 0.6, airT = 20, windspd = 1, rh = 50) {
+  O2eff = 0.2, stress = 0.6, airT = 20, windspd = 1, rh = 50, Q10 = 3, basal = NA, basmult = 1) {
   posture[posture==1]<-1.01 # avoid divide by zero
-  mouseelephant <- 10^(-1.462 + 0.675 * log10(mass * 1000))
+  if(is.na(basal) == TRUE){
+   mouseelephant <- 10^(-1.462 + 0.675 * log10(mass * 1000)) * basmult
+   basal <- mouseelephant * Q10 ^ ((coreT - 37) / 10) # Q10 correction
+  }
   a_coef <- 0.6
   b_coef <- 0.5
   sp_heat_air <- 1005.8
@@ -136,26 +143,26 @@ ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, furco
   Rconv <- 1 / (hc * Aouter)
   Rrad <- 1 / (4 * Aouter * 1 * 0.95 * (5.7 * 10^-8) * (airT + 273.15)^3)
   Rtotal <- Rbody + Rinsul + (Rconv*Rrad)/(Rconv + Rrad)
-  upcrit <- coreT - (mouseelephant*stress*Rtotal)
-  lowcrit <- coreT - mouseelephant * Rtotal
+  upcrit <- coreT - (basal*stress*Rtotal)
+  lowcrit <- coreT - basal * Rtotal
   Qgen <- (coreT - airT) / Rtotal
   QgenFinal <- Qgen
-  QgenFinal[QgenFinal<mouseelephant]<-mouseelephant
+  QgenFinal[QgenFinal<basal]<-basal
   mlO2ph <- QgenFinal / 20.1 * 3600
   esat <- VAPPRS(coreT)
   Qresp_gph <- (mlO2ph / 0.2094 / O2eff) * (WETAIR.rh(db = coreT, rh = 100)$vd - WETAIR.rh(db = airT, rh = rh)$vd) / 1000
   conv_H2O_loss <- 2501200 - 2378.7 * airT
   Qresp_W <- ((Qresp_gph / 3600) * conv_H2O_loss) / 1000
   Qresp_kjph <- Qresp_W / 1000 * 3600
-  PctBasal <- QgenFinal / mouseelephant * 100
+  PctBasal <- QgenFinal / basal * 100
   status<-Qgen
-  status[status>mouseelephant]<--100000000
-  status[status<stress * mouseelephant]<--300000000
+  status[status>basal]<--100000000
+  status[status<stress * basal]<--300000000
   status[status<100000000*-1]<--200000000
   status[status==100000000*-1]<-1
   status[status==300000000*-1]<-3
   status[status==200000000*-1]<-2
-  H2Oloss_W <- (Qgen * -1) + mouseelephant
+  H2Oloss_W <- (Qgen * -1) + basal
   H2O_gph <- (((H2Oloss_W) * 1000) / conv_H2O_loss) * 3600
   H2O_gph[H2O_gph<0]<-0
   massph_percent<-H2O_gph
