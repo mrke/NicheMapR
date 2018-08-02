@@ -143,7 +143,7 @@ ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, furco
   QgenFinal[QgenFinal<mouseelephant]<-mouseelephant
   mlO2ph <- QgenFinal / 20.1 * 3600
   esat <- VAPPRS(coreT)
-  Qresp_gph <- (mlO2ph / 0.2094 / O2eff) * (WETAIR(db = coreT, rh = 100)$vd - WETAIR(db = airT, rh = rh)$vd) / 1000
+  Qresp_gph <- (mlO2ph / 0.2094 / O2eff) * (WETAIR.rh(db = coreT, rh = 100)$vd - WETAIR.rh(db = airT, rh = rh)$vd) / 1000
   conv_H2O_loss <- 2501200 - 2378.7 * airT
   Qresp_W <- ((Qresp_gph / 3600) * conv_H2O_loss) / 1000
   Qresp_kjph <- Qresp_W / 1000 * 3600
@@ -161,15 +161,22 @@ ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, furco
   massph_percent<-H2O_gph
   massph_percent[massph_percent<0]<-0
   timetodeath<-massph_percent
-  massph_percent[massph_percent!=0]<-((H2O_gph / 1000) / mass) * 100
-  timetodeath[timetodeath!=0]<-1 / (H2O_gph / (mass * 0.15 * 1000))
-  results<-cbind(airT, windspd, rh, coreT, upcrit, lowcrit, Qresp_gph, Qresp_W, Qresp_kjph, skinT, Qgen,
+  massph_percent[massph_percent!=0]<-((H2O_gph[massph_percent != 0] / 1000) / mass) * 100
+  timetodeath[timetodeath!=0]<-1 / (H2O_gph[timetodeath!=0] / (mass * 0.15 * 1000))
+
+  # check if raster output or table
+  if(class(airT)[[1]] == 'RasterLayer'){
+   results <- list(upcrit = upcrit, lowcrit = lowcrit, Qresp_gph = Qresp_gph, Qresp_W = Qresp_W,
+     Qresp_kjph = Qresp_kjph, skinT = skinT, Qgen = Qgen, QgenFinal = QgenFinal, mlO2ph = mlO2ph,
+     PctBasal = PctBasal, status = status, H2Oloss_W = H2Oloss_W, H2O_gph = H2O_gph,
+     massph_percent = massph_percent, timetodeath = timetodeath)
+  }else{
+   results<-cbind(airT, windspd, rh, coreT, upcrit, lowcrit, Qresp_gph, Qresp_W, Qresp_kjph, skinT, Qgen,
            QgenFinal, mlO2ph, PctBasal, status, H2Oloss_W, H2O_gph,
            massph_percent, timetodeath)
-
   colnames(results)<-c('AirTemp','WindSpeed','RelHum','Tcore','UCT','LCT','Qresp_gph','Qresp_W',
     'Qresp_kjph','Tskin','Qgen','QgenFinal','mlO2ph','PctBasal','status','H2Oloss_W',
     'H2O_gph','massph_percent','timetodeath')
-
+  }
   return(results)
 }
