@@ -147,7 +147,7 @@ ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, furco
   lowcrit <- coreT - basal * Rtotal
   Qgen <- (coreT - airT) / Rtotal
   QgenFinal <- Qgen
-  QgenFinal[QgenFinal<basal]<-basal
+  QgenFinal[QgenFinal<basal]<-basal[QgenFinal<basal]
   mlO2ph <- QgenFinal / 20.1 * 3600
   esat <- VAPPRS(coreT)
   Qresp_gph <- (mlO2ph / 0.2094 / O2eff) * (WETAIR.rh(db = coreT, rh = 100)$vd - WETAIR.rh(db = airT, rh = rh)$vd) / 1000
