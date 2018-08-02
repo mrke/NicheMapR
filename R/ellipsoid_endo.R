@@ -99,7 +99,7 @@
 ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, furcond = 0.04,
   O2eff = 0.2, stress = 0.6, airT = 20, windspd = 1, rh = 50, Q10 = 3, basal = NA, basmult = 1) {
   posture[posture==1]<-1.01 # avoid divide by zero
-  if(is.na(basal) == TRUE){
+  if(is.na(max(basal)) == TRUE){
    mouseelephant <- 10^(-1.462 + 0.675 * log10(mass * 1000)) * basmult
    basal <- mouseelephant * Q10 ^ ((coreT - 37) / 10) # Q10 correction
   }
