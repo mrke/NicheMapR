@@ -1,6 +1,6 @@
 #' Australian implementation of the microclimate model.
 #'
-#' An implementation of the Niche Mapper microclimate model that uses the AWAP daily weather database
+#' An implementation of the NicheMapR microclimate model that uses the AWAP daily weather database
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param ystart First year to run

@@ -1,6 +1,6 @@
-#' USA implementation of the microclimate model.
+#' NCEP implementation of the microclimate model.
 #'
-#' An implementation of the NicheMapR microclimate model that uses the GRIDMET daily weather database http://www.climatologylab.org/gridmet.html, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "metdata_elevationdata.nc".
+#' An implementation of the NicheMapR microclimate model that uses the RNCEP package daily weather database http://www.climatologylab.org/gridmet.html, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "metdata_elevationdata.nc".
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
 #' @param dstart First day to run, date in format "d-m-Y" e.g. "01-01-2016"
 #' @param dfinish Last day to run, date in format "d-m-Y" e.g. "31-12-2016"
@@ -50,7 +50,6 @@
 #' \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
 #' \code{warm}{ = 0, uniform warming, °C}\cr\cr
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
-#' \code{opendap}{ = 1, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
@@ -216,7 +215,7 @@
 #' library(NicheMapR)
 #' dstart <- "01/01/2016"
 #' dfinish <- "31/12/2017"
-#' micro<-micro_usa(loc = 'Death Valley, California', runshade = 0, soilgrids = 0, dstart = dstart, dfinish = dfinish) # run the model using SoilGrids data at Madison for 2014 to 2016
+#' micro<-micro_ncep(loc = 'Death Valley, California', runshade = 0, soilgrids = 0, dstart = dstart, dfinish = dfinish) # run the model using SoilGrids data at Madison for 2014 to 2016
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
@@ -272,7 +271,7 @@
 #'     (%)",col=i,type = "l")
 #'  }
 #' }
-micro_usa <- function(loc = 'Death Valley, California', dstart = "01/01/2016", dfinish = "31/12/2016",
+micro_ncep <- function(loc = 'Death Valley, California', dstart = "01/01/2016", dfinish = "31/12/2016",
   nyears = as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1, soiltype = 4,
   REFL = 0.15, elev = NA, slope = 0, aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
   DEP=c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
@@ -291,7 +290,7 @@ micro_usa <- function(loc = 'Death Valley, California', dstart = "01/01/2016", d
   LAI = 0.1, snowmodel = 1, snowtemp = 1.5, snowdens = 0.375, densfun = c(0.5979, 0.2178, 0.001, 0.0038),
   snowmelt = 1, undercatch = 1, rainmelt = 0.0125, shore = 0, tides = 0,
   scenario = "", year = "", hourly = 0, rainhourly = 0, rainhour = 0,
-  rainoff = 0, lamb = 0, IUV = 0, opendap = 1, soilgrids = 0, IR = 0, message = 0,
+  rainoff = 0, lamb = 0, IUV = 0, soilgrids = 0, IR = 0, message = 0,
   fail = nyears * 24 * 365, save = 0, snowcond = 0, intercept = maxshade / 100 * 0.4, grasshade = 0) {
 
   # loc="Madison, Wisconsin"
@@ -373,8 +372,7 @@ micro_usa <- function(loc = 'Death Valley, California', dstart = "01/01/2016", d
   # MAXCOUNT = 500
   # windfac=1
   # rainhourly = 0
-  # opendap = 1
-  # soilgrids = 1
+  # soilgrids = 0
   # IR = 0
   # message = 0
   # fail = nyears * 24 * 365
@@ -567,6 +565,10 @@ micro_usa <- function(loc = 'Death Valley, California', dstart = "01/01/2016", d
       stop("package 'raster' is needed. Please install it.",
         call. = FALSE)
     }
+    if (!requireNamespace("RNCEP", quietly = TRUE)) {
+      stop("package 'RNCEP' is needed. Please install it.",
+        call. = FALSE)
+    }
     if (!requireNamespace("ncdf4", quietly = TRUE)) {
       stop("package 'ncdf4' is needed. Please install it.",
         call. = FALSE)
@@ -611,62 +613,23 @@ micro_usa <- function(loc = 'Death Valley, California', dstart = "01/01/2016", d
     ALMINT <- (abs(x[1])-ALONG)*60
     azmuth<-aspect
 
-    if(save != 2){
-      #GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]]
-      if(opendap == 1){
-        require(utils)
-        require(futile.logger)
-        retry <- function(expr, isError=function(x) "try-error" %in% class(x), maxErrors=50, sleep=1) {
-          attempts = 0
-          retval = try(eval(expr))
-          while (isError(retval)) {
-            attempts = attempts + 1
-            if (attempts >= maxErrors) {
-              msg = sprintf("retry: too many retries [[%s]]", capture.output(str(retval)))
-              flog.fatal(msg)
-              stop(msg)
-            } else {
-              msg = sprintf("retry: error in attempt %i/%i [[%s]]", attempts, maxErrors,
-                capture.output(str(retval)))
-              flog.error(msg)
-              warning(msg)
-            }
-            if (sleep > 0) Sys.sleep(sleep)
-            retval = try(eval(expr))
-          }
-          return(retval)
-        }
-
-        cat("extracting elevation via opendaps \n")
-        baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/MET/"
-        nc <- nc_open(paste0(baseurl, "/elev/metdata_elevationdata.nc"))
-        lon <- ncvar_get(nc, "lon")
-        lat <- ncvar_get(nc, "lat")
-        flat=match(abs(lat-x[2])<1/48,1)
-        latindex=which(flat %in% 1)
-        flon=match(abs(lon-x[1])<1/48,1)
-        lonindex=which(flon %in% 1)
-        start <- c(lonindex,latindex,1)
-        count <- c(1, 1, 1)
-        USADEM <- retry(as.numeric(ncvar_get(nc, varid = "elevation",
-          start = start, count)))
-        nc_close(nc)
-      }else{
-        USADEM <- extract(raster(paste0(spatial,"/metdata_elevationdata.nc")), x) # metres above sea level
-      }
-      if(save == 1){
-        cat("saving DEM data for later \n")
-        save(USADEM, file = 'USADEM.Rda')
-      }
+    gcfolder<-paste(.libPaths()[1],"/gcfolder.rda",sep="")
+    if(file.exists(gcfolder)==FALSE){
+      message("You don't appear to have the global climate data set - \n run function get.global.climate(folder = 'folder you want to put it in') .....\n exiting function micro_global")
+      opt <- options(show.error.messages=FALSE)
+      on.exit(options(opt))
+      stop()
     }
-    if(save == 2){
-      cat("loading DEM data from previous run \n")
-      load('USADEM.Rda')
+    load(gcfolder)
+    global_climate<-raster::brick(paste(folder,"/global_climate.nc",sep=""))
+    CLIMATE <- raster::extract(global_climate,x)
+    ALTT<-as.numeric(CLIMATE[,1])
+    if(is.na(ALTT)){
+      ALTT=0
     }
 
-    ALTITUDES <- NA# extract(raster(paste0(spatial,"/terr50.tif")), x) # to do
+    ALTITUDES <- ALTT
     if(is.na(elev) == FALSE){ALTITUDES <- elev} # check if user-specified elevation
-    if(is.na(ALTITUDES)==TRUE){ALTITUDES<-USADEM}
     if(save != 2){
       if(soilgrids == 1){
         cat('extracting data from SoilGrids \n')
@@ -734,212 +697,154 @@ micro_usa <- function(loc = 'Death Valley, California', dstart = "01/01/2016", d
     VIEWF<-VIEWF_all
 
     # setting up for temperature correction using lapse rate given difference between 9sec DEM value and 0.05 deg value
-    delta_elev = USADEM - ALTITUDES
+    delta_elev = ALTT - ALTITUDES
     adiab_corr_max <- delta_elev * lapse_max
     adiab_corr_min <- delta_elev * lapse_min
+    adiab_corr <- mean(adiab_corr_max, adiab_corr_min)
+    days <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900"), by = 'days')
+    alldays <- seq(as.POSIXct("01/01/1900", format = "%d/%m/%Y", origin = "01/01/1900"), Sys.time()-60*60*24, by = 'days')
+    startday <- which(as.character(format(alldays, "%d/%m/%Y")) == format(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), "%d/%m/%Y"))
+    endday <- which(as.character(format(alldays, "%d/%m/%Y")) == format(as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900"), "%d/%m/%Y"))
+    countday <- endday-startday+1
+
     if(save != 2){
-      if(opendap == 1){
-        cat("extracting weather data \n")
-        dates<-Sys.time()-60*60*24
-        curyear<-as.numeric(format(dates,"%Y"))
-        days <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900"), by = 'days')
-        alldays <- seq(as.POSIXct("01/01/1900", format = "%d/%m/%Y", origin = "01/01/1900"), Sys.time()-60*60*24, by = 'days')
-        startday <- which(as.character(format(alldays, "%d/%m/%Y")) == format(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), "%d/%m/%Y"))
-        endday <- which(as.character(format(alldays, "%d/%m/%Y")) == format(as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900"), "%d/%m/%Y"))
-        countday <- endday-startday+1
-        baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_met_"
-        cat(paste0("reading weather input for ", dstart, " to ", dfinish, " \n"))
-        cat(paste0("tmin weather input \n"))
-        nc <- nc_open(paste0(baseurl, "tmmn_1979_CurrentYear_CONUS.nc"))
-        day<-retry(as.numeric(ncvar_get(nc, varid = "day")))
-        lon <- ncvar_get(nc, "lon")
-        lat <- ncvar_get(nc, "lat")
-        flat=match(abs(lat-x[2])<1/48,1)
-        latindex=which(flat %in% 1)
-        flon=match(abs(lon-x[1])<1/48,1)
-        lonindex=which(flon %in% 1)
-        start <- c(latindex, lonindex, which(day == startday) - 1)
-        count <- c(1, 1, countday)
-        Tmin <- retry(as.numeric(ncvar_get(nc, varid = "daily_minimum_temperature", start = start, count))) - 273.15
-        nc_close(nc)
-        cat(paste0("tmax weather input \n"))
-        nc <- nc_open(paste0(baseurl, "tmmx_1979_CurrentYear_CONUS.nc"))
-        Tmax <- retry(as.numeric(ncvar_get(nc, varid = "daily_maximum_temperature", start = start, count))) - 273.15
-        nc_close(nc)
-        cat(paste0("rhmin weather input \n"))
-        nc <- nc_open(paste0(baseurl, "rmin_1979_CurrentYear_CONUS.nc"))
-        rhmin <- retry(as.numeric(ncvar_get(nc, varid = "daily_minimum_relative_humidity", start = start, count)))
-        nc_close(nc)
-        cat(paste0("rhmax weather input \n"))
-        nc <- nc_open(paste0(baseurl, "rmax_1979_CurrentYear_CONUS.nc"))
-        rhmax <- retry(as.numeric(ncvar_get(nc, varid = "daily_maximum_relative_humidity", start = start, count)))
-        nc_close(nc)
-        cat(paste0("rain weather input \n"))
-        nc <- nc_open(paste0(baseurl, "pr_1979_CurrentYear_CONUS.nc"))
-        Rain <- retry(as.numeric(ncvar_get(nc, varid = "precipitation_amount", start = start, count)))
-        nc_close(nc)
-        cat(paste0("solar weather input \n"))
-        nc <- nc_open(paste0(baseurl, "srad_1979_CurrentYear_CONUS.nc"))
-        solar <- retry(as.numeric(ncvar_get(nc, varid = "daily_mean_shortwave_radiation_at_surface", start = start, count)))
-        nc_close(nc)
-        cat(paste0("wind weather input \n"))
-        nc <- nc_open(paste0(baseurl, "vs_1979_CurrentYear_CONUS.nc"))
-        Wind <- retry(as.numeric(ncvar_get(nc, varid = "daily_mean_wind_speed", start = start, count)))
-        nc_close(nc)
-      }else{
-        cat("extracting weather data \n")
-        nc <- nc_open(paste(spatial, "/tmmx_", yearlist[1], ".nc",
-          sep = ""))
-        lon <- matrix(ncvar_get(nc, "lon"))
-        lat <- matrix(ncvar_get(nc, "lat"))
-        lon_1 <- as.numeric(longlat[1])
-        lat_1 <- as.numeric(longlat[2])
-        dist1 <- abs(lon - lon_1)
-        index1 <- which.min(dist1)
-        dist2 <- abs(lat - lat_1)
-        index2 <- which.min(dist2)
-        start <- c(index2, index1, 1)
-        count <- c(1, 1, -1)
-        for (j in 1:nyears) {
-          if (j == 1) {
-            cat(paste("reading weather input for ", yearlist[j],
-              " \n", sep = ""))
-            nc <- nc_open(paste(spatial, "/tmmn_", yearlist[j],
-              ".nc", sep = ""))
-            tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
-              start = start, count))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/tmmx_", yearlist[j],
-              ".nc", sep = ""))
-            tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
-              start = start, count))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/rmin_", yearlist[j],
-              ".nc", sep = ""))
-            rhmin <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
-              start = start, count))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/rmax_", yearlist[j],
-              ".nc", sep = ""))
-            rhmax <- as.numeric(ncvar_get(nc, varid = "relative_humidity",
-              start = start, count))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/pr_", yearlist[j],
-              ".nc", sep = ""))
-            Rain <- as.numeric(ncvar_get(nc, varid = "precipitation_amount",
-              start = start, count))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/srad_", yearlist[j],
-              ".nc", sep = ""))
-            solar <- as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
-              start = start, count))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/vs_", yearlist[j],
-              ".nc", sep = ""))
-            Wind <- as.numeric(ncvar_get(nc, varid = "wind_speed",
-              start = start, count))
-            nc_close(nc)
-            Tmax <- tmax - 273.15
-            Tmin <- tmin - 273.15
-          } else {
-            cat(paste("reading weather input for ", yearlist[j],
-              " \n", sep = ""))
-            nc <- nc_open(paste(spatial, "/tmmn_", yearlist[j],
-              ".nc", sep = ""))
-            tmin <- as.numeric(ncvar_get(nc, varid = "air_temperature",
-              start = start, count))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/tmmx_", yearlist[j],
-              ".nc", sep = ""))
-            tmax <- as.numeric(ncvar_get(nc, varid = "air_temperature",
-              start = start, count))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/rmin_", yearlist[j],
-              ".nc", sep = ""))
-            rhmin <- c(rhmin, as.numeric(ncvar_get(nc, varid = "relative_humidity",
-              start = start, count)))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/rmax_", yearlist[j],
-              ".nc", sep = ""))
-            rhmax <- c(rhmax, as.numeric(ncvar_get(nc, varid = "relative_humidity",
-              start = start, count)))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/pr_", yearlist[j],
-              ".nc", sep = ""))
-            Rain <- c(Rain, as.numeric(ncvar_get(nc, varid = "precipitation_amount",
-              start = start, count)))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/srad_", yearlist[j],
-              ".nc", sep = ""))
-            solar <- c(solar, as.numeric(ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
-              start = start, count)))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/vs_", yearlist[j],
-              ".nc", sep = ""))
-            Wind <- c(Wind, as.numeric(ncvar_get(nc, varid = "wind_speed",
-              start = start, count)))
-            nc_close(nc)
-            Tmax <- c(Tmax, tmax - 273.15)
-            Tmin <- c(Tmin, tmin - 273.15)
-          }
-        }
-      }
-      # compute clear sky solar for the site of interest, for cloud cover computation below
-      cat("running micro_global to get clear sky solar \n")
-      micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, timeinterval = 365)
-      clearskyrad <- micro_clearsky$metout[,c(1, 13)]
-      clearsky_mean1 <- aggregate(clearskyrad[,2], by = list(clearskyrad[,1]), FUN = mean)[,2]
-      leapyears<-seq(1900,2100,4)
-      for(j in 1:nyears){
-        if(yearlist[j]%in%leapyears){# add day for leap year if needed
-          clearsky_mean<-c(clearsky_mean1[1:59],clearsky_mean1[59],clearsky_mean1[60:365])
-        }else{
-          clearsky_mean <- clearsky_mean1
-        }
-        if(j == 1){
-          allclearsky <- clearsky_mean
-        }else{
-          allclearsky <- c(allclearsky, clearsky_mean)
-        }
-      }
-      if(opendap == 1 & save != 2){ # truncating if less than whole years requested via opendap
-        cut <- as.numeric(days[1] - as.POSIXct(paste0('01/01/', ystart), format = "%d/%m/%Y") + 1)
-        allclearsky <- allclearsky[cut:(cut+countday-1)]
-      }
-      cloud <- (1 - solar / allclearsky) * 100
-      cloud[cloud<0]<-0
-      cloud[cloud>100]<-100
-      CCMAXX<-as.numeric(cloud)
-      CCMINN<-CCMAXX
-      CCMINN<-CCMINN*0.5
-      CCMAXX<-CCMAXX*2
-      CCMINN[CCMINN>100]<-100
-      CCMAXX[CCMAXX>100]<-100
-      Wind[Wind==0]<-0.1
+      cat("extracting weather data with RNCEP \n")
+      y.start <- as.numeric(format(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), "%Y"))
+      y.finish <- as.numeric(format(as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900"), "%Y"))
+      m.start <- as.numeric(format(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), "%m"))
+      m.finish <- as.numeric(format(as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900"), "%m"))
+      # for splining
+      tt <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900")+23*3600, by = 'hours')
+
+      ## Query the temperature from a particular pressure level ##
+      tair2 <- NCEP.gather(variable='air.2m', level='gaussian',
+        months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
+        lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
+        reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)
+      lat1 <- as.numeric(dimnames(tair2)[[1]][1])
+      lon1 <- as.numeric(dimnames(tair2)[[2]][2])
+      if(lat1 > 90){lat1 <- -1*(360-lat1)}
+      if(lon1 > 180){lon1 <- -1*(360-lon1)}
+      lonlat2 <- c(lon1, lat1)
+      tair <- tair2[1, 1, ]
+      tointerp <- tt[seq(1, length(tair)*6, 6)]
+      xx <- cbind(tointerp,tair)
+      TAIRhr <- spline(xx, xout = tt)$y - 273.15
+      precip <- NCEP.gather(variable='prate.sfc', level='gaussian',
+        months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
+        lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
+        reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
+      xx <- cbind(tointerp,precip)
+      RAINhr <- spline(xx, xout = tt)$y * 3600
+      RAINhr[RAINhr < 0] <- 0
+      shum <- NCEP.gather(variable='shum.2m', level='gaussian',
+        months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
+        lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
+        reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
+      xx <- cbind(tointerp,shum)
+      SHUMhr <- spline(xx, xout = tt)$y # specific humidity
+      press <- NCEP.gather(variable='pres.sfc', level='surface',
+        months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
+        lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
+        reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
+      xx <- cbind(tointerp,press)
+      PRESShr <- spline(xx, xout = tt)$y
+      ws <- WETAIR(db = TAIRhr, rh = 100, bp = PRESShr)$rw
+      RHhr <- SHUMhr / ws * 100
+      RHhr[RHhr > 100] <- 100
+      RHhr[RHhr < 0] <- 0
+      cloud <- NCEP.gather(variable='tcdc.eatm', level='gaussian',
+        months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
+        lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
+        reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
+      xx <- cbind(tointerp,cloud)
+      CLDhr <- spline(xx, xout = tt)$y
+      CLDhr[CLDhr < 0] <- 0
+      CLDhr[CLDhr > 100] <- 100
+      uwind <- NCEP.gather(variable='uwnd.10m', level='gaussian',
+        months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
+        lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
+        reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
+      vwind <- NCEP.gather(variable='vwnd.10m', level='gaussian',
+        months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
+        lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
+        reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
+      wind_abs = (uwind^2 + vwind^2)^(1/2)
+      xx <- cbind(tointerp,wind_abs)
+      WNhr <- spline(xx, xout = tt)$y*(2/10)^0.15 # also correct to 2m height
+      WNhr[WNhr < 0.1] <- 0.1
+      sol <- NCEP.gather(variable='dswrf.sfc', level='gaussian',
+        months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
+        lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
+        reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
+      xx <- cbind(tointerp,sol)
+      SOLRhr <- spline(xx, xout = tt)$y
+      SOLRhr[SOLRhr<0]<-0
+
+
+      TMAXX1<-aggregate(TAIRhr,by=list(format(tt, "%d/%m/%Y")),max) # maximum air temperatures (°C)
+      TMAXX<-TMAXX1$x[order(as.POSIXct(TMAXX1$Group.1, format = "%d/%m/%Y"))]
+      TMINN1<-aggregate(TAIRhr,by=list(format(tt, "%d/%m/%Y")),min) # minimum air temperatures (°C)
+      TMINN<-TMINN1$x[order(as.POSIXct(TMINN1$Group.1, format = "%d/%m/%Y"))]
+      RAINFALL1<-aggregate(RAINhr,by=list(format(tt, "%d/%m/%Y")),sum) # monthly mean rainfall (mm)
+      RAINFALL<-RAINFALL1$x[order(as.POSIXct(RAINFALL1$Group.1, format = "%d/%m/%Y"))]
+      CCMAXX1<-aggregate(CLDhr,by=list(format(tt, "%d/%m/%Y")),max) # max cloud cover (%)
+      CCMAXX<-CCMAXX1$x[order(as.POSIXct(CCMAXX1$Group.1, format = "%d/%m/%Y"))]
+      CCMINN1<-aggregate(CLDhr,by=list(format(tt, "%d/%m/%Y")),min) # min cloud cover (%)
+      CCMINN<-CCMINN1$x[order(as.POSIXct(CCMINN1$Group.1, format = "%d/%m/%Y"))]
+      RHMAXX1<-aggregate(RHhr,by=list(format(tt, "%d/%m/%Y")),max) # max relative humidity (%)
+      RHMAXX<-RHMAXX1$x[order(as.POSIXct(RHMAXX1$Group.1, format = "%d/%m/%Y"))]
+      RHMINN1<-aggregate(RHhr,by=list(format(tt, "%d/%m/%Y")),min) # min relative humidity (%)
+      RHMINN<-RHMINN1$x[order(as.POSIXct(RHMINN1$Group.1, format = "%d/%m/%Y"))]
+      WNMAXX1<-aggregate(WNhr,by=list(format(tt, "%d/%m/%Y")),max) # max wind speed (m/s)
+      WNMAXX<-WNMAXX1$x[order(as.POSIXct(WNMAXX1$Group.1, format = "%d/%m/%Y"))]
+      WNMINN1<-aggregate(WNhr,by=list(format(tt, "%d/%m/%Y")),min) # min wind speed (m/s)
+      WNMINN<-WNMINN1$x[order(as.POSIXct(WNMINN1$Group.1, format = "%d/%m/%Y"))]
+      PRESS1<-aggregate(PRESShr,by=list(format(tt, "%d/%m/%Y")),min) # min wind speed (m/s)
+      PRESS<-PRESS1$x[order(as.POSIXct(PRESS1$Group.1, format = "%d/%m/%Y"))]
+
       if(save == 1){
         cat("saving met data for later \n")
         save(CCMAXX, file = 'CCMAXX.Rda')
         save(CCMINN, file = 'CCMINN.Rda')
-        save(Wind, file = 'Wind.Rda')
-        save(Tmax, file = 'Tmax.Rda')
-        save(Tmin, file = 'Tmin.Rda')
-        save(rhmax, file = 'rhmax.Rda')
-        save(rhmin, file = 'rhmin.Rda')
-        save(Rain, file = 'Rain.Rda')
+        save(WNMAXX, file = 'WNMAXX.Rda')
+        save(WNMINN, file = 'WNMINN.Rda')
+        save(TMAXX, file = 'TMAXX.Rda')
+        save(TMINN, file = 'TMINN.Rda')
+        save(RHMAXX, file = 'RHMAXX.Rda')
+        save(RHMINN, file = 'RHMINN.Rda')
+        save(RAINFALL, file = 'RAINFAL.Rda')
+        save(PRESS, file = 'PRESS.Rda')
+        save(CLDhr, file = 'CLDhr.Rda')
+        save(WNhr, file = 'WNhr.Rda')
+        save(TAIRhr, file = 'TAIRhr.Rda')
+        save(RHhr, file = 'RHhr.Rda')
+        save(RAINhr, file = 'RAINhr.Rda')
+        save(SOLRhr, file = 'SOLRhr.Rda')
+        save(lonlat2, file = 'lonlat2.Rda')
       }
     }else{
       cat("loading met data from previous run \n")
       load('CCMAXX.Rda')
       load('CCMINN.Rda')
-      load('Wind.Rda')
-      load('Tmax.Rda')
-      load('Tmin.Rda')
-      load('rhmax.Rda')
-      load('rhmin.Rda')
-      load('Rain.Rda')
+      load('WNMAXX.Rda')
+      load('WNMINN.Rda')
+      load('TMAXX.Rda')
+      load('TMINN.Rda')
+      load('RHMAXX.Rda')
+      load('RHMINN.Rda')
+      load('RAINFAL.Rda')
+      load('PRESS.Rda')
+      load('CLDhr.Rda')
+      load('WNhr.Rda')
+      load('TAIRhr.Rda')
+      load('RHhr.Rda')
+      load('RAINhr.Rda')
+      load('SOLRhr.Rda')
+      load('lonlat2.Rda')
     }
 
-    ndays<-length(Tmax)
+    ndays<-length(TMAXX)
     doynum<-ndays
     leapyears<-seq(1900,2100,4)
     for(k in 1:nyears){
@@ -959,13 +864,13 @@ micro_usa <- function(loc = 'Death Valley, California', dstart = "01/01/2016", d
         doy <- c(doy, seq(1, dinyear))
       }
     }
-    if(opendap == 1 & save != 2){ # could be less than whole years
-      doy <- doy[cut:(cut+countday-1)]
-    }
+    cut <- as.numeric(days[1] - as.POSIXct(paste0('01/01/', ystart), format = "%d/%m/%Y") + 1)
+    doy <- doy[cut:(cut+countday-1)]
+
     ida<-ndays
     idayst <- 1
 
-    dim<-length(Tmin)
+    dim<-length(TMAXX)
     maxshades=rep(maxshade,dim)
     minshades=rep(minshade,dim)
     shademax<-maxshades
@@ -989,19 +894,28 @@ micro_usa <- function(loc = 'Death Valley, California', dstart = "01/01/2016", d
       } #end check if running gads
 
       if(adiab_cor==1){
-        TMAXX<-as.matrix(Tmax+adiab_corr_max)
-        TMINN<-as.matrix(Tmin+adiab_corr_min)
+        Tmax <- TMAXX
+        Tmin <- TMINN
+        Tair <- TAIRhr
+        rhmax <- RHMAXX
+        rhmin <- RHMINN
+        rh <- RHhr
+        TMAXX<-as.matrix(TMAXX+adiab_corr_max)
+        TMINN<-as.matrix(TMINN+adiab_corr_min)
+        TAIRhr<-as.matrix(TAIRhr+adiab_corr)
       }else{
-        TMAXX<-as.matrix(Tmax)
-        TMINN<-as.matrix(Tmin)
+        TMAXX<-as.matrix(TMAXX)
+        TMINN<-as.matrix(TMINN)
+        TAIRhr<-as.matrix(TAIRhr)
       }
       if(warm != 0){
         # impose uniform temperature change
         TMAXX<-TMAXX+seq(0, dim-1)/(dim-1)*warm
         TMINN<-TMINN+seq(0, dim-1)/(dim-1)*warm
+        TAIRhr<-TAIRhr+seq(0, dim-1)/(dim-1)*warm
       }
-      RAINFALL<-Rain+rainoff
-
+      RAINFALL<-RAINFALL+rainoff
+      RAINhr<-RAINhr+rainoff
       # correct for potential change in RH with elevation-corrected Tair
       es <- WETAIR(db = TMAXX, rh = 100)$esat
       e <- WETAIR(db = Tmax, rh = rhmin)$e
@@ -1013,13 +927,18 @@ micro_usa <- function(loc = 'Death Valley, California', dstart = "01/01/2016", d
       RHMAXX <- (e / es) * 100
       RHMAXX[RHMAXX>100]<-100
       RHMAXX[RHMAXX<0]<-0.01
+      es <- WETAIR(db = TAIRhr, rh = 100)$esat
+      e <- WETAIR(db = Tair, rh = rh)$e
+      RHhr <- (e / es) * 100
+      RHhr[RHhr>100]<-100
+      RHhr[RHhr<0]<-0.01
 
       ALLMINTEMPS<-TMINN
       ALLMAXTEMPS<-TMAXX
       ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
 
-      WNMAXX <- Wind * windfac
-      WNMINN <- Wind * windfac
+      WNMAXX <- WNMAXX * windfac
+      WNMINN <- WNMINN * windfac
       message('min wind * 0.5 \n')
       message('max wind * 2 \n')
 
@@ -1092,8 +1011,8 @@ micro_usa <- function(loc = 'Death Valley, California', dstart = "01/01/2016", d
       #Heavy trees 	0.25
       #Several buildings 	0.25
       #Hilly, mountainous terrain 	0.25
-      WNMAXX<-WNMAXX*(2/10)^0.15
-      WNMINN<-WNMINN*(2/10)^0.15
+      #WNMAXX<-WNMAXX*(2/10)^0.15
+      #WNMINN<-WNMINN*(2/10)^0.15
 
       SLES<-matrix(nrow = dim, data = 0)
       SLES<-SLES+SLE
@@ -1144,8 +1063,8 @@ micro_usa <- function(loc = 'Death Valley, California', dstart = "01/01/2016", d
         WNhr=rep(0,24*dim)
         CLDhr=rep(0,24*dim)
         SOLRhr=rep(0,24*dim)
-        ZENhr=rep(-1,24*dim)
       }
+      ZENhr=rep(-1,24*dim)
       if(rainhourly==0){
         RAINhr=rep(0,24*dim)
       }else{
@@ -1295,17 +1214,17 @@ micro_usa <- function(loc = 'Death Valley, California', dstart = "01/01/2016", d
         drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
         srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
         if(snowmodel == 1){
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=lonlat2,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
         }else{
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=lonlat2,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
         }
       }else{
         if(snowmodel == 1){
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=lonlat2,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP))
         }else{
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=lonlat2,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP))
         }
       }
     } # end of check for na sites
   } # end error trapping
-} # end of micro_usa function
+} # end of micro_ncep function

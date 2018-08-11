@@ -1,6 +1,6 @@
 #' New Zealand implementation of the microclimate model.
 #'
-#' An implementation of the Niche Mapper microclimate model that uses the Virtual Climate Station Network (VCSN) for NZ https://www.niwa.co.nz/climate/our-services/virtual-climate-stations
+#' An implementation of the NicheMapR microclimate model that uses the Virtual Climate Station Network (VCSN) for NZ https://www.niwa.co.nz/climate/our-services/virtual-climate-stations
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
 #' @param ystart First year to run
 #' @param yfinish Last year to run
