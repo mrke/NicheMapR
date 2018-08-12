@@ -1,6 +1,6 @@
 #' NCEP implementation of the microclimate model.
 #'
-#' An implementation of the NicheMapR microclimate model that uses the RNCEP package daily weather database http://www.climatologylab.org/gridmet.html, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "metdata_elevationdata.nc".
+#' An implementation of the NicheMapR microclimate model that uses the RNCEP package daily weather database https://sites.google.com/site/michaelukemp/rncep, and specifically uses the following variables: air.2m, prate.sfc, shum.2m, pres.sfc, tcdc.eatm, uwnd.10m, vwnd.10m, dswrf.sfc. At the moment uses the same DEM from the CRU global climate data set.
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
 #' @param dstart First day to run, date in format "d-m-Y" e.g. "01-01-2016"
 #' @param dfinish Last day to run, date in format "d-m-Y" e.g. "31-12-2016"
@@ -28,7 +28,7 @@
 #' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
 #' @return sunsnow Hourly predictions of snow temperature under the minimum specified shade
 #' @return shadsnow Hourly predictions snow temperature under the maximum specified shade
-#' @usage micro_USA(loc = 'Death Valley, California', dstart = "01-01-2016", dfinish = "01-01-2016", soiltype = 4,
+#' @usage micro_ncep(loc = 'Galapagos', dstart = "01-01-2017", dfinish = "31-12-2017", soiltype = 4,
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export
@@ -215,7 +215,7 @@
 #' library(NicheMapR)
 #' dstart <- "01/01/2016"
 #' dfinish <- "31/12/2017"
-#' micro<-micro_ncep(loc = 'Death Valley, California', runshade = 0, soilgrids = 0, dstart = dstart, dfinish = dfinish) # run the model using SoilGrids data at Madison for 2014 to 2016
+#' micro<-micro_ncep(loc = 'Galapagos', runshade = 0, soilgrids = 0, dstart = dstart, dfinish = dfinish) # run the model using SoilGrids data at Madison for 2014 to 2016
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
@@ -271,7 +271,7 @@
 #'     (%)",col=i,type = "l")
 #'  }
 #' }
-micro_ncep <- function(loc = 'Death Valley, California', dstart = "01/01/2016", dfinish = "31/12/2016",
+micro_ncep <- function(loc = 'Galapagos', dstart = "01/01/2016", dfinish = "31/12/2016",
   nyears = as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1, soiltype = 4,
   REFL = 0.15, elev = NA, slope = 0, aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
   DEP=c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
@@ -294,6 +294,7 @@ micro_ncep <- function(loc = 'Death Valley, California', dstart = "01/01/2016", 
   fail = nyears * 24 * 365, save = 0, snowcond = 0, intercept = maxshade / 100 * 0.4, grasshade = 0) {
 
   # loc="Madison, Wisconsin"
+  # loc = 'Dubbo, NSW'
   # dstart="01/01/2016"
   # dfinish="31/12/2016"
   # nyears=as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1
@@ -358,7 +359,7 @@ micro_ncep <- function(loc = 'Death Valley, California', dstart = "01/01/2016", 
   # shore=0
   # tides = 0
   # scenario=""
-  # hourly=0
+  # hourly=1
   # rainhour = 0
   # rainoff=0
   # lamb = 0
@@ -381,6 +382,7 @@ micro_ncep <- function(loc = 'Death Valley, California', dstart = "01/01/2016", 
   # lapse_min = 0.0039
   # snowcond = 0
   # intercept = maxshade / 100 * 0.3
+  # grasshade = 0
 
   ystart <- as.numeric(substr(dstart, 7, 10))
   yfinish <- as.numeric(substr(dfinish, 7, 10))
@@ -596,6 +598,7 @@ micro_ncep <- function(loc = 'Death Valley, California', dstart = "01/01/2016", 
     library(raster)
     library(proj4)
     library(ncdf4)
+    library(RNCEP)
     # get the local timezone reference longitude
     if(timezone==1){ # this now requires registration
       if(!require(geonames, quietly = TRUE)){
@@ -706,6 +709,8 @@ micro_ncep <- function(loc = 'Death Valley, California', dstart = "01/01/2016", 
     startday <- which(as.character(format(alldays, "%d/%m/%Y")) == format(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), "%d/%m/%Y"))
     endday <- which(as.character(format(alldays, "%d/%m/%Y")) == format(as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900"), "%d/%m/%Y"))
     countday <- endday-startday+1
+    #tt <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900")+23*3600, by = 'hours')
+    tt <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(dfinish, format = "%d/%m/%Y", tz = 'UTC')+23*3600, by = 'hours')
 
     if(save != 2){
       cat("extracting weather data with RNCEP \n")
@@ -713,8 +718,10 @@ micro_ncep <- function(loc = 'Death Valley, California', dstart = "01/01/2016", 
       y.finish <- as.numeric(format(as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900"), "%Y"))
       m.start <- as.numeric(format(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), "%m"))
       m.finish <- as.numeric(format(as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900"), "%m"))
+      if(as.numeric(format(Sys.time(), '%Y')) == yfinish){
+        m.finish <- m.finish - 1
+      }
       # for splining
-      tt <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900")+23*3600, by = 'hours')
 
       ## Query the temperature from a particular pressure level ##
       tair2 <- NCEP.gather(variable='air.2m', level='gaussian',
@@ -781,13 +788,83 @@ micro_ncep <- function(loc = 'Death Valley, California', dstart = "01/01/2016", 
       SOLRhr <- spline(xx, xout = tt)$y
       SOLRhr[SOLRhr<0]<-0
 
+    SZA<-function(timein=Sys.time(),Lat = 50.910335,Lon = 11.568740){
+          # Calculate solar zenith angle
+          # according to http://solardat.uoregon.edu/SolarRadiationBasics.html
+          # calculations have been modified for positive East longitudes and time in UTC
+          # Extract time information
+          #( hour, minute, second, dummy, n ) = time.gmtime()[3:8]
+          # Calculate declination of the sun d
+          #if (is.vector(timein)){
 
+          sza<-vector("numeric",length=length(timein))
+          for(i in 1:length(timein)){
+            tm <- timein[i]
+            time<-as.POSIXlt(tm,tz='UTC')
+            d2r=pi/180.
+            r2d=1./d2r
+            doy <- time$yday+1
+            d<-23.45 * d2r * sin(d2r *360. *(284. + doy) / 365.) # [rad]
+            #print (sprintf("d = %f", d * 180 / pi))
+            # Calculate equation of time
+            if (doy <= 106){
+              E_qt <- -14.2 * sin(pi * (doy + 7.) / 111.)      # Eq. SR.4a [minutes]
+            }else{if (doy<= 166){
+              E_qt <-   4.0 * sin(pi * (doy - 106.) / 59.)     # Eq. SR.4b [minutes]
+            }else{if (doy<= 246){
+              E_qt <-  -6.5 * sin(pi * (doy - 166.) / 80.)     # Eq. SR.4c [minutes]
+            }else{E_qt <-  16.4 * sin(pi * (doy - 247.) / 113.)}}}    # Eq. SR.4d [minutes]
+            # Get UTC time T
+            T<-time$hour + time$min / 60.0 + time$sec / 3600.0 # [hours]
+            # Calculate solar time T_solar (East longitudes are positive!)
+            Longitude<-Lon#*d2r
+            T_solar<-T + Longitude / 15. + E_qt / 60. # [hours]
+            # Calculate hour angle w (positive: from midnight to noon, negative: from noon to midnight)
+            w<-pi * (12. - T_solar) / 12. # [rad]
+            # Calculate solar zenith angle Z
+            l<-Lat * d2r # [rad]
+            if(class(Lat)[1]=="RasterLayer"){
+              if(i==1){
+                sza1= 90.-asin(sin(l) * sin(d) + cos(l) * cos(d) * cos(w)) * r2d # [deg]
+                sza1[sza1>90]<-90
+                sza=sza1
+              }else{
+                sza1=90.-asin(sin(l) * sin(d) + cos(l) * cos(d) * cos(w)) * r2d # [deg]
+                sza1[sza1>90]<-90
+                sza=stack(sza,sza1)
+              }
+            }else{
+              sza[i]<-90.-asin(sin(l) * sin(d) + cos(l) * cos(d) * cos(w)) * r2d # [deg]
+            }
+          }
+          #}
+          return(sza)
+        }
+        ZENhr <- SZA(timein = tt, Lat = x[2], Lon = abs(x[1]))
+        ZENhr[ZENhr>90] <- 90
+        SOLRhr[ZENhr >= 90] <- 0
+        ZENhr2 <- ZENhr
+        ZENhr2[ZENhr2!=90] <- 0
+        rleb <- rle(x = ZENhr2)$lengths[1:3]
+        length.orig <- length(PRESShr)
+        crop <- rleb[1] + (24-rleb[3])/2
+        crop2 <- length.orig-(25-crop)
+        PRESShr<-PRESShr[crop:crop2]
+        CLDhr<-CLDhr[crop:crop2]
+        WNhr<-WNhr[crop:crop2]
+        TAIRhr<-TAIRhr[crop:crop2]
+        RHhr<-RHhr[crop:crop2]
+        RAINhr<-RAINhr[crop:crop2]
+        SOLRhr<-SOLRhr[crop:crop2]
+        ZENhr<-ZENhr[crop:crop2]
+        tt<-tt[crop:crop2]
+        tt<-tt+(25-crop)*3600
       TMAXX1<-aggregate(TAIRhr,by=list(format(tt, "%d/%m/%Y")),max) # maximum air temperatures (°C)
       TMAXX<-TMAXX1$x[order(as.POSIXct(TMAXX1$Group.1, format = "%d/%m/%Y"))]
       TMINN1<-aggregate(TAIRhr,by=list(format(tt, "%d/%m/%Y")),min) # minimum air temperatures (°C)
       TMINN<-TMINN1$x[order(as.POSIXct(TMINN1$Group.1, format = "%d/%m/%Y"))]
-      RAINFALL1<-aggregate(RAINhr,by=list(format(tt, "%d/%m/%Y")),sum) # monthly mean rainfall (mm)
-      RAINFALL<-RAINFALL1$x[order(as.POSIXct(RAINFALL1$Group.1, format = "%d/%m/%Y"))]
+      RAINFALL1<-aggregate(data.frame(precip*6*3600),by=list(format(tointerp, "%d/%m/%Y")),sum) # monthly mean rainfall (mm)
+      RAINFALL<-RAINFALL1[order(as.POSIXct(RAINFALL1$Group.1, format = "%d/%m/%Y")),2]
       CCMAXX1<-aggregate(CLDhr,by=list(format(tt, "%d/%m/%Y")),max) # max cloud cover (%)
       CCMAXX<-CCMAXX1$x[order(as.POSIXct(CCMAXX1$Group.1, format = "%d/%m/%Y"))]
       CCMINN1<-aggregate(CLDhr,by=list(format(tt, "%d/%m/%Y")),min) # min cloud cover (%)
@@ -813,7 +890,7 @@ micro_ncep <- function(loc = 'Death Valley, California', dstart = "01/01/2016", 
         save(TMINN, file = 'TMINN.Rda')
         save(RHMAXX, file = 'RHMAXX.Rda')
         save(RHMINN, file = 'RHMINN.Rda')
-        save(RAINFALL, file = 'RAINFAL.Rda')
+        save(RAINFALL, file = 'RAINFALL.Rda')
         save(PRESS, file = 'PRESS.Rda')
         save(CLDhr, file = 'CLDhr.Rda')
         save(WNhr, file = 'WNhr.Rda')
@@ -833,7 +910,7 @@ micro_ncep <- function(loc = 'Death Valley, California', dstart = "01/01/2016", 
       load('TMINN.Rda')
       load('RHMAXX.Rda')
       load('RHMINN.Rda')
-      load('RAINFAL.Rda')
+      load('RAINFALL.Rda')
       load('PRESS.Rda')
       load('CLDhr.Rda')
       load('WNhr.Rda')
@@ -939,8 +1016,6 @@ micro_ncep <- function(loc = 'Death Valley, California', dstart = "01/01/2016", 
 
       WNMAXX <- WNMAXX * windfac
       WNMINN <- WNMINN * windfac
-      message('min wind * 0.5 \n')
-      message('max wind * 2 \n')
 
       MAXSHADES<-maxshades
       MINSHADES<-minshades
@@ -1063,12 +1138,14 @@ micro_ncep <- function(loc = 'Death Valley, California', dstart = "01/01/2016", 
         WNhr=rep(0,24*dim)
         CLDhr=rep(0,24*dim)
         SOLRhr=rep(0,24*dim)
+        ZENhr=rep(-1,24*dim)
+      }else{
+
       }
-      ZENhr=rep(-1,24*dim)
       if(rainhourly==0){
         RAINhr=rep(0,24*dim)
       }else{
-        RAINhr = rainhour
+        RAINhr = RAINhr
       }
 
       doy1=matrix(data = 0., nrow = dim, ncol = 1)
