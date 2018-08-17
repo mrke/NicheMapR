@@ -9,7 +9,6 @@
 #' @param slope Slope in degrees
 #' @param aspect Aspect in degrees (0 = north)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
-#' @param soiltype Soil type: Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, user-defined = 12, based on Campbell and Norman 1990 Table 9.1.
 #' @param minshade Minimum shade level to use (\%)
 #' @param maxshade Maximum shade level to us (\%)
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
@@ -28,14 +27,13 @@
 #' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
 #' @return sunsnow Hourly predictions of snow temperature under the minimum specified shade
 #' @return shadsnow Hourly predictions snow temperature under the maximum specified shade
-#' @usage micro_USA(loc = 'Death Valley, California', dstart = "01-01-2016", dfinish = "01-01-2016", soiltype = 4,
+#' @usage micro_USA(loc = 'Death Valley, California', dstart = "01-01-2016", dfinish = "01-01-2016",
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export
 #' @details
 #' \itemize{
 #' \strong{ Parameters controling how the model runs:}\cr\cr
-#'
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 #' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
 #' \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
@@ -272,33 +270,102 @@
 #'     (%)",col=i,type = "l")
 #'  }
 #' }
-micro_usa <- function(loc = 'Death Valley, California', dstart = "01/01/2016", dfinish = "31/12/2016",
-  nyears = as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1, soiltype = 4,
-  REFL = 0.15, elev = NA, slope = 0, aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
-  DEP=c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
-  Refhyt = 2, Usrhyt = 0.01, Z01 = 0, Z02 = 0, ZH1 = 0, ZH2 = 0, runshade = 1,
-  clearsky = 0, run.gads = 1, write_input = 0, writecsv = 0,
-  terrain = 0, dailywind = 1, windfac = 1, adiab_cor = 1, warm = 0,
-  spatial = "N:/USA", ERR = 1.5, RUF = 0.004, EC = 0.0167238, SLE = 0.95,
-  Thcond = 2.5, Density = 2.56, SpecHeat = 870, BulkDensity = 1.3, PCTWET = 0,
-  rainwet = 1.5, cap = 1, CMH2O = 1, hori = rep(0,24), TIMAXS=c(1.0, 1.0, 0.0, 0.0),
-  TIMINS = c(0, 0, 1, 1), timezone = 0, runmoist = 1, PE = rep(1.1, 19),
-  KS = rep(0.0037, 19), BB = rep(4.5, 19), BD = rep(BulkDensity, 19),
-  DD = rep(Density, 19), maxpool = 10000, rainmult = 1, evenrain = 0,
+micro_usa <- function(
+  loc = 'Death Valley, California',
+  dstart = "01/01/2016", dfinish = "31/12/2016",
+  nyears = as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1,
+  REFL = 0.15,
+  elev = NA,
+  slope = 0,
+  aspect = 0,
+  lapse_max = 0.0077,
+  lapse_min = 0.0039,
+  DEP=c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200),
+  minshade = 0,
+  maxshade = 90,
+  Refhyt = 2,
+  Usrhyt = 0.01,
+  Z01 = 0,
+  Z02 = 0,
+  ZH1 = 0,
+  ZH2 = 0,
+  runshade = 1,
+  clearsky = 0,
+  run.gads = 1,
+  write_input = 0,
+  writecsv = 0,
+  terrain = 0,
+  dailywind = 1,
+  windfac = 1,
+  adiab_cor = 1,
+  warm = 0,
+  spatial = "N:/USA",
+  ERR = 1.5,
+  RUF = 0.004,
+  EC = 0.0167238,
+  SLE = 0.95,
+  Thcond = 2.5,
+  Density = 2.56,
+  SpecHeat = 870,
+  BulkDensity = 1.3,
+  PCTWET = 0,
+  rainwet = 1.5,
+  cap = 1,
+  CMH2O = 1,
+  hori = rep(0,24),
+  TIMAXS=c(1.0, 1.0, 0.0, 0.0),
+  TIMINS = c(0, 0, 1, 1),
+  timezone = 0,
+  runmoist = 1,
+  PE = rep(1.1, 19),
+  KS = rep(0.0037, 19),
+  BB = rep(4.5, 19),
+  BD = rep(BulkDensity, 19),
+  DD = rep(Density, 19),
+  maxpool = 10000,
+  rainmult = 1,
+  evenrain = 0,
   SoilMoist_Init = c(0.1, 0.12, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4),
   L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000,
-  R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
-  LAI = 0.1, snowmodel = 1, snowtemp = 1.5, snowdens = 0.375, densfun = c(0.5979, 0.2178, 0.001, 0.0038),
-  snowmelt = 1, undercatch = 1, rainmelt = 0.0125, shore = 0, tides = 0,
-  scenario = "", year = "", hourly = 0, rainhourly = 0, rainhour = 0,
-  rainoff = 0, lamb = 0, IUV = 0, opendap = 1, soilgrids = 0, IR = 0, message = 0,
-  fail = nyears * 24 * 365, save = 0, snowcond = 0, intercept = maxshade / 100 * 0.4, grasshade = 0) {
+  R1 = 0.001,
+  RW = 2.5e+10,
+  RL = 2e+6,
+  PC = -1500,
+  SP = 10,
+  IM = 1e-06,
+  MAXCOUNT = 500,
+  LAI = 0.1,
+  snowmodel = 1,
+  snowtemp = 1.5,
+  snowdens = 0.375,
+  densfun = c(0.5979, 0.2178, 0.001, 0.0038),
+  snowmelt = 1,
+  undercatch = 1,
+  rainmelt = 0.0125,
+  shore = 0,
+  tides = 0,
+  scenario = "",
+  year = "",
+  hourly = 0,
+  rainhourly = 0,
+  rainhour = 0,
+  rainoff = 0,
+  lamb = 0,
+  IUV = 0,
+  opendap = 1,
+  soilgrids = 0,
+  IR = 0,
+  message = 0,
+  fail = nyears * 24 * 365,
+  save = 0,
+  snowcond = 0,
+  intercept = maxshade / 100 * 0.4,
+  grasshade = 0) { # end function parameters
 
   # loc="Madison, Wisconsin"
   # dstart="01/01/2016"
   # dfinish="31/12/2016"
   # nyears=as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1
-  # soiltype=4
   # REFL=0.15
   # slope=0
   # aspect=0
@@ -545,11 +612,6 @@ micro_usa <- function(loc = 'Death Valley, California', dstart = "01/01/2016", d
         Please input a value between 0 and 100.", '\n')
     errors<-1
   }
-  if(soiltype<0 | soiltype>11){
-    cat("ERROR: the soil type must range between 1 and 11.
-        Please correct.", '\n')
-    errors<-1
-  }
   # end error trapping
 
   if(errors==0){ # continue
@@ -702,7 +764,7 @@ micro_usa <- function(loc = 'Death Valley, California', dstart = "01/01/2016", d
         load('BulkDensity.Rda')
       }
     }
-    if(save == 1){
+    if(save == 1 & soilgrids == 1){
       cat("saving SoilGrids data for later \n")
       save(PE, file = 'PE.Rda')
       save(BB, file = 'BB.Rda')

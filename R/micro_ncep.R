@@ -9,7 +9,6 @@
 #' @param slope Slope in degrees
 #' @param aspect Aspect in degrees (0 = north)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
-#' @param soiltype Soil type: Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, user-defined = 12, based on Campbell and Norman 1990 Table 9.1.
 #' @param minshade Minimum shade level to use (\%)
 #' @param maxshade Maximum shade level to us (\%)
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
@@ -28,14 +27,13 @@
 #' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
 #' @return sunsnow Hourly predictions of snow temperature under the minimum specified shade
 #' @return shadsnow Hourly predictions snow temperature under the maximum specified shade
-#' @usage micro_ncep(loc = 'Galapagos', dstart = "01-01-2017", dfinish = "31-12-2017", soiltype = 4,
+#' @usage micro_ncep(loc = 'Galapagos', dstart = "01-01-2017", dfinish = "31-12-2017",
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export
 #' @details
 #' \itemize{
 #' \strong{ Parameters controling how the model runs:}\cr\cr
-#'
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 #' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
 #' \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
@@ -45,7 +43,7 @@
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{terrain}{ = 0, Use 250m resolution terrain data? 1=yes, 0=no}\cr\cr
-#' \code{dailywind}{ = 1, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
+#' \code{reanalysis}{ = TRUE, Use reanalysis2 NCEP data? TRUE/FALSE}\cr\cr
 #' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 #' \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
 #' \code{warm}{ = 0, uniform warming, °C}\cr\cr
@@ -213,9 +211,9 @@
 #' }
 #' @examples
 #' library(NicheMapR)
-#' dstart <- "01/01/2016"
-#' dfinish <- "31/12/2017"
-#' micro<-micro_ncep(loc = 'Galapagos', runshade = 0, soilgrids = 0, dstart = dstart, dfinish = dfinish) # run the model using SoilGrids data at Madison for 2014 to 2016
+#' dstart <- "01/01/1976"
+#' dfinish <- "31/12/1978"
+#' micro<-micro_ncep(loc = 'Galapagos', runshade = 0, soilgrids = 0, dstart = dstart, dfinish = dfinish, reanalysis = FALSE)
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
@@ -271,34 +269,102 @@
 #'     (%)",col=i,type = "l")
 #'  }
 #' }
-micro_ncep <- function(loc = 'Galapagos', dstart = "01/01/2016", dfinish = "31/12/2016",
-  nyears = as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1, soiltype = 4,
-  REFL = 0.15, elev = NA, slope = 0, aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
-  DEP=c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
-  Refhyt = 2, Usrhyt = 0.01, Z01 = 0, Z02 = 0, ZH1 = 0, ZH2 = 0, runshade = 1,
-  clearsky = 0, run.gads = 1, write_input = 0, writecsv = 0,
-  terrain = 0, dailywind = 1, windfac = 1, adiab_cor = 1, warm = 0,
-  spatial = "N:/USA", ERR = 1.5, RUF = 0.004, EC = 0.0167238, SLE = 0.95,
-  Thcond = 2.5, Density = 2.56, SpecHeat = 870, BulkDensity = 1.3, PCTWET = 0,
-  rainwet = 1.5, cap = 1, CMH2O = 1, hori = rep(0,24), TIMAXS=c(1.0, 1.0, 0.0, 0.0),
-  TIMINS = c(0, 0, 1, 1), timezone = 0, runmoist = 1, PE = rep(1.1, 19),
-  KS = rep(0.0037, 19), BB = rep(4.5, 19), BD = rep(BulkDensity, 19),
-  DD = rep(Density, 19), maxpool = 10000, rainmult = 1, evenrain = 0,
+micro_ncep <- function(
+  loc = 'Galapagos',
+  dstart = "01/01/2004",
+  dfinish = "31/12/2005",
+  nyears = as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1,
+  REFL = 0.15,
+  elev = NA,
+  slope = 0,
+  aspect = 0,
+  lapse_max = 0.0077,
+  lapse_min = 0.0039,
+  DEP=c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200),
+  minshade = 0,
+  maxshade = 90,
+  Refhyt = 2,
+  Usrhyt = 0.01,
+  Z01 = 0,
+  Z02 = 0,
+  ZH1 = 0,
+  ZH2 = 0,
+  runshade = 1,
+  clearsky = 0,
+  run.gads = 1,
+  write_input = 0,
+  writecsv = 0,
+  terrain = 0,
+  reanalysis = TRUE,
+  windfac = 1,
+  adiab_cor = 1,
+  warm = 0,
+  spatial = "N:/USA",
+  ERR = 1.5,
+  RUF = 0.004,
+  EC = 0.0167238,
+  SLE = 0.95,
+  Thcond = 2.5,
+  Density = 2.56,
+  SpecHeat = 870,
+  BulkDensity = 1.3,
+  PCTWET = 0,
+  rainwet = 1.5,
+  cap = 1,
+  CMH2O = 1,
+  hori = rep(0,24),
+  TIMAXS=c(1.0, 1.0, 0.0, 0.0),
+  TIMINS = c(0, 0, 1, 1),
+  timezone = 0,
+  runmoist = 1,
+  PE = rep(1.1, 19),
+  KS = rep(0.0037, 19),
+  BB = rep(4.5, 19),
+  BD = rep(BulkDensity, 19),
+  DD = rep(Density, 19),
+  maxpool = 10000,
+  rainmult = 1,
+  evenrain = 0,
   SoilMoist_Init = c(0.1, 0.12, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4),
   L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000,
-  R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
-  LAI = 0.1, snowmodel = 1, snowtemp = 1.5, snowdens = 0.375, densfun = c(0.5979, 0.2178, 0.001, 0.0038),
-  snowmelt = 1, undercatch = 1, rainmelt = 0.0125, shore = 0, tides = 0,
-  scenario = "", year = "", hourly = 0, rainhourly = 0, rainhour = 0,
-  rainoff = 0, lamb = 0, IUV = 0, soilgrids = 0, IR = 0, message = 0,
-  fail = nyears * 24 * 365, save = 0, snowcond = 0, intercept = maxshade / 100 * 0.4, grasshade = 0) {
+  R1 = 0.001,
+  RW = 2.5e+10,
+  RL = 2e+6,
+  PC = -1500,
+  SP = 10,
+  IM = 1e-06,
+  MAXCOUNT = 500,
+  LAI = 0.1,
+  snowmodel = 1,
+  snowtemp = 1.5,
+  snowdens = 0.375,
+  densfun = c(0.5979, 0.2178, 0.001, 0.0038),
+  snowmelt = 1,
+  undercatch = 1,
+  rainmelt = 0.0125,
+  shore = 0,
+  tides = 0,
+  scenario = "",
+  year = "",
+  hourly = 0,
+  rainhourly = 0,
+  rainhour = 0,
+  rainoff = 0,
+  lamb = 0,
+  IUV = 0,
+  soilgrids = 0,
+  IR = 0,
+  message = 0,
+  fail = nyears * 24 * 365,
+  save = 0,
+  snowcond = 0,
+  intercept = maxshade / 100 * 0.4,
+  grasshade = 0) { # end function parameters
 
-  # loc="Madison, Wisconsin"
-  # loc = 'Dubbo, NSW'
-  # dstart="01/01/2016"
-  # dfinish="31/12/2016"
+  # loc = 'Tromso, Norway'
+  # dstart = "01/01/2016"
+  # dfinish = "31/12/2016"
   # nyears=as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1
-  # soiltype=4
   # REFL=0.15
   # slope=0
   # aspect=0
@@ -317,7 +383,7 @@ micro_ncep <- function(loc = 'Galapagos', dstart = "01/01/2016", dfinish = "31/1
   # write_input=0
   # writecsv=0
   # terrain=0
-  # dailywind=1
+  # reanalysis=TRUE
   # adiab_cor=1
   # warm=0
   # spatial="C:/USA"
@@ -389,6 +455,9 @@ micro_ncep <- function(loc = 'Galapagos', dstart = "01/01/2016", dfinish = "31/1
   yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
+  if(as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900") > Sys.time() | as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900") > Sys.time()){
+    cat("sorry, no NCEP data for these times - please choose a different date range \n")
+  }
   if(DEP[2]-DEP[1]>3 | DEP[3]-DEP[2]>3){
     cat("warning, nodes might be too far apart near the surface, try a different spacing if the program is crashing \n")
   }
@@ -545,11 +614,6 @@ micro_ncep <- function(loc = 'Galapagos', dstart = "01/01/2016", dfinish = "31/1
         Please input a value between 0 and 100.", '\n')
     errors<-1
   }
-  if(soiltype<0 | soiltype>11){
-    cat("ERROR: the soil type must range between 1 and 11.
-        Please correct.", '\n')
-    errors<-1
-  }
   # end error trapping
 
   if(errors==0){ # continue
@@ -668,7 +732,7 @@ micro_ncep <- function(loc = 'Galapagos', dstart = "01/01/2016", dfinish = "31/1
         load('BulkDensity.Rda')
       }
     }
-    if(save == 1){
+    if(save == 1 & soilgrids == 1){
       cat("saving SoilGrids data for later \n")
       save(PE, file = 'PE.Rda')
       save(BB, file = 'BB.Rda')
@@ -723,147 +787,222 @@ micro_ncep <- function(loc = 'Galapagos', dstart = "01/01/2016", dfinish = "31/1
       }
       # for splining
 
-      ## Query the temperature from a particular pressure level ##
-      tair2 <- NCEP.gather(variable='air.2m', level='gaussian',
-        months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
-        lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
-        reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)
-      lat1 <- as.numeric(dimnames(tair2)[[1]][1])
-      lon1 <- as.numeric(dimnames(tair2)[[2]][2])
-      if(lat1 > 90){lat1 <- -1*(360-lat1)}
-      if(lon1 > 180){lon1 <- -1*(360-lon1)}
-      lonlat2 <- c(lon1, lat1)
-      tair <- tair2[1, 1, ]
-      tointerp <- tt[seq(1, length(tair)*6, 6)]
-      xx <- cbind(tointerp,tair)
-      TAIRhr <- spline(xx, xout = tt)$y - 273.15
-      precip <- NCEP.gather(variable='prate.sfc', level='gaussian',
-        months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
-        lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
-        reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
-      xx <- cbind(tointerp,precip)
-      RAINhr <- spline(xx, xout = tt)$y * 3600
+      getNCEP <- function(var, x, level, m.start, m.finish, y.start, y.finish, nyears, reanalysis){
+        # extracts continuous data via RNCEP's NCEP.gather function, concatenating years and
+        # splining (using the 'periodic' method) to hourly
+        leap <- seq(1952, as.numeric(format(Sys.time(), "%Y")), 4)
+        get.end.day <- function(y.finish, m.finish){
+          if(m.finish == 2){
+            if(y.finish %in% leap){
+              end.day <- 29
+            }else{
+              end.day <- 28
+            }
+          }else{
+            if(m.finish %in% c(4, 6, 9, 11)){
+              end.day <- 30
+            }else{
+              end.day <- 31
+            }
+          }
+        }
+        for(year in y.start:y.finish){
+          m.start2 <- m.start
+          m.finish2 <- m.finish
+          if(year == y.start){
+            m.start2 <- m.start
+          }else{
+            m.start2 <- 1
+          }
+          if(year == y.finish){
+            m.finish2 <- m.finish
+          }else{
+            m.finish2 <- 12
+          }
+          end.day <- get.end.day(y.finish, m.finish2)
+          tt2 <- seq(as.POSIXct(paste0("1/",m.start2,"/",year), format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(paste0(end.day, "/",m.finish2,"/",year), format = "%d/%m/%Y", tz = 'UTC')+23*3600, by = 'hours')
+          result1 <- NCEP.gather(variable=var, level=level,
+            months.minmax=c(m.start2,m.finish2), years.minmax=c(year, year),
+            lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
+            reanalysis2 = reanalysis, return.units = TRUE, status.bar = FALSE)
+          if(year == y.start){
+            lat1 <- as.numeric(dimnames(result1)[[1]][1])
+            lon1 <- as.numeric(dimnames(result1)[[2]][1])
+            if(lat1 > 90){lat1 <- -1*(360-lat1)}
+            if(lon1 > 180){lon1 <- -1*(360-lon1)}
+            lonlat2 <- c(lon1, lat1)
+          }
+          result2 <- result1[1, 1, ]
+          tointerp <- tt[seq(1, length(result2)*6, 6)]
+          xx <- cbind(tointerp,result2)
+          #result <- suppressWarnings(spline(xx[,1], xx[,2], xout = tt2, method = 'periodic'))
+          result <- approx(xx, n = length(tt2), rule = 2)$y
+          if(year == y.start){
+            final.result <- result
+            final.result2 <- result2
+            final.tointerp <- tointerp
+          }else{
+            final.result <- c(final.result, result)
+            final.result2 <- c(final.result2, result2)
+            final.tointerp <- c(final.tointerp, tointerp)
+          }
+        }
+        return(list(result = final.result, result2 = final.result2, lonlat2 = lonlat2, tointerp = final.tointerp))
+      }
+
+      ## Query the NCEP dataset
+      TAIRhr <- getNCEP('air.2m', x, 'gaussian', m.start, m.finish,  y.start, y.finish, nyears, reanalysis)
+      lonlat2 <- TAIRhr$lonlat2
+      tointerp <- TAIRhr$tointerp
+      TAIRhr <- TAIRhr$result - 273.15
+      RAINhr <- getNCEP('prate.sfc', x, 'gaussian', m.start, m.finish,  y.start, y.finish, nyears, reanalysis)
+      RAINhr2 <- RAINhr$result2 # get 6-hourly
+      RAINhr <- RAINhr$result * 3600 # get hourly
       RAINhr[RAINhr < 0] <- 0
-      shum <- NCEP.gather(variable='shum.2m', level='gaussian',
-        months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
-        lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
-        reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
-      xx <- cbind(tointerp,shum)
-      SHUMhr <- spline(xx, xout = tt)$y # specific humidity
-      press <- NCEP.gather(variable='pres.sfc', level='surface',
-        months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
-        lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
-        reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
-      xx <- cbind(tointerp,press)
-      PRESShr <- spline(xx, xout = tt)$y
+      RAINhr2[RAINhr2 < 0] <- 0
+      SHUMhr <- getNCEP('shum.2m', x, 'gaussian', m.start, m.finish,  y.start, y.finish, nyears, reanalysis)$result
+      PRESShr <- getNCEP('pres.sfc', x, 'surface', m.start, m.finish,  y.start, y.finish, nyears, reanalysis)$result
       ws <- WETAIR(db = TAIRhr, rh = 100, bp = PRESShr)$rw
       RHhr <- SHUMhr / ws * 100
       RHhr[RHhr > 100] <- 100
       RHhr[RHhr < 0] <- 0
-      cloud <- NCEP.gather(variable='tcdc.eatm', level='gaussian',
-        months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
-        lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
-        reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
-      xx <- cbind(tointerp,cloud)
-      CLDhr <- spline(xx, xout = tt)$y
+      CLDhr <- getNCEP('tcdc.eatm', x, 'gaussian', m.start, m.finish,  y.start, y.finish, nyears, reanalysis)$result
       CLDhr[CLDhr < 0] <- 0
       CLDhr[CLDhr > 100] <- 100
-      uwind <- NCEP.gather(variable='uwnd.10m', level='gaussian',
-        months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
-        lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
-        reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
-      vwind <- NCEP.gather(variable='vwnd.10m', level='gaussian',
-        months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
-        lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
-        reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
-      wind_abs = (uwind^2 + vwind^2)^(1/2)
-      xx <- cbind(tointerp,wind_abs)
-      WNhr <- spline(xx, xout = tt)$y*(2/10)^0.15 # also correct to 2m height
+      UWINDhr <- getNCEP('uwnd.10m', x, 'gaussian', m.start, m.finish,  y.start, y.finish, nyears, reanalysis)$result
+      VWINDhr <- getNCEP('vwnd.10m', x, 'gaussian', m.start, m.finish,  y.start, y.finish, nyears, reanalysis)$result
+      WNhr <- (UWINDhr^2 + VWINDhr^2)^(1/2)*(2/10)^0.15 # convert to single direction speed and also correct from 10m to 2m height
       WNhr[WNhr < 0.1] <- 0.1
-      sol <- NCEP.gather(variable='dswrf.sfc', level='gaussian',
-        months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
-        lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
-        reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
-      xx <- cbind(tointerp,sol)
-      SOLRhr <- spline(xx, xout = tt)$y
+      SOLRhr <- getNCEP('dswrf.sfc', x, 'gaussian', m.start, m.finish,  y.start, y.finish, nyears, reanalysis)$result
       SOLRhr[SOLRhr<0]<-0
 
-    SZA<-function(timein=Sys.time(),Lat = 50.910335,Lon = 11.568740){
-          # Calculate solar zenith angle
-          # according to http://solardat.uoregon.edu/SolarRadiationBasics.html
-          # calculations have been modified for positive East longitudes and time in UTC
-          # Extract time information
-          #( hour, minute, second, dummy, n ) = time.gmtime()[3:8]
-          # Calculate declination of the sun d
-          #if (is.vector(timein)){
+      # precip <- NCEP.gather(variable='prate.sfc', level='gaussian',
+      #   months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
+      #   lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
+      #   reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
+      # xx <- cbind(tointerp,precip)
+      # RAINhr <- spline(xx, xout = tt)$y * 3600
+      # RAINhr[RAINhr < 0] <- 0
+      # shum <- NCEP.gather(variable='shum.2m', level='gaussian',
+      #   months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
+      #   lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
+      #   reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
+      # xx <- cbind(tointerp,shum)
+      # SHUMhr <- spline(xx, xout = tt)$y # specific humidity
+      # press <- NCEP.gather(variable='pres.sfc', level='surface',
+      #   months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
+      #   lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
+      #   reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
+      # xx <- cbind(tointerp,press)
+      # PRESShr <- spline(xx, xout = tt)$y
+      # ws <- WETAIR(db = TAIRhr, rh = 100, bp = PRESShr)$rw
+      # RHhr <- SHUMhr / ws * 100
+      # RHhr[RHhr > 100] <- 100
+      # RHhr[RHhr < 0] <- 0
+      # cloud <- NCEP.gather(variable='tcdc.eatm', level='gaussian',
+      #   months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
+      #   lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
+      #   reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
+      # xx <- cbind(tointerp,cloud)
+      # CLDhr <- spline(xx, xout = tt)$y
+      # CLDhr[CLDhr < 0] <- 0
+      # CLDhr[CLDhr > 100] <- 100
+      # uwind <- NCEP.gather(variable='uwnd.10m', level='gaussian',
+      #   months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
+      #   lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
+      #   reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
+      # vwind <- NCEP.gather(variable='vwnd.10m', level='gaussian',
+      #   months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
+      #   lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
+      #   reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
+      # wind_abs = (uwind^2 + vwind^2)^(1/2)
+      # xx <- cbind(tointerp,wind_abs)
+      # WNhr <- spline(xx, xout = tt)$y*(2/10)^0.15 # also correct to 2m height
+      # WNhr[WNhr < 0.1] <- 0.1
+      # sol <- NCEP.gather(variable='dswrf.sfc', level='gaussian',
+      #   months.minmax=c(m.start,m.finish), years.minmax=c(y.start, y.finish),
+      #   lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
+      #   reanalysis2 = FALSE, return.units = TRUE, status.bar = FALSE)[1, 1, ]
+      # xx <- cbind(tointerp,sol)
+      # SOLRhr <- spline(xx, xout = tt)$y
+      # SOLRhr[SOLRhr<0]<-0
 
-          sza<-vector("numeric",length=length(timein))
-          for(i in 1:length(timein)){
-            tm <- timein[i]
-            time<-as.POSIXlt(tm,tz='UTC')
-            d2r=pi/180.
-            r2d=1./d2r
-            doy <- time$yday+1
-            d<-23.45 * d2r * sin(d2r *360. *(284. + doy) / 365.) # [rad]
-            #print (sprintf("d = %f", d * 180 / pi))
-            # Calculate equation of time
-            if (doy <= 106){
-              E_qt <- -14.2 * sin(pi * (doy + 7.) / 111.)      # Eq. SR.4a [minutes]
-            }else{if (doy<= 166){
-              E_qt <-   4.0 * sin(pi * (doy - 106.) / 59.)     # Eq. SR.4b [minutes]
-            }else{if (doy<= 246){
-              E_qt <-  -6.5 * sin(pi * (doy - 166.) / 80.)     # Eq. SR.4c [minutes]
-            }else{E_qt <-  16.4 * sin(pi * (doy - 247.) / 113.)}}}    # Eq. SR.4d [minutes]
-            # Get UTC time T
-            T<-time$hour + time$min / 60.0 + time$sec / 3600.0 # [hours]
-            # Calculate solar time T_solar (East longitudes are positive!)
-            Longitude<-Lon#*d2r
-            T_solar<-T + Longitude / 15. + E_qt / 60. # [hours]
-            # Calculate hour angle w (positive: from midnight to noon, negative: from noon to midnight)
-            w<-pi * (12. - T_solar) / 12. # [rad]
-            # Calculate solar zenith angle Z
-            l<-Lat * d2r # [rad]
-            if(class(Lat)[1]=="RasterLayer"){
-              if(i==1){
-                sza1= 90.-asin(sin(l) * sin(d) + cos(l) * cos(d) * cos(w)) * r2d # [deg]
-                sza1[sza1>90]<-90
-                sza=sza1
-              }else{
-                sza1=90.-asin(sin(l) * sin(d) + cos(l) * cos(d) * cos(w)) * r2d # [deg]
-                sza1[sza1>90]<-90
-                sza=stack(sza,sza1)
-              }
+      SZA<-function(timein=Sys.time(),Lat = 50.910335,Lon = 11.568740){
+        # Calculate solar zenith angle
+        # according to http://solardat.uoregon.edu/SolarRadiationBasics.html
+        # calculations have been modified for positive East longitudes and time in UTC
+        # Extract time information
+        #( hour, minute, second, dummy, n ) = time.gmtime()[3:8]
+        # Calculate declination of the sun d
+        #if (is.vector(timein)){
+
+        sza<-vector("numeric",length=length(timein))
+        for(i in 1:length(timein)){
+          tm <- timein[i]
+          time<-as.POSIXlt(tm,tz='UTC')
+          d2r=pi/180.
+          r2d=1./d2r
+          doy <- time$yday+1
+          d<-23.45 * d2r * sin(d2r *360. *(284. + doy) / 365.) # [rad]
+          #print (sprintf("d = %f", d * 180 / pi))
+          # Calculate equation of time
+          if (doy <= 106){
+            E_qt <- -14.2 * sin(pi * (doy + 7.) / 111.)      # Eq. SR.4a [minutes]
+          }else{if (doy<= 166){
+            E_qt <-   4.0 * sin(pi * (doy - 106.) / 59.)     # Eq. SR.4b [minutes]
+          }else{if (doy<= 246){
+            E_qt <-  -6.5 * sin(pi * (doy - 166.) / 80.)     # Eq. SR.4c [minutes]
+          }else{E_qt <-  16.4 * sin(pi * (doy - 247.) / 113.)}}}    # Eq. SR.4d [minutes]
+          # Get UTC time T
+          T<-time$hour + time$min / 60.0 + time$sec / 3600.0 # [hours]
+          # Calculate solar time T_solar (East longitudes are positive!)
+          Longitude<-Lon#*d2r
+          T_solar<-T + Longitude / 15. + E_qt / 60. # [hours]
+          # Calculate hour angle w (positive: from midnight to noon, negative: from noon to midnight)
+          w<-pi * (12. - T_solar) / 12. # [rad]
+          # Calculate solar zenith angle Z
+          l<-Lat * d2r # [rad]
+          if(class(Lat)[1]=="RasterLayer"){
+            if(i==1){
+              sza1= 90.-asin(sin(l) * sin(d) + cos(l) * cos(d) * cos(w)) * r2d # [deg]
+              sza1[sza1>90]<-90
+              sza=sza1
             }else{
-              sza[i]<-90.-asin(sin(l) * sin(d) + cos(l) * cos(d) * cos(w)) * r2d # [deg]
+              sza1=90.-asin(sin(l) * sin(d) + cos(l) * cos(d) * cos(w)) * r2d # [deg]
+              sza1[sza1>90]<-90
+              sza=stack(sza,sza1)
             }
+          }else{
+            sza[i]<-90.-asin(sin(l) * sin(d) + cos(l) * cos(d) * cos(w)) * r2d # [deg]
           }
-          #}
-          return(sza)
         }
-        ZENhr <- SZA(timein = tt, Lat = x[2], Lon = abs(x[1]))
-        ZENhr[ZENhr>90] <- 90
-        SOLRhr[ZENhr >= 90] <- 0
-        ZENhr2 <- ZENhr
-        ZENhr2[ZENhr2!=90] <- 0
-        rleb <- rle(x = ZENhr2)$lengths[1:3]
-        length.orig <- length(PRESShr)
-        crop <- rleb[1] + (24-rleb[3])/2
-        crop2 <- length.orig-(25-crop)
-        PRESShr<-PRESShr[crop:crop2]
-        CLDhr<-CLDhr[crop:crop2]
-        WNhr<-WNhr[crop:crop2]
-        TAIRhr<-TAIRhr[crop:crop2]
-        RHhr<-RHhr[crop:crop2]
-        RAINhr<-RAINhr[crop:crop2]
-        SOLRhr<-SOLRhr[crop:crop2]
-        ZENhr<-ZENhr[crop:crop2]
-        tt<-tt[crop:crop2]
-        tt<-tt+(25-crop)*3600
+        #}
+        return(sza)
+      }
+      ZENhr <- SZA(timein = tt, Lat = x[2], Lon = abs(x[1]))
+      ZENhr[ZENhr>90] <- 90
+      SOLRhr[ZENhr >= 90] <- 0
+      ZENhr2 <- ZENhr
+      ZENhr2[ZENhr2!=90] <- 0
+      rleb <- rle(x = ZENhr2)$lengths[1:3]
+      length.orig <- length(PRESShr)
+      crop <- rleb[1] + (24-rleb[3])/2
+      crop2 <- length.orig-(25-crop)
+      PRESShr<-PRESShr[crop:crop2]
+      CLDhr<-CLDhr[crop:crop2]
+      WNhr<-WNhr[crop:crop2]
+      TAIRhr<-TAIRhr[crop:crop2]
+      RHhr<-RHhr[crop:crop2]
+      RAINhr<-RAINhr[crop:crop2]
+      SOLRhr<-SOLRhr[crop:crop2]
+      ZENhr<-ZENhr[crop:crop2]
+      tt<-tt[crop:crop2]
+      tt<-tt+(25-crop)*3600
       TMAXX1<-aggregate(TAIRhr,by=list(format(tt, "%d/%m/%Y")),max) # maximum air temperatures (°C)
       TMAXX<-TMAXX1$x[order(as.POSIXct(TMAXX1$Group.1, format = "%d/%m/%Y"))]
       TMINN1<-aggregate(TAIRhr,by=list(format(tt, "%d/%m/%Y")),min) # minimum air temperatures (°C)
       TMINN<-TMINN1$x[order(as.POSIXct(TMINN1$Group.1, format = "%d/%m/%Y"))]
-      RAINFALL1<-aggregate(data.frame(precip*6*3600),by=list(format(tointerp, "%d/%m/%Y")),sum) # monthly mean rainfall (mm)
+      RAINFALL1<-aggregate(data.frame(RAINhr2 * 6 * 3600),by=list(format(tointerp, "%d/%m/%Y")),sum) # monthly mean rainfall (mm)
       RAINFALL<-RAINFALL1[order(as.POSIXct(RAINFALL1$Group.1, format = "%d/%m/%Y")),2]
       CCMAXX1<-aggregate(CLDhr,by=list(format(tt, "%d/%m/%Y")),max) # max cloud cover (%)
       CCMAXX<-CCMAXX1$x[order(as.POSIXct(CCMAXX1$Group.1, format = "%d/%m/%Y"))]
@@ -1004,12 +1143,13 @@ micro_ncep <- function(loc = 'Galapagos', dstart = "01/01/2016", dfinish = "31/1
       RHMAXX <- (e / es) * 100
       RHMAXX[RHMAXX>100]<-100
       RHMAXX[RHMAXX<0]<-0.01
+      if(hourly == 1){
       es <- WETAIR(db = TAIRhr, rh = 100)$esat
       e <- WETAIR(db = Tair, rh = rh)$e
       RHhr <- (e / es) * 100
       RHhr[RHhr>100]<-100
       RHhr[RHhr<0]<-0.01
-
+      }
       ALLMINTEMPS<-TMINN
       ALLMAXTEMPS<-TMAXX
       ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
