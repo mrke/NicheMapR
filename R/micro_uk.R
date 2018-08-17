@@ -10,7 +10,6 @@
 #' @param slope Slope in degrees
 #' @param aspect Aspect in degrees (0 = north)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
-#' @param soiltype Soil type: Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, user-defined = 12, based on Campbell and Norman 1990 Table 9.1.
 #' @param minshade Minimum shade level to use (\%)
 #' @param maxshade Maximum shade level to us (\%)
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
@@ -29,7 +28,7 @@
 #' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
 #' @return sunsnow Hourly predictions of snow temperature under the minimum specified shade
 #' @return shadsnow Hourly predictions snow temperature under the maximum specified shade
-#' @usage micro_UK(loc = "London, UK", timeinterval = 365, ystart = 2015, yfinish = 2015, soiltype = 4,
+#' @usage micro_UK(loc = "London, UK", timeinterval = 365, ystart = 2015, yfinish = 2015,
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export
@@ -277,7 +276,7 @@
 #'  }
 #' }
 micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
-  yfinish = 2015, nyears = yfinish - ystart + 1, soiltype = 4, REFL = 0.15,
+  yfinish = 2015, nyears = yfinish - ystart + 1, REFL = 0.15,
   elev = NA, slope = 0, aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
   DEP = c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
   Refhyt = 1.2, Usrhyt = 0.01, Z01 = 0, Z02 = 0, ZH1 = 0, ZH2 = 0, runshade = 1,
@@ -303,7 +302,6 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
   # ystart=2000
   # yfinish=2001
   # nyears=yfinish-ystart+1
-  # soiltype=4
   # REFL=0.15
   # slope=0
   # aspect=0
@@ -560,11 +558,6 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
         Please input a value between 0 and 100.", '\n')
     errors<-1
   }
-  if(soiltype<0 | soiltype>11){
-    cat("ERROR: the soil type must range between 1 and 11.
-      Please correct.", '\n')
-    errors<-1
-  }
   # end error trapping
 
   if(errors==0){ # continue
@@ -708,7 +701,7 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
       load('KS.Rda')
       load('BulkDensity.Rda')
     }
-    if(save == 1){
+    if(save == 1 & soilgrids == 1){
       cat("saving SoilGrids data for later \n")
       save(PE, file = 'PE.Rda')
       save(BB, file = 'BB.Rda')
