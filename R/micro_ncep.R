@@ -449,6 +449,7 @@ micro_ncep <- function(
   # snowcond = 0
   # intercept = maxshade / 100 * 0.3
   # grasshade = 0
+  # save = 0
 
   ystart <- as.numeric(substr(dstart, 7, 10))
   yfinish <- as.numeric(substr(dfinish, 7, 10))
@@ -840,11 +841,11 @@ micro_ncep <- function(
           if(year == y.start){
             final.result <- result
             final.result2 <- result2
-            final.tointerp <- tointerp
+            final.tointerp <- as.character(tointerp)
           }else{
             final.result <- c(final.result, result)
             final.result2 <- c(final.result2, result2)
-            final.tointerp <- c(final.tointerp, tointerp)
+            final.tointerp <- c(final.tointerp, as.character(tointerp))
           }
         }
         return(list(result = final.result, result2 = final.result2, lonlat2 = lonlat2, tointerp = final.tointerp))
@@ -853,7 +854,7 @@ micro_ncep <- function(
       ## Query the NCEP dataset
       TAIRhr <- getNCEP('air.2m', x, 'gaussian', m.start, m.finish,  y.start, y.finish, nyears, reanalysis)
       lonlat2 <- TAIRhr$lonlat2
-      tointerp <- TAIRhr$tointerp
+      tointerp <- as.POSIXct(TAIRhr$tointerp, tz = "UTC")
       TAIRhr <- TAIRhr$result - 273.15
       RAINhr <- getNCEP('prate.sfc', x, 'gaussian', m.start, m.finish,  y.start, y.finish, nyears, reanalysis)
       RAINhr2 <- RAINhr$result2 # get 6-hourly
