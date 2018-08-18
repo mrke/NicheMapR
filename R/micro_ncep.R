@@ -363,7 +363,7 @@ micro_ncep <- function(
 
   # loc = 'Tromso, Norway'
   # dstart = "01/01/2016"
-  # dfinish = "31/12/2016"
+  # dfinish = "31/12/2017"
   # nyears=as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1
   # REFL=0.15
   # slope=0
@@ -820,7 +820,7 @@ micro_ncep <- function(
             m.finish2 <- 12
           }
           end.day <- get.end.day(y.finish, m.finish2)
-          tt2 <- seq(as.POSIXct(paste0("1/",m.start2,"/",year), format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(paste0(end.day, "/",m.finish2,"/",year), format = "%d/%m/%Y", tz = 'UTC')+23*3600, by = 'hours')
+          tt2 <- seq(as.POSIXct(paste0("01/",m.start2,"/",year), format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(paste0(end.day, "/",m.finish2,"/",year), format = "%d/%m/%Y", tz = 'UTC')+23*3600, by = 'hours')
           result1 <- NCEP.gather(variable=var, level=level,
             months.minmax=c(m.start2,m.finish2), years.minmax=c(year, year),
             lat.southnorth=c(x[2],x[2]), lon.westeast=c(x[1],x[1]),
@@ -833,7 +833,7 @@ micro_ncep <- function(
             lonlat2 <- c(lon1, lat1)
           }
           result2 <- result1[1, 1, ]
-          tointerp <- tt[seq(1, length(result2)*6, 6)]
+          tointerp <- tt2[seq(1, length(result2)*6, 6)]
           xx <- cbind(tointerp,result2)
           #result <- suppressWarnings(spline(xx[,1], xx[,2], xout = tt2, method = 'periodic'))
           result <- approx(xx, n = length(tt2), rule = 2)$y
