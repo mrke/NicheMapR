@@ -888,6 +888,7 @@ micro_nz <- function(loc = "Dunedin, New Zealand", ystart = 2000,
         }else{
           clear<-clearskysum
         }
+        clear <-  * 3600 / 1e6 # to MJ/d
         cloud<-(1-Rad/clear)*100
         cloud[cloud<0]<-0
         cloud[cloud>100]<-100
