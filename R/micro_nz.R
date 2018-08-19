@@ -915,7 +915,6 @@ micro_nz <- function(loc = "Dunedin, New Zealand", ystart = 2000,
         }else{
           Wind<-Tmax*0+3
         }
-        clear<-as.numeric(ncvar_get(nc_clearsky,varid="variable",start=start,count))
         nc<-nc_open(paste(spatial,"/",yearlist[j],'_Rad.nc',sep=""))
         Rad<-as.numeric(ncvar_get(nc,varid="variable",start=start,count))
         nc_close(nc)
