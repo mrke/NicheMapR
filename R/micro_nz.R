@@ -930,6 +930,9 @@ micro_nz <- function(loc = "Dunedin, New Zealand", ystart = 2000,
         CCMAXX<-as.numeric(c(CCMAXX,cloud))
       }
     }
+    if(clearsky == 1){
+      CCMAXX <- CCMAXX * 0
+    }
     CCMINN<-CCMAXX
     Wind<-Wind*windfac
     Wind[Wind==0]<-0.1

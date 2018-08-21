@@ -971,6 +971,9 @@ micro_usa <- function(
       cloud <- (1 - solar / allclearsky) * 100
       cloud[cloud<0]<-0
       cloud[cloud>100]<-100
+      if(clearsky == 1){
+        cloud <- cloud * 0
+      }
       CCMAXX<-as.numeric(cloud)
       CCMINN<-CCMAXX
       CCMINN<-CCMINN*0.5

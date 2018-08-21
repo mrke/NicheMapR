@@ -913,6 +913,9 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
       cloud <- (1-solar/allclearsky) * 100
       cloud[cloud<0]<-0
       cloud[cloud>100]<-100
+      if(clearsky == 1){
+        cloud <- cloud * 0
+      }
       CCMAXX<-as.numeric(cloud)
       CCMINN<-CCMAXX
       CCMINN<-CCMINN*0.5
