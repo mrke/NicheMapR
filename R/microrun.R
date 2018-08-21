@@ -244,17 +244,5 @@ microclimate <- function(micro) {
   colnames(drlam)<-drlam.colnames
   colnames(drrlam)<-drlam.colnames
   colnames(srlam)<-drlam.colnames
-  if(micro$microinput[43]!=1){
-    if(micro$microinput[36]!=1){
-      return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, plant = plant, shadplant = shadplant, sunsnow=sunsnow, shdsnow=shdsnow))
-    }else{
-      return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, plant = plant, shadplant = shadplant,  sunsnow=sunsnow, shdsnow=shdsnow))
-    }
-  }else{
-    if(micro$microinput[36]!=1){
-      return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, plant = plant, shadplant = shadplant,  drlam=drlam, drrlam=drrlam, srlam=srlam))
-    }else{
-      return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, plant = plant, shadplant = shadplant,  sunsnow=sunsnow, shdsnow=shdsnow, drlam=drlam, drrlam=drrlam, srlam=srlam))
-    }
-  }
+  return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, plant = plant, shadplant = shadplant,  sunsnow=sunsnow, shdsnow=shdsnow, drlam=drlam, drrlam=drrlam, srlam=srlam))
 }
