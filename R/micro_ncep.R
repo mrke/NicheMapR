@@ -870,6 +870,9 @@ micro_ncep <- function(
       CLDhr <- getNCEP('tcdc.eatm', x, 'gaussian', m.start, m.finish,  y.start, y.finish, nyears, reanalysis)$result
       CLDhr[CLDhr < 0] <- 0
       CLDhr[CLDhr > 100] <- 100
+      if(clearsky == 1){
+        CLDhr <- CLDhr * 0
+      }
       UWINDhr <- getNCEP('uwnd.10m', x, 'gaussian', m.start, m.finish,  y.start, y.finish, nyears, reanalysis)$result
       VWINDhr <- getNCEP('vwnd.10m', x, 'gaussian', m.start, m.finish,  y.start, y.finish, nyears, reanalysis)$result
       WNhr <- (UWINDhr^2 + VWINDhr^2)^(1/2)*(2/10)^0.15 # convert to single direction speed and also correct from 10m to 2m height
