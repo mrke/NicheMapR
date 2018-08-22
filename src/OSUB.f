@@ -4,17 +4,17 @@ C     NicheMapR: software for biophysical mechanistic niche modelling
 
 C     Copyright (C) 2018 Michael R. Kearney and Warren P. Porter
 
-c     This program is free software: you can redistribute it and/or modify 
-c     it under the terms of the GNU General Public License as published by 
+c     This program is free software: you can redistribute it and/or modify
+c     it under the terms of the GNU General Public License as published by
 c     the Free Software Foundation, either version 3 of the License, or (at
 c      your option) any later version.
 
 c     This program is distributed in the hope that it will be useful, but
-c     WITHOUT ANY WARRANTY; without even the implied warranty of 
-c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+c     WITHOUT ANY WARRANTY; without even the implied warranty of
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 c     General Public License for more details.
 
-c     You should have received a copy of the GNU General Public License 
+c     You should have received a copy of the GNU General Public License
 c     along with this program. If not, see http://www.gnu.org/licenses/.
 
 C     THIS SUBROUTINE IS CALLED FROM SFODE, THE NUMERICAL INTEGRATOR.  Y MAY BE EITHER
@@ -36,7 +36,7 @@ C     VERSION 2 SEPT. 2000
       DOUBLE PRECISION MON,X,ZENR,inrad,refrad,snowcond,intercept
       DOUBLE PRECISION TSKY,ARAD,CRAD,CLOD,CLOUD,CLR,SOLR,QRADVG,QRADGR
       DOUBLE PRECISION RCSP,HGTP,RUFP,BEGP,PRTP,ERRP,snowout,curmoist
-     & ,soiltemp,SLEP,NONP,SUN,PLT,rainfall,curhumid,surflux
+     & ,soiltemp,SLEP,NONP,SUN,PLT,rainfall,curhumid,surflux,IRDown
       DOUBLE PRECISION CLEAR,QRADSK,SIGP,TAIR,SRAD,QEVAP,frosttest,vel2m
       DOUBLE PRECISION htovpr,water,gwsurf,EP,zz,vv,hourly,curroot2
       DOUBLE PRECISION rainhourly,IRmode,melthresh,time3,err
@@ -58,8 +58,8 @@ C     VERSION 2 SEPT. 2000
       double precision snowdens,snowmelt,snowtemp,cursnow,qphase,melt,
      & sumphase,sumphase2,snowage,prevden,qphase2,sumlayer,densrat,
      & cummelted,melted,snowfall,rainmelt,cpsnow,netsnow,hcap,meltheat,
-     & layermass,xtrain,QFREZE
-     
+     & layermass,xtrain,QFREZE,grasshade
+
       integer maxsnode2,maxsnode3,maxcount,js,numrun
       INTEGER CONS,I,IEND,IFINAL,ILOCT,IOUT,IPRINT,ITEST,trouble
       INTEGER J,JULNUM,MM,DOY,N,NAIR,ND,NOUT,dew,writecsv,runsnow
@@ -67,7 +67,7 @@ C     VERSION 2 SEPT. 2000
       INTEGER I91,I92,I93,I94,I95,I96,runmoist,evenrain,step,timestep
       INTEGER I97,I98,I99,I100,I101,errout,maxerr,errcount
       INTEGER IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART,IEND2
-      
+
       INTEGER methour,microdaily,runshade,k,lamb,cnd
 
       CHARACTER*3 SYMBOL,INAME,STP
@@ -88,7 +88,7 @@ C      FILES 6,I2,I3 & I10 ARE CONSOLE, OUTPUT, METOUT & SOIL RESPECTIVELY
       DIMENSION PE(19),KS(19),BD(19),BB(19),L(19),curroot(18),DD(19)
       DIMENSION sumphase2(10)
 
-      COMMON/TABLE/TI(200),TD(200)
+      COMMON/TABLE/TI(211),TD(211)
       COMMON/TABLE2/ILOCT(21)
       COMMON/ARRAY/T(30),WC(20),C(20),DEP(30),IOUT(100),
      1 OUT(101),ITEST(23)
@@ -108,7 +108,7 @@ C    BALANCES
       COMMON/DAYJUL/JULNUM,DOY
       COMMON/SNOWPRED/snowtemp,snowdens,snowmelt,snownode,minsnow
      &,maxsnode1,snode,cursnow,daysincesnow,lastday,undercatch,rainmeltf
-     &,densfun,snowcond,intercept,snowage,prevden
+     &,densfun,snowcond,intercept,snowage,prevden,grasshade
 C     PERCENT GROUND SHADE & ELEVATION (M) TO METOUT
       COMMON/GROUND/SHAYD,ALTT,MAXSHD,SABNEW,PTWET,rainfall
       COMMON/LOCLHUM/RHLOCL
@@ -117,7 +117,7 @@ C     PERCENT GROUND SHADE & ELEVATION (M) TO METOUT
       common/prevtime/lastime,temp,lastsurf
       common/prevtime2/slipped
       common/soilmoist/condep,rainmult,maxpool
-      common/soilmoist3/runmoist,evenrain,maxcount 
+      common/soilmoist3/runmoist,evenrain,maxcount
       common/soimoist2/rww,pc,rl,sp,r1,im
       COMMON/DAILY/microdaily
       COMMON/NICHEMAPRIO/SLE,ERR,soilprop,surflux
@@ -139,7 +139,7 @@ C     PERCENT GROUND SHADE & ELEVATION (M) TO METOUT
       COMMON/WIOCONS2/IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART,IEND
       common/errormsg/errout,maxerr,errcount
       COMMON/WICHDAY/NUMRUN
-      
+
       DATA NAME/'TIME ','TAIR','TSKY','TSURF','VEL','SOL  ','TLIZ',
      1 'QSOLAR','QRAD','QCOND','QCONV','MOL ','STEP','T2','T3','T4'
      1,'T5','T6',
@@ -163,8 +163,8 @@ C     SETTING CONSOLE OUTPUT VARIABLE
        maxsnode1=0.
        maxsnode2=0
       endif
-      
-c     OUTPUT    
+
+c     OUTPUT
 C     1        TIME                                              TIME
 C     2        TAIR(INPUT AT REF. HT.)                           TAR
 C     3        TSKY                                              TSKY
@@ -299,6 +299,7 @@ C     SETTING UP THE 'OUTPUT'
       CLOUD=TAB('CLD',TIME)
       T(N)=TAB('TDS',TIME)
       VEL2M=TAB('VEL',TIME)/(100.*60.)
+      IRDOWN=TAB('IRD',TIME)
 
 c     phase change for freezing moist soil
        methour=0
@@ -334,7 +335,7 @@ c     phase change for freezing moist soil
          endif
          qphase2(j-js+1)=(meanTpast(j)-meanT(j))*layermass(j-js+1)*4.186
          sumphase2(j-js+1)=qphase2(j-js+1)+sumphase2(j-js+1)
-         if(sumphase2(j-js+1).gt.(HTOFN*layermass(j-js+1)))then  
+         if(sumphase2(j-js+1).gt.(HTOFN*layermass(j-js+1)))then
           t(j)=-0.1
           t(j+1)=-0.1
           tt(j)=-0.1
@@ -361,6 +362,12 @@ C     Angstrom formula (formula 5.33 on P. 177 of "Climate Data and Resources" b
        SOLR = SOLR*(0.36+0.64*(1.-(CLOUD/100)))
       ENDIF
 
+      if(IRDOWN.gt.0)THEN ! hourly IRdown provided
+C     NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
+      QRAD = IRDOWN - QRADGR
+c     TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
+      TSKY=(IRDOWN/SIGP)**(1./4.)-273
+      else
 C     CLEAR SKY RADIANT TEMPERATURE
       CLR=1.- (CLOUD/100.)
 C     CLEAR SKY RADIANT TEMPERATURE
@@ -369,7 +376,7 @@ c     Campbell and Norman eq. 10.10 to get emissivity of sky
        RH = TAB('REL',TIME)
        if(RH.gt.100.)then
         RH= 100.
-       endif        
+       endif
        WB = 0.
        DP = 999.
 C      BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
@@ -384,11 +391,11 @@ C      EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
 c     Below is the Gates formula (7.1)
 c      ARAD=(1.22*0.00000005673*(TAIR+273.)**4-171)
       else
-c     Swinbank, Eq. 10.11 in Campbell and Norman       
+c     Swinbank, Eq. 10.11 in Campbell and Norman
        ARAD=(0.0000092*(TAIR+273.16)**2)*0.0000000567*(TAIR+273.16)**4
      &*60./(4.185*10000.)
       endif
-      
+
 C     APPROXIMATING CLOUD RADIANT TEMPERATURE AS REFERENCE SHADE TEMPERATURE - 2 degrees
       CRAD=SIGP*SLEP*(TAIR+271.)**4
 c     Hillshade radiant temperature (approximating as air temperature)
@@ -400,14 +407,38 @@ C     TOTAL SKY IR AVAILABLE/UNIT AREA
       CLOD =  CRAD*(CLOUD/100.)
 c       previously SIGP*SLEP*(CLEAR + CLOUD)*((100.- SHAYD)/100.) but changed by MK to
 c       allow the formula in Gates to be used
+      if((grasshade.eq.1).and.(runsnow.eq.1))then
+       methour=(int(SIOUT(1)/60)+1)+24*(doy-1)
       QRADSK=(CLEAR + CLOD)*((100.- SHAYD)/100.)
+       if(methour.gt.1)then
+        if(snowhr(methour-1).gt.0)then
+         QRADSK=(CLEAR + CLOD)*((100.- 0.)/100.) ! no shade, snow on veg
+        endif
+       endif
+      else
+       QRADSK=(CLEAR + CLOD)*((100.- SHAYD)/100.)
+      endif
 
 C     VEGETATION IR AVAILABLE/UNIT AREA
 c     previously QRADVG=SIGP*SLEP*(SHAYD/100.)*CRAD but changed by MK to allow formula
-c       in Campbell to be used
-      QRADVG=(SHAYD/100.)*HRAD
-C     GROUND SURFACE IR UPWARD/UNIT AREA, APPROXIMATING SHADED GROUND USING HRAD
-      QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*HRAD
+c     in Campbell to be used
+      if((grasshade.eq.1).and.(runsnow.eq.1))then
+       methour=(int(SIOUT(1)/60)+1)+24*(doy-1)
+       QRADVG=(SHAYD/100.)*HRAD
+C      GROUND SURFACE IR UPWARD/UNIT AREA
+c      QRADGR=SIGP*SLEP*SRAD MK commented this out and replaced with below
+       QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*CRAD
+       if(methour.gt.1)then
+        if(snowhr(methour-1).gt.0)then
+         QRADVG=(0./100.)*HRAD ! no shade, snow on veg
+         QRADGR=((100.-0.)/100.)*SRAD+(0./100.)*CRAD
+        endif
+       endif
+      else
+       QRADVG=(SHAYD/100.)*HRAD
+       QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*CRAD
+      endif
+
 c     TOTAL HILLSHADE RADIATION
       QRADHL=HRAD
 C     NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
@@ -415,6 +446,8 @@ C     NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FR
 c      TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
       TSKY=(((QRADSK + QRADVG)*VIEWF + QRADHL*(1-VIEWF))/(SIGP))**(1./4.
      & )-273
+      ENDIF
+
 c     TSKY=((QRADSK + QRADVG)/(SIGP))**(1./4.)-273
       SIOUT(1) = TIME
 C     AIR TEMPERATURE AT ANIMAL HEIGHT (1ST NODE BELOW REFERENCE HEIGHT, 200 CM)
@@ -464,7 +497,7 @@ c     convert to W/m2
        if((OUT(2).le.snowtemp).and.(rainfall.gt.0.0))then
 c       compute snow fall using conversion from daily rain to daily snow (disaggregated over 24 hours) and convert from mm rain to cm snow
         if((time.lt.1e-8).or.(int(hourly).eq.1).or.(int(rainhourly)
-     &.eq.1))then   
+     &.eq.1))then
 c        account for undercatch
          snowfall=((rainfall*rainmult*undercatch*0.1)/snowdens)! snowfall in cm/m2
          if(SHAYD.gt.0)then
@@ -545,10 +578,10 @@ c      get cm snow lost due to rainfall - from Anderson model
         call WETAIR(0,WB,100,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,CP,
      &  WTRPOT) ! get specific heat and mixing ratio of humid air at zero C
         cpsnow = (2.100*snowdens+(1.005+1.82*(RW/1.+RW))* ! based on https://en.wiktionary.org/wiki/humid_heat
-     &   (1-snowdens)) ! compute weighted specific heat accounting for ice vs airm SI units         
+     &   (1-snowdens)) ! compute weighted specific heat accounting for ice vs airm SI units
          hcap=cpsnow+HTOFN !J/gC
          do 1100 j=1,(maxsnode2+1) ! loop through snow nodes
-          cnd=j+7-maxsnode2   
+          cnd=j+7-maxsnode2
           if(j.ne.maxsnode2+1)then ! not at the bottom yet
            if(meanT(cnd).gt.melthresh)then ! check if greater than threshold above 0 deg C (here 0.4 deg C)
             meltheat=(meanT(cnd)-melthresh)*cpsnow* ! g snow melted (change in temp x heat capacity x g snow (1m2 * height of layer)
@@ -558,7 +591,7 @@ c      get cm snow lost due to rainfall - from Anderson model
             melt=melt+meltheat/HTOFN !(snow depth in cm x snow density in g/cm3 converted units of g/m2) gives J heat input,
            endif                     ! divided by heat of fusion to get g melted
           else
-           if(meanT(cnd).gt.melthresh)then ! doing deepest node - depth here is flexible and is the difference between current snow and the 
+           if(meanT(cnd).gt.melthresh)then ! doing deepest node - depth here is flexible and is the difference between current snow and the
             meltheat=(meanT(cnd)-melthresh)*cpsnow* ! height of the current maximum node used of the 8 possible
      &       (cursnow-snownode(maxsnode2))*10000*snowdens+
      &       HTOFN*(cursnow-snownode(maxsnode2))*10000*snowdens
@@ -591,7 +624,7 @@ c      get cm snow lost due to rainfall - from Anderson model
               tt(cnd)=0.
               tt(cnd+1)=0.
               y(cnd)=0.
-              y(cnd+1)=0.            
+              y(cnd+1)=0.
              endif
             endif
            else
@@ -614,7 +647,7 @@ c      get cm snow lost due to rainfall - from Anderson model
           if(sumphase.gt.(HTOFN*sumlayer))then
            do 1121 j=1,(maxsnode2+1) ! loop through snow nodes
             if(j.lt.9)then
-             cnd=j+7-maxsnode2   
+             cnd=j+7-maxsnode2
              if((t(cnd).lt.-1e-8).and.(qphase(cnd).gt.0))then
               t(cnd)=-0.5
               t(cnd+1)=-0.5
@@ -622,8 +655,8 @@ c      get cm snow lost due to rainfall - from Anderson model
               tt(cnd+1)=-0.5
               y(cnd)=-0.5
               y(cnd+1)=-0.5
-              qphase(cnd)=0.    
-             endif 
+              qphase(cnd)=0.
+             endif
             endif
 1121       continue
            sumphase=0.
@@ -651,7 +684,7 @@ c      get cm snow lost due to rainfall - from Anderson model
         snowhr(methour)=cursnow
         if(snowhr(methour).lt.0)then
          snowhr(methour)=0.
-        endif        
+        endif
         snowpres = snowhr(methour)
         snowtest = snowhr(methour-1)
         if(int(siout(1)).eq.1380)then
@@ -666,7 +699,7 @@ c      get cm snow lost due to rainfall - from Anderson model
        endif
        if(methour.gt.1)then
        if((snowhr(methour).lt.minsnow).and.(snowhr(methour-1).lt.1e-8)
-     &)then  
+     &)then
         xtrain=snowhr(methour)*snowdens !save snow below min level and add to next hour
         snowhr(methour)=0.
        endif
@@ -738,23 +771,23 @@ C       SETTING THIS MONTH'S PERCENT OF SURFACE WITH FREE WATER/SNOW ON IT
         SLE = SLES(DOY)
        endif
        SNOWOUT=snowhr(methour)
-       call snowlayer 
+       call snowlayer
        if(methour.gt.1)then
        if((SNOWOUT-snownode(int(maxsnode1)).lt.0.5) ! avoid getting too close to a given node - save to xtrain and add/subtract later
      &  .and.(snowout.le.snowhr(methour-1)).and.(SNOWOUT.gt.0))then
         xtrain=xtrain+(SNOWOUT-snownode(int(maxsnode1)))*snowdens
-        SNOWOUT=snownode(int(maxsnode1))-.1     
+        SNOWOUT=snownode(int(maxsnode1))-.1
         snowhr(methour)=SNOWOUT
        endif
        endif
-       call snowlayer       
+       call snowlayer
        if(((snowout.lt.minsnow+0.5).or.(snowout.lt.snownode(int ! avoid getting too close to a given node - save to xtrain and add/subtract later
      &  (maxsnode1))+0.5)).and.(snowout.gt.0))THEN
         xtrain=0.5*snowdens
-        SNOWOUT=snownode(int(maxsnode1))+0.5        
+        SNOWOUT=snownode(int(maxsnode1))+0.5
         snowhr(methour)=SNOWOUT
-       endif     
-       call snowlayer       
+       endif
+       call snowlayer
        tt_past=tt
       else
        xtrain=0.
@@ -772,7 +805,7 @@ C       SETTING THIS MONTH'S PERCENT OF SURFACE WITH FREE WATER/SNOW ON IT
         endif
        else
         snowage=0.
-       endif 
+       endif
       endif
       prevden=snowdens
 ********************* end main code for snow model *******************************
@@ -835,7 +868,7 @@ C       GETTING THE RELATIVE HUMIDITY FOR THIS POINT IN TIME
         RH = TAB('REL',TIME)
         if(RH.gt.100.)then
          RH= 100.
-        endif        
+        endif
         WB = 0.
         DP = 999.
 C       BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
@@ -856,7 +889,7 @@ C       CHECKING FOR DIVIDE BY ZERO
 C       CHECKING FOR DIVIDE BY ZERO
         IF(T(1).EQ.TAIR)THEN
          T(1)=T(1)+0.1
-        ENDIF  
+        ENDIF
 C       CHECK FOR OUTSIZE T(1)
         TTEST=ABS(soiltemp(1))
         IF(TTEST.GT. 100)THEN
@@ -962,7 +995,7 @@ c      curmoist(1)=condep/((depp(2)*10)*(1-BD(1)/DD(1)))
           inrad = TAB('ZEN',TIME)*pi/180.
           refrad=asin(sin(inrad)/1.33)
           SABNEW = 1.-0.5*((sin(inrad-refrad)**2/(sin(inrad+refrad)**2))
-     &    +(tan(inrad-refrad)**2/(tan(inrad+refrad)**2))) 
+     &    +(tan(inrad-refrad)**2/(tan(inrad+refrad)**2)))
          endif
         else
          SABNEW = 1.0 - REFLS(DOY)
@@ -1037,7 +1070,7 @@ c     SET UP LOCAL RELATIVE HUMIDITY
           sunsnow(methour,10)=TEMP(69)
           sunsnow(methour,11)=TEMP(70)
           soil(methour,3)=TEMP(70) ! make soil surface node equal to temp of bottom snow node
-         endif         
+         endif
          if(runmoist.eq.1)then
           soilmoist(methour,1)=temp(19)
           soilmoist(methour,2)=temp(20)
@@ -1052,7 +1085,7 @@ c     SET UP LOCAL RELATIVE HUMIDITY
           plant(methour,2)=temp(20)
           plant(methour,3)=temp(71)
           plant(methour,4)=temp(72)
-          plant(methour,5:14)=temp(73:82)           
+          plant(methour,5:14)=temp(73:82)
          endif
         ELSE
          methour=int(temp(31)-1)
@@ -1072,7 +1105,7 @@ c     SET UP LOCAL RELATIVE HUMIDITY
           shdsnow(methour,10)=TEMP(69)
           shdsnow(methour,11)=TEMP(70)
           shadsoil(methour,3)=TEMP(70) ! make soil surface node equal to temp of bottom snow node
-         endif         
+         endif
          if(runmoist.eq.1)then
           shadmoist(methour,1)=temp(19)
           shadmoist(methour,2)=temp(20)
@@ -1087,7 +1120,7 @@ c     SET UP LOCAL RELATIVE HUMIDITY
           shadplant(methour,2)=temp(20)
           shadplant(methour,3)=temp(71)
           shadplant(methour,4)=temp(72)
-          shadplant(methour,5:14)=temp(73:82)           
+          shadplant(methour,5:14)=temp(73:82)
          endif
         ENDIF
        ENDIF
@@ -1155,7 +1188,7 @@ c     end check for previous slippage
           plant(methour,2)=SIOUT(1)
           plant(methour,3)=trans2 * 1000 * 3600 !g/m2/h
           plant(methour,4)=leafpot
-          plant(methour,5:14)=curroot(1:10)          
+          plant(methour,5:14)=curroot(1:10)
          endif
          if(writecsv.eq.1)then
           WRITE(I3,154) metout(methour,1),",",metout(methour,2),",",
@@ -1191,7 +1224,7 @@ c     end check for previous slippage
      &ur,5),",",plant(methour,6),",",plant(methour,7),",",plant
      &(methour,8),",",plant(methour,9),",",plant(methour,10)
      &,",",plant(methour,11),",",plant(methour,12),",",plant(methour,13)
-     &,",",plant(methour,14)     
+     &,",",plant(methour,14)
         endif
       if(runsnow.eq.1)then
       WRITE(I7,159) JULDAY(DOY),",",SIOUT(1),",",
@@ -1296,7 +1329,7 @@ c     end check for previous slippage
      &,",",DRRLAMBDA(methour,109),",",DRRLAMBDA(methour,110),",",
      &DRRLAMBDA(methour,111),",",DRRLAMBDA(methour,112),",",
      &DRRLAMBDA(methour,113)
- 
+
         WRITE(I99,164) SRLAMBDA(methour,1
      &),",",SRLAMBDA(methour,2),",",SRLAMBDA(methour,3),",",SRLAMBDA
      &(methour,4),",",SRLAMBDA(methour,5),",",SRLAMBDA(methour,6),","
@@ -1343,7 +1376,7 @@ c     end check for previous slippage
      &106),",",SRLAMBDA(methour,107),",",SRLAMBDA(methour,108),",",
      &SRLAMBDA(methour,109),",",SRLAMBDA(methour,110),",",
      &SRLAMBDA(methour,111),",",SRLAMBDA(methour,112),",",
-     &SRLAMBDA(methour,113)   
+     &SRLAMBDA(methour,113)
           endif
          endif
         ELSE
@@ -1385,7 +1418,7 @@ c     end check for previous slippage
           shdsnow(methour,10)=TT(8)
           shdsnow(methour,11)=TT(9)
           shadsoil(methour,3)=TT(9) ! make soil surface node equal to temp of bottom snow node
-         endif         
+         endif
          if(runmoist.eq.1)then
           shadmoist(methour,1)=JULDAY(DOY)
           shadmoist(methour,2)=SIOUT(1)
@@ -1400,7 +1433,7 @@ c     end check for previous slippage
           shadplant(methour,2)=SIOUT(1)
           shadplant(methour,3)=trans2 * 1000 * 3600 !g/m2/h
           shadplant(methour,4)=leafpot
-          shadplant(methour,5:14)=curroot(1:10)            
+          shadplant(methour,5:14)=curroot(1:10)
          endif
          if((writecsv.eq.1).and.(runshade.eq.1))then
           WRITE(I12,154) shadmet(methour,1),",",shadmet(methour,2),",",
@@ -1422,7 +1455,7 @@ c     end check for previous slippage
      &TT(1),",",TT(2),",",TT(3),",",
      &TT(4),",",TT(5),",",TT(6),",",
      &TT(7),",",TT(8),",",TT(9)
-      endif     
+      endif
           if(runmoist.eq.1)then
       WRITE(I93,163) shadmoist(methour,1),",",shadmoist(methour,2),","
      &,shadmoist(methour,3),",",shadmoist(methour,4),",",shadmoist(metho
@@ -1527,9 +1560,9 @@ C      INCREMENT MONTH/TIME INTERVAL COUNTER
      &F10.8,A,F10.8,A,F10.8,A,F10.8,A,F10.8,A,F10.8,A,F10.8,A,F10.8,A,
      &F10.8,A,F10.8,A,F10.8,A,F10.8,A,F10.8,A,F10.8,A,F10.8,A,F10.8,A,
      &F10.8,A,F10.8,A,F10.8,A,F10.8,A,F10.8,A,F10.8,A,F10.8,A,F10.8,A,
-     &F10.8,A,F10.8)    
+     &F10.8,A,F10.8)
   159 FORMAT(1F4.0,A,1F7.2,A,F7.2,A,F7.2,A,F7.2,A,F7.2,A,F7.2,A,F7.2,A
-     & ,F7.2,A,F7.2,A,F7.2)     
+     & ,F7.2,A,F7.2,A,F7.2)
   200 RETURN
       END
 
