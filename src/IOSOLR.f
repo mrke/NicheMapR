@@ -32,7 +32,7 @@ C     THIS SUBROUTINE CALLED BY SOLRAD SETS UP I/O FOR SOLRAD
       double precision tannul2,rainfall,Thconduct,Density,Spheat
       double precision snownode,minsnow,maxsnode1,snode,snowage,prevden,
      &daysincesnow,lastday,undercatch,rainmeltf,densfun
-      double precision snowdens,snowmelt,snowtemp,cursnow
+      double precision snowdens,snowmelt,snowtemp,cursnow,grasshade
 
       INTEGER I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,CONS,IMN,I91,I92
      & ,I93,I94,I95,I96,I97,I98,I99,I100,I101
@@ -59,7 +59,7 @@ c     Variable substrate properties, times & locations
       COMMON/DAYSS/TIMINS,TIMAXS
       COMMON/SNOWPRED/snowtemp,snowdens,snowmelt,snownode,minsnow
      &,maxsnode1,snode,cursnow,daysincesnow,lastday,undercatch,rainmeltf
-     &,densfun,intercept,snowage,prevden
+     &,densfun,intercept,snowage,prevden,grasshade
       COMMON/WIOCONS/PUNSH,ALAT,AMULT,PRESS,CMH2O,REFL,ALONC,TIMCOR,
      * AZMUTH,SLOPE,TSNHR,TSRHR,Hemis
       COMMON/WIOCONS2/IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART,IEND

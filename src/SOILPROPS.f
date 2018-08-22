@@ -40,7 +40,7 @@ c     Predicting the effect of temperature on soil thermal conductivity. Soil Sc
      & ,TSNHR,TSRHR,HEMIS,snowcond,intercept
       double precision rww,pc,rl,sp,r1,im
       double precision snowdens,snowmelt,snowtemp,cursnow,
-     & snowage,prevden,cpsnow
+     & snowage,prevden,cpsnow,grasshade
      
       INTEGER DAYCT,I,J,II,maxcount
       INTEGER JULNUM,DOY,Numtyps
@@ -67,7 +67,7 @@ c     Predicting the effect of temperature on soil thermal conductivity. Soil Sc
       common/snowmod/runsnow,trouble
       COMMON/SNOWPRED/snowtemp,snowdens,snowmelt,snownode,minsnow
      &,maxsnode1,snode,cursnow,daysincesnow,lastday,undercatch,rainmeltf
-     &,densfun,snowcond,intercept,snowage,prevden
+     &,densfun,snowcond,intercept,snowage,prevden,grasshade
       COMMON/WIOCONS/PUNSH,ALAT,AMULT,PRESS,CMH2O,REFL,ALONC,TIMCOR,
      * AZMUTH,SLOPE,TSNHR,TSRHR,Hemis
       COMMON/WIOCONS2/IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART,IEND2

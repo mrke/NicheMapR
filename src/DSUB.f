@@ -2,22 +2,22 @@
       use commondat
       IMPLICIT NONE
       EXTERNAL TAB
-      
+
 C     NicheMapR: software for biophysical mechanistic niche modelling
 
 C     Copyright (C) 2018 Michael R. Kearney and Warren P. Porter
 
-c     This program is free software: you can redistribute it and/or modify 
-c     it under the terms of the GNU General Public License as published by 
+c     This program is free software: you can redistribute it and/or modify
+c     it under the terms of the GNU General Public License as published by
 c     the Free Software Foundation, either version 3 of the License, or (at
 c      your option) any later version.
 
 c     This program is distributed in the hope that it will be useful, but
-c     WITHOUT ANY WARRANTY; without even the implied warranty of 
-c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+c     WITHOUT ANY WARRANTY; without even the implied warranty of
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 c     General Public License for more details.
 
-c     You should have received a copy of the GNU General Public License 
+c     You should have received a copy of the GNU General Public License
 c     along with this program. If not, see http://www.gnu.org/licenses/.
 
       double precision A,ALAT,ALONC,ALTT,AMOL,AMULT,ARAD,AZMUTH
@@ -33,14 +33,14 @@ c     along with this program. If not, see http://www.gnu.org/licenses/.
      & ,RS
       double precision RUFP,RW,SAB,SABNEW,SHAYD,SHDLIZ,SIGP,SIOUT,SKYIN
      & ,SLEP
-      double precision SLOPE,SMET,SOK,SOLR,SPDAY,SRAD,STP,SUN
+      double precision SLOPE,SMET,SOK,SOLR,SPDAY,SRAD,STP,SUN,IRDOWN
       double precision T,TAB,TAIR,TCI,TDS,TGRD,TKDAY,TIM,TIMCOR,TIME
      & ,TIMEF
       double precision TS,TSI,TSKY,TSNHR,TSRHR,TTEST,TVINC,TVIR
       double precision VD,VELR,VV,WB,WC,WTRPOT,X,XXX
       double precision ZENR,ZSLR,ZZ,Z01,Z02,ZH1,ZH2,HRAD,QRADHL,VIEWF,TT
       double precision sle,err,soilprop,moist,Thconduct,Density,Spheat
-     & ,snowage
+     & ,snowage,grasshade
       double precision rainfall,minsnow,inrad,refrad,snowcond,intercept
      & ,prevden
       double precision condep,rainmult,surflux,ep,maxpool,tide
@@ -81,9 +81,9 @@ c     along with this program. If not, see http://www.gnu.org/licenses/.
       COMMON/GROUND/SHAYD,ALTT,MAXSHD,SABNEW,PTWET,rainfall
       COMMON/SNOWPRED/snowtemp,snowdens,snowmelt,snownode,minsnow
      &,maxsnode1,snode,cursnow,daysincesnow,lastday,undercatch,rainmeltf
-     &,densfun,snowcond,intercept,snowage,prevden
+     &,densfun,snowcond,intercept,snowage,prevden,grasshade
       common/soilmoist/condep,rainmult,maxpool
-      common/soilmoist3/runmoist,evenrain,maxcount     
+      common/soilmoist3/runmoist,evenrain,maxcount
       common/soimoist2/rww,pc,rl,sp,r1,im
       common/hour/hourly,rainhourly
       common/IR/IRmode
@@ -212,7 +212,7 @@ C        SETTING THIS MONTH'S PERCENT OF SURFACE WITH FREE WATER/SNOW ON IT
         inrad = TAB('ZEN',TIME)*pi/180.
         refrad=asin(sin(inrad)/1.33)
         SABNEW = 1.-0.5*((sin(inrad-refrad)**2/(sin(inrad+refrad)**2))+
-     &   (tan(inrad-refrad)**2/(tan(inrad+refrad)**2))) 
+     &   (tan(inrad-refrad)**2/(tan(inrad+refrad)**2)))
       endif
 C**** get VALUES OF C, WC
 c     DENSITY (RHO) TIMES HEAT CAPACITY = RCSP. Assuming unit area of ground surface
@@ -276,7 +276,7 @@ c         RCSP = DENDAY(I)*SPDAY(I)
           else
            C(I)=SOK/DEPP(9-maxsnode2)
           endif
-         endif 
+         endif
         endif
 551    continue
       ENDIF
@@ -286,6 +286,7 @@ c     End of soil properties
       ZENR=TAB('ZEN',TIME)
       SOLR=TAB('SOL',TIME)
       CLOUD=TAB('CLD',TIME)
+      IRDOWN=TAB('IRD',TIME)
 
 C     Modification by M. Kearney for effect of cloud cover on direct solar radiation, using the
 C     Angstrom formula (formula 5.33 on P. 177 of "Climate Data and Resources" by Edward Linacre 1992
@@ -293,8 +294,17 @@ C     Angstrom formula (formula 5.33 on P. 177 of "Climate Data and Resources" b
          SOLR = SOLR*(0.36+0.64*(1.-(CLOUD/100)))
       ENDIF
 C     SOLAR RADIATION ON LEVEL GROUND. SURFACE ABSORPTIVITY, SAB, NOW CHANGING EACH MONTH/TIME INTERVAL, SABNEW
-      QSOLAR=SABNEW*SOLR*((100.- SHAYD)/100.)
-
+      if((grasshade.eq.1).and.(runsnow.eq.1))then
+       methour=(int(SIOUT(1)/60)+1)+24*(doy-1)
+       QSOLAR=SABNEW*SOLR*((100.- SHAYD)/100.)
+       if(methour.gt.1)then
+        if(snowhr(methour-1).gt.0)then
+         QSOLAR=SABNEW*SOLR*((100.- 0.)/100.) ! no shade, snow on veg
+        endif
+       endif
+      else
+       QSOLAR=SABNEW*SOLR*((100.- SHAYD)/100.)
+      endif
 C     SOLAR MODIFICATION FOR SLOPES
       IF(SLOPE .GT. 0) THEN
 C       SLOPING SURFACE
@@ -317,14 +327,20 @@ C     PERCENT CLOUD COVER 2 DEG. LESS THAN TAIR
 
 C     CONVERTING PERCENT CLOUDS TO FRACTION OF SKY CLEAR
       CLR=1.- (CLOUD/100.)
-      
+
+      if(IRDOWN.gt.0)THEN ! hourly IRdown provided
+C     NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
+      QRAD = IRDOWN - QRADGR
+c     TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
+      TSKY=(IRDOWN/SIGP)**(1./4.)-273
+      else
 C     CLEAR SKY RADIANT TEMPERATURE
       if(IRmode.eq.0)then
 c     Campbell and Norman eq. 10.10 to get emissivity of sky
         RH = TAB('REL',TIME)
       if(RH.gt.100.)then
             RH= 100.
-      endif        
+      endif
         WB = 0.
         DP = 999.
 C       BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
@@ -339,7 +355,7 @@ C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
 c     Below is the Gates formula (7.1)
 c      ARAD=(1.22*0.00000005673*(TAIR+273.)**4-171)
       else
-c     Swinbank, Eq. 10.11 in Campbell and Norman       
+c     Swinbank, Eq. 10.11 in Campbell and Norman
       ARAD=(0.0000092*(TAIR+273.16)**2)*0.0000000567*(TAIR+273.16)**4*60
      &./(4.185*10000.)
       endif
@@ -354,14 +370,37 @@ C     TOTAL SKY IR AVAILABLE/UNIT AREA
       CLOD = CRAD*(CLOUD/100.)
 c     previously SIGP*SLEP*(CLEAR + CLOUD)*((100.- SHAYD)/100.) but changed by MK to
 c     allow the formula in Gates to be used
+      if((grasshade.eq.1).and.(runsnow.eq.1))then
+       methour=(int(SIOUT(1)/60)+1)+24*(doy-1)
       QRADSK=(CLEAR + CLOD)*((100.- SHAYD)/100.)
+       if(methour.gt.1)then
+        if(snowhr(methour-1).gt.0)then
+         QRADSK=(CLEAR + CLOD)*((100.- 0.)/100.) ! no shade, snow on veg
+        endif
+       endif
+      else
+       QRADSK=(CLEAR + CLOD)*((100.- SHAYD)/100.)
+      endif
 C     VEGETATION IR AVAILABLE/UNIT AREA
 c     previously QRADVG=SIGP*SLEP*(SHAYD/100.)*CRAD but changed by MK to allow formula
 c     in Campbell to be used
-      QRADVG=(SHAYD/100.)*HRAD
-C     GROUND SURFACE IR UPWARD/UNIT AREA
-c     QRADGR=SIGP*SLEP*SRAD MK commented this out and replaced with below
-      QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*CRAD
+      if((grasshade.eq.1).and.(runsnow.eq.1))then
+       methour=(int(SIOUT(1)/60)+1)+24*(doy-1)
+       QRADVG=(SHAYD/100.)*HRAD
+C      GROUND SURFACE IR UPWARD/UNIT AREA
+c      QRADGR=SIGP*SLEP*SRAD MK commented this out and replaced with below
+       QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*CRAD
+       if(methour.gt.1)then
+        if(snowhr(methour-1).gt.0)then
+         QRADVG=(0./100.)*HRAD ! no shade, snow on veg
+         QRADGR=((100.-0.)/100.)*SRAD+(0./100.)*CRAD
+        endif
+       endif
+      else
+       QRADVG=(SHAYD/100.)*HRAD
+       QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*CRAD
+      endif
+
 c     TOTAL HILLSHADE RADIATION
       QRADHL=HRAD
 C     NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
@@ -370,6 +409,7 @@ c     TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
       TSKY=(((QRADSK + QRADVG)*VIEWF + QRADHL*(1-VIEWF))/(SIGP))**(1./4.
      & )-273
 c     TSKY=((QRADSK + QRADVG)/(SIGP))**(1./4.)-273
+      endif
 
       if(runsnow.eq.1)then
 c     change for snow - check what node is to be used for conduction, will be node 10 if no snow
@@ -439,7 +479,7 @@ C       GETTING THE RELATIVE HUMIDITY FOR THIS POINT IN TIME
          RH = TAB('REL',TIME)
       if(RH.gt.100.)then
             RH= 100.
-      endif         
+      endif
          WB = 0.
          DP = 999.
 C        BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
@@ -461,7 +501,7 @@ C       CHECK FOR OUTSIZE T(1)
 C       CHECKING FOR DIVIDE BY ZERO
          IF(T(1).EQ.TAIR)THEN
            T(1)= T(1)+0.1
-         ENDIF         
+         ENDIF
          HC = max(ABS((QCONV*4.184/60.*10000)/(T(1)-TAIR)),0.5)
          HD = (HC/(CP*DENAIR))*(0.71/0.60)**0.666
          CALL EVAP(T(1),TAIR,RH,HD,QEVAP,SAT)
