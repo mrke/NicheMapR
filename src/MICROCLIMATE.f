@@ -3,7 +3,7 @@
      &,timins1,RHMAXX1,RHMINN1,CCMAXX1,CCMINN1,WNMAXX1,WNMINN1,TMAXX1
      &,TMINN1,REFLS1,PCTWET1,soilinit1,hori1,tai1,soilprop1,
      &moists1,rain1,tannulrun1,tides1,PE1,KS1,BB1,BD1,DD1,L1,LAI1
-     &,TAIRhr1,RHhr1,WNhr1,CLDhr1,SOLRhr1,RAINhr1,ZENhr1,metout1
+     &,TAIRhr1,RHhr1,WNhr1,CLDhr1,SOLRhr1,RAINhr1,ZENhr1,IRhr1,metout1
      &,soil1,shadmet1,shadsoil1,soilmoist1,shadmoist1,humid1,shadhumid1
      &,soilpot1,shadpot1,sunsnow1,shdsnow1,plant1,shadplant1,DRLAMBDA1
      &,DRRLAMBDA1,SRLAMBDA1)
@@ -34,7 +34,7 @@ c     an optional snow model that simulates snow accumulation and melt and its e
 c     soil temperature. It no longer writes out temporary data (to dataky.dat).
 c     The program and associated package is fully described in the publication
 c     Kearney, M. R., and W. P. Porter. 2017. NicheMapR - an R package for biophysical modelling:
-c     the microclimate model. Ecography 40:664?674.
+c     the microclimate model. Ecography 40:664–674.
 c     The full package is available at http://github.com/mrke/NicheMapR/
 
 C     SOLRAD computes clear sky solar radiation for anywhere
@@ -68,7 +68,7 @@ c     OSUB outputs the microclimate calculations.
      &SLES1(nn2),MAXSHADES1(nn2),MINSHADES1(nn2),
      &JULDAY1(nn2),rain1(nn2),tannulrun1(nn2),TAIRhr1(nn2*24),
      &RHhr1(nn2*24),WNhr1(nn2*24),CLDhr1(nn2*24),
-     &SOLRhr1(nn2*24),RAINhr1(nn2*24),ZENhr1(nn2*24)
+     &SOLRhr1(nn2*24),RAINhr1(nn2*24),ZENhr1(nn2*24),IRhr1(nn2*24)
       double precision, DIMENSION(10,int(nn2)), intent(in) :: moists1,
      & Nodes1
       double precision, DIMENSION(24*int(nn2),19), intent(inout) ::
@@ -106,7 +106,7 @@ c     OSUB outputs the microclimate calculations.
       double precision DRLAM,DRRLAM,SRLAM,snowcond,intercept
       double precision rww,pc,rl,sp,r1,im
       double precision snowdens,snowmelt,snowtemp,cursnow,qphase,
-     & sumphase,sumphase2,snowage,prevden,QFREZE,xtrain
+     & sumphase,sumphase2,snowage,prevden,QFREZE,xtrain,grasshade
 
       INTEGER I,I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I20,KK,LL,I100
       INTEGER I91,I92,I93,I94,I95,I96,IPCH,IPRINT,cnt,II,I97,I98,I99
@@ -124,7 +124,7 @@ c     OSUB outputs the microclimate calculations.
       CHARACTER*12 FNAME
 
       DIMENSION snownode(8),snode(8),qphase(8)
-      DIMENSION microinput1(58)
+      DIMENSION microinput1(59)
       DIMENSION soilprop(10,5),soilprop1(10,5),moist(10)
       DIMENSION DEPS(21),curmoist2(18)
       DIMENSION TIMINS(4),TIMAXS(4)
@@ -144,7 +144,7 @@ c     OSUB outputs the microclimate calculations.
       COMMON/ARRAY/T(30),WC(20),C(20),DEP(30),IOUT(100),
      & OUT(101),ITEST(23)
       COMMON/CARRAY/INAME(20),SYMBOL(23)
-      COMMON/TABLE/TI(200),TD(200)
+      COMMON/TABLE/TI(211),TD(211)
       COMMON/TABLE2/ILOCT(21)
       COMMON/OPSHUN/MONLY,NOPRNT,NOTRAN,NOCON,IPCH,ISHADE,NKHT,
      & NPOS,NLIZ,NOSUM
@@ -183,7 +183,7 @@ c    Variable soil properties data from Iomet1
       COMMON/LATLONGS/AMINUT,ALONG,ALMINT,ALREF
       COMMON/SNOWPRED/snowtemp,snowdens,snowmelt,snownode,minsnow
      &,maxsnode1,snode,cursnow,daysincesnow,lastday,undercatch,rainmeltf
-     &,densfun,snowcond,intercept,snowage,prevden
+     &,densfun,snowcond,intercept,snowage,prevden,grasshade
       common/horizon/hori,azi
       common/soilmoist/condep,rainmult,maxpool
       common/soilmoist3/runmoist,evenrain,maxcount
@@ -391,6 +391,7 @@ c    WRITE(I2,*)i,' ',j,' ',Thconds(i,j),' ',Thconds1(i,j)
       maxerr=int(microinput1(56))
       snowcond=microinput1(57)/418.6*60
       intercept=microinput1(58)
+      grasshade=microinput1(59)
       if((int(hourly).eq.1).or.(int(rainhourly).eq.1))then
       kk=0
       ll=0
@@ -787,6 +788,12 @@ c    goto 1111
        else
         TD(137:161)=ZENS(DOYS2:DOYF2)
        endif
+       if(IRhr1(1).gt.0)then
+        TD(187:210)=IRhr1(DOYS:DOYF)/ 4.185 / 10000. * 60.
+        TD(211)=IRhr1(DOYF)/ 4.185 / 10000. * 60.
+       else
+        TD(187:211)=IRhr1(DOYF)
+       endif
        DOYS=(DOY)*25-24
        DOYF=DOY*25
        TD(162:186)=ZSLS(DOYS:DOYF)
@@ -808,7 +815,7 @@ c    goto 1111
       TI(112:136)=minutes
       TI(137:161)=minutes
       TI(162:186)=minutes
-
+      TI(187:211)=minutes
       if(runsnow.eq.1)then
        ndep=21
        ii=18

@@ -947,6 +947,7 @@ micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval
         SOLRhr<-forecast$sw
         RAINhr<-forecast$prec1
         ZENhr<-forecast$zeniths
+        IRDhr=rep(-1,length(ZENhr))
 
         if(adiab_cor==1){
           TAIRhr.orig <- TAIRhr
@@ -1199,7 +1200,7 @@ micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval
           tides<-matrix(data = 0., nrow = 24*dim, ncol = 3) # make an empty matrix
         }
         # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
-        micro<-list(tides=tides,microinput=microinput,DOY=DOY,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,DD=DD,L=L,LAI=LAI,0,nyears*24*365)
+        micro<-list(tides=tides,microinput=microinput,DOY=DOY,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,IRDhr=IRDhr,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,DD=DD,L=L,LAI=LAI,0,nyears*24*365)
         # write all input to csv files in their own folder
         if(write_input==1){
           if(dir.exists("micro csv input")==FALSE){
@@ -1246,6 +1247,7 @@ micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval
           write.table(SOLRhr,file="micro csv input/SOLRhr.csv", sep = ",", col.names = NA, qmethod = "double")
           write.table(RAINhr,file="micro csv input/RAINhr.csv", sep = ",", col.names = NA, qmethod = "double")
           write.table(ZENhr,file="micro csv input/ZENhr.csv", sep = ",", col.names = NA, qmethod = "double")
+          write.table(IRDhr,file="micro csv input/IRDhr.csv", sep = ",", col.names = NA, qmethod = "double")
         }
         if(is.numeric(loc[1])){
           location<-paste("long",loc[1],"lat",loc[2])

@@ -4,17 +4,17 @@ C     NicheMapR: software for biophysical mechanistic niche modelling
 
 C     Copyright (C) 2018 Michael R. Kearney and Warren P. Porter
 
-c     This program is free software: you can redistribute it and/or modify 
-c     it under the terms of the GNU General Public License as published by 
+c     This program is free software: you can redistribute it and/or modify
+c     it under the terms of the GNU General Public License as published by
 c     the Free Software Foundation, either version 3 of the License, or (at
 c      your option) any later version.
 
 c     This program is distributed in the hope that it will be useful, but
-c     WITHOUT ANY WARRANTY; without even the implied warranty of 
-c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+c     WITHOUT ANY WARRANTY; without even the implied warranty of
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 c     General Public License for more details.
 
-c     You should have received a copy of the GNU General Public License 
+c     You should have received a copy of the GNU General Public License
 c     along with this program. If not, see http://www.gnu.org/licenses/.
 
 C    25 June 1998 version incorporates skylight before sunrise and after sunset.  Spectral
@@ -86,8 +86,8 @@ C     REPINT(N)    RECIPROCAL OF EPINT
      &lastday,undercatch,rainmeltf
 
       double precision snowdens,snowmelt,snowtemp,cursnow,snowage,
-     & prevden
-     
+     & prevden,grasshade
+
       INTEGER I,I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92,I93
      & ,I94,I95,I96
       integer ia,IALT,icorr,iday,idom,ielam,IDA,IDAYST
@@ -97,7 +97,7 @@ C     REPINT(N)    RECIPROCAL OF EPINT
       integer n,NCT,ND,nft,nmax,NOSCAT,NUMRUN,nzct
       integer microdaily,cnt,ILOCT
       INTEGER I97,I98,I99,methour,lamb,I100,I101
-      
+
       CHARACTER*12 FNAME
       CHARACTER*80 LABL1,LABL2,LABL3
       CHARACTER*1 ANS1,ANS2,ANS3,ANS4,ANS5,ANS6,ANS7,ANS10
@@ -139,7 +139,7 @@ C     REPINT(N)    RECIPROCAL OF EPINT
       COMMON/GROUND/SHAYD,ALTT,MAXSHD,SABNEW,PTWET,rainfall
       COMMON/SNOWPRED/snowtemp,snowdens,snowmelt,snownode,minsnow
      &,maxsnode1,snode,cursnow,daysincesnow,lastday,undercatch,rainmeltf
-     &,densfun,snowcond,intercept,snowage,prevden
+     &,densfun,snowcond,intercept,snowage,prevden,grasshade
       COMMON/WICHDAY/NUMRUN
       COMMON/DAILY/microdaily
       common/deep/tannul2
@@ -149,7 +149,7 @@ C     REPINT(N)    RECIPROCAL OF EPINT
       COMMON/NICHEMAPRIO/SLE,ERR,soilprop,surflux
       common/moistcom/moist,ep
       COMMON/dataky/DEPS,CNT
-      COMMON/TABLE/TI(200),TDD(200)
+      COMMON/TABLE/TI(211),TDD(211)
       COMMON/TABLE2/ILOCT(21)
       COMMON/LAMBDA/DRLAM,DRRLAM,SRLAM,LAMB
 
@@ -821,12 +821,12 @@ c     polynomials to the ALTFCT data originally in SOLAR.DAT and now stored abov
       ALTFCT3=1.07573E-06*ALT**5-5.14511E-05*ALT**4+7.97960E-04*ALT**3-
      &4.90904E-03*ALT**2 + 2.99258E-03*ALT + 1.00238E+00
       ALTFCT4=1
-      
-c     mutliplier to correct hourly solar data for horizon angle      
+
+c     mutliplier to correct hourly solar data for horizon angle
       if(altdeg.lt.ahoriz)then
       TDD(111+IT)=0.15 ! diffuse only, so 85% cut out
       endif
-      
+
       DO 301 N=1,NMAX
        TLAM1=(PRESS/1013.)*TR(N)*ALTFCT1
        TLAM2=(25./AMR)*TA(N)*ALTFCT2
@@ -1010,11 +1010,11 @@ C     REPINT(N)    RECIPROCAL OF EPINT
       DRRLAMBDA(methour,1)=JULDAY(IDAY)
       DRRLAMBDA(methour,2)=TD
       SRLAMBDA(methour,1)=JULDAY(IDAY)
-      SRLAMBDA(methour,2)=TD          
-      DRLAMBDA(methour,3:113)=DRLAM(1:111)*10 ! CONVERTING FROM mW/cm2-nm to W/m2-nm 
-      DRRLAMBDA(methour,3:113)=DRRLAM(1:111)*10 ! CONVERTING FROM mW/cm2-nm to W/m2-nm 
-      SRLAMBDA(methour,3:113)=SRLAM(1:111)*10 ! CONVERTING FROM mW/cm2-nm to W/m2-nm 
-         
+      SRLAMBDA(methour,2)=TD
+      DRLAMBDA(methour,3:113)=DRLAM(1:111)*10 ! CONVERTING FROM mW/cm2-nm to W/m2-nm
+      DRRLAMBDA(methour,3:113)=DRRLAM(1:111)*10 ! CONVERTING FROM mW/cm2-nm to W/m2-nm
+      SRLAMBDA(methour,3:113)=SRLAM(1:111)*10 ! CONVERTING FROM mW/cm2-nm to W/m2-nm
+
       IF(IPINT .EQ. 0) GO TO 350
 C     WRITING PLOT FILE
       IF (IT .LE. IEND) THEN

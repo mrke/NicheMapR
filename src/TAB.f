@@ -4,17 +4,17 @@ C     NicheMapR: software for biophysical mechanistic niche modelling
 
 C     Copyright (C) 2018 Michael R. Kearney and Warren P. Porter
 
-c     This program is free software: you can redistribute it and/or modify 
-c     it under the terms of the GNU General Public License as published by 
+c     This program is free software: you can redistribute it and/or modify
+c     it under the terms of the GNU General Public License as published by
 c     the FDOYree Software Foundation, either version 3 of the License, or (at
 c      your option) any later version.
 
 c     This program is distributed in the hope that it will be useful, but
-c     WITHOUT ANY WARRANTY; without even the implied warranty of 
-c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+c     WITHOUT ANY WARRANTY; without even the implied warranty of
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 c     General Public License for more details.
 
-c     You should have received a copy of the GNU General Public License 
+c     You should have received a copy of the GNU General Public License
 c     along with this program. If not, see http://www.gnu.org/licenses/.
 
 c     This function does linear interpolation of intermediate values for
@@ -25,13 +25,13 @@ c     values to solve the equations.
       INTEGER I,I1,IA,IFINAL,ILOCT,ISTART,JULNUM,DOY,errcount,maxerr
       INTEGER errout,numrun
       CHARACTER*3 INAME,NAME,SYMBOL
-      COMMON/TABLE/TI(200),TD(200)
+      COMMON/TABLE/TI(211),TD(211)
       COMMON/TABLE2/ILOCT(21)
       COMMON/CARRAY/INAME(20),SYMBOL(23)
       COMMON/DAYJUL/JULNUM,DOY
       common/errormsg/errout,maxerr,errcount
       COMMON/WICHDAY/NUMRUN
-      
+
 C     NAME = TABLE NAME
 C     AIND = TIME
 C     TI = INDEPENDENT VARIABLE (TIME)
@@ -78,9 +78,9 @@ c      Interpolate linearly the dependent value & return
      1D****')
       errcount=maxerr+1
       numrun=2
-      DOY=julnum      
+      DOY=julnum
       RETURN
-      
+
   505 CONTINUE
   510 WRITE(6,511) AIND,NAME
   511 FORMAT('0****THE INDEPENDENT VARIABLE OF VALUE',E12.4,
