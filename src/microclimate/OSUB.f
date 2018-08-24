@@ -38,8 +38,8 @@ C     VERSION 2 SEPT. 2000
       DOUBLE PRECISION RCSP,HGTP,RUFP,BEGP,PRTP,ERRP,snowout,curmoist
      & ,soiltemp,SLEP,NONP,SUN,PLT,rainfall,curhumid,surflux,IRDown
       DOUBLE PRECISION CLEAR,QRADSK,SIGP,TAIR,SRAD,QEVAP,frosttest,vel2m
-      DOUBLE PRECISION htovpr,water,gwsurf,EP,zz,vv,hourly,curroot2
-      DOUBLE PRECISION rainhourly,IRmode,melthresh,time3,err
+      DOUBLE PRECISION htovpr,water,gwsurf,EP,zz,vv,curroot2
+      DOUBLE PRECISION melthresh,time3,err
 
       DOUBLE PRECISION FROST,curpot,meanT,meanTpast,temp,SLE
       DOUBLE PRECISION bp,hrad,patmos,pstd,qrad,qradhl,viewf,wb,wtrpot
@@ -60,7 +60,7 @@ C     VERSION 2 SEPT. 2000
      & cummelted,melted,snowfall,rainmelt,cpsnow,netsnow,hcap,meltheat,
      & layermass,xtrain,QFREZE,grasshade
 
-      integer maxsnode2,maxsnode3,maxcount,js,numrun
+      integer maxsnode2,maxsnode3,maxcount,js,numrun,rainhourly,hourly
       INTEGER CONS,I,IEND,IFINAL,ILOCT,IOUT,IPRINT,ITEST,trouble
       INTEGER J,JULNUM,MM,DOY,N,NAIR,ND,NOUT,dew,writecsv,runsnow
       INTEGER I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,slipped,sat
@@ -68,7 +68,7 @@ C     VERSION 2 SEPT. 2000
       INTEGER I97,I98,I99,I100,I101,errout,maxerr,errcount
       INTEGER IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART,IEND2
 
-      INTEGER methour,microdaily,runshade,k,lamb,cnd
+      INTEGER methour,IRmode,microdaily,runshade,k,lamb,cnd
 
       CHARACTER*3 SYMBOL,INAME,STP
       CHARACTER*6 NAME, HEAD
@@ -247,7 +247,7 @@ C       SETTING THIS MONTH'S PERCENT OF SURFACE WITH FREE WATER/SNOW ON IT
        PTWET=PCTWET(DOY)
        rainfall=RAIN(DOY)
       endif
-      if((int(hourly).eq.1).or.(int(rainhourly).eq.1))then
+      if(int(rainhourly).eq.1)then
        methour=0
        methour=(int(SIOUT(1)/60)+1)+24*(DOY-1)
        rainfall=rainhr(int(TIME/60.+1+25*(DOY-1)))
@@ -363,89 +363,92 @@ C     Angstrom formula (formula 5.33 on P. 177 of "Climate Data and Resources" b
       ENDIF
 
       if(IRDOWN.gt.0)THEN ! hourly IRdown provided
-C     NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
-      QRAD = IRDOWN - QRADGR
-c     TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
-      TSKY=(IRDOWN/SIGP)**(1./4.)-273
-      else
-C     CLEAR SKY RADIANT TEMPERATURE
-      CLR=1.- (CLOUD/100.)
-C     CLEAR SKY RADIANT TEMPERATURE
-      if(int(IRmode).eq.0)then
-c     Campbell and Norman eq. 10.10 to get emissivity of sky
-       RH = TAB('REL',TIME)
-       if(RH.gt.100.)then
-        RH= 100.
-       endif
-       WB = 0.
-       DP = 999.
-C      BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
-C      EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
-       PSTD=101325.
-       PATMOS=PSTD*((1.-(0.0065*ALTT/288.))**(1./0.190284))
-       BP = PATMOS
-       CALL WETAIR (TAIR,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,
-     &      CP,WTRPOT)
-       ARAD=1.72*((E/1000.)/(TAIR+273.16))**(1./7.)*0.0000000567*
-     &(TAIR+273.16)**4*60./(4.185*10000.)
-c     Below is the Gates formula (7.1)
-c      ARAD=(1.22*0.00000005673*(TAIR+273.)**4-171)
-      else
-c     Swinbank, Eq. 10.11 in Campbell and Norman
-       ARAD=(0.0000092*(TAIR+273.16)**2)*0.0000000567*(TAIR+273.16)**4
-     &*60./(4.185*10000.)
-      endif
-
-C     APPROXIMATING CLOUD RADIANT TEMPERATURE AS REFERENCE SHADE TEMPERATURE - 2 degrees
-      CRAD=SIGP*SLEP*(TAIR+271.)**4
-c     Hillshade radiant temperature (approximating as air temperature)
-      HRAD=SIGP*SLEP*(TAIR+273.)**4
-C     GROUND SURFACE RADIATION TEMPERATURE
-      SRAD=SIGP*SLE*(TT(1)+273.)**4
-C     TOTAL SKY IR AVAILABLE/UNIT AREA
-      CLEAR =  ARAD*CLR
-      CLOD =  CRAD*(CLOUD/100.)
-c       previously SIGP*SLEP*(CLEAR + CLOUD)*((100.- SHAYD)/100.) but changed by MK to
-c       allow the formula in Gates to be used
-      if((grasshade.eq.1).and.(runsnow.eq.1))then
-       methour=(int(SIOUT(1)/60)+1)+24*(doy-1)
-      QRADSK=(CLEAR + CLOD)*((100.- SHAYD)/100.)
-       if(methour.gt.1)then
-        if(snowhr(methour-1).gt.0)then
-         QRADSK=(CLEAR + CLOD)*((100.- 0.)/100.) ! no shade, snow on veg
-        endif
-       endif
-      else
-       QRADSK=(CLEAR + CLOD)*((100.- SHAYD)/100.)
-      endif
-
-C     VEGETATION IR AVAILABLE/UNIT AREA
-c     previously QRADVG=SIGP*SLEP*(SHAYD/100.)*CRAD but changed by MK to allow formula
-c     in Campbell to be used
-      if((grasshade.eq.1).and.(runsnow.eq.1))then
-       methour=(int(SIOUT(1)/60)+1)+24*(doy-1)
-       QRADVG=(SHAYD/100.)*HRAD
-C      GROUND SURFACE IR UPWARD/UNIT AREA
-c      QRADGR=SIGP*SLEP*SRAD MK commented this out and replaced with below
-       QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*CRAD
-       if(methour.gt.1)then
-        if(snowhr(methour-1).gt.0)then
-         QRADVG=(0./100.)*HRAD ! no shade, snow on veg
-         QRADGR=((100.-0.)/100.)*SRAD+(0./100.)*CRAD
-        endif
-       endif
-      else
-       QRADVG=(SHAYD/100.)*HRAD
-       QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*CRAD
-      endif
-
-c     TOTAL HILLSHADE RADIATION
-      QRADHL=HRAD
-C     NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
-      QRAD = (QRADSK + QRADVG)*VIEWF + QRADHL*(1-VIEWF) - QRADGR
+C      NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
+       SRAD=SIGP*SLE*(T(1)+273.)**4
+       HRAD=SIGP*SLEP*(TAIR+273.)**4
+       QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*HRAD
+       QRAD = IRDOWN - QRADGR
 c      TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
-      TSKY=(((QRADSK + QRADVG)*VIEWF + QRADHL*(1-VIEWF))/(SIGP))**(1./4.
-     & )-273
+       TSKY=(IRDOWN/SIGP)**(1./4.)-273
+      else
+C      CLEAR SKY RADIANT TEMPERATURE
+       CLR=1.- (CLOUD/100.)
+C      CLEAR SKY RADIANT TEMPERATURE
+       if(int(IRmode).eq.0)then
+c       Campbell and Norman eq. 10.10 to get emissivity of sky
+        RH = TAB('REL',TIME)
+        if(RH.gt.100.)then
+         RH= 100.
+        endif
+        WB = 0.
+        DP = 999.
+C       BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
+C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
+        PSTD=101325.
+        PATMOS=PSTD*((1.-(0.0065*ALTT/288.))**(1./0.190284))
+        BP = PATMOS
+        CALL WETAIR (TAIR,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,
+     &      CP,WTRPOT)
+        ARAD=1.72*((E/1000.)/(TAIR+273.16))**(1./7.)*0.0000000567*
+     &  (TAIR+273.16)**4*60./(4.185*10000.)
+c       Below is the Gates formula (7.1)
+c       ARAD=(1.22*0.00000005673*(TAIR+273.)**4-171)
+       else
+c       Swinbank, Eq. 10.11 in Campbell and Norman
+        ARAD=(0.0000092*(TAIR+273.16)**2)*0.0000000567*(TAIR+273.16)**4
+     & *60./(4.185*10000.)
+       endif
+
+C      APPROXIMATING CLOUD RADIANT TEMPERATURE AS REFERENCE SHADE TEMPERATURE - 2 degrees
+       CRAD=SIGP*SLEP*(TAIR+271.)**4
+c      Hillshade radiant temperature (approximating as air temperature)
+       HRAD=SIGP*SLEP*(TAIR+273.)**4
+C      GROUND SURFACE RADIATION TEMPERATURE
+       SRAD=SIGP*SLE*(TT(1)+273.)**4
+C      TOTAL SKY IR AVAILABLE/UNIT AREA
+       CLEAR =  ARAD*CLR
+       CLOD =  CRAD*(CLOUD/100.)
+c      previously SIGP*SLEP*(CLEAR + CLOUD)*((100.- SHAYD)/100.) but changed by MK to
+c      allow the formula in Gates to be used
+       if((int(grasshade).eq.1).and.(runsnow.eq.1))then
+        methour=(int(SIOUT(1)/60)+1)+24*(doy-1)
+        QRADSK=(CLEAR + CLOD)*((100.- SHAYD)/100.)
+        if(methour.gt.1)then
+         if(snowhr(methour-1).gt.0)then
+          QRADSK=(CLEAR + CLOD)*((100.- 0.)/100.) ! no shade, snow on veg
+         endif
+        endif
+       else
+        QRADSK=(CLEAR + CLOD)*((100.- SHAYD)/100.)
+       endif
+
+C      VEGETATION IR AVAILABLE/UNIT AREA
+c      previously QRADVG=SIGP*SLEP*(SHAYD/100.)*CRAD but changed by MK to allow formula
+c      in Campbell to be used
+       if((int(grasshade).eq.1).and.(runsnow.eq.1))then
+        methour=(int(SIOUT(1)/60)+1)+24*(doy-1)
+        QRADVG=(SHAYD/100.)*HRAD
+C       GROUND SURFACE IR UPWARD/UNIT AREA
+c       QRADGR=SIGP*SLEP*SRAD MK commented this out and replaced with below
+        QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*HRAD
+        if(methour.gt.1)then
+         if(snowhr(methour-1).gt.0)then
+          QRADVG=(0./100.)*HRAD ! no shade, snow on veg
+          QRADGR=((100.-0.)/100.)*SRAD+(0./100.)*HRAD
+         endif
+        endif
+       else
+        QRADVG=(SHAYD/100.)*HRAD
+        QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*HRAD
+       endif
+
+c      TOTAL HILLSHADE RADIATION
+       QRADHL=HRAD
+C      NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
+       QRAD = (QRADSK + QRADVG)*VIEWF + QRADHL*(1-VIEWF) - QRADGR
+c      TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
+       TSKY=(((QRADSK + QRADVG)*VIEWF + QRADHL*(1-VIEWF))/(SIGP))**(1./
+     & 4.)-273
       ENDIF
 
 c     TSKY=((QRADSK + QRADVG)/(SIGP))**(1./4.)-273
@@ -496,8 +499,7 @@ c     convert to W/m2
        endif
        if((OUT(2).le.snowtemp).and.(rainfall.gt.0.0))then
 c       compute snow fall using conversion from daily rain to daily snow (disaggregated over 24 hours) and convert from mm rain to cm snow
-        if((time.lt.1e-8).or.(int(hourly).eq.1).or.(int(rainhourly)
-     &.eq.1))then
+        if((time.lt.1e-8).or.(int(rainhourly).eq.1))then
 c        account for undercatch
          snowfall=((rainfall*rainmult*undercatch*0.1)/snowdens)! snowfall in cm/m2
          if(SHAYD.gt.0)then
@@ -543,9 +545,9 @@ c     don't lose water if heat is just going into melting snow
       if(runsnow.eq.1)then
 c      get cm snow lost due to rainfall - from Anderson model
        if((OUT(2).ge.snowtemp).and.(rainfall.gt.0).and.((time.lt.1e-8)
-     & .or.(int(hourly).eq.1).or.(int(rainhourly).eq.1)))then ! mean air temperature warmer than snow temperature and more than 1 mm rain and midnight
+     & .or.(int(rainhourly).eq.1)))then ! mean air temperature warmer than snow temperature and more than 1 mm rain and midnight
         rainmelt=(rainmeltf*rainfall*(OUT(2)))*24./10./snowdens ! melt the snow as a function of the air temperature
-        if((int(hourly).eq.1).or.(int(rainhourly).eq.1))then
+        if(int(rainhourly).eq.1)then
          rainmelt=rainmelt/24.
         endif
         if(rainmelt.lt.0)then
@@ -833,7 +835,7 @@ c      choosing between even rainfall through the day or one event at midnight
        if((snowpres.gt.0).and.(OUT(2).lt.snowtemp))then
         condep=condep+melted
        else
-        if((int(hourly).eq.0).and.(int(rainhourly).eq.0))then
+        if(int(rainhourly).eq.0)then
          if(evenrain.eq.0)then
           if((time.gt.1e-8).or.(cursnow.gt.0))then
            rainfallb=0
