@@ -692,7 +692,7 @@ micro_ncep <- function(
     load(gcfolder)
     global_climate<-raster::brick(paste(folder,"/global_climate.nc",sep=""))
     CLIMATE <- raster::extract(global_climate,x)
-    ALTT<-as.numeric(CLIMATE[,1])
+    ALTT<-as.numeric(CLIMATE[1])
     if(is.na(ALTT)){
       ALTT=0
     }

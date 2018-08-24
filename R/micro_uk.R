@@ -1089,8 +1089,8 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
       #Heavy trees 	0.25
       #Several buildings 	0.25
       #Hilly, mountainous terrain 	0.25
-      WNMAXX<-WNMAXX*(1.2/2)^0.15
-      WNMINN<-WNMINN*(1.2/2)^0.15
+      WNMAXX<-WNMAXX*(1.2/10)^0.15
+      WNMINN<-WNMINN*(1.2/10)^0.15
 
       SLES<-matrix(nrow=dim,data=0)
       SLES<-SLES+SLE

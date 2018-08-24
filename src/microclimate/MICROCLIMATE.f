@@ -87,7 +87,7 @@ c     OSUB outputs the microclimate calculations.
      &microinput1,soilprop1,PE1,KS1,BB1,BD1,L1,soilinit1,DD1
 
       double precision C,DEP,DTAU,ERR1,H,OUT,PAR,PTWET,SABNEW,soildp,
-     & airdp,HOURLY,rainhourly,IRmode
+     & airdp
       double precision T,TD,TI,TIME,TIMEF,WORK,shayd,altt,MAXSHD,WC
      & ,viewf
       double precision itair,icld,iwind,irelhum,rainfall,surflux,PE,KS
@@ -116,7 +116,7 @@ c     OSUB outputs the microclimate calculations.
       INTEGER NOUT,NPOS,NUMRUN,NUMTYPS,writecsv,runshade,lamb,errout
       INTEGER IALT,IEND,IEP,IPINT,ISTART,IUV,NOSCAT,IDA,IDAYST,julstnd
       INTEGER microdaily,DOYF,DOYS,DOYF2,DOYS2,runmoist,evenrain,runsnow
-      INTEGER errcount
+      INTEGER errcount,HOURLY,rainhourly,IRmode
 
       CHARACTER*80 LABL1,LABL2,LABL3
       CHARACTER*3 IBLK,INAME,SYMBOL
@@ -375,8 +375,8 @@ c    WRITE(I2,*)i,' ',j,' ',Thconds(i,j),' ',Thconds1(i,j)
       densfun(3)=microinput1(41)
       densfun(4)=microinput1(42)
       prevden=densfun(2)
-      hourly=microinput1(43)
-      rainhourly=microinput1(44)
+      hourly=int(microinput1(43))
+      rainhourly=int(microinput1(44))
       lamb=int(microinput1(45))
       IUV=int(microinput1(46))
       rww=microinput1(47)

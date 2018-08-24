@@ -294,7 +294,7 @@ C     Angstrom formula (formula 5.33 on P. 177 of "Climate Data and Resources" b
          SOLR = SOLR*(0.36+0.64*(1.-(CLOUD/100)))
       ENDIF
 C     SOLAR RADIATION ON LEVEL GROUND. SURFACE ABSORPTIVITY, SAB, NOW CHANGING EACH MONTH/TIME INTERVAL, SABNEW
-      if((grasshade.eq.1).and.(runsnow.eq.1))then
+      if((int(grasshade).eq.1).and.(runsnow.eq.1))then
        methour=(int(SIOUT(1)/60)+1)+24*(doy-1)
        QSOLAR=SABNEW*SOLR*((100.- SHAYD)/100.)
        if(methour.gt.1)then
@@ -329,18 +329,21 @@ C     CONVERTING PERCENT CLOUDS TO FRACTION OF SKY CLEAR
       CLR=1.- (CLOUD/100.)
 
       if(IRDOWN.gt.0)THEN ! hourly IRdown provided
-C     NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
-      QRAD = IRDOWN - QRADGR
-c     TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
-      TSKY=(IRDOWN/SIGP)**(1./4.)-273
+C      NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
+       SRAD=SIGP*SLE*(T(1)+273.)**4
+       HRAD=SIGP*SLEP*(TAIR+273.)**4
+       QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*HRAD
+       QRAD = IRDOWN - QRADGR
+c      TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
+       TSKY=(IRDOWN/SIGP)**(1./4.)-273
       else
-C     CLEAR SKY RADIANT TEMPERATURE
-      if(IRmode.eq.0)then
-c     Campbell and Norman eq. 10.10 to get emissivity of sky
+C      CLEAR SKY RADIANT TEMPERATURE
+       if(IRmode.eq.0)then
+c       Campbell and Norman eq. 10.10 to get emissivity of sky
         RH = TAB('REL',TIME)
-      if(RH.gt.100.)then
-            RH= 100.
-      endif
+        if(RH.gt.100.)then
+         RH= 100.
+        endif
         WB = 0.
         DP = 999.
 C       BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
@@ -353,62 +356,62 @@ C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
       ARAD=1.72*((E/1000.)/(TAIR+273.16))**(1./7.)*0.0000000567*
      &(TAIR+273.16)**4*60./(4.185*10000.)
 c     Below is the Gates formula (7.1)
-c      ARAD=(1.22*0.00000005673*(TAIR+273.)**4-171)
-      else
-c     Swinbank, Eq. 10.11 in Campbell and Norman
-      ARAD=(0.0000092*(TAIR+273.16)**2)*0.0000000567*(TAIR+273.16)**4*60
-     &./(4.185*10000.)
-      endif
-C     APPROXIMATING CLOUD RADIANT TEMPERATURE AS REFERENCE SHADE TEMPERATURE - 2 degrees
-      CRAD=SIGP*SLEP*(TAIR+271.)**4
-c     Hillshade radiant temperature (approximating as air temperature)
-      HRAD=SIGP*SLEP*(TAIR+273.)**4
-C     GROUND SURFACE RADIATION TEMPERATURE
-      SRAD=SIGP*SLE*(T(1)+273.)**4
-C     TOTAL SKY IR AVAILABLE/UNIT AREA
-      CLEAR = ARAD*CLR
-      CLOD = CRAD*(CLOUD/100.)
-c     previously SIGP*SLEP*(CLEAR + CLOUD)*((100.- SHAYD)/100.) but changed by MK to
-c     allow the formula in Gates to be used
-      if((grasshade.eq.1).and.(runsnow.eq.1))then
-       methour=(int(SIOUT(1)/60)+1)+24*(doy-1)
-      QRADSK=(CLEAR + CLOD)*((100.- SHAYD)/100.)
-       if(methour.gt.1)then
-        if(snowhr(methour-1).gt.0)then
-         QRADSK=(CLEAR + CLOD)*((100.- 0.)/100.) ! no shade, snow on veg
-        endif
+c        ARAD=(1.22*0.00000005673*(TAIR+273.)**4-171)
+       else
+c       Swinbank, Eq. 10.11 in Campbell and Norman
+        ARAD=(0.0000092*(TAIR+273.16)**2)*0.0000000567*(TAIR+273.16)**4
+     &  *60./(4.185*10000.)
        endif
-      else
-       QRADSK=(CLEAR + CLOD)*((100.- SHAYD)/100.)
-      endif
-C     VEGETATION IR AVAILABLE/UNIT AREA
-c     previously QRADVG=SIGP*SLEP*(SHAYD/100.)*CRAD but changed by MK to allow formula
-c     in Campbell to be used
-      if((grasshade.eq.1).and.(runsnow.eq.1))then
-       methour=(int(SIOUT(1)/60)+1)+24*(doy-1)
-       QRADVG=(SHAYD/100.)*HRAD
-C      GROUND SURFACE IR UPWARD/UNIT AREA
-c      QRADGR=SIGP*SLEP*SRAD MK commented this out and replaced with below
-       QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*CRAD
-       if(methour.gt.1)then
-        if(snowhr(methour-1).gt.0)then
-         QRADVG=(0./100.)*HRAD ! no shade, snow on veg
-         QRADGR=((100.-0.)/100.)*SRAD+(0./100.)*CRAD
+C      APPROXIMATING CLOUD RADIANT TEMPERATURE AS REFERENCE SHADE TEMPERATURE - 2 degrees
+       CRAD=SIGP*SLEP*(TAIR+271.)**4
+c      Hillshade radiant temperature (approximating as air temperature)
+       HRAD=SIGP*SLEP*(TAIR+273.)**4
+C      GROUND SURFACE RADIATION TEMPERATURE
+       SRAD=SIGP*SLE*(T(1)+273.)**4
+C      TOTAL SKY IR AVAILABLE/UNIT AREA
+       CLEAR = ARAD*CLR
+       CLOD = CRAD*(CLOUD/100.)
+c      previously SIGP*SLEP*(CLEAR + CLOUD)*((100.- SHAYD)/100.) but changed by MK to
+c      allow the formula in Gates to be used
+       if((int(grasshade).eq.1).and.(runsnow.eq.1))then
+        methour=(int(SIOUT(1)/60)+1)+24*(doy-1)
+        QRADSK=(CLEAR + CLOD)*((100.- SHAYD)/100.)
+        if(methour.gt.1)then
+         if(snowhr(methour-1).gt.0)then
+          QRADSK=(CLEAR + CLOD)*((100.- 0.)/100.) ! no shade, snow on veg
+         endif
         endif
+       else
+        QRADSK=(CLEAR + CLOD)*((100.- SHAYD)/100.)
        endif
-      else
-       QRADVG=(SHAYD/100.)*HRAD
-       QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*CRAD
-      endif
+C      VEGETATION IR AVAILABLE/UNIT AREA
+c      previously QRADVG=SIGP*SLEP*(SHAYD/100.)*CRAD but changed by MK to allow formula
+c      in Campbell to be used
+       if((int(grasshade).eq.1).and.(runsnow.eq.1))then
+        methour=(int(SIOUT(1)/60)+1)+24*(doy-1)
+        QRADVG=(SHAYD/100.)*HRAD
+C       GROUND SURFACE IR UPWARD/UNIT AREA
+c       QRADGR=SIGP*SLEP*SRAD MK commented this out and replaced with below
+        QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*HRAD
+        if(methour.gt.1)then
+         if(snowhr(methour-1).gt.0)then
+          QRADVG=(0./100.)*HRAD ! no shade, snow on veg
+          QRADGR=((100.-0.)/100.)*SRAD+(0./100.)*HRAD
+         endif
+        endif
+       else
+        QRADVG=(SHAYD/100.)*HRAD
+        QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*HRAD
+       endif
 
-c     TOTAL HILLSHADE RADIATION
-      QRADHL=HRAD
-C     NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
-      QRAD = (QRADSK + QRADVG)*VIEWF + QRADHL*(1-VIEWF) - QRADGR
-c     TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
-      TSKY=(((QRADSK + QRADVG)*VIEWF + QRADHL*(1-VIEWF))/(SIGP))**(1./4.
-     & )-273
-c     TSKY=((QRADSK + QRADVG)/(SIGP))**(1./4.)-273
+c      TOTAL HILLSHADE RADIATION
+       QRADHL=HRAD
+C      NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
+       QRAD = (QRADSK + QRADVG)*VIEWF + QRADHL*(1-VIEWF) - QRADGR
+c      TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
+       TSKY=(((QRADSK + QRADVG)*VIEWF + QRADHL*(1-VIEWF))/(SIGP))**
+     & (1./4.)-273
+c      TSKY=((QRADSK + QRADVG)/(SIGP))**(1./4.)-273
       endif
 
       if(runsnow.eq.1)then
