@@ -30,7 +30,7 @@
 #' @export
 #' @details
 #' \itemize{
-#' \strong{Parameters controling how the model runs:}\cr\cr
+#' \strong{Parameters controlling how the model runs:}\cr\cr
 #'
 #' \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
 #' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
@@ -1309,20 +1309,20 @@ micro_clima <- function(
       CLDhr <- TAIRhr * 0 # base this on clear sky solar from microclima?
       ZENhr2 <- ZENhr
       ZENhr2[ZENhr2!=90] <- 0
-      rleb <- rle(x = ZENhr2)$lengths[1:3]
-      length.orig <- length(PRESShr)
-      crop <- rleb[1] + (24-rleb[3])/2
-      crop2 <- length.orig-(25-crop)
-      CLDhr<-CLDhr[crop:crop2]
-      WNhr<-WNhr[crop:crop2]
-      TAIRhr<-TAIRhr[crop:crop2]
-      RHhr<-RHhr[crop:crop2]
-      RAINhr<-RAINhr[crop:crop2]
-      SOLRhr<-SOLRhr[crop:crop2]
-      ZENhr<-ZENhr[crop:crop2]
-      PRESShr<-PRESShr[crop:crop2]
-      tt<-tt[crop:crop2]
-      tt<-tt+(25-crop)*3600
+      # rleb <- rle(x = ZENhr2)$lengths[1:3]
+      # length.orig <- length(PRESShr)
+      # crop <- rleb[1] + (24-rleb[3])/2
+      # crop2 <- length.orig-(25-crop)
+      # CLDhr<-CLDhr[crop:crop2]
+      # WNhr<-WNhr[crop:crop2]
+      # TAIRhr<-TAIRhr[crop:crop2]
+      # RHhr<-RHhr[crop:crop2]
+      # RAINhr<-RAINhr[crop:crop2]
+      # SOLRhr<-SOLRhr[crop:crop2]
+      # ZENhr<-ZENhr[crop:crop2]
+      # PRESShr<-PRESShr[crop:crop2]
+      # tt<-tt[crop:crop2]
+      # tt<-tt+(25-crop)*3600
       TMAXX1<-aggregate(TAIRhr,by=list(format(tt, "%d/%m/%Y")),max) # maximum air temperatures (°C)
       TMAXX<-TMAXX1$x[order(as.POSIXct(TMAXX1$Group.1, format = "%d/%m/%Y"))]
       TMINN1<-aggregate(TAIRhr,by=list(format(tt, "%d/%m/%Y")),min) # minimum air temperatures (°C)
@@ -1407,8 +1407,8 @@ micro_clima <- function(
         doy <- c(doy, seq(1, dinyear))
       }
     }
-    cut <- as.numeric(days[1] - as.POSIXct(paste0('01/01/', ystart), format = "%d/%m/%Y") + 1)
-    doy <- doy[(cut+1):(cut+countday-1)]
+    #cut <- as.numeric(days[1] - as.POSIXct(paste0('01/01/', ystart), format = "%d/%m/%Y") + 1)
+    #doy <- doy[(cut+1):(cut+countday-1)]
     #RAINFALL<-RAINFALL[(cut+1):(cut+countday-1)]
     ida<-ndays
     idayst <- 1
@@ -1456,7 +1456,7 @@ micro_clima <- function(
 
     REFLS <- rep(REFL, dim)
     PCTWET <- rep(PCTWET, dim)
-    RAINFALL <- RAINFALL[(1+cut):(dim+cut)]
+    #RAINFALL <- RAINFALL[(1+cut):(dim+cut)]
     soilwet<-RAINFALL
     soilwet[soilwet<=rainwet] = 0
     soilwet[soilwet>0] = 90
@@ -1659,7 +1659,7 @@ micro_clima <- function(
     }else{
       location<-loc
     }
-    cat(paste('running microclimate model for ',dim,' days from ',tt[1+cut*24],' to ', tt[length(tt)], ' at site ',location,'\n'))
+    cat(paste('running microclimate model for ',dim,' days from ',tt[1],' to ', tt[length(tt)], ' at site ',location,'\n'))
     ptm <- proc.time() # Start timing
     microut<-microclimate(micro)
     print(proc.time() - ptm) # Stop the clock
