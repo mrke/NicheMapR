@@ -32,7 +32,7 @@
 #' Usrhyt = 0.01, ...)
 #' @export
 #' @details
-#' \strong{ Parameters controling how the model runs:}\cr\cr
+#' \strong{ Parameters controlling how the model runs:}\cr\cr
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 #' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
 #' \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
