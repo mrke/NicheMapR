@@ -1,11 +1,13 @@
-#' NCEP implementation of the microclimate model, with microclima computing hourly forcing.
+#' NCEP implementation of the microclimate model, with package microclima computing hourly forcing.
 #'
 #' An implementation of the NicheMapR microclimate model that uses the RNCEP package daily weather database https://sites.google.com/site/michaelukemp/rncep, and specifically uses the following variables: air.2m, prate.sfc, shum.2m, pres.sfc, tcdc.eatm, uwnd.10m, vwnd.10m, dswrf.sfc. At the moment uses the same DEM from the CRU global climate data set.
+#' @encoding UTF-8
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
 #' @param dstart First day to run, date in format "d-m-Y" e.g. "01-01-2016"
 #' @param dfinish Last day to run, date in format "d-m-Y" e.g. "31-12-2016"
+#' @param dem a digital elevation model produce by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
 #' @param REFL Soil solar reflectance, decimal \%
-#' @param slope Slope in degrees (if negative, then derived from DEM with microclima)
+#' @param slope Slope in degrees (if negative, then derived from DEM with package microclima)
 #' @param aspect Aspect in degrees (0 = north) (if negative, then derived from DEM with microclima)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
@@ -29,9 +31,7 @@
 #' Usrhyt = 0.01, ...)
 #' @export
 #' @details
-#' \itemize{
-#' \strong{Parameters controlling how the model runs:}\cr\cr
-#'
+#' \strong{ Parameters controlling how the model runs:}\cr\cr
 #' \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
 #' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 #' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
@@ -65,7 +65,7 @@
 #' \code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
 #' \code{hori}{ = rep(0,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
 #'
-#' \strong{ Soil moisture mode parameters:}
+#' \strong{ Soil moisture mode parameters:}\cr\cr
 #'
 #' \code{runmoist}{ = 1, Run soil moisture model? 1=yes, 0=no  1=yes, 0=no (note that this may cause slower runs)}\cr\cr
 #' \code{PE}{ = rep(1.1,19), Air entry potential (J/kg) (19 values descending through soil for specified soil nodes in parameter}
@@ -96,10 +96,8 @@
 #' \code{SP}{ = 10, stability parameter for stomatal closure equation, -}\cr\cr
 #' \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
 #' \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
-#' \code{DEP}
-#' { and points half way between)}\cr\cr
-#' \code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET in soil moisture model and for microclima radiation calcs}\cr\cr
-#' \code{LOR}{ = 1, leaf orientation for microclima radiation calcs}\cr\cr
+#' \code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET in soil moisture model and for package microclima radiation calcs}\cr\cr
+#' \code{LOR}{ = 1, leaf orientation for package microclima radiation calcs}\cr\cr
 #'
 #' \strong{ Snow mode parameters:}
 #'
@@ -123,6 +121,22 @@
 #' }
 #'
 #' \strong{Outputs:}
+#'
+#' \code{dim}{ - number of days for which predictions are made}\cr\cr
+#' \code{longlat}{ - longitude and latitude for which simulation was run (decimal degrees)}\cr\cr
+#' \code{dates}{ - vector of dates (POSIXct, UTC)}\cr\cr
+#' \code{nyears}{ - number of years for which predictions are made}\cr\cr
+#' \code{RAINFALL}{ - vector of daily rainfall (mm)}\cr\cr
+#' \code{elev}{ - elevation at point of simulation (m)}\cr\cr
+#' \code{minshade}{ - minimum shade for simulation (\%)}\cr\cr
+#' \code{maxshade}{ - maximum shade for simulation (single value - if time varying, in 'MAXSHADES') (\%)}\cr\cr
+#' \code{MAXSHADES}{ - vector of maximum shades used (\%)}\cr\cr
+#' \code{dem}{ - digital elevation model obtained via 'get_dev' using package 'elevatr' (m)}\cr\cr
+#' \code{DEP}{ - vector of depths used (cm)}\cr\cr
+#' \code{SLOPE}{ - slope at point of simulation (\%)}\cr\cr
+#' \code{ASPECT}{ - aspect at point of simulation (°, 0 is north)}\cr\cr
+#' \code{HORIZON}{ - horizon angles at point of simulation (°)}\cr\cr
+#'
 #' metout/shadmet variables:
 #' \itemize{
 #' \item 1 DOY - day-of-year
@@ -260,6 +274,7 @@ micro_clima <- function(
   loc = c(-5.3, 50.13),
   dstart = "01/01/2017",
   dfinish = "31/12/2017",
+  dem = NA,
   nyears=as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1,
   REFL=0.15,
   slope=0,
@@ -274,7 +289,7 @@ micro_clima <- function(
   run.gads=1,
   write_input=0,
   writecsv=0,
-  reanalysis=TRUE,
+  reanalysis=FALSE,
   windfac = 1,
   warm=0,
   ERR=1.5,
@@ -333,81 +348,83 @@ micro_clima <- function(
   intercept = 0 / 100 * 0.3,
   grasshade = 0){ # end function parameters
 
-  # loc = c(-5.3, 50.13)
-  # dstart = "01/01/2017"
-  # dfinish = "31/12/2017"
-  # nyears=as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1
-  # REFL=0.15
-  # slope=0
-  # aspect=0
-  # DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
-  # Refhyt=2
-  # Usrhyt=.01
-  # Z01=0
-  # Z02=0
-  # ZH1=0
-  # ZH2=0
-  # run.gads=1
-  # write_input=0
-  # writecsv=0
-  # reanalysis=TRUE
-  # windfac = 1
-  # warm=0
-  # ERR=1.5
-  # RUF=0.004
-  # EC=0.0167238
-  # SLE=0.95
-  # Thcond=2.5
-  # Density=2.56
-  # SpecHeat=870
-  # BulkDensity=1.3
-  # PCTWET=0
-  # rainwet=1.5
-  # cap=1
-  # CMH2O=1
-  # hori=rep(0,24)
-  # runmoist=1
-  # PE=rep(1.1,19)
-  # KS=rep(0.0037,19)
-  # BB=rep(4.5,19)
-  # BD=rep(1.3,19)
-  # DD=rep(2.56,19)
-  # maxpool=10000
-  # rainmult=1
-  # evenrain=0
-  # SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
-  # L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000
-  # R1 = 0.001
-  # RW = 2.5e+10
-  # RL = 2e+6
-  # PC = -1500
-  # SP = 10
-  # IM = 1e-06
-  # MAXCOUNT = 500
-  # LAI=0.1
-  # LOR=1
-  # snowmodel=1
-  # snowtemp=1.5
-  # snowdens=0.375
-  # densfun=c(0.5979, 0.2178, 0.001, 0.0038)
-  # snowmelt=1
-  # undercatch=1
-  # rainmelt=0.0125
-  # shore=0
-  # tides = 0
-  # hourly=1
-  # rainhourly = 0
-  # rainhour = 0
-  # rainoff=0
-  # lamb = 0
-  # IUV = 0
-  # soilgrids = 0
-  # message = 0
-  # fail = nyears * 24 * 365
-  # save = 0
-  # snowcond = 0
-  # intercept = 0 / 100 * 0.3
-  # grasshade = 0
+#
+#   loc = c(-5.3, 50.13)
+#   dstart = "01/01/2010"
+#   dfinish = "31/12/2010"
+#   dem = NA
+#   nyears=as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1
+#   REFL=0.15
+#   slope=0
+#   aspect=0
+#   DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
+#   Refhyt=2
+#   Usrhyt=.01
+#   Z01=0
+#   Z02=0
+#   ZH1=0
+#   ZH2=0
+#   run.gads=1
+#   write_input=0
+#   writecsv=0
+#   reanalysis=FALSE
+#   windfac = 1
+#   warm=0
+#   ERR=1.5
+#   RUF=0.004
+#   EC=0.0167238
+#   SLE=0.95
+#   Thcond=2.5
+#   Density=2.56
+#   SpecHeat=870
+#   BulkDensity=1.3
+#   PCTWET=0
+#   rainwet=1.5
+#   cap=1
+#   CMH2O=1
+#   hori=rep(0,24)
+#   runmoist=1
+#   PE=rep(1.1,19)
+#   KS=rep(0.0037,19)
+#   BB=rep(4.5,19)
+#   BD=rep(1.3,19)
+#   DD=rep(2.56,19)
+#   maxpool=10000
+#   rainmult=1
+#   evenrain=0
+#   SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
+#   L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000
+#   R1 = 0.001
+#   RW = 2.5e+10
+#   RL = 2e+6
+#   PC = -1500
+#   SP = 10
+#   IM = 1e-06
+#   MAXCOUNT = 500
+#   LAI=0.1
+#   LOR=1
+#   snowmodel=1
+#   snowtemp=1.5
+#   snowdens=0.375
+#   densfun=c(0.5979, 0.2178, 0.001, 0.0038)
+#   snowmelt=1
+#   undercatch=1
+#   rainmelt=0.0125
+#   shore=0
+#   tides = 0
+#   hourly=1
+#   rainhourly = 0
+#   rainhour = 0
+#   rainoff=0
+#   lamb = 0
+#   IUV = 0
+#   soilgrids = 0
+#   message = 0
+#   fail = nyears * 24 * 365
+#   save = 0
+#   snowcond = 0
+#   intercept = 0 / 100 * 0.3
+#   grasshade = 0
   library(microclima)
   library(elevatr)
   library(RNCEP)
@@ -721,7 +738,9 @@ micro_clima <- function(
     dp[ncepdata$dsw == 0] <- NA
     # (4) Calculate direct and diffuse
     dirr <- (ncepdata$dsw * (1 - dp)) / si_m
+    dirr[dirr > 1367] <- 0 # ensuring low solar angles don't cause values > solar constant
     difr <- (ncepdata$dsw * dp) / af
+    difr[difr > 1367] <- 0 # ensuring low solar angles don't cause values > solar constant
     globr <- dirr + difr
     nd <- length(globr)
     globr[1] <- mean(globr[1:4], na.rm = T)
@@ -839,6 +858,7 @@ micro_clima <- function(
     si[sa < ha] <- 0
     # Partition shortwave radiation
     dirr <- si * hourlydata$rad_dni
+    dirr[dirr > 1367] <- 0 # ensuring low solar angles don't cause values > solar constant
     a <- slope * (pi/180)
     k <- hourlydata$rad_dni / 4.87
     k <- ifelse(k > 1, 1, k)
@@ -1122,6 +1142,7 @@ micro_clima <- function(
 
   if(errors==0){ # continue
 
+    moist.lai <- 0.1 # to do - option to decouple shade from LAI used in soil moisture
     # for microclima calculations
     tme <- as.POSIXlt(seq(ISOdate(ystart, 1, 1, tz = "UTC") - 3600 * 12, ISOdate((ystart + nyears), 1, 1, tz = "UTC") - 3600 * 13, by = "days"))
 
@@ -1183,7 +1204,10 @@ micro_clima <- function(
     lat <- as.numeric(longlat[2])
     long <- as.numeric(longlat[1])
     loc <- c(long, lat)
-    if(save != 2){
+    if(class(dem)[1] == "RasterLayer"){
+     cat('using DEM provided to function call \n')
+    }
+    if(save != 2 & class(dem)[1] != "RasterLayer"){
       cat('downloading DEM via package elevatr \n')
       dem <- get_dem(lat = lat, long = long) # mercator equal area projection
     }
@@ -1249,6 +1273,7 @@ micro_clima <- function(
     countday <- endday-startday+1
     #tt <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900")+23*3600, by = 'hours')
     tt <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(dfinish, format = "%d/%m/%Y", tz = 'UTC')+23*3600, by = 'hours')
+    dates2 <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(dfinish, format = "%d/%m/%Y", tz = 'UTC')+23*3600, by = 'days')
     if(save == 2){
       load('tref.Rda')
       load('SLOPE.Rda')
@@ -1270,7 +1295,7 @@ micro_clima <- function(
       lor <- LOR # leaf orientation
       albr <- REFL # mean albedo of surfaces from which radiation is reflected
 
-      cat("computing radiation and elevation effects with microclima \n")
+      cat("computing radiation and elevation effects with package microclima \n")
       hourlyr <- point.radwind(hourlydata, dem, lat, long, l, lor, albr)
       hourlyradwind <- hourlyr$hourlyr
       SLOPE <- hourlyr$slp
@@ -1297,10 +1322,10 @@ micro_clima <- function(
       SOLRhr <- hourlyradwind$swrad / 0.0036
       SOLRhr[SOLRhr < 0] <- 0
       IRDhr <- hourlyradwind$longdown / .0036
-      RHhr <- humidityconvert(h = hourlydata$humidity, intype = 'specific', p = hourlydata$pressure, tc = TAIRhr)$relative
+      RHhr <- suppressWarnings(humidityconvert(h = hourlydata$humidity, intype = 'specific', p = hourlydata$pressure, tc = TAIRhr)$relative)
       RHhr[RHhr > 100] <- 100
       RHhr[RHhr < 0] <- 0
-      WNhr <- hourlyradwind$windspeed
+      WNhr <- hourlyradwind$windspeed*(2/10)^0.15 # adjust from 10m to 2m
       WNhr[is.na(WNhr)] <- 0.1
       RAINhr <- WNhr * 0 # using daily rain for now
       PRESShr <- hourlydata$pressure
@@ -1595,6 +1620,7 @@ micro_clima <- function(
     RAINFALL1[1:dim]<-RAINFALL
     tannul1[1:dim]<-tannul
     moists1[1:10,1:dim]<-moists
+    LAI <- moist.lai
     if(length(LAI)<dim){
       LAI<-rep(LAI[1],dim)
       LAI1 <- LAI
@@ -1707,15 +1733,15 @@ micro_clima <- function(
       drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
       srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
       if(snowmodel == 1){
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=longlat,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, tt = tt, dem = dem))
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=longlat,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates=tt, dem = dem,dates2=dates2))
       }else{
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=longlat,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, tt = tt, dem = dem))
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=longlat,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates=tt, dem = dem,dates2=dates2))
       }
     }else{
       if(snowmodel == 1){
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=longlat,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, tt = tt, dem = dem))
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=longlat,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates=tt, dem = dem,dates2=dates2))
       }else{
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=longlat,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, tt = tt, dem = dem))
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=longlat,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates=tt, dem = dem,dates2=dates2))
       }
     }
   } # end error trapping

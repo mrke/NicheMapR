@@ -7,6 +7,7 @@
 #' a user-specified mass is used as well as a allometric (mass and body temperature) function to
 #' compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{micro_global}}, must be run prior to running the ectotherm model
 #'
+#' @encoding UTF-8
 #' @param Ww_g = 40, Wet weight of animal (g), note this model is 'steady state' so no lags in heating/cooling due to mass
 #' @param shape = 3, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)
 #' @param alpha_max = 0.85, Maximum solar absorptivity, decimal percent
@@ -70,7 +71,7 @@
 #' \item{\code{soilpot}{ = micro$soilpot, Microclimate model output for soil water potential, minimum shade conditions}\cr}
 #' \item{\code{shadpot}{ = micro$shadpot, Microclimate model output for soil water potential, maximum shade conditions}\cr}
 #' \item{\code{rainfall}{ = micro$RAINFALL, Vector of daily rainfall}\cr}
-#' \item{\code{ectoin}{ = rbind(as.numeric(micro$ALTT),as.numeric(micro$REFL)[1],micro$longlat[1],micro$longlat[2]), Other items needed by the model - this needs to be tidied up}\cr}
+#' \item{\code{ectoin}{ = rbind(as.numeric(micro$elev),as.numeric(micro$REFL)[1],micro$longlat[1],micro$longlat[2]), Other items needed by the model - this needs to be tidied up}\cr}
 #'}
 #' \strong{ Morphological parameters:}
 #'
@@ -531,7 +532,7 @@ ectotherm<-function(
   soilpot=micro$soilpot,
   shadpot=micro$shadpot,
   rainfall=micro$RAINFALL,
-  ectoin=rbind(as.numeric(micro$ALTT), 1 - alpha_sub[1], micro$longlat[1], micro$longlat[2]),
+  ectoin=rbind(as.numeric(micro$elev), 1 - alpha_sub[1], micro$longlat[1], micro$longlat[2]),
   custom_shape=c(10.4713,0.688,0.425,0.85,3.798,0.683,0.694,0.743),
   shape_a=1,
   shape_b=3,
