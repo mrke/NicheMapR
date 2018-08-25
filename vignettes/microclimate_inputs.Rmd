@@ -104,7 +104,7 @@ $^{3}$Computationally intensive
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
-ALTT                      | m                 | 0-10,000          | altitude
+ALTT                      | m                 | 0-10,000          | elevation
 slope                     | decimal degrees   | 0-90              | slope
 azmuth                    | decimal degrees   | 0-360             | aspect (0 is north)
 hori                      | decimal degrees   | 0-90              | horizon angles$^1$  
