@@ -1,6 +1,7 @@
 #' NCEP implementation of the microclimate model.
 #'
 #' An implementation of the NicheMapR microclimate model that uses the RNCEP package daily weather database https://sites.google.com/site/michaelukemp/rncep, and specifically uses the following variables: air.2m, prate.sfc, shum.2m, pres.sfc, tcdc.eatm, uwnd.10m, vwnd.10m, dswrf.sfc. At the moment uses the same DEM from the CRU global climate data set.
+#' @encoding UTF-8
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
 #' @param dstart First day to run, date in format "d-m-Y" e.g. "01-01-2016"
 #' @param dfinish Last day to run, date in format "d-m-Y" e.g. "31-12-2016"
@@ -32,7 +33,6 @@
 #' Usrhyt = 0.01, ...)
 #' @export
 #' @details
-#' \itemize{
 #' \strong{Parameters controlling how the model runs:}\cr\cr
 #'
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
@@ -110,8 +110,6 @@
 #' \code{SP}{ = 10, stability parameter for stomatal closure equation, -}\cr\cr
 #' \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
 #' \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
-#' \code{DEP}
-#' { and points half way between)}\cr\cr
 #' \code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET}\cr\cr
 #'
 #' \strong{ Snow mode parameters:}
@@ -136,6 +134,19 @@
 #' }
 #'
 #' \strong{Outputs:}
+#'
+#' \code{dim}{ - number of days for which predictions are made}\cr\cr
+#' \code{longlat}{ - longitude and latitude for which simulation was run (decimal degrees)}\cr\cr
+#' \code{dates}{ - vector of dates (hourly, POSIXct, timezone = UTC)}\cr\cr
+#' \code{dates2}{ - vector of dates (daily, POSIXct, timezone = UTC)}\cr\cr
+#' \code{nyears}{ - number of years for which predictions are made}\cr\cr
+#' \code{RAINFALL}{ - vector of daily rainfall (mm)}\cr\cr
+#' \code{elev}{ - elevation at point of simulation (m)}\cr\cr
+#' \code{minshade}{ - minimum shade for simulation (\%)}\cr\cr
+#' \code{maxshade}{ - maximum shade for simulation (single value - if time varying, in 'MAXSHADES') (\%)}\cr\cr
+#' \code{MAXSHADES}{ - vector of maximum shades used (\%)}\cr\cr
+#' \code{DEP}{ - vector of depths used (cm)}\cr\cr
+#'
 #' metout/shadmet variables:
 #' \itemize{
 #' \item 1 DOY - day-of-year
@@ -777,6 +788,7 @@ micro_ncep <- function(
     countday <- endday-startday+1
     #tt <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900")+23*3600, by = 'hours')
     tt <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(dfinish, format = "%d/%m/%Y", tz = 'UTC')+23*3600, by = 'hours')
+    dates2 <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(dfinish, format = "%d/%m/%Y", tz = 'UTC')+23*3600, by = 'days')
 
     if(save != 2){
       cat("extracting weather data with RNCEP \n")
@@ -1439,15 +1451,15 @@ micro_ncep <- function(
         drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
         srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
         if(snowmodel == 1){
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=lonlat2,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=lonlat2,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=tt,dates2=dates2))
         }else{
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=lonlat2,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=lonlat2,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=tt,dates2=dates2))
         }
       }else{
         if(snowmodel == 1){
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=lonlat2,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=lonlat2,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,dates=tt,dates2=dates2))
         }else{
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=lonlat2,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=lonlat2,nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,dates=tt,dates2=dates2))
         }
       }
     } # end of check for na sites

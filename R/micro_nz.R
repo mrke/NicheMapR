@@ -1,6 +1,7 @@
 #' New Zealand implementation of the microclimate model.
 #'
 #' An implementation of the NicheMapR microclimate model that uses the Virtual Climate Station Network (VCSN) for NZ https://www.niwa.co.nz/climate/our-services/virtual-climate-stations
+#' @encoding UTF-8
 #' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
 #' @param ystart First year to run
 #' @param yfinish Last year to run
@@ -111,8 +112,6 @@
 #' \code{PC}{ = -1500, critical leaf water potential for stomatal closure, J kg-1}\cr\cr
 #' \code{SP}{ = 10, stability parameter for stomatal closure equation, -}\cr\cr
 #' \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
-#' \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
-#' \code{DEP}
 #' { and points half way between)}\cr\cr
 #' \code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET}\cr\cr
 #'
@@ -138,6 +137,19 @@
 #' }
 #'
 #' \strong{Outputs:}
+#'
+#' \code{dim}{ - number of days for which predictions are made}\cr\cr
+#' \code{longlat}{ - longitude and latitude for which simulation was run (decimal degrees)}\cr\cr
+#' \code{dates}{ - vector of dates (hourly, POSIXct, timezone = NZ)}\cr\cr
+#' \code{dates2}{ - vector of dates (daily, POSIXct, timezone = NZ)}\cr\cr
+#' \code{nyears}{ - number of years for which predictions are made}\cr\cr
+#' \code{RAINFALL}{ - vector of daily rainfall (mm)}\cr\cr
+#' \code{elev}{ - elevation at point of simulation (m)}\cr\cr
+#' \code{minshade}{ - minimum shade for simulation (\%)}\cr\cr
+#' \code{maxshade}{ - maximum shade for simulation (single value - if time varying, in 'MAXSHADES') (\%)}\cr\cr
+#' \code{MAXSHADES}{ - vector of maximum shades used (\%)}\cr\cr
+#' \code{DEP}{ - vector of depths used (cm)}\cr\cr
+#'
 #' metout/shadmet variables:
 #' \itemize{
 #' \item 1 DOY - day-of-year
@@ -1313,20 +1325,22 @@ micro_nz <- function(loc = "Dunedin, New Zealand", ystart = 2000,
       if(max(metout[,1] == 0)){
         cat("ERROR: the model crashed - try a different error tolerance (ERR) or a different spacing in DEP", '\n')
       }
+      dates <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'NZ'), as.POSIXct(paste0("01/01/",yfinish), format = "%d/%m/%Y", tz = 'NZ'), by = 'hours')
+      dates2 <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'NZ'), as.POSIXct(paste0("01/01/",yfinish), format = "%d/%m/%Y", tz = 'NZ'), by = 'days')
       if(lamb == 1){
         drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
         drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
         srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
         if(snowmodel == 1){
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2))
         }else{
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2))
         }
       }else{
         if(snowmodel == 1){
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,dates=dates,dates2=dates2))
         }else{
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,ALTT=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,dates=dates,dates2=dates2))
         }
       }
     } # end of check for na sites
