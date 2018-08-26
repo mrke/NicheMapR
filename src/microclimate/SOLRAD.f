@@ -92,7 +92,7 @@ C     REPINT(N)    RECIPROCAL OF EPINT
      & ,I94,I95,I96
       integer ia,IALT,icorr,iday,idom,ielam,IDA,IDAYST
       integer iedum,IEND,iep,ILAM,intcz,INTIME
-      integer IPINT,isos,ISTART,IT,IUV,IVAR,j,jct,JJ,JTEST,julnum
+      integer IPINT,isos,ISTART,IT,IUV,IVAR,jct,JJ,JTEST,julnum
       integer K,lamax,llat,M,malt,mm,mmm,mom,DOY
       integer n,NCT,ND,nft,nmax,NOSCAT,NUMRUN,nzct
       integer microdaily,cnt,ILOCT

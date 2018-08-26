@@ -1475,6 +1475,7 @@ micro_clima <- function(
 
     WNMAXX <- WNMAXX * windfac
     WNMINN <- WNMINN * windfac
+    WNhr <- WNhr * windfac
 
     MAXSHADES<-maxshades
     MINSHADES<-minshades
@@ -1511,11 +1512,7 @@ micro_clima <- function(
       avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
       tannulrun<-rep(avetemp,ndays)
     }else{
-      if(nrow(TMAXX)==1){
-        avetemp<-colMeans(cbind(TMAXX, TMINN), na.rm=TRUE)
-      }else{
         avetemp<-rowMeans(cbind(TMAXX, TMINN), na.rm=TRUE)
-      }
       if(length(TMAXX)<365){
         tannulrun<-rep((sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2),length(TMAXX))
       }else{

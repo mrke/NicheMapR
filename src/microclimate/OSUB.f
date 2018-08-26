@@ -66,7 +66,7 @@ C     VERSION 2 SEPT. 2000
       INTEGER I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,slipped,sat
       INTEGER I91,I92,I93,I94,I95,I96,runmoist,evenrain,step,timestep
       INTEGER I97,I98,I99,I100,I101,errout,maxerr,errcount
-      INTEGER IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART,IEND2
+      INTEGER IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART
 
       INTEGER methour,IRmode,microdaily,runshade,k,lamb,cnd
 
@@ -577,7 +577,14 @@ c      get cm snow lost due to rainfall - from Anderson model
        else
         prevsnow=snowhr(methour-1)
         if(prevsnow.ge.minsnow)then ! melt the snow
-        call WETAIR(0,WB,100,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,CP,
+        WB = 0.
+        DP = 999.
+C       BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
+C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
+        PSTD=101325.
+        PATMOS=PSTD*((1.-(0.0065*ALTT/288.))**(1./0.190284))
+        BP = PATMOS
+        call WETAIR(0.,WB,100.,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,CP,
      &  WTRPOT) ! get specific heat and mixing ratio of humid air at zero C
         cpsnow = (2.100*snowdens+(1.005+1.82*(RW/1.+RW))* ! based on https://en.wiktionary.org/wiki/humid_heat
      &   (1-snowdens)) ! compute weighted specific heat accounting for ice vs airm SI units
