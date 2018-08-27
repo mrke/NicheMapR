@@ -620,6 +620,7 @@ micro_ncep <- function(
         }
       }
       dsw[dsw<0] <- 0
+      prate[prate<0] <- 0
     }
     dfout <- data.frame(obs_time = tme2[sel], Tk, Tkmin, Tkmax, sh, pr, wu, wv, dlw, ulw, dsw, tcdc, prate)
     rownames(dfout) <- NULL
@@ -1369,12 +1370,13 @@ micro_ncep <- function(
       #save(ncepdata, file = 'ncepdata.Rda')
       #hourlydata <- hourlyNCEP(ncepdata, lat, long)
       hourly <- hourlyNCEP(tme, longlat[2], longlat[1], reanalysis2, spatial)
-      hourlydata <- hourly$hourlydata
-      precip <- hourly$prate
+      hourlydata <- hourly$hourlyout
+      precip <- hourly$prate[-c(1:4)]
+      precip <- precip[1:(length(precip)-4)]
       ZENhr <- hourlydata$szenith
       ZENhr[ZENhr > 90] <- 90
       #dailyrain <- get_rain(lat, long, tme)
-      precip <- apply(precip, 3, mean, na.rm = T)
+      precip <- aggregate(precip, by = list(format(tt[seq(1, length(tt), 6)], "%Y-%m-%d")), mean)$x
       precip <- precip * 6 * 3600
       mpre <- t(matrix(as.numeric(precip), nrow = 4))
       dailyrain <- apply(mpre, 1, sum)
