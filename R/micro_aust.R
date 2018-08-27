@@ -140,7 +140,7 @@
 #' \code{dim}{ - number of days for which predictions are made}\cr\cr
 #' \code{longlat}{ - longitude and latitude for which simulation was run (decimal degrees)}\cr\cr
 #' \code{dates}{ - vector of dates (hourly, POSIXct, timezone = GMT+10)}\cr\cr
-#' \code{dates2}{ - vector of dates (daily, POSIXct, timezone = GMT+10)}\cr\crs
+#' \code{dates2}{ - vector of dates (daily, POSIXct, timezone = GMT+10)}\cr\cr
 #' \code{nyears}{ - number of years for which predictions are made}\cr\cr
 #' \code{RAINFALL}{ - vector of daily rainfall (mm)}\cr\cr
 #' \code{elev}{ - elevation at point of simulation (m)}\cr\cr
