@@ -280,7 +280,7 @@ micro_clima <- function(
   slope=0,
   aspect=0,
   DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.),
-  Refhyt=2,
+  Refhyt=1,
   Usrhyt=.01,
   Z01=0,
   Z02=0,
@@ -348,83 +348,83 @@ micro_clima <- function(
   intercept = 0 / 100 * 0.3,
   grasshade = 0){ # end function parameters
 
-#
-#   loc = c(-5.3, 50.13)
-#   dstart = "01/01/2010"
-#   dfinish = "31/12/2010"
-#   dem = NA
-#   nyears=as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1
-#   REFL=0.15
-#   slope=0
-#   aspect=0
-#   DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
-#   Refhyt=2
-#   Usrhyt=.01
-#   Z01=0
-#   Z02=0
-#   ZH1=0
-#   ZH2=0
-#   run.gads=1
-#   write_input=0
-#   writecsv=0
-#   reanalysis=FALSE
-#   windfac = 1
-#   warm=0
-#   ERR=1.5
-#   RUF=0.004
-#   EC=0.0167238
-#   SLE=0.95
-#   Thcond=2.5
-#   Density=2.56
-#   SpecHeat=870
-#   BulkDensity=1.3
-#   PCTWET=0
-#   rainwet=1.5
-#   cap=1
-#   CMH2O=1
-#   hori=rep(0,24)
-#   runmoist=1
-#   PE=rep(1.1,19)
-#   KS=rep(0.0037,19)
-#   BB=rep(4.5,19)
-#   BD=rep(1.3,19)
-#   DD=rep(2.56,19)
-#   maxpool=10000
-#   rainmult=1
-#   evenrain=0
-#   SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
-#   L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000
-#   R1 = 0.001
-#   RW = 2.5e+10
-#   RL = 2e+6
-#   PC = -1500
-#   SP = 10
-#   IM = 1e-06
-#   MAXCOUNT = 500
-#   LAI=0.1
-#   LOR=1
-#   snowmodel=1
-#   snowtemp=1.5
-#   snowdens=0.375
-#   densfun=c(0.5979, 0.2178, 0.001, 0.0038)
-#   snowmelt=1
-#   undercatch=1
-#   rainmelt=0.0125
-#   shore=0
-#   tides = 0
-#   hourly=1
-#   rainhourly = 0
-#   rainhour = 0
-#   rainoff=0
-#   lamb = 0
-#   IUV = 0
-#   soilgrids = 0
-#   message = 0
-#   fail = nyears * 24 * 365
-#   save = 0
-#   snowcond = 0
-#   intercept = 0 / 100 * 0.3
-#   grasshade = 0
+  #
+  #   loc = c(-5.3, 50.13)
+  #   dstart = "01/01/2010"
+  #   dfinish = "31/12/2010"
+  #   dem = NA
+  #   nyears=as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1
+  #   REFL=0.15
+  #   slope=0
+  #   aspect=0
+  #   DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
+  #   Refhyt=2
+  #   Usrhyt=.01
+  #   Z01=0
+  #   Z02=0
+  #   ZH1=0
+  #   ZH2=0
+  #   run.gads=1
+  #   write_input=0
+  #   writecsv=0
+  #   reanalysis=FALSE
+  #   windfac = 1
+  #   warm=0
+  #   ERR=1.5
+  #   RUF=0.004
+  #   EC=0.0167238
+  #   SLE=0.95
+  #   Thcond=2.5
+  #   Density=2.56
+  #   SpecHeat=870
+  #   BulkDensity=1.3
+  #   PCTWET=0
+  #   rainwet=1.5
+  #   cap=1
+  #   CMH2O=1
+  #   hori=rep(0,24)
+  #   runmoist=1
+  #   PE=rep(1.1,19)
+  #   KS=rep(0.0037,19)
+  #   BB=rep(4.5,19)
+  #   BD=rep(1.3,19)
+  #   DD=rep(2.56,19)
+  #   maxpool=10000
+  #   rainmult=1
+  #   evenrain=0
+  #   SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
+  #   L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000
+  #   R1 = 0.001
+  #   RW = 2.5e+10
+  #   RL = 2e+6
+  #   PC = -1500
+  #   SP = 10
+  #   IM = 1e-06
+  #   MAXCOUNT = 500
+  #   LAI=0.1
+  #   LOR=1
+  #   snowmodel=1
+  #   snowtemp=1.5
+  #   snowdens=0.375
+  #   densfun=c(0.5979, 0.2178, 0.001, 0.0038)
+  #   snowmelt=1
+  #   undercatch=1
+  #   rainmelt=0.0125
+  #   shore=0
+  #   tides = 0
+  #   hourly=1
+  #   rainhourly = 0
+  #   rainhour = 0
+  #   rainoff=0
+  #   lamb = 0
+  #   IUV = 0
+  #   soilgrids = 0
+  #   message = 0
+  #   fail = nyears * 24 * 365
+  #   save = 0
+  #   snowcond = 0
+  #   intercept = 0 / 100 * 0.3
+  #   grasshade = 0
   library(microclima)
   library(elevatr)
   library(RNCEP)
@@ -442,24 +442,32 @@ micro_clima <- function(
   get_dem <- function(r = NA, lat, long, resolution = 30, zmin = 0) {
     if (resolution < 30) {
       warning("Higher resolution data only available for some locations. DEM
-            may be derived by interpolation. Check https://mapzen.com/documentation/terrain-tiles/data-sources/
-           for details")
+            may be derived by interpolation")
     }
-    # NB need to change projection if working in the arctic / antarctic
-    if (is.na(r)) {
+    if (class(r) != "RasterLayer") {
       xy <- data.frame(x = long, y = lat)
       coordinates(xy) = ~x + y
       proj4string(xy) = "+init=epsg:4326"
-      xy <- as.data.frame(spTransform(xy, CRS("+init=epsg:3395")))
+      if (lat >= -80 & lat <= 84)
+        xy <- as.data.frame(spTransform(xy, CRS("+init=epsg:3395")))
+      if (lat > 84)
+        xy <- as.data.frame(spTransform(xy, CRS("+init=epsg:3413")))
+      if (lat < -80)
+        xy <- as.data.frame(spTransform(xy, CRS("+init=epsg:3976")))
       e <- extent(c(xy$x - 100 * resolution, xy$x + 100 * resolution,
         xy$y - 100 * resolution, xy$y + 100 * resolution))
       r <- raster(e)
       res(r) <- resolution
-      crs(r) <- "+init=epsg:3395"
-
+      if (lat >= -80 & lat <= 84)
+        crs(r) <- "+init=epsg:3395"
+      if (lat > 84)
+        crs(r) <- "+init=epsg:3413"
+      if (lat < -80)
+        crs(r) <- "+init=epsg:3976"
     } else {
-      ll <- latlongfromraster(r)
-      if (is.na(res) == F) res(r) <- resolution
+      lat <- latlongfromraster(r)$lat
+      long <- latlongfromraster(r)$long
+      res(r) <- resolution
     }
     z = ceiling(log((cos(lat * pi/180) * 2 * pi * 6378137) / (256 * resolution), 2))
     z <- ifelse(z > 14, 14, z)
@@ -469,7 +477,7 @@ micro_clima <- function(
     m2[m2 < zmin] <- zmin
     m2[is.na(m2)] <- zmin
     r2 <- if_raster(m2, r2)
-    return(r2) # Data returned in Mercator projection (equal area)
+    return(r2)
   }
 
   # get nearest land pixel from ncep
@@ -481,8 +489,63 @@ micro_clima <- function(
     sel <- which(xydif$dist == min(xydif$dist))
     return(xy[sel[1],])
   }
-
-  get_inputs <- function(lat, long, tme) {
+  get_inputs <- function(lat, long, tme, reanalysis2 = TRUE) {
+    sorttimes <- function(tme) {
+      tme2 <- as.POSIXct(tme)
+      tme2 <- c((tme2 - 24 * 3600), tme2, (tme2 + 24 * 3600), (tme2 + 48 * 3600))
+      tme2 <- as.POSIXlt(tme2)
+      yrs <- unique(tme2$year + 1900)
+      mths <- unique(tme2$mon + 1)
+      yrs <-yrs[order(yrs)]
+      mths <-mths[order(mths)]
+      tma <- 0
+      dm <- c(31,28,31,30,31,30,31,31,30,31,30,31) * 4 - 1
+      for (yr in 1:length(yrs)) {
+        dm[2] <- ifelse(yrs[yr]%%4 == 0, 115, 111)
+        for (mth in 1:length(mths)) {
+          tmym <- as.POSIXct(c(0:dm[mth]) * 3600 * 6,
+            origin = paste0(yrs[yr],"-",mths[mth],"-01 00:00"),
+            tz = 'GMT')
+          tma <- c(tma, tmym)
+        }
+      }
+      tma <- as.POSIXlt(tma[-1], origin = '1970-01-01', tz = 'GMT')
+      sel <- which(tma >= min(tme2) & tma <= max(tme2))
+      sel <- sel[-length(sel)]
+      return(list(tme = tma, sel = sel))
+    }
+    ncepget1 <- function(climvar, tme2, ll, sel) {
+      yrs <- unique(tme2$year + 1900)
+      mths <- unique(tme2$mon + 1)
+      v <- NCEP.gather(climvar, level = 'gaussian',
+        years.minmax = c(min(yrs),max(yrs)),
+        months.minma = c(min(mths):max(mths)),
+        lat.southnorth = c(ll$y,ll$y), lon.westeast = c(ll$x,ll$x),
+        reanalysis2 = reanalysis2, return.units = FALSE, status.bar = FALSE)
+      v <- apply(v, 3, mean, na.rm = T)
+      v[sel]
+    }
+    ll <- data.frame(x = long, y = lat)
+    tme2 <- sorttimes(tme)$tme
+    sel <- sorttimes(tme)$sel
+    # These variables are forecasts valid 6 hours after the reference time.
+    Tk <- ncepget1('air.2m', tme2, ll, sel)
+    Tkmin <- ncepget1('tmin.2m', tme2, ll, sel)
+    Tkmax <- ncepget1('tmax.2m', tme2, ll, sel)
+    sh <- ncepget1('shum.2m', tme2, ll, sel)
+    pr <- ncepget1('pres.sfc', tme2, ll, sel)
+    wu <- ncepget1('uwnd.10m', tme2, ll, sel)
+    wv <- ncepget1('vwnd.10m', tme2, ll, sel)
+    # These variables are 6 hour averages starting at the reference time.
+    dlw <- ncepget1('dlwrf.sfc', tme2, ll, sel)
+    ulw <- ncepget1('ulwrf.sfc', tme2, ll, sel)
+    dsw <- ncepget1('dswrf.sfc', tme2, ll, sel)
+    tcdc <- ncepget1('tcdc.eatm', tme2, ll, sel)
+    dfout <- data.frame(obs_time = tme2[sel], Tk, Tkmin, Tkmax, sh, pr, wu, wv, dlw, ulw, dsw, tcdc)
+    rownames(dfout) <- NULL
+    return(dfout)
+  }
+  get_inputs_old <- function(lat, long, tme) {
     yrs <- unique(tme$year + 1900)
     mths <- unique(tme$mon + 1)
     ll <- data.frame(x = long, y = lat)
@@ -492,8 +555,19 @@ micro_clima <- function(
       months.minma = c(min(mths):max(mths)),
       lat.southnorth = c(ll$y,ll$y), lon.westeast = c(ll$x,ll$x),
       status.bar = FALSE, reanalysis2 = reanalysis)
+    # Tk <- NCEP.gather('air.2m', level = 'gaussian',
+    #   years.minmax = c(min(yrs),max(yrs)),
+    #   months.minma = c(min(mths):max(mths)),
+    #   lat.southnorth = c(ll$y,ll$y), lon.westeast = c(ll$x,ll$x),
+    #   status.bar = FALSE, reanalysis2 = reanalysis)
     tme1.txt <- dimnames(Tk)[[3]][1]
     Tk <- apply(Tk, 3, mean, na.rm = T)
+    tcdc <- NCEP.gather('tcdc.eatm', level = 'gaussian',
+      years.minmax = c(min(yrs),max(yrs)),
+      months.minma = c(min(mths):max(mths)),
+      lat.southnorth = c(ll$y,ll$y), lon.westeast = c(ll$x,ll$x),
+      status.bar = FALSE, reanalysis2 = reanalysis)
+    tcdc <- apply(tcdc, 3, mean, na.rm = T)
     rh <- NCEP.gather('rhum.sig995', level = 'surface',
       years.minmax = c(min(yrs),max(yrs)),
       months.minma = c(min(mths):max(mths)),
@@ -506,13 +580,13 @@ micro_clima <- function(
       lat.southnorth = c(ll$y,ll$y), lon.westeast = c(ll$x,ll$x),
       status.bar = FALSE, reanalysis2 = reanalysis)
     pr <- apply(pr, 3, mean, na.rm = T)
-    wu <- NCEP.gather('uwnd.sig995', level = 'surface',
+    wu <- NCEP.gather('uwnd.10m', level = 'gaussian',
       years.minmax = c(min(yrs),max(yrs)),
       months.minma = c(min(mths):max(mths)),
       lat.southnorth = c(ll$y,ll$y), lon.westeast = c(ll$x,ll$x),
       status.bar = FALSE, reanalysis2 = reanalysis)
     wu <- apply(wu, 3, mean, na.rm = T)
-    wv <- NCEP.gather('vwnd.sig995', level = 'surface',
+    wv <- NCEP.gather('vwnd.10m', level = 'gaussian',
       years.minmax = c(min(yrs),max(yrs)),
       months.minma = c(min(mths):max(mths)),
       lat.southnorth = c(ll$y,ll$y), lon.westeast = c(ll$x,ll$x),
@@ -539,7 +613,7 @@ micro_clima <- function(
     dsw <- apply(dsw, 3, mean, na.rm = T)
     tme1 <- as.POSIXct(paste0(substr(tme1.txt, 1, 4), "-", substr(tme1.txt, 6, 7), "-", substr(tme1.txt, 9, 10), " ", substr(tme1.txt, 12, 13)), format = "%Y-%m-%d %H", tz = "UTC")
     tme2 <- as.POSIXlt(c(0:(length(Tk) - 1)) * 60 * 60 *6, origin = tme1, tz = 'UTC')
-    dfout <- data.frame(obs_time = tme2, Tk, rh, pr, wu = wu, wv, nlw, ulw, dsw)
+    dfout <- data.frame(obs_time = tme2, Tk, rh, pr, wu = wu, wv, nlw, ulw, dsw, tcdc)
     rownames(dfout) <- NULL
     return(dfout)
   }
@@ -583,7 +657,6 @@ micro_clima <- function(
     alt <- sa * (pi/180)
     k1 <- 0.83 - 0.56 * exp(-0.06 * sa)
     si <- cos(pi/2 - alt)
-    #si[si < 0] <- 0
     k <- rad/(4.87 * si)
     k[is.na(k)] <- 0
     k <- ifelse(k > k1, k1, k)
@@ -695,7 +768,101 @@ micro_clima <- function(
     tc <- (mxs - mns) * tfrac + mns
     tc
   }
-
+  hourlyNCEP <- function(tme, lat, long, reanalysis2 = TRUE) {
+    int <- as.numeric(tme[2]) - as.numeric(tme[1])
+    lgth <- (length(tme) * int) / (24 * 3600)
+    tme2 <- as.POSIXlt(c(0:(lgth - 1)) * 3600 * 24, origin = min(tme), tz = 'GMT')
+    ncepdata <- get_inputs(lat, long, tme2, reanalysis2)
+    tme6 <- as.POSIXlt(ncepdata$obs_time)
+    n <- (length(tme6) - 1) * 6 + 1
+    h_pr <- spline(tme6, ncepdata$pr, n = n)$y
+    h_sh <- spline(tme6, ncepdata$sh, n = n)$y
+    h_tcdc <- spline(tme6, ncepdata$tcdc, n = n)$y
+    tmo  <- spline(tme6, ncepdata$sh, n = n)$x
+    tmo <- as.POSIXlt(tmo, origin = "1970-01-01 00:00",
+      tz = "GMT")
+    # tmoend <- as.POSIXlt(c(1:6) * 3600, origin = max(tmo),
+    #   tz = "GMT")
+    # tmo2 <- c(tmo, tmoend)
+    tmo2 <- as.POSIXlt(seq(0,(lgth + 2), by = 1/24) * 3600 * 24, origin = min(tme)-3600*24, tz = 'GMT')
+    jd <- julday(tmo2$year + 1900,  tmo2$mon + 1, tmo2$mday)
+    si <- siflat(tmo2$hour, lat, long, jd)
+    amc <- airmasscoef(tmo2$hour, lat, long, jd)
+    sa2<-solalt(tmo2$hour, lat, long, jd, 0, 0)
+    z <- 90 - sa2
+    amc <- 1/(cos(z * pi/180) + 0.50572 * (96.07995 - z)^(-1.6364))
+    amc[z >= 88] <- 0
+    si_m <- 0
+    am_m <- 0
+    for (i in 1:(length(tme6))) {
+      st <- (i - 1) * 6 + 1
+      ed <- st + 5
+      si_m[i] <- mean(si[st:ed], na.rm = T)
+      am_m[i] <- mean(amc[st:ed], na.rm = T)
+    }
+    af <- 1.1 * 0.7 ^ (am_m^0.678)
+    jd <- julday(tme6$year + 1900, tme6$mon + 1, tme6$mday)
+    dp <- 0
+    for (i in 1:length(jd)) {
+      dp[i] <- difprop2(ncepdata$dsw[i], jd[i], tme6$hour[i], lat, long)
+    }
+    dp[ncepdata$dsw == 0] <- NA
+    dirr <- (ncepdata$dsw * (1 - dp)) / si_m
+    difr <- (ncepdata$dsw * dp) / af
+    dirr[dirr > 1367] <- 0 # ensuring low solar angles don't cause values > solar constant
+    difr[difr > 1367] <- 0 # ensuring low solar angles don't cause values > solar constant
+    globr <- dirr + difr
+    #globr[globr > (4.87 / 0.0036)] <- (4.87 / 0.0036)
+    nd <- length(globr)
+    globr[1] <- mean(globr[1:4], na.rm = T)
+    globr[nd] <- mean(globr[(nd - 4):nd], na.rm = T)
+    dp[1] <- mean(dp[1:4], na.rm = T)
+    dp[nd] <- mean(dp[(nd - 4):nd], na.rm = T)
+    globr <- na.approx(globr, na.rm = F)
+    dp <- na.approx(dp, na.rm = F)
+    h_dp <- spline(tme6, dp, n = n)$y
+    h_gr <- spline(tme6, globr, n = n)$y
+    tmorad <- as.POSIXlt(tmo + 3600 * 3)
+    jd <- julday(tmorad$year + 1900, tmorad$mon + 1, tmorad$mday)
+    si <- siflat(tmorad$hour, lat, long, jd)
+    szenith <- 90 - solalt(tmorad$hour, lat, long, jd)
+    am <- airmasscoef(tmorad$hour, lat, long, jd)
+    af <- 1.1 * 0.7 ^ (am^0.678)
+    h_dni <- h_gr * (1 - h_dp)
+    h_dni[si == 0] <- 0
+    h_dif <- h_gr * h_dp * af
+    h_dif[is.na(h_dif)] <- 0
+    em <- ncepdata$dlw / ncepdata$ulw
+    em_h <- spline(tme6, em, n = n)$y
+    t6sel <- c(4:(length(tme6)-5))
+    thsel <-c(22:(length(tmorad)-22))
+    thsel2 <-c(19:(length(tmo) - 25))
+    tcmn <- ncepdata$Tkmin[t6sel] - 273.15
+    tcmx <- ncepdata$Tkmax[t6sel] - 273.15
+    tcmn <-t(matrix(tcmn, nrow = 4))
+    tcmx <-t(matrix(tcmx, nrow = 4))
+    tmin <- apply(tcmn, 1, min)
+    tmax <- apply(tcmx, 1, max)
+    jd <- julday(tme2$year + 1900, tme2$mon + 1, tme2$mday)
+    h_tc<-hourlytemp2(julian = jd, em = em_h[thsel], dni = h_dni[thsel],
+      dif = h_dif[thsel], mintemp = tmin, maxtemp = tmax,
+      lat = lat, long = long)
+    hlwu <- 2.043e-10 * (h_tc + 273.15)^4
+    hlwd <- em_h[thsel] *  hlwu
+    h_nlw <- hlwu - hlwd
+    h_uw <- spline(tme6, ncepdata$wu, n = n)$y
+    h_vw <- spline(tme6, ncepdata$wv, n = n)$y
+    h_ws <- sqrt(h_uw^2 + h_vw^2)
+    h_ws <- windheight(h_ws, 10, 1)
+    h_wd <- atan2(h_uw, h_vw) * 180/pi + 180
+    h_wd <- h_wd%%360
+    hourlyout <- data.frame(obs_time = tmorad[thsel], temperature = h_tc, humidity = h_sh[thsel2],
+      pressure = h_pr[thsel2], windspeed = h_ws[thsel2], winddir = h_wd[thsel2],
+      emissivity = em_h[thsel2], netlong = h_nlw, uplong = hlwu, downlong = hlwd,
+      rad_dni = h_dni[thsel] * 0.0036, rad_dif = h_dif[thsel] * 0.0036,
+      szenith = szenith[thsel], h_tcdc = h_tcdc[thsel])
+    hourlyout
+  }
   houry_inputs <- function(ncepdata, lat, long) {
     # add extra row to table
     ncepe <- ncepdata[dim(ncepdata)[1],]
@@ -708,6 +875,7 @@ micro_clima <- function(
     tme <- as.POSIXlt(ncepdata$obs_time)
     n <- (length(tme) - 1) * 6 + 1
     h_pr <- spline(tme, ncepdata$pr, n = n)$y
+    h_tcdc <- spline(tme, ncepdata$h_tcdc, n = n)$y
     h_sh <- spline(tme, shu, n = n)$y
     tmo  <- spline(tme, shu, n = n)$x
     tmo <- as.POSIXlt(tmo, origin = "1970-01-01 00:00",
@@ -802,48 +970,56 @@ micro_clima <- function(
       windspeed = h_ws, winddir = h_wd, emissivity = em_h,
       netlong = h_nlw, uplong = 2.043e-10 * (h_tc + 273.15)^4,
       rad_dni = h_dni * 0.0036,
-      rad_dif = h_dif * 0.0036, zen = zenhr[-n])
+      rad_dif = h_dif * 0.0036, zen = zenhr[-n], cloud = h_tcdc[-n])
     hourlyout$downlong <- hourlyout$uplong - hourlyout$netlong
     hourlyout
   }
   # allow for horizon angle and slope/aspect override, as well as horizon angle, slope and aspect output, substituted 'lor' for 'x'
-  point.radwind <- function(hourlydata, dem, lat, long, lor, x, albr) {
-    # xy in mercator projection
+  pointradwind <- function(hourlydata, dem, lat, long, l, x, albr = 0.15, zmin = 0, slope = NA, aspect = NA) {
+    m <- is_raster(dem)
+    m[is.na(m)] <- zmin
+    m[m < zmin] <- zmin
+    dem <- if_raster(m, dem)
     xy <- data.frame(x = long, y = lat)
     coordinates(xy) = ~x + y
     proj4string(xy) = "+init=epsg:4326"
-    xy <- as.data.frame(spTransform(xy, CRS("+init=epsg:3395")))
-    # wind shelter coefficient in 36 directions
+    xy <- as.data.frame(spTransform(xy, crs(dem)))
     reso <- res(dem)[1]
     wsc36 <- 0
+    wsc36atground <- 0
     for (i in 0:35) {
       wscr <- windcoef(dem, i*10, hgt = 1, res = reso)
+      wscr2 <- windcoef(dem, i*10, hgt = 0, res = reso)
       wsc36[i + 1] <- extract(wscr, xy)
+      wsc36atground[i + 1] <- extract(wscr2, xy)
     }
     wshelt <- 0
+    wsheltatground <- 0
     for (i in 1:length(hourlydata$winddir)) {
       daz <- round(hourlydata$winddir[i] / 10, 0) + 1
       wshelt[i] <- wsc36[daz]
+      wsheltatground[i] <- wsc36atground[daz]
     }
-    # slope, aspect and extract
-    slope <- terrain(dem, unit = 'degrees')
-    aspect <- terrain(dem, opt = 'aspect', unit = 'degrees')
+    if (class(slope) == "logical") {
+      slope <- terrain(dem, unit = 'degrees')
+      slope <- extract(slope, xy)
+    }
+    if (class(aspect) == "logical") {
+      aspect <- terrain(dem, opt = 'aspect', unit = 'degrees')
+      aspect <- extract(aspect, xy)
+    }
     svf <- skyviewveg(dem, array(l, dim = dim(dem)[1:2]),
       array(x, dim = dim(dem)[1:2]), res = reso)
-    fr <- canopy(array(l, dim = dim(dem)[1:2]), array(lor, dim = dim(dem)[1:2]))
-    slope <- extract(slope, xy)
-    aspect <- extract(aspect, xy)
+    fr <- canopy(array(l, dim = dim(dem)[1:2]), array(x, dim = dim(dem)[1:2]))
     svf <- extract(svf, xy)
     fr <- mean(fr)
     mslope <- mean_slope(dem, res = reso)
     mha <- extract(mslope, xy)
-    # horizon angle in 36 directions (degrees)
     ha36 <- 0
     for (i in 0:35) {
       har <- horizonangle(dem, i*10, reso)
       ha36[i + 1] <- atan(extract(har, xy)) * (180/pi)
     }
-    # Calculate solar index (including horizon)
     tme <- as.POSIXlt(hourlydata$obs_time)
     ha <- 0
     jd <- julday(tme$year + 1900, tme$mon + 1, tme$mday)
@@ -856,9 +1032,7 @@ micro_clima <- function(
     si <- siflat(tme$hour, lat, long, jd)
     sa <- solalt(tme$hour, lat, long, jd)
     si[sa < ha] <- 0
-    # Partition shortwave radiation
     dirr <- si * hourlydata$rad_dni
-    dirr[dirr > 1367] <- 0 # ensuring low solar angles don't cause values > solar constant
     a <- slope * (pi/180)
     k <- hourlydata$rad_dni / 4.87
     k <- ifelse(k > 1, 1, k)
@@ -868,22 +1042,20 @@ micro_clima <- function(
     refr <- 0.5 * albr * (1 - cos(sdi)) * hourlydata$rad_dif
     fd <- dirr + cisr
     fdf <- isor + refr
-    # account for vegetation effects
-    kk <- ((lor^2 + 1/(tan(sa * (pi/180))^2))^0.5)/(lor + 1.774 * (lor + 1.182)^(-0.733))
+    kk <- ((x^2 + 1/(tan(sa * (pi/180))^2))^0.5)/(x + 1.774 * (x + 1.182)^(-0.733))
     trd <- exp(-kk * l)
     trf <- (1 - fr)
     fgd <- fd * trd
     fged <- fdf * trf * svf
     swrad <- fgd + fged
-    # hourlyradout
-    hourlyrad <- data.frame(swrad = swrad, longdown = hourlydata$downlong,
-      skyviewfact = svf, canopyfact = fr,
-      windspeed = wshelt * hourlydata$windspeed)
+    hourlyrad <- data.frame(swrad = swrad, skyviewfact = svf, canopyfact = fr,
+      whselt = wsheltatground, windspeed = wshelt * hourlydata$windspeed,
+      slope = slope, aspect = aspect)
     return(list(hourlyr = hourlyrad, slp = slope, asp = aspect, hori = ha36))
   }
 
   cadconditions2 <- function (em, wind, startjul, lat, long,
-    starttime = 0, hourint = 1, windthresh = 4.5, emthresh = 0.5,
+    starttime = 0, hourint = 1, windthresh = 4.5, emthresh = 0.725,
     tz = 0, dst = 0, con = TRUE)
   {
     jd <- floor(c(1:length(em)) * hourint/24 - hourint/24 + startjul +
@@ -937,28 +1109,38 @@ micro_clima <- function(
     }
     if_raster(fa, dem)
   }
-
+integertobinary8 <- function(i) {
+  a <- 2 ^ (0:9)
+  b <- 2 * a
+  binc <- format(sapply(i, function(x) sum(10 ^ (0:9)[(x %% b) >= a])),
+                 scientific = FALSE)
+  if (nchar(binc) > 8) warning("Integer > 8 bit binary")
+  binc <- str_pad(binc, 8, pad = "0")
+  binc
+}
   eleveffects <- function(hourlydata, dem, lat, long, windthresh = 4.5,
     emthresh = 0.78) {
-    # xy in mercator projection
     xy <- data.frame(x = long, y = lat)
+    elevncep <- extract(demworld, xy)
     coordinates(xy) = ~x + y
     proj4string(xy) = "+init=epsg:4326"
-    xy <- as.data.frame(spTransform(xy, CRS("+init=epsg:3395")))
+    xy <- as.data.frame(spTransform(xy, crs(dem)))
     elev <- extract(dem, xy)
     # elevation effect
     lr <- lapserate(hourlydata$temperature, hourlydata$humidity,
       hourlydata$pressure)
-    elevt <- lr * elev + hourlydata$temperature
-    # lapse rate effect
-    # (1) Cad conditions
+    elevt <- lr * (elev - elevncep) + hourlydata$temperature
     tme <- as.POSIXlt(hourlydata$obs_time)
     jds <- julday(tme$year[1] + 1900, tme$mday[1] + 1, tme$mday[1])
     cad <- cadconditions2(hourlydata$emissivity, hourlydata$windspeed,
       jds, lat, long, starttime = tme$hour[1], hourint = 1,
       windthresh = windthresh, emthresh = emthresh)
-    # (2) Spatial
-    basins <- basindelin(dem)
+    pxls <- dim(dem)[1] * dim(dem)[2]
+    if (pxls > 300 * 300) {
+      basins <- basindelin_big(dem)
+    } else {
+      basins <- basindelin(dem)
+    }
     basins <- basinmerge(dem, basins, 2)
     basins <- basinsort(dem, basins)
     fa <- flowacc(dem)
@@ -978,8 +1160,9 @@ micro_clima <- function(
     cdif <- extract(cdif, xy)
     cadt <- cdif * lr * cad
     tout <- data.frame(tref = hourlydata$temperature,
+      elev = elev, elevncep = elevncep,
       telev = lr * elev,
-      tcad = cadt, elevation = elev)
+      tcad = cadt)
     tout
   }
 
@@ -1205,7 +1388,7 @@ micro_clima <- function(
     long <- as.numeric(longlat[1])
     loc <- c(long, lat)
     if(class(dem)[1] == "RasterLayer"){
-     cat('using DEM provided to function call \n')
+      cat('using DEM provided to function call \n')
     }
     if(save != 2 & class(dem)[1] != "RasterLayer"){
       cat('downloading DEM via package elevatr \n')
@@ -1279,16 +1462,18 @@ micro_clima <- function(
       load('SLOPE.Rda')
       load('ASPECT.Rda')
       load('HORIZON.Rda')
-      elev <- tref$elevation[1] # m
+      elev <- tref$elev[1] # m
       ALTT <- elev
     }
 
     if(save != 2){
       cat("extracting weather data with RNCEP \n")
-      ncepdata <- get_inputs(lat, long, tme)
+      #ncepdata <- get_inputs(lat, long, tme)
       #save(ncepdata, file = 'ncepdata.Rda')
-      hourlydata <- houry_inputs(ncepdata, lat, long)
-      ZENhr <- hourlydata$zen
+      #hourlydata <- hourlyNCEP(ncepdata, lat, long)
+      hourlydata <- hourlyNCEP(tme, lat, long)
+      ZENhr <- hourlydata$szenith
+      ZENhr[ZENhr > 90] <- 90
       dailyrain <- get_rain(lat, long, tme)
       #save(dailyrain, file = 'dailyrain.Rda')
       l <- mean(LAI) # leaf area index
@@ -1296,7 +1481,7 @@ micro_clima <- function(
       albr <- REFL # mean albedo of surfaces from which radiation is reflected
 
       cat("computing radiation and elevation effects with package microclima \n")
-      hourlyr <- point.radwind(hourlydata, dem, lat, long, l, lor, albr)
+      hourlyr <- pointradwind(hourlydata, dem, lat, long, l, lor, albr)
       hourlyradwind <- hourlyr$hourlyr
       SLOPE <- hourlyr$slp
       ASPECT <- hourlyr$asp
@@ -1316,22 +1501,27 @@ micro_clima <- function(
       # tref (Original hourly NCEP)
       # telev (delta temperature due to elev)
       # tcad (delta temperature due to cold air drainage)
-      elev <- tref$elevation[1] # m
+      elev <- tref$elev[1] # m
       ALTT <- elev
       TAIRhr <- tref$tref + tref$telev + tref$tcad # reference Tair plus offsets due to lapse rate and cold air drainage
       SOLRhr <- hourlyradwind$swrad / 0.0036
       SOLRhr[SOLRhr < 0] <- 0
-      IRDhr <- hourlyradwind$longdown / .0036
+      CLDhr <- hourlydata$h_tcdc
+      CLDhr[CLDhr < 0] <- 0
+      CLDhr[CLDhr > 100] <- 100
+      #if(clearsky == 1){
+      #  CLDhr <- CLDhr * 0
+      #}
+      IRDhr <- hourlydata$downlong / .0036
       RHhr <- suppressWarnings(humidityconvert(h = hourlydata$humidity, intype = 'specific', p = hourlydata$pressure, tc = TAIRhr)$relative)
       RHhr[RHhr > 100] <- 100
       RHhr[RHhr < 0] <- 0
-      WNhr <- hourlyradwind$windspeed*(2/10)^0.15 # adjust from 10m to 2m
+      WNhr <- hourlyradwind$windspeed#*(1/10)^0.15 # adjust from 10m to 2m
       WNhr[is.na(WNhr)] <- 0.1
       RAINhr <- WNhr * 0 # using daily rain for now
       PRESShr <- hourlydata$pressure
       RAINFALL <- dailyrain
       RAINFALL[RAINFALL < 0.1] <- 0
-      CLDhr <- TAIRhr * 0 # base this on clear sky solar from microclima?
       ZENhr2 <- ZENhr
       ZENhr2[ZENhr2!=90] <- 0
       # rleb <- rle(x = ZENhr2)$lengths[1:3]
@@ -1512,7 +1702,7 @@ micro_clima <- function(
       avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
       tannulrun<-rep(avetemp,ndays)
     }else{
-        avetemp<-rowMeans(cbind(TMAXX, TMINN), na.rm=TRUE)
+      avetemp<-rowMeans(cbind(TMAXX, TMINN), na.rm=TRUE)
       if(length(TMAXX)<365){
         tannulrun<-rep((sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2),length(TMAXX))
       }else{
@@ -1575,7 +1765,7 @@ micro_clima <- function(
       ZENhr=rep(-1,24*dim)
       IRDhr=rep(-1,24*dim)
     }else{
-
+      CLDhr=rep(0,24*dim)
     }
     if(rainhourly==0){
       RAINhr=rep(0,24*dim)

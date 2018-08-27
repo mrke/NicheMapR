@@ -283,27 +283,105 @@
 #'     (%)",col=i,type = "l")
 #'  }
 #' }
-micro_aust <- function(loc= "Nyrripi, Northern Territory",
-  ystart = 1990, yfinish = 1990, nyears = 1, REFL = 0.15, elev = NA,
-  slope = 0, aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
-  DEP = c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
-  Refhyt = 1.2, Usrhyt = 0.01, Z01 = 0, Z02 = 0, ZH1 = 0, ZH2 = 0, runshade = 1,
-  clearsky = 0, run.gads = 1, write_input = 0, writecsv = 0, manualshade = 1,
-  soildata = 1, terrain = 0, dailywind = 1, windfac = 1, adiab_cor = 1, warm = 0,
-  spatial = "c:/Australian Environment/", vlsci = 0, ERR = 1.5, RUF = 0.004,
-  EC = 0.0167238, SLE = 0.95, Thcond = 2.5, Density = 2.56, SpecHeat = 870,
-  BulkDensity = 1.3, PCTWET = 0, rainwet = 1.5, cap = 1, CMH2O=1, hori = rep(0, 24),
-  TIMAXS = c(1, 1, 0, 0), TIMINS=c(0, 0, 1, 1), timezone = 0, runmoist = 1,
-  PE = rep(1.1, 19), KS = rep(0.0037, 19), BB = rep(4.5, 19), BD = rep(BulkDensity, 19),
-  DD = rep(Density, 19), maxpool = 10000, rainmult = 1, evenrain = 0,
+micro_aust <- function(
+  loc= "Nyrripi, Northern Territory",
+  ystart = 1990,
+  yfinish = 1990,
+  nyears = 1,
+  REFL = 0.15,
+  elev = NA,
+  slope = 0,
+  aspect = 0,
+  lapse_max = 0.0077,
+  lapse_min = 0.0039,
+  DEP = c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200),
+  minshade = 0,
+  maxshade = 90,
+  Refhyt = 1.2,
+  Usrhyt = 0.01,
+  Z01 = 0,
+  Z02 = 0,
+  ZH1 = 0,
+  ZH2 = 0,
+  runshade = 1,
+  clearsky = 0,
+  run.gads = 1,
+  write_input = 0,
+  writecsv = 0,
+  manualshade = 1,
+  soildata = 1,
+  terrain = 0,
+  dailywind = 1,
+  windfac = 1,
+  adiab_cor = 1,
+  warm = 0,
+  spatial = "c:/Australian Environment/",
+  vlsci = 0,
+  ERR = 1.5,
+  RUF = 0.004,
+  EC = 0.0167238,
+  SLE = 0.95,
+  Thcond = 2.5,
+  Density = 2.56,
+  SpecHeat = 870,
+  BulkDensity = 1.3,
+  PCTWET = 0,
+  rainwet = 1.5,
+  cap = 1,
+  CMH2O=1,
+  hori = rep(0, 24),
+  TIMAXS = c(1, 1, 0, 0),
+  TIMINS=c(0, 0, 1, 1),
+  timezone = 0,
+  runmoist = 1,
+  PE = rep(1.1, 19),
+  KS = rep(0.0037, 19),
+  BB = rep(4.5, 19),
+  BD = rep(BulkDensity, 19),
+  DD = rep(Density, 19),
+  maxpool = 10000,
+  rainmult = 1,
+  evenrain = 0,
   SoilMoist_Init=c(0.1, 0.12, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4),
   L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000,
-  R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
-  LAI = 0.1, snowmodel = 0, snowtemp = 1.5, snowdens = 0.375, densfun = c(0.5979, 0.2178, 0.001, 0.0038),
-  snowmelt = 1, undercatch = 1, rainmelt = 0.0125, shore = 0, tides = 0, loop = 0, scenario = "", year = "",
-  barcoo = "", quadrangle = 1, hourly = 0, rainhourly = 0, rainhour = 0, uid = "", pwd = "", lamb = 0,
-  IUV = 0, soilgrids = 0, IR = 0, opendap = 0, message = 0, fail = nyears * 24 * 365, snowcond = 0,
-  intercept = maxshade / 100 * 0.4, grasshade = 0) {
+  R1 = 0.001,
+  RW = 2.5e+10,
+  RL = 2e+6,
+  PC = -1500,
+  SP = 10,
+  IM = 1e-06,
+  MAXCOUNT = 500,
+  LAI = 0.1,
+  snowmodel = 0,
+  snowtemp = 1.5,
+  snowdens = 0.375,
+  densfun = c(0.5979, 0.2178, 0.001, 0.0038),
+  snowmelt = 1,
+  undercatch = 1,
+  rainmelt = 0.0125,
+  shore = 0,
+  tides = 0,
+  loop = 0,
+  scenario = "",
+  year = "",
+  barcoo = "",
+  quadrangle = 1,
+  hourly = 0,
+  rainhourly = 0,
+  rainhour = 0,
+  uid = "",
+  pwd = "",
+  lamb = 0,
+  IUV = 0,
+  soilgrids = 0,
+  IR = 0,
+  opendap = 0,
+  message = 0,
+  fail = nyears * 24 * 365,
+  snowcond = 0,
+  intercept = maxshade / 100 * 0.4,
+  grasshade = 0
+  ) {
 
   # function to assist with interpolated data in leap years
   leapfix <- function(indata, yearlist){
@@ -1096,6 +1174,7 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
         doy <- c(doy, dayoy)
       }
     }
+    doy<-leapfix(doy, yearlist)
     doy<-doy[1:dim]
     ida<-dim
     idayst <- 1 # start month
@@ -1902,8 +1981,8 @@ micro_aust <- function(loc= "Nyrripi, Northern Territory",
         if(max(metout[,1] == 0)){
           cat("ERROR: the model crashed - try a different error tolerance (ERR) or a different spacing in DEP", '\n')
         }
-        dates <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/",yfinish), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), by = 'hours')
-        dates2 <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/",yfinish), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), by = 'days')
+        dates <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("31/12/",yfinish), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), by = 'hours')
+        dates2 <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("31/12/",yfinish), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), by = 'days')
         if(lamb == 1){
           drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
           drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance

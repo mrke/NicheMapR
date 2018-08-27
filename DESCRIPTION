@@ -4,9 +4,9 @@ Version: 1.1.4
 Authors@R: person("Michael", "Kearney", email = "mrke@unimelb.edu.au", role = c("aut", "cre"))
 Maintainer: Michael Kearney <mrke@unimelb.edu.au>
 Description: This packages provides an interface to a suite of biophysical
-    modelling algorithims including the Niche Mapper system.
+    modelling algorithms including the Niche Mapper system.
 Depends:
-    R (>= 3.2.1)
+    R (>= 3.5.1)
 License: gpl-3.0
 LazyData: true
 RoxygenNote: 6.0.1
@@ -27,7 +27,8 @@ Suggests:
     rjson,
     sp,
     GSIF,
-    futile.logger
+    futile.logger,
+    microclima
 VignetteBuilder: rmarkdown
 Vignettes: properties-of-air,ectotherm-model-tutorial,microclimate-model-
     tutorial,microclimate-monthly-input-example,microclimate-inputs,microclimate-
