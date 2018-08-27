@@ -1373,13 +1373,12 @@ micro_ncep <- function(
       hourlydata <- hourly$hourlyout
       precip <- hourly$prate[-c(1:4)]
       precip <- precip[1:(length(precip)-4)]
+      precip <- precip * 6 * 3600
+      precip <- aggregate(precip, by = list(format(tt[seq(1, length(tt), 6)], "%Y-%m-%d")), sum)$x
+      dailyrain <- precip
       ZENhr <- hourlydata$szenith
       ZENhr[ZENhr > 90] <- 90
       #dailyrain <- get_rain(lat, long, tme)
-      precip <- aggregate(precip, by = list(format(tt[seq(1, length(tt), 6)], "%Y-%m-%d")), mean)$x
-      precip <- precip * 6 * 3600
-      mpre <- t(matrix(as.numeric(precip), nrow = 4))
-      dailyrain <- apply(mpre, 1, sum)
       #save(dailyrain, file = 'dailyrain.Rda')
       l <- mean(LAI) # leaf area index
       lor <- LOR # leaf orientation
