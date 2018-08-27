@@ -1369,8 +1369,8 @@ micro_usa <- function(
       if(max(metout[,1] == 0)){
         cat("ERROR: the model crashed - try a different error tolerance (ERR) or a different spacing in DEP", '\n')
       }
-      dates <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), as.POSIXct(paste0("01/01/",yfinish), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), by = 'hours')
-      dates2 <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), as.POSIXct(paste0("01/01/",yfinish), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), by = 'days')
+      dates <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), as.POSIXct(paste0("31/12/",yfinish), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), by = 'hours')
+      dates2 <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), as.POSIXct(paste0("31/12/",yfinish), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), by = 'days')
       if(lamb == 1){
         drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
         drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
