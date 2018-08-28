@@ -1371,7 +1371,7 @@ micro_ncep <- function(
       #hourlydata <- hourlyNCEP(ncepdata, lat, long)
       hourlyd <- hourlyNCEP(tme, longlat[2], longlat[1], reanalysis2, spatial)
       hourlydata <- hourlyd$hourlyout
-      precip <- hourly$prate[-c(1:4)]
+      precip <- hourlyd$prate[-c(1:4)]
       precip <- precip[1:(length(precip)-4)]
       precip <- precip * 6 * 3600
       precip <- aggregate(precip, by = list(format(tt[seq(1, length(tt), 6)], "%Y-%m-%d")), sum)$x
