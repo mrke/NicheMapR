@@ -37,7 +37,7 @@
 #' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
-#' \code{reanalysis}{ = FALSE, Use reanalysis2 NCEP data? TRUE/FALSE}\cr\cr
+#' \code{reanalysis}{ = TRUE, Use reanalysis2 NCEP data? TRUE/FALSE}\cr\cr
 #' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 #' \code{warm}{ = 0, uniform warming, °C}\cr\cr
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
@@ -290,7 +290,7 @@ micro_ncep <- function(
   run.gads=1,
   write_input=0,
   writecsv=0,
-  reanalysis=FALSE,
+  reanalysis=TRUE,
   windfac = 1,
   warm=0,
   ERR=1.5,
@@ -369,7 +369,7 @@ micro_ncep <- function(
   #   run.gads=1
   #   write_input=0
   #   writecsv=0
-  #   reanalysis=FALSE
+  #   reanalysis=TRUE
   #   windfac = 1
   #   warm=0
   #   ERR=1.5
@@ -423,7 +423,7 @@ micro_ncep <- function(
   #   soilgrids = 0
   #   message = 0
   #   fail = nyears * 24 * 365
-  #   spatial = NA
+  #   spatial = "c:/Spatial_Data/ncep/"
   #   save = 0
   #   snowcond = 0
   #   intercept = 0 / 100 * 0.3
@@ -1369,8 +1369,8 @@ micro_ncep <- function(
       #ncepdata <- get_inputs(lat, long, tme)
       #save(ncepdata, file = 'ncepdata.Rda')
       #hourlydata <- hourlyNCEP(ncepdata, lat, long)
-      hourly <- hourlyNCEP(tme, longlat[2], longlat[1], reanalysis2, spatial)
-      hourlydata <- hourly$hourlyout
+      hourlyd <- hourlyNCEP(tme, longlat[2], longlat[1], reanalysis2, spatial)
+      hourlydata <- hourlyd$hourlyout
       precip <- hourly$prate[-c(1:4)]
       precip <- precip[1:(length(precip)-4)]
       precip <- precip * 6 * 3600
