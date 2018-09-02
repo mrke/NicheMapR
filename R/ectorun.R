@@ -29,6 +29,7 @@
 #' @param thermal_stages Stage-specific thermal physiology
 #' @param behav_stages Stage-specific behaviour
 #' @param water_stages Stage-specific water related parameters
+#' @param nutri_stages Stage-specific nutrition related parameters
 #' @param MAXSHADES Maximum shade levels
 #' @param S_instar For the Insect DEB model
 #' @export
@@ -81,6 +82,7 @@ ectorun <- function(ecto) {
       as.double(ecto$thermal_stages),
       as.double(ecto$behav_stages),
       as.double(ecto$water_stages),
+      as.double(ecto$nutri_stages),
       as.double(ecto$maxshades),
       as.double(ecto$S_instar),
       environ=matrix(data = 0., nrow = dim*24, ncol = 24),
@@ -123,6 +125,7 @@ ectorun <- function(ecto) {
       as.double(ecto$thermal_stages),
       as.double(ecto$behav_stages),
       as.double(ecto$water_stages),
+      as.double(ecto$nutri_stages),
       as.double(ecto$maxshades),
       as.double(ecto$S_instar),
       environ=matrix(data = 0., nrow = dim*24, ncol = 24),

@@ -203,8 +203,8 @@
 #' \item  1 DOY - day-of-year
 #' \item  2 TIME - time of day (mins)
 #' \item  3 TRANS - plant transpiration rate (kg/m2/s)
-#' \item  4 LEAFPOT - leaf water potentail (J/kg)
-#' \item  5-14 RPOT0cm ... - root water potentail (J/kg), at each of the 10 specified depths
+#' \item  4 LEAFPOT - leaf water potential (J/kg)
+#' \item  5-14 RPOT0cm ... - root water potential (J/kg), at each of the 10 specified depths
 #' }
 #'
 #' if snow model is run i.e. parameter lamb = 1\cr
