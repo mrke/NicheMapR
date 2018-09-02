@@ -137,6 +137,7 @@
 #' \item{\code{E_Hb}{ = 866.6*fract^3, Maturity at birth (J)}\cr}
 #' \item{\code{E_Hj}{ = E_Hb*fract^3, Maturity at metamorphosis (J)}\cr}
 #' \item{\code{E_Hp}{ = 1.019e+04*fract^3, Maturity at puberty}\cr}
+#' \item{\code{E_He}{ = E_He*fract^3, Maturity at eclosion (J)}\cr}
 #' \item{\code{h_a}{ = 1.051e-08/(24^2), Weibull ageing acceleration (1/h2)}\cr}
 #' \item{\code{s_G}{ = 0.01, Gompertz stress coefficient (-)}\cr}
 #' \item{\code{E_0}{ = 9220*fract^4, Energy content of the egg (derived from core parameters) (J)}\cr}
@@ -145,10 +146,10 @@
 #' \itemize{
 #' \item{\code{T_REF}{ = 20 + 273.15, Reference temperature for rate correction (°C)}\cr}
 #' \item{\code{T_A}{ = 8817 Arhhenius temperature}\cr}
-#' \item{\code{T_AL}{ = 50000, Arrhenius temperature for decrease below lower boundary of tolerance range \code{TL}}\cr}
-#' \item{\code{T_AH}{ = 90000, Arrhenius temperature for decrease above upper boundary of tolerance range \code{TH}}\cr}
-#' \item{\code{TL}{ = 279, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
-#' \item{\code{TH}{ = 306, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
+#' \item{\code{T_AL}{ = 50000, Arrhenius temperature for decrease below lower boundary of tolerance range \code{T_L}}\cr}
+#' \item{\code{T_AH}{ = 90000, Arrhenius temperature for decrease above upper boundary of tolerance range \code{T_H}}\cr}
+#' \item{\code{T_L}{ = 279, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
+#' \item{\code{T_H}{ = 306, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
 #'}
 #' \strong{ Compound/derived DEB parameters:}
 #' \itemize{
@@ -252,7 +253,8 @@
 #' \item{\code{thermal_stages}{ = matrix(data = c(rep(CT_min,8),rep(CT_max,8),rep(T_F_max,8),rep(T_F_min,8),rep(T_B_min,8),rep(T_pref,8)), nrow = 8, ncol = 6), Stage specific thermal thresholds (CT_min,CT_max,T_F_max,T_F_min,T_B_min,T_pref)}\cr}
 #' \item{\code{behav_stages}{ = matrix(data = c(rep(diurn,8),rep(nocturn,8),rep(crepus,8),rep(burrow,8),rep(shdburrow,8),rep(mindepth,8),rep(maxdepth,8),rep(shade_seek,8),rep(climb,8),rep(fossorial,8),rep(rainact,8),rep(actrainthresh,8),rep(act_breed,8),rep(flyer,8),rep(aquabask,8)), nrow = 8, ncol = 15), Stage specific behaviour diurn,nocturn,crepus,burrow,shdburrow,mindepth,maxdepth,shade_seek,climb,fossorial,rainact,actrainthresh,act_breed,flyer,aquabask)}\cr}
 #' \item{\code{water_stages}{ = matrix(data = c(rep(pct_wet,8),rep(F_O2,8),rep(pct_H_P,8),rep(pct_H_N,8),rep(pct_H_X,8),rep(pct_H_R,8),rep(raindrink,8),rep(gutfill,8)), nrow = 8, ncol = 8), Stage-specific water budget parameters (pct_wet,F_O2,pct_H_P,pct_H_N,pct_H_X,pct_H_R,raindrink,gutfill)}\cr}
-#' \item{\code{arrhenius}{ = matrix(data = matrix(data = c(rep(T_A,8),rep(T_AL,8),rep(T_AH,8),rep(TL,8),rep(TH,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A,T_AL,T_AH,TL,TH)}\cr}
+#' \item{\code{nutri_stages}{ = matrix(data = c(rep(foodlim,8),rep(0,8)), nrow = 8, ncol = 1), Stage-specific nutritional parameters (foodlim)}\cr}
+#' \item{\code{arrhenius}{ = matrix(data = matrix(data = c(rep(T_A,8),rep(T_AL,8),rep(T_AH,8),rep(T_L,8),rep(T_H,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A,T_AL,T_AH,T_L,T_H)}\cr}
 #'}
 #' \strong{ Butterfly model parameters (not yet tested):}
 #' \itemize{
@@ -575,14 +577,15 @@ ectotherm<-function(
   E_Hb=866.6*fract^3,
   E_Hj=E_Hb*fract^3,
   E_Hp=1.019e+04*fract^3,
+  E_He=1.019e+04*fract^3,
   h_a=1.051e-08/(24^2),
   s_G=0.01,
   T_REF=20 + 273.15,
   T_A=8817,
   T_AL=5.0e+04,
   T_AH=9.0+04,
-  TL=6 + 273.15,
-  TH=33 + 273.15,
+  T_L=6 + 273.15,
+  T_H=33 + 273.15,
   E_0=9220*fract^4,
   f=1,
   E_sm=350,
@@ -659,7 +662,8 @@ ectotherm<-function(
     rep(rainact,8),rep(actrainthresh,8),rep(act_breed,8),rep(flyer,8),rep(aquabask,8)), nrow = 8, ncol = 15),
   water_stages=matrix(data = c(rep(pct_wet,8),rep(F_O2,8),rep(pct_H_P,8),rep(pct_H_N,8),
     rep(pct_H_X,8),rep(pct_H_R,8),rep(raindrink,8),rep(gutfill,8)), nrow = 8, ncol = 8),
-  arrhenius=matrix(data = matrix(data = c(rep(T_A,8),rep(T_AL,8),rep(T_AH,8),rep(TL,8),rep(TH,8)),
+  nutri_stages=matrix(data = c(rep(foodlim,8)), nrow = 8, ncol = 1),
+  arrhenius=matrix(data = matrix(data = c(rep(T_A,8),rep(T_AL,8),rep(T_AH,8),rep(T_L,8),rep(T_H,8)),
     nrow = 8, ncol = 5), nrow = 8, ncol = 5),
   wings=0,
   rho1_3=0.2,
@@ -862,7 +866,7 @@ ectotherm<-function(
   # conversions from percent to proportion
   PTUREA1<-pct_H_N/100
   PFEWAT1<-pct_H_P/100
-  FoodWater1<-pct_H_X/100
+  FoodWater1<-pct_H_X[1]/100
   water_stages[,3]<-water_stages[,3]/100
   water_stages[,4]<-water_stages[,4]/100
   water_stages[,5]<-water_stages[,5]/100
@@ -901,9 +905,13 @@ ectotherm<-function(
   # food and food water levels
   if(length(X) == 1){ # no day-specific food levels given
     foodlevels <- rep(X, nrow(metout) / 24)
+  }else{
+    foodlevels <- X
   }
   if(length(pct_H_X) == 1){ # no day-specific food water levels given
     foodwaters <- rep(pct_H_X, nrow(metout) / 24)
+  }else{
+    foodwaters <- pct_H_X
   }
   lat<-ectoin[4]
   DOYstart<-metout[1,2]
@@ -913,7 +921,7 @@ ectotherm<-function(
   microyear<-1
   postur<-1
   ectoinput<-as.matrix(c(ALT,fluid,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,Ww_kg,epsilon,absan,RQ,rinsul,shape,live,TIMBAS,k_flesh,c_body,rho_body,alpha_max,alpha_min,FATOSK,FATOSB,FATOBJ,T_F_min,T_F_max,delta_air,SKINW,pct_eyes,xbas,F_O2,T_pref,F_cond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,postur,maxshd,minshd,CT_max,CT_min,behav,DOY,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,DOYstart,monthly,custom_shape,M_1,M_2,M_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,pct_H_R,microyear,container,flyer,flyspeed,dim,maxdepth,CT_minthresh,CT_kill,gutfill,mindepth,T_B_min,T_RB_min,F_m,k_sub,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,Tb_breed,Tb_breed_hrs,contwet,warmsig,aquabask,pct_H_death,write_csv,aestdepth,eggshade,pO2thresh))
-  debmod<-c(clutchsize,rho_body_deb,d_V,d_Egg,mu_X,mu_E,mu_V,mu_P,T_REF-273.15,z,kap,kap_X,p_M,v,E_G,kap_R,E_sm,del_M,h_a,V_init_baby,E_init_baby,k_J,E_Hb,E_Hj,E_Hp,clutch_ab[2],batch,rain_breed,photostart,photofinish,daylengthstart,daylengthfinish,photodirs,photodirf,clutch_ab[1],amphibreed,amphistage,eta_O,JM_JO,E_0,kap_X_P,PTUREA1,PFEWAT1,wO,w_N,FoodWater1,f,s_G,K,X,metab_mode,stages,y_EV_l,s_j,startday,raindrink,reset,m_a,m_i,m_h,aestivate,depress,minclutch,L_b)
+  debmod<-c(clutchsize,rho_body_deb,d_V,d_Egg,mu_X,mu_E,mu_V,mu_P,T_REF-273.15,z,kap,kap_X,p_M,v,E_G,kap_R,E_sm,del_M,h_a,V_init_baby,E_init_baby,k_J,E_Hb,E_Hj,E_Hp,clutch_ab[2],batch,rain_breed,photostart,photofinish,daylengthstart,daylengthfinish,photodirs,photodirf,clutch_ab[1],amphibreed,amphistage,eta_O,JM_JO,E_0,kap_X_P,PTUREA1,PFEWAT1,wO,w_N,FoodWater1,f,s_G,K,X[1],metab_mode,stages,y_EV_l,s_j,startday,raindrink,reset,m_a,m_i,m_h,aestivate,depress,minclutch,L_b,E_He)
   deblast<-c(iyear,countday,V_init,E_init,ms_init,cumrepro_init,q_init,hs_init,cumbatch_init,V_baby_init,E_baby_init,E_H_init,stage)
 
   origDOY<-metout[,1]
@@ -1002,6 +1010,7 @@ ectotherm<-function(
     write.csv(thermal_stages, file = "ecto csv input/thermal_stages.csv")
     write.csv(behav_stages, file = "ecto csv input/behav_stages.csv")
     write.csv(water_stages, file = "ecto csv input/water_stages.csv")
+    write.csv(nutri_stages, file = "ecto csv input/nutri_stages.csv")
     write.csv(maxshades, file = "ecto csv input/Maxshades.csv")
     write.csv(S_instar, file = "ecto csv input/S_instar.csv")
     write.table(metout[(seq(1,dim*24)),], file = "ecto csv input/metout.csv",sep=",",row.names=FALSE)
@@ -1015,7 +1024,7 @@ ectotherm<-function(
     write.table(humid[(seq(1,dim*24)),], file = "ecto csv input/humid.csv",sep=",",row.names=FALSE)
     write.table(shadhumid[(seq(1,dim*24)),], file = "ecto csv input/shadhumid.csv",sep=",",row.names=FALSE)
   }
-  ecto<-list(dim=dim,ectoinput=ectoinput,metout=metout[,1:18],shadmet=shadmet[,1:18],soil=soil,shadsoil=shadsoil,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,DEP=DEP,rainfall=rainfall,iyear=iyear,countday=countday,debmod=debmod,deblast=deblast,foodwaters=foodwaters,foodlevels=foodlevels,wetlandTemps=wetlandTemps,wetlandDepths=wetlandDepths,GLMtemps=GLMtemps,GLMO2s=GLMO2s,GLMsalts=GLMsalts,GLMpHs=GLMpHs,GLMfoods=GLMfoods,arrhenius=arrhenius,thermal_stages=thermal_stages,behav_stages=behav_stages,water_stages=water_stages,maxshades=maxshades,S_instar=S_instar)
+  ecto<-list(dim=dim,ectoinput=ectoinput,metout=metout[,1:18],shadmet=shadmet[,1:18],soil=soil,shadsoil=shadsoil,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,DEP=DEP,rainfall=rainfall,iyear=iyear,countday=countday,debmod=debmod,deblast=deblast,foodwaters=foodwaters,foodlevels=foodlevels,wetlandTemps=wetlandTemps,wetlandDepths=wetlandDepths,GLMtemps=GLMtemps,GLMO2s=GLMO2s,GLMsalts=GLMsalts,GLMpHs=GLMpHs,GLMfoods=GLMfoods,arrhenius=arrhenius,thermal_stages=thermal_stages,behav_stages=behav_stages,water_stages=water_stages,nutri_stages=nutri_stages,maxshades=maxshades,S_instar=S_instar)
 
   message('running ectotherm model ... \n')
 
