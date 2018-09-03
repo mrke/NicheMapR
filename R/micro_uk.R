@@ -140,7 +140,7 @@
 #'
 #' \strong{Outputs:}
 #'
-#' \code{dim}{ - number of days for which predictions are made}\cr\cr
+#' \code{ndays}{ - number of days for which predictions are made}\cr\cr
 #' \code{longlat}{ - longitude and latitude for which simulation was run (decimal degrees)}\cr\cr
 #' \code{dates}{ - vector of dates (hourly, POSIXct, timezone = GMT)}\cr\cr
 #' \code{dates2}{ - vector of dates (daily, POSIXct, timezone = GMT)}\cr\cr
@@ -966,9 +966,9 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
     idayst <- 1
 
     tzone<-paste("Etc/GMT-12",sep="") # doing it this way ignores daylight savings!
-    dim<-length(seq(ISOdate(ystart,1,1,tz=tzone)-3600*12, ISOdate((ystart+nyears),1,1,tz=tzone)-3600*13, by="days"))
-    maxshades=rep(maxshade,dim)
-    minshades=rep(minshade,dim)
+    ndays<-length(seq(ISOdate(ystart,1,1,tz=tzone)-3600*12, ISOdate((ystart+nyears),1,1,tz=tzone)-3600*13, by="days"))
+    maxshades=rep(maxshade,ndays)
+    minshades=rep(minshade,ndays)
 
     if(is.na(ALTITUDES)!=TRUE){
 
@@ -997,8 +997,8 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
       }
       if(warm != 0){
       # impose uniform temperature change
-      TMAXX<-TMAXX+seq(0, dim-1)/(dim-1)*warm
-      TMINN<-TMINN+seq(0, dim-1)/(dim-1)*warm
+      TMAXX<-TMAXX+seq(0, ndays-1)/(ndays-1)*warm
+      TMINN<-TMINN+seq(0, ndays-1)/(ndays-1)*warm
       }
       RAINFALL<-Rain+rainoff
 
@@ -1034,19 +1034,19 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
         MINSHADES<-minshades
       }
 
-      REFLS <- rep(REFL, dim)
-      PCTWET <- rep(PCTWET, dim)
+      REFLS <- rep(REFL, ndays)
+      PCTWET <- rep(PCTWET, ndays)
       soilwet<-RAINFALL
       soilwet[soilwet<=rainwet] = 0
       soilwet[soilwet>0] = 90
       PCTWET<-pmax(soilwet,PCTWET)
 
 
-      Intrvls<-rep(0, dim)
+      Intrvls<-rep(0, ndays)
       Intrvls[1] <- 1 # user-supplied last day-of-year in each time interval sequence
       Numtyps <- 1 # number of substrate types
       Numint <- 1  # number of time intervals
-      Nodes <- matrix(data = 0, nrow = 10, ncol = dim) # deepest nodes for each substrate type
+      Nodes <- matrix(data = 0, nrow = 10, ncol = ndays) # deepest nodes for each substrate type
       Nodes[1,1] <- 10. # deepest nodes for each substrate type
       ALREF <- abs(trunc(x[1]))
 
@@ -1104,7 +1104,7 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
       WNMAXX<-WNMAXX*(1.2/10)^0.15
       WNMINN<-WNMINN*(1.2/10)^0.15
 
-      SLES<-matrix(nrow=dim,data=0)
+      SLES<-matrix(nrow=ndays,data=0)
       SLES<-SLES+SLE
 
       moists2<-matrix(nrow=10, ncol = ndays, data=0)
@@ -1113,7 +1113,7 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
 
       if(runmoist==1){
         if(timeinterval==365){
-          moists2<-matrix(nrow=10, ncol = dim, data=0) # set up an empty vector for soil moisture values through time
+          moists2<-matrix(nrow=10, ncol = ndays, data=0) # set up an empty vector for soil moisture values through time
         }else{
           moists2<-matrix(nrow=10, ncol = timeinterval, data=0) # set up an empty vector for soil moisture values through time
         }
@@ -1148,64 +1148,64 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
       ALAT<-as.numeric(ALAT)
 
       # microclimate input parameters list
-      microinput<-c(dim,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade)
+      microinput<-c(ndays,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade)
 
       # hourly option set to 0, so make empty vectors
       if(hourly==0){
-        TAIRhr=rep(0,24*dim)
-        RHhr=rep(0,24*dim)
-        WNhr=rep(0,24*dim)
-        CLDhr=rep(0,24*dim)
-        SOLRhr=rep(0,24*dim)
-        ZENhr=rep(-1,24*dim)
-        IRDhr=rep(-1,24*dim)
+        TAIRhr=rep(0,24*ndays)
+        RHhr=rep(0,24*ndays)
+        WNhr=rep(0,24*ndays)
+        CLDhr=rep(0,24*ndays)
+        SOLRhr=rep(0,24*ndays)
+        ZENhr=rep(-1,24*ndays)
+        IRDhr=rep(-1,24*ndays)
       }
       if(rainhourly==0){
-        RAINhr=rep(0,24*dim)
+        RAINhr=rep(0,24*ndays)
       }else{
         RAINhr = rainhour
       }
 
-      doy1=matrix(data = 0., nrow = dim, ncol = 1)
-      SLES1=matrix(data = 0., nrow = dim, ncol = 1)
-      MAXSHADES1=matrix(data = 0., nrow = dim, ncol = 1)
-      MINSHADES1=matrix(data = 0., nrow = dim, ncol = 1)
-      TMAXX1=matrix(data = 0., nrow = dim, ncol = 1)
-      TMINN1=matrix(data = 0., nrow = dim, ncol = 1)
-      CCMAXX1=matrix(data = 0., nrow = dim, ncol = 1)
-      CCMINN1=matrix(data = 0., nrow = dim, ncol = 1)
-      RHMAXX1=matrix(data = 0., nrow = dim, ncol = 1)
-      RHMINN1=matrix(data = 0., nrow = dim, ncol = 1)
-      WNMAXX1=matrix(data = 0., nrow = dim, ncol = 1)
-      WNMINN1=matrix(data = 0., nrow = dim, ncol = 1)
-      REFLS1=matrix(data = 0., nrow = dim, ncol = 1)
-      PCTWET1=matrix(data = 0., nrow = dim, ncol = 1)
-      RAINFALL1=matrix(data = 0, nrow = dim, ncol = 1)
-      tannul1=matrix(data = 0, nrow = dim, ncol = 1)
-      moists1=matrix(data = 0., nrow = 10, ncol = dim)
-      doy1[1:dim]<-doy
-      SLES1[1:dim]<-SLES
-      MAXSHADES1[1:dim]<-MAXSHADES
-      MINSHADES1[1:dim]<-MINSHADES
-      TMAXX1[1:dim]<-TMAXX
-      TMINN1[1:dim]<-TMINN
-      CCMAXX1[1:dim]<-CCMAXX
-      CCMINN1[1:dim]<-CCMINN
-      RHMAXX1[1:dim]<-RHMAXX
-      RHMINN1[1:dim]<-RHMINN
-      WNMAXX1[1:dim]<-WNMAXX
-      WNMINN1[1:dim]<-WNMINN
-      REFLS1[1:dim]<-REFLS
-      PCTWET1[1:dim]<-PCTWET
-      RAINFALL1[1:dim]<-RAINFALL
-      tannul1[1:dim]<-tannul
-      moists1[1:10,1:dim]<-moists
-      if(length(LAI)<dim){
-        LAI<-rep(LAI[1],dim)
+      doy1=matrix(data = 0., nrow = ndays, ncol = 1)
+      SLES1=matrix(data = 0., nrow = ndays, ncol = 1)
+      MAXSHADES1=matrix(data = 0., nrow = ndays, ncol = 1)
+      MINSHADES1=matrix(data = 0., nrow = ndays, ncol = 1)
+      TMAXX1=matrix(data = 0., nrow = ndays, ncol = 1)
+      TMINN1=matrix(data = 0., nrow = ndays, ncol = 1)
+      CCMAXX1=matrix(data = 0., nrow = ndays, ncol = 1)
+      CCMINN1=matrix(data = 0., nrow = ndays, ncol = 1)
+      RHMAXX1=matrix(data = 0., nrow = ndays, ncol = 1)
+      RHMINN1=matrix(data = 0., nrow = ndays, ncol = 1)
+      WNMAXX1=matrix(data = 0., nrow = ndays, ncol = 1)
+      WNMINN1=matrix(data = 0., nrow = ndays, ncol = 1)
+      REFLS1=matrix(data = 0., nrow = ndays, ncol = 1)
+      PCTWET1=matrix(data = 0., nrow = ndays, ncol = 1)
+      RAINFALL1=matrix(data = 0, nrow = ndays, ncol = 1)
+      tannul1=matrix(data = 0, nrow = ndays, ncol = 1)
+      moists1=matrix(data = 0., nrow = 10, ncol = ndays)
+      doy1[1:ndays]<-doy
+      SLES1[1:ndays]<-SLES
+      MAXSHADES1[1:ndays]<-MAXSHADES
+      MINSHADES1[1:ndays]<-MINSHADES
+      TMAXX1[1:ndays]<-TMAXX
+      TMINN1[1:ndays]<-TMINN
+      CCMAXX1[1:ndays]<-CCMAXX
+      CCMINN1[1:ndays]<-CCMINN
+      RHMAXX1[1:ndays]<-RHMAXX
+      RHMINN1[1:ndays]<-RHMINN
+      WNMAXX1[1:ndays]<-WNMAXX
+      WNMINN1[1:ndays]<-WNMINN
+      REFLS1[1:ndays]<-REFLS
+      PCTWET1[1:ndays]<-PCTWET
+      RAINFALL1[1:ndays]<-RAINFALL
+      tannul1[1:ndays]<-tannul
+      moists1[1:10,1:ndays]<-moists
+      if(length(LAI)<ndays){
+        LAI<-rep(LAI[1],ndays)
         LAI1 <- LAI
       }
       if(shore==0){
-        tides<-matrix(data = 0, nrow = 24*dim, ncol = 3) # make an empty matrix
+        tides<-matrix(data = 0, nrow = 24*ndays, ncol = 3) # make an empty matrix
       }
       # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
       micro<-list(tides=tides,microinput=microinput,doy=doy,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,IRDhr=IRDhr,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,DD=DD,L=L,LAI=LAI)
@@ -1312,15 +1312,15 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
         drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
         srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
         if(snowmodel == 1){
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2))
         }else{
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2))
         }
       }else{
         if(snowmodel == 1){
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,dates=dates,dates2=dates2))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,dates=dates,dates2=dates2))
         }else{
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,dim=dim,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,dates=dates,dates2=dates2))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=minshade,maxshade=maxshade,DEP=DEP,dates=dates,dates2=dates2))
         }
       }
     } # end of check for na sites
