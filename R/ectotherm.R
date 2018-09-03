@@ -182,9 +182,9 @@
 #' \strong{ Insect DEB model parameters (not yet in operation):}
 #' \itemize{
 #' \item{\code{metab_mode}{ = 0, Run insect model? 0 = no, 1 = hemimetabolus model (to do), 2 = holometabolous model}\cr}
-#' \item{\code{stages}{ = 7, number of stages (max = 8) = number of instars plus 1 for egg + 1 for pupa + 1 for imago}\cr}
+#' \item{\code{stages}{ = 8, number of stages = number of instars plus 1 for egg + 1 for pupa + 1 for imago}\cr}
 #' \item{\code{y_EV_l}{ = 0.95, yield of imago reserve on larval structure (mol/mol)}\cr}
-#' \item{\code{S_instar}{ = c(2.660,2.310,1.916,0), stress at instar n: L_n^2/ L_n-1^2 (-)}\cr}
+#' \item{\code{S_instar}{ = rep(2.660,stages-4), stress at instar n: L_n^2/ L_n-1^2 (-)}\cr}
 #' \item{\code{s_j}{ = 0.999, Reprod buffer/structure ratio at pupation as fraction of max}\cr}
 #' \item{\code{L_b}{ = 0.0611, Structural length at birth (cm)}\cr}
 #'}
@@ -239,22 +239,22 @@
 #' \item{\code{conthole}{ = 0, Daily loss of height (mm) due to 'hole' in container (e.g. infiltration to soil, drawdown from water tank)}\cr}
 #' \item{\code{contonly}{ = 1, Just run the container model and quit?}\cr}
 #' \item{\code{contwet}{ = 80, \% of container surface acting as a free water exchanger}\cr}
-#' \item{\code{wetlandTemps}{ = matrix(data = 0, nrow = 24*dim, ncol = 1), Matrix of hourly wetland temperaures (°C)}\cr}
-#' \item{\code{wetlandDepths}{ = matrix(data = 0, nrow = 24*dim, ncol = 1), Matrix of hourly wetland depths (cm)}\cr}
-#' \item{\code{GLMtemps}{ = matrix(data = 0, nrow = 24*dim, ncol = 20), Matrix of hourly wetland temperatures (C) with depth}\cr}
-#' \item{\code{GLMO2s}{ = matrix(data = 0, nrow = 24*dim, ncol = 20), Matrix of hourly wetland PO2 (kPa) with depth}\cr}
-#' \item{\code{GLMsalts}{ = matrix(data = 0, nrow = 24*dim, ncol = 20), Matrix of hourly wetland salinity (ppm) with depth}\cr}
-#' \item{\code{GLMpHs}{ = matrix(data = 0, nrow = 24*dim, ncol = 20), Matrix of hourly wetland pH with depth}\cr}
-#' \item{\code{GLMfoods}{ = matrix(data = 0, nrow = 24*dim, ncol = 20), Matrix of hourly wetland food density (J/cm3) with depth}\cr}
+#' \item{\code{wetlandTemps}{ = matrix(data = 0, nrow = 24*ndays, ncol = 1), Matrix of hourly wetland temperaures (°C)}\cr}
+#' \item{\code{wetlandDepths}{ = matrix(data = 0, nrow = 24*ndays, ncol = 1), Matrix of hourly wetland depths (cm)}\cr}
+#' \item{\code{GLMtemps}{ = matrix(data = 0, nrow = 24*ndays, ncol = 20), Matrix of hourly wetland temperatures (C) with depth}\cr}
+#' \item{\code{GLMO2s}{ = matrix(data = 0, nrow = 24*ndays, ncol = 20), Matrix of hourly wetland PO2 (kPa) with depth}\cr}
+#' \item{\code{GLMsalts}{ = matrix(data = 0, nrow = 24*ndays, ncol = 20), Matrix of hourly wetland salinity (ppm) with depth}\cr}
+#' \item{\code{GLMpHs}{ = matrix(data = 0, nrow = 24*ndays, ncol = 20), Matrix of hourly wetland pH with depth}\cr}
+#' \item{\code{GLMfoods}{ = matrix(data = 0, nrow = 24*ndays, ncol = 20), Matrix of hourly wetland food density (J/cm3) with depth}\cr}
 #' \item{\code{pO2thresh}{ = 10, Oxygen partial pressure tolerance threshold}\cr}
 #'}
 #' \strong{ Life stage-specific parameter allocation:}
 #' \itemize{
-#' \item{\code{thermal_stages}{ = matrix(data = c(rep(CT_min,8),rep(CT_max,8),rep(T_F_max,8),rep(T_F_min,8),rep(T_B_min,8),rep(T_pref,8)), nrow = 8, ncol = 6), Stage specific thermal thresholds (CT_min,CT_max,T_F_max,T_F_min,T_B_min,T_pref)}\cr}
-#' \item{\code{behav_stages}{ = matrix(data = c(rep(diurn,8),rep(nocturn,8),rep(crepus,8),rep(burrow,8),rep(shdburrow,8),rep(mindepth,8),rep(maxdepth,8),rep(shade_seek,8),rep(climb,8),rep(fossorial,8),rep(rainact,8),rep(actrainthresh,8),rep(act_breed,8),rep(flyer,8),rep(aquabask,8)), nrow = 8, ncol = 15), Stage specific behaviour diurn,nocturn,crepus,burrow,shdburrow,mindepth,maxdepth,shade_seek,climb,fossorial,rainact,actrainthresh,act_breed,flyer,aquabask)}\cr}
-#' \item{\code{water_stages}{ = matrix(data = c(rep(pct_wet,8),rep(F_O2,8),rep(pct_H_P,8),rep(pct_H_N,8),rep(pct_H_X,8),rep(pct_H_R,8),rep(raindrink,8),rep(gutfill,8)), nrow = 8, ncol = 8), Stage-specific water budget parameters (pct_wet,F_O2,pct_H_P,pct_H_N,pct_H_X,pct_H_R,raindrink,gutfill)}\cr}
-#' \item{\code{nutri_stages}{ = matrix(data = c(rep(foodlim,8),rep(0,8)), nrow = 8, ncol = 1), Stage-specific nutritional parameters (foodlim)}\cr}
-#' \item{\code{arrhenius}{ = matrix(data = matrix(data = c(rep(T_A,8),rep(T_AL,8),rep(T_AH,8),rep(T_L,8),rep(T_H,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A,T_AL,T_AH,T_L,T_H)}\cr}
+#' \item{\code{thermal_stages}{ = matrix(data = c(rep(CT_min,stages),rep(CT_max,stages),rep(T_F_max,stages),rep(T_F_min,stages),rep(T_B_min,stages),rep(T_pref,stages)), nrow = stages, ncol = 6), Stage specific thermal thresholds (CT_min,CT_max,T_F_max,T_F_min,T_B_min,T_pref)}\cr}
+#' \item{\code{behav_stages}{ = matrix(data = c(rep(diurn,stages),rep(nocturn,stages),rep(crepus,stages),rep(burrow,stages),rep(shdburrow,stages),rep(mindepth,stages),rep(maxdepth,stages),rep(shade_seek,stages),rep(climb,stages),rep(fossorial,stages),rep(rainact,stages),rep(actrainthresh,stages),rep(act_breed,stages),rep(flyer,stages),rep(aquabask,stages)), nrow = stages, ncol = 15), Stage specific behaviour diurn,nocturn,crepus,burrow,shdburrow,mindepth,maxdepth,shade_seek,climb,fossorial,rainact,actrainthresh,act_breed,flyer,aquabask)}\cr}
+#' \item{\code{water_stages}{ = matrix(data = c(rep(pct_wet,stages),rep(F_O2,stages),rep(pct_H_P,stages),rep(pct_H_N,stages),rep(pct_H_X,stages),rep(pct_H_R,stages),rep(raindrink,stages),rep(gutfill,stages)), nrow = stages, ncol = 8), Stage-specific water budget parameters (pct_wet,F_O2,pct_H_P,pct_H_N,pct_H_X,pct_H_R,raindrink,gutfill)}\cr}
+#' \item{\code{nutri_stages}{ = matrix(data = c(rep(foodlim,stages),rep(0,stages)), nrow = stages, ncol = 1), Stage-specific nutritional parameters (foodlim)}\cr}
+#' \item{\code{arrhenius}{ = matrix(data = matrix(data = c(rep(T_A,stages),rep(T_AL,stages),rep(T_AH,stages),rep(T_L,stages),rep(T_H,stages)), nrow = stages, ncol = 5), nrow = stages, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A,T_AL,T_AH,T_L,T_H)}\cr}
 #'}
 #' \strong{ Butterfly model parameters (not yet tested):}
 #' \itemize{
@@ -606,9 +606,9 @@ ectotherm<-function(
   n_P=c(1,1.8,0.5,0.15),
   n_M_nitro=c(1,4/5,3/5,4/5),
   metab_mode=0,
-  stages=7,
+  stages=8,
   y_EV_l=0.95,
-  S_instar=c(2.660,2.310,1.916,0),
+  S_instar=rep(2.660,stages-4),
   s_j=0.999,
   L_b=0.06148,
   V_init=3e-9,
@@ -648,23 +648,23 @@ ectotherm<-function(
   conthole=0,
   contonly=1,
   contwet=80,
-  wetlandTemps=matrix(data = 0, nrow = 24*dim, ncol = 1),
-  wetlandDepths=matrix(data = 0, nrow = 24*dim, ncol = 1),
-  GLMtemps=matrix(data = 0, nrow = 24*dim, ncol = 20),
-  GLMO2s=matrix(data = 10., nrow = 24*dim, ncol = 20),
-  GLMsalts=matrix(data = 0, nrow = 24*dim, ncol = 20),
-  GLMpHs=matrix(data = 7., nrow = 24*dim, ncol = 20),
-  GLMfoods=matrix(data = 10., nrow = 24*dim, ncol = 20),
-  thermal_stages=matrix(data = c(rep(CT_min,8),rep(CT_max,8),rep(T_F_max,8),rep(T_F_min,8),rep(T_B_min,8),
-    rep(T_pref,8)), nrow = 8, ncol = 6),
-  behav_stages=matrix(data = c(rep(diurn,8),rep(nocturn,8),rep(crepus,8),rep(burrow,8),
-    rep(shdburrow,8),rep(mindepth,8),rep(maxdepth,8),rep(shade_seek,8),rep(climb,8),rep(fossorial,8),
-    rep(rainact,8),rep(actrainthresh,8),rep(act_breed,8),rep(flyer,8),rep(aquabask,8)), nrow = 8, ncol = 15),
-  water_stages=matrix(data = c(rep(pct_wet,8),rep(F_O2,8),rep(pct_H_P,8),rep(pct_H_N,8),
-    rep(pct_H_X,8),rep(pct_H_R,8),rep(raindrink,8),rep(gutfill,8)), nrow = 8, ncol = 8),
-  nutri_stages=matrix(data = c(rep(foodlim,8)), nrow = 8, ncol = 1),
-  arrhenius=matrix(data = matrix(data = c(rep(T_A,8),rep(T_AL,8),rep(T_AH,8),rep(T_L,8),rep(T_H,8)),
-    nrow = 8, ncol = 5), nrow = 8, ncol = 5),
+  wetlandTemps=matrix(data = 0, nrow = 24*ndays, ncol = 1),
+  wetlandDepths=matrix(data = 0, nrow = 24*ndays, ncol = 1),
+  GLMtemps=matrix(data = 0, nrow = 24*ndays, ncol = 20),
+  GLMO2s=matrix(data = 10., nrow = 24*ndays, ncol = 20),
+  GLMsalts=matrix(data = 0, nrow = 24*ndays, ncol = 20),
+  GLMpHs=matrix(data = 7., nrow = 24*ndays, ncol = 20),
+  GLMfoods=matrix(data = 10., nrow = 24*ndays, ncol = 20),
+  thermal_stages=matrix(data = c(rep(CT_min,stages),rep(CT_max,stages),rep(T_F_max,stages),rep(T_F_min,stages),rep(T_B_min,stages),
+    rep(T_pref,stages)), nrow = stages, ncol = 6),
+  behav_stages=matrix(data = c(rep(diurn,stages),rep(nocturn,stages),rep(crepus,stages),rep(burrow,stages),
+    rep(shdburrow,stages),rep(mindepth,stages),rep(maxdepth,stages),rep(shade_seek,stages),rep(climb,stages),rep(fossorial,stages),
+    rep(rainact,stages),rep(actrainthresh,stages),rep(act_breed,stages),rep(flyer,stages),rep(aquabask,stages)), nrow = stages, ncol = 15),
+  water_stages=matrix(data = c(rep(pct_wet,stages),rep(F_O2,stages),rep(pct_H_P,stages),rep(pct_H_N,stages),
+    rep(pct_H_X,stages),rep(pct_H_R,stages),rep(raindrink,stages),rep(gutfill,stages)), nrow = stages, ncol = 8),
+  nutri_stages=matrix(data = c(rep(foodlim,stages)), nrow = stages, ncol = 1),
+  arrhenius=matrix(data = matrix(data = c(rep(T_A,stages),rep(T_AL,stages),rep(T_AH,stages),rep(T_L,stages),rep(T_H,stages)),
+    nrow = stages, ncol = 5), nrow = stages, ncol = 5),
   wings=0,
   rho1_3=0.2,
   trans1=0,
@@ -710,7 +710,7 @@ ectotherm<-function(
   if(microin!="none"){
     message('reading microclimate input \n')
     rainfall<-as.matrix(read.csv(file=paste(microin,'rainfall.csv',sep=""),sep=","))[,2]
-    dim=length(rainfall)
+    ndays=length(rainfall)
     metout<-read.csv(file=paste(microin,'metout.csv',sep=""),sep=",")[,-1]
     shadmet<-read.csv(file=paste(microin,'shadmet.csv',sep=""),sep=",")[,-1]
     soil<-read.csv(file=paste(microin,'soil.csv',sep=""),sep=",")[,-1]
@@ -719,8 +719,8 @@ ectotherm<-function(
       wetlandTemps<-read.csv(file=paste(microin,'wetlandTemps.csv',sep=""),sep=",")[,-1]
       wetlandDepths<-read.csv(file=paste(microin,'wetlandDepths.csv',sep=""),sep=",")[,-1]
     }else{
-      wetlandTemps=matrix(data = 0, nrow = 24*dim, ncol = 1)
-      wetlandDepths=matrix(data = 0, nrow = 24*dim, ncol = 1)
+      wetlandTemps=matrix(data = 0, nrow = 24*ndays, ncol = 1)
+      wetlandDepths=matrix(data = 0, nrow = 24*ndays, ncol = 1)
     }
     if(file.exists(paste(microin,'soilpot.csv',sep=""))){
       soilpot<-read.csv(file=paste(microin,'soilpot.csv',sep=""),sep=",")[,-1]
@@ -756,23 +756,23 @@ ectotherm<-function(
     ectoin<-read.csv(file=paste(microin,'ectoin.csv',sep=""),sep=",")[,-1]
     DEP<-as.matrix(read.csv(file=paste(microin,'DEP.csv',sep=""),sep=","))[,2]
     maxshades<-as.matrix(read.csv(file=paste(microin,'MAXSHADES.csv',sep=""),sep=","))[,2]
-    metout2=matrix(data = 0, nrow = 24*dim, ncol = 18)
-    soil2=matrix(data = 0, nrow = 24*dim, ncol = 12)
-    shadmet2=matrix(data = 0, nrow = 24*dim, ncol = 18)
-    shadsoil2=matrix(data = 0, nrow = 24*dim, ncol = 12)
-    soilmoist2=matrix(data = 0, nrow = 24*dim, ncol = 12)
-    shadmoist2=matrix(data = 0, nrow = 24*dim, ncol = 12)
-    soilpot2=matrix(data = 0, nrow = 24*dim, ncol = 12)
-    shadpot2=matrix(data = 0, nrow = 24*dim, ncol = 12)
-    humid2=matrix(data = 0, nrow = 24*dim, ncol = 12)
-    shadhumid2=matrix(data = 0, nrow = 24*dim, ncol = 12)
-    wetlandTemps2=matrix(data = 0, nrow = 24*dim, ncol = 1)
-    wetlandDepths2=matrix(data = 0, nrow = 24*dim, ncol = 1)
-    GLMtemps2=matrix(data = 0, nrow = 24*dim, ncol = 20)
-    GLMO2s2=matrix(data = 0, nrow = 24*dim, ncol = 20)
-    GLMsalts2=matrix(data = 0, nrow = 24*dim, ncol = 20)
-    GLMpHs2=matrix(data = 0, nrow = 24*dim, ncol = 20)
-    GLMfoods2=matrix(data = 0, nrow = 24*dim, ncol = 20)
+    metout2=matrix(data = 0, nrow = 24*ndays, ncol = 18)
+    soil2=matrix(data = 0, nrow = 24*ndays, ncol = 12)
+    shadmet2=matrix(data = 0, nrow = 24*ndays, ncol = 18)
+    shadsoil2=matrix(data = 0, nrow = 24*ndays, ncol = 12)
+    soilmoist2=matrix(data = 0, nrow = 24*ndays, ncol = 12)
+    shadmoist2=matrix(data = 0, nrow = 24*ndays, ncol = 12)
+    soilpot2=matrix(data = 0, nrow = 24*ndays, ncol = 12)
+    shadpot2=matrix(data = 0, nrow = 24*ndays, ncol = 12)
+    humid2=matrix(data = 0, nrow = 24*ndays, ncol = 12)
+    shadhumid2=matrix(data = 0, nrow = 24*ndays, ncol = 12)
+    wetlandTemps2=matrix(data = 0, nrow = 24*ndays, ncol = 1)
+    wetlandDepths2=matrix(data = 0, nrow = 24*ndays, ncol = 1)
+    GLMtemps2=matrix(data = 0, nrow = 24*ndays, ncol = 20)
+    GLMO2s2=matrix(data = 0, nrow = 24*ndays, ncol = 20)
+    GLMsalts2=matrix(data = 0, nrow = 24*ndays, ncol = 20)
+    GLMpHs2=matrix(data = 0, nrow = 24*ndays, ncol = 20)
+    GLMfoods2=matrix(data = 0, nrow = 24*ndays, ncol = 20)
     metout2[1:nrow(metout),]<-metout
     shadmet2[1:nrow(metout),]<-shadmet
     soil2[1:nrow(metout),]<-soil
@@ -823,7 +823,7 @@ ectotherm<-function(
     colnames(humid)<-hum.names
     colnames(shadhumid)<-hum.names
   }else{
-    dim=length(rainfall)
+    ndays=length(rainfall)
   }
 
   # habitat
@@ -920,32 +920,32 @@ ectotherm<-function(
   tester<-0
   microyear<-1
   postur<-1
-  ectoinput<-as.matrix(c(ALT,fluid,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,Ww_kg,epsilon,absan,RQ,rinsul,shape,live,TIMBAS,k_flesh,c_body,rho_body,alpha_max,alpha_min,FATOSK,FATOSB,FATOBJ,T_F_min,T_F_max,delta_air,SKINW,pct_eyes,xbas,F_O2,T_pref,F_cond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,postur,maxshd,minshd,CT_max,CT_min,behav,DOY,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,DOYstart,monthly,custom_shape,M_1,M_2,M_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,pct_H_R,microyear,container,flyer,flyspeed,dim,maxdepth,CT_minthresh,CT_kill,gutfill,mindepth,T_B_min,T_RB_min,F_m,k_sub,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,Tb_breed,Tb_breed_hrs,contwet,warmsig,aquabask,pct_H_death,write_csv,aestdepth,eggshade,pO2thresh))
+  ectoinput<-as.matrix(c(ALT,fluid,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,Ww_kg,epsilon,absan,RQ,rinsul,shape,live,TIMBAS,k_flesh,c_body,rho_body,alpha_max,alpha_min,FATOSK,FATOSB,FATOBJ,T_F_min,T_F_max,delta_air,SKINW,pct_eyes,xbas,F_O2,T_pref,F_cond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,postur,maxshd,minshd,CT_max,CT_min,behav,DOY,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,DOYstart,monthly,custom_shape,M_1,M_2,M_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,pct_H_R,microyear,container,flyer,flyspeed,ndays,maxdepth,CT_minthresh,CT_kill,gutfill,mindepth,T_B_min,T_RB_min,F_m,k_sub,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,Tb_breed,Tb_breed_hrs,contwet,warmsig,aquabask,pct_H_death,write_csv,aestdepth,eggshade,pO2thresh))
   debmod<-c(clutchsize,rho_body_deb,d_V,d_Egg,mu_X,mu_E,mu_V,mu_P,T_REF-273.15,z,kap,kap_X,p_M,v,E_G,kap_R,E_sm,del_M,h_a,V_init_baby,E_init_baby,k_J,E_Hb,E_Hj,E_Hp,clutch_ab[2],batch,rain_breed,photostart,photofinish,daylengthstart,daylengthfinish,photodirs,photodirf,clutch_ab[1],amphibreed,amphistage,eta_O,JM_JO,E_0,kap_X_P,PTUREA1,PFEWAT1,wO,w_N,FoodWater1,f,s_G,K,X[1],metab_mode,stages,y_EV_l,s_j,startday,raindrink,reset,m_a,m_i,m_h,aestivate,depress,minclutch,L_b,E_He)
   deblast<-c(iyear,countday,V_init,E_init,ms_init,cumrepro_init,q_init,hs_init,cumbatch_init,V_baby_init,E_baby_init,E_H_init,stage)
 
   origDOY<-metout[,1]
   if(ystrt>0){
-    metout<-rbind(metout[((ystrt)*365*24+1):(dim*24),],metout[1:((ystrt)*365*24),])
-    shadmet<-rbind(shadmet[((ystrt)*365*24+1):(dim*24),],shadmet[1:((ystrt)*365*24),])
-    soil<-rbind(soil[((ystrt)*365*24+1):(dim*24),],soil[1:((ystrt)*365*24),])
-    shadsoil<-rbind(shadsoil[((ystrt)*365*24+1):(dim*24),],shadsoil[1:((ystrt)*365*24),])
-    soilmoist<-rbind(soilmoist[((ystrt)*365*24+1):(dim*24),],soilmoist[1:((ystrt)*365*24),])
-    shadmoist<-rbind(shadmoist[((ystrt)*365*24+1):(dim*24),],shadmoist[1:((ystrt)*365*24),])
-    soilpot<-rbind(soilpot[((ystrt)*365*24+1):(dim*24),],soilpot[1:((ystrt)*365*24),])
-    shadpot<-rbind(shadpot[((ystrt)*365*24+1):(dim*24),],shadpot[1:((ystrt)*365*24),])
-    humid<-rbind(humid[((ystrt)*365*24+1):(dim*24),],humid[1:((ystrt)*365*24),])
-    shadhumid<-rbind(shadhumid[((ystrt)*365*24+1):(dim*24),],shadhumid[1:((ystrt)*365*24),])
-    wetlandDepths<-c(wetlandDepths[((ystrt)*365*24+1):(dim*24)],wetlandDepths[1:((ystrt)*365*24)])
-    wetlandTemps<-c(wetlandTemps[((ystrt)*365*24+1):(dim*24)],wetlandTemps[1:((ystrt)*365*24)])
-    GLMtemps<-rbind(GLMtemps[((ystrt)*365*24+1):(dim*24),],GLMtemps[1:((ystrt)*365*24),])
-    GLMO2s<-rbind(GLMO2s[((ystrt)*365*24+1):(dim*24),],GLMO2s[1:((ystrt)*365*24),])
-    GLMsalts<-rbind(GLMsalts[((ystrt)*365*24+1):(dim*24),],GLMsalts[1:((ystrt)*365*24),])
-    GLMpHs<-rbind(GLMpHs[((ystrt)*365*24+1):(dim*24),],GLMpHs[1:((ystrt)*365*24),])
-    GLMfoods<-rbind(GLMfoods[((ystrt)*365*24+1):(dim*24),],GLMfoods[1:((ystrt)*365*24),])
-    maxshades<-c(maxshades[((ystrt)*365+1):(dim)],maxshades[1:((ystrt)*365)])
-    rainfall<-c(rainfall[((ystrt)*365+1):(dim)],rainfall[1:((ystrt)*365)])
-    foodwaters<-c(foodwaters[((ystrt)*365+1):(dim)],foodwaters[1:((ystrt)*365)])
+    metout<-rbind(metout[((ystrt)*365*24+1):(ndays*24),],metout[1:((ystrt)*365*24),])
+    shadmet<-rbind(shadmet[((ystrt)*365*24+1):(ndays*24),],shadmet[1:((ystrt)*365*24),])
+    soil<-rbind(soil[((ystrt)*365*24+1):(ndays*24),],soil[1:((ystrt)*365*24),])
+    shadsoil<-rbind(shadsoil[((ystrt)*365*24+1):(ndays*24),],shadsoil[1:((ystrt)*365*24),])
+    soilmoist<-rbind(soilmoist[((ystrt)*365*24+1):(ndays*24),],soilmoist[1:((ystrt)*365*24),])
+    shadmoist<-rbind(shadmoist[((ystrt)*365*24+1):(ndays*24),],shadmoist[1:((ystrt)*365*24),])
+    soilpot<-rbind(soilpot[((ystrt)*365*24+1):(ndays*24),],soilpot[1:((ystrt)*365*24),])
+    shadpot<-rbind(shadpot[((ystrt)*365*24+1):(ndays*24),],shadpot[1:((ystrt)*365*24),])
+    humid<-rbind(humid[((ystrt)*365*24+1):(ndays*24),],humid[1:((ystrt)*365*24),])
+    shadhumid<-rbind(shadhumid[((ystrt)*365*24+1):(ndays*24),],shadhumid[1:((ystrt)*365*24),])
+    wetlandDepths<-c(wetlandDepths[((ystrt)*365*24+1):(ndays*24)],wetlandDepths[1:((ystrt)*365*24)])
+    wetlandTemps<-c(wetlandTemps[((ystrt)*365*24+1):(ndays*24)],wetlandTemps[1:((ystrt)*365*24)])
+    GLMtemps<-rbind(GLMtemps[((ystrt)*365*24+1):(ndays*24),],GLMtemps[1:((ystrt)*365*24),])
+    GLMO2s<-rbind(GLMO2s[((ystrt)*365*24+1):(ndays*24),],GLMO2s[1:((ystrt)*365*24),])
+    GLMsalts<-rbind(GLMsalts[((ystrt)*365*24+1):(ndays*24),],GLMsalts[1:((ystrt)*365*24),])
+    GLMpHs<-rbind(GLMpHs[((ystrt)*365*24+1):(ndays*24),],GLMpHs[1:((ystrt)*365*24),])
+    GLMfoods<-rbind(GLMfoods[((ystrt)*365*24+1):(ndays*24),],GLMfoods[1:((ystrt)*365*24),])
+    maxshades<-c(maxshades[((ystrt)*365+1):(ndays)],maxshades[1:((ystrt)*365)])
+    rainfall<-c(rainfall[((ystrt)*365+1):(ndays)],rainfall[1:((ystrt)*365)])
+    foodwaters<-c(foodwaters[((ystrt)*365+1):(ndays)],foodwaters[1:((ystrt)*365)])
     metout[,1]<-origDOY
     shadmet[,1]<-origDOY
     soil[,1]<-origDOY
@@ -1013,18 +1013,18 @@ ectotherm<-function(
     write.csv(nutri_stages, file = "ecto csv input/nutri_stages.csv")
     write.csv(maxshades, file = "ecto csv input/Maxshades.csv")
     write.csv(S_instar, file = "ecto csv input/S_instar.csv")
-    write.table(metout[(seq(1,dim*24)),], file = "ecto csv input/metout.csv",sep=",",row.names=FALSE)
-    write.table(shadmet[(seq(1,dim*24)),], file = "ecto csv input/shadmet.csv",sep=",",row.names=FALSE)
-    write.table(soil[(seq(1,dim*24)),], file = "ecto csv input/soil.csv",sep=",",row.names=FALSE)
-    write.table(shadsoil[(seq(1,dim*24)),], file = "ecto csv input/shadsoil.csv",sep=",",row.names=FALSE)
-    write.table(soilmoist[(seq(1,dim*24)),], file = "ecto csv input/soilmoist.csv",sep=",",row.names=FALSE)
-    write.table(shadmoist[(seq(1,dim*24)),], file = "ecto csv input/shadmoist.csv",sep=",",row.names=FALSE)
-    write.table(soilpot[(seq(1,dim*24)),], file = "ecto csv input/soilpot.csv",sep=",",row.names=FALSE)
-    write.table(shadpot[(seq(1,dim*24)),], file = "ecto csv input/shadpot.csv",sep=",",row.names=FALSE)
-    write.table(humid[(seq(1,dim*24)),], file = "ecto csv input/humid.csv",sep=",",row.names=FALSE)
-    write.table(shadhumid[(seq(1,dim*24)),], file = "ecto csv input/shadhumid.csv",sep=",",row.names=FALSE)
+    write.table(metout[(seq(1,ndays*24)),], file = "ecto csv input/metout.csv",sep=",",row.names=FALSE)
+    write.table(shadmet[(seq(1,ndays*24)),], file = "ecto csv input/shadmet.csv",sep=",",row.names=FALSE)
+    write.table(soil[(seq(1,ndays*24)),], file = "ecto csv input/soil.csv",sep=",",row.names=FALSE)
+    write.table(shadsoil[(seq(1,ndays*24)),], file = "ecto csv input/shadsoil.csv",sep=",",row.names=FALSE)
+    write.table(soilmoist[(seq(1,ndays*24)),], file = "ecto csv input/soilmoist.csv",sep=",",row.names=FALSE)
+    write.table(shadmoist[(seq(1,ndays*24)),], file = "ecto csv input/shadmoist.csv",sep=",",row.names=FALSE)
+    write.table(soilpot[(seq(1,ndays*24)),], file = "ecto csv input/soilpot.csv",sep=",",row.names=FALSE)
+    write.table(shadpot[(seq(1,ndays*24)),], file = "ecto csv input/shadpot.csv",sep=",",row.names=FALSE)
+    write.table(humid[(seq(1,ndays*24)),], file = "ecto csv input/humid.csv",sep=",",row.names=FALSE)
+    write.table(shadhumid[(seq(1,ndays*24)),], file = "ecto csv input/shadhumid.csv",sep=",",row.names=FALSE)
   }
-  ecto<-list(dim=dim,ectoinput=ectoinput,metout=metout[,1:18],shadmet=shadmet[,1:18],soil=soil,shadsoil=shadsoil,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,DEP=DEP,rainfall=rainfall,iyear=iyear,countday=countday,debmod=debmod,deblast=deblast,foodwaters=foodwaters,foodlevels=foodlevels,wetlandTemps=wetlandTemps,wetlandDepths=wetlandDepths,GLMtemps=GLMtemps,GLMO2s=GLMO2s,GLMsalts=GLMsalts,GLMpHs=GLMpHs,GLMfoods=GLMfoods,arrhenius=arrhenius,thermal_stages=thermal_stages,behav_stages=behav_stages,water_stages=water_stages,nutri_stages=nutri_stages,maxshades=maxshades,S_instar=S_instar)
+  ecto<-list(ndays=ndays,nstages=stages,ectoinput=ectoinput,metout=metout[,1:18],shadmet=shadmet[,1:18],soil=soil,shadsoil=shadsoil,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,DEP=DEP,rainfall=rainfall,iyear=iyear,countday=countday,debmod=debmod,deblast=deblast,foodwaters=foodwaters,foodlevels=foodlevels,wetlandTemps=wetlandTemps,wetlandDepths=wetlandDepths,GLMtemps=GLMtemps,GLMO2s=GLMO2s,GLMsalts=GLMsalts,GLMpHs=GLMpHs,GLMfoods=GLMfoods,arrhenius=arrhenius,thermal_stages=thermal_stages,behav_stages=behav_stages,water_stages=water_stages,nutri_stages=nutri_stages,maxshades=maxshades,S_instar=S_instar)
 
   message('running ectotherm model ... \n')
 
@@ -1032,10 +1032,10 @@ ectotherm<-function(
   ectout<-ectorun(ecto)
   message(paste0('runtime ', (proc.time() - ptm)[3], ' seconds')) # Stop the clock
 
-  environ<-ectout$environ[1:(dim*24),]
-  enbal<-ectout$enbal[1:(dim*24),]
-  masbal<-ectout$masbal[1:(dim*24),]
-  debout<-ectout$debout[1:(dim*24),]
+  environ<-ectout$environ[1:(ndays*24),]
+  enbal<-ectout$enbal[1:(ndays*24),]
+  masbal<-ectout$masbal[1:(ndays*24),]
+  debout<-ectout$debout[1:(ndays*24),]
   yearout<-ectout$yearout
   yearsout<-ectout$yearsout[1:nyears,]
 

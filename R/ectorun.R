@@ -35,7 +35,7 @@
 #' @export
 ectorun <- function(ecto) {
 
-  dim<-ecto$dim
+  ndays<-ecto$ndays
 
   os = Sys.info()['sysname']
   if (os == "Windows") {
@@ -53,7 +53,8 @@ ectorun <- function(ecto) {
  if(is.loaded("ectotherm", "ECTOTHERM", type = "FORTRAN")==FALSE){
     dyn.load(paste(lib.loc = .libPaths()[1],libpath,sep=""))
     a <- .Fortran("ectotherm",
-      as.integer(ecto$dim),
+      as.integer(ecto$ndays),
+      as.integer(ecto$nstages),
       as.double(ecto$ectoinput),
       as.double(ecto$metout),
       as.double(ecto$shadmet),
@@ -85,18 +86,19 @@ ectorun <- function(ecto) {
       as.double(ecto$nutri_stages),
       as.double(ecto$maxshades),
       as.double(ecto$S_instar),
-      environ=matrix(data = 0., nrow = dim*24, ncol = 24),
-      enbal=matrix(data = 0., nrow = dim*24, ncol = 13),
-      masbal=matrix(data = 0., nrow = dim*24, ncol = 19),
-      debout=matrix(data = 0., nrow = dim*24, ncol = 21),
+      environ=matrix(data = 0., nrow = ndays*24, ncol = 24),
+      enbal=matrix(data = 0., nrow = ndays*24, ncol = 13),
+      masbal=matrix(data = 0., nrow = ndays*24, ncol = 19),
+      debout=matrix(data = 0., nrow = ndays*24, ncol = 21),
       yearout=matrix(data = 0., nrow = 1, ncol = 20),
-      yearsout=matrix(data = 0., nrow = ceiling(dim/365), ncol = 45),
+      yearsout=matrix(data = 0., nrow = ceiling(ndays/365), ncol = 45),
       PACKAGE = "ectotherm"
     )
     dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
   } else {
     a <- .Fortran("ectotherm",
-      as.integer(ecto$dim),
+      as.integer(ecto$ndays),
+      as.integer(ecto$nstages),
       as.double(ecto$ectoinput),
       as.double(ecto$metout),
       as.double(ecto$shadmet),
@@ -128,24 +130,24 @@ ectorun <- function(ecto) {
       as.double(ecto$nutri_stages),
       as.double(ecto$maxshades),
       as.double(ecto$S_instar),
-      environ=matrix(data = 0., nrow = dim*24, ncol = 24),
-      enbal=matrix(data = 0., nrow = dim*24, ncol = 13),
-      masbal=matrix(data = 0., nrow = dim*24, ncol = 19),
-      debout=matrix(data = 0., nrow = dim*24, ncol = 21),
+      environ=matrix(data = 0., nrow = ndays*24, ncol = 24),
+      enbal=matrix(data = 0., nrow = ndays*24, ncol = 13),
+      masbal=matrix(data = 0., nrow = ndays*24, ncol = 19),
+      debout=matrix(data = 0., nrow = ndays*24, ncol = 21),
       yearout=matrix(data = 0., nrow = 1, ncol = 20),
-      yearsout=matrix(data = 0., nrow = ceiling(dim/365), ncol = 45),
+      yearsout=matrix(data = 0., nrow = ceiling(ndays/365), ncol = 45),
       PACKAGE = "ECTOTHERM"
     )
     # need to load and unload the microclimate dll or else it crashes second time round - probably due to memory leak
     dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
     dyn.load(paste(lib.loc = .libPaths()[1],libpath,sep=""))
   }
-  environ <- matrix(data = 0., nrow = 24*dim, ncol = 24)
-  enbal <- matrix(data = 0., nrow = 24*dim, ncol = 13)
-  masbal <- matrix(data = 0., nrow = 24*dim, ncol = 19)
-  debout <- matrix(data = 0., nrow = 24*dim, ncol = 21)
+  environ <- matrix(data = 0., nrow = 24*ndays, ncol = 24)
+  enbal <- matrix(data = 0., nrow = 24*ndays, ncol = 13)
+  masbal <- matrix(data = 0., nrow = 24*ndays, ncol = 19)
+  debout <- matrix(data = 0., nrow = 24*ndays, ncol = 21)
   yearout <- matrix(data = 0., nrow = 1, ncol = 20)
-  yearsout <- matrix(data = 0., nrow = ceiling(dim/365), ncol = 45)
+  yearsout <- matrix(data = 0., nrow = ceiling(ndays/365), ncol = 45)
 
   storage.mode(environ)<-"double"
   storage.mode(enbal)<-"double"
