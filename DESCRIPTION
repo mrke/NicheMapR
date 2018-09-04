@@ -20,6 +20,7 @@ Suggests:
     geonames,
     raster,
     XML,
+    proj4,
     readr,
     rutils,
     ncdf4,
