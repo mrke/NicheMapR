@@ -937,6 +937,7 @@ micro_ncep <- function(
         save(SOLRhr, file = 'SOLRhr.Rda')
         save(ZENhr, file = 'ZENhr.Rda')
         save(IRDhr, file = 'IRDhr.Rda')
+        save(microclima.out, file = 'microclima.out.Rda')
       }
     }else{
       cat("loading met data from previous run \n")
@@ -958,6 +959,7 @@ micro_ncep <- function(
       load('SOLRhr.Rda')
       load('ZENhr.Rda')
       load('IRDhr.Rda')
+      load('microclima.out.Rda')
     }
     slope <- 0 # already corrected for by microclima
     azmuth <- 0 # already corrected for by microclima

@@ -116,7 +116,8 @@
 #' \item{\code{pct_H_death}{ = 35, Maximum tolerated dehydration (\% of wet mass) - causes death if greater than this}\cr}
 #' \item{\code{gutfill}{ = 75, Gut fill (\%) at which satiation occurs - if greater than 100\%, animal always tries to forage}\cr}
 #' \item{\code{raindrink}{ = 0, rainfall level at which rehydration from drinking occurs - if 0 animal can always drink}\cr}
-#'}
+#' \item{\code{foodlim}{ = 1, is the animal food limited - if 0 animal can always find food (useful for making different life stages dependent on soil moisture-based food estimates}\cr}
+#' }
 #' \strong{ Dynamic Energy Budget (DEB) model parameters:}
 #' \itemize{
 #' \item{\code{DEB}{ = 0, Run the DEB model (1) or just heat balance (0). Latter uses allometrically predicted respiration base on \code{M_1}, \code{M_2} and \code{M_3}}\cr}
@@ -562,6 +563,7 @@ ectotherm<-function(
   pct_H_R=15,
   gutfill=75,
   raindrink=0,
+  foodlim=1,
   DEB=0,
   fract=1,
   z=2.825*fract,
