@@ -2,7 +2,7 @@
 #'
 #' An implementation of the NicheMapR microclimate model that uses the CHESS daily weather database. Specifically uses the following files, and needs all 12 for a given year: dtr, tas, huss, precip, rsds, sfcWind, psurf. Also uses the OS Terrain 50 DEM (assumes file name is 'terr50.tif'), which was aggregated to 1km to match met data for lapse-rate correction (assumes file name is 'terr1000.tif'). Citation for CHESS data: Robinson, E.L. ; Blyth, E. ; Clark, D.B. ; Comyn-Platt, E. ; Finch, J. ; Rudd, A.C. (2017). Climate hydrology and ecology research support system meteorology dataset for Great Britain (1961-2015) [CHESS-met] v1.2. NERC Environmental Information Data Centre. https://doi.org/10.5285/b745e7b1-626c-4ccc-ac27-56582e77b900
 #' @encoding UTF-8
-#' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
+#' @param loc Longitude and latitude (decimal degrees)
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param ystart First year to run
 #' @param yfinish Last year to run
@@ -228,7 +228,7 @@
 #' }
 #' @examples
 #' library(NicheMapR)
-#' micro<-micro_uk(runshade = 0) # run the model with default location and settings
+#' micro<-micro_uk(runshade = 0) # run the model with default location (London) and settings
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
@@ -287,124 +287,98 @@
 #'     (%)",col=i,type = "l")
 #'  }
 #' }
-micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
-  yfinish = 2015, nyears = yfinish - ystart + 1, REFL = 0.15,
-  elev = NA, slope = 0, aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
-  DEP = c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
-  Refhyt = 1.2, Usrhyt = 0.01, Z01 = 0, Z02 = 0, ZH1 = 0, ZH2 = 0, runshade = 1,
-  clearsky = 0,run.gads = 1, write_input = 0, writecsv = 0, manualshade = 1,
-  terrain = 0, dailywind = 1, windfac = 1, adiab_cor = 1, warm = 0, spatial = "Q:/CHESS",
-  ERR = 1.5, RUF = 0.004, EC = 0.0167238, SLE = 0.95, Thcond = 2.5, Density = 2.56,
-  SpecHeat = 870, BulkDensity = 1.3, PCTWET = 0, rainwet = 1.5, cap = 1, CMH2O = 1,
-  hori = rep(0,24), TIMAXS=c(1, 1, 0, 0), TIMINS = c(0, 0, 1, 1), timezone = 0,
-  runmoist = 1, PE = rep(1.1, 19), KS = rep(0.0037, 19), BB = rep(4.5, 19),
-  BD = rep(BulkDensity, 19), DD = rep(Density, 19), maxpool = 10000, rainmult = 1,
-  evenrain = 0, SoilMoist_Init = c(0.1, 0.12, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4),
+micro_uk <- function(
+  loc = c(-0.1277583, 51.50735),
+  timeinterval = 365,
+  ystart = 2015,
+  yfinish = 2015,
+  nyears = yfinish - ystart + 1,
+  REFL = 0.15,
+  elev = NA,
+  slope = 0,
+  aspect = 0,
+  lapse_max = 0.0077,
+  lapse_min = 0.0039,
+  DEP = c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200),
+  minshade = 0,
+  maxshade = 90,
+  Refhyt = 1.2,
+  Usrhyt = 0.01,
+  Z01 = 0,
+  Z02 = 0,
+  ZH1 = 0,
+  ZH2 = 0,
+  runshade = 1,
+  clearsky = 0,
+  run.gads = 1,
+  write_input = 0,
+  writecsv = 0,
+  manualshade = 1,
+  terrain = 0,
+  dailywind = 1,
+  windfac = 1,
+  adiab_cor = 1,
+  warm = 0,
+  spatial = "Q:/CHESS",
+  ERR = 1.5,
+  RUF = 0.004,
+  EC = 0.0167238,
+  SLE = 0.95,
+  Thcond = 2.5,
+  Density = 2.56,
+  SpecHeat = 870,
+  BulkDensity = 1.3,
+  PCTWET = 0,
+  rainwet = 1.5,
+  cap = 1,
+  CMH2O = 1,
+  hori = rep(0,24),
+  TIMAXS=c(1, 1, 0, 0),
+  TIMINS = c(0, 0, 1, 1),
+  timezone = 0,
+  runmoist = 1,
+  PE = rep(1.1, 19),
+  KS = rep(0.0037, 19),
+  BB = rep(4.5, 19),
+  BD = rep(BulkDensity, 19),
+  DD = rep(Density, 19),
+  maxpool = 10000,
+  rainmult = 1,
+  evenrain = 0,
+  SoilMoist_Init = c(0.1, 0.12, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4),
   L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000,
-  R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06,
-  MAXCOUNT = 500, LAI = 0.1, snowmodel = 1, snowtemp = 1.5, snowdens = 0.375,
-  densfun = c(0.5979, 0.2178, 0.001, 0.0038), snowmelt = 1, undercatch = 1, rainmelt = 0.0125, shore = 0,
-  tides = matrix(data = 0, nrow = 24 * timeinterval * nyears, ncol = 3), hourly = 0,
-  rainhourly = 0, rainhour = 0, rainoff = 0, lamb = 0, IUV = 0, opendap = 0,
-  soilgrids = 1, IR = 0, message = 0, fail = nyears * 24 * 365, snowcond = 0,
-  intercept = maxshade / 100 * 0.3, save = 0, grasshade = 0) {
-
-  # loc="London, UK"
-  # timeinterval=365
-  # ystart=2000
-  # yfinish=2001
-  # nyears=yfinish-ystart+1
-  # REFL=0.15
-  # slope=0
-  # aspect=0
-  # DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
-  # minshade=0
-  # maxshade=90
-  # Usrhyt=.01
-  # Z01=0
-  # Z02=0
-  # ZH1=0
-  # ZH2=0
-  # runshade=1
-  # clearsky=0
-  # run.gads=1
-  # write_input=0
-  # writecsv=0
-  # manualshade=1
-  # soildata=0
-  # terrain=0
-  # dailywind=1
-  # adiab_cor=1
-  # warm=0
-  # spatial="Q:/CHESS"
-  # vlsci=0
-  # loop=0
-  # ERR=1.5
-  # RUF=0.004
-  # EC=0.0167238
-  # SLE=0.95
-  # Thcond=2.5
-  # Density=2.560
-  # SpecHeat=870
-  # BulkDensity=1.300
-  # PCTWET=0
-  # rainwet=1.5
-  # cap=1
-  # CMH2O=1
-  # hori=rep(0,24)
-  # TIMAXS=c(1.0, 1.0, 0.0, 0.0)
-  # IMINS=c(0, 0, 1, 1)
-  # timezone=0
-  # runmoist=1
-  # PE=rep(1.1,19)
-  # KS=rep(0.0037,19)
-  # BB=rep(4.5,19)
-  # BD=rep(1.3,19)
-  # DD=rep(2.56,19)
-  # maxpool=10000
-  # rainmult=1
-  # evenrain=0
-  # SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
-  # L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000
-  # LAI=0.1
-  # snowmodel=0
-  # snowtemp=1.5
-  # snowdens=0.375
-  # densfun=c(0.5979, 0.2178, 0.001, 0.0038)
-  # snowmelt=1
-  # undercatch=1
-  # rainmelt=0.0125
-  # shore=0
-  # tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
-  # scenario=""
-  # year=2070
-  # barcoo=""
-  # quadrangle=1
-  # hourly=0
-  # rainhour = 0
-  # rainoff=0
-  # lamb = 0
-  # IUV = 0
-  # R1 = 0.001
-  # RW = 2.5e+10
-  # RL = 2e+6
-  # PC = -1500
-  # SP = 10
-  # IM = 1e-06
-  # MAXCOUNT = 500
-  # windfac=1
-  # rainhourly = 0
-  # opendap = 1
-  # soilgrids = 1
-  # IR = 0
-  # message = 0
-  # fail = nyears * 24 * 365
-  # elev = NA
-  # lapse_max = 0.0077
-  # lapse_min = 0.0039
-  # Refhyt <- 1.2
-  # snowcond = 0
-  # intercept = maxshade / 100 * 0.3
+  R1 = 0.001,
+  RW = 2.5e+10,
+  RL = 2e+6,
+  PC = -1500,
+  SP = 10,
+  IM = 1e-06,
+  MAXCOUNT = 500,
+  LAI = 0.1,
+  snowmodel = 1,
+  snowtemp = 1.5,
+  snowdens = 0.375,
+  densfun = c(0.5979, 0.2178, 0.001, 0.0038),
+  snowmelt = 1,
+  undercatch = 1,
+  rainmelt = 0.0125,
+  shore = 0,
+  tides = matrix(data = 0, nrow = 24 * timeinterval * nyears, ncol = 3),
+  hourly = 0,
+  rainhourly = 0,
+  rainhour = 0,
+  rainoff = 0,
+  lamb = 0,
+  IUV = 0,
+  opendap = 0,
+  soilgrids = 1,
+  IR = 0,
+  message = 0,
+  fail = nyears * 24 * 365,
+  snowcond = 0,
+  intercept = maxshade / 100 * 0.3,
+  save = 0,
+  grasshade = 0) {
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
@@ -595,26 +569,9 @@ micro_uk <- function(loc = "London, UK", timeinterval = 365, ystart = 2015,
       stop("package 'ncdf4' is needed. Please install it.",
         call. = FALSE)
     }
-    if(is.numeric(loc)==FALSE){ # use geocode to get location from site name via googlemaps
-      if (!requireNamespace("dismo", quietly = TRUE)) {
-        stop("dismo needed for the place name geocode function to work. Please install it.",
-          call. = FALSE)
-      }
-      if (!requireNamespace("XML", quietly = TRUE)) {
-        stop("XML needed for the place name geocode function to work. Please install it.",
-          call. = FALSE)
-      }
-      if (!requireNamespace("proj4", quietly = TRUE)) {
-        stop("package 'proj4' is needed. Please install it.",
-          call. = FALSE)
-      }
-      longlat <- dismo::geocode(loc)[3:4] # assumes first geocode match is correct
-      if(nrow(longlat>1)){longlat<-longlat[1,]}
-      x <- t(as.matrix(as.numeric(c(longlat[1,1],longlat[1,2]))))
-    }else{
-      longlat <- loc
-      x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
-    }
+    longlat <- loc
+    x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
+
     library(raster)
     library(proj4)
     library(ncdf4)

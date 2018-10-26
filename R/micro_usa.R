@@ -2,7 +2,7 @@
 #'
 #' An implementation of the NicheMapR microclimate model that uses the GRIDMET daily weather database http://www.climatologylab.org/gridmet.html, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "metdata_elevationdata.nc".
 #' @encoding UTF-8
-#' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
+#' @param loc Longitude and latitude (decimal degrees)
 #' @param dstart First day to run, date in format "d-m-Y" e.g. "01-01-2016"
 #' @param dfinish Last day to run, date in format "d-m-Y" e.g. "31-12-2016"
 #' @param REFL Soil solar reflectance, decimal \%
@@ -226,7 +226,7 @@
 #' library(NicheMapR)
 #' dstart <- "01/01/2016"
 #' dfinish <- "31/12/2017"
-#' micro<-micro_usa(loc = 'Death Valley, California', runshade = 0, soilgrids = 0, dstart = dstart, dfinish = dfinish) # run the model using SoilGrids data at Madison for 2014 to 2016
+#' micro<-micro_usa() # run the model at the default location (Madison, Wisconsin) for 2016 to 2017 using opendap ((does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
@@ -283,8 +283,9 @@
 #'  }
 #' }
 micro_usa <- function(
-  loc = 'Death Valley, California',
-  dstart = "01/01/2016", dfinish = "31/12/2016",
+  loc = c(-89.40123, 43.07305),
+  dstart = "01/01/2016",
+  dfinish = "31/12/2017",
   nyears = as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1,
   REFL = 0.15,
   elev = NA,
@@ -373,95 +374,6 @@ micro_usa <- function(
   snowcond = 0,
   intercept = maxshade / 100 * 0.4,
   grasshade = 0) { # end function parameters
-
-  # loc="Madison, Wisconsin"
-  # dstart="01/01/2016"
-  # dfinish="31/12/2016"
-  # nyears=as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1
-  # REFL=0.15
-  # slope=0
-  # aspect=0
-  # DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
-  # minshade=0
-  # maxshade=90
-  # Refhyt=2
-  # Usrhyt=.01
-  # Z01=0
-  # Z02=0
-  # ZH1=0
-  # ZH2=0
-  # runshade=0
-  # clearsky=0
-  # run.gads=1
-  # write_input=0
-  # writecsv=0
-  # terrain=0
-  # dailywind=1
-  # adiab_cor=1
-  # warm=0
-  # spatial="C:/USA"
-  # ERR=1.5
-  # RUF=0.004
-  # EC=0.0167238
-  # SLE=0.95
-  # Thcond=2.5
-  # Density=2.56
-  # SpecHeat=870
-  # BulkDensity=1.3
-  # PCTWET=0
-  # rainwet=1.5
-  # cap=1
-  # CMH2O=1
-  # hori=rep(0,24)
-  # TIMAXS=c(1.0, 1.0, 0.0, 0.0)
-  # TIMINS=c(0, 0, 1, 1)
-  # timezone=0
-  # runmoist=1
-  # PE=rep(1.1,19)
-  # KS=rep(0.0037,19)
-  # BB=rep(4.5,19)
-  # BD=rep(1.3,19)
-  # DD=rep(2.56,19)
-  # maxpool=10000
-  # rainmult=1
-  # evenrain=0
-  # SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
-  # L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000
-  # LAI=0.1
-  # snowmodel=1
-  # snowtemp=1.5
-  # snowdens=0.375
-  # densfun=c(0.5979, 0.2178, 0.001, 0.0038)
-  # snowmelt=1
-  # undercatch=1
-  # rainmelt=0.0125
-  # shore=0
-  # tides = 0
-  # scenario=""
-  # hourly=0
-  # rainhour = 0
-  # rainoff=0
-  # lamb = 0
-  # IUV = 0
-  # R1 = 0.001
-  # RW = 2.5e+10
-  # RL = 2e+6
-  # PC = -1500
-  # SP = 10
-  # IM = 1e-06
-  # MAXCOUNT = 500
-  # windfac=1
-  # rainhourly = 0
-  # opendap = 1
-  # soilgrids = 1
-  # IR = 0
-  # message = 0
-  # fail = nyears * 24 * 365
-  # elev = NA
-  # lapse_max = 0.0077
-  # lapse_min = 0.0039
-  # snowcond = 0
-  # intercept = maxshade / 100 * 0.3
 
   ystart <- as.numeric(substr(dstart, 7, 10))
   yfinish <- as.numeric(substr(dfinish, 7, 10))
@@ -645,26 +557,9 @@ micro_usa <- function(
       stop("package 'ncdf4' is needed. Please install it.",
         call. = FALSE)
     }
-    if(is.numeric(loc)==FALSE){ # use geocode to get location from site name via googlemaps
-      if (!requireNamespace("dismo", quietly = TRUE)) {
-        stop("dismo needed for the place name geocode function to work. Please install it.",
-          call. = FALSE)
-      }
-      if (!requireNamespace("XML", quietly = TRUE)) {
-        stop("XML needed for the place name geocode function to work. Please install it.",
-          call. = FALSE)
-      }
-      if (!requireNamespace("proj4", quietly = TRUE)) {
-        stop("package 'proj4' is needed. Please install it.",
-          call. = FALSE)
-      }
-      longlat <- dismo::geocode(loc)[3:4] # assumes first geocode match is correct
-      if(nrow(longlat>1)){longlat<-longlat[1,]}
-      x <- t(as.matrix(as.numeric(c(longlat[1,1],longlat[1,2]))))
-    }else{
-      longlat <- loc
-      x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
-    }
+    longlat <- loc
+    x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
+
     library(raster)
     library(proj4)
     library(ncdf4)
