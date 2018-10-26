@@ -680,6 +680,10 @@ micro_aust <- function(
     yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
     tzone <- paste("Etc/GMT+",10,sep="")
     dates <- seq(ISOdate(ystart,1,1,tz=tzone)-3600*12, ISOdate((ystart+nyears),1,1,tz=tzone)-3600*13, by="days")
+    if(ystart == as.numeric(format(Sys.time(), "%Y"))){ # cut days down if doing current year (incomplete)
+      dates <- dates[dates < Sys.time()]
+      dailywind <- 0 # no daily wind for current year
+    }
     ndays <- length(dates)
     doys12<-c(15, 46, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349) # middle day of each month
     microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
@@ -745,7 +749,7 @@ micro_aust <- function(
       TAI <- 0
     }
     micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, TAI = TAI, timeinterval = 365)
-    clearskyrad <- micro_clearsky$metout[,c(1, 13)]
+    clearskyrad <- micro_clearsky$metout[1:(ndays*24),c(1, 13)]
     clearskysum <- aggregate(clearskyrad[,2], by = list(clearskyrad[,1]), FUN = sum)[,2]
 
     # get the local timezone reference longitude
@@ -1860,7 +1864,7 @@ micro_aust <- function(
         tannul1=matrix(data = 0, nrow = ndays, ncol = 1)
         moists1=matrix(data = 0., nrow = 10, ncol = ndays)
         doy1[1:ndays]<-doy
-        SLES1[1:ndays]<-SLES
+        SLES1[1:ndays]<-SLES[1:ndays]
         MAXSHADES1[1:ndays]<-MAXSHADES
         MINSHADES1[1:ndays]<-MINSHADES
         TMAXX1[1:ndays]<-TMAXX
@@ -1869,8 +1873,8 @@ micro_aust <- function(
         CCMINN1[1:ndays]<-CCMINN
         RHMAXX1[1:ndays]<-RHMAXX
         RHMINN1[1:ndays]<-RHMINN
-        WNMAXX1[1:ndays]<-WNMAXX
-        WNMINN1[1:ndays]<-WNMINN
+        WNMAXX1[1:ndays]<-WNMAXX[1:ndays]
+        WNMINN1[1:ndays]<-WNMINN[1:ndays]
         REFLS1[1:ndays]<-REFLS
         PCTWET1[1:ndays]<-PCTWET
         RAINFALL1[1:ndays]<-RAINFALL
