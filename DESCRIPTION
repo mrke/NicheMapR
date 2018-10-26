@@ -9,7 +9,7 @@ Depends:
     R (>= 3.5.1)
 License: gpl-3.0
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 Suggests:
     devtools,
     dismo,
@@ -34,3 +34,4 @@ VignetteBuilder: rmarkdown
 Vignettes: properties-of-air,ectotherm-model-tutorial,microclimate-model-
     tutorial,microclimate-monthly-input-example,microclimate-inputs,microclimate-
     model-theory-equations,microclimate-hourly-input-example
+Encoding: UTF-8
