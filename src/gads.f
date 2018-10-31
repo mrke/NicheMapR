@@ -1,4 +1,4 @@
-      subroutine gads(lat51,lon51,relhum1,season1,optdep1)
+      subroutine rungads(lat51,lon51,relhum1,season1,optdep1)
 
 ccccc ------------------------------------------------------------------c
 c     create global distributions of microphysical and optical aerosol  c
@@ -42,7 +42,7 @@ c      - OPTCOM                                                        c
 c      - OPTPAR                                                        c
 c      - OUT4                                                          c
 c                                                                      c
-c      Diese Unterprogramme sind an ATLOPT angehÑngt.                  c
+c      Diese Unterprogramme sind an ATLOPT angeh?ngt.                  c
 c                                                                      c
 c      ab 14.12.92 anderes Format der neuen Mie-Rechnungen eingebaut   c
 c      ab 04.11.93 neue Parameter scattering, absorption, omega ratio  c
@@ -69,6 +69,7 @@ ccccc -----------------------------------------------------------------c
       character*20 catyp
       character*30 typnam
       character*50 area
+      CHARACTER(len=255) :: cwd
 
       common /prog/   nprog
       common /profi/  nil(10),hfta(10),hstra(10),
@@ -120,7 +121,8 @@ ccccc -----------------------------------------------------------------c
 CCCCC -----------------------------------------------------------------C
 c     some definitions for this version                                c
 CCCCC -----------------------------------------------------------------C
-
+            !CALL getcwd(cwd)
+            !WRITE(*,*) TRIM(cwd)
 	lat5=lat51
 	lon5=lon51
 	season=season1
@@ -198,11 +200,11 @@ c      read (*,*) iwel
 	do 9999 iwel=1,nwel
 
       if (ws.eq.'w') then
-         open(ntape,file='../extdata/glodat/winter.dat')
+         open(ntape,file='extdata/glodat/winter.dat')
          read (ntape,'(a1)') dum
          cseas='winter '
       else if (ws.eq.'s') then
-         open(ntape,file='../extdata/glodat/summer.dat')
+         open(ntape,file='extdata/glodat/summer.dat')
          read (ntape,'(a1)') dum
          cseas='summer '
       else
@@ -258,7 +260,7 @@ c      print*,' Anfang head4'
 c      print*,' Ende head4'
 
 ccccc -----------------------------------------------------------------c
-c      Schleife Åber alle verlangten WellenlÑngen und Feuchteklassen   c
+c      Schleife ?ber alle verlangten Wellenl?ngen und Feuchteklassen   c
 ccccc -----------------------------------------------------------------c
 
        do il=1,niw
@@ -266,7 +268,7 @@ ccccc -----------------------------------------------------------------c
           do ih=1,njh
 
 ccccc -----------------------------------------------------------------c
-c      Schleife Åber alle verlangten geographischen Koordinaten        c
+c      Schleife ?ber alle verlangten geographischen Koordinaten        c
 ccccc -----------------------------------------------------------------c
 
              do ilat=lata,late,-lati
@@ -338,7 +340,7 @@ C     *****************************************************************C
 C								       C
 C     -----------------------------------------------------------------C
 C     EINLESEN DER HOEHEN-PROFILE vom File profiles.dat und der        C
-C     Extinktionskoeffizienten der oberen AtmosphÑre von extcof.dat    C
+C     Extinktionskoeffizienten der oberen Atmosph?re von extcof.dat    C
 CCCCC -----------------------------------------------------------------C
 
       common /wavel/  mlamb,alamb(61),niw
@@ -371,7 +373,7 @@ CCCCC -----------------------------------------------------------------C
       close (8)
 
 CCCCC -----------------------------------------------------------------C
-C     Einlesen der Extinktionskoeffizienten fÅr die obere AtmosphÑre:  C
+C     Einlesen der Extinktionskoeffizienten f?r die obere Atmosph?re:  C
 C								       C
 C     EXTINCTION COEFFICIENT -	FREE TROPOSPHERIC AEROSOL  +	       C
 C     EXTINCTION COEFFICIENT -	  STRATOSPHERIC   AEROSOL	       C
@@ -379,7 +381,7 @@ C								       C
 C     UEBERSPRINGEN DER ERSTEN BEIDEN ZEILEN von TAPE9		       C
 CCCCC -----------------------------------------------------------------C
 
-      open (9,file='extback.dat')
+      open (9,file='extdata/extback.dat')
       IL=1
       READ(9,'(/)')
       DO IWL=1,mlamb
@@ -430,7 +432,7 @@ C     Kopf des output-files                                            C
 CCCCC -----------------------------------------------------------------C
 
 c      if (ih.eq.1.and.il.eq.1) then
-         open (10,file='aererg.txt')
+         open (10,file='extdata/aererg.txt')
 
 c         write(10,100) cseas
 c  100	   format('# Global Aerosol Data Set, Version 2.2a'/,
@@ -442,7 +444,7 @@ c     *		'============================')
 c      end if
 
 CCCCC -----------------------------------------------------------------C
-C     Beschriftung fÅr verschiedene Wellenlaengen und rel. Feuchten    c	       c
+C     Beschriftung f?r verschiedene Wellenlaengen und rel. Feuchten    c	       c
 CCCCC -----------------------------------------------------------------C
 
 c      if (nih.ne.0) then
@@ -466,18 +468,18 @@ c      end if
       end do
 
       if (kop.le.10) then
-c         write(10,4001) (opnam(in),in=1,kop)
+         write(10,4001) (opnam(in),in=1,kop)
  4001    format('   LAT  LON NL LAMB    RELHUM ',10(1x,a8,1x))
       else
-c         write(10,4001) (opnam(in),in=1,10)
-c         write(10,4002) (opnam(in),in=11,kop)
+         write(10,4001) (opnam(in),in=1,10)
+         write(10,4002) (opnam(in),in=11,kop)
  4002    format('                               ',5(1x,a8,1x))
       end if
 
 c      write(10,4003)
 c 4003 format('#',13x,'  [1/km]  ','  [1/km]  ','  [1/km]  ',
 c     *       30x,'   [sr]')
-	close (10)
+
       return
       end
 
@@ -544,7 +546,7 @@ c          write(*,1025) ( ACNR(JC,1),ACMR(JC,1),JC=4,NJC(1))
             print*,'***!!!    sum of mixing ratios is not 1.     !!!***'
             print*,'***!!! please have a look at errorfile *.err !!!***'
             print*,'***************************************************'
-c            write (2,1001) latx,lonx,sum
+            write (2,1001) latx,lonx,sum
          end if
       end do
 1001  format (2i4,3x,1pe10.3)
@@ -588,7 +590,7 @@ CCCCC *****************************************************************C
 C     *****************************************************************C
 C                                                                      C
 C     -----------------------------------------------------------------C
-C      Einlesen der optischen Rohdaten in einen Puffer fÅr             C
+C      Einlesen der optischen Rohdaten in einen Puffer f?r             C
 C      20 Komponenten                                                  C
 c                                                                      c
 c     Bei den urspruenglichen Mie-Rechnungen sind alle Koeffizienten   c
@@ -612,7 +614,7 @@ CCCCC -----------------------------------------------------------------C
       character*4  comnam
       character*8  opanam,optnam
       character*10 dum2
-      character*16 tap
+      character*21 tap
       character*20 catyp
       character*30 typnam
 
@@ -632,7 +634,7 @@ CCCCC -----------------------------------------------------------------C
      *	          brebuf(20),bimbuf(20),mbuf
 
 ccccc -----------------------------------------------------------------c
-c      Schleife Åber alle am Gitterpunkt vorkommenden Komponenten      c
+c      Schleife ?ber alle am Gitterpunkt vorkommenden Komponenten      c
 ccccc -----------------------------------------------------------------c
 
        do il=1,nl
@@ -652,7 +654,7 @@ c	  print*,'Anfang Komponenten schleife: ',ic,njc(il)
 	     jc=acnr(ic,il)
 
 ccccc -----------------------------------------------------------------c
-c     Ausschlu· der Quellung bei insoluble, Russ und den               c
+c     Ausschlu? der Quellung bei insoluble, Russ und den               c
 c     mineralischen Komponenten und bei den Wolken                     c                          c
 ccccc -----------------------------------------------------------------c
 
@@ -671,14 +673,14 @@ c     Bestimmung des Filenamens der gesuchten Komponente aus	       c
 c     Komponentennummer und Feuchteklasse                              c
 ccccc -----------------------------------------------------------------c
 
-            tap(1:10)='../optdat/'
-            tap(11:14)=comnam(jc)
-            tap(15:16)=chum(iht)
-c			write(10,*) tap
+          tap(1:15)='extdata/optdat/'
+          tap(16:19)=comnam(jc)
+          tap(20:21)=chum(iht)
+			write(10,*) tap
             ntap=20
 
 ccccc -----------------------------------------------------------------c
-c     Bestimmung der Kennnummer fÅr den Puffer Åber die WellenlÑnge    c
+c     Bestimmung der Kennnummer f?r den Puffer ?ber die Wellenl?nge    c
 c                                                                      c
 c         nbuf: Kennummer der aktuellen Komponente fuer den Puffer     c
 c     kbuf(20): Kennummern der gespeicherten Komponenten               c
@@ -690,7 +692,7 @@ ccccc -----------------------------------------------------------------c
 c 	     print*,'nbuf= ',nbuf
 
 ccccc -----------------------------------------------------------------c
-c      öberprÅfung des Puffers auf öbereinstimmung mit nbuf            c
+c      ?berpr?fung des Puffers auf ?bereinstimmung mit nbuf            c
 ccccc -----------------------------------------------------------------c
 
 	     exists=.false.
@@ -706,7 +708,7 @@ c           print*,'mbuf= ',mbuf
 
 ccccc -----------------------------------------------------------------c
 c      Einlesen der Komponentendaten, falls sie nicht im Puffer        c
-c      stehen, sonst öbernahme aus dem Puffer                          c
+c      stehen, sonst ?bernahme aus dem Puffer                          c
 ccccc -----------------------------------------------------------------c
 
 c       print*,exists
@@ -851,7 +853,7 @@ CCCCC *****************************************************************C
 C     *****************************************************************C
 C                                                                      c
 C     -----------------------------------------------------------------C
-C     Berechnung und Ausdruck der gewÅnschten optischen Parameter      C
+C     Berechnung und Ausdruck der gew?nschten optischen Parameter      C
 CCCCC -----------------------------------------------------------------C
 
       integer prnr,acnr,rht
@@ -1153,7 +1155,7 @@ ccccc *****************************************************************c
 c     *****************************************************************c
 c			                                                     c
 c     -----------------------------------------------------------------c
-c     AUSGABE DER DATEN	fÅr atlopt				                 c
+c     AUSGABE DER DATEN	f?r atlopt				                 c
 ccccc -----------------------------------------------------------------c
 
       integer prnr,acnr,njc,rht
@@ -1185,36 +1187,36 @@ ccccc -----------------------------------------------------------------c
 
 	 if (iop.le.10) then
 	    if (l.eq.1) then
-c	       write (10,2020) latx,lonx,nl,alamb(ilamb),ahum(ihum),
-c     *			       (oparam(ip,l),ip=1,iop)
- 2020	     FORMAT(2(1x,I4),i3,3x,f6.3,3x,f3.0,1p3e10.3,0p3e10.3,1pe10.3)
+	       write (10,2020) latx,lonx,nl,alamb(ilamb),ahum(ihum),
+     *			       (oparam(ip,l),ip=1,iop)
+ 2020	  FORMAT(2(1x,I4),i3,3x,f6.3,3x,f3.0,1p3e10.3,0p3e10.3,1pe10.3)
            optdep(ilamb,1)=alamb(ilamb)
 	     optdep(ilamb,2)=oparam(6,l)
 	    else
-c	       write (10,3020)
-c     *			       (oparam(ip,l),ip=1,iop)
+	       write (10,3020)
+     *			       (oparam(ip,l),ip=1,iop)
  3020          FORMAT(13x,1p3e10.3,0p3e10.3,1pe10.3)
 	    end if
 	 else
 	    if (l.eq.1) then
-c	       write (10,2020) latx,lonx,nl,
-c     *			       (oparam(ip,l),ip=1,5)
-c	       write (10,2030) (oparam(ip,l),ip=6,iop)
+	       write (10,2020) latx,lonx,nl,
+     *			       (oparam(ip,l),ip=1,5)
+	       write (10,2030) (oparam(ip,l),ip=6,iop)
  2030	       FORMAT(11x,1p10e10.3)
 	    else
-c	       write (10,3040)
-c     *			       (oparam(ip,l),ip=1,5)
+	       write (10,3040)
+     *			       (oparam(ip,l),ip=1,5)
  3040	       FORMAT(13x,10e10.3)
-c	       write (10,2030) (oparam(ip,l),ip=6,iop)
+	       write (10,2030) (oparam(ip,l),ip=6,iop)
 	    end if
 	 end if
 
 	 if(jnopar(10).eq.1) then
-c	    write(10,4002)
+	    write(10,4002)
  4002	    format('   phase function')
-c	    write(10,4010) (phaf(it,l),it=1,nia)
+	    write(10,4010) (phaf(it,l),it=1,nia)
  4010	    format(8e10.3)
-c	    write(10,*) ' '
+	    write(10,*) ' '
 	 end if
       end do
 
