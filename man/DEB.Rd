@@ -10,15 +10,16 @@ DEB(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 * step,
   E_Hj = E_Hb, E_Hp = 186500, h_a = 2.16e-11/(step^2), s_G = 0.01,
   T_REF = 20, TA = 8085, TAL = 18721, TAH = 9 + 4, TL = 288,
   TH = 315, E_0 = 1040000, f = 1, E_sm = 1116, K = 1,
-  andens_deb = 1, d_V = 0.3, d_E = 0.3, d_Egg = 0.3, mu_X = 525000,
-  mu_E = 585000, mu_V = 5e+05, mu_P = 480000, kap_X_P = 0.1,
-  n_X = c(1, 1.8, 0.5, 0.15), n_E = c(1, 1.8, 0.5, 0.15), n_V = c(1, 1.8,
-  0.5, 0.15), n_P = c(1, 1.8, 0.5, 0.15), n_M_nitro = c(1, 4/5, 3/5, 4/5),
-  clutchsize = 2, clutch_ab = c(0.085, 0.7), viviparous = 0,
-  minclutch = 0, batch = 1, lambda = 1/2, VTMIN = 26, VTMAX = 39,
-  ma = 1e-04, mi = 0, mh = 0.5, arrhenius = matrix(data = matrix(data =
-  c(rep(TA, 8), rep(TAL, 8), rep(TAH, 8), rep(TL, 8), rep(TH, 8)), nrow = 8,
-  ncol = 5), nrow = 8, ncol = 5), acthr = 1, X = 10, E_pres = 6011.93,
+  andens_deb = 1, d_V = 0.3, d_E = 0.3, d_Egg = 0.3,
+  mu_X = 525000, mu_E = 585000, mu_V = 5e+05, mu_P = 480000,
+  kap_X_P = 0.1, n_X = c(1, 1.8, 0.5, 0.15), n_E = c(1, 1.8, 0.5,
+  0.15), n_V = c(1, 1.8, 0.5, 0.15), n_P = c(1, 1.8, 0.5, 0.15),
+  n_M_nitro = c(1, 4/5, 3/5, 4/5), clutchsize = 2,
+  clutch_ab = c(0.085, 0.7), viviparous = 0, minclutch = 0,
+  batch = 1, lambda = 1/2, VTMIN = 26, VTMAX = 39, ma = 1e-04,
+  mi = 0, mh = 0.5, arrhenius = matrix(data = matrix(data = c(rep(TA,
+  8), rep(TAL, 8), rep(TAH, 8), rep(TL, 8), rep(TH, 8)), nrow = 8, ncol =
+  5), nrow = 8, ncol = 5), acthr = 1, X = 10, E_pres = 6011.93,
   V_pres = 3.9752^3, E_H_pres = 73592, q_pres = 0, hs_pres = 0,
   surviv_pres = 1, Es_pres = 0, cumrepro = 0, cumbatch = 0,
   p_B_past = 0, stage = 1, breeding = 0, pregnant = 0, Tb = 33,
@@ -252,4 +253,3 @@ if(j==1){
 
 
 }
-
