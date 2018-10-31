@@ -74,4 +74,3 @@ This is a modified version of the raw data with the following modifications:
 3. Incomplete days have been searched for and filled with NA values
 }
 \keyword{datasets}
-

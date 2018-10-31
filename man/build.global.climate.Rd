@@ -20,4 +20,3 @@ of a 1961-90 mean monthly terrestrial climatology. Journal of Climate 12:829-856
 optionaly uses a  global monthly soil moisture estimate from NOAA CPC Soil Moisture http://140.172.38.100/psd/
 thredds/catalog/Datasets/cpcsoil/catalog.html
 }
-

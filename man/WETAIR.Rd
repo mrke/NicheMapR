@@ -55,4 +55,3 @@ If RH is known but not WB then set WB=0 and DP=999
 (2) Hygrometric data:
 If DP is known then set WB = 0 and RH = 0.
 }
-

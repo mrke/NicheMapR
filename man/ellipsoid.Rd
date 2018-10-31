@@ -5,8 +5,8 @@
 \title{Ellipsoid endotherm model}
 \usage{
 ellipsoid(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5,
-  furcond = 0.04, O2eff = 0.2, stress = 0.6, airT = 20, windspd = 1,
-  rh = 50)
+  furcond = 0.04, O2eff = 0.2, stress = 0.6, airT = 20,
+  windspd = 1, rh = 50, Q10 = 3, basal = NA, basmult = 1)
 }
 \arguments{
 \item{posture}{= 4.5, Shape, ratio of long to short axis of a prolate ellipsoid}
@@ -28,6 +28,10 @@ ellipsoid(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5,
 \item{windspd}{= 1, Wind speed (m/s)}
 
 \item{rh}{= 50, Relative humidity (\%)}
+
+\item{basal}{= NA, user specified basal metabolic rate (W)}
+
+\item{basmult}{= 1, multiplier to adjust mouse-elephant predicted basal metabolic rate}
 }
 \value{
 \itemize{
@@ -59,7 +63,9 @@ Proceedings of the National Academy of Sciences 106:19666-19672.
 with additional rough calculations for water loss. Note this model is only relevant for
 conditions where there is no solar radiation and air/ground/sky temperatures are equal.
 Originally coded into R from Excel by John Baumgartner.
-Requires the NicheMapR functions WETAIR, DRYAIR and VAPPRS
+Requires the NicheMapR functions WETAIR.rh, DRYAIR and VAPPRS
+Modified to allow use with rasters 2 Aug 2018
+Modified to allow user-specified basal metabolic rates and Q10 effects 2 Aug 2018
 }
 \details{
 Note that the parameter 'stress' is a fudge factor that accounts for physiological thermoregulatory
@@ -115,4 +121,3 @@ with(endo,{points(Tcore ~ dates,xlab = "Date and Time",lty=2, type = "l")})
 with(endo,{plot(timetodeath ~ dates,xlab = "Date and Time", ylab = "Time to Death (h)"
 , type = "l",main=paste("Time to Death by Desiccation",sep=""), ylim=c(0,24))})
 }
-

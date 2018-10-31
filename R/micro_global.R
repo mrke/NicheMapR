@@ -8,7 +8,7 @@
 #' Koepke, P., M. Hess, I. Schult, and E. P. Shettle. 1997. Global Aerosol Data Set. Max-Planck-Institut for Meteorologie, Hamburg
 #' by choosing the option 'run.gads<-1'
 #' @encoding UTF-8
-#' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
+#' @param loc Longitude and latitude (decimal degrees)
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param nyears The number of years to run
 #' @param REFL Soil solar reflectance, decimal \%
@@ -21,7 +21,7 @@
 #' @param maxshade Maximum shade level to us (\%)
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
 #' @param ... Additional arguments, see Details
-#' @usage micro_global(loc = "Madison, Wisconsin USA", timeinterval = 12, nyears = 1, soiltype = 4,
+#' @usage micro_global(loc = c(-89.40123, 43.07305), timeinterval = 12, nyears = 1, soiltype = 4,
 #' REFL = 0.15, slope = 0, aspect = 0,
 #' DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
@@ -218,7 +218,7 @@
 #' \item  3-113 290, ..., 4000 - irradiance (W/(m2 nm)) at each of 111 wavelengths from 290 to 4000 nm
 #' }
 #' @examples
-#'micro<-micro_global() # run the model with default location and settings
+#'micro<-micro_global() # run the model with default location (Madison, Wisconsin) and settings
 #'
 #'metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #'shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
@@ -294,7 +294,7 @@
 #'}
 #' @export
 micro_global <- function(
-  loc = "Madison, Wisconsin USA",
+  loc = c(-89.40123, 43.07305),
   timeinterval = 12,
   nyears = 1,
   soiltype = 4,
@@ -579,26 +579,11 @@ micro_global <- function(
 
     ################## location and terrain #################################
 
-    if(is.numeric(loc)==FALSE & length(loc)==1){
-      # use geocode to get location from site name via googlemaps
-      if (!requireNamespace("dismo", quietly = TRUE)) {
-        stop("dismo needed for the place name geocode function to work. Please install it.",
-          call. = FALSE)
-      }
-      if (!requireNamespace("XML", quietly = TRUE)) {
-        stop("XML needed for the place name geocode function to work. Please install it.",
-          call. = FALSE)
-      }
-      longlat <- dismo::geocode(loc)[3:4] # assumes first geocode match is correct
-      if(nrow(longlat>1)){longlat<-longlat[1,]}
-      x <- t(as.matrix(as.numeric(c(longlat[1,1],longlat[1,2]))))
-    }else{
-      if(is.numeric(loc)==FALSE){ # might not be quite right format, try correcting
-        loc=cbind(as.numeric(loc[1]),as.numeric(loc[2]))
-      }
-      longlat <- loc
-      x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
+    if(is.numeric(loc)==FALSE){ # might not be quite right format, try correcting
+     loc=cbind(as.numeric(loc[1]),as.numeric(loc[2]))
     }
+    longlat <- loc
+    x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
 
     # get the local timezone reference longitude
     if(timezone==1){ # this now requires registration

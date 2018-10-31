@@ -165,4 +165,3 @@ for (i in 1:length(DOYs)) {
   legend(0,70, c("Tc", "To", "Tcf", "Tair"), lty = c(1, 2, 1, 2), lwd = c(2.5, 2.5, 2.5, 2.5), col = c("black", "black", "red", "blue"))
 }
 }
-
