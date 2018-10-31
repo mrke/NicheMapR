@@ -77,12 +77,12 @@
 #'
 #' \itemize{
 #' \item{\code{custom_shape}{ = c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom alshape coefficients. Operates if shape=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}\cr}
-#' \item{\code{shape_a}{ = 1., Proportionality factor (-) for going from volume to area, keep this 1 (redundant parameter that should be removed)}\cr}
+#' \item{\code{shape_a}{ = 1, Proportionality factor (-) for going from volume to area, keep this 1 (redundant parameter that should be removed)}\cr}
 #' \item{\code{shape_b}{ = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid }\cr}
 #' \item{\code{shape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
 #' \item{\code{FATOSK}{ = 0.4, Configuration factor to sky (-) for infrared calculations}\cr}
 #' \item{\code{FATOSB}{ = 0.4, Configuration factor to subsrate for infrared calculations}\cr}
-#' \item{\code{rinsul}{ = 0., Insulative fat layer thickness (m)}\cr}
+#' \item{\code{rinsul}{ = 0, Insulative fat layer thickness (m)}\cr}
 #' \item{\code{F_cond}{ = 0.25, Fraction of surface contacting the substrate}\cr}
 #' \item{\code{c_body}{ = 3073, Specific heat of flesh J/(kg-K)}\cr}
 #' \item{\code{k_flesh}{ = 0.5, Thermal conductivity of flesh (W/mC, range: 0.412-2.8)}\cr}
@@ -174,18 +174,18 @@
 #' \item{\code{mu_V}{ = 500000, Molar Gibbs energy (chemical potential) of structure (J/mol)}\cr}
 #' \item{\code{mu_P}{ = 480000, Molar Gibbs energy (chemical potential) of faeces (J/mol)}\cr}
 #' \item{\code{kap_X_P}{ = 0.1, Faecation efficiency of food to faeces (-)}\cr}
-#' \item{\code{n_X}{ = c(1,1.8,0.5,0.15), chem. indices of C, O, H and N in food}\cr}
-#' \item{\code{n_E}{ = c(1,1.8,0.5,0.15), chem. indices of C, O, H and N in reserve}\cr}
-#' \item{\code{n_V}{ = c(1,1.8,0.5,0.15), chem. indices of C, O, H and N in structure}\cr}
-#' \item{\code{n_P}{ = c(1,1.8,0.5,0.15), chem. indices of C, O, H and N in faeces}\cr}
-#' \item{\code{n_M_nitro}{ = c(1,4/5,3/5,4/5), chem. indices of C, O, H and N in nitrogenous waste}\cr}
+#' \item{\code{n_X}{ = c(1, 1.8, 0.5, 0.15), chem. indices of C, O, H and N in food}\cr}
+#' \item{\code{n_E}{ = c(1, 1.8, 0.5, 0.15), chem. indices of C, O, H and N in reserve}\cr}
+#' \item{\code{n_V}{ = c(1, 1.8, 0.5, 0.15), chem. indices of C, O, H and N in structure}\cr}
+#' \item{\code{n_P}{ = c(1, 1.8, 0.5, 0.15), chem. indices of C, O, H and N in faeces}\cr}
+#' \item{\code{n_M_nitro}{ = c(1, 4/5, 3/5, 4/5), chem. indices of C, O, H and N in nitrogenous waste}\cr}
 #'}
 #' \strong{ Insect DEB model parameters (not yet in operation):}
 #' \itemize{
 #' \item{\code{metab_mode}{ = 0, Run insect model? 0 = no, 1 = hemimetabolus model (to do), 2 = holometabolous model}\cr}
 #' \item{\code{stages}{ = 8, number of stages = number of instars plus 1 for egg + 1 for pupa + 1 for imago}\cr}
 #' \item{\code{y_EV_l}{ = 0.95, yield of imago reserve on larval structure (mol/mol)}\cr}
-#' \item{\code{S_instar}{ = rep(2.660,stages-4), stress at instar n: L_n^2/ L_n-1^2 (-)}\cr}
+#' \item{\code{S_instar}{ = rep(2.660, stages-4), stress at instar n: L_n^2/ L_n-1^2 (-)}\cr}
 #' \item{\code{s_j}{ = 0.999, Reprod buffer/structure ratio at pupation as fraction of max}\cr}
 #' \item{\code{L_b}{ = 0.0611, Structural length at birth (cm)}\cr}
 #'}
