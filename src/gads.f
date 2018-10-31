@@ -198,11 +198,11 @@ c      read (*,*) iwel
 	do 9999 iwel=1,nwel
 
       if (ws.eq.'w') then
-         open(ntape,file='../glodat/winter.dat')
+         open(ntape,file='../extdata/glodat/winter.dat')
          read (ntape,'(a1)') dum
          cseas='winter '
       else if (ws.eq.'s') then
-         open(ntape,file='../glodat/summer.dat')
+         open(ntape,file='../extdata/glodat/summer.dat')
          read (ntape,'(a1)') dum
          cseas='summer '
       else
@@ -358,7 +358,7 @@ c     h1(il,ip): Obergrenze der Schicht                                c
 c     hm(il,ip): effektive Dicke der Schicht il fuer den Typ ip        c
 CCCCC -----------------------------------------------------------------C
 
-      open (8,file='profiles.dat')
+      open (8,file='extdata/profiles.dat')
 
       nprof=7
       DO IP=1,nprof
