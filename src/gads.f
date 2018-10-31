@@ -1,4 +1,4 @@
-      subroutine rungads(lat51,lon51,relhum1,season1,optdep1)
+      subroutine gads(lat51,lon51,relhum1,season1,optdep1)
 
 ccccc ------------------------------------------------------------------c
 c     create global distributions of microphysical and optical aerosol  c
