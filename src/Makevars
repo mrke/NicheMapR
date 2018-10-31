@@ -1,3 +1,0 @@
-
-all: $(SHLIB)
-	mv $(SHLIB) gads$(SHLIB_EXT)
