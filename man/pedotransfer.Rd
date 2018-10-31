@@ -44,4 +44,3 @@ point of dryland cropping soils. Soil Research 49:389-407.
 \details{
 \code{model}{ = 1, choose the pedotransfer function to use; 0 for Cosby et al. (1984) univariate regression (their Table 5), for Cosby et al. (1984) multivariate regression (their Table 4), or 2 for Campbell (1985)}\cr\cr
 }
-

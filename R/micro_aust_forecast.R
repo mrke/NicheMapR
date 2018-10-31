@@ -2,7 +2,7 @@
 #'
 #' An implementation of the NicheMapR microclimate model that uses the AWAP daily weather database
 #' @encoding UTF-8
-#' @param loc Either a longitude and latitude (decimal degrees) or a place name to search for on Google Earth
+#' @param loc Longitude and latitude (decimal degrees)
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param ystart First year to run
 #' @param yfinish Last year to run
@@ -231,7 +231,7 @@
 #' \item  3-113 290, ..., 4000 - irradiance (W/(m2 nm)) at each of 111 wavelengths from 290 to 4000 nm
 #' }
 #' @examples
-#'micro<-micro_aust_forecast() # run the model with default location and settings
+#'micro<-micro_aust_forecast() # run the model with default location (Nyrripi, Northern Territory) and settings
 #'
 #'metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #'shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
@@ -306,125 +306,105 @@
 #'  }
 #'}
 #' @export
-micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval = 365,
-  ystart = 1990, yfinish = 1990, nyears = 1, REFL = 0.15, elev = NA,
-  slope = 0, aspect = 0, lapse_max = 0.0077, lapse_min = 0.0039,
-  DEP = c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200), minshade = 0, maxshade = 90,
-  Refhyt = 1.2, Usrhyt = 0.01, Z01 = 0, Z02 = 0, ZH1 = 0, ZH2 = 0, runshade = 1,
-  clearsky = 0, run.gads = 1, write_input = 0, writecsv = 0, manualshade = 1,
-  soildata = 1, terrain = 0, dailywind = 1, windfac = 1, adiab_cor = 1, warm = 0,
-  spatial = "c:/Australian Environment/", vlsci = 0, ERR = 1.5, RUF = 0.004,
-  EC = 0.0167238, SLE = 0.95, Thcond = 2.5, Density = 2.56, SpecHeat = 870,
-  BulkDensity = 1.3, PCTWET = 0, rainwet = 1.5, cap = 1, CMH2O=1, hori = rep(0, 24),
-  TIMAXS = c(1, 1, 0, 0), TIMINS=c(0, 0, 1, 1), timezone = 0, runmoist = 1,
-  PE = rep(1.1, 19), KS = rep(0.0037, 19), BB = rep(4.5, 19), BD = rep(BulkDensity, 19),
-  DD = rep(Density, 19), maxpool = 10000, rainmult = 1, evenrain = 0,
+micro_aust_forecast <- function(
+  loc = c(130.5686 -22.6523),
+  timeinterval = 365,
+  ystart = 1990,
+  yfinish = 1990,
+  nyears = 1,
+  REFL = 0.15,
+  elev = NA,
+  slope = 0,
+  aspect = 0,
+  lapse_max = 0.0077,
+  lapse_min = 0.0039,
+  DEP = c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200),
+  minshade = 0,
+  maxshade = 90,
+  Refhyt = 1.2,
+  Usrhyt = 0.01,
+  Z01 = 0,
+  Z02 = 0,
+  ZH1 = 0,
+  ZH2 = 0,
+  runshade = 1,
+  clearsky = 0,
+  run.gads = 1,
+  write_input = 0,
+  writecsv = 0,
+  manualshade = 1,
+  soildata = 1,
+  terrain = 0,
+  dailywind = 1,
+  windfac = 1,
+  adiab_cor = 1,
+  warm = 0,
+  spatial = "W:/",
+  vlsci = 0,
+  ERR = 1.5,
+  RUF = 0.004,
+  EC = 0.0167238,
+  SLE = 0.95,
+  Thcond = 2.5,
+  Density = 2.56,
+  SpecHeat = 870,
+  BulkDensity = 1.3,
+  PCTWET = 0,
+  rainwet = 1.5,
+  cap = 1,
+  CMH2O=1,
+  hori = rep(0, 24),
+  TIMAXS = c(1, 1, 0, 0),
+  TIMINS=c(0, 0, 1, 1),
+  timezone = 0,
+  runmoist = 1,
+  PE = rep(1.1, 19),
+  KS = rep(0.0037, 19),
+  BB = rep(4.5, 19),
+  BD = rep(BulkDensity, 19),
+  DD = rep(Density, 19),
+  maxpool = 10000,
+  rainmult = 1,
+  evenrain = 0,
   SoilMoist_Init=c(0.1, 0.12, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4),
   L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000,
-  R1 = 0.001, RW = 2.5e+10, RL = 2e+6, PC = -1500, SP = 10, IM = 1e-06, MAXCOUNT = 500,
-  LAI = 0.1, snowmodel = 0, snowtemp = 1.5, snowdens = 0.375,
-  densfun = c(0.5979, 0.2178, 0.001, 0.0038), snowmelt = 1, undercatch = 1,
-  rainmelt = 0.0125, shore = 0,
-  tides = matrix(data = 0, nrow = 24 * timeinterval * nyears, ncol = 3), loop = 0,
-  scenario = "", year = "", barcoo = "", quadrangle = 1, hourly = 0, rainhourly = 0,
-  rainhour = 0, uid = "", pwd = "", lamb = 0, IUV = 0, soilgrids = 1, IR = 0,
-  opendap = 1, message = 0, fail = nyears * 24 * 365, snowcond = 0,
-  intercept = maxshade / 100 * 0.3, grasshade = 0) {
-
-  # loc="Nyrripi, Northern Territory"
-  # timeinterval=365
-  # ystart=2000
-  # yfinish=2001
-  # nyears=yfinish-ystart+1
-  # REFL=0.15
-  # slope=0
-  # aspect=0
-  # DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)
-  # minshade=0
-  # maxshade=90
-  # Usrhyt=.01
-  # Z01=0
-  # Z02=0
-  # ZH1=0
-  # ZH2=0
-  # runshade=1
-  # clearsky=0
-  # run.gads=1
-  # write_input=0
-  # writecsv=0
-  # manualshade=1
-  # soildata=0
-  # terrain=0
-  # dailywind=1
-  # adiab_cor=1
-  # warm=0
-  # spatial="w:/"
-  # vlsci=0
-  # loop=0
-  # ERR=1.5
-  # RUF=0.004
-  # EC=0.0167238
-  # SLE=0.95
-  # Thcond=2.5
-  # Density=2.560
-  # SpecHeat=870
-  # BulkDensity=1.300
-  # PCTWET=0
-  # rainwet=1.5
-  # cap=1
-  # CMH2O=1
-  # hori=rep(0,24)
-  # TIMAXS=c(1.0, 1.0, 0.0, 0.0)
-  # IMINS=c(0, 0, 1, 1)
-  # timezone=0
-  # runmoist=1
-  # PE=rep(1.1,19)
-  # KS=rep(0.0037,19)
-  # BB=rep(4.5,19)
-  # BD=rep(1.3,19)
-  # DD=rep(2.56,19)
-  # maxpool=10000
-  # rainmult=1
-  # evenrain=0
-  # SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3)
-  # L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000
-  # LAI=0.1
-  # snowmodel=0
-  # snowtemp=1.5
-  # snowdens=0.375
-  # densfun=c(0.5979, 0.2178, 0.001, 0.0038)
-  # snowmelt=1
-  # undercatch=1
-  # rainmelt=0.0125
-  # shore=0
-  # tides=matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3)
-  # scenario=""
-  # year=2070
-  # barcoo=""
-  # quadrangle=1
-  # hourly=0
-  # rainhour = 0
-  # rainoff=0
-  # lamb = 0
-  # IUV = 0
-  # R1 = 0.001
-  # RW = 2.5e+10
-  # RL = 2e+6
-  # PC = -1500
-  # SP = 10
-  # IM = 1e-06
-  # MAXCOUNT = 500
-  # windfac=1
-  # rainhourly = 0
-  # opendap = 1
-  # soilgrids = 1
-  # IR = 0
-  # message = 0
-  # fail = nyears * 24 * 365
-  # elev = NA
-  # lapse_max = 0.0077
-  # lapse_min = 0.0039
-  # Refhyt <- 1.2
+  R1 = 0.001,
+  RW = 2.5e+10,
+  RL = 2e+6,
+  PC = -1500,
+  SP = 10,
+  IM = 1e-06,
+  MAXCOUNT = 500,
+  LAI = 0.1,
+  snowmodel = 0,
+  snowtemp = 1.5,
+  snowdens = 0.375,
+  densfun = c(0.5979, 0.2178, 0.001, 0.0038),
+  snowmelt = 1,
+  undercatch = 1,
+  rainmelt = 0.0125,
+  shore = 0,
+  tides = matrix(data = 0, nrow = 24 * timeinterval * nyears, ncol = 3),
+  loop = 0,
+  scenario = "",
+  year = "",
+  barcoo = "",
+  quadrangle = 1,
+  hourly = 0,
+  rainhourly = 0,
+  rainhour = 0,
+  uid = "",
+  pwd = "",
+  lamb = 0,
+  IUV = 0,
+  soilgrids = 1,
+  IR = 0,
+  opendap = 1,
+  message = 0,
+  fail = nyears * 24 * 365,
+  snowcond = 0,
+  intercept = maxshade / 100 * 0.3,
+  grasshade = 0) {
 
   if(vlsci==0){
     library(RODBC)
@@ -650,22 +630,8 @@ micro_aust_forecast <- function(loc= "Nyrripi, Northern Territory", timeinterval
       f4 <- "/vlsci/VR0212/shared/Spatial_Data/Aust9secDEM.grd";
     }
 
-    if(is.numeric(loc)==FALSE){ # use geocode to get location from site name via googlemaps
-      if (!requireNamespace("dismo", quietly = TRUE)) {
-        stop("dismo needed for the place name geocode function to work. Please install it.",
-          call. = FALSE)
-      }
-      if (!requireNamespace("XML", quietly = TRUE)) {
-        stop("XML needed for the place name geocode function to work. Please install it.",
-          call. = FALSE)
-      }
-      longlat <- dismo::geocode(loc)[3:4] # assumes first geocode match is correct
-      if(nrow(longlat>1)){longlat<-longlat[1,]}
-      x <- t(as.matrix(as.numeric(c(longlat[1,1],longlat[1,2]))))
-    }else{
-      longlat <- loc
-      x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
-    }
+    longlat <- loc
+    x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
 
     # get the local timezone reference longitude
     if(timezone==1){ # this now requires registration

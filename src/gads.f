@@ -1,12 +1,6 @@
       subroutine gads(lat51,lon51,relhum1,season1,optdep1)
 
 ccccc ------------------------------------------------------------------c
-c     Note that must specify location of profiles.dat, extback.dat,     c
-c     optdat and glodata - make sure dimension of tap matches          c
-c     length of optdat plus file names (4 + 2, e.g. waso99 )           c
-c     08/Jan/2016                                           M.Kearney  c
-CCCCC -----------------------------------------------------------------C
-ccccc ------------------------------------------------------------------c
 c     create global distributions of microphysical and optical aerosol  c
 c     properties on the base of the GADS database.                      c
 c                                                                       c
@@ -76,6 +70,7 @@ ccccc -----------------------------------------------------------------c
       character*30 typnam
       character*50 area
       CHARACTER(len=255) :: cwd
+
       common /prog/   nprog
       common /profi/  nil(10),hfta(10),hstra(10),
      *                h0(2,10),h1(2,10),hm(2,10)
@@ -126,7 +121,8 @@ ccccc -----------------------------------------------------------------c
 CCCCC -----------------------------------------------------------------C
 c     some definitions for this version                                c
 CCCCC -----------------------------------------------------------------C
-
+            !CALL getcwd(cwd)
+            !WRITE(*,*) TRIM(cwd)
 	lat5=lat51
 	lon5=lon51
 	season=season1
@@ -215,6 +211,7 @@ c      read (*,*) iwel
          print*,' wrong input! try again!'
          goto 1001
       end if
+
       if (iwel.lt.1.or.iwel.gt.nwel) then
          print*,' wrong number! try again! '
          goto 909
@@ -364,6 +361,7 @@ c     hm(il,ip): effektive Dicke der Schicht il fuer den Typ ip        c
 CCCCC -----------------------------------------------------------------C
 
       open (8,file='extdata/profiles.dat')
+
       nprof=7
       DO IP=1,nprof
          READ(8,8010) IIP,NIL(IP),HFTA(IP),HSTRA(IP)
@@ -434,7 +432,7 @@ C     Kopf des output-files                                            C
 CCCCC -----------------------------------------------------------------C
 
 c      if (ih.eq.1.and.il.eq.1) then
-         open (10,file='aererg.txt')
+         open (10,file='extdata/aererg.txt')
 
 c         write(10,100) cseas
 c  100	   format('# Global Aerosol Data Set, Version 2.2a'/,
@@ -470,18 +468,18 @@ c      end if
       end do
 
       if (kop.le.10) then
-c         write(10,4001) (opnam(in),in=1,kop)
+         write(10,4001) (opnam(in),in=1,kop)
  4001    format('   LAT  LON NL LAMB    RELHUM ',10(1x,a8,1x))
       else
-c         write(10,4001) (opnam(in),in=1,10)
-c         write(10,4002) (opnam(in),in=11,kop)
+         write(10,4001) (opnam(in),in=1,10)
+         write(10,4002) (opnam(in),in=11,kop)
  4002    format('                               ',5(1x,a8,1x))
       end if
 
 c      write(10,4003)
 c 4003 format('#',13x,'  [1/km]  ','  [1/km]  ','  [1/km]  ',
 c     *       30x,'   [sr]')
-	close (10)
+
       return
       end
 
@@ -548,7 +546,7 @@ c          write(*,1025) ( ACNR(JC,1),ACMR(JC,1),JC=4,NJC(1))
             print*,'***!!!    sum of mixing ratios is not 1.     !!!***'
             print*,'***!!! please have a look at errorfile *.err !!!***'
             print*,'***************************************************'
-c            write (2,1001) latx,lonx,sum
+            write (2,1001) latx,lonx,sum
          end if
       end do
 1001  format (2i4,3x,1pe10.3)
@@ -675,10 +673,10 @@ c     Bestimmung des Filenamens der gesuchten Komponente aus	       c
 c     Komponentennummer und Feuchteklasse                              c
 ccccc -----------------------------------------------------------------c
 
-            tap(1:15)='extdata/optdat/'
-            tap(16:19)=comnam(jc)
-            tap(20:21)=chum(iht)
-c   			write(10,*) tap
+          tap(1:15)='extdata/optdat/'
+          tap(16:19)=comnam(jc)
+          tap(20:21)=chum(iht)
+			write(10,*) tap
             ntap=20
 
 ccccc -----------------------------------------------------------------c
@@ -1189,36 +1187,36 @@ ccccc -----------------------------------------------------------------c
 
 	 if (iop.le.10) then
 	    if (l.eq.1) then
-c	       write (10,2020) latx,lonx,nl,alamb(ilamb),ahum(ihum),
-c     *			       (oparam(ip,l),ip=1,iop)
- 2020	     FORMAT(2(1x,I4),i3,3x,f6.3,3x,f3.0,1p3e10.3,0p3e10.3,1pe10.3)
+	       write (10,2020) latx,lonx,nl,alamb(ilamb),ahum(ihum),
+     *			       (oparam(ip,l),ip=1,iop)
+ 2020	  FORMAT(2(1x,I4),i3,3x,f6.3,3x,f3.0,1p3e10.3,0p3e10.3,1pe10.3)
            optdep(ilamb,1)=alamb(ilamb)
 	     optdep(ilamb,2)=oparam(6,l)
 	    else
-c	       write (10,3020)
-c     *			       (oparam(ip,l),ip=1,iop)
+	       write (10,3020)
+     *			       (oparam(ip,l),ip=1,iop)
  3020          FORMAT(13x,1p3e10.3,0p3e10.3,1pe10.3)
 	    end if
 	 else
 	    if (l.eq.1) then
-c	       write (10,2020) latx,lonx,nl,
-c     *			       (oparam(ip,l),ip=1,5)
-c	       write (10,2030) (oparam(ip,l),ip=6,iop)
+	       write (10,2020) latx,lonx,nl,
+     *			       (oparam(ip,l),ip=1,5)
+	       write (10,2030) (oparam(ip,l),ip=6,iop)
  2030	       FORMAT(11x,1p10e10.3)
 	    else
-c	       write (10,3040)
-c     *			       (oparam(ip,l),ip=1,5)
+	       write (10,3040)
+     *			       (oparam(ip,l),ip=1,5)
  3040	       FORMAT(13x,10e10.3)
-c	       write (10,2030) (oparam(ip,l),ip=6,iop)
+	       write (10,2030) (oparam(ip,l),ip=6,iop)
 	    end if
 	 end if
 
 	 if(jnopar(10).eq.1) then
-c	    write(10,4002)
+	    write(10,4002)
  4002	    format('   phase function')
-c	    write(10,4010) (phaf(it,l),it=1,nia)
+	    write(10,4010) (phaf(it,l),it=1,nia)
  4010	    format(8e10.3)
-c	    write(10,*) ' '
+	    write(10,*) ' '
 	 end if
       end do
 

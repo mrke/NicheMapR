@@ -43,4 +43,3 @@ Institution Press. Washington, DC. WETAIR must be used in conjunction with funct
 Input variables are shown below. The user must supply known values for rh, db and pb (bp at one standard
 atmosphere is 101 325 pascals).
 }
-

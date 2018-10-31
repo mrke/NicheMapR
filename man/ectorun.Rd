@@ -63,6 +63,8 @@ ectorun(ecto)
 
 \item{water_stages}{Stage-specific water related parameters}
 
+\item{nutri_stages}{Stage-specific nutrition related parameters}
+
 \item{MAXSHADES}{Maximum shade levels}
 
 \item{S_instar}{For the Insect DEB model}
@@ -70,4 +72,3 @@ ectorun(ecto)
 \description{
 R wrapper for Fortran binary of Niche Mapper microclimate model
 }
-
