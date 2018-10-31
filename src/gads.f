@@ -198,11 +198,11 @@ c      read (*,*) iwel
 	do 9999 iwel=1,nwel
 
       if (ws.eq.'w') then
-         open(ntape,file='../extdata/glodat/winter.dat')
+         open(ntape,file='../glodat/winter.dat')
          read (ntape,'(a1)') dum
          cseas='winter '
       else if (ws.eq.'s') then
-         open(ntape,file='../extdata/glodat/summer.dat')
+         open(ntape,file='../glodat/summer.dat')
          read (ntape,'(a1)') dum
          cseas='summer '
       else
