@@ -372,7 +372,7 @@ micro_global <- function(
   snowcond = 0,
   intercept = maxshade / 100 * 0.4,
   grasshade = 0
-  ) {
+) {
 
   SoilMoist=SoilMoist_Init
   errors<-0
@@ -580,7 +580,7 @@ micro_global <- function(
     ################## location and terrain #################################
 
     if(is.numeric(loc)==FALSE){ # might not be quite right format, try correcting
-     loc=cbind(as.numeric(loc[1]),as.numeric(loc[2]))
+      loc=cbind(as.numeric(loc[1]),as.numeric(loc[2]))
     }
     longlat <- loc
     x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
@@ -629,16 +629,10 @@ micro_global <- function(
 
     if(soilgrids == 1){
       cat('extracting data from SoilGrids \n')
-      require(rjson)
-      require(sp)
-      require(GSIF)
-      pnts <- data.frame(lon=x[1], lat=x[2], id=c("p1"))
-      coordinates(pnts) <- ~lon+lat
-      proj4string(pnts) <- CRS("+proj=longlat +datum=WGS84")
-      soilgrids.r <- REST.SoilGrids(c("BLDFIE", "SLTPPT","SNDPPT", "CLYPPT"))
-      ov <- over(soilgrids.r, pnts)
+      require(jsonlite)
+      ov <- fromJSON(paste0('https://rest.soilgrids.org/query?lon=',x[1],'&lat=',x[2],',&attributes=BLDFIE,SLTPPT,SNDPPT,CLYPPT'), flatten = TRUE)
       if(length(ov) > 3){
-        soilpro <- cbind(c(0,5,15,30,60,100,200), t(ov[3:9])/1000, t(ov[11:17]), t(ov[19:25]), t(ov[27:33]) )
+        soilpro <- cbind(c(0,5,15,30,60,100,200), unlist(ov$properties$BLDFIE$M)/1000, unlist(ov$properties$SLTPPT$M), unlist(ov$properties$SNDPPT$M), unlist(ov$properties$CLYPPT$M) )
         colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
         #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
         soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
@@ -674,8 +668,8 @@ micro_global <- function(
     adiab_corr_min <- delta_elev * lapse_min
     RAINFALL <- CLIMATE[,2:13]
     if(is.na(RAINFALL[1])){
-    cat("no climate data for this site \n")
-     stop()
+      cat("no climate data for this site \n")
+      stop()
     }
     RAINYDAYS <- CLIMATE[,14:25]/10
     WNMAXX <- CLIMATE[,26:37]/10
