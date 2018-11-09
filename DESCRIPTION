@@ -1,4 +1,5 @@
 Package: NicheMapR
+Type: Package
 Title: R implementation of Niche Mapper software for biophysical modelling
 Version: 1.1.4
 Authors@R: person("Michael", "Kearney", email = "mrke@unimelb.edu.au", role = c("aut", "cre"))
@@ -10,28 +11,26 @@ Depends:
 License: gpl-3.0
 LazyData: true
 RoxygenNote: 6.1.0
+Remotes: ilyamaclean/microclima
 Suggests:
     devtools,
-    dismo,
     geonames,
     knitr,
     lattice,
     rmarkdown,
     geonames,
-    raster,
-    XML,
-    proj4,
     readr,
     rutils,
-    ncdf4,
-    soilDB,
-    rjson,
-    sp,
-    GSIF,
+    jsonlite,
     futile.logger,
     microclima
+Imports:
+    ncdf4,
+    raster
 VignetteBuilder: rmarkdown
 Vignettes: properties-of-air,ectotherm-model-tutorial,microclimate-model-
     tutorial,microclimate-monthly-input-example,microclimate-inputs,microclimate-
     model-theory-equations,microclimate-hourly-input-example
 Encoding: UTF-8
+URL: https://github.com/mrke/NicheMapR
+BugReports: https://github.com/mrke/NicheMapR/issues
