@@ -174,6 +174,7 @@ get_p_wet <- function(cut.known = 0, resp.known = 0, eye.known = 0, vent.known =
       J_CO2<- J_O2_con * RQ # Co2 flux at exit, mol/s
       J_air_out <- (J_O2_out + J_CO2) * ((fN2 + fO2) / fO2) * (fO2_ref / fO2) * (PO2_ref / PO2) #Moles air at 2 (mol/s)
     }
+    e_lung <- WETAIR(db = T_b, rh = 100)$e
     J_H2O_out <- J_air_out*(e_lung/(bp-e_lung)) # water exiting, mol/s
 
     # total respiratory water loss
