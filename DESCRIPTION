@@ -7,7 +7,7 @@ Maintainer: Michael Kearney <mrke@unimelb.edu.au>
 Description: This packages provides an interface to a suite of biophysical
     modelling algorithms including the Niche Mapper system.
 Depends:
-    R (>= 3.5.1)
+    R (>= 3.4.0)
 License: gpl-3.0
 LazyData: true
 RoxygenNote: 6.1.0
