@@ -283,66 +283,67 @@ micro_ncep <- function(
   dstart = "01/01/2017",
   dfinish = "31/12/2017",
   dem = NA,
-  nyears=as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1,
-  REFL=0.15,
-  slope=NA,
-  aspect=NA,
-  DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.),
-  Refhyt=1,
-  Usrhyt=.01,
-  Z01=0,
-  Z02=0,
-  ZH1=0,
-  ZH2=0,
-  run.gads=1,
-  write_input=0,
-  writecsv=0,
-  reanalysis=TRUE,
+  dem2 = dem,
+  nyears = as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1,
+  REFL = 0.15,
+  slope = NA,
+  aspect = NA,
+  DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200),
+  Refhyt = 2,
+  Usrhyt = 0.01,
+  Z01 = 0,
+  Z02 = 0,
+  ZH1 = 0,
+  ZH2 = 0,
+  run.gads = 1,
+  write_input = 0,
+  writecsv = 0,
+  reanalysis = TRUE,
   windfac = 1,
-  warm=0,
-  ERR=1.5,
-  RUF=0.004,
-  EC=0.0167238,
-  SLE=0.95,
-  Thcond=2.5,
-  Density=2.56,
-  SpecHeat=870,
-  BulkDensity=1.3,
-  PCTWET=0,
-  rainwet=1.5,
-  cap=1,
-  CMH2O=1,
-  hori=rep(0,24),
-  runmoist=1,
-  PE=rep(1.1,19),
-  KS=rep(0.0037,19),
-  BB=rep(4.5,19),
-  BD=rep(1.3,19),
-  DD=rep(2.56,19),
-  maxpool=10000,
-  rainmult=1,
-  evenrain=0,
-  SoilMoist_Init=c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3),
+  warm = 0,
+  ERR = 1.5,
+  RUF = 0.004,
+  EC = 0.0167238,
+  SLE = 0.95,
+  Thcond = 2.5,
+  Density = 2.56,
+  SpecHeat = 870,
+  BulkDensity = 1.3,
+  PCTWET = 0,
+  rainwet = 1.5,
+  cap = 1,
+  CMH2O = 1,
+  hori = rep(0, 24),
+  runmoist = 1,
+  PE = rep(1.1, 19),
+  KS = rep(0.0037, 19),
+  BB = rep(4.5, 19),
+  BD = rep(1.3, 19),
+  DD = rep(2.56, 19),
+  maxpool = 10000,
+  rainmult = 1,
+  evenrain = 0,
+  SoilMoist_Init = c(0.1, 0.12, 0.15, 0.2, 0.25, 0.3, 0.3, 0.3, 0.3, 0.3),
   L = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4 ,0.4, 0, 0) * 10000,
   R1 = 0.001,
   RW = 2.5e+10,
-  RL = 2e+6,
+  RL = 2e+06,
   PC = -1500,
   SP = 10,
   IM = 1e-06,
   MAXCOUNT = 500,
-  LAI=0.1,
-  LOR=1,
-  snowmodel=1,
-  snowtemp=1.5,
-  snowdens=0.375,
-  densfun=c(0.5979, 0.2178, 0.001, 0.0038),
-  snowmelt=1,
-  undercatch=1,
-  rainmelt=0.0125,
-  shore=0,
+  LAI = 0.1,
+  LOR = 1,
+  snowmodel = 1,
+  snowtemp = 1.5,
+  snowdens = 0.375,
+  densfun = c(0.5979, 0.2178, 0.001, 0.0038),
+  snowmelt = 1,
+  undercatch = 1,
+  rainmelt = 0.0125,
+  shore = 0,
   tides = 0,
-  hourly=1,
+  hourly = 1,
   rainhourly = 0,
   rainhour = 0,
   rainoff=0,
@@ -355,14 +356,12 @@ micro_ncep <- function(
   save = 0,
   snowcond = 0,
   intercept = 0 / 100 * 0.3,
-  grasshade = 0){ # end function parameters
+  grasshade = 0,
+  coastal = T){ # end function parameters
 
   ystart <- as.numeric(substr(dstart, 7, 10))
   yfinish <- as.numeric(substr(dfinish, 7, 10))
   yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
-
-  longlat <- loc
-  x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
@@ -719,14 +718,14 @@ micro_ncep <- function(
         dsw[dsw<0] <- 0
         prate[prate<0] <- 0
         prate <- prate * 3600 * 6
-        ncepdata <- data.frame(obs_time = tme2[sel], Tk, Tkmin, Tkmax, sh, pr, wu, wv, dlw, ulw, dsw, tcdc)#, prate)
+        ncepdata <- data.frame(obs_time = tme2[sel], Tk, Tkmin, Tkmax, sh, pr, wu, wv, dlw, ulw, dsw, tcdc)
         hourlydata <- hourlyNCEP(ncepdata = ncepdata, lat, long, tme, TRUE)
-        microclima.out <- microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(LAI), x = LOR, hourlydata = hourlydata, dailyprecip = prate, dem = dem, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78)
+        microclima.out <- microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78)
         dailyrain <- microclima.out$dailyprecip[-c(1:4)] # remove extra 4 values from start
         dailyrain <- dailyrain[1:(length(dailyrain)-4)] # remove extra 4 values from end
         dailyrain <- aggregate(dailyrain, by = list(format(hourlydata$obs_time[seq(1, nrow(hourlydata), 6)], "%Y-%m-%d")), sum)$x
       }else{
-        microclima.out <- microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(LAI), x = LOR, hourlydata = NA, dailyprecip = NA, dem = dem, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78)
+        microclima.out <- microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(LAI), x = LOR, coastal = coastal, hourlydata = NA, dailyprecip = NA, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78)
         hourlydata <- microclima.out$hourlydata
         dailyrain <- microclima.out$dailyprecip
       }
@@ -737,7 +736,7 @@ micro_ncep <- function(
       cat("computing radiation and elevation effects with package microclima \n")
       SLOPE <- hourlyradwind$slope[1]
       ASPECT <- hourlyradwind$aspect[1]
-      HORIZON <- hori#hourlyr$hori
+      HORIZON <- hori
       if(save == 1){
         save(SLOPE, file = 'SLOPE.Rda')
         save(ASPECT, file = 'ASPECT.Rda')
@@ -760,9 +759,6 @@ micro_ncep <- function(
       CLDhr <- hourlydata$cloudcover
       CLDhr[CLDhr < 0] <- 0
       CLDhr[CLDhr > 100] <- 100
-      #if(clearsky == 1){
-      #  CLDhr <- CLDhr * 0
-      #}
       IRDhr <- hourlydata$downlong / .0036
       RHhr <- suppressWarnings(humidityconvert(h = hourlydata$humidity, intype = 'specific', p = hourlydata$pressure, tc = TAIRhr)$relative)
       RHhr[RHhr > 100] <- 100
