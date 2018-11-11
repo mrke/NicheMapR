@@ -831,7 +831,7 @@ micro_ncep <- function(
       load('IRDhr.Rda')
       load('microclima.out.Rda')
     }
-    if(hourlydata == 1){
+    if(hourly == 1){
      slope <- 0 # already corrected for by microclima
      azmuth <- 0 # already corrected for by microclima
     }
