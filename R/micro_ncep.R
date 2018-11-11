@@ -29,13 +29,6 @@
 #' @usage micro_clima(loc = 'Galapagos', dstart = "01-01-2017", dfinish = "31-12-2017",
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200),
 #' Usrhyt = 0.01, ...)
-#' @import microclima
-#' @import elevatr
-#' @import RNCEP
-#' @import zoo
-#' @import raster
-#' @import proj4
-#' @import ncdf4
 #' @export
 #' @details
 #' \strong{ Parameters controlling how the model runs:}\cr\cr
@@ -104,7 +97,8 @@
 #' \code{SP}{ = 10, stability parameter for stomatal closure equation, -}\cr\cr
 #' \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
 #' \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
-#' \code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET in soil moisture model and for package microclima radiation calcs}\cr\cr
+#' \code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET in soil moisture model}\cr\cr
+#' \code{microclima.LAI}{ = 0.1, leaf area index, used by package microclima for radiation calcs}\cr\cr
 #' \code{LOR}{ = 1, leaf orientation for package microclima radiation calcs}\cr\cr
 #'
 #' \strong{ Snow mode parameters:}
@@ -333,6 +327,7 @@ micro_ncep <- function(
   IM = 1e-06,
   MAXCOUNT = 500,
   LAI = 0.1,
+  microclima.LAI = 0.1,
   LOR = 1,
   snowmodel = 1,
   snowtemp = 1.5,
@@ -498,17 +493,14 @@ micro_ncep <- function(
 
   if(errors==0){ # continue
 
-    moist.lai <- 0.1 # to do - option to decouple shade from LAI used in soil moisture
+
+    ################## time related variables #################################
+
     # for microclima calculations
     tme <- as.POSIXlt(seq(ISOdate(ystart, 1, 1, tz = "UTC") - 3600 * 12, ISOdate((ystart + nyears), 1, 1, tz = "UTC") - 3600 * 13, by = "days"))
 
-
-
-    ################## time related variables #################################
     doys12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
-
     microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
-
     daystart<-1
     idayst <- 1 # start day
 
@@ -525,6 +517,14 @@ micro_ncep <- function(
       stop("package 'ncdf4' is needed. Please install it.",
         call. = FALSE)
     }
+    if (!requireNamespace("microclima", quietly = TRUE)) {
+      stop("package 'microclima' is needed. Please install it via command: devtools::install_github('ilyamaclean/microclima').",
+        call. = FALSE)
+    }
+    requireNamespace(raster)
+    requireNamespace(RNCEP)
+    requireNamespace(ncdf4)
+    requireNamespace(microclima)
     longlat <- loc
     x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
 
@@ -545,7 +545,7 @@ micro_ncep <- function(
     }
     if(save != 2 & class(dem)[1] != "RasterLayer"){
       cat('downloading DEM via package elevatr \n')
-      dem <- get_dem(lat = lat, long = long) # mercator equal area projection
+      dem <- microclima::get_dem(lat = lat, long = long) # mercator equal area projection
     }
     if(save == 1){
       save(dem, file = 'dem.Rda')
@@ -556,8 +556,12 @@ micro_ncep <- function(
     if(save != 2){
       if(soilgrids == 1){
         cat('extracting data from SoilGrids \n')
-        require(jsonlite)
-        ov <- fromJSON(paste0('https://rest.soilgrids.org/query?lon=',x[1],'&lat=',x[2],',&attributes=BLDFIE,SLTPPT,SNDPPT,CLYPPT'), flatten = TRUE)
+        if (!requireNamespace("jsonlite", quietly = TRUE)) {
+          stop("package 'jsonlite' is needed to extract data from SoilGrids, please install it.",
+            call. = FALSE)
+        }
+        requireNamespace(jsonlite)
+        ov <- jsonlite::fromJSON(paste0('https://rest.soilgrids.org/query?lon=',x[1],'&lat=',x[2],',&attributes=BLDFIE,SLTPPT,SNDPPT,CLYPPT'), flatten = TRUE)
         if(length(ov) > 3){
           soilpro <- cbind(c(0,5,15,30,60,100,200), unlist(ov$properties$BLDFIE$M)/1000, unlist(ov$properties$SLTPPT$M), unlist(ov$properties$SNDPPT$M), unlist(ov$properties$CLYPPT$M) )
           colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
@@ -613,13 +617,10 @@ micro_ncep <- function(
 
     if(save != 2){
       cat("extracting weather data with RNCEP \n")
-      #ncepdata <- get_inputs(lat, long, tme)
-      #save(ncepdata, file = 'ncepdata.Rda')
-      #hourlydata <- hourlyNCEP(ncepdata, lat, long)
       ncquery <- function(filename, var, start, count, year){
-        nc <- nc_open(paste(spatial, "/",filename,year,".nc", sep = ""))
-        out <- as.numeric(ncvar_get(nc, varid = var, start = start, count = count))
-        nc_close(nc)
+        nc <- ncdf4::nc_open(paste(spatial, "/",filename,year,".nc", sep = ""))
+        out <- as.numeric(ncdf4::ncvar_get(nc, varid = var, start = start, count = count))
+        ncdf4::nc_close(nc)
         out
       }
       if(is.na(spatial) == FALSE){
@@ -652,9 +653,9 @@ micro_ncep <- function(
         cat(paste0("extracting weather data locally from ", spatial, " \n"))
         years <- as.numeric(unique(format(tme, "%Y")))
         nyears <- length(years)
-        nc <- nc_open(paste(spatial, "/air.2m.gauss.", years[1], ".nc",
+        nc <- ncdf4::nc_open(paste(spatial, "/air.2m.gauss.", years[1], ".nc",
           sep = ""))
-        lon2 <- matrix(ncvar_get(nc, "lon"))
+        lon2 <- matrix(ncdf4::ncvar_get(nc, "lon"))
         #lon2[lon2 > 180] <- - 180 + (lon2[lon2 > 180] - 180)
         lat2 <- matrix(ncvar_get(nc, "lat"))
         lon_1 <- long
@@ -668,7 +669,7 @@ micro_ncep <- function(
         count <- c(1, 1, 1, -1)
         start2 <- c(index1, index2, 1, 1460-3)
         count2 <- c(1, 1, 1, 4)
-        nc_close(nc)
+        ncdf4::nc_close(nc)
 
         for (j in 1:(nyears+2)) {
           if (j == 1) {
@@ -719,13 +720,13 @@ micro_ncep <- function(
         prate[prate<0] <- 0
         prate <- prate * 3600 * 6
         ncepdata <- data.frame(obs_time = tme2[sel], Tk, Tkmin, Tkmax, sh, pr, wu, wv, dlw, ulw, dsw, tcdc)
-        hourlydata <- hourlyNCEP(ncepdata = ncepdata, lat, long, tme, TRUE)
-        microclima.out <- microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78)
+        hourlydata <- microclima::hourlyNCEP(ncepdata = ncepdata, lat, long, tme, TRUE)
+        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78)
         dailyrain <- microclima.out$dailyprecip[-c(1:4)] # remove extra 4 values from start
         dailyrain <- dailyrain[1:(length(dailyrain)-4)] # remove extra 4 values from end
         dailyrain <- aggregate(dailyrain, by = list(format(hourlydata$obs_time[seq(1, nrow(hourlydata), 6)], "%Y-%m-%d")), sum)$x
       }else{
-        microclima.out <- microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(LAI), x = LOR, coastal = coastal, hourlydata = NA, dailyprecip = NA, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78)
+        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = NA, dailyprecip = NA, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78)
         hourlydata <- microclima.out$hourlydata
         dailyrain <- microclima.out$dailyprecip
       }
@@ -771,7 +772,6 @@ micro_ncep <- function(
       RAINFALL[RAINFALL < 0.1] <- 0
       ZENhr2 <- ZENhr
       ZENhr2[ZENhr2!=90] <- 0
-
       dmaxmin <- function(x, fun) {
         dx <- t(matrix(x, nrow = 24))
         apply(dx, 1, fun)
@@ -1033,7 +1033,6 @@ micro_ncep <- function(
     RAINFALL1[1:ndays]<-RAINFALL
     tannul1[1:ndays]<-tannul
     moists1[1:10,1:ndays]<-moists
-    LAI <- moist.lai
     if(length(LAI)<ndays){
       LAI<-rep(LAI[1],ndays)
       LAI1 <- LAI

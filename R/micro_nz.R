@@ -693,6 +693,10 @@ micro_nz <- function(
 
     if(soilgrids == 1){
       cat('extracting data from SoilGrids \n')
+      if (!requireNamespace("jsonlite", quietly = TRUE)) {
+        stop("package 'jsonlite' is needed to extract data from SoilGrids, please install it.",
+          call. = FALSE)
+      }
       require(jsonlite)
       ov <- fromJSON(paste0('https://rest.soilgrids.org/query?lon=',x[1],'&lat=',x[2],',&attributes=BLDFIE,SLTPPT,SNDPPT,CLYPPT'), flatten = TRUE)
       if(length(ov) > 3){
