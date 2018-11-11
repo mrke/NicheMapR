@@ -12,6 +12,7 @@
 #' @param aspect Aspect in degrees (0 = north) (if NA, then derived from DEM with microclima)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
+#' @param coastal Compute coastal effects with microclima? (can take a while)
 #' @param ... Additional arguments, see Details
 #' @return metout The above ground micrometeorological conditions under the minimum specified shade
 #' @return shadmet The above ground micrometeorological conditions under the maximum specified shade
@@ -353,7 +354,7 @@ micro_ncep <- function(
   snowcond = 0,
   intercept = 0 / 100 * 0.3,
   grasshade = 0,
-  coastal = T){ # end function parameters
+  coastal = F){ # end function parameters
 
   ystart <- as.numeric(substr(dstart, 7, 10))
   yfinish <- as.numeric(substr(dfinish, 7, 10))
