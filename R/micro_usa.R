@@ -560,8 +560,8 @@ micro_usa <- function(
     longlat <- loc
     x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
 
-    requireNamespace(raster)
-    requireNamespace(ncdf4)
+    requireNamespace("raster")
+    requireNamespace("ncdf4")
 
     # get the local timezone reference longitude
     if(timezone==1){ # this now requires registration

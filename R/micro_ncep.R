@@ -5,7 +5,8 @@
 #' @param loc Longitude and latitude (decimal degrees)
 #' @param dstart First day to run, date in format "d-m-Y" e.g. "01-01-2016"
 #' @param dfinish Last day to run, date in format "d-m-Y" e.g. "31-12-2016"
-#' @param dem a digital elevation model produce by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
+#' @param dem a digital elevation model used by microclima for micro-topographic effects, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
+#' @param dem2 a digital elevation model used by microclima for meso-climate calculations, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
 #' @param REFL Soil solar reflectance, decimal \%
 #' @param slope Slope in degrees (if NA, then derived from DEM with package microclima)
 #' @param aspect Aspect in degrees (0 = north) (if NA, then derived from DEM with microclima)
@@ -521,10 +522,10 @@ micro_ncep <- function(
       stop("package 'microclima' is needed. Please install it via command: devtools::install_github('ilyamaclean/microclima').",
         call. = FALSE)
     }
-    requireNamespace(raster)
-    requireNamespace(RNCEP)
-    requireNamespace(ncdf4)
-    requireNamespace(microclima)
+    requireNamespace("raster")
+    requireNamespace("RNCEP")
+    requireNamespace("ncdf4")
+    requireNamespace("microclima")
     longlat <- loc
     x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
 
