@@ -658,7 +658,7 @@ micro_ncep <- function(
           sep = ""))
         lon2 <- matrix(ncdf4::ncvar_get(nc, "lon"))
         #lon2[lon2 > 180] <- - 180 + (lon2[lon2 > 180] - 180)
-        lat2 <- matrix(ncvar_get(nc, "lat"))
+        lat2 <- matrix(ncdf4::ncvar_get(nc, "lat"))
         lon_1 <- long
         if(lon_1 < 0){lon_1 <- 180 - (long*-1) + 180}
         lat_1 <- lat
