@@ -629,6 +629,10 @@ micro_global <- function(
 
     if(soilgrids == 1){
       cat('extracting data from SoilGrids \n')
+      if (!requireNamespace("jsonlite", quietly = TRUE)) {
+        stop("package 'jsonlite' is needed to extract data from SoilGrids, please install it.",
+          call. = FALSE)
+      }
       require(jsonlite)
       ov <- fromJSON(paste0('https://rest.soilgrids.org/query?lon=',x[1],'&lat=',x[2],',&attributes=BLDFIE,SLTPPT,SNDPPT,CLYPPT'), flatten = TRUE)
       if(length(ov) > 3){
@@ -654,6 +658,14 @@ micro_global <- function(
       stop()
     }
     load(gcfolder)
+    if (!requireNamespace("raster", quietly = TRUE)) {
+      stop("package 'raster' is needed. Please install it.",
+        call. = FALSE)
+    }
+    if (!requireNamespace("ncdf4", quietly = TRUE)) {
+      stop("package 'ncdf4' is needed. Please install it.",
+        call. = FALSE)
+    }
 
     message('extracting climate data \n')
     global_climate<-raster::brick(paste(folder,"/global_climate.nc",sep=""))

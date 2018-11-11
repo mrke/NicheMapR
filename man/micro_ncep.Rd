@@ -129,7 +129,8 @@ An implementation of the NicheMapR microclimate model that uses the RNCEP packag
 \code{SP}{ = 10, stability parameter for stomatal closure equation, -}\cr\cr
 \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
 \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
-\code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET in soil moisture model and for package microclima radiation calcs}\cr\cr
+\code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET in soil moisture model}\cr\cr
+\code{microclima.LAI}{ = 0.1, leaf area index, used by package microclima for radiation calcs}\cr\cr
 \code{LOR}{ = 1, leaf orientation for package microclima radiation calcs}\cr\cr
 
 \strong{ Snow mode parameters:}

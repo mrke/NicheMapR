@@ -569,12 +569,15 @@ micro_uk <- function(
       stop("package 'ncdf4' is needed. Please install it.",
         call. = FALSE)
     }
+    if (!requireNamespace("sp", quietly = TRUE)) {
+      stop("package 'sp' is needed. Please install it.",
+        call. = FALSE)
+    }
     longlat <- loc
     x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
 
-    library(raster)
-    library(proj4)
-    library(ncdf4)
+    requireNamespace(raster)
+    requireNamespace(ncdf4)
     # get the local timezone reference longitude
     if(timezone==1){ # this now requires registration
       if(!require(geonames, quietly = TRUE)){
@@ -605,8 +608,8 @@ micro_uk <- function(
 +ellps=airy +datum=OSGB36 +units=m +no_defs'
     sp <-  sp::spTransform(sp::SpatialPoints(x,proj4string=sp::CRS(wgs84)),sp::CRS(bng))
     x2 <- sp@coords
-    UKDEM <-extract(raster(paste0(spatial,"/terr1000.tif")), x2)
-    ALTITUDES <- extract(raster(paste0(spatial,"/terr50.tif")), x2)
+    UKDEM <-extract(raster::raster(paste0(spatial,"/terr1000.tif")), x2)
+    ALTITUDES <- extract(raster::raster(paste0(spatial,"/terr50.tif")), x2)
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-UKDEM}
     if(is.na(elev) == FALSE){ # check if user-specified elevation
       ALTITUDES <- elev
@@ -639,8 +642,12 @@ micro_uk <- function(
     if(save != 2){
       if(soilgrids == 1){
         cat('extracting data from SoilGrids \n')
+        if (!requireNamespace("jsonlite", quietly = TRUE)) {
+          stop("package 'jsonlite' is needed to extract data from SoilGrids, please install it.",
+            call. = FALSE)
+        }
         require(jsonlite)
-        ov <- fromJSON(paste0('https://rest.soilgrids.org/query?lon=',x[1],'&lat=',x[2],',&attributes=BLDFIE,SLTPPT,SNDPPT,CLYPPT'), flatten = TRUE)
+        ov <- jsonlite::fromJSON(paste0('https://rest.soilgrids.org/query?lon=',x[1],'&lat=',x[2],',&attributes=BLDFIE,SLTPPT,SNDPPT,CLYPPT'), flatten = TRUE)
         if(length(ov) > 3){
           soilpro <- cbind(c(0,5,15,30,60,100,200), unlist(ov$properties$BLDFIE$M)/1000, unlist(ov$properties$SLTPPT$M), unlist(ov$properties$SNDPPT$M), unlist(ov$properties$CLYPPT$M) )
           colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
@@ -685,6 +692,9 @@ micro_uk <- function(
 
     if(save != 2){
       if(opendap != 0){
+        if(!require(futile.logger, quietly = TRUE)){
+         stop('package "futile.logger" is required for this opendap extraction process. Please install it.')
+        }
         require(utils)
         require(futile.logger)
         retry <- function(expr, isError=function(x) "try-error" %in% class(x), maxErrors=20, sleep=0) {
@@ -694,12 +704,12 @@ micro_uk <- function(
             attempts = attempts + 1
             if (attempts >= maxErrors) {
               msg = sprintf("retry: too many retries [[%s]]", capture.output(str(retval)))
-              flog.fatal(msg)
+              futile.logger::flog.fatal(msg)
               stop(msg)
             } else {
               msg = sprintf("retry: error in attempt %i/%i [[%s]]", attempts, maxErrors,
                 capture.output(str(retval)))
-              flog.error(msg)
+              futile.logger::flog.error(msg)
               warning(msg)
             }
             if (sleep > 0) Sys.sleep(sleep)
@@ -709,11 +719,11 @@ micro_uk <- function(
         }
 
         baseurl <- opendap
-        nc <- nc_open(paste0(baseurl, "dtrDetail02/chess_dtr_", yearlist[1],
+        nc <- ndf4::nc_open(paste0(baseurl, "dtrDetail02/chess_dtr_", yearlist[1],
           "12.nc", sep = ""))
-        northings <- retry(matrix(ncvar_get(nc, "y")))
-        eastings <- retry(matrix(ncvar_get(nc, "x")))
-        nc_close(nc)
+        northings <- retry(matrix(ndf4::ncvar_get(nc, "y")))
+        eastings <- retry(matrix(ndf4::ncvar_get(nc, "x")))
+        ndf4::nc_close(nc)
         easting <- eastings
         northing <- rep(northings[1], length(easting))
         lon <- ConvertCoordinates(easting, northing)[, 1]
@@ -732,27 +742,27 @@ micro_uk <- function(
           for (jj in 1:12) {
             cat(paste("reading weather input for ", yearlist[j],
               " month ", month[jj], " \n", sep = ""))
-            nc <- nc_open(paste0(baseurl, "dtrDetail02/chess_dtr_", yearlist[j], month[jj], ".nc"))
-            dtr <- retry(as.numeric(ncvar_get(nc, varid = "dtr",start = start, count)))
-            nc_close(nc)
-            nc <- nc_open(paste0(baseurl, "tasDetail02/chess_tas_", yearlist[j], month[jj], ".nc"))
-            tas <- retry(as.numeric(ncvar_get(nc, varid = "tas", start = start, count)))
-            nc_close(nc)
-            nc <- nc_open(paste0(baseurl, "psurfDetail02/chess_psurf_", yearlist[j], month[jj], ".nc"))
-            psurf <- retry(as.numeric(ncvar_get(nc, varid = "psurf", start = start, count)))
-            nc_close(nc)
-            nc <- nc_open(paste0(baseurl, "hussDetail02/chess_huss_", yearlist[j], month[jj], ".nc"))
-            huss <- retry(as.numeric(ncvar_get(nc, varid = "huss",  start = start, count)))
-            nc_close(nc)
-            nc <- nc_open(paste0(baseurl, "precipDetail02/chess_precip_", yearlist[j], month[jj], ".nc"))
-            precip <- retry(as.numeric(ncvar_get(nc, varid = "precip", start = start, count)))
-            nc_close(nc)
-            nc <- nc_open(paste0(baseurl, "rsdsDetail02/chess_rsds_", yearlist[j], month[jj], ".nc"))
-            rsds <- retry(as.numeric(ncvar_get(nc, varid = "rsds", start = start, count)))
-            nc_close(nc)
-            nc <- nc_open(paste0(baseurl, "sfcWindDetail02/chess_sfcWind_", yearlist[j], month[jj], ".nc"))
-            sfcWind <- retry(as.numeric(ncvar_get(nc, varid = "sfcWind", start = start, count)))
-            nc_close(nc)
+            nc <- ndf4::nc_open(paste0(baseurl, "dtrDetail02/chess_dtr_", yearlist[j], month[jj], ".nc"))
+            dtr <- retry(as.numeric(ndf4::ncvar_get(nc, varid = "dtr",start = start, count)))
+            ndf4::nc_close(nc)
+            nc <- ndf4::nc_open(paste0(baseurl, "tasDetail02/chess_tas_", yearlist[j], month[jj], ".nc"))
+            tas <- retry(as.numeric(ndf4::ncvar_get(nc, varid = "tas", start = start, count)))
+            ndf4::nc_close(nc)
+            nc <- ndf4::nc_open(paste0(baseurl, "psurfDetail02/chess_psurf_", yearlist[j], month[jj], ".nc"))
+            psurf <- retry(as.numeric(ndf4::ncvar_get(nc, varid = "psurf", start = start, count)))
+            ndf4::nc_close(nc)
+            nc <- ndf4::nc_open(paste0(baseurl, "hussDetail02/chess_huss_", yearlist[j], month[jj], ".nc"))
+            huss <- retry(as.numeric(ndf4::ncvar_get(nc, varid = "huss",  start = start, count)))
+            ndf4::nc_close(nc)
+            nc <- ndf4::nc_open(paste0(baseurl, "precipDetail02/chess_precip_", yearlist[j], month[jj], ".nc"))
+            precip <- retry(as.numeric(ndf4::ncvar_get(nc, varid = "precip", start = start, count)))
+            ndf4::nc_close(nc)
+            nc <- ndf4::nc_open(paste0(baseurl, "rsdsDetail02/chess_rsds_", yearlist[j], month[jj], ".nc"))
+            rsds <- retry(as.numeric(ndf4::ncvar_get(nc, varid = "rsds", start = start, count)))
+            ndf4::nc_close(nc)
+            nc <- ndf4::nc_open(paste0(baseurl, "sfcWindDetail02/chess_sfcWind_", yearlist[j], month[jj], ".nc"))
+            sfcWind <- retry(as.numeric(ndf4::ncvar_get(nc, varid = "sfcWind", start = start, count)))
+            ndf4::nc_close(nc)
             if (j == 1 & jj == 1) {
               Tmax <- tas - 273.15 + dtr/2
               Tmin <- tas - 273.15 - dtr/2
@@ -774,11 +784,11 @@ micro_uk <- function(
           }
         }
       }else{
-        nc <- nc_open(paste(spatial, "/chess_dtr_", yearlist[1],
+        nc <- ndf4::nc_open(paste(spatial, "/chess_dtr_", yearlist[1],
           "12.nc", sep = ""))
-        northings <- matrix(ncvar_get(nc, "y"))
-        eastings <- matrix(ncvar_get(nc, "x"))
-        nc_close(nc)
+        northings <- matrix(ndf4::ncvar_get(nc, "y"))
+        eastings <- matrix(ndf4::ncvar_get(nc, "x"))
+        ndf4::nc_close(nc)
         easting <- eastings
         northing <- rep(northings[1], length(easting))
         lon <- ConvertCoordinates(easting, northing)[, 1]
@@ -797,41 +807,41 @@ micro_uk <- function(
           for (jj in 1:12) {
             cat(paste("reading weather input for ", yearlist[j],
               " month ", month[jj], " \n", sep = ""))
-            nc <- nc_open(paste(spatial, "/chess_dtr_", yearlist[j],
+            nc <- ndf4::nc_open(paste(spatial, "/chess_dtr_", yearlist[j],
               month[jj], ".nc", sep = ""))
-            dtr <- as.numeric(ncvar_get(nc, varid = "dtr",
+            dtr <- as.numeric(ndf4::ncvar_get(nc, varid = "dtr",
               start = start, count))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/chess_tas_", yearlist[j],
+            ndf4::nc_close(nc)
+            nc <- ndf4::nc_open(paste(spatial, "/chess_tas_", yearlist[j],
               month[jj], ".nc", sep = ""))
-            tas <- as.numeric(ncvar_get(nc, varid = "tas",
+            tas <- as.numeric(ndf4::ncvar_get(nc, varid = "tas",
               start = start, count))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/chess_psurf_",
+            ndf4::nc_close(nc)
+            nc <- ndf4::nc_open(paste(spatial, "/chess_psurf_",
               yearlist[j], month[jj], ".nc", sep = ""))
-            psurf <- as.numeric(ncvar_get(nc, varid = "psurf",
+            psurf <- as.numeric(ndf4::ncvar_get(nc, varid = "psurf",
               start = start, count))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/chess_huss_",
+            ndf4::nc_close(nc)
+            nc <- ndf4::nc_open(paste(spatial, "/chess_huss_",
               yearlist[j], month[jj], ".nc", sep = ""))
-            huss <- as.numeric(ncvar_get(nc, varid = "huss",
+            huss <- as.numeric(ndf4::cvar_get(nc, varid = "huss",
               start = start, count))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/chess_precip_",
+            ndf4::nc_close(nc)
+            nc <- ndf4::nc_open(paste(spatial, "/chess_precip_",
               yearlist[j], month[jj], ".nc", sep = ""))
-            precip <- as.numeric(ncvar_get(nc, varid = "precip",
+            precip <- as.numeric(ndf4::ncvar_get(nc, varid = "precip",
               start = start, count))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/chess_rsds_",
+            ndf4::nc_close(nc)
+            nc <- ndf4::nc_open(paste(spatial, "/chess_rsds_",
               yearlist[j], month[jj], ".nc", sep = ""))
-            rsds <- as.numeric(ncvar_get(nc, varid = "rsds",
+            rsds <- as.numeric(ndf4::ncvar_get(nc, varid = "rsds",
               start = start, count))
-            nc_close(nc)
-            nc <- nc_open(paste(spatial, "/chess_sfcWind_",
+            ndf4::nc_close(nc)
+            nc <- ndf4::nc_open(paste(spatial, "/chess_sfcWind_",
               yearlist[j], month[jj], ".nc", sep = ""))
-            sfcWind <- as.numeric(ncvar_get(nc, varid = "sfcWind",
+            sfcWind <- as.numeric(ndf4::ncvar_get(nc, varid = "sfcWind",
               start = start, count))
-            nc_close(nc)
+            ndf4::nc_close(nc)
             if (j == 1 & jj == 1) {
               Tmax <- tas - 273.15 + dtr/2
               Tmin <- tas - 273.15 - dtr/2
