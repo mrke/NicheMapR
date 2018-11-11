@@ -1038,7 +1038,7 @@ micro_usa <- function(
         if(length(TMAXX)<365){
           tannulrun<-rep((sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2),length(TMAXX))
         }else{
-          tannulrun<-movingFun(avetemp,n=365,fun=mean,type='to')
+          tannulrun<-raster::movingFun(avetemp,n=365,fun=mean,type='to')
           yearone<-rep((sum(TMAXX[1:365])+sum(TMINN[1:365]))/(365*2),365)
           tannulrun[1:365]<-yearone
         }

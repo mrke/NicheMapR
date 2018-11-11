@@ -16,7 +16,9 @@ Usrhyt = 0.01, ...)
 
 \item{dfinish}{Last day to run, date in format "d-m-Y" e.g. "31-12-2016"}
 
-\item{dem}{a digital elevation model produce by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)}
+\item{dem}{a digital elevation model used by microclima for micro-topographic effects, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)}
+
+\item{dem2}{a digital elevation model used by microclima for meso-climate calculations, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)}
 
 \item{REFL}{Soil solar reflectance, decimal \%}
 
@@ -27,6 +29,8 @@ Usrhyt = 0.01, ...)
 \item{DEP}{Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface}
 
 \item{Usrhyt}{Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest}
+
+\item{coastal}{Compute coastal effects with microclima? (can take a while)}
 
 \item{...}{Additional arguments, see Details}
 }
