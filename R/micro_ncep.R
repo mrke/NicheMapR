@@ -562,7 +562,6 @@ micro_ncep <- function(
           stop("package 'jsonlite' is needed to extract data from SoilGrids, please install it.",
             call. = FALSE)
         }
-        requireNamespace(jsonlite)
         ov <- jsonlite::fromJSON(paste0('https://rest.soilgrids.org/query?lon=',x[1],'&lat=',x[2],',&attributes=BLDFIE,SLTPPT,SNDPPT,CLYPPT'), flatten = TRUE)
         if(length(ov) > 3){
           soilpro <- cbind(c(0,5,15,30,60,100,200), unlist(ov$properties$BLDFIE$M)/1000, unlist(ov$properties$SLTPPT$M), unlist(ov$properties$SNDPPT$M), unlist(ov$properties$CLYPPT$M) )
@@ -722,13 +721,13 @@ micro_ncep <- function(
         prate[prate<0] <- 0
         prate <- prate * 3600 * 6
         ncepdata <- data.frame(obs_time = tme2[sel], Tk, Tkmin, Tkmax, sh, pr, wu, wv, dlw, ulw, dsw, tcdc)
-        hourlydata <- microclima::hourlyNCEP(ncepdata = ncepdata, lat, long, tme, TRUE)
-        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78)
+        hourlydata <- microclima::hourlyNCEP(ncepdata = ncepdata, lat, long, tme, reanalysis)
+        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
         dailyrain <- microclima.out$dailyprecip[-c(1:4)] # remove extra 4 values from start
         dailyrain <- dailyrain[1:(length(dailyrain)-4)] # remove extra 4 values from end
         dailyrain <- aggregate(dailyrain, by = list(format(hourlydata$obs_time[seq(1, nrow(hourlydata), 6)], "%Y-%m-%d")), sum)$x
       }else{
-        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = NA, dailyprecip = NA, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78)
+        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = NA, dailyprecip = NA, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
         hourlydata <- microclima.out$hourlydata
         dailyrain <- microclima.out$dailyprecip
       }
@@ -832,8 +831,10 @@ micro_ncep <- function(
       load('IRDhr.Rda')
       load('microclima.out.Rda')
     }
-    slope <- 0 # already corrected for by microclima
-    azmuth <- 0 # already corrected for by microclima
+    if(hourlydata == 1){
+     slope <- 0 # already corrected for by microclima
+     azmuth <- 0 # already corrected for by microclima
+    }
     ndays<-length(TMAXX)
     doynum<-ndays
     leapyears<-seq(1900,2100,4)
