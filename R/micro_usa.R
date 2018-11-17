@@ -549,19 +549,19 @@ micro_usa <- function(
     idayst <- 1 # start day
 
     ################## location and terrain #################################
-    if (!requireNamespace("raster", quietly = TRUE)) {
+    if (!require("raster", quietly = TRUE)) {
       stop("package 'raster' is needed. Please install it.",
         call. = FALSE)
     }
-    if (!requireNamespace("ncdf4", quietly = TRUE)) {
+    if (!require("ncdf4", quietly = TRUE)) {
       stop("package 'ncdf4' is needed. Please install it.",
         call. = FALSE)
     }
     longlat <- loc
     x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
 
-    requireNamespace("raster")
-    requireNamespace("ncdf4")
+    require("raster")
+    require("ncdf4")
 
     # get the local timezone reference longitude
     if(timezone==1){ # this now requires registration
@@ -617,8 +617,8 @@ micro_usa <- function(
         latindex=which(flat %in% 1)
         flon=match(abs(lon-x[1])<1/48,1)
         lonindex=which(flon %in% 1)
-        start <- c(lonindex,latindex,1)
-        count <- c(1, 1, 1)
+        start <- c(index2, index1, 1)
+        count <- c(1, 1, -1)
         USADEM <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "elevation",
           start = start, count)))
         ncdf4::nc_close(nc)
@@ -988,8 +988,6 @@ micro_usa <- function(
 
       WNMAXX <- Wind * windfac
       WNMINN <- Wind * windfac
-      message('min wind * 0.5 \n')
-      message('max wind * 2 \n')
 
       MAXSHADES<-maxshades
       MINSHADES<-minshades
