@@ -620,7 +620,7 @@ micro_usa <- function(
         start <- c(index2, index1, 1)
         count <- c(1, 1, -1)
         USADEM <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "elevation",
-          start = start, count)))
+          start = start, count = count)))
         ncdf4::nc_close(nc)
       }else{
         USADEM <- extract(raster::raster(paste0(spatial,"/metdata_elevationdata.nc")), x) # metres above sea level
@@ -725,31 +725,31 @@ micro_usa <- function(
         lonindex <- which(flon %in% 1)
         start <- c(lonindex, latindex, which(day == startday) - 1)
         count <- c(1, 1, countday)
-        Tmin <- retry(as.numeric(ncvar_get(nc, varid = "daily_minimum_temperature", start = start, count))) - 273.15
+        Tmin <- retry(as.numeric(ncvar_get(nc, varid = "daily_minimum_temperature", start = start, count = count))) - 273.15
         nc_close(nc)
         cat(paste0("tmax weather input \n"))
         nc <- nc_open(paste0(baseurl, "tmmx_1979_CurrentYear_CONUS.nc"))
-        Tmax <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "daily_maximum_temperature", start = start, count))) - 273.15
+        Tmax <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "daily_maximum_temperature", start = start, count = count))) - 273.15
         ncdf4::nc_close(nc)
         cat(paste0("rhmin weather input \n"))
         nc <- ncdf4::nc_open(paste0(baseurl, "rmin_1979_CurrentYear_CONUS.nc"))
-        rhmin <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "daily_minimum_relative_humidity", start = start, count)))
+        rhmin <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "daily_minimum_relative_humidity", start = start, count = count)))
         ncdf4::nc_close(nc)
         cat(paste0("rhmax weather input \n"))
         nc <- ncdf4::nc_open(paste0(baseurl, "rmax_1979_CurrentYear_CONUS.nc"))
-        rhmax <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "daily_maximum_relative_humidity", start = start, count)))
+        rhmax <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "daily_maximum_relative_humidity", start = start, count = count)))
         ncdf4::nc_close(nc)
         cat(paste0("rain weather input \n"))
         nc <- ncdf4::nc_open(paste0(baseurl, "pr_1979_CurrentYear_CONUS.nc"))
-        Rain <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "precipitation_amount", start = start, count)))
+        Rain <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "precipitation_amount", start = start, count = count)))
         ncdf4::nc_close(nc)
         cat(paste0("solar weather input \n"))
         nc <- ncdf4::nc_open(paste0(baseurl, "srad_1979_CurrentYear_CONUS.nc"))
-        solar <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "daily_mean_shortwave_radiation_at_surface", start = start, count)))
+        solar <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "daily_mean_shortwave_radiation_at_surface", start = start, count = count)))
         ncdf4::nc_close(nc)
         cat(paste0("wind weather input \n"))
         nc <- ncdf4::nc_open(paste0(baseurl, "vs_1979_CurrentYear_CONUS.nc"))
-        Wind <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "daily_mean_wind_speed", start = start, count)))
+        Wind <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "daily_mean_wind_speed", start = start, count = count)))
         ncdf4::nc_close(nc)
       }else{
         cat("extracting weather data \n")
@@ -772,37 +772,37 @@ micro_usa <- function(
             nc <- ncdf4::nc_open(paste(spatial, "/tmmn_", yearlist[j],
               ".nc", sep = ""))
             tmin <- as.numeric(ncdf4::ncvar_get(nc, varid = "air_temperature",
-              start = start, count))
+              start = start, count = count))
             ncdf4::nc_close(nc)
             nc <- ncdf4::nc_open(paste(spatial, "/tmmx_", yearlist[j],
               ".nc", sep = ""))
             tmax <- as.numeric(ncdf4::ncvar_get(nc, varid = "air_temperature",
-              start = start, count))
+              start = start, count = count))
             ncdf4::nc_close(nc)
             nc <- ncdf4::nc_open(paste(spatial, "/rmin_", yearlist[j],
               ".nc", sep = ""))
             rhmin <- as.numeric(ncdf4::ncvar_get(nc, varid = "relative_humidity",
-              start = start, count))
+              start = start, count = count))
             ncdf4::nc_close(nc)
             nc <- ncdf4::nc_open(paste(spatial, "/rmax_", yearlist[j],
               ".nc", sep = ""))
             rhmax <- as.numeric(ncdf4::ncvar_get(nc, varid = "relative_humidity",
-              start = start, count))
+              start = start, count = count))
             ncdf4::nc_close(nc)
             nc <- ncdf4::nc_open(paste(spatial, "/pr_", yearlist[j],
               ".nc", sep = ""))
             Rain <- as.numeric(ncdf4::ncvar_get(nc, varid = "precipitation_amount",
-              start = start, count))
+              start = start, count = count))
             ncdf4::nc_close(nc)
             nc <- ncdf4::nc_open(paste(spatial, "/srad_", yearlist[j],
               ".nc", sep = ""))
             solar <- as.numeric(ncdf4::ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
-              start = start, count))
+              start = start, count = count))
             ncdf4::nc_close(nc)
             nc <- ncdf4::nc_open(paste(spatial, "/vs_", yearlist[j],
               ".nc", sep = ""))
             Wind <- as.numeric(ncdf4::ncvar_get(nc, varid = "wind_speed",
-              start = start, count))
+              start = start, count = count))
             ncdf4::nc_close(nc)
             Tmax <- tmax - 273.15
             Tmin <- tmin - 273.15
@@ -812,37 +812,37 @@ micro_usa <- function(
             nc <- ncdf4::nc_open(paste(spatial, "/tmmn_", yearlist[j],
               ".nc", sep = ""))
             tmin <- as.numeric(ncdf4::ncvar_get(nc, varid = "air_temperature",
-              start = start, count))
+              start = start, count = count))
             ncdf4::nc_close(nc)
             nc <- ncdf4::nc_open(paste(spatial, "/tmmx_", yearlist[j],
               ".nc", sep = ""))
             tmax <- as.numeric(ncdf4::ncvar_get(nc, varid = "air_temperature",
-              start = start, count))
+              start = start, count = count))
             ncdf4::nc_close(nc)
             nc <- ncdf4::nc_open(paste(spatial, "/rmin_", yearlist[j],
               ".nc", sep = ""))
             rhmin <- c(rhmin, as.numeric(ncdf4::ncvar_get(nc, varid = "relative_humidity",
-              start = start, count)))
+              start = start, count = count)))
             ncdf4::nc_close(nc)
             nc <- ncdf4::nc_open(paste(spatial, "/rmax_", yearlist[j],
               ".nc", sep = ""))
             rhmax <- c(rhmax, as.numeric(ncdf4::ncvar_get(nc, varid = "relative_humidity",
-              start = start, count)))
+              start = start, count = count)))
             ncdf4::nc_close(nc)
             nc <- ncdf4::nc_open(paste(spatial, "/pr_", yearlist[j],
               ".nc", sep = ""))
             Rain <- c(Rain, as.numeric(ncdf4::ncvar_get(nc, varid = "precipitation_amount",
-              start = start, count)))
+              start = start, count = count)))
             ncdf4::nc_close(nc)
             nc <- ncdf4::nc_open(paste(spatial, "/srad_", yearlist[j],
               ".nc", sep = ""))
             solar <- c(solar, as.numeric(ncdf4::ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
-              start = start, count)))
+              start = start, count = count)))
             ncdf4::nc_close(nc)
             nc <- ncdf4::nc_open(paste(spatial, "/vs_", yearlist[j],
               ".nc", sep = ""))
             Wind <- c(Wind, as.numeric(ncdf4::ncvar_get(nc, varid = "wind_speed",
-              start = start, count)))
+              start = start, count = count)))
             ncdf4::nc_close(nc)
             Tmax <- c(Tmax, tmax - 273.15)
             Tmin <- c(Tmin, tmin - 273.15)
