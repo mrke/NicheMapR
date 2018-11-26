@@ -8,7 +8,7 @@ DEB(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 * step,
   kap_X = 0.85, v = 0.065 * step, kap = 0.886, p_M = 32 * step,
   E_G = 7767, kap_R = 0.95, k_J = 0.002 * step, E_Hb = 73590,
   E_Hj = E_Hb, E_Hp = 186500, h_a = 2.16e-11/(step^2), s_G = 0.01,
-  T_REF = 20, TA = 8085, TAL = 18721, TAH = 9 + 4, TL = 288,
+  T_REF = 20, TA = 8085, TAL = 18721, TAH = 90000, TL = 288,
   TH = 315, E_0 = 1040000, f = 1, E_sm = 1116, K = 1,
   andens_deb = 1, d_V = 0.3, d_E = 0.3, d_Egg = 0.3,
   mu_X = 525000, mu_E = 585000, mu_V = 5e+05, mu_P = 480000,
@@ -23,7 +23,7 @@ DEB(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 * step,
   V_pres = 3.9752^3, E_H_pres = 73592, q_pres = 0, hs_pres = 0,
   surviv_pres = 1, Es_pres = 0, cumrepro = 0, cumbatch = 0,
   p_B_past = 0, stage = 1, breeding = 0, pregnant = 0, Tb = 33,
-  fdry = 0.3)
+  fdry = 0.3, L_b = 0.42, L_j = 1.376)
 }
 \arguments{
 \item{step}{= 1/24, step size (days)}

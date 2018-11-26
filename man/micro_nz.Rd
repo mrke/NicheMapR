@@ -74,6 +74,7 @@ An implementation of the NicheMapR microclimate model that uses the Virtual Clim
 \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
 \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
 \code{IR}{ = 0, Clear-sky longwave radiation computed using Campbell and Norman (1998) eq. 10.10 (includes humidity) (0) or Swinbank formula (1)}\cr\cr
+\code{solonly}{ = 0,Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
 \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
 \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
