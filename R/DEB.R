@@ -130,15 +130,83 @@
 #'
 #'
 #' @export
-DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*step,kap=0.886,p_M=32*step,E_G=7767,
-  kap_R=0.95,k_J=0.002*step,E_Hb=7.359e+04,E_Hj=E_Hb,E_Hp=1.865e+05,h_a=2.16e-11/(step^2),s_G=0.01,
-  T_REF=20,TA=8085,TAL=18721,  TAH=9.0+04,TL=288,TH=315,E_0=1.04e+06,f=1,E_sm=1116,K=1,
-  andens_deb=1,d_V=0.3,d_E=0.3,d_Egg=0.3,mu_X=525000,mu_E=585000,mu_V=500000,mu_P=480000,kap_X_P=0.1,
-  n_X=c(1,1.8,0.5,.15),n_E=c(1,1.8,0.5,0.15),n_V=c(1,1.8,0.5,.15),n_P=c(1,1.8,0.5,.15),n_M_nitro=c(1,4/5,3/5,4/5),
-  clutchsize=2,clutch_ab=c(0.085,0.7),viviparous=0,minclutch=0,batch=1,lambda=1/2,VTMIN=26,VTMAX=39,ma=1e-4,mi=0,mh=0.5,
+DEB<-function(
+  step=1/24,
+  z=7.997,
+  del_M=0.242,
+  F_m=13290*step,
+  kap_X=0.85,
+  v=0.065*step,
+  kap=0.886,
+  p_M=32*step,
+  E_G=7767,
+  kap_R=0.95,
+  k_J=0.002*step,
+  E_Hb=7.359e+04,
+  E_Hj=E_Hb,
+  E_Hp=1.865e+05,
+  h_a=2.16e-11/(step^2),
+  s_G=0.01,
+  T_REF=20,
+  TA=8085,
+  TAL=18721,
+  TAH=9.0E+04,
+  TL=288,
+  TH=315,
+  E_0=1.04e+06,
+  f=1,
+  E_sm=1116,
+  K=1,
+  andens_deb=1,
+  d_V=0.3,
+  d_E=0.3,
+  d_Egg=0.3,
+  mu_X=525000,
+  mu_E=585000,
+  mu_V=500000,
+  mu_P=480000,
+  kap_X_P=0.1,
+  n_X=c(1,1.8,0.5,.15),
+  n_E=c(1,1.8,0.5,0.15),
+  n_V=c(1,1.8,0.5,.15),
+  n_P=c(1,1.8,0.5,.15),
+  n_M_nitro=c(1,4/5,3/5,4/5),
+  clutchsize=2,
+  clutch_ab=c(0.085,0.7),
+  viviparous=0,
+  minclutch=0,
+  batch=1,
+  lambda=1/2,
+  VTMIN=26,
+  VTMAX=39,
+  ma=1e-4,
+  mi=0,
+  mh=0.5,
   arrhenius=matrix(data = matrix(data = c(rep(TA,8),rep(TAL,8),rep(TAH,8),rep(TL,8),rep(TH,8)),nrow = 8, ncol = 5), nrow = 8, ncol = 5),
-  acthr=1,X=10,E_pres=6011.93,V_pres=3.9752^3,E_H_pres=73592,q_pres=0,hs_pres=0,surviv_pres=1,Es_pres=0,
-  cumrepro=0,cumbatch=0,p_B_past=0,stage=1,breeding=0,pregnant=0,Tb=33,fdry=0.3){
+  acthr=1,
+  X=10,
+  E_pres=6011.93,
+  V_pres=3.9752^3,
+  E_H_pres=73592,
+  q_pres=0,
+  hs_pres=0,
+  surviv_pres=1,
+  Es_pres=0,
+  cumrepro=0,
+  cumbatch=0,
+  p_B_past=0,
+  stage=1,
+  breeding=0,
+  pregnant=0,
+  Tb=33,
+  fdry=0.3,
+  L_b=0.42,
+  L_j=1.376){
+
+  if(clutch_ab[1]>0){
+  clutchsize=floor(clutch_ab[1]*(V_pres^(1/3)/del_M)-clutch_ab[2])
+  }
+  orig_clutchsize <- clutchsize
 
   q_init<-q_pres
   E_H_init<-E_H_pres
@@ -168,14 +236,27 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
   # Arrhenius temperature correction factor
   Tcorr = exp(TA*(1/(273+T_REF)-1/(273+Tb)))/(1+exp(TAL*(1/(273+Tb)-1/TL))+exp(TAH*(1/TH-1/(273+Tb))))
 
+  s <- 1
+  if(E_Hj != E_Hb){
+    if(E_H_pres < E_Hb){
+      s <- 1# % -, multiplication factor for v and {p_Am}
+    }else{
+      if(E_H_pres < E_Hj){
+        s <- V_pres^(1/3) / L_b#
+      }else{
+        s <- L_j / L_b#
+      }
+    }
+  }
+
   M_V = d_V/w_V
   p_MT = p_M*Tcorr
   k_Mdot = p_MT/E_G
   k_JT = k_J*Tcorr
-  p_AmT = p_MT*z/kap
-  vT = v*Tcorr
+  p_AmT = p_MT*z/kap*s
+  vT = v*Tcorr*s
   E_m = p_AmT/vT
-  F_mT = F_m*Tcorr
+  F_mT = F_m*Tcorr*s
   g = E_G/(kap*E_m)
   E_scaled=E_pres/E_m
   V_max=(kap*p_AmT/p_MT)^(3.)
@@ -240,7 +321,7 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
   }
 
   # some powers
-  p_M = p_MT*V_pres
+  p_M2 = p_MT*V_pres
   p_J = k_JT*E_H_pres
   if(Es_pres>0.0000001*E_sm*V_pres){
     p_A = V_pres^(2./3.)*p_AmT*f
@@ -268,11 +349,11 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
 
   # more powers
   if(E_H_pres>=E_Hp){
-    p_D = p_M+p_J+(1-kap_R)*p_R
+    p_D = p_M2+p_J+(1-kap_R)*p_R
   }else{
-    p_D = p_M+p_J+p_R
+    p_D = p_M2+p_J+p_R
   }
-  p_G = p_C-p_M-p_J-p_R
+  p_G = p_C-p_M2-p_J-p_R
 
   # reproduction
   if((E_H_pres<=E_Hp) | (pregnant==1)){
@@ -335,6 +416,14 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
       stage=stage
     }
   }
+      testclutch=floor((cumrepro+cumbatch)/E_0)
+#     FOR VARIABLE CLUTCH SIZE FROM REPRO AND BATCH BUFFERS
+      if(minclutch > 0 & floor(cumrepro+cumbatch)/E_0 > minclutch){
+       if(testclutch <= orig_clutchsize){# ! MAKE SMALLEST CLUTCH ALLOWABLE FOR THIS REPRO EVENT
+        clutchsize <- minclutch
+        clutchenergy <- clutchsize*E_0
+       }
+      }
 
   if((cumbatch>clutchenergy) | (pregnant==1)){
     #for variable clutch size from repro and batch buffers
@@ -398,6 +487,7 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
       testclutch=floor(cumbatch/E_0)
       if(testclutch>clutchsize){
         clutchsize=testclutch
+        clutchenergy <- clutchsize*E_0
       }
       cumbatch = cumbatch-clutchenergy
       repro=1
@@ -454,6 +544,8 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
   JMO2_GM=JOJx_GM*JM_JO[3,1]+JOJv_GM*JM_JO[3,2]+JOJe_GM*JM_JO[3,3]+JOJp_GM*JM_JO[3,4]
   JMNWASTE_GM=JOJx_GM*JM_JO[4,1]+JOJv_GM*JM_JO[4,2]+JOJe_GM*JM_JO[4,3]+JOJp_GM*JM_JO[4,4]
 
+  #RQ = JMCO2/JMO2
+
   O2FLUX = -1*JMO2/(T_REF/Tb/24.4)*1000 #mlO2/h, temperature corrected (including SDA)
   CO2FLUX = JMCO2/(T_REF/Tb/24.4)*1000
   MLO2 = (-1*JMO2*(0.082058*(Tb+273.15))/(0.082058*293.15))*24.06*1000 #mlO2/h, stp
@@ -505,8 +597,8 @@ DEB<-function(step=1/24,z=7.997,del_M=0.242,F_m=13290*step,kap_X=0.85,v=0.065*st
   suriv_pres=surviv_pres
   Es_pres=Es
 
-  deb.names<-c("E_pres","V_pres","E_H_pres","q_pres","hs_pres","surviv_pres","Es_pres","cumrepro","cumbatch","p_B_past","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","wetmass","gutfreemass","gutfull","fecundity","clutches","potfreemass")
-  results_deb<-c(E_pres,V_pres,E_H_pres,q_pres,hs_pres,surviv_pres,Es_pres,cumrepro,cumbatch,p_B_past,O2FLUX,CO2FLUX,MLO2,GH2OMET,DEBQMET,DRYFOOD,FAECES,NWASTE,wetgonad,wetstorage,wetfood,wetmass,gutfreemass,gutfull,fecundity,clutches,potfreemass)
+  deb.names<-c("E_pres","V_pres","E_H_pres","q_pres","hs_pres","surviv_pres","Es_pres","cumrepro","cumbatch","p_B_past","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","wetmass","gutfreemass","gutfull","fecundity","clutches","potfreemass","length","p.R")
+  results_deb<-c(E_pres,V_pres,E_H_pres,q_pres,hs_pres,surviv_pres,Es_pres,cumrepro,cumbatch,p_B_past,O2FLUX,CO2FLUX,MLO2,GH2OMET,DEBQMET,DRYFOOD,FAECES,NWASTE,wetgonad,wetstorage,wetfood,wetmass,gutfreemass,gutfull,fecundity,clutches,potfreemass,svl,p_R)
   names(results_deb)<-deb.names
   return(results_deb)
 }

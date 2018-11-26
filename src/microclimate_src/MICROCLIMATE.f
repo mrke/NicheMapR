@@ -116,7 +116,7 @@ c     OSUB outputs the microclimate calculations.
       INTEGER NOUT,NPOS,NUMRUN,NUMTYPS,writecsv,runshade,lamb,errout
       INTEGER IALT,IEND,IEP,IPINT,ISTART,IUV,NOSCAT,IDA,IDAYST,julstnd
       INTEGER microdaily,DOYF,DOYS,DOYF2,DOYS2,runmoist,evenrain,runsnow
-      INTEGER errcount,HOURLY,rainhourly,IRmode
+      INTEGER errcount,HOURLY,rainhourly,IRmode,solonly
 
       CHARACTER*80 LABL1,LABL2,LABL3
       CHARACTER*3 IBLK,INAME,SYMBOL
@@ -124,7 +124,7 @@ c     OSUB outputs the microclimate calculations.
       CHARACTER*12 FNAME
 
       DIMENSION snownode(8),snode(8),qphase(8)
-      DIMENSION microinput1(59)
+      DIMENSION microinput1(60)
       DIMENSION soilprop(10,5),soilprop1(10,5),moist(10)
       DIMENSION DEPS(21),curmoist2(18)
       DIMENSION TIMINS(4),TIMAXS(4)
@@ -197,6 +197,7 @@ c    Variable soil properties data from Iomet1
       common/IR/IRmode
       COMMON/melt/QFREZE,xtrain,qphase,sumphase,sumphase2
       common/errormsg/errout,maxerr,errcount
+      COMMON/onlysol/solonly
 
       DATA IBLK/'   '/
       DATA IFINAL/1/
@@ -319,6 +320,7 @@ c    Unpacking user input from R
       endif
 
       tides=tides1
+      solonly=int(microinput1(60))
 c    do 901 i=1,2
 c    julstnd(i)=julstnd1(i)
 c901    continue

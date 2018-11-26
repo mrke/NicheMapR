@@ -6,17 +6,17 @@ C     NicheMapR: software for biophysical mechanistic niche modelling
 
 C     Copyright (C) 2018 Michael R. Kearney and Warren P. Porter
 
-c     This program is free software: you can redistribute it and/or modify 
-c     it under the terms of the GNU General Public License as published by 
+c     This program is free software: you can redistribute it and/or modify
+c     it under the terms of the GNU General Public License as published by
 c     the Free Software Foundation, either version 3 of the License, or (at
 c      your option) any later version.
 
 c     This program is distributed in the hope that it will be useful, but
-c     WITHOUT ANY WARRANTY; without even the implied warranty of 
-c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+c     WITHOUT ANY WARRANTY; without even the implied warranty of
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 c     General Public License for more details.
 
-c     You should have received a copy of the GNU General Public License 
+c     You should have received a copy of the GNU General Public License
 c     along with this program. If not, see http://www.gnu.org/licenses/.
 
 C     SOLVES SYSTEM OF N SIMULTANEOUS FIRST ORDER O.D.E.
@@ -36,12 +36,13 @@ C     AT RETURN X AND Y CONTAIN THEIR LAST GOOD VALUES
       DOUBLE PRECISION viewf,tnew,dummy,terr,error,sumphase2
       DOUBLE PRECISION lastime,curmoist2,lastsurf,YI,YP,temp
       DOUBLE PRECISION QFREZE,xtrain,qphase,sumphase
-      
+
       INTEGER cons,I,J,JX,K,KTR,KTT,L,L1,N,NC,NRUNGE,NN,NFACTR,NCOND
       Integer I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,IPRINT,ep,moist
       INTEGER I91,I92,I93,I94,I95,I96,slipped,trouble,runsnow,numrun
       INTEGER I97,I98,I99,I100,I101,errout,maxerr,errcount,JULNUM,DOY
-      
+      integer solonly
+
       DIMENSION curmoist2(18),moist(10),qphase(8),sumphase2(8)
 
       COMMON/NONSCR/N,NN,X,XMAX,DX,ERR,H,NCOND,NFACTR,IPRINT
@@ -54,14 +55,15 @@ c     I/O file designations: I1-I7 (in MAIN); I2 = output file
      2  ,DUMMY(1160)
       COMMON/VIEWFACT/VIEWF
       common/prevtime/lastime,temp(83),lastsurf
-      common/prevtime2/slipped      
+      common/prevtime2/slipped
       common/curmoist/curmoist2
       common/snowmod/runsnow,trouble
       COMMON/melt/QFREZE,xtrain,qphase,sumphase,sumphase2
       common/errormsg/errout,maxerr,errcount
       COMMON/DAYJUL/JULNUM,DOY
       COMMON/WICHDAY/NUMRUN
-      
+      COMMON/onlysol/solonly
+
 c     Defining console value
       cons = 0
 c     zeroing terms for catching slippage of integrator
@@ -88,6 +90,16 @@ C     INITIALIZE
       L1=0
       HO24=H/24.0
       ERT=0.0
+      if(solonly.eq.1)then ! option for only running solar calcs
+      do 51 J=1,25
+      CALL OSUB(X,Y)
+      X = X + 60
+      if(x.gt.xmax)then
+          goto 700
+      endif
+51    continue
+      endif
+
 C     SPECIAL STARTING FOR ERR = 0.0000
       IF(ERR.NE.0.0000) GOTO 100
       CALL DSUB(X0,Y,G)
@@ -253,12 +265,12 @@ c      WRITE(I2,490) X,ERR,H
       endif
       errcount=errcount+1
       if(errcount.gt.maxerr)then
-       WRITE(cons,587)  
+       WRITE(cons,587)
   587  FORMAT('0***ERRCOUNT EXCEEDED MAXCOUNT, PROGRAM TERMINATED.***'/)
        numrun=2
        DOY=julnum
        RETURN
-      ENDIF      
+      ENDIF
       xtrain=0.
       QFREZE=0.
       DO 486 I=1,N

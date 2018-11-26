@@ -28,10 +28,9 @@ This first example involves the most basic case of running the model to produce 
 
 Try running the model for a place of interest to you, as follows:
 ```{r}
-library(NicheMapR)
-
-micro<-micro_global(loc="Madison, Wisconsin, USA")
-longlat <- c(micro$longlat[1], micro$longlat[2]) # save the longitude and latitude and pass directly below
+library(NicheMapR) 
+longlat <- c(-89.40123, 43.07305) # Madison, Wisconsin, USA
+micro<-micro_global(loc = longlat)
 ```
 
 The results are stored as a list in the variable ```micro```. The main ones to focus on for now are

@@ -81,7 +81,8 @@ SLES                      | -                 | 0-1               | substrate lo
 REFLS                      | -                 | 0-1               | substrate solar reflectivity$^1$ 
 CMH2O                     | cm                | 0.1-2             | precipitable cm H$_2$O in air column
 TAI                       | -                 | 1-doynum          | aerosol optical extinction coefficients$^{1,2}$ 
-lamb                     | -                | 0-1             | flag to eturn wavelength-specific solar radiation output
+solonly                   | -                | 0-1             | flag to do only solar calcs
+lamb                     | -                | 0-1             | flag to return wavelength-specific solar radiation output
 IUV                      | -                | 0-1             | flag to use gamma function for scattered solar radiation$^{3}$
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion

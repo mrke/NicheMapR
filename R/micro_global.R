@@ -47,6 +47,7 @@
 #' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
 #' \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
 #' \code{IR}{ = 0, Clear-sky longwave radiation computed using Campbell and Norman (1998) eq. 10.10 (includes humidity) (0) or Swinbank formula (1)}\cr\cr
+#' \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
 #' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 #' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
@@ -314,6 +315,7 @@ micro_global <- function(
   ZH1 = 0,
   ZH2 = 0,
   runshade = 1,
+  solonly = 0,
   clearsky = 0,
   run.gads = 1,
   write_input = 0,
@@ -680,8 +682,18 @@ micro_global <- function(
     adiab_corr_min <- delta_elev * lapse_min
     RAINFALL <- CLIMATE[,2:13]
     if(is.na(RAINFALL[1])){
-      cat("no climate data for this site \n")
-      stop()
+      cat("no climate data for this site, using dummy data so solar is still produced \n")
+    CLIMATE <- raster::extract(global_climate,cbind(140,-35))
+    ALTT<-as.numeric(CLIMATE[,1])
+    delta_elev <- 0
+    if(is.na(elev) == FALSE){ # check if user-specified elevation
+      delta_elev <- ALTT - elev # get delta for lapse rate correction
+      ALTT <- elev # now make final elevation the user-specified one
+    }
+    adiab_corr_max <- delta_elev * lapse_max
+    adiab_corr_min <- delta_elev * lapse_min
+    RAINFALL <- CLIMATE[,2:13]*0
+    #stop()
     }
     RAINYDAYS <- CLIMATE[,14:25]/10
     WNMAXX <- CLIMATE[,26:37]/10
@@ -719,7 +731,8 @@ micro_global <- function(
     }
     if(is.na(max(SoilMoist, ALTT, CLIMATE))==TRUE){
       message("Sorry, there is no environmental data for this location")
-      stop()
+      SoilMoist<-raster::extract(soilmoisture,cbind(140,-35))/1000 # this is originally in mm/m
+      #stop()
     }
 
     # correct for fact that wind is measured at 10 m height
@@ -915,7 +928,7 @@ micro_global <- function(
     ZENhr=rep(-1,24*ndays)
     IRDhr=rep(-1,24*ndays)
     # microclimate input parameters list
-    microinput<-c(ndays,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade)
+    microinput<-c(ndays,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade,solonly)
 
     doy1=matrix(data = 0., nrow = ndays, ncol = 1)
     SLES1=matrix(data = 0., nrow = ndays, ncol = 1)
