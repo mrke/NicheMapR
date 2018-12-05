@@ -619,7 +619,7 @@ micro_usa <- function(
         latindex=which(flat %in% 1)
         flon=match(abs(lon-x[1])<1/48,1)
         lonindex=which(flon %in% 1)
-        start <- c(index1, index2, 1)
+        start <- c(lonindex, latindex, 1)
         count <- c(1, 1, -1)
         USADEM <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "elevation",
           start = start, count = count)))
