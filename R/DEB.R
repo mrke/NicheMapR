@@ -201,10 +201,12 @@ DEB<-function(
   Tb=33,
   fdry=0.3,
   L_b=0.42,
-  L_j=1.376){
+  L_j=1.376,
+  spawnday=1,
+  day=1){
 
   if(clutch_ab[1]>0){
-  clutchsize=floor(clutch_ab[1]*(V_pres^(1/3)/del_M)-clutch_ab[2])
+    clutchsize=floor(clutch_ab[1]*(V_pres^(1/3)/del_M)-clutch_ab[2])
   }
   orig_clutchsize <- clutchsize
 
@@ -357,32 +359,33 @@ DEB<-function(
 
   # reproduction
   if((E_H_pres<=E_Hp) | (pregnant==1)){
-    p_B = 0.
+    p_B = 0
   }else{
     if(batch==1){
-      batchprep=(kap_R/lambda)*((1-kap)*(E_m*(vT*V_pres^(2./3.)+k_Mdot*V_pres)/(1+(1/g)))-p_J)
+      batchprep=(kap_R/lambda)*((1-kap)*(E_m*(vT*V_pres^(2/3)+k_Mdot*V_pres)/(1+(1/g)))-p_J)
       if(breeding==0){
         p_B = 0
       }else{
-        #if the repro buffer is lower than what p_B would be(see below), p_B is p_R
+        #if the repro buffer is lower than what p_B would be (see below), p_B is p_R
         if(cumrepro<batchprep){
           p_B = p_R
         }else{
           #otherwise it is a faster rate, as specified in Pecquerie et. al JSR 2009 Anchovy paper,
           #with lambda (the fraction of the year the animals breed if food/temperature not limiting) = 0.583 or 7 months of the year
-          p_B = batchprep
+          p_B = max(batchprep, p_R)
         }
       }
     }else{
-      p_B=p_R
+      p_B = p_R
     }#end check for whether batch mode is operating
   }#end check for immature or mature
+
 
   #accumulate energy/matter in reproduction buffer
   if(E_H_pres>E_Hp){
     # if buffer ran on previous day
     if(cumrepro<0){
-      #       keep it empty, bring it up to 0
+      # keep it empty, bring it up to 0
       cumrepro=0
     }else{
       cumrepro = cumrepro+p_R*kap_R-p_B_past
@@ -416,14 +419,14 @@ DEB<-function(
       stage=stage
     }
   }
-      testclutch=floor((cumrepro+cumbatch)/E_0)
-#     FOR VARIABLE CLUTCH SIZE FROM REPRO AND BATCH BUFFERS
-      if(minclutch > 0 & floor(cumrepro+cumbatch)/E_0 > minclutch){
-       if(testclutch <= orig_clutchsize){# ! MAKE SMALLEST CLUTCH ALLOWABLE FOR THIS REPRO EVENT
-        clutchsize <- minclutch
-        clutchenergy <- clutchsize*E_0
-       }
-      }
+  testclutch=floor((cumrepro+cumbatch)/E_0)
+  #     FOR VARIABLE CLUTCH SIZE FROM REPRO AND BATCH BUFFERS
+  if(minclutch > 0 & floor(cumrepro+cumbatch)/E_0 > minclutch){
+    if(testclutch <= orig_clutchsize){# ! MAKE SMALLEST CLUTCH ALLOWABLE FOR THIS REPRO EVENT
+      clutchsize <- minclutch
+      clutchenergy <- clutchsize*E_0
+    }
+  }
 
   if((cumbatch>clutchenergy) | (pregnant==1)){
     #for variable clutch size from repro and batch buffers
@@ -484,8 +487,13 @@ DEB<-function(
       #    change below to active or not active rather than depth-based, in case of fossorial
       if((Tb < VTMIN)  |  (Tb > VTMAX)){
       }
+      if(day == spawnday & spawnday != 0){
       testclutch=floor(cumbatch/E_0)
       if(testclutch>clutchsize){
+        clutchsize=testclutch
+        clutchenergy <- clutchsize*E_0
+      }
+      if(spawnday > 0){
         clutchsize=testclutch
         clutchenergy <- clutchsize*E_0
       }
@@ -493,6 +501,7 @@ DEB<-function(
       repro=1
       fecundity=clutchsize
       clutches=1
+      }
     }
   }
 

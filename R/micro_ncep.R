@@ -35,11 +35,15 @@
 #' @details
 #' \strong{ Parameters controlling how the model runs:}\cr\cr
 #' \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+#' \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
 #' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 #' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{reanalysis}{ = TRUE, Use reanalysis2 NCEP data? TRUE/FALSE}\cr\cr
+#' \code{NCEPlw}{ = 0, use NCEP longwave radiation (1) or NicheMapR-derived from cloud (0)}\cr\cr
+#' \code{NCEPcld}{ = 0, use NCEP cloud cover (1) or NicheMapR-derived cloud cover (0)}\cr\cr
+#' \code{NCEPsw}{ = 0, use NCEP shortwave radiation (solar) (1) or NicheMapR-derived solar (0)}\cr\cr
 #' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 #' \code{warm}{ = 0, uniform warming, °C}\cr\cr
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
@@ -100,7 +104,7 @@
 #' \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
 #' \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
 #' \code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET in soil moisture model}\cr\cr
-#' \code{microclima.LAI}{ = 0.1, leaf area index, used by package microclima for radiation calcs}\cr\cr
+#' \code{microclima.LAI}{ = 0, leaf area index, used by package microclima for radiation calcs}\cr\cr
 #' \code{LOR}{ = 1, leaf orientation for package microclima radiation calcs}\cr\cr
 #'
 #' \strong{ Snow mode parameters:}
@@ -295,6 +299,9 @@ micro_ncep <- function(
   write_input = 0,
   writecsv = 0,
   reanalysis = TRUE,
+  NCEPlw = 0,
+  NCEPcld = 0,
+  NCEPsw = 0,
   windfac = 1,
   warm = 0,
   ERR = 1.5,
@@ -329,7 +336,7 @@ micro_ncep <- function(
   IM = 1e-06,
   MAXCOUNT = 500,
   LAI = 0.1,
-  microclima.LAI = 0.1,
+  microclima.LAI = 0,
   LOR = 1,
   snowmodel = 1,
   snowtemp = 1.5,
@@ -495,38 +502,43 @@ micro_ncep <- function(
 
   if(errors==0){ # continue
 
-
+    #remove trailing forward slash if necessary
+    if(is.na(spatial)==FALSE){
+      if(substr(x = spatial, start = nchar(spatial), nchar(spatial))=='/'){
+        spatial <- substr(spatial, 1, nchar(spatial)-1)
+      }
+    }
     ################## time related variables #################################
 
     # for microclima calculations
     tme <- as.POSIXlt(seq(ISOdate(ystart, 1, 1, tz = "UTC") - 3600 * 12, ISOdate((ystart + nyears), 1, 1, tz = "UTC") - 3600 * 13, by = "days"))
+    #tme <- as.POSIXlt(seq(ISOdate(ystart, 1, 1) - 3600 * 12, ISOdate((ystart + nyears), 1, 1) - 3600 * 13, by = "days"))
 
-    doys12<-c(15.,46.,74.,105.,135.,166.,196.,227.,258.,288.,319.,349.) # middle day of each month
     microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
     daystart<-1
     idayst <- 1 # start day
 
     ################## location and terrain #################################
-    if (!requireNamespace("raster", quietly = TRUE)) {
+    if (!require("raster", quietly = TRUE)) {
       stop("package 'raster' is needed. Please install it.",
         call. = FALSE)
     }
-    if (!requireNamespace("RNCEP", quietly = TRUE)) {
+    if (!require("RNCEP", quietly = TRUE)) {
       stop("package 'RNCEP' is needed. Please install it.",
         call. = FALSE)
     }
-    if (!requireNamespace("ncdf4", quietly = TRUE)) {
+    if (!require("ncdf4", quietly = TRUE)) {
       stop("package 'ncdf4' is needed. Please install it.",
         call. = FALSE)
     }
-    if (!requireNamespace("microclima", quietly = TRUE)) {
+    if (!require("microclima", quietly = TRUE)) {
       stop("package 'microclima' is needed. Please install it via command: devtools::install_github('ilyamaclean/microclima').",
         call. = FALSE)
     }
-    requireNamespace("raster")
-    requireNamespace("RNCEP")
-    requireNamespace("ncdf4")
-    requireNamespace("microclima")
+    require("raster")
+    require("RNCEP")
+    require("ncdf4")
+    require("microclima")
     longlat <- loc
     x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
 
@@ -599,14 +611,16 @@ micro_ncep <- function(
     VIEWF <- 1 # incorporated already by microclima
 
     # setting up for temperature correction using lapse rate given difference between 9sec DEM value and 0.05 deg value
-    days <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900"), by = 'days')
-    alldays <- seq(as.POSIXct("01/01/1900", format = "%d/%m/%Y", origin = "01/01/1900"), Sys.time()-60*60*24, by = 'days')
-    startday <- which(as.character(format(alldays, "%d/%m/%Y")) == format(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), "%d/%m/%Y"))
-    endday <- which(as.character(format(alldays, "%d/%m/%Y")) == format(as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900"), "%d/%m/%Y"))
+    days <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900", tz = 'UTC'), as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900", tz = 'UTC'), by = 'days')
+    alldays <- seq(as.POSIXct("01/01/1900", format = "%d/%m/%Y", origin = "01/01/1900", tz = 'UTC'), Sys.time()-60*60*24, by = 'days')
+    startday <- which(as.character(format(alldays, "%d/%m/%Y")) == format(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900", tz = 'UTC'), "%d/%m/%Y"))
+    endday <- which(as.character(format(alldays, "%d/%m/%Y")) == format(as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900", tz = 'UTC'), "%d/%m/%Y"))
     countday <- endday-startday+1
     #tt <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900")+23*3600, by = 'hours')
     tt <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(dfinish, format = "%d/%m/%Y", tz = 'UTC')+23*3600, by = 'hours')
+    #tt <- seq(as.POSIXct(dstart, format = "%d/%m/%Y"), as.POSIXct(dfinish, format = "%d/%m/%Y")+23*3600, by = 'hours')
     dates2 <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(dfinish, format = "%d/%m/%Y", tz = 'UTC')+23*3600, by = 'days')
+    #dates2 <- seq(as.POSIXct(dstart, format = "%d/%m/%Y"), as.POSIXct(dfinish, format = "%d/%m/%Y")+23*3600, by = 'days')
     if(save == 2){
       load('tref.Rda')
       load('SLOPE.Rda')
@@ -626,6 +640,9 @@ micro_ncep <- function(
       }
       if(is.na(spatial) == FALSE){
         sorttimes <- function(tme) {
+          # creates a vector of 6-hourly dates for a given date vector as well as
+          # one year either side, as well as a vector to select just one day before and
+          # after the date vector
           tme2 <- as.POSIXct(tme)
           tme2 <- c((tme2 - 24 * 3600), tme2, (tme2 + 24 * 3600), (tme2 + 48 * 3600))
           tme2 <- as.POSIXlt(tme2)
@@ -649,11 +666,12 @@ micro_ncep <- function(
           sel <- sel[-length(sel)]
           return(list(tme = tma, sel = sel))
         }
-        tme2 <- sorttimes(tme)$tme
-        sel <- sorttimes(tme)$sel
+        tme2 <- sorttimes(tme)$tme # time vector one year either side of specified years
+        sel <- sorttimes(tme)$sel # selection vector to get one day either side of specified years
         cat(paste0("extracting weather data locally from ", spatial, " \n"))
         years <- as.numeric(unique(format(tme, "%Y")))
         nyears <- length(years)
+        # now getting starting point and count for reading netcdf files
         nc <- ncdf4::nc_open(paste(spatial, "/air.2m.gauss.", years[1], ".nc",
           sep = ""))
         lon2 <- matrix(ncdf4::ncvar_get(nc, "lon"))
@@ -664,13 +682,16 @@ micro_ncep <- function(
         lat_1 <- lat
         dist1 <- abs(lon2 - lon_1)
         index1 <- which.min(dist1)
+        lon3 <- lon2[index1]
         dist2 <- abs(lat2 - lat_1)
         index2 <- which.min(dist2)
-        start <- c(index1, index2, 1, 1)
-        count <- c(1, 1, 1, -1)
-        start2 <- c(index1, index2, 1, 1460-3)
-        count2 <- c(1, 1, 1, 4)
+        lat3 <- lat2[index2]
+        start <- c(index1, index2, 1, 1) # for chosen years
+        count <- c(1, 1, 1, -1) # for chosen years
+        start2 <- c(index1, index2, 1, 1460-3) # for year prior to chosen years (getting the last day)
+        count2 <- c(1, 1, 1, 4) # for year prior/year after chosen years (getting the last four or first four values, i.e. hours 0, 6, 12, 18)
         ncdf4::nc_close(nc)
+        if(lon3 >180){lon3 <- lon3 - 180} # ensure longitude is -180 to 180
 
         for (j in 1:(nyears+2)) {
           if (j == 1) {
@@ -678,7 +699,7 @@ micro_ncep <- function(
             Tkmax <- ncquery("tmax.2m.gauss.", "tmax", start2, count2, years[j]-1)
             Tk <- ncquery("air.2m.gauss.", "air", start2, count2, years[j]-1)
             sh <- ncquery("shum.2m.gauss.", "shum", start2, count2, years[j]-1)
-            pr <- ncquery("pres.sfc.gauss.", "pres", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
+            pr <- ncquery("pres.sfc.gauss.", "pres", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1) # only three dimensions, hence c(1,2,4)
             tcdc <- ncquery("tcdc.eatm.gauss.", "tcdc", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
             dsw <- ncquery("dswrf.sfc.gauss.", "dswrf", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
             dlw <- ncquery("dlwrf.sfc.gauss.", "dlwrf", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
@@ -719,15 +740,23 @@ micro_ncep <- function(
         }
         dsw[dsw<0] <- 0
         prate[prate<0] <- 0
-        prate <- prate * 3600 * 6
-        ncepdata <- data.frame(obs_time = tme2[sel], Tk, Tkmin, Tkmax, sh, pr, wu, wv, dlw, ulw, dsw, tcdc)
-        hourlydata <- microclima::hourlyNCEP(ncepdata = ncepdata, lat, long, tme, reanalysis)
+        prate <- prate * 3600 * 6 # mm in 6 hrs
+        ncepdata <- data.frame(obs_time = tme2[sel], Tk, Tkmin, Tkmax, sh, pr, wu, wv, dlw, ulw, dsw, tcdc) # 6-hourly ncep for chosen period plus a day added either side for interpolation
+        #hourlydata <- microclima::hourlyNCEP(ncepdata = ncepdata, lat, long, tme, reanalysis)
+        hourlydata <- hourlyNCEP2(ncepdata = ncepdata, lat, long, tme, reanalysis) # interpolated to hourly
         microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
+        microclima.out.noslope <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
+        #microclima.out <- microclimaforNMR2(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
+        #microclima.out.noslope <- microclimaforNMR2(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
+        #dailyrain <- microclima.out$dailyprecip # remove extra 4 values from start
         dailyrain <- microclima.out$dailyprecip[-c(1:4)] # remove extra 4 values from start
         dailyrain <- dailyrain[1:(length(dailyrain)-4)] # remove extra 4 values from end
+        #dailyrain <- dailyrain[1:(length(dailyrain)-1)] # remove extra 4 values from end
         dailyrain <- aggregate(dailyrain, by = list(format(hourlydata$obs_time[seq(1, nrow(hourlydata), 6)], "%Y-%m-%d")), sum)$x
       }else{
-        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = NA, dailyprecip = NA, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
+        #microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = NA, dailyprecip = NA, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
+        microclima.out <- microclimaforNMR2(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
+        microclima.out.noslope <- microclimaforNMR2(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
         hourlydata <- microclima.out$hourlydata
         dailyrain <- microclima.out$dailyprecip
       }
@@ -756,12 +785,183 @@ micro_ncep <- function(
       elev <- tref$elev[1] # m
       ALTT <- elev
       TAIRhr <- tref$tref + tref$telev + tref$tcad # reference Tair plus offsets due to lapse rate and cold air drainage
+
       SOLRhr <- hourlyradwind$swrad / 0.0036
       SOLRhr[SOLRhr < 0] <- 0
-      CLDhr <- hourlydata$cloudcover
-      CLDhr[CLDhr < 0] <- 0
-      CLDhr[CLDhr > 100] <- 100
+      SOLRhr.noslope <- microclima.out.noslope$hourlyradwind$swrad / 0.0036
+      SOLRhr.noslope[SOLRhr.noslope < 0] <- 0
+      #if(NCEPsw == 0 | NCEPcld == 0 | ((hourly == 1) & (NCEPlw == 0))){
+        cat("running micro_global to get clear sky solar \n")
+        micro_clearsky <- micro_global(loc = c(lon3, lat3), clearsky = 1, timeinterval = 365, runmoist = 0, elev = 0, solonly = 1)
+        clearskyrad <- micro_clearsky$metout[, c(1, 13)]
+        nmr.zenith <- micro_clearsky$metout[, 12]
+        clearsky_mean1 <- aggregate(clearskyrad[,2], by = list(clearskyrad[,1]), FUN = max)[,2]
+        # insert leap days if needed
+        leapyears<-seq(1900,2100,4)
+        for(j in 1:nyears){
+          if(yearlist[j]%in%leapyears){# add day for leap year if needed
+            clearsky_mean<-c(clearsky_mean1[1:59],clearsky_mean1[59],clearsky_mean1[60:365])
+          }else{
+            clearsky_mean <- clearsky_mean1
+          }
+          if(j == 1){
+            allclearsky <- clearsky_mean
+          }else{
+            allclearsky <- c(allclearsky, clearsky_mean)
+          }
+        }
+        datesb <- microclima.out$hourlydata$obs_time + round(long/15, 0) * 3600
+        solday <- aggregate(SOLRhr.noslope, by = list(format(datesb, "%d/%m/%Y")), FUN = max) # get daily max from NCEP
+        solday <- solday[order(as.POSIXct(solday$Group.1, format = "%d/%m/%Y")),] # get order back
+        solday <- solday$x[1:length(allclearsky)] # get just values
+        solday.month <- aggregate(SOLRhr.noslope, by = list(format(datesb, "%m")), FUN = max) # get daily max from NCEP
+        solday.month <- solday.month[order(as.POSIXct(solday.month$Group.1, format = "%m")),] # get order back
+        solday.month <- solday.month$x # get just predictions
+        # set up days for max values (offset from middle day of each month accordingly)
+        doys12<-c(15-14, 46-14, 74-14, 105-14, 135-14, 166-10, 196+14, 227+14, 258+14, 288+14, 319+14, 365)
+        solday.month2 <- rep(suppressWarnings(spline(doys12,solday.month,n=365,xmin=1,xmax=365,method="periodic"))$y, nyears)
+        # add in leap days if needed
+        for(j in 1:nyears){
+          if(yearlist[j]%in%leapyears){# add day for leap year if needed
+            solday.month3<-c(solday.month2[1:59],solday.month2[59],solday.month2[60:365])
+          }else{
+            solday.month3 <- solday.month2
+          }
+          if(j == 1){
+            solday.month4 <- solday.month3
+          }else{
+            solday.month4 <- c(solday.month4, solday.month3)
+          }
+        }
+        #diffmax <- max(solday - allclearsky) # find offset from max values
+        diffmax <- solday.month4 - allclearsky # find offset from max values
+        allclearsky <- allclearsky + diffmax # offset to match NCEP data
+        #plot(allclearsky, ylim = c(0, 1300))
+        #points(solday, col = 'red')
+        cloud <- (1 - solday / allclearsky) * 100 # derive cloud as ratio of NCEP to NMR predicted
+        cloud[cloud<0]<-0 # remove negatives
+        cloud[cloud>100]<-100 # remove > 100s
+        # repeating daily values for 24 hrs
+        cloudhr <- cbind(rep(seq(1,length(cloud)),24), rep(cloud, 24))
+        cloudhr <- cloudhr[order(cloudhr[,1]),]
+        cloudhr <- cloudhr[,2]
+        # adjusting for case of starting at time other than midnight
+        #timediff <- as.numeric(datesb[1] - as.POSIXct(dstart, format = "%d/%m/%Y", tz = "UTC"))
+        timediff <- as.numeric(datesb[1] - as.POSIXct(dstart, format = "%d/%m/%Y", tz = "UTC"))
+        if(timediff > 0){
+          cloudhr <- cloudhr[timediff:length(cloudhr)]
+          cloudhr <- c(cloudhr, rep(cloudhr[length(cloudhr)], timediff-1))
+          clearskyrad2 <- c(clearskyrad[timediff:nrow(clearskyrad), 2], clearskyrad[1:(timediff-1), 2])
+          nmr.zenith <- c(nmr.zenith[timediff:length(nmr.zenith)], nmr.zenith[1:(timediff-1)])
+        }
+        if(timediff < 0){
+          cloudhr <- c(rep(cloudhr[length(cloudhr)], abs(timediff)), cloudhr[1:(length(cloudhr)-abs(timediff))])
+          clearskyrad2 <- c(clearskyrad[(nrow(clearskyrad)-abs(timediff)):nrow(clearskyrad), 2], clearskyrad[1:(nrow(clearskyrad)-abs(timediff)-1), 2])
+          nmr.zenith <- c(nmr.zenith[(length(nmr.zenith)-abs(timediff)):length(nmr.zenith), ], nmr.zenith[1:(length(nmr.zenith)-abs(timediff)-1)])
+        }
+        # insert leap days if needed
+        for(j in 1:nyears){
+          if(yearlist[j]%in%leapyears){# add day for leap year if needed
+            clearskyrad3<-c(clearskyrad2[1:(59*24)],clearskyrad2[(59*24):(59*24+23)],clearskyrad2[(59*24):(365*24-1)])
+            nmr.zenith2<-c(nmr.zenith[1:(59*24)],nmr.zenith[(59*24):(59*24+23)],nmr.zenith[(59*24):(365*24-1)])
+          }else{
+            clearskyrad3 <- clearskyrad2
+            nmr.zenith2 <- nmr.zenith
+          }
+          if(j == 1){
+            clearskyrad4 <- clearskyrad3
+            nmr.zenith3 <- nmr.zenith2
+          }else{
+            clearskyrad4 <- c(clearskyrad4, clearskyrad3)
+            nmr.zenith3 <- c(nmr.zenith3, nmr.zenith2)
+          }
+        }
+      #}
+
+      if(NCEPsw == 0){
+        dsw2 <- clearskyrad4 * (1-cloudhr/100)
+        hour.microclima <- as.numeric(format(tt, "%H"))
+        jd <- julday(as.numeric(format(tt, "%Y")), as.numeric(format(tt, "%m")), as.numeric(format(tt, "%d")))
+        #si <- siflat(hour.microclima, lat, long, jd)
+        si <- solarindex(0, aspect, hour.microclima, lat, long, jd, shadow = FALSE, merid = 0)
+        am <- microclima::airmasscoef(hour.microclima, lat, long, jd, merid = 0)
+        dp <- vector(length = length(jd))
+        for (i in 1:length(jd)) {
+          dp[i] <- microclima::.difprop2(dsw2[i], jd[i], hour.microclima[i], lat, long, watts = TRUE, hourly = TRUE, merid = 0)
+        }
+        am[am > 5] <- 5
+        dp[dsw2 == 0] <- NA
+        dnir <- (dsw2 * (1 - dp))/si
+        dnir[si == 0] <- NA
+        difr <- (dsw2 * dp)
+        rmx <- 4.87/0.0036 * (1 - dp)
+        rmx2 <- 4.87/0.0036 * (dp)
+        sdni <- dnir - rmx
+        sdni[sdni < 0] <- 0
+        sdni[si < 0.0348995] <- dnir[si < 0.0348995]
+        dnir <- dnir - sdni
+        difr <- difr + sdni
+        edni <- dnir/((4.87/0.0036) * (1 - dp))
+        edif <- difr/((4.87/0.0036) * dp)
+        bound <- function(x, mn = 0, mx = 1) {
+          x[x > mx] <- mx
+          x[x < mn] <- mn
+          x
+        }
+        odni <- bound((log(edni)/-am), mn = 0.24, mx = 1.7)
+        odif <- bound((log(edif)/-am), mn = 0.24, mx = 1.7)
+        dnir <- dnir/exp(-am * odni)
+        difr <- difr/exp(-am * odif)
+        dnir <- ifelse(dnir > rmx, rmx, dnir)
+        difr <- ifelse(difr > rmx2, rmx2, difr)
+        globr <- dnir * si + difr
+        globr <- bound(globr, mx = 4.87/0.0036)
+        nd <- length(globr)
+        sel <- which(is.na(globr * dp * odni * odif) == F)
+        globr[1] <- globr[min(sel)]
+        dp[1] <- dp[min(sel)]
+        odni[1] <- odni[min(sel)]
+        odif[1] <- odif[min(sel)]
+        globr[nd] <- globr[max(sel)]
+        dp[nd] <- dp[max(sel)]
+        odni[nd] <- odni[max(sel)]
+        odif[nd] <- odif[max(sel)]
+        globr <- na.approx(globr, na.rm = F)
+        dp <- na.approx(dp, na.rm = F)
+        odni <- na.approx(odni, na.rm = F)
+        odif <- na.approx(odif, na.rm = F)
+        h_gr <- bound(globr, mx = 4.87/0.0036)
+        h_dp <- bound(dp)
+        h_oi <- bound(odni, mn = 0.24, mx = 1.7)
+        h_od <- bound(odif, mn = 0.24, mx = 1.7)
+        afi <- exp(-am * h_oi)
+        afd <- exp(-am * h_od)
+        h_dni <- (1 - h_dp) * afi * h_gr
+        h_dif <- h_dp * afd * h_gr
+        h_dni[si == 0] <- 0
+        h_dif[is.na(h_dif)] <- 0
+        h_dni[is.na(h_dni)] <- 0
+        hourlydata$rad_dni <- h_dni * 0.0036
+        hourlydata$rad_dif <- h_dif * 0.0036
+        #hourlydata$szenith <- nmr.zenith3
+        radwind <- microclima::.pointradwind(hourlydata = hourlydata, dem = dem, lat = lat, long = long, l = mean(microclima.LAI), x = LOR,
+          albr = REFL, zmin = 0, slope = slope, aspect = aspect) # note doesn't use the zenith angle passed in!
+        SOLRhr <- radwind$swrad / 0.0036
+        # plot(hourlydata$rad_dni/.0036 + hourlydata$rad_dif/.0036, type= 'l', col = 'red')
+        # points(SOLRhr, type = 'l')
+      }
       IRDhr <- hourlydata$downlong / .0036
+      if(NCEPcld == 1){
+        CLDhr <- hourlydata$cloudcover
+        CLDhr[CLDhr < 0] <- 0
+        CLDhr[CLDhr > 100] <- 100
+      }else{
+        CLDhr <- cloudhr
+      }
+      if(NCEPlw == 0){
+        IRDhr <- IRDhr * 0 + -1
+      }
+
       RHhr <- suppressWarnings(humidityconvert(h = hourlydata$humidity, intype = 'specific', p = hourlydata$pressure, tc = TAIRhr)$relative)
       RHhr[RHhr > 100] <- 100
       RHhr[RHhr < 0] <- 0
@@ -781,6 +981,12 @@ micro_ncep <- function(
       TMINN <- dmaxmin(TAIRhr, min)
       CCMAXX <- dmaxmin(CLDhr, max)
       CCMINN <- dmaxmin(CLDhr, min)
+      if(hourly == 0 | ((hourly == 1) & (NCEPcld = 0))){
+        CCMAXX1 <- CCMAXX
+        CCMAXX <- CCMAXX1 * 2
+        CCMINN <- CCMAXX1 * 0.5
+        CCMAXX[CCMAXX > 100] <- 100
+      }
       RHMAXX <- dmaxmin(RHhr, max)
       RHMINN <- dmaxmin(RHhr, min)
       WNMAXX <- dmaxmin(WNhr, max)
@@ -832,8 +1038,8 @@ micro_ncep <- function(
       load('microclima.out.Rda')
     }
     if(hourly == 1){
-     slope <- 0 # already corrected for by microclima
-     azmuth <- 0 # already corrected for by microclima
+      slope <- 0 # already corrected for by microclima
+      azmuth <- 0 # already corrected for by microclima
     }
     ndays<-length(TMAXX)
     doynum<-ndays
@@ -993,9 +1199,10 @@ micro_ncep <- function(
       SOLRhr=rep(0,24*ndays)
       ZENhr=rep(-1,24*ndays)
       IRDhr=rep(-1,24*ndays)
-    }else{
-      CLDhr=rep(0,24*ndays)
     }
+    #else{
+    #  CLDhr=rep(0,24*ndays)
+    #}
     if(rainhourly==0){
       RAINhr=rep(0,24*ndays)
     }else{
