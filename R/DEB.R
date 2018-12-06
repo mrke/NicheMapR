@@ -482,25 +482,37 @@ DEB<-function(
       }
     }else{
       #not viviparous, so lay the eggs at next period of activity
-      if((Tb < VTMIN)  |  (Tb > VTMAX)){
-      }
-      #    change below to active or not active rather than depth-based, in case of fossorial
-      if((Tb < VTMIN)  |  (Tb > VTMAX)){
-      }
-      if(day == spawnday & spawnday != 0){
-      testclutch=floor(cumbatch/E_0)
-      if(testclutch>clutchsize){
-        clutchsize=testclutch
-        clutchenergy <- clutchsize*E_0
-      }
-      if(spawnday > 0){
-        clutchsize=testclutch
-        clutchenergy <- clutchsize*E_0
-      }
-      cumbatch = cumbatch-clutchenergy
-      repro=1
-      fecundity=clutchsize
-      clutches=1
+      if((Tb >= VTMIN)  |  (Tb <= VTMAX)){
+        #    change below to active or not active rather than depth-based, in case of fossorial
+        #if((Tb < VTMIN)  |  (Tb > VTMAX)){
+        #}
+        if(day == spawnday & spawnday != 0){
+          testclutch=floor(cumbatch/E_0)
+          if(testclutch>clutchsize){
+            clutchsize=testclutch
+            clutchenergy <- clutchsize*E_0
+          }
+          if(spawnday > 0){
+            clutchsize=testclutch
+            clutchenergy <- clutchsize*E_0
+          }
+          cumbatch = cumbatch-clutchenergy
+          repro=1
+          fecundity=clutchsize
+          clutches=1
+        }else{
+         if(spawnday == 0){
+         testclutch=floor(cumbatch/E_0)
+          if(testclutch>clutchsize){
+            clutchsize=testclutch
+            clutchenergy <- clutchsize*E_0
+          }
+          cumbatch = cumbatch-clutchenergy
+          repro=1
+          fecundity=clutchsize
+          clutches=1
+         }
+        }
       }
     }
   }
