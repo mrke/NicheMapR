@@ -789,6 +789,7 @@ micro_global <- function(
       }
       RAINFALL<-rep(RAINFALL,nyears)
     }
+    orig.RAINFALL <- RAINFALL
     # get annual mean temp for creating deep soil (2m) boundary condition
     avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
     soilinit<-rep(avetemp,20)
@@ -1067,6 +1068,9 @@ micro_global <- function(
     if(snowmodel == 1){
       sunsnow <- microut$sunsnow
       shdsnow <- microut$shdsnow
+    }
+    if(timeinterval == 12){
+      RAINFALL <- orig.RAINFALL
     }
     if(max(metout[,1] == 0)){
       cat("ERROR: the model crashed - try a different error tolerance (ERR) or a different spacing in DEP", '\n')
