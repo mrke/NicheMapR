@@ -765,7 +765,7 @@ micro_usa <- function(
         index1 <- which.min(dist1)
         dist2 <- abs(lat - lat_1)
         index2 <- which.min(dist2)
-        start <- c(index2, index1, 1)
+        start <- c(index1, index2, 1)
         count <- c(1, 1, -1)
         for (j in 1:nyears) {
           if (j == 1) {
