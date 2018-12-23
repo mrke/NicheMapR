@@ -603,7 +603,7 @@ DEB<-function(
     hs = hs_init + dhsds
   }else{
     hs = 0
-  }
+  }29484/
   h_w = ((h_aT*(E_pres/E_m)*vT)/(6*V_pres^(1./3.)))^(1./3.)
   dsurvdt = -1*surviv_pres*hs
   surviv = surviv_pres+dsurvdt

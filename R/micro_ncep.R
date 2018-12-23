@@ -743,14 +743,29 @@ micro_ncep <- function(
         prate <- prate * 3600 * 6 # mm in 6 hrs
         ncepdata <- data.frame(obs_time = tme2[sel], Tk, Tkmin, Tkmax, sh, pr, wu, wv, dlw, ulw, dsw, tcdc) # 6-hourly ncep for chosen period plus a day added either side for interpolation
         #hourlydata <- microclima::hourlyNCEP(ncepdata = ncepdata, lat, long, tme, reanalysis)
-        hourlydata <- hourlyNCEP2(ncepdata = ncepdata, lat, long, tme, reanalysis) # interpolated to hourly
-        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
-        microclima.out.noslope <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
+        #hourlydata <- hourlyNCEP(ncepdata = ncepdata, lat, long, tme, reanalysis) # interpolated to hourly
+        #hourlydata2 <- hourlyNCEP2(ncepdata = ncepdata, lat, long, tme, reanalysis) # interpolated to hourly
+        hourlydata <- hourlyNCEP3(ncepdata = ncepdata, lat, long, tme, reanalysis) # interpolated to hourly
+        #loctime <- hourlydata$obs_time
+        #hourlydata$obs_time <- hourlydata$obs_time-round(long/15, 0)*3600
+        cat('microclima calcs \n')
+        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
+      hourlyradwind <- microclima.out$hourlyradwind
+      #plot((hourlydata$rad_dif[1:100] + hourlydata$rad_dni[1:100])/.0036, type = 'l')
+      #plot(hourlyradwind$swrad[1:100]/.0036, type = 'l')
+      SLOPE <- hourlyradwind$slope[1]
+      ASPECT <- hourlyradwind$aspect[1]
+     # if(slope == 0 | (SLOPE == 0 & is.na(slope) == TRUE)){
+       #   microclima.out.noslope <- microclima.out
+        #}else{
+        #cat('sloping surface - also computing flat ground microclima calcs \n')
+          microclima.out.noslope <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
+      # }
         #microclima.out <- microclimaforNMR2(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
         #microclima.out.noslope <- microclimaforNMR2(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
         #dailyrain <- microclima.out$dailyprecip # remove extra 4 values from start
         dailyrain <- microclima.out$dailyprecip[-c(1:4)] # remove extra 4 values from start
-        dailyrain <- dailyrain[1:(length(dailyrain)-4)] # remove extra 4 values from end
+        dailyrain <- dailyrain[1:(length(dailyrain)-4)] # remove extra 5 values from end
         #dailyrain <- dailyrain[1:(length(dailyrain)-1)] # remove extra 4 values from end
         dailyrain <- aggregate(dailyrain, by = list(format(hourlydata$obs_time[seq(1, nrow(hourlydata), 6)], "%Y-%m-%d")), sum)$x
       }else{
@@ -760,13 +775,11 @@ micro_ncep <- function(
         hourlydata <- microclima.out$hourlydata
         dailyrain <- microclima.out$dailyprecip
       }
-      hourlyradwind <- microclima.out$hourlyradwind
       tref <- microclima.out$tref
       ZENhr <- hourlydata$szenith
       ZENhr[ZENhr > 90] <- 90
       cat("computing radiation and elevation effects with package microclima \n")
-      SLOPE <- hourlyradwind$slope[1]
-      ASPECT <- hourlyradwind$aspect[1]
+
       HORIZON <- hori
       if(save == 1){
         save(SLOPE, file = 'SLOPE.Rda')
@@ -819,7 +832,7 @@ micro_ncep <- function(
         solday.month <- solday.month$x # get just predictions
         # set up days for max values (offset from middle day of each month accordingly)
         doys12<-c(15-14, 46-14, 74-14, 105-14, 135-14, 166-10, 196+14, 227+14, 258+14, 288+14, 319+14, 365)
-        solday.month2 <- rep(suppressWarnings(spline(doys12,solday.month,n=365,xmin=1,xmax=365,method="periodic"))$y, nyears)
+        solday.month2 <- suppressWarnings(spline(doys12,solday.month,n=365,xmin=1,xmax=365,method="periodic"))$y
         # add in leap days if needed
         for(j in 1:nyears){
           if(yearlist[j]%in%leapyears){# add day for leap year if needed
@@ -878,12 +891,16 @@ micro_ncep <- function(
         }
       #}
 
-      if(NCEPsw == 0){
+      if(NCEPsw == 0){ # use NCEP to compute cloud and adjust solar accordingly, then adjust for topographic effects
         dsw2 <- clearskyrad4 * (1-cloudhr/100)
         hour.microclima <- as.numeric(format(tt, "%H"))
         jd <- julday(as.numeric(format(tt, "%Y")), as.numeric(format(tt, "%m")), as.numeric(format(tt, "%d")))
-        #si <- siflat(hour.microclima, lat, long, jd)
-        si <- solarindex(0, aspect, hour.microclima, lat, long, jd, shadow = FALSE, merid = 0)
+        #si <- siflat(hour.microclima, lat, long, jd, merid = 0)
+        if(is.na(slope) | is.na(aspect)){
+          slope <- SLOPE
+          aspect <- ASPECT
+        }
+        si <- microclima::solarindex(slope, aspect, hour.microclima, lat, long, jd, shadow = FALSE, merid = 0)
         am <- microclima::airmasscoef(hour.microclima, lat, long, jd, merid = 0)
         dp <- vector(length = length(jd))
         for (i in 1:length(jd)) {
@@ -943,12 +960,14 @@ micro_ncep <- function(
         h_dni[is.na(h_dni)] <- 0
         hourlydata$rad_dni <- h_dni * 0.0036
         hourlydata$rad_dif <- h_dif * 0.0036
-        #hourlydata$szenith <- nmr.zenith3
-        radwind <- microclima::.pointradwind(hourlydata = hourlydata, dem = dem, lat = lat, long = long, l = mean(microclima.LAI), x = LOR,
-          albr = REFL, zmin = 0, slope = slope, aspect = aspect) # note doesn't use the zenith angle passed in!
+        hourlydata$szenith <- nmr.zenith3
+        # this version of .pointradwind uses solarindex not siflat
+        #radwind <- .pointradwind2(hourlydata = hourlydata, dem = dem, lat = lat, long = long, l = mean(microclima.LAI), x = LOR,
+        #  albr = REFL, zmin = 0, slope = slope, aspect = aspect) # note doesn't use the zenith angle passed in!
+        radwind <- .shortwave.ts(hourlydata$rad_dni, hourlydata$rad_dif, jd, hour.microclima, lat, long, slope, aspect, ha = 0, svv = 1, x = LOR, l = mean(microclima.LAI), albr = REFL, merid = 0, dst = 0, difani = FALSE)
         SOLRhr <- radwind$swrad / 0.0036
-        # plot(hourlydata$rad_dni/.0036 + hourlydata$rad_dif/.0036, type= 'l', col = 'red')
-        # points(SOLRhr, type = 'l')
+        #plot(hourlydata$rad_dni[1:100]/.0036 + hourlydata$rad_dif[1:100]/.0036, type= 'l', col = 'red')
+        #points(SOLRhr[1:100], type = 'l')
       }
       IRDhr <- hourlydata$downlong / .0036
       if(NCEPcld == 1){
@@ -981,12 +1000,12 @@ micro_ncep <- function(
       TMINN <- dmaxmin(TAIRhr, min)
       CCMAXX <- dmaxmin(CLDhr, max)
       CCMINN <- dmaxmin(CLDhr, min)
-      if(hourly == 0 | ((hourly == 1) & (NCEPcld = 0))){
-        CCMAXX1 <- CCMAXX
-        CCMAXX <- CCMAXX1 * 2
-        CCMINN <- CCMAXX1 * 0.5
-        CCMAXX[CCMAXX > 100] <- 100
-      }
+      #if(hourly == 0 | ((hourly == 1) & (NCEPcld = 0))){
+      #  CCMAXX1 <- CCMAXX
+      #  CCMAXX <- CCMAXX1 * 2
+      #  CCMINN <- CCMAXX1 * 0.5
+      #  CCMAXX[CCMAXX > 100] <- 100
+      #}
       RHMAXX <- dmaxmin(RHhr, max)
       RHMINN <- dmaxmin(RHhr, min)
       WNMAXX <- dmaxmin(WNhr, max)
