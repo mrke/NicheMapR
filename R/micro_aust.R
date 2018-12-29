@@ -907,11 +907,13 @@ micro_aust <- function(
 
     if(opendap == 1){
       message("extracting climate data", '\n')
-      baseurl<-"http://rs-data1-mel.csiro.au/thredds/dodsC/bawap/"
+      #baseurl<- "http://rs-data1-mel.csiro.au/thredds/dodsC/bawap/"
+      baseurl<-"http://dapds00.nci.org.au/thredds/dodsC/ub8/au/climate/"
       for (j in 1:nyears) {
         if (j == 1) {
           cat(paste("reading weather input for ", yearlist[j]," \n", sep = ""))
           nc <- nc_open(paste0(baseurl, "rad/day/",yearlist[j],"/bom-rad_day-19900101-19900131.nc"))
+          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.rad.", yearlist[j], ".nc"))
           lon <- ncvar_get(nc, "longitude")
           lat <- ncvar_get(nc, "latitude")
           flat=match(abs(lat-x[2])<1/44,1)
