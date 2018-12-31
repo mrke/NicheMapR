@@ -751,10 +751,10 @@ micro_ncep <- function(
         cat('microclima calcs \n')
         microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
         hourlyradwind <- microclima.out$hourlyradwind
-        #plot((hourlydata$rad_dif + hourlydata$rad_dni*cos(hourlydata$szenith*pi/180))/.0036, type = 'l', ylim = c(0, 1100))
+        #plot((hourlydata$rad_dif[1:240] + hourlydata$rad_dni[1:240]*cos(hourlydata$szenith[1:240]*pi/180))/.0036, type = 'l', ylim = c(0, 1100))
         #points(hourlyradwind$swrad/.0036, type = 'l', col = 'red')
         #abline(h = 600)
-        #plot(ncepdata$dsw, type = 'l', ylim = c(0, 1100))
+        #plot(ncepdata$dsw[1:40], type = 'l', ylim = c(0, 1100))
         #abline(h = 600)
         SLOPE <- hourlyradwind$slope[1]
         ASPECT <- hourlyradwind$aspect[1]
@@ -891,76 +891,64 @@ micro_ncep <- function(
 
       if(NCEPsw == 0){ # use NCEP + NMR to compute cloud and adjust solar accordingly, then adjust for topographic effects
         dsw2 <- clearskyrad4 *(0.36+0.64*(1-cloudhr/100)) # Angstrom formula (formula 5.33 on P. 177 of "Climate Data and Resources" by Edward Linacre 1992
-        dp.NMR2 <- 0.12 + 0.83 * cloudhr / 100 # from Butt et al. 2010 Agricultural and Forest Meteorology 150 (2010) 361–368
+        #dp.NMR2 <- 0.12 + 0.83 * cloudhr / 100 # from Butt et al. 2010 Agricultural and Forest Meteorology 150 (2010) 361–368
         hour.microclima <- as.numeric(format(tt, "%H"))
         jd <- julday(as.numeric(format(tt, "%Y")), as.numeric(format(tt, "%m")), as.numeric(format(tt, "%d")))
         if(is.na(slope) | is.na(aspect)){
           slope <- SLOPE
           aspect <- ASPECT
         }
-        # # partition total solar into diffuse and direct using code from microclima::hourlyNCEP
-        # si <- siflat(hour.microclima, lat, long, jd, merid = 0)
-        # am <- microclima::airmasscoef(hour.microclima, lat, long, jd, merid = 0)
-        # dp <- vector(length = length(jd))
-        # for (i in 1:length(jd)) {
-        #   dp[i] <- difprop2(dsw2[i], jd[i], hour.microclima[i], lat, long, watts = TRUE, hourly = TRUE, merid = 0)
-        # }
-        # am[am > 5] <- 5
-        # dp[dsw2 == 0] <- NA
-        # dnir <- (dsw2 * (1 - dp))/si
-        # dnir[si == 0] <- NA
-        # difr <- (dsw2 * dp)
-        # rmx <- 4.87/0.0036 * (1 - dp)
-        # rmx2 <- 4.87/0.0036 * (dp)
-        # sdni <- dnir - rmx
-        # sdni[sdni < 0] <- 0
-        # sdni[si < 0.0348995] <- dnir[si < 0.0348995]
-        # dnir <- dnir - sdni
-        # difr <- difr + sdni
-        # edni <- dnir/((4.87/0.0036) * (1 - dp))
-        # edif <- difr/((4.87/0.0036) * dp)
-        # bound <- function(x, mn = 0, mx = 1) {
-        #   x[x > mx] <- mx
-        #   x[x < mn] <- mn
-        #   x
-        # }
-        # odni <- bound((log(edni)/-am), mn = 0.24, mx = 1.7)
-        # odif <- bound((log(edif)/-am), mn = 0.24, mx = 1.7)
-        # dnir <- dnir/exp(-am * odni)
-        # difr <- difr/exp(-am * odif)
-        # dnir <- ifelse(dnir > rmx, rmx, dnir)
-        # difr <- ifelse(difr > rmx2, rmx2, difr)
-        # globr <- dnir * si + difr
-        # globr <- bound(globr, mx = 4.87/0.0036)
-        # nd <- length(globr)
-        # sel <- which(is.na(globr * dp * odni * odif) == F)
-        # globr[1] <- globr[min(sel)]
-        # dp[1] <- dp[min(sel)]
-        # odni[1] <- odni[min(sel)]
-        # odif[1] <- odif[min(sel)]
-        # globr[nd] <- globr[max(sel)]
-        # dp[nd] <- dp[max(sel)]
-        # odni[nd] <- odni[max(sel)]
-        # odif[nd] <- odif[max(sel)]
-        # globr <- na.approx(globr, na.rm = F)
-        # dp <- na.approx(dp, na.rm = F)
-        # odni <- na.approx(odni, na.rm = F)
-        # odif <- na.approx(odif, na.rm = F)
-        # h_gr <- bound(globr, mx = 4.87/0.0036)
-        # h_dp <- bound(dp)
-        # h_oi <- bound(odni, mn = 0.24, mx = 1.7)
-        # h_od <- bound(odif, mn = 0.24, mx = 1.7)
-        # afi <- exp(-am * h_oi)
-        # afd <- exp(-am * h_od)
-        # h_dni <- (1 - h_dp) * afi * h_gr
-        # h_dif <- h_dp * afd * h_gr
-        # h_dni[si == 0] <- 0
-        # h_dif[is.na(h_dif)] <- 0
-        # h_dni[is.na(h_dni)] <- 0
-        # hourlydata2 <- hourlydata
-        # hourlydata2$rad_dni <- h_dni * 0.0036
-        # hourlydata2$rad_dif <- h_dif * 0.0036
-        # hourlydata2$szenith <- nmr.zenith3
+        # partition total solar into diffuse and direct using code from microclima::hourlyNCEP
+        si <- microclima::siflat(hour.microclima, lat, long, jd, merid = 0)
+        am <- microclima::airmasscoef(hour.microclima, lat, long, jd, merid = 0)
+        dp <- vector(length = length(jd))
+        for (i in 1:length(jd)) {
+          dp[i] <- microclima:::difprop(dsw2[i], jd[i], hour.microclima[i], lat, long, watts = TRUE, hourly = TRUE, merid = 0)
+        }
+        dp[dsw2 == 0] <- NA
+        dnir <- (dsw2 * (1 - dp))/si
+        dnir[si == 0] <- NA
+        difr <- (dsw2 * dp)
+        edni <- dnir/((4.87/0.0036) * (1 - dp))
+        edif <- difr/((4.87/0.0036) * dp)
+        bound <- function(x, mn = 0, mx = 1) {
+         x[x > mx] <- mx
+         x[x < mn] <- mn
+         x
+        }
+        odni <- bound((log(edni)/-am), mn = 0.001, mx = 1.7)
+        odif <- bound((log(edif)/-am), mn = 0.001, mx = 1.7)
+        nd <- length(odni)
+        sel <- which(is.na(am * dp * odni * odif) == F)
+        dp[1] <- dp[min(sel)]
+        odni[1] <- odni[min(sel)]
+        odif[1] <- odif[min(sel)]
+        dp[nd] <- dp[max(sel)]
+        odni[nd] <- odni[max(sel)]
+        odif[nd] <- odif[max(sel)]
+        dp[nd] <- dp[max(sel)]
+        odni[nd] <- odni[max(sel)]
+        odif[nd] <- odif[max(sel)]
+        if (!require("raster", quietly = TRUE)) {
+          stop("package 'raster' is needed. Please install it.",
+               call. = FALSE)
+        }
+        dp <- na.approx(dp, na.rm = F)
+        odni <- na.approx(odni, na.rm = F)
+        odif <- na.approx(odif, na.rm = F)
+        h_dp <- bound(dp)
+        h_oi <- bound(odni, mn = 0.24, mx = 1.7)
+        h_od <- bound(odif, mn = 0.24, mx = 1.7)
+        afi <- exp(-am * h_oi)
+        afd <- exp(-am * h_od)
+        h_dni <- (1 - h_dp) * afi * 4.87/0.0036
+        h_dif <- h_dp * afd * 4.87/0.0036
+        h_dni[si == 0] <- 0
+        h_dif[is.na(h_dif)] <- 0
+        hourlydata2 <- hourlydata
+        hourlydata2$rad_dni <- h_dni * 0.0036
+        hourlydata2$rad_dif <- h_dif * 0.0036
+        hourlydata2$szenith <- nmr.zenith3
         xy <- data.frame(x = long, y = lat)
         coordinates(xy) = ~x + y
         proj4string(xy) = "+init=epsg:4326"
@@ -978,14 +966,14 @@ micro_ncep <- function(
           saz <- ifelse(saz > 36, 1, saz)
           ha[i] <- ha36[saz]
         }
-        # radwind <- .shortwave.ts(hourlydata2$rad_dni, hourlydata2$rad_dif, jd, hour.microclima, lat, long, slope, aspect, ha = ha, svv = 1, x = LOR, l = mean(microclima.LAI), albr = REFL, merid = 0, dst = 0, difani = FALSE)
-        dni.NMR <- dsw2*(1-dp.NMR2)/cos(nmr.zenith3*pi/180)
-        dni.NMR[nmr.zenith3 > 88] <- 0
-        radwind2 <- .shortwave.ts(dni.NMR, dsw2*dp.NMR2, jd, hour.microclima, lat, long, slope, aspect, ha = ha, svv = 1, x = LOR, l = mean(microclima.LAI), albr = REFL, merid = 0, dst = 0, difani = FALSE)
+        radwind2 <- .shortwave.ts(hourlydata2$rad_dni, hourlydata2$rad_dif, jd, hour.microclima, lat, long, slope, aspect, ha = ha, svv = 1, x = LOR, l = mean(microclima.LAI), albr = REFL, merid = 0, dst = 0, difani = FALSE)
+        #dni.NMR <- dsw2*(1-dp.NMR2)/cos(nmr.zenith3*pi/180)
+        #dni.NMR[nmr.zenith3 > 88] <- 0
+        #radwind2 <- .shortwave.ts(dni.NMR, dsw2*dp.NMR2, jd, hour.microclima, lat, long, slope, aspect, ha = ha, svv = 1, x = LOR, l = mean(microclima.LAI), albr = REFL, merid = 0, dst = 0, difani = FALSE)
         microclima.out$hourlyradwind <- radwind2
-        SOLRhr <- radwind2$swrad
+        SOLRhr <- radwind2$swrad / 0.0036
       }
-      IRDhr <- hourlydata$downlong / .0036
+      IRDhr <- hourlydata$downlong / 0.0036
       if(NCEPcld == 1){
         CLDhr <- hourlydata$cloudcover
         CLDhr[CLDhr < 0] <- 0
