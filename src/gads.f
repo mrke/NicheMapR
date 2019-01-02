@@ -475,7 +475,7 @@ c      end if
          write(10,4002) (opnam(in),in=11,kop)
  4002    format('                               ',5(1x,a8,1x))
       end if
-      close (10)
+
 c      write(10,4003)
 c 4003 format('#',13x,'  [1/km]  ','  [1/km]  ','  [1/km]  ',
 c     *       30x,'   [sr]')
