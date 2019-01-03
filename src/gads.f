@@ -323,7 +323,7 @@ c       print*,' Ende optpar',ilat,ilon
        close (ntape)
 9999	continue
 
-       close (10)
+c       close (10)
 
 	 do 9998 i=1,25
 	  do 9997 j=1,2
@@ -432,7 +432,7 @@ C     Kopf des output-files                                            C
 CCCCC -----------------------------------------------------------------C
 
 c      if (ih.eq.1.and.il.eq.1) then
-         open (10,file='extdata/aererg.txt')
+c         open (10,file='extdata/aererg.txt')
 
 c         write(10,100) cseas
 c  100	   format('# Global Aerosol Data Set, Version 2.2a'/,
@@ -467,14 +467,14 @@ c      end if
          opnam(iop)=opanam(iop)
       end do
 
-      if (kop.le.10) then
-         write(10,4001) (opnam(in),in=1,kop)
- 4001    format('   LAT  LON NL LAMB    RELHUM ',10(1x,a8,1x))
-      else
-         write(10,4001) (opnam(in),in=1,10)
-         write(10,4002) (opnam(in),in=11,kop)
- 4002    format('                               ',5(1x,a8,1x))
-      end if
+c      if (kop.le.10) then
+c         write(10,4001) (opnam(in),in=1,kop)
+c 4001    format('   LAT  LON NL LAMB    RELHUM ',10(1x,a8,1x))
+c      else
+c         write(10,4001) (opnam(in),in=1,10)
+c         write(10,4002) (opnam(in),in=11,kop)
+c 4002    format('                               ',5(1x,a8,1x))
+c      end if
 
 c      write(10,4003)
 c 4003 format('#',13x,'  [1/km]  ','  [1/km]  ','  [1/km]  ',
@@ -676,7 +676,7 @@ ccccc -----------------------------------------------------------------c
           tap(1:15)='extdata/optdat/'
           tap(16:19)=comnam(jc)
           tap(20:21)=chum(iht)
-			write(10,*) tap
+c			write(10,*) tap
             ntap=20
 
 ccccc -----------------------------------------------------------------c
@@ -1187,37 +1187,37 @@ ccccc -----------------------------------------------------------------c
 
 	 if (iop.le.10) then
 	    if (l.eq.1) then
-	       write (10,2020) latx,lonx,nl,alamb(ilamb),ahum(ihum),
-     *			       (oparam(ip,l),ip=1,iop)
- 2020	  FORMAT(2(1x,I4),i3,3x,f6.3,3x,f3.0,1p3e10.3,0p3e10.3,1pe10.3)
+c	       write (10,2020) latx,lonx,nl,alamb(ilamb),ahum(ihum),
+c     *			       (oparam(ip,l),ip=1,iop)
+c 2020	  FORMAT(2(1x,I4),i3,3x,f6.3,3x,f3.0,1p3e10.3,0p3e10.3,1pe10.3)
            optdep(ilamb,1)=alamb(ilamb)
 	     optdep(ilamb,2)=oparam(6,l)
 	    else
-	       write (10,3020)
-     *			       (oparam(ip,l),ip=1,iop)
- 3020          FORMAT(13x,1p3e10.3,0p3e10.3,1pe10.3)
+c	       write (10,3020)
+c     *			       (oparam(ip,l),ip=1,iop)
+c 3020          FORMAT(13x,1p3e10.3,0p3e10.3,1pe10.3)
 	    end if
 	 else
-	    if (l.eq.1) then
-	       write (10,2020) latx,lonx,nl,
-     *			       (oparam(ip,l),ip=1,5)
-	       write (10,2030) (oparam(ip,l),ip=6,iop)
- 2030	       FORMAT(11x,1p10e10.3)
-	    else
-	       write (10,3040)
-     *			       (oparam(ip,l),ip=1,5)
- 3040	       FORMAT(13x,10e10.3)
-	       write (10,2030) (oparam(ip,l),ip=6,iop)
-	    end if
+c	    if (l.eq.1) then
+c	       write (10,2020) latx,lonx,nl,
+c     *			       (oparam(ip,l),ip=1,5)
+c	       write (10,2030) (oparam(ip,l),ip=6,iop)
+c 2030	       FORMAT(11x,1p10e10.3)
+c	    else
+c	       write (10,3040)
+c     *			       (oparam(ip,l),ip=1,5)
+c 3040	       FORMAT(13x,10e10.3)
+c	       write (10,2030) (oparam(ip,l),ip=6,iop)
+c	    end if
 	 end if
 
-	 if(jnopar(10).eq.1) then
-	    write(10,4002)
- 4002	    format('   phase function')
-	    write(10,4010) (phaf(it,l),it=1,nia)
- 4010	    format(8e10.3)
-	    write(10,*) ' '
-	 end if
+c	 if(jnopar(10).eq.1) then
+c	    write(10,4002)
+c 4002	    format('   phase function')
+c	    write(10,4010) (phaf(it,l),it=1,nia)
+c 4010	    format(8e10.3)
+c	    write(10,*) ' '
+c	 end if
       end do
 
       return
