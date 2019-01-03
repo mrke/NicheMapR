@@ -749,7 +749,7 @@ micro_ncep <- function(
         ncepdata <- data.frame(obs_time = tme2[sel], Tk, Tkmin, Tkmax, sh, pr, wu, wv, dlw, ulw, dsw, tcdc) # 6-hourly ncep for chosen period plus a day added either side for interpolation
         hourlydata <- hourlyNCEP(ncepdata = ncepdata, lat, long, tme, reanalysis) # interpolated to hourly
         cat('microclima calcs \n')
-        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
+        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
         hourlyradwind <- microclima.out$hourlyradwind
         #plot((hourlydata$rad_dif[1:240] + hourlydata$rad_dni[1:240]*cos(hourlydata$szenith[1:240]*pi/180))/.0036, type = 'l', ylim = c(0, 1100))
         #points(hourlyradwind$swrad/.0036, type = 'l', col = 'red')
@@ -762,14 +762,14 @@ micro_ncep <- function(
           microclima.out.noslope <- microclima.out
         }else{
           cat('sloping surface - also computing flat ground microclima calcs \n')
-          microclima.out.noslope <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
+          microclima.out.noslope <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
         }
         dailyrain <- microclima.out$dailyprecip[-c(1:4)] # remove extra 4 values from start
         dailyrain <- dailyrain[1:(length(dailyrain)-4)] # remove extra 5 values from end
         dailyrain <- aggregate(dailyrain, by = list(format(hourlydata$obs_time[seq(1, nrow(hourlydata), 6)], "%Y-%m-%d")), sum)$x
       }else{
-        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
-        microclima.out.noslope <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = REFL, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
+        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
+        microclima.out.noslope <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis)
         hourlydata <- microclima.out$hourlydata
         dailyrain <- microclima.out$dailyprecip
       }
@@ -966,7 +966,7 @@ micro_ncep <- function(
           saz <- ifelse(saz > 36, 1, saz)
           ha[i] <- ha36[saz]
         }
-        radwind2 <- .shortwave.ts(hourlydata2$rad_dni, hourlydata2$rad_dif, jd, hour.microclima, lat, long, slope, aspect, ha = ha, svv = 1, x = LOR, l = mean(microclima.LAI), albr = REFL, merid = 0, dst = 0, difani = FALSE)
+        radwind2 <- .shortwave.ts(hourlydata2$rad_dni, hourlydata2$rad_dif, jd, hour.microclima, lat, long, slope, aspect, ha = ha, svv = 1, x = LOR, l = mean(microclima.LAI), albr = 0, merid = 0, dst = 0, difani = FALSE)
         #dni.NMR <- dsw2*(1-dp.NMR2)/cos(nmr.zenith3*pi/180)
         #dni.NMR[nmr.zenith3 > 88] <- 0
         #radwind2 <- .shortwave.ts(dni.NMR, dsw2*dp.NMR2, jd, hour.microclima, lat, long, slope, aspect, ha = ha, svv = 1, x = LOR, l = mean(microclima.LAI), albr = REFL, merid = 0, dst = 0, difani = FALSE)
