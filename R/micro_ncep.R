@@ -1140,8 +1140,7 @@ micro_ncep <- function(
 
     Intrvls<-rep(0,ndays)
     Intrvls[1] <- 1 # user-supplied last day-of-year in each time interval sequence
-    Numtyps <- 1 # number of substrate types
-    Numint <- 1  # number of time intervals
+    Numtyps <- 10 # number of substrate types
     Nodes <- matrix(data = 0, nrow = 10, ncol = ndays) # deepest nodes for each substrate type
     Nodes[1:10,] <- c(1:10) # deepest nodes for each substrate type
     ALREF <- abs(trunc(x[1]))
