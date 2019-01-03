@@ -1143,7 +1143,7 @@ micro_ncep <- function(
     Numtyps <- 1 # number of substrate types
     Numint <- 1  # number of time intervals
     Nodes <- matrix(data = 0, nrow = 10, ncol = ndays) # deepest nodes for each substrate type
-    Nodes[1,1] <- 10. # deepest nodes for each substrate type
+    Nodes[1:10,] <- c(1:10) # deepest nodes for each substrate type
     ALREF <- abs(trunc(x[1]))
 
     HEMIS <- ifelse(x[2]<0, 2, 1)
