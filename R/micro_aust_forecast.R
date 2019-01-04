@@ -794,7 +794,7 @@ micro_aust_forecast <- function(
     }
 
     if(soilgrids == 1){
-      cat('extracting data from SoilGrids \n')
+      cat('extracting soil texture data from SoilGrids \n')
       require(jsonlite)
       if (!requireNamespace("jsonlite", quietly = TRUE)) {
         stop("package 'jsonlite' is needed to extract data from SoilGrids, please install it.",
