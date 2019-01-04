@@ -12,8 +12,8 @@
 #' @param shape = 3, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)
 #' @param alpha_max = 0.85, Maximum solar absorptivity, decimal percent
 #' @param alpha_min = 0.85, Maximum solar absorptivity, decimal percent
-#' @param T_F_min = 34, Minimum foraging temperature, °C (also affects burrow depth selection)
-#' @param T_F_max = 24, Maximum foraging temperature, °C
+#' @param T_F_min = 24, Minimum foraging temperature, °C (also affects burrow depth selection)
+#' @param T_F_max = 34, Maximum foraging temperature, °C
 #' @param T_B_min = 17.5, Minimum basking temperature, °C
 #' @param T_RB_min = 17.5, Minimum temperature at which animal will move from retreat to basking site, °C
 #' @param T_pref = 30, Preferred body temperature, °C
@@ -487,8 +487,8 @@ ectotherm<-function(
   shape=3,
   alpha_max=0.85,
   alpha_min=0.85,
-  T_F_min=34,
-  T_F_max=24,
+  T_F_min=24,
+  T_F_max=34,
   T_B_min=17.5,
   T_RB_min=17.5,
   T_pref=30,
