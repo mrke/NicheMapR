@@ -72,7 +72,7 @@
 #' \code{rainwet}{ = 1.5, mm of rainfall causing the ground to be 90\% wet for the day}\cr\cr
 #' \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
 #' \code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
-#' \code{hori}{ = rep(0,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
+#' \code{hori}{ = rep(NA,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
 #'
 #' \strong{ Soil moisture mode parameters:}\cr\cr
 #'
@@ -612,8 +612,13 @@ micro_ncep <- function(
       save(BulkDensity, file = 'BulkDensity.Rda')
     }
     hori<-rep(0, 24)
-    VIEWF <- 1 # incorporated already by microclima
-
+    if(is.na(hori[1])){
+     VIEWF <- 1 # incorporated already by microclima
+    }else{
+     VIEWF <- 1-sum(sin(as.data.frame(hori)*pi/180))/length(hori) # convert horizon angles to radians and calc view factor(s)
+     HORIZON <- spline(x = hori, n = 36, method =  'periodic')$y
+     HORIZON[HORIZON < 0] <- 0
+    }
     # setting up for temperature correction using lapse rate given difference between 9sec DEM value and 0.05 deg value
     days <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900", tz = 'UTC'), as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900", tz = 'UTC'), by = 'days')
     alldays <- seq(as.POSIXct("01/01/1900", format = "%d/%m/%Y", origin = "01/01/1900", tz = 'UTC'), Sys.time()-60*60*24, by = 'days')
