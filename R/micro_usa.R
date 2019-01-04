@@ -642,7 +642,7 @@ micro_usa <- function(
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-USADEM}
     if(save != 2){
       if(soilgrids == 1){
-        cat('extracting data from SoilGrids \n')
+        cat('extracting soil texture data from SoilGrids \n')
         require(jsonlite)
         ov <- jsonlite::fromJSON(paste0('https://rest.soilgrids.org/query?lon=',x[1],'&lat=',x[2],',&attributes=BLDFIE,SLTPPT,SNDPPT,CLYPPT'), flatten = TRUE)
         if(length(ov) > 3){
