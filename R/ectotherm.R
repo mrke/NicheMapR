@@ -251,7 +251,7 @@
 #'}
 #' \strong{ Life stage-specific parameter allocation:}
 #' \itemize{
-#' \item{\code{thermal_stages}{ = matrix(data = c(rep(CT_min,stages),rep(CT_max,stages),rep(T_F_max,stages),rep(T_F_min,stages),rep(T_B_min,stages),rep(T_pref,stages)), nrow = stages, ncol = 6), Stage specific thermal thresholds (CT_min,CT_max,T_F_max,T_F_min,T_B_min,T_pref)}\cr}
+#' \item{\code{thermal_stages}{ = matrix(data = c(rep(CT_min,stages),rep(CT_max,stages),rep(T_F_min,stages),rep(T_F_max,stages),rep(T_B_min,stages),rep(T_pref,stages)), nrow = stages, ncol = 6), Stage specific thermal thresholds (CT_min,CT_max,T_F_min,T_F_max,T_B_min,T_pref)}\cr}
 #' \item{\code{behav_stages}{ = matrix(data = c(rep(diurn,stages),rep(nocturn,stages),rep(crepus,stages),rep(burrow,stages),rep(shdburrow,stages),rep(mindepth,stages),rep(maxdepth,stages),rep(shade_seek,stages),rep(climb,stages),rep(fossorial,stages),rep(rainact,stages),rep(actrainthresh,stages),rep(act_breed,stages),rep(flyer,stages),rep(aquabask,stages)), nrow = stages, ncol = 15), Stage specific behaviour diurn,nocturn,crepus,burrow,shdburrow,mindepth,maxdepth,shade_seek,climb,fossorial,rainact,actrainthresh,act_breed,flyer,aquabask)}\cr}
 #' \item{\code{water_stages}{ = matrix(data = c(rep(pct_wet,stages),rep(F_O2,stages),rep(pct_H_P,stages),rep(pct_H_N,stages),rep(pct_H_X,stages),rep(pct_H_R,stages),rep(raindrink,stages),rep(gutfill,stages)), nrow = stages, ncol = 8), Stage-specific water budget parameters (pct_wet,F_O2,pct_H_P,pct_H_N,pct_H_X,pct_H_R,raindrink,gutfill)}\cr}
 #' \item{\code{nutri_stages}{ = matrix(data = c(rep(foodlim,stages),rep(0,stages)), nrow = stages, ncol = 1), Stage-specific nutritional parameters (foodlim)}\cr}
@@ -448,7 +448,7 @@
 #'shadsoil<-cbind(dates,shadsoil)
 #'
 #'# run the ectotherm model
-#'ecto<-ectotherm(T_F_min=35,T_F_max=30,T_pref=33,T_B_min=20,T_RB_min=10)
+#'ecto<-ectotherm(T_F_min=30,T_F_max=35,T_pref=33,T_B_min=20,T_RB_min=10)
 #'
 #'# retrieve output
 #'environ<-as.data.frame(ecto$environ) # activity, Tb and environment
@@ -657,7 +657,7 @@ ectotherm<-function(
   GLMsalts=matrix(data = 0, nrow = 24*ndays, ncol = 20),
   GLMpHs=matrix(data = 7., nrow = 24*ndays, ncol = 20),
   GLMfoods=matrix(data = 10., nrow = 24*ndays, ncol = 20),
-  thermal_stages=matrix(data = c(rep(CT_min,stages),rep(CT_max,stages),rep(T_F_max,stages),rep(T_F_min,stages),rep(T_B_min,stages),
+  thermal_stages=matrix(data = c(rep(CT_min,stages),rep(CT_max,stages),rep(T_F_min,stages),rep(T_F_max,stages),rep(T_B_min,stages),
     rep(T_pref,stages)), nrow = stages, ncol = 6),
   behav_stages=matrix(data = c(rep(diurn,stages),rep(nocturn,stages),rep(crepus,stages),rep(burrow,stages),
     rep(shdburrow,stages),rep(mindepth,stages),rep(maxdepth,stages),rep(shade_seek,stages),rep(climb,stages),rep(fossorial,stages),
@@ -922,7 +922,7 @@ ectotherm<-function(
   tester<-0
   microyear<-1
   postur<-1
-  ectoinput<-as.matrix(c(ALT,fluid,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,Ww_kg,epsilon,absan,RQ,rinsul,shape,live,TIMBAS,k_flesh,c_body,rho_body,alpha_max,alpha_min,FATOSK,FATOSB,FATOBJ,T_F_min,T_F_max,delta_air,SKINW,pct_eyes,xbas,F_O2,T_pref,F_cond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,postur,maxshd,minshd,CT_max,CT_min,behav,DOY,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,DOYstart,monthly,custom_shape,M_1,M_2,M_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,pct_H_R,microyear,container,flyer,flyspeed,ndays,maxdepth,CT_minthresh,CT_kill,gutfill,mindepth,T_B_min,T_RB_min,F_m,k_sub,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,Tb_breed,Tb_breed_hrs,contwet,warmsig,aquabask,pct_H_death,write_csv,aestdepth,eggshade,pO2thresh))
+  ectoinput<-as.matrix(c(ALT,fluid,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,Ww_kg,epsilon,absan,RQ,rinsul,shape,live,TIMBAS,k_flesh,c_body,rho_body,alpha_max,alpha_min,FATOSK,FATOSB,FATOBJ,T_F_max,T_F_min,delta_air,SKINW,pct_eyes,xbas,F_O2,T_pref,F_cond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,postur,maxshd,minshd,CT_max,CT_min,behav,DOY,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,DOYstart,monthly,custom_shape,M_1,M_2,M_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,pct_H_R,microyear,container,flyer,flyspeed,ndays,maxdepth,CT_minthresh,CT_kill,gutfill,mindepth,T_B_min,T_RB_min,F_m,k_sub,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,Tb_breed,Tb_breed_hrs,contwet,warmsig,aquabask,pct_H_death,write_csv,aestdepth,eggshade,pO2thresh))
   debmod<-c(clutchsize,rho_body_deb,d_V,d_Egg,mu_X,mu_E,mu_V,mu_P,T_REF-273.15,z,kap,kap_X,p_M,v,E_G,kap_R,E_sm,del_M,h_a,V_init_baby,E_init_baby,k_J,E_Hb,E_Hj,E_Hp,clutch_ab[2],batch,rain_breed,photostart,photofinish,daylengthstart,daylengthfinish,photodirs,photodirf,clutch_ab[1],amphibreed,amphistage,eta_O,JM_JO,E_0,kap_X_P,PTUREA1,PFEWAT1,wO,w_N,FoodWater1,f,s_G,K,X[1],metab_mode,stages,y_EV_l,s_j,startday,raindrink,reset,m_a,m_i,m_h,aestivate,depress,minclutch,L_b,E_He)
   deblast<-c(iyear,countday,V_init,E_init,ms_init,cumrepro_init,q_init,hs_init,cumbatch_init,V_baby_init,E_baby_init,E_H_init,stage)
 
