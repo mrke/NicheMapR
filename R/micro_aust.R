@@ -386,11 +386,11 @@ micro_aust <- function(
 ) {
 
   # function to assist with interpolated data in leap years
-  leapfix <- function(indata, yearlist){
+  leapfix <- function(indata, yearlist, mult = 1){
     leapyears<-seq(1972,2060,4)
     for(j in 1:length(yearlist)){
       if(yearlist[j] %in% leapyears){# add day for leap year if needed
-        data<-c(indata[1:59], indata[59], indata[60:365])
+        data<-c(indata[1:(59*mult)], indata[59*mult], indata[(60*mult):(365*mult)])
       }else{
         data <- indata
       }
@@ -1073,6 +1073,7 @@ micro_aust <- function(
     idayst <- 1 # start month
     # end preliminary test for incomplete year, if simulation includes the present year
 
+
     if((soildata==1 & nrow(soilprop)>0) | soildata == 0){
       if(soildata==1){
         # get static soil data into arrays
@@ -1596,6 +1597,105 @@ micro_aust <- function(
             tannulrun[1:365]<-yearone
             # SST
           }
+        }
+
+        if(microclima == 1 & hourly == 2){
+
+          if (!require("microclima", quietly = TRUE)) {
+            stop("package 'microclima' is needed. Please install it.",
+                 call. = FALSE)
+          }
+          cat("Downloading digital elevation data \n")
+          lat <- x[2]
+          long <- x[1]
+          dem <- microclima::get_dem(r = NA, lat = lat, long = long, resolution = 100,
+                                     zmin = zmin)
+          cloudhr <- cbind(rep(seq(1,length(cloud)),24), rep(cloud, 24))
+          cloudhr <- cloudhr[order(cloudhr[,1]),]
+          cloudhr <- cloudhr[,2]
+          dsw2 <- leapfix(clearskyrad[,2], yearlist, 24) *(0.36+0.64*(1-cloudhr/100)) # Angstrom formula (formula 5.33 on P. 177 of "Climate Data and Resources" by Edward Linacre 1992
+          tt <- seq(as.POSIXct(paste0('01/01/',ystart), format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(paste0('31/12/',yfinish), format = "%d/%m/%Y", tz = 'UTC')+23*3600, by = 'hours')
+          #tt2 <- seq(as.POSIXct(paste0('01/01/',ystart), format = "%d/%m/%Y", tz = "Etc/GMT+10"), as.POSIXct(paste0('31/12/',yfinish), format = "%d/%m/%Y", tz = "Etc/GMT+10")+23*3600, by = 'hours')
+          timediff <- x[1]/15
+          #timediff <- as.numeric(tt2[1] - as.POSIXct(paste0('01/01/',ystart), format = "%d/%m/%Y", tz = "UTC"))
+          #tt <- tt + timediff * 3600
+          hour.microclima <- as.numeric(format(tt, "%H")) + timediff-floor(timediff)
+          jd <- julday(as.numeric(format(tt, "%Y")), as.numeric(format(tt, "%m")), as.numeric(format(tt, "%d")))
+          if(is.na(slope) | is.na(aspect)){
+            slope <- SLOPE
+            aspect <- ASPECT
+          }
+          # partition total solar into diffuse and direct using code from microclima::hourlyNCEP
+          si <- microclima::siflat(hour.microclima, lat, long, jd, merid = long)
+          am <- microclima::airmasscoef(hour.microclima, lat, long, jd, merid = long)
+          dp <- vector(length = length(jd))
+          for (i in 1:length(jd)) {
+            dp[i] <- microclima:::difprop(dsw2[i], jd[i], hour.microclima[i], lat, long, watts = TRUE, hourly = TRUE, merid = long)
+          }
+          dp[dsw2 == 0] <- NA
+          dnir <- (dsw2 * (1 - dp))/si
+          dnir[si == 0] <- NA
+          difr <- (dsw2 * dp)
+          edni <- dnir/((4.87/0.0036) * (1 - dp))
+          edif <- difr/((4.87/0.0036) * dp)
+          bound <- function(x, mn = 0, mx = 1) {
+            x[x > mx] <- mx
+            x[x < mn] <- mn
+            x
+          }
+          odni <- bound((log(edni)/-am), mn = 0.001, mx = 1.7)
+          odif <- bound((log(edif)/-am), mn = 0.001, mx = 1.7)
+          nd <- length(odni)
+          sel <- which(is.na(am * dp * odni * odif) == F)
+          dp[1] <- dp[min(sel)]
+          odni[1] <- odni[min(sel)]
+          odif[1] <- odif[min(sel)]
+          dp[nd] <- dp[max(sel)]
+          odni[nd] <- odni[max(sel)]
+          odif[nd] <- odif[max(sel)]
+          dp[nd] <- dp[max(sel)]
+          odni[nd] <- odni[max(sel)]
+          odif[nd] <- odif[max(sel)]
+          if (!require("raster", quietly = TRUE)) {
+            stop("package 'raster' is needed. Please install it.",
+                 call. = FALSE)
+          }
+          dp <- na.approx(dp, na.rm = F)
+          odni <- na.approx(odni, na.rm = F)
+          odif <- na.approx(odif, na.rm = F)
+          h_dp <- bound(dp)
+          h_oi <- bound(odni, mn = 0.24, mx = 1.7)
+          h_od <- bound(odif, mn = 0.24, mx = 1.7)
+          afi <- exp(-am * h_oi)
+          afd <- exp(-am * h_od)
+          h_dni <- (1 - h_dp) * afi * 4.87/0.0036
+          h_dif <- h_dp * afd * 4.87/0.0036
+          h_dni[si == 0] <- 0
+          h_dif[is.na(h_dif)] <- 0
+          # hourlydata2 <- hourlydata
+          # hourlydata2$rad_dni <- h_dni * 0.0036
+          # hourlydata2$rad_dif <- h_dif * 0.0036
+          # hourlydata2$szenith <- nmr.zenith3
+          xy <- data.frame(x = long, y = lat)
+          coordinates(xy) = ~x + y
+          proj4string(xy) = "+init=epsg:4326"
+          xy <- as.data.frame(spTransform(xy, crs(dem)))
+          ha <- 0
+          ha36 <- 0
+          for (i in 0:35) {
+            har <- horizonangle(dem, i * 10, res(dem)[1])
+            ha36[i + 1] <- atan(extract(har, xy)) * (180/pi)
+          }
+          #else ha36 <- rep(horizon, 36)
+          for (i in 1:length(tme)) {
+            saz <- solazi(hour.microclima[i], lat, long, jd[i], merid = long)
+            saz <- round(saz/10, 0) + 1
+            saz <- ifelse(saz > 36, 1, saz)
+            ha[i] <- ha36[saz]
+          }
+          radwind2 <- .shortwave.ts(h_dni * 0.0036, h_dif * 0.0036, jd, hour.microclima, lat, long, slope, aspect, ha = ha, svv = 1, x = LOR, l = mean(microclima.LAI), albr = 0, merid = long, dst = 0, difani = FALSE)
+          microclima.out$hourlyradwind <- radwind2
+          SOLRhr <- radwind2$swrad / 0.0036
         }
 
         if(opendap == 0){
