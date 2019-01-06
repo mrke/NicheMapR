@@ -1672,10 +1672,6 @@ micro_aust <- function(
           h_dif <- h_dp * afd * 4.87/0.0036
           h_dni[si == 0] <- 0
           h_dif[is.na(h_dif)] <- 0
-          # hourlydata2 <- hourlydata
-          # hourlydata2$rad_dni <- h_dni * 0.0036
-          # hourlydata2$rad_dif <- h_dif * 0.0036
-          # hourlydata2$szenith <- nmr.zenith3
           xy <- data.frame(x = long, y = lat)
           coordinates(xy) = ~x + y
           proj4string(xy) = "+init=epsg:4326"
@@ -1686,8 +1682,7 @@ micro_aust <- function(
             har <- horizonangle(dem, i * 10, res(dem)[1])
             ha36[i + 1] <- atan(extract(har, xy)) * (180/pi)
           }
-          #else ha36 <- rep(horizon, 36)
-          for (i in 1:length(tme)) {
+          for (i in 1:length(hour.microclima)) {
             saz <- solazi(hour.microclima[i], lat, long, jd[i], merid = long)
             saz <- round(saz/10, 0) + 1
             saz <- ifelse(saz > 36, 1, saz)
@@ -1696,6 +1691,9 @@ micro_aust <- function(
           radwind2 <- .shortwave.ts(h_dni * 0.0036, h_dif * 0.0036, jd, hour.microclima, lat, long, slope, aspect, ha = ha, svv = 1, x = LOR, l = mean(microclima.LAI), albr = 0, merid = long, dst = 0, difani = FALSE)
           microclima.out$hourlyradwind <- radwind2
           SOLRhr <- radwind2$swrad / 0.0036
+          VIEWF <- 0 # accounted for already in microclima cals
+          hori <- rep(0, 24) # accounted for already in microclima calcs
+
         }
 
         if(opendap == 0){
