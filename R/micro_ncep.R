@@ -754,7 +754,7 @@ micro_ncep <- function(
       hourlyradwind <- microclima.out$hourlyradwind
       SLOPE <- hourlyradwind$slope[1]
       ASPECT <- hourlyradwind$aspect[1]
-      if((is.na(slope) == FALSE | slope == 0) | (SLOPE == 0 & is.na(slope) == TRUE)){
+      if((is.na(slope) == FALSE & slope == 0) | slope == 0 | (SLOPE == 0 & is.na(slope) == TRUE)){
         microclima.out.noslope <- microclima.out
       }else{
         cat('sloping surface - also running flat ground microclima calcs \n')
