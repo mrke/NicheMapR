@@ -618,7 +618,7 @@ micro_nz <- function(
     }else{
       TAI <- 0
     }
-    micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, TAI = TAI, timeinterval = 365)
+    micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, TAI = TAI, timeinterval = 365, solonly = 1)
     clearskyrad <- micro_clearsky$metout[,c(1, 13)]
     clearskysum <- aggregate(clearskyrad[,2], by = list(clearskyrad[,1]), FUN = sum)[,2]
 

@@ -824,7 +824,9 @@ c     polynomials to the ALTFCT data originally in SOLAR.DAT and now stored abov
 
 c     mutliplier to correct hourly solar data for horizon angle
       if(altdeg.lt.ahoriz)then
-      TDD(111+IT)=0.15 ! diffuse only, so 85% cut out
+c	   diffuse only - cut down to diffuse fraction      
+      TDD(111+IT)=TDD(111+IT)* (0.12 + 0.83 * ((CCMINN(IDAY) + 
+     &  CCMAXX(IDAY))/ 2 / 100)) ! from Butt et al. 2010 Agricultural and Forest Meteorology 150 (2010) 361–368
       endif
 
       DO 301 N=1,NMAX
