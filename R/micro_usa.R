@@ -853,7 +853,7 @@ micro_usa <- function(
       }
       # compute clear sky solar for the site of interest, for cloud cover computation below
       cat("running micro_global to get clear sky solar \n")
-      micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, timeinterval = 365)
+      micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, timeinterval = 365, solonly = 1)
       clearskyrad <- micro_clearsky$metout[,c(1, 13)]
       clearsky_mean1 <- aggregate(clearskyrad[,2], by = list(clearskyrad[,1]), FUN = mean)[,2]
       leapyears<-seq(1900,2100,4)

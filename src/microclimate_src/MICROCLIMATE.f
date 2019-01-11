@@ -752,7 +752,7 @@ C       INSERTING DEFAULT OUTPUT VARIABLES TO BE PRINTED
       DO 12 I=1,6
  12   IOUT(I)=I
       NDEP=10
-C    ZEROING WORK, DEPTH AND OUTPUT ARRAYS
+C     ZEROING WORK, DEPTH AND OUTPUT ARRAYS
       DO 24 I=1,560
  24   WORK(I)=0.
       DO 25 I = 1,100
@@ -760,10 +760,8 @@ C    ZEROING WORK, DEPTH AND OUTPUT ARRAYS
       IPRINT=1
 
 C    ***********************************************************
-C     START OF LOOP FOR READING ALL INPUT FROM FILE 'DATAKY.DAT'
       errcount=0
 200   CONTINUE
-c    goto 1111
       LAI=LAIs(DOY)
       TD(10)=TDSS(DOY)
       TD(11)=TDSS(DOY)
@@ -809,6 +807,20 @@ c    goto 1111
        TD(112:136)=SOLS(DOYS:DOYF)
        TD(137:161)=ZENS(DOYS:DOYF)
        TD(162:186)=ZSLS(DOYS:DOYF)
+      endif
+      if(int(HOURLY).eq.2)then ! passing in hourly solar (and possibly zenith angle) only
+       DOYS=(DOY)*24-23
+       DOYF=DOY*24
+       DOYS2=(DOY)*25-24
+       DOYF2=DOY*25
+       TD(112:135)=SOLRhr1(DOYS:DOYF)/ 4.185 / 10000. * 60.
+       TD(136)=SOLRhr1(DOYF)/ 4.185 / 10000. * 60.
+       if(ZENhr1(1).gt.0)then
+        TD(137:160)=ZENhr1(DOYS:DOYF)
+        TD(161)=ZENhr1(DOYF)
+       else
+        TD(137:161)=ZENS(DOYS2:DOYF2)
+       endif
       endif
       TI(12:36)=minutes
       TI(37:61)=minutes

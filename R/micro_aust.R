@@ -41,6 +41,7 @@
 #' \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
 #' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 #' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
+#' \code{microclima}{ = 0, Use microclima and elevatr package to adjust solar radiation for terrain? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{manualshade}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
 #' \code{soildata}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
@@ -115,6 +116,8 @@
 #' \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
 #' \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
 #' \code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET}\cr\cr
+#' \code{microclima.LAI}{ = 0, leaf area index, used by package microclima for radiation calcs}\cr\cr
+#' \code{microclima.LOR}{ = 1, leaf orientation for package microclima radiation calcs}\cr\cr
 #'
 #' \strong{ Snow mode parameters:}
 #'
@@ -354,6 +357,8 @@ micro_aust <- function(
   IM = 1e-06,
   MAXCOUNT = 500,
   LAI = 0.1,
+  microclima.LAI = 0,
+  LOR = 1,
   snowmodel = 0,
   snowtemp = 1.5,
   snowdens = 0.375,
@@ -375,6 +380,7 @@ micro_aust <- function(
   pwd = "",
   lamb = 0,
   IUV = 0,
+  microclima = 0,
   soilgrids = 0,
   IR = 0,
   opendap = 0,
@@ -390,8 +396,12 @@ micro_aust <- function(
     leapyears<-seq(1972,2060,4)
     for(j in 1:length(yearlist)){
       if(yearlist[j] %in% leapyears){# add day for leap year if needed
-        data<-c(indata[1:(59*mult)], indata[59*mult], indata[(60*mult):(365*mult)])
-      }else{
+        if(mult == 1){
+        data<-c(indata[1:59], indata[59], indata[60:365])
+        }else{
+          data<-c(indata[1:(59*mult)], indata[(58*mult+1):(59*mult)], indata[(59*mult+1):(365*mult)])
+        }
+         }else{
         data <- indata
       }
       if(j==1){
@@ -505,17 +515,17 @@ micro_aust <- function(
         Please input a value between 0 and 1.", '\n')
     errors<-1
   }
-  if(slope<0 | slope>90){
+  if(is.na(slope) == FALSE & (slope<0 | slope>90)){
     message("ERROR: Slope value (slope) is out of bounds.
         Please input a value between 0 and 90.", '\n')
     errors<-1
   }
-  if(aspect<0 | aspect>365){
+  if(is.na(aspect) == FALSE & (aspect<0 | aspect>365)){
     message("ERROR: Aspect value (aspect) is out of bounds.
         Please input a value between 0 and 365.", '\n')
     errors<-1
   }
-  if(max(hori)>90 | min(hori)<0){
+  if(is.na(hori[1]) == FALSE & (max(hori)>90 | min(hori)<0)){
     message("ERROR: At least one of your horizon angles (hori) is out of bounds.
         Please input a value between 0 and 90", '\n')
     errors<-1
@@ -637,7 +647,7 @@ micro_aust <- function(
     }else{
       TAI <- 0
     }
-    micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, TAI = TAI, timeinterval = 365)
+    micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, TAI = TAI, timeinterval = 365, solonly = 1)
     clearskyrad <- micro_clearsky$metout[,c(1, 13)]
     clearskysum <- aggregate(clearskyrad[,2], by = list(clearskyrad[,1]), FUN = sum)[,2]
 
@@ -801,7 +811,7 @@ micro_aust <- function(
       cat('extracting data from SoilGrids \n')
       if (!requireNamespace("jsonlite", quietly = TRUE)) {
         stop("package 'jsonlite' is needed to extract data from SoilGrids, please install it.",
-          call. = FALSE)
+             call. = FALSE)
       }
       require(jsonlite)
       ov <- fromJSON(paste0('https://rest.soilgrids.org/query?lon=',x[1],'&lat=',x[2],',&attributes=BLDFIE,SLTPPT,SNDPPT,CLYPPT'), flatten = TRUE)
@@ -923,65 +933,65 @@ micro_aust <- function(
           start <- c(latindex,lonindex,1)
           count <- c(1, 1, -1)
           sol <- as.numeric(ncvar_get(nc, varid = "rad",
-            start = start, count))
+                                      start = start, count))
           nc_close(nc)
           nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.tmax.", yearlist[j],
-            ".nc"))
+                               ".nc"))
           tmax <- as.numeric(ncvar_get(nc, varid = "tmax",
-            start = start, count))
+                                       start = start, count))
           nc_close(nc)
           nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.tmin.", yearlist[j],
-            ".nc"))
+                               ".nc"))
           tmin <- as.numeric(ncvar_get(nc, varid = "tmin",
-            start = start, count))
+                                       start = start, count))
           nc_close(nc)
           nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.vph09.", yearlist[j],
-            ".nc"))
+                               ".nc"))
           vph09 <- as.numeric(ncvar_get(nc, varid = "vph09",
-            start = start, count))
+                                        start = start, count))
           nc_close(nc)
           nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.vph15.", yearlist[j],
-            ".nc"))
+                               ".nc"))
           vph15 <- as.numeric(ncvar_get(nc, varid = "vph15",
-            start = start, count))
+                                        start = start, count))
           nc_close(nc)
           nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.rain.", yearlist[j],
-            ".nc"))
+                               ".nc"))
           Rain <- as.numeric(ncvar_get(nc, varid = "rain",
-            start = start, count))
+                                       start = start, count))
           nc_close(nc)
         }else{
           cat(paste("reading weather input for ", yearlist[j],
-            " \n", sep = ""))
+                    " \n", sep = ""))
           nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.rad.", yearlist[j],
-            ".nc"))
+                               ".nc"))
           sol <- c(sol, as.numeric(ncvar_get(nc, varid = "rad",
-            start = start, count)))
+                                             start = start, count)))
           nc_close(nc)
           nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.tmax.", yearlist[j],
-            ".nc"))
+                               ".nc"))
           tmax <- c(tmax, as.numeric(ncvar_get(nc, varid = "tmax",
-            start = start, count)))
+                                               start = start, count)))
           nc_close(nc)
           nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.tmin.", yearlist[j],
-            ".nc"))
+                               ".nc"))
           tmin <- c(tmin, as.numeric(ncvar_get(nc, varid = "tmin",
-            start = start, count)))
+                                               start = start, count)))
           nc_close(nc)
           nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.vph09.", yearlist[j],
-            ".nc"))
+                               ".nc"))
           vph09 <- c(vph09, as.numeric(ncvar_get(nc, varid = "vph09",
-            start = start, count)))
+                                                 start = start, count)))
           nc_close(nc)
           nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.vph15.", yearlist[j],
-            ".nc"))
+                               ".nc"))
           vph15 <- c(vph15, as.numeric(ncvar_get(nc, varid = "vph15",
-            start = start, count)))
+                                                 start = start, count)))
           nc_close(nc)
           nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.rain.", yearlist[j],
-            ".nc"))
+                               ".nc"))
           Rain <- c(Rain, as.numeric(ncvar_get(nc, varid = "rain",
-            start = start, count)))
+                                               start = start, count)))
           nc_close(nc)
         }
       }
@@ -1426,20 +1436,20 @@ micro_aust <- function(
                   if(length(years1)==1){ # doing a period within a year
                     query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
                     , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",
-                      lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day between
+                                  lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day between
                     ",doystart," and ",doyfinish,") order by b.day")
                   }else{
                     if(i==1){ # doing first year, start at day requested
                       query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
                        , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",
-                        lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day >= ",
-                        doystart,") order by b.day")
+                                    lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day >= ",
+                                    doystart,") order by b.day")
                     }else{
                       if(i==length(years1)){ # doing last year, only go up to last day requested
                         query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
                         , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between "
-                          ,lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day <= ",
-                          doyfinish,") order by b.day")
+                                      ,lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day <= ",
+                                      doyfinish,") order by b.day")
                       }else{ # doing in between years, so get all data for this year
                         query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
                         , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between
@@ -1600,31 +1610,61 @@ micro_aust <- function(
         }
 
         if(microclima == 1 & hourly == 2){
-
+          cat('using microclima and elevatr to adjust solar for topographic and vegetation effects \n')
           if (!require("microclima", quietly = TRUE)) {
             stop("package 'microclima' is needed. Please install it.",
+                 call. = FALSE)
+          }
+          if (!require("zoo", quietly = TRUE)) {
+            stop("package 'zoo' is needed. Please install it.",
                  call. = FALSE)
           }
           cat("Downloading digital elevation data \n")
           lat <- x[2]
           long <- x[1]
-          dem <- microclima::get_dem(r = NA, lat = lat, long = long, resolution = 100,
-                                     zmin = zmin)
+          tt <- seq(as.POSIXct(paste0('01/01/',ystart), format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(paste0('31/12/',yfinish), format = "%d/%m/%Y", tz = 'UTC')+23*3600, by = 'hours')
+          timediff <- x[1]/15
+          hour.microclima <- as.numeric(format(tt, "%H")) + timediff-floor(timediff)
+          jd <- julday(as.numeric(format(tt, "%Y")), as.numeric(format(tt, "%m")), as.numeric(format(tt, "%d")))
+          dem <- microclima::get_dem(r = NA, lat = lat, long = long, resolution = 100, zmin = -20)
+          xy <- data.frame(x = long, y = lat)
+          coordinates(xy) = ~x + y
+          proj4string(xy) = "+init=epsg:4326"
+          xy <- as.data.frame(spTransform(xy, crs(dem)))
+          if (class(slope) == "logical") {
+            slope <- terrain(dem, unit = "degrees")
+            slope <- extract(slope, xy)
+          }
+          if (class(aspect) == "logical") {
+            aspect <- terrain(dem, opt = "aspect", unit = "degrees")
+            aspect <- extract(aspect, xy)
+          }
+          ha <- 0
+          if(is.na(hori[1]) == "TRUE"){
+            ha36 <- 0
+            for (i in 0:35) {
+              har <- horizonangle(dem, i * 10, res(dem)[1])
+              ha36[i + 1] <- atan(extract(har, xy)) * (180/pi)
+            }
+          }else{
+            ha36 <- spline(x = hori, n = 36, method =  'periodic')$y
+            ha36[ha36 < 0] <- 0
+            ha36[ha36 > 90] <- 90
+          }
+          for (i in 1:length(hour.microclima)) {
+            saz <- solazi(hour.microclima[i], lat, long, jd[i], merid = long)
+            saz <- round(saz/10, 0) + 1
+            saz <- ifelse(saz > 36, 1, saz)
+            ha[i] <- ha36[saz]
+          }
+          #demmeso <- dem
+          #info <- .eleveffects(hourlydata, demmeso, lat, long, windthresh = 4.5, emthresh = 0.78)
+          #elev <- info$tout
           cloudhr <- cbind(rep(seq(1,length(cloud)),24), rep(cloud, 24))
           cloudhr <- cloudhr[order(cloudhr[,1]),]
           cloudhr <- cloudhr[,2]
+          cloudhr <- leapfix(cloudhr, yearlist, 24)
           dsw2 <- leapfix(clearskyrad[,2], yearlist, 24) *(0.36+0.64*(1-cloudhr/100)) # Angstrom formula (formula 5.33 on P. 177 of "Climate Data and Resources" by Edward Linacre 1992
-          tt <- seq(as.POSIXct(paste0('01/01/',ystart), format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(paste0('31/12/',yfinish), format = "%d/%m/%Y", tz = 'UTC')+23*3600, by = 'hours')
-          #tt2 <- seq(as.POSIXct(paste0('01/01/',ystart), format = "%d/%m/%Y", tz = "Etc/GMT+10"), as.POSIXct(paste0('31/12/',yfinish), format = "%d/%m/%Y", tz = "Etc/GMT+10")+23*3600, by = 'hours')
-          timediff <- x[1]/15
-          #timediff <- as.numeric(tt2[1] - as.POSIXct(paste0('01/01/',ystart), format = "%d/%m/%Y", tz = "UTC"))
-          #tt <- tt + timediff * 3600
-          hour.microclima <- as.numeric(format(tt, "%H")) + timediff-floor(timediff)
-          jd <- julday(as.numeric(format(tt, "%Y")), as.numeric(format(tt, "%m")), as.numeric(format(tt, "%d")))
-          if(is.na(slope) | is.na(aspect)){
-            slope <- SLOPE
-            aspect <- ASPECT
-          }
           # partition total solar into diffuse and direct using code from microclima::hourlyNCEP
           si <- microclima::siflat(hour.microclima, lat, long, jd, merid = long)
           am <- microclima::airmasscoef(hour.microclima, lat, long, jd, merid = long)
@@ -1672,28 +1712,11 @@ micro_aust <- function(
           h_dif <- h_dp * afd * 4.87/0.0036
           h_dni[si == 0] <- 0
           h_dif[is.na(h_dif)] <- 0
-          xy <- data.frame(x = long, y = lat)
-          coordinates(xy) = ~x + y
-          proj4string(xy) = "+init=epsg:4326"
-          xy <- as.data.frame(spTransform(xy, crs(dem)))
-          ha <- 0
-          ha36 <- 0
-          for (i in 0:35) {
-            har <- horizonangle(dem, i * 10, res(dem)[1])
-            ha36[i + 1] <- atan(extract(har, xy)) * (180/pi)
-          }
-          for (i in 1:length(hour.microclima)) {
-            saz <- solazi(hour.microclima[i], lat, long, jd[i], merid = long)
-            saz <- round(saz/10, 0) + 1
-            saz <- ifelse(saz > 36, 1, saz)
-            ha[i] <- ha36[saz]
-          }
           radwind2 <- .shortwave.ts(h_dni * 0.0036, h_dif * 0.0036, jd, hour.microclima, lat, long, slope, aspect, ha = ha, svv = 1, x = LOR, l = mean(microclima.LAI), albr = 0, merid = long, dst = 0, difani = FALSE)
-          microclima.out$hourlyradwind <- radwind2
+          #microclima.out$hourlyradwind <- radwind2
           SOLRhr <- radwind2$swrad / 0.0036
-          VIEWF <- 0 # accounted for already in microclima cals
+          VIEWF <- 1 # accounted for already in microclima cals
           hori <- rep(0, 24) # accounted for already in microclima calcs
-
         }
 
         if(opendap == 0){
@@ -1819,14 +1842,16 @@ micro_aust <- function(
         microinput<-c(ndays,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade,solonly)
 
         # hourly option set to 0, so make empty vectors
-        if(hourly==0){
+        if(hourly!=1){
           TAIRhr=rep(0,24*ndays)
           RHhr=rep(0,24*ndays)
           WNhr=rep(0,24*ndays)
           CLDhr=rep(0,24*ndays)
-          SOLRhr=rep(0,24*ndays)
           ZENhr=rep(-1,24*ndays)
           IRDhr=rep(-1,24*ndays)
+        }
+        if(hourly==0){
+          SOLRhr=rep(0,24*ndays)
         }
         if(rainhourly==0){
           RAINhr=rep(0,24*ndays)

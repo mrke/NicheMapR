@@ -618,6 +618,7 @@ micro_ncep <- function(
       VIEWF <- 1-sum(sin(as.data.frame(hori)*pi/180))/length(hori) # convert horizon angles to radians and calc view factor(s)
       HORIZON <- spline(x = hori, n = 36, method =  'periodic')$y
       HORIZON[HORIZON < 0] <- 0
+      HORIZON[HORIZON > 90] <- 90
     }
     # setting up for temperature correction using lapse rate given difference between 9sec DEM value and 0.05 deg value
     days <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900", tz = 'UTC'), as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900", tz = 'UTC'), by = 'days')
@@ -788,7 +789,7 @@ micro_ncep <- function(
       SOLRhr.noslope <- microclima.out.noslope$hourlyradwind$swrad / 0.0036
       SOLRhr.noslope[SOLRhr.noslope < 0] <- 0
       cloudhr <- hourlydata$cloudcover
-      if((nceplw == 1 & ncepsw == 1 & hourly == 1)==FALSE){
+      if((NCEPlw == 1 & NCEPsw == 1 & hourly == 1)==FALSE){
         cat("running micro_global to get clear sky solar \n")
         micro_clearsky <- micro_global(loc = c(lon3, lat3), clearsky = 1, timeinterval = 365, runmoist = 0, elev = 0, solonly = 1)
         clearskyrad <- micro_clearsky$metout[, c(1, 13)]
@@ -916,6 +917,10 @@ micro_ncep <- function(
         odif[nd] <- odif[max(sel)]
         if (!require("raster", quietly = TRUE)) {
           stop("package 'raster' is needed. Please install it.",
+               call. = FALSE)
+        }
+        if (!require("zoo", quietly = TRUE)) {
+          stop("package 'zoo' is needed. Please install it.",
                call. = FALSE)
         }
         dp <- na.approx(dp, na.rm = F)
