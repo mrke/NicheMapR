@@ -18,9 +18,9 @@ ectotherm(Ww_g, shape, alpha_max, alpha_min, T_F_min, T_F_max, T_B_min, T_RB_min
 
 \item{alpha_min}{= 0.85, Maximum solar absorptivity, decimal percent}
 
-\item{T_F_min}{= 34, Minimum foraging temperature, °C (also affects burrow depth selection)}
+\item{T_F_min}{= 24, Minimum foraging temperature, °C (also affects burrow depth selection)}
 
-\item{T_F_max}{= 24, Maximum foraging temperature, °C}
+\item{T_F_max}{= 34, Maximum foraging temperature, °C}
 
 \item{T_B_min}{= 17.5, Minimum basking temperature, °C}
 
@@ -111,7 +111,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \strong{ Morphological parameters:}
 
 \itemize{
-\item{\code{custom_shape}{ = c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom alshape coefficients. Operates if shape=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}\cr}
+\item{\code{custom_shape}{ = c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom shape coefficients. Operates if shape=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}\cr}
 \item{\code{shape_a}{ = 1, Proportionality factor (-) for going from volume to area, keep this 1 (redundant parameter that should be removed)}\cr}
 \item{\code{shape_b}{ = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid }\cr}
 \item{\code{shape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
@@ -286,7 +286,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 }
 \strong{ Life stage-specific parameter allocation:}
 \itemize{
-\item{\code{thermal_stages}{ = matrix(data = c(rep(CT_min,stages),rep(CT_max,stages),rep(T_F_max,stages),rep(T_F_min,stages),rep(T_B_min,stages),rep(T_pref,stages)), nrow = stages, ncol = 6), Stage specific thermal thresholds (CT_min,CT_max,T_F_max,T_F_min,T_B_min,T_pref)}\cr}
+\item{\code{thermal_stages}{ = matrix(data = c(rep(CT_min,stages),rep(CT_max,stages),rep(T_F_min,stages),rep(T_F_max,stages),rep(T_B_min,stages),rep(T_pref,stages)), nrow = stages, ncol = 6), Stage specific thermal thresholds (CT_min,CT_max,T_F_min,T_F_max,T_B_min,T_pref)}\cr}
 \item{\code{behav_stages}{ = matrix(data = c(rep(diurn,stages),rep(nocturn,stages),rep(crepus,stages),rep(burrow,stages),rep(shdburrow,stages),rep(mindepth,stages),rep(maxdepth,stages),rep(shade_seek,stages),rep(climb,stages),rep(fossorial,stages),rep(rainact,stages),rep(actrainthresh,stages),rep(act_breed,stages),rep(flyer,stages),rep(aquabask,stages)), nrow = stages, ncol = 15), Stage specific behaviour diurn,nocturn,crepus,burrow,shdburrow,mindepth,maxdepth,shade_seek,climb,fossorial,rainact,actrainthresh,act_breed,flyer,aquabask)}\cr}
 \item{\code{water_stages}{ = matrix(data = c(rep(pct_wet,stages),rep(F_O2,stages),rep(pct_H_P,stages),rep(pct_H_N,stages),rep(pct_H_X,stages),rep(pct_H_R,stages),rep(raindrink,stages),rep(gutfill,stages)), nrow = stages, ncol = 8), Stage-specific water budget parameters (pct_wet,F_O2,pct_H_P,pct_H_N,pct_H_X,pct_H_R,raindrink,gutfill)}\cr}
 \item{\code{nutri_stages}{ = matrix(data = c(rep(foodlim,stages),rep(0,stages)), nrow = stages, ncol = 1), Stage-specific nutritional parameters (foodlim)}\cr}
@@ -484,7 +484,7 @@ shadmet<-cbind(dates,shadmet)
 shadsoil<-cbind(dates,shadsoil)
 
 # run the ectotherm model
-ecto<-ectotherm(T_F_min=35,T_F_max=30,T_pref=33,T_B_min=20,T_RB_min=10)
+ecto<-ectotherm(T_F_min=30,T_F_max=35,T_pref=33,T_B_min=20,T_RB_min=10)
 
 # retrieve output
 environ<-as.data.frame(ecto$environ) # activity, Tb and environment

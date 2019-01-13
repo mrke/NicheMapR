@@ -68,13 +68,18 @@ An implementation of the NicheMapR microclimate model that uses the RNCEP packag
 }
 \details{
 \strong{ Parameters controlling how the model runs:}\cr\cr
+\code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+\code{IR}{ = 0, Clear-sky longwave radiation computed using Campbell and Norman (1998) eq. 10.10 (includes humidity) (0) or Swinbank formula (1)}\cr\cr
 \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
 \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
 \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 \code{reanalysis}{ = TRUE, Use reanalysis2 NCEP data? TRUE/FALSE}\cr\cr
+\code{NCEPlw}{ = 1, use NCEP longwave radiation (1) or NicheMapR-derived from cloud (0)}\cr\cr
+\code{NCEPcld}{ = 0, use NCEP cloud cover (1) or NicheMapR-derived cloud cover (0)}\cr\cr
+\code{NCEPsw}{ = 1, use NCEP shortwave radiation (solar) (1) or NicheMapR-derived solar (0)}\cr\cr
 \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 \code{warm}{ = 0, uniform warming, °C}\cr\cr
 \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
@@ -101,7 +106,7 @@ An implementation of the NicheMapR microclimate model that uses the RNCEP packag
 \code{rainwet}{ = 1.5, mm of rainfall causing the ground to be 90\% wet for the day}\cr\cr
 \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
 \code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
-\code{hori}{ = rep(0,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
+\code{hori}{ = rep(NA,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
 
 \strong{ Soil moisture mode parameters:}\cr\cr
 
@@ -135,7 +140,7 @@ An implementation of the NicheMapR microclimate model that uses the RNCEP packag
 \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
 \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
 \code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET in soil moisture model}\cr\cr
-\code{microclima.LAI}{ = 0.1, leaf area index, used by package microclima for radiation calcs}\cr\cr
+\code{microclima.LAI}{ = 0, leaf area index, used by package microclima for radiation calcs}\cr\cr
 \code{LOR}{ = 1, leaf orientation for package microclima radiation calcs}\cr\cr
 
 \strong{ Snow mode parameters:}
