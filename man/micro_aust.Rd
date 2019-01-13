@@ -75,6 +75,7 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
 \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
+\code{microclima}{ = 0, Use microclima and elevatr package to adjust solar radiation for terrain? 1=yes, 0=no}\cr\cr
 \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 \code{manualshade}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
 \code{soildata}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
@@ -147,6 +148,8 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
 \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
 \code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET}\cr\cr
+\code{microclima.LAI}{ = 0, leaf area index, used by package microclima for radiation calcs}\cr\cr
+\code{microclima.LOR}{ = 1, leaf orientation for package microclima radiation calcs}\cr\cr
 
 \strong{ Snow mode parameters:}
 

@@ -23,7 +23,7 @@ DEB(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 * step,
   V_pres = 3.9752^3, E_H_pres = 73592, q_pres = 0, hs_pres = 0,
   surviv_pres = 1, Es_pres = 0, cumrepro = 0, cumbatch = 0,
   p_B_past = 0, stage = 1, breeding = 0, pregnant = 0, Tb = 33,
-  fdry = 0.3, L_b = 0.42, L_j = 1.376)
+  fdry = 0.3, L_b = 0.42, L_j = 1.376, spawnday = 1, day = 1)
 }
 \arguments{
 \item{step}{= 1/24, step size (days)}
