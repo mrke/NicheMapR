@@ -3,8 +3,8 @@
 #' An implementation of the NicheMapR microclimate model that uses the RNCEP package daily weather database https://sites.google.com/site/michaelukemp/rncep, and specifically uses the following variables: air.2m, prate.sfc, shum.2m, pres.sfc, tcdc.eatm, uwnd.10m, vwnd.10m, dswrf.sfc. At the moment uses the same DEM from the CRU global climate data set.
 #' @encoding UTF-8
 #' @param loc Longitude and latitude (decimal degrees)
-#' @param dstart First day to run, date in format "d-m-Y" e.g. "01-01-2016"
-#' @param dfinish Last day to run, date in format "d-m-Y" e.g. "31-12-2016"
+#' @param dstart First day to run, date in format "d/m/Y" e.g. "01/01/2016"
+#' @param dfinish Last day to run, date in format "d/m/Y" e.g. "31/12/2016"
 #' @param dem a digital elevation model used by microclima for micro-topographic effects, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
 #' @param dem2 a digital elevation model used by microclima for meso-climate calculations, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
 #' @param REFL Soil solar reflectance, decimal \%
@@ -28,7 +28,7 @@
 #' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
 #' @return sunsnow Hourly predictions of snow temperature under the minimum specified shade
 #' @return shadsnow Hourly predictions snow temperature under the maximum specified shade
-#' @usage micro_clima(loc = 'Galapagos', dstart = "01-01-2017", dfinish = "31-12-2017",
+#' @usage micro_clima(loc = 'Galapagos', dstart = "01/01/2017", dfinish = "31/12/2017",
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200),
 #' Usrhyt = 0.01, ...)
 #' @export
