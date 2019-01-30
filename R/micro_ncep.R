@@ -745,12 +745,14 @@ micro_ncep <- function(
         prate <- prate * 3600 * 6 # mm in 6 hrs
         ncepdata <- data.frame(obs_time = tme2[sel], Tk, Tkmin, Tkmax, sh, pr, wu, wv, dlw, ulw, dsw, tcdc) # 6-hourly ncep for chosen period plus a day added either side for interpolation
         hourlydata <- hourlyNCEP(ncepdata = ncepdata, lat, long, tme, reanalysis) # interpolated to hourly
+        cat("computing radiation and elevation effects with package microclima \n")
+        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
       }else{
         cat("downloading weather data with package RNCEP via package microclima \n")
         hourlydata <- microclima::hourlyNCEP(ncepdata = NA, lat, long, tme, reanalysis) # interpolated to hourly
+        cat("computing radiation and elevation effects with package microclima \n")
+        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = NA, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
       }
-      cat("computing radiation and elevation effects with package microclima \n")
-      microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
       hourlyradwind <- microclima.out$hourlyradwind
       SLOPE <- hourlyradwind$slope[1]
       ASPECT <- hourlyradwind$aspect[1]
@@ -762,12 +764,17 @@ micro_ncep <- function(
       if((is.na(slope) == FALSE & SLOPE == 0) | slopetest == 0 | (SLOPE == 0 & slopetest == -1)){
         microclima.out.noslope <- microclima.out
       }else{
-        cat('sloping surface - also running flat ground microclima calcs \n')
-        microclima.out.noslope <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
+        if(is.na(spatial) == FALSE){
+          cat('sloping surface - also running flat ground microclima calcs \n')
+          microclima.out.noslope <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
+          dailyrain <- microclima.out$dailyprecip[-c(1:4)] # remove extra 4 values from start
+          dailyrain <- dailyrain[1:(length(dailyrain)-4)] # remove extra 5 values from end
+          dailyrain <- aggregate(dailyrain, by = list(format(hourlydata$obs_time[seq(1, nrow(hourlydata), 6)], "%Y-%m-%d")), sum)$x
+        }else{
+          microclima.out.noslope <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = NA, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
+          dailyrain <- microclima.out$dailyprecip
+        }
       }
-      dailyrain <- microclima.out$dailyprecip[-c(1:4)] # remove extra 4 values from start
-      dailyrain <- dailyrain[1:(length(dailyrain)-4)] # remove extra 5 values from end
-      dailyrain <- aggregate(dailyrain, by = list(format(hourlydata$obs_time[seq(1, nrow(hourlydata), 6)], "%Y-%m-%d")), sum)$x
       tref <- microclima.out$tref
       ZENhr <- hourlydata$szenith
       ZENhr[ZENhr > 90] <- 90
@@ -796,7 +803,8 @@ micro_ncep <- function(
       cloudhr <- hourlydata$cloudcover
       if((NCEPlw == 1 & NCEPsw == 1 & hourly == 1)==FALSE){
         cat("running micro_global to get clear sky solar \n")
-        micro_clearsky <- micro_global(loc = c(lon3, lat3), clearsky = 1, timeinterval = 365, runmoist = 0, elev = 0, solonly = 1)
+        #micro_clearsky <- micro_global(loc = c(lon3, lat3), clearsky = 1, timeinterval = 365, runmoist = 0, elev = 0, solonly = 1)
+        micro_clearsky <- micro_global(loc = loc, clearsky = 1, timeinterval = 365, runmoist = 0, elev = 0, solonly = 1)
         clearskyrad <- micro_clearsky$metout[, c(1, 13)]
         nmr.zenith <- micro_clearsky$metout[, 12]
         clearsky_mean1 <- aggregate(clearskyrad[,2], by = list(clearskyrad[,1]), FUN = max)[,2]
