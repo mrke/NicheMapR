@@ -615,7 +615,7 @@ DEB<-function(
   E_H_pres=E_H
   q_pres=q
   hs_pres=hs
-  suriv_pres=surviv_pres
+  surviv_pres=surviv
   Es_pres=Es
 
   deb.names<-c("E_pres","V_pres","E_H_pres","q_pres","hs_pres","surviv_pres","Es_pres","cumrepro","cumbatch","p_B_past","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","wetmass","gutfreemass","gutfull","fecundity","clutches","potfreemass","length","p.R")
