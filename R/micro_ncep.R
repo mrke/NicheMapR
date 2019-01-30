@@ -12,7 +12,7 @@
 #' @param aspect Aspect in degrees (0 = north) (if NA, then derived from DEM with microclima)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
-#' @param coastal Compute coastal effects with microclima? (can take a while)
+#' @param coastal Compute coastal effects with microclima? T (TRUE) or F (FALSE) (can take a while and may have high memory requirements depending on DEM size)
 #' @param ... Additional arguments, see Details
 #' @return metout The above ground micrometeorological conditions under the minimum specified shade
 #' @return shadmet The above ground micrometeorological conditions under the maximum specified shade
@@ -796,9 +796,9 @@ micro_ncep <- function(
         }else{
           if(is.na(spatial) == FALSE){
             cat('sloping surface - also running flat ground microclima calcs \n')
-            microclima.out.noslope <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = 0, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
+            microclima.out.noslope <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = F, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
           }else{
-            microclima.out.noslope <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = 0, hourlydata = hourlydata, dailyprecip = NA, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
+            microclima.out.noslope <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = F, hourlydata = hourlydata, dailyprecip = NA, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = 0, aspect = 0, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
           }
         }
         SOLRhr.noslope <- microclima.out.noslope$hourlyradwind$swrad / 0.0036
