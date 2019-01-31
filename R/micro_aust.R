@@ -373,7 +373,6 @@ micro_aust <- function(
   year = "",
   barcoo = "",
   quadrangle = 1,
-  hourly = 0,
   rainhourly = 0,
   rainhour = 0,
   uid = "",
@@ -1608,8 +1607,9 @@ micro_aust <- function(
             # SST
           }
         }
-
-        if(microclima == 1 & hourly == 2){
+        hourly <- 0
+        if(microclima == 1){
+          hourly <- 2
           cat('using microclima and elevatr to adjust solar for topographic and vegetation effects \n')
           if (!require("microclima", quietly = TRUE)) {
             stop("package 'microclima' is needed. Please install it.",
