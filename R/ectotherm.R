@@ -121,6 +121,7 @@
 #' \strong{ Dynamic Energy Budget (DEB) model parameters:}
 #' \itemize{
 #' \item{\code{DEB}{ = 0, Run the DEB model (1) or just heat balance (0). Latter uses allometrically predicted respiration base on \code{M_1}, \code{M_2} and \code{M_3}}\cr}
+#' \item{\code{intmethod}{ = 1, Use Euler (0) or DOPRI (1) method for integrating non-insect DEB model. Latter will be more accurate but slower}\cr}
 #' \item{\code{fract}{ = 1, Scaling factor for DEB body-size covariation relationships - use it to make a metabolically scaled larger or smaller version of your animal}\cr}
 #'}
 #' \strong{ Core DEB parameters:}
@@ -136,7 +137,7 @@
 #' \item{\code{kap_R}{ = 0.95, Fraction of reproduction energy fixed in eggs}\cr}
 #' \item{\code{k_J}{ = 0.006498/24, Maturity maintenance rate coefficient (1/h)}\cr}
 #' \item{\code{E_Hb}{ = 866.6*fract^3, Maturity at birth (J)}\cr}
-#' \item{\code{E_Hj}{ = E_Hb*fract^3, Maturity at metamorphosis (J)}\cr}
+#' \item{\code{E_Hj}{ = E_Hb*fract^3, Maturity at metamorphosis (if different to E_Hb, triggers metabolic acceleration) (J)}\cr}
 #' \item{\code{E_Hp}{ = 1.019e+04*fract^3, Maturity at puberty}\cr}
 #' \item{\code{E_He}{ = E_He*fract^3, Maturity at eclosion (J)}\cr}
 #' \item{\code{h_a}{ = 1.051e-08/(24^2), Weibull ageing acceleration (1/h2)}\cr}
@@ -180,14 +181,14 @@
 #' \item{\code{n_P}{ = c(1, 1.8, 0.5, 0.15), chem. indices of C, O, H and N in faeces}\cr}
 #' \item{\code{n_M_nitro}{ = c(1, 4/5, 3/5, 4/5), chem. indices of C, O, H and N in nitrogenous waste}\cr}
 #'}
-#' \strong{ Insect DEB model parameters (not yet in operation):}
+#' \strong{ Insect/metabolic acceleratoin DEB model parameters:}
 #' \itemize{
 #' \item{\code{metab_mode}{ = 0, Run insect model? 0 = no, 1 = hemimetabolus model (to do), 2 = holometabolous model}\cr}
 #' \item{\code{stages}{ = 8, number of stages = number of instars plus 1 for egg + 1 for pupa + 1 for imago}\cr}
 #' \item{\code{y_EV_l}{ = 0.95, yield of imago reserve on larval structure (mol/mol)}\cr}
 #' \item{\code{S_instar}{ = rep(2.660, stages-4), stress at instar n: L_n^2/ L_n-1^2 (-)}\cr}
 #' \item{\code{s_j}{ = 0.999, Reprod buffer/structure ratio at pupation as fraction of max}\cr}
-#' \item{\code{L_b}{ = 0.0611, Structural length at birth (cm)}\cr}
+#' \item{\code{L_b}{ = 0.06148, Structural length at birth (cm)}\cr}
 #'}
 #' \strong{ Inital conditions for DEB model:}
 #' \itemize{
@@ -205,7 +206,7 @@
 #' \itemize{
 #' \item{\code{clutchsize}{ = 5, Clutch size (#), overridden by \code{clutch_ab}}\cr}
 #' \item{\code{clutch_ab}{ = c(0,0), # paramters for relationship between length (cm) and clutch size: clutch size = a*SVL-b, make a and b zero if fixed clutch size}\cr}
-#' \item{\code{viviparous}{ = 0, Viviparous reproduction? 1=yes, 0=no (if yes, animal will be held in adult-sided female's body for duration of development and will experience her body temperature}\cr}
+#' \item{\code{viviparous}{ = 1, Viviparous reproduction? 1=yes, 0=no (if yes, animal will be held in adult-sided female's body for duration of development and will experience her body temperature}\cr}
 #' \item{\code{minclutch}{ = 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate}\cr}
 #' \item{\code{batch}{ = 1, Invoke Pequerie et al.'s batch laying model?}\cr}
 #' \item{\code{photostart}{ = 3, Photoperiod response triggering ovulation, none (0), summer solstice (1), autumnal equinox (2), winter solstice (3), vernal equinox (4), specified daylength thresholds (5 - uses \code{daylengthstart} and \code{daylengthfinish})}\cr}
@@ -429,7 +430,7 @@
 #'}
 #' @examples
 #'# run the microclimate model
-#'micro<-micro_global(loc="Kuranda, Queensland")
+#'micro<-micro_global(loc=c(145.620, -16.821) #Kuranda, Queensland
 #'
 #'# retrieve output
 #'metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
@@ -565,6 +566,7 @@ ectotherm<-function(
   raindrink=0,
   foodlim=1,
   DEB=0,
+  intmethod=1,
   fract=1,
   z=2.825*fract,
   del_M=0.2144,
@@ -922,7 +924,7 @@ ectotherm<-function(
   tester<-0
   microyear<-1
   postur<-1
-  ectoinput<-as.matrix(c(ALT,fluid,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,Ww_kg,epsilon,absan,RQ,rinsul,shape,live,TIMBAS,k_flesh,c_body,rho_body,alpha_max,alpha_min,FATOSK,FATOSB,FATOBJ,T_F_max,T_F_min,delta_air,SKINW,pct_eyes,xbas,F_O2,T_pref,F_cond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,postur,maxshd,minshd,CT_max,CT_min,behav,DOY,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,DOYstart,monthly,custom_shape,M_1,M_2,M_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,pct_H_R,microyear,container,flyer,flyspeed,ndays,maxdepth,CT_minthresh,CT_kill,gutfill,mindepth,T_B_min,T_RB_min,F_m,k_sub,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,Tb_breed,Tb_breed_hrs,contwet,warmsig,aquabask,pct_H_death,write_csv,aestdepth,eggshade,pO2thresh))
+  ectoinput<-as.matrix(c(ALT,fluid,OBJDIS,OBJL,PCTDIF,EMISSK,EMISSB,ABSSB,shade,enberr,Ww_kg,epsilon,absan,RQ,rinsul,shape,live,TIMBAS,k_flesh,c_body,rho_body,alpha_max,alpha_min,FATOSK,FATOSB,FATOBJ,T_F_max,T_F_min,delta_air,SKINW,pct_eyes,xbas,F_O2,T_pref,F_cond,skint,gas,transt,soilnode,o2max,ACTLVL,tannul,nodnum,postur,maxshd,minshd,CT_max,CT_min,behav,DOY,actrainthresh,viviparous,pregnant,conth,contw,contlast,tranin,tcinit,nyears,lat,rainmult,DOYstart,monthly,custom_shape,M_1,M_2,M_3,DEB,tester,rho1_3,trans1,aref,bref,cref,phi,wings,phimax,phimin,shape_a,shape_b,shape_c,pct_H_R,microyear,container,flyer,flyspeed,ndays,maxdepth,CT_minthresh,CT_kill,gutfill,mindepth,T_B_min,T_RB_min,F_m,k_sub,flymetab,continit,wetmod,contonly,conthole,contype,shdburrow,Tb_breed,Tb_breed_hrs,contwet,warmsig,aquabask,pct_H_death,write_csv,aestdepth,eggshade,pO2thresh,intmethod))
   debmod<-c(clutchsize,rho_body_deb,d_V,d_Egg,mu_X,mu_E,mu_V,mu_P,T_REF-273.15,z,kap,kap_X,p_M,v,E_G,kap_R,E_sm,del_M,h_a,V_init_baby,E_init_baby,k_J,E_Hb,E_Hj,E_Hp,clutch_ab[2],batch,rain_breed,photostart,photofinish,daylengthstart,daylengthfinish,photodirs,photodirf,clutch_ab[1],amphibreed,amphistage,eta_O,JM_JO,E_0,kap_X_P,PTUREA1,PFEWAT1,wO,w_N,FoodWater1,f,s_G,K,X[1],metab_mode,stages,y_EV_l,s_j,startday,raindrink,reset,m_a,m_i,m_h,aestivate,depress,minclutch,L_b,E_He)
   deblast<-c(iyear,countday,V_init,E_init,ms_init,cumrepro_init,q_init,hs_init,cumbatch_init,V_baby_init,E_baby_init,E_H_init,stage)
 
