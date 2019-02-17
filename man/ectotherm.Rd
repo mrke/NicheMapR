@@ -156,11 +156,12 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \strong{ Dynamic Energy Budget (DEB) model parameters:}
 \itemize{
 \item{\code{DEB}{ = 0, Run the DEB model (1) or just heat balance (0). Latter uses allometrically predicted respiration base on \code{M_1}, \code{M_2} and \code{M_3}}\cr}
-\item{\code{fract}{ = 1, Scaling factor for DEB body-size covariation relationships - use it to make a metabolically scaled larger or smaller version of your animal}\cr}
+\item{\code{intmethod}{ = 1, Use Euler (0) or DOPRI (1) method for integrating non-insect DEB model. Latter will be more accurate but slower}\cr}
+\item{\code{z_mult}{ = 1, Scaling factor for DEB body-size covariation relationships - use it to make a metabolically scaled larger or smaller version of your animal}\cr}
 }
 \strong{ Core DEB parameters:}
 \itemize{
-\item{\code{z}{ = 2.825*fract, Zoom factor (cm)}\cr}
+\item{\code{z}{ = 2.825*z_mult, Zoom factor (cm)}\cr}
 \item{\code{del_M}{ =  0.2144, Shape coefficient (-)}\cr}
 \item{\code{F_m}{ = 12420, Surface area-specific maximum feeding rate J/cm2/h}\cr}
 \item{\code{kap_X}{ = 0.85, Digestive efficiency (decimal \%)}\cr}
@@ -170,13 +171,13 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{E_G}{ = 7512, Cost of structure (J/cm3)}\cr}
 \item{\code{kap_R}{ = 0.95, Fraction of reproduction energy fixed in eggs}\cr}
 \item{\code{k_J}{ = 0.006498/24, Maturity maintenance rate coefficient (1/h)}\cr}
-\item{\code{E_Hb}{ = 866.6*fract^3, Maturity at birth (J)}\cr}
-\item{\code{E_Hj}{ = E_Hb*fract^3, Maturity at metamorphosis (J)}\cr}
-\item{\code{E_Hp}{ = 1.019e+04*fract^3, Maturity at puberty}\cr}
-\item{\code{E_He}{ = E_He*fract^3, Maturity at eclosion (J)}\cr}
-\item{\code{h_a}{ = 1.051e-08/(24^2), Weibull ageing acceleration (1/h2)}\cr}
+\item{\code{E_Hb}{ = 866.6*z_mult^3, Maturity at birth (J)}\cr}
+\item{\code{E_Hj}{ = E_Hb*z_mult^3, Maturity at metamorphosis (if different to E_Hb, triggers metabolic acceleration) (J)}\cr}
+\item{\code{E_Hp}{ = 1.019e+04*z.mult^3, Maturity at puberty}\cr}
+\item{\code{E_He}{ = E_He*z_mult^3, Maturity at eclosion (J)}\cr}
+\item{\code{h_a}{ = 1.051e-08*z_mult/(24^2), Weibull ageing acceleration (1/h2)}\cr}
 \item{\code{s_G}{ = 0.01, Gompertz stress coefficient (-)}\cr}
-\item{\code{E_0}{ = 9220*fract^4, Energy content of the egg (derived from core parameters) (J)}\cr}
+\item{\code{E_0}{ = 9220*z_mult^4, Energy content of the egg (derived from core parameters) (J)}\cr}
 }
 \strong{ Thermal DEB parameters:}
 \itemize{
@@ -215,14 +216,14 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{n_P}{ = c(1, 1.8, 0.5, 0.15), chem. indices of C, O, H and N in faeces}\cr}
 \item{\code{n_M_nitro}{ = c(1, 4/5, 3/5, 4/5), chem. indices of C, O, H and N in nitrogenous waste}\cr}
 }
-\strong{ Insect DEB model parameters (not yet in operation):}
+\strong{ Insect/metabolic acceleratoin DEB model parameters:}
 \itemize{
 \item{\code{metab_mode}{ = 0, Run insect model? 0 = no, 1 = hemimetabolus model (to do), 2 = holometabolous model}\cr}
 \item{\code{stages}{ = 8, number of stages = number of instars plus 1 for egg + 1 for pupa + 1 for imago}\cr}
 \item{\code{y_EV_l}{ = 0.95, yield of imago reserve on larval structure (mol/mol)}\cr}
 \item{\code{S_instar}{ = rep(2.660, stages-4), stress at instar n: L_n^2/ L_n-1^2 (-)}\cr}
 \item{\code{s_j}{ = 0.999, Reprod buffer/structure ratio at pupation as fraction of max}\cr}
-\item{\code{L_b}{ = 0.0611, Structural length at birth (cm)}\cr}
+\item{\code{L_b}{ = 0.06148, Structural length at birth (cm)}\cr}
 }
 \strong{ Inital conditions for DEB model:}
 \itemize{
@@ -240,7 +241,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \itemize{
 \item{\code{clutchsize}{ = 5, Clutch size (#), overridden by \code{clutch_ab}}\cr}
 \item{\code{clutch_ab}{ = c(0,0), # paramters for relationship between length (cm) and clutch size: clutch size = a*SVL-b, make a and b zero if fixed clutch size}\cr}
-\item{\code{viviparous}{ = 0, Viviparous reproduction? 1=yes, 0=no (if yes, animal will be held in adult-sided female's body for duration of development and will experience her body temperature}\cr}
+\item{\code{viviparous}{ = 1, Viviparous reproduction? 1=yes, 0=no (if yes, animal will be held in adult-sided female's body for duration of development and will experience her body temperature}\cr}
 \item{\code{minclutch}{ = 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate}\cr}
 \item{\code{batch}{ = 1, Invoke Pequerie et al.'s batch laying model?}\cr}
 \item{\code{photostart}{ = 3, Photoperiod response triggering ovulation, none (0), summer solstice (1), autumnal equinox (2), winter solstice (3), vernal equinox (4), specified daylength thresholds (5 - uses \code{daylengthstart} and \code{daylengthfinish})}\cr}
@@ -465,7 +466,7 @@ yearsout variables:
 }
 \examples{
 # run the microclimate model
-micro<-micro_global(loc="Kuranda, Queensland")
+micro<-micro_global(loc=c(145.620, -16.821) #Kuranda, Queensland
 
 # retrieve output
 metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade

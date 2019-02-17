@@ -5,16 +5,16 @@
 \alias{micro_ncep}
 \title{NCEP implementation of the microclimate model, with package microclima computing hourly forcing.}
 \usage{
-micro_clima(loc = 'Galapagos', dstart = "01-01-2017", dfinish = "31-12-2017",
+micro_clima(loc = 'Galapagos', dstart = "01/01/2017", dfinish = "31/12/2017",
 REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200),
 Usrhyt = 0.01, ...)
 }
 \arguments{
 \item{loc}{Longitude and latitude (decimal degrees)}
 
-\item{dstart}{First day to run, date in format "d-m-Y" e.g. "01-01-2016"}
+\item{dstart}{First day to run, date in format "d/m/Y" e.g. "01/01/2016"}
 
-\item{dfinish}{Last day to run, date in format "d-m-Y" e.g. "31-12-2016"}
+\item{dfinish}{Last day to run, date in format "d/m/Y" e.g. "31/12/2016"}
 
 \item{dem}{a digital elevation model used by microclima for micro-topographic effects, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)}
 
@@ -30,7 +30,7 @@ Usrhyt = 0.01, ...)
 
 \item{Usrhyt}{Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest}
 
-\item{coastal}{Compute coastal effects with microclima? (can take a while)}
+\item{coastal}{Compute coastal effects with microclima? T (TRUE) or F (FALSE) (can take a while and may have high memory requirements depending on DEM size)}
 
 \item{...}{Additional arguments, see Details}
 }
@@ -77,9 +77,6 @@ An implementation of the NicheMapR microclimate model that uses the RNCEP packag
 \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 \code{reanalysis}{ = TRUE, Use reanalysis2 NCEP data? TRUE/FALSE}\cr\cr
-\code{NCEPlw}{ = 1, use NCEP longwave radiation (1) or NicheMapR-derived from cloud (0)}\cr\cr
-\code{NCEPcld}{ = 0, use NCEP cloud cover (1) or NicheMapR-derived cloud cover (0)}\cr\cr
-\code{NCEPsw}{ = 1, use NCEP shortwave radiation (solar) (1) or NicheMapR-derived solar (0)}\cr\cr
 \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 \code{warm}{ = 0, uniform warming, °C}\cr\cr
 \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
@@ -127,6 +124,8 @@ An implementation of the NicheMapR microclimate model that uses the RNCEP packag
 \code{DEP}
 { and points half way between)}\cr\cr
 \code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
+\code{rainhourly}{ = 0, Is hourly rain input being supplied (1 = yes, 0 = no)?}\cr\cr
+\code{rainhour}{ = 0, Vector of hourly rainfall values - overrides daily NCEP rain if rainhourly = 1}\cr\cr
 \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
 \code{rainoff}{ = 0, Rain offset (mm), used to induce constant extra input}\cr\cr
 \code{evenrain}{ = 0, Spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)}\cr\cr
