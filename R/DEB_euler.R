@@ -619,6 +619,10 @@ DEB_euler<-function(
   surviv_pres=surviv
   Es_pres=Es
 
+  #deb.names<-c("length","wetmass", "E","V","E_H","q","hs","surviv","Es","gutfull","cumrepro","cumbatch","p_R","p_B","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","gutfreemass","fecundity","clutches","potfreemass")
+  #results_deb<-c(svl,wetmass,E_pres,V_pres,E_H_pres,q_pres,hs_pres,surviv_pres,Es_pres,gutfull,cumrepro,cumbatch,p_R,p_B_past,O2FLUX,CO2FLUX,MLO2,GH2OMET,DEBQMET,DRYFOOD,FAECES,NWASTE,wetgonad,wetstorage,wetfood,gutfreemass,fecundity,clutches,potfreemass)
+  #deb.names<-c("E_pres","V_pres","E_H_pres","q_pres","hs_pres","surviv_pres","Es_pres","cumrepro","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","wetmass","gutfreemass","gutfull","fecundity","clutches","potfreemass","length","p.R")
+  #results_deb<-c(E_pres,V_pres,E_H_pres,q_pres,hs_pres,surviv_pres,Es_pres,cumrepro,O2FLUX,CO2FLUX,MLO2,GH2OMET,DEBQMET,DRYFOOD,FAECES,NWASTE,wetgonad,wetstorage,wetfood,wetmass,gutfreemass,gutfull,fecundity,clutches,potfreemass,svl,p_R)
   deb.names<-c("E_pres","V_pres","E_H_pres","q_pres","hs_pres","surviv_pres","Es_pres","cumrepro","cumbatch","p_B_past","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","wetmass","gutfreemass","gutfull","fecundity","clutches","potfreemass","length","p.R")
   results_deb<-c(E_pres,V_pres,E_H_pres,q_pres,hs_pres,surviv_pres,Es_pres,cumrepro,cumbatch,p_B_past,O2FLUX,CO2FLUX,MLO2,GH2OMET,DEBQMET,DRYFOOD,FAECES,NWASTE,wetgonad,wetstorage,wetfood,wetmass,gutfreemass,gutfull,fecundity,clutches,potfreemass,svl,p_R)
   names(results_deb)<-deb.names

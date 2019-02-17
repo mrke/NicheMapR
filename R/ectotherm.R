@@ -122,11 +122,11 @@
 #' \itemize{
 #' \item{\code{DEB}{ = 0, Run the DEB model (1) or just heat balance (0). Latter uses allometrically predicted respiration base on \code{M_1}, \code{M_2} and \code{M_3}}\cr}
 #' \item{\code{intmethod}{ = 1, Use Euler (0) or DOPRI (1) method for integrating non-insect DEB model. Latter will be more accurate but slower}\cr}
-#' \item{\code{fract}{ = 1, Scaling factor for DEB body-size covariation relationships - use it to make a metabolically scaled larger or smaller version of your animal}\cr}
+#' \item{\code{z_mult}{ = 1, Scaling factor for DEB body-size covariation relationships - use it to make a metabolically scaled larger or smaller version of your animal}\cr}
 #'}
 #' \strong{ Core DEB parameters:}
 #' \itemize{
-#' \item{\code{z}{ = 2.825*fract, Zoom factor (cm)}\cr}
+#' \item{\code{z}{ = 2.825*z_mult, Zoom factor (cm)}\cr}
 #' \item{\code{del_M}{ =  0.2144, Shape coefficient (-)}\cr}
 #' \item{\code{F_m}{ = 12420, Surface area-specific maximum feeding rate J/cm2/h}\cr}
 #' \item{\code{kap_X}{ = 0.85, Digestive efficiency (decimal \%)}\cr}
@@ -136,13 +136,13 @@
 #' \item{\code{E_G}{ = 7512, Cost of structure (J/cm3)}\cr}
 #' \item{\code{kap_R}{ = 0.95, Fraction of reproduction energy fixed in eggs}\cr}
 #' \item{\code{k_J}{ = 0.006498/24, Maturity maintenance rate coefficient (1/h)}\cr}
-#' \item{\code{E_Hb}{ = 866.6*fract^3, Maturity at birth (J)}\cr}
-#' \item{\code{E_Hj}{ = E_Hb*fract^3, Maturity at metamorphosis (if different to E_Hb, triggers metabolic acceleration) (J)}\cr}
-#' \item{\code{E_Hp}{ = 1.019e+04*fract^3, Maturity at puberty}\cr}
-#' \item{\code{E_He}{ = E_He*fract^3, Maturity at eclosion (J)}\cr}
-#' \item{\code{h_a}{ = 1.051e-08/(24^2), Weibull ageing acceleration (1/h2)}\cr}
+#' \item{\code{E_Hb}{ = 866.6*z_mult^3, Maturity at birth (J)}\cr}
+#' \item{\code{E_Hj}{ = E_Hb*z_mult^3, Maturity at metamorphosis (if different to E_Hb, triggers metabolic acceleration) (J)}\cr}
+#' \item{\code{E_Hp}{ = 1.019e+04*z.mult^3, Maturity at puberty}\cr}
+#' \item{\code{E_He}{ = E_He*z_mult^3, Maturity at eclosion (J)}\cr}
+#' \item{\code{h_a}{ = 1.051e-08*z_mult/(24^2), Weibull ageing acceleration (1/h2)}\cr}
 #' \item{\code{s_G}{ = 0.01, Gompertz stress coefficient (-)}\cr}
-#' \item{\code{E_0}{ = 9220*fract^4, Energy content of the egg (derived from core parameters) (J)}\cr}
+#' \item{\code{E_0}{ = 9220*z_mult^4, Energy content of the egg (derived from core parameters) (J)}\cr}
 #'}
 #' \strong{ Thermal DEB parameters:}
 #' \itemize{
@@ -567,8 +567,8 @@ ectotherm<-function(
   foodlim=1,
   DEB=0,
   intmethod=1,
-  fract=1,
-  z=2.825*fract,
+  z.mult=1,
+  z=2.825*z.mult,
   del_M=0.2144,
   F_m=12420,
   kap_X=0.85,
@@ -578,10 +578,10 @@ ectotherm<-function(
   E_G=7512,
   kap_R=0.95,
   k_J=0.00628/24,
-  E_Hb=866.6*fract^3,
-  E_Hj=E_Hb*fract^3,
-  E_Hp=1.019e+04*fract^3,
-  E_He=1.019e+04*fract^3,
+  E_Hb=866.6*z.mult^3,
+  E_Hj=E_Hb*z.mult^3,
+  E_Hp=1.019e+04*z.mult^3,
+  E_He=1.019e+04*z.mult^3,
   h_a=1.051e-08/(24^2),
   s_G=0.01,
   T_REF=20 + 273.15,
@@ -590,7 +590,7 @@ ectotherm<-function(
   T_AH=9.0+04,
   T_L=6 + 273.15,
   T_H=33 + 273.15,
-  E_0=9220*fract^4,
+  E_0=9220*z.mult^4,
   f=1,
   E_sm=350,
   K=1,

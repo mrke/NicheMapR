@@ -203,79 +203,6 @@ DEB<-function(
   spawnday=1,
   day=1){
 
-  # step=1/24
-  # z=7.997
-  # del_M=0.242
-  # F_m=13290*step
-  # kap_X=0.85
-  # v=0.065*step
-  # kap=0.886
-  # p_M=32*step
-  # E_G=7767
-  # kap_R=0.95
-  # k_J=0.002*step
-  # E_Hb=7.359e+04
-  # E_Hj=E_Hb
-  # E_Hp=1.865e+05
-  # h_a=2.16e-11/(step^2)
-  # s_G=0.01
-  # T_REF=20
-  # T_A=8085
-  # T_AL=18721
-  # T_AH=9.0E+04
-  # T_L=288
-  # T_H=315
-  # E_0=1.04e+06
-  # f=1
-  # E_sm=1116
-  # K=1
-  # andens_deb=1
-  # d_V=0.3
-  # d_E=0.3
-  # d_Egg=0.3
-  # mu_X=525000
-  # mu_E=585000
-  # mu_V=500000
-  # mu_P=480000
-  # kap_X_P=0.1
-  # n_X=c(1,1.8,0.5,.15)
-  # n_E=c(1,1.8,0.5,0.15)
-  # n_V=c(1,1.8,0.5,.15)
-  # n_P=c(1,1.8,0.5,.15)
-  # n_M_nitro=c(1,4/5,3/5,4/5)
-  # clutchsize=2
-  # clutch_ab=c(0.085,0.7)
-  # viviparous=0
-  # minclutch=0
-  # batch=1
-  # lambda=1/2
-  # VTMIN=26
-  # VTMAX=39
-  # ma=1e-4
-  # mi=0
-  # mh=0.5
-  # arrhenius=matrix(data = matrix(data = c(rep(T_A,8),rep(T_AL,8),rep(T_AH,8),rep(T_L,8),rep(T_H,8)),nrow = 8, ncol = 5), nrow = 8, ncol = 5)
-  # acthr=1
-  # X=10
-  # E_pres=6011.93
-  # V_pres=3.9752^3
-  # E_H_pres=7.359e+04 * 1.05
-  # q_pres=0
-  # hs_pres=0
-  # surviv_pres=1
-  # Es_pres=0
-  # cumrepro=0
-  # cumbatch=0
-  # stage=1
-  # breeding=0
-  # pregnant=0
-  # Tb=33
-  # fdry=0.3
-  # L_b=0.42
-  # L_j=1.376
-  # spawnday=1
-  # day=1
-
   if (!require("deSolve", quietly = TRUE)) {
     stop("package 'deSolve' is needed. Please install it.",
          call. = FALSE)
@@ -374,15 +301,15 @@ DEB<-function(
       H <- y[3]# J, maturity
       Es <- y[4]# J, gut energy
       S <- y[5]# J, starvation energy
-      q <- y[6]# -, starvation energy
-      hs <- y[7]# -, starvation energy
+      q <- y[6]# -, aging acceleration
+      hs <- y[7]# -, hazard rate
       R <- y[8]# J, reproduction buffer energy
       B <- y[9]# J, egg batch energy
 
       L <- V ^ (1/3) # cm, structural length
-      V_m <- L_m ^ 3
+      V_m <- L_m ^ 3 # cm ^ 3, maximum structural volume
       e <- E / E_m  # -, scaled reserve density
-      r <- v * (e / L - (1 + L_T / L) / L_m) / (e + g)
+      r <- v * (e / L - (1 + L_T / L) / L_m) / (e + g) # specific growth rate
       dV <- V * r                 # cm^3 / t, change in structure
       p_C <- (E_m * (v / L + k_M * (1 + L_T / L)) * (e * g) / (e + g)) * V # J / t, mobilisation rate, equation 2.20 DEB3
 
@@ -429,8 +356,8 @@ DEB<-function(
           dH <- 0
         }
 
-        dq <- (q * (V / V_m) * s_G + h_a) * e* ((v / L) - r) - r * q
-        dhs <- q - r * hs
+        dq <- (q * (V / V_m) * s_G + h_a) * e* ((v / L) - r) - r * q # aging acceleration
+        dhs <- q - r * hs # hazard
 
         # reproduction
         if((H <= E_Hp) | (pregnant==1)){
