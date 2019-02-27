@@ -236,7 +236,7 @@ DEB_euler<-function(
   w_N<-CHON%*%n_M_nitro
 
   # Arrhenius temperature correction factor
-  Tcorr = exp(T_A*(1/(273+T_REF)-1/(273+Tb)))/(1+exp(T_AL*(1/(273+Tb)-1/T_L))+exp(T_AH*(1/T_H-1/(273+Tb))))
+  Tcorr = exp(T_A*(1/(273.15+T_REF)-1/(273.15+Tb)))/(1+exp(T_AL*(1/(273.15+Tb)-1/T_L))+exp(T_AH*(1/T_H-1/(273.15+Tb))))
 
   s <- 1 # -, multiplication factor for v and {p_Am} under metabolic acceleration
   if(E_Hj != E_Hb){

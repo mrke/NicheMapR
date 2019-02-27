@@ -721,11 +721,11 @@ micro_uk <- function(
         }
 
         baseurl <- opendap
-        nc <- ndf4::nc_open(paste0(baseurl, "dtrDetail02/chess_dtr_", yearlist[1],
+        nc <- ncdf4::nc_open(paste0(baseurl, "dtrDetail02/chess_dtr_", yearlist[1],
           "12.nc", sep = ""))
-        northings <- retry(matrix(ndf4::ncvar_get(nc, "y")))
-        eastings <- retry(matrix(ndf4::ncvar_get(nc, "x")))
-        ndf4::nc_close(nc)
+        northings <- retry(matrix(ncdf4::ncvar_get(nc, "y")))
+        eastings <- retry(matrix(ncdf4::ncvar_get(nc, "x")))
+        ncdf4::nc_close(nc)
         easting <- eastings
         northing <- rep(northings[1], length(easting))
         lon <- ConvertCoordinates(easting, northing)[, 1]
@@ -744,27 +744,27 @@ micro_uk <- function(
           for (jj in 1:12) {
             cat(paste("reading weather input for ", yearlist[j],
               " month ", month[jj], " \n", sep = ""))
-            nc <- ndf4::nc_open(paste0(baseurl, "dtrDetail02/chess_dtr_", yearlist[j], month[jj], ".nc"))
-            dtr <- retry(as.numeric(ndf4::ncvar_get(nc, varid = "dtr",start = start, count)))
-            ndf4::nc_close(nc)
-            nc <- ndf4::nc_open(paste0(baseurl, "tasDetail02/chess_tas_", yearlist[j], month[jj], ".nc"))
-            tas <- retry(as.numeric(ndf4::ncvar_get(nc, varid = "tas", start = start, count)))
-            ndf4::nc_close(nc)
-            nc <- ndf4::nc_open(paste0(baseurl, "psurfDetail02/chess_psurf_", yearlist[j], month[jj], ".nc"))
-            psurf <- retry(as.numeric(ndf4::ncvar_get(nc, varid = "psurf", start = start, count)))
-            ndf4::nc_close(nc)
-            nc <- ndf4::nc_open(paste0(baseurl, "hussDetail02/chess_huss_", yearlist[j], month[jj], ".nc"))
-            huss <- retry(as.numeric(ndf4::ncvar_get(nc, varid = "huss",  start = start, count)))
-            ndf4::nc_close(nc)
-            nc <- ndf4::nc_open(paste0(baseurl, "precipDetail02/chess_precip_", yearlist[j], month[jj], ".nc"))
-            precip <- retry(as.numeric(ndf4::ncvar_get(nc, varid = "precip", start = start, count)))
-            ndf4::nc_close(nc)
-            nc <- ndf4::nc_open(paste0(baseurl, "rsdsDetail02/chess_rsds_", yearlist[j], month[jj], ".nc"))
-            rsds <- retry(as.numeric(ndf4::ncvar_get(nc, varid = "rsds", start = start, count)))
-            ndf4::nc_close(nc)
-            nc <- ndf4::nc_open(paste0(baseurl, "sfcWindDetail02/chess_sfcWind_", yearlist[j], month[jj], ".nc"))
-            sfcWind <- retry(as.numeric(ndf4::ncvar_get(nc, varid = "sfcWind", start = start, count)))
-            ndf4::nc_close(nc)
+            nc <- ncdf4::nc_open(paste0(baseurl, "dtrDetail02/chess_dtr_", yearlist[j], month[jj], ".nc"))
+            dtr <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "dtr",start = start, count)))
+            ncdf4::nc_close(nc)
+            nc <- ncdf4::nc_open(paste0(baseurl, "tasDetail02/chess_tas_", yearlist[j], month[jj], ".nc"))
+            tas <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "tas", start = start, count)))
+            ncdf4::nc_close(nc)
+            nc <- ncdf4::nc_open(paste0(baseurl, "psurfDetail02/chess_psurf_", yearlist[j], month[jj], ".nc"))
+            psurf <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "psurf", start = start, count)))
+            ncdf4::nc_close(nc)
+            nc <- ncdf4::nc_open(paste0(baseurl, "hussDetail02/chess_huss_", yearlist[j], month[jj], ".nc"))
+            huss <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "huss",  start = start, count)))
+            ncdf4::nc_close(nc)
+            nc <- ncdf4::nc_open(paste0(baseurl, "precipDetail02/chess_precip_", yearlist[j], month[jj], ".nc"))
+            precip <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "precip", start = start, count)))
+            ncdf4::nc_close(nc)
+            nc <- ncdf4::nc_open(paste0(baseurl, "rsdsDetail02/chess_rsds_", yearlist[j], month[jj], ".nc"))
+            rsds <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "rsds", start = start, count)))
+            ncdf4::nc_close(nc)
+            nc <- ncdf4::nc_open(paste0(baseurl, "sfcWindDetail02/chess_sfcWind_", yearlist[j], month[jj], ".nc"))
+            sfcWind <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "sfcWind", start = start, count)))
+            ncdf4::nc_close(nc)
             if (j == 1 & jj == 1) {
               Tmax <- tas - 273.15 + dtr/2
               Tmin <- tas - 273.15 - dtr/2
@@ -786,11 +786,11 @@ micro_uk <- function(
           }
         }
       }else{
-        nc <- ndf4::nc_open(paste(spatial, "/chess_dtr_", yearlist[1],
+        nc <- ncdf4::nc_open(paste(spatial, "/chess_dtr_", yearlist[1],
           "12.nc", sep = ""))
-        northings <- matrix(ndf4::ncvar_get(nc, "y"))
-        eastings <- matrix(ndf4::ncvar_get(nc, "x"))
-        ndf4::nc_close(nc)
+        northings <- matrix(ncdf4::ncvar_get(nc, "y"))
+        eastings <- matrix(ncdf4::ncvar_get(nc, "x"))
+        ncdf4::nc_close(nc)
         easting <- eastings
         northing <- rep(northings[1], length(easting))
         lon <- ConvertCoordinates(easting, northing)[, 1]
@@ -809,41 +809,41 @@ micro_uk <- function(
           for (jj in 1:12) {
             cat(paste("reading weather input for ", yearlist[j],
               " month ", month[jj], " \n", sep = ""))
-            nc <- ndf4::nc_open(paste(spatial, "/chess_dtr_", yearlist[j],
+            nc <- ncdf4::nc_open(paste(spatial, "/chess_dtr_", yearlist[j],
               month[jj], ".nc", sep = ""))
-            dtr <- as.numeric(ndf4::ncvar_get(nc, varid = "dtr",
+            dtr <- as.numeric(ncdf4::ncvar_get(nc, varid = "dtr",
               start = start, count))
-            ndf4::nc_close(nc)
-            nc <- ndf4::nc_open(paste(spatial, "/chess_tas_", yearlist[j],
+            ncdf4::nc_close(nc)
+            nc <- ncdf4::nc_open(paste(spatial, "/chess_tas_", yearlist[j],
               month[jj], ".nc", sep = ""))
-            tas <- as.numeric(ndf4::ncvar_get(nc, varid = "tas",
+            tas <- as.numeric(ncdf4::ncvar_get(nc, varid = "tas",
               start = start, count))
-            ndf4::nc_close(nc)
-            nc <- ndf4::nc_open(paste(spatial, "/chess_psurf_",
+            ncdf4::nc_close(nc)
+            nc <- ncdf4::nc_open(paste(spatial, "/chess_psurf_",
               yearlist[j], month[jj], ".nc", sep = ""))
-            psurf <- as.numeric(ndf4::ncvar_get(nc, varid = "psurf",
+            psurf <- as.numeric(ncdf4::ncvar_get(nc, varid = "psurf",
               start = start, count))
-            ndf4::nc_close(nc)
-            nc <- ndf4::nc_open(paste(spatial, "/chess_huss_",
+            ncdf4::nc_close(nc)
+            nc <- ncdf4::nc_open(paste(spatial, "/chess_huss_",
               yearlist[j], month[jj], ".nc", sep = ""))
-            huss <- as.numeric(ndf4::cvar_get(nc, varid = "huss",
+            huss <- as.numeric(ncdf4::ncvar_get(nc, varid = "huss",
               start = start, count))
-            ndf4::nc_close(nc)
-            nc <- ndf4::nc_open(paste(spatial, "/chess_precip_",
+            ncdf4::nc_close(nc)
+            nc <- ncdf4::nc_open(paste(spatial, "/chess_precip_",
               yearlist[j], month[jj], ".nc", sep = ""))
-            precip <- as.numeric(ndf4::ncvar_get(nc, varid = "precip",
+            precip <- as.numeric(ncdf4::ncvar_get(nc, varid = "precip",
               start = start, count))
-            ndf4::nc_close(nc)
-            nc <- ndf4::nc_open(paste(spatial, "/chess_rsds_",
+            ncdf4::nc_close(nc)
+            nc <- ncdf4::nc_open(paste(spatial, "/chess_rsds_",
               yearlist[j], month[jj], ".nc", sep = ""))
-            rsds <- as.numeric(ndf4::ncvar_get(nc, varid = "rsds",
+            rsds <- as.numeric(ncdf4::ncvar_get(nc, varid = "rsds",
               start = start, count))
-            ndf4::nc_close(nc)
-            nc <- ndf4::nc_open(paste(spatial, "/chess_sfcWind_",
+            ncdf4::nc_close(nc)
+            nc <- ncdf4::nc_open(paste(spatial, "/chess_sfcWind_",
               yearlist[j], month[jj], ".nc", sep = ""))
-            sfcWind <- as.numeric(ndf4::ncvar_get(nc, varid = "sfcWind",
+            sfcWind <- as.numeric(ncdf4::ncvar_get(nc, varid = "sfcWind",
               start = start, count))
-            ndf4::nc_close(nc)
+            ncdf4::nc_close(nc)
             if (j == 1 & jj == 1) {
               Tmax <- tas - 273.15 + dtr/2
               Tmin <- tas - 273.15 - dtr/2
