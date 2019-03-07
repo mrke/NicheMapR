@@ -521,7 +521,7 @@ ectotherm<-function(
   write_input=0,
   startday=1,
   minshade=0,
-  maxshades=rep(minshade, length(micro$MAXSHADES),
+  minshades=rep(minshade, length(micro$MAXSHADES)),
   maxshades=micro$MAXSHADES,
   fluid=0,
   k_sub=2.79,
@@ -761,8 +761,8 @@ ectotherm<-function(
     shadhumid<-as.matrix(shadhumid)
     ectoin<-read.csv(file=paste(microin,'ectoin.csv',sep=""),sep=",")[,-1]
     DEP<-as.matrix(read.csv(file=paste(microin,'DEP.csv',sep=""),sep=","))[,2]
-    maxshades<-as.matrix(read.csv(file=paste(microin,'MAXSHADES.csv',sep=""),sep=","))[,2]
     minshades<-as.matrix(read.csv(file=paste(microin,'MINSHADES.csv',sep=""),sep=","))[,2]
+    maxshades<-as.matrix(read.csv(file=paste(microin,'MAXSHADES.csv',sep=""),sep=","))[,2]
     metout2=matrix(data = 0, nrow = 24*ndays, ncol = 18)
     soil2=matrix(data = 0, nrow = 24*ndays, ncol = 12)
     shadmet2=matrix(data = 0, nrow = 24*ndays, ncol = 18)
@@ -866,8 +866,8 @@ ectotherm<-function(
   SPARE3<-0 # delete this
   SPARE5<-0
   o2max<-F_O2
-  maxshd<-maxshades[1]
   minshd<-minshades[1]
+  maxshd<-maxshades[1]
   behav=c(diurn,nocturn,crepus,rainact,burrow,shade_seek,climb,fossorial,SPARE3)
   DOY<-1
 
