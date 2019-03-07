@@ -675,7 +675,7 @@ micro_aust <- function(
     }
 
     if(soildata==1){
-      cat('extracting soil texture data from SoilGrids \n')
+      cat('extracting soil emissivities \n')
       if(vlsci==0){
         static_soil<-paste(spatial,"static_soil.nc",sep="")
         emissivities<-paste(spatial,"aus_emissivities.nc",sep="")
