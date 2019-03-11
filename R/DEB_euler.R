@@ -49,7 +49,7 @@
 #' @param n_M_nitro = c(1,4/5,3/5,4/5), Chem. indices of C, O, H and N in nitrogenous waste
 #' @param stage = 0, Initial stage (0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction)
 #' @param clutchsize = 2, Clutch size (#), overridden by \code{clutch_ab}
-#' @param clutch_ab = c(0,0), paramters for relationship between length (cm) and clutch size: clutch size = a*SVL-b, make a and b zero if fixed clutch size
+#' @param clutch_ab = c(0,0), paramters for relationship between length (cm) and clutch size: clutch size = a*L_w-b, make a and b zero if fixed clutch size
 #' @param viviparous = 0, Viviparous reproduction? 1=yes, 0=no (if yes, animal will be held in adult-sided female's body for duration of development and will experience her body temperature
 #' @param minclutch = 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate
 #' @param batch = 1, Invoke Pequerie et al.'s batch laying model?
@@ -203,225 +203,251 @@ DEB_euler<-function(
   L_b=0.42,
   L_j=1.376,
   spawnday=1,
-  day=1){
+  day=1,
+  metab_mode=0){
 
-  if(clutch_ab[1]>0){
-    clutchsize=floor(clutch_ab[1]*(V_pres^(1/3)/del_M)-clutch_ab[2])
+  # initialise for reproduction and starvation
+  if(clutch_ab[1] > 0){
+    clutchsize <- floor(clutch_ab[1] * (V_pres ^ (1 / 3) / del_M) - clutch_ab[2])
   }
   orig_clutchsize <- clutchsize
-
-  q_init<-q_pres
-  E_H_init<-E_H_pres
-  hs_init<-hs_pres
-  fecundity<-0
-  clutches<-0
-  clutchenergy <- E_0*clutchsize
+  fecundity <- 0
+  clutches <- 0
+  clutchenergy <- E_0 * clutchsize
   starve <- 0
+
+  # initialise ageing and maturity
+  q_init <- q_pres # survival probability to a toxic compound
+  E_H_init <- E_H_pres
+  hs_init <- hs_pres # specific death probability rate (hazard rate)
+
   #DEB mass balance-related calculations
-  n_O<-cbind(n_X,n_V,n_E,n_P) # matrix of composition of organics, i.e. food, structure, reserve and faeces
-  CHON<-c(12,1,16,14)
-  wO<-CHON%*%n_O
-  w_V=wO[3]
-  M_V<-d_V/w_V
-  y_EX<-kap_X*mu_X/mu_E # yield of reserve on food
-  y_XE<-1/y_EX # yield of food on reserve
-  y_VE<-mu_E*M_V/E_G  # yield of structure on reserve
-  y_PX<-kap_X_P*mu_X/mu_P # yield of faeces on food
-  y_PE<-y_PX/y_EX # yield of faeces on reserve  0.143382353
-  nM<-matrix(c(1,0,2,0,0,2,1,0,0,0,2,0,n_M_nitro),nrow=4)
-  n_M_nitro_inv<-c(-1*n_M_nitro[1]/n_M_nitro[4],(-1*n_M_nitro[2])/(2*n_M_nitro[4]),(4*n_M_nitro[1]+n_M_nitro[2]-2*n_M_nitro[3])/(4*n_M_nitro[4]),1/n_M_nitro[4])
-  n_M_inv<-matrix(c(1,0,-1,0,0,1/2,-1/4,0,0,0,1/2,0,n_M_nitro_inv),nrow=4)
-  JM_JO<--1*n_M_inv%*%n_O
-  etaO<-matrix(c(y_XE/mu_E*-1,0,1/mu_E,y_PE/mu_E,0,0,-1/mu_E,0,0,y_VE/mu_E,-1/mu_E,0),nrow=4)
-  w_N<-CHON%*%n_M_nitro
+  n_O <- cbind(n_X, n_V, n_E, n_P) # matrix of composition of organics, i.e. food, structure, reserve and faeces
+  CHON <- c(12, 1, 16, 14)
+  wO <- CHON%*%n_O
+  w_V <- wO[3]
+  M_V <- d_V / w_V
+  y_EX <- kap_X * mu_X / mu_E # yield of reserve on food
+  y_XE <- 1 / y_EX # yield of food on reserve
+  y_VE <- mu_E * M_V / E_G  # yield of structure on reserve
+  y_PX <- kap_X_P * mu_X / mu_P # yield of faeces on food
+  y_PE <- y_PX / y_EX # yield of faeces on reserve  0.143382353
+  nM <- matrix(c(1, 0, 2, 0, 0, 2, 1, 0, 0, 0, 2, 0, n_M_nitro), nrow = 4)
+  n_M_nitro_inv <- c(-1 * n_M_nitro[1] / n_M_nitro[4], (-1 * n_M_nitro[2]) / (2 * n_M_nitro[4]), (4 * n_M_nitro[1] + n_M_nitro[2] - 2 * n_M_nitro[3]) / (4 * n_M_nitro[4]), 1 / n_M_nitro[4])
+  n_M_inv <- matrix(c(1, 0, -1, 0, 0, 1 / 2, -1 / 4, 0, 0, 0, 1 / 2, 0, n_M_nitro_inv), nrow = 4)
+  JM_JO <- -1 * n_M_inv %*% n_O
+  etaO <- matrix(c(y_XE / mu_E * -1, 0, 1 / mu_E, y_PE / mu_E, 0, 0, -1 / mu_E, 0, 0, y_VE / mu_E, -1 / mu_E, 0), nrow = 4)
+  w_N <- CHON %*% n_M_nitro
 
   # Arrhenius temperature correction factor
-  Tcorr = exp(T_A*(1/(273.15+T_REF)-1/(273.15+Tb)))/(1+exp(T_AL*(1/(273.15+Tb)-1/T_L))+exp(T_AH*(1/T_H-1/(273.15+Tb))))
+  Tcorr <- exp(T_A * (1 / (273.15 + T_REF) -1 / (273.15 + Tb))) / (1 + exp(T_AL * (1 / (273.15 + Tb) - 1 / T_L)) + exp(T_AH * (1 / T_H - 1 / (273.15 + Tb))))
 
-  s <- 1 # -, multiplication factor for v and {p_Am} under metabolic acceleration
+  s_M <- 1 # -, multiplication factor for v and {p_Am} under metabolic acceleration
   if(E_Hj != E_Hb){
     if(E_H_pres < E_Hb){
-      s <- 1
+      s_M <- 1
     }else{
       if(E_H_pres < E_Hj){
-        s <- V_pres^(1/3) / L_b#
+        s_M <- V_pres^(1 / 3) / L_b#
       }else{
-        s <- L_j / L_b#
+        s_M <- L_j / L_b#
       }
     }
   }
 
-  M_V = d_V/w_V
-  p_MT = p_M*Tcorr
-  k_Mdot = p_MT/E_G
-  k_JT = k_J*Tcorr
-  p_AmT = p_MT*z/kap*s
-  vT = v*Tcorr*s
-  E_m = p_AmT/vT
-  F_mT = F_m*Tcorr*s
-  g = E_G/(kap*E_m)
-  e = E_pres/E_m
-  V_m=(kap*p_AmT/p_MT)^(3)
-  h_aT = h_a*Tcorr
-  L_T = 0.
-  L_pres = V_pres^(1/3)
-  L_m = V_m^(1/3)
-  scaled_l = L_pres/L_m
-  kappa_G = (d_V*mu_V)/(w_V*E_G)
-  yEX=kap_X*mu_X/mu_E
-  yXE=1/yEX
-  yPX=kap_X_P*mu_X/mu_P
-  mu_AX=mu_E/yXE
-  eta_PA=yPX/mu_AX
-  w_X=wO[1]
-  w_E=wO[3]
-  w_V=wO[2]
-  w_P=wO[4]
+  M_V <- d_V / w_V
+  p_MT <- p_M * Tcorr
+  k_Mdot <- p_MT / E_G
+  k_JT <- k_J * Tcorr
+  p_AmT <- p_MT * z / kap * s_M
+  vT <- v * Tcorr * s_M
+  E_m <- p_AmT / vT
+  F_mT <- F_m * Tcorr * s_M
+  g <- E_G / (kap * E_m)
+  e <- E_pres / E_m
+  V_m <- (kap * p_AmT / p_MT) ^ 3
+  h_aT <- h_a * Tcorr
+  L_T <- 0
+  L_pres <- V_pres ^ (1 / 3)
+  L_m <- V_m ^ (1 / 3)
+  scaled_l <- L_pres / L_m
+  kappa_G <- (d_V * mu_V) / (w_V * E_G)
+  yEX <- kap_X * mu_X / mu_E
+  yXE <- 1 / yEX
+  yPX <- kap_X_P * mu_X / mu_P
+  mu_AX <- mu_E / yXE
+  eta_PA <- yPX / mu_AX
+  w_X <- wO[1]
+  w_E <- wO[3]
+  w_V <- wO[2]
+  w_P <- wO[4]
 
   # growth of structure
-  if(E_H_pres<=E_Hb){
+  if(E_H_pres <= E_Hb){
     #use embryo equation for length, from Kooijman 2009 eq. 2
-    dLdt=(vT*e-k_Mdot*g*V_pres^(1/3))/(3*(e+g))
-    V_temp=(V_pres^(1/3)+dLdt)^3
-    dVdt = V_temp-V_pres
-    r=vT*(e/L_pres-(1+L_T/L_pres)/L_m)/(e+g)
+    dLdt <- (vT * e - k_Mdot * g * V_pres ^ (1 / 3)) / (3 * (e + g))
+    V_temp <- (V_pres ^ (1 / 3) + dLdt) ^ 3
+    dVdt <- V_temp - V_pres
+    r <- vT * (e / L_pres - (1 + L_T / L_pres) / L_m) / (e + g)
   }else{
     #equation 2.21 from DEB3
-    r=vT*(e/L_pres-(1+L_T/L_pres)/L_m)/(e+g)
-    dVdt = V_pres*r
-    if(dVdt<0){
-      dVdt=0
-      starve=dVdt*-1*mu_V*d_V/w_V
+    r <- vT * (e / L_pres - (1 + L_T / L_pres) / L_m) / (e + g)
+    dVdt <- V_pres * r
+    if(dVdt < 0){
+      dVdt <- 0
+      starve <- dVdt * -1 * mu_V * d_V / w_V
     }else{
-      starve=0
+      starve <- 0
     }
   }
-  V=V_pres+dVdt
-  if(V<0){
-    V=0
+  if(metab_mode == 1 & E_H_pres > E_Hj){
+    dVdt <- 0
   }
-  #svl in mm
-  svl = V^(1/3)/del_M*10
+  V <- V_pres + dVdt
+  if(V < 0){
+    V <- 0
+  }
+  #L_w in mm
+  L_w <- V ^ (1 / 3) / del_M * 10
 
   # reserve dynamics
-  if(E_H_pres<=E_Hb){
+  if(E_H_pres <= E_Hb){
     #use embryo equation for scaled reserve, U_E, from Kooijman 2009 eq. 1
-    Sc = L_pres^2*(g*e)/(g+e)*(1+((k_Mdot*L_pres)/vT))
-    dUEdt = -1*Sc
-    E_temp=((E_pres*V_pres/p_AmT)+dUEdt)*p_AmT/(V_pres+dVdt)
-    dEdt=E_temp-E_pres
+    Sc <- L_pres ^ 2 * (g * e) / (g + e) * (1 + ((k_Mdot * L_pres) / vT))
+    dUEdt <- -1 * Sc
+    E_temp <- ((E_pres * V_pres / p_AmT) + dUEdt) * p_AmT / (V_pres + dVdt)
+    dEdt <- E_temp - E_pres
   }else{
     if(Es_pres>0.0000001*E_sm*V_pres){
-      dEdt = (p_AmT*f-E_pres*vT)/L_pres
+      dEdt <- (p_AmT * f - E_pres * vT) / L_pres
     }else{
-      dEdt = (p_AmT*0-E_pres*vT)/L_pres
+      dEdt <- (p_AmT * 0 - E_pres * vT) / L_pres
     }
   }
-  E = E_pres+dEdt
-  if(E<0){ #make sure E doesn't go below zero
-    E=0
+  E <- E_pres + dEdt
+  if(E < 0){ #make sure E doesn't go below zero
+    E <- 0
   }
 
   # some powers
-  p_M2 = p_MT*V_pres
-  p_J = k_JT*E_H_pres+starve
-  if(Es_pres>0.0000001*E_sm*V_pres){
-    p_A = V_pres^(2./3.)*p_AmT*f
+  p_M2 <- p_MT * V_pres
+  p_J <- k_JT * E_H_pres + starve
+  if(Es_pres > 0.0000001 * E_sm * V_pres){
+    p_A <- V_pres ^ (2 / 3) * p_AmT * f
   }else{
-    p_A = 0
+    p_A <- 0
   }
-  p_X = p_A/kap_X #J food eaten per hour
-  p_C = (E_m*(vT/L_pres+k_Mdot*(1+L_T/L_pres))*(e*g)/(e+g))*V_pres #equation 2.20 DEB3
-  p_R = (1-kap)*p_C-p_J
+  p_X <- p_A / kap_X #J food eaten per hour
+  p_C <- (E_m * (vT / L_pres + k_Mdot * (1 + L_T / L_pres)) * (e * g) / (e + g)) * V_pres #equation 2.20 DEB3
+  if(metab_mode == 0){
+    p_R <- (1 - kap) * p_C - p_J
+  }
+  if(metab_mode == 1){
+    if(E_H_pres > E_Hj){
+      if(Es_pres > 0){
+       p_R <- p_AmT * V ^ (2 / 3) - p_M2 - p_J # no kappa-rule - absolute reserve amount never reaches steady state so reproduction gets all of p_A minus maintenace
+      }else{
+       p_R <- p_C - p_M2 - p_J # no kappa-rule - absolute reserve amount never reaches steady state so reproduction gets all of p_C minus maintenace
+      }
+    }else{
+      p_R <- (1 - kap) * p_C - p_J
+    }
+  }
 
   #maturation
-  if(E_H_pres<E_Hp){
-    if(E_H_pres<=E_Hb){
+  if(E_H_pres < E_Hp){
+    if(E_H_pres <= E_Hb){
       #use embryo equation for scaled maturity, U_H, from Kooijman 2009 eq. 3
-      U_H_pres=E_H_pres/p_AmT
-      dUHdt=(1-kap)*Sc-k_JT*U_H_pres
-      dE_Hdt=dUHdt*p_AmT
+      U_H_pres <- E_H_pres / p_AmT
+      dUHdt <- (1-kap) * Sc - k_JT * U_H_pres
+      dE_Hdt <- dUHdt * p_AmT
     }else{
-      dE_Hdt = (1-kap)*p_C-p_J
+      dE_Hdt <- (1-kap)*p_C-p_J
     }
   }else{
-    dE_Hdt = 0
+    dE_Hdt <- 0
   }
-  E_H = E_H_init + dE_Hdt
+  E_H <- E_H_init + dE_Hdt
 
   # more powers
   if(E_H_pres>=E_Hp){
-    p_D = p_M2+p_J+(1-kap_R)*p_R
+    p_D <- p_M2 + p_J + (1 - kap_R) * p_R
   }else{
-    p_D = p_M2+p_J+p_R
+    p_D <- p_M2 + p_J + p_R
   }
-  p_G = p_C-p_M2-p_J-p_R
+  p_G <- p_C - p_M2 - p_J - p_R
 
   # reproduction
-  if((E_H_pres<=E_Hp) | (pregnant==1)){
-    p_B = 0
+  if((E_H_pres <= E_Hp) | (pregnant == 1)){
+    p_B <- 0
   }else{
     if(batch==1){
-      batchprep=(kap_R/lambda)*((1-kap)*(E_m*(vT*V_pres^(2/3)+k_Mdot*V_pres)/(1+(1/g)))-p_J)
-      if(breeding==0){
-        p_B = 0
+      if(metab_mode == 0){
+        batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * (v * V ^ (2 / 3) + k_Mdot * V) / (1 + (1 / g))) - p_J)
+      }else{
+        if(Es_pres > 0){
+         batchprep <- (kap_R / lambda) * (p_AmT * V ^ (2 / 3) - p_M2 - p_J)
+        }else{
+         batchprep <- (kap_R / lambda) * ((E_m * (v * V ^ (2 / 3) + k_Mdot * V) / (1 + (1 / g))) - p_M2 - p_J)
+        }
+      }
+      if(breeding == 0){
+        p_B <- 0
       }else{
         #if the repro buffer is lower than what p_B would be (see below), p_B is p_R
-        if(cumrepro<batchprep){
-          p_B = p_R
+        if(cumrepro < batchprep){
+          p_B <- p_R
         }else{
           #otherwise it is a faster rate, as specified in Pecquerie et. al JSR 2009 Anchovy paper,
           #with lambda (the fraction of the year the animals breed if food/temperature not limiting) = 0.583 or 7 months of the year
-          p_B = max(batchprep, p_R)
+          p_B <- max(batchprep, p_R)
         }
       }
     }else{
-      p_B = p_R
+      p_B <- p_R
     }#end check for whether batch mode is operating
   }#end check for immature or mature
 
 
   #accumulate energy/matter in reproduction buffer
-  if(E_H_pres>E_Hp){
+  if(E_H_pres > E_Hp){
     # if buffer ran out on previous day
-    if(cumrepro<0){
+    if(cumrepro < 0){
       # keep it empty, bring it up to 0
-      cumrepro=0
+      cumrepro <- 0
     }else{
-      cumrepro = cumrepro+p_R*kap_R-p_B_past
+      cumrepro <- cumrepro + p_R * kap_R - p_B_past
     }
   }
-  cumbatch = cumbatch+p_B #accumulate energy/matter in egg batch buffer
+  cumbatch <- cumbatch + p_B #accumulate energy/matter in egg batch buffer
 
   # determine stages
-  if(stage==2){
-    if(cumbatch<0.1*clutchenergy){
-      stage=3
+  if(stage == 2){
+    if(cumbatch < 0.1 * clutchenergy){
+      stage <- 3
     }
   }
-  if(E_H<=E_Hb){
-    stage=0
+  if(E_H <= E_Hb){
+    stage <- 0
   }else{
-    if(E_H<E_Hj){
-      stage=1
+    if(E_H < E_Hj){
+      stage <- 1
     }else{
-      if(E_H<E_Hp){
-        stage=2
+      if(E_H < E_Hp){
+        stage <- 2
       }else{
-        stage=3
+        stage <- 3
       }
     }
   }
-  if(cumbatch>0){
-    if(E_H>E_Hp){
-      stage=4
-    }else{
-      stage=stage
+  if(cumbatch > 0){
+    if(E_H > E_Hp){
+      stage <- 4
     }
   }
-  testclutch=floor((cumrepro+cumbatch)/E_0)
+  testclutch <- floor((cumrepro + cumbatch) / E_0)
   #     FOR VARIABLE CLUTCH SIZE FROM REPRO AND BATCH BUFFERS
-  if(minclutch > 0 & floor(cumrepro+cumbatch)/E_0 > minclutch){
+  if(minclutch > 0 & floor(cumrepro + cumbatch) / E_0 > minclutch){
     if(testclutch <= orig_clutchsize){# ! MAKE SMALLEST CLUTCH ALLOWABLE FOR THIS REPRO EVENT
       clutchsize <- minclutch
       clutchenergy <- clutchsize*E_0
@@ -429,38 +455,30 @@ DEB_euler<-function(
   }
 
   if((cumbatch>clutchenergy) | (pregnant==1)){
-    #for variable clutch size from repro and batch buffers
-    #if((cumbatch(hour)>clutchenergy) | (pregnant==1).or
-    #&.((viviparous==1) & (cumbatch(hour)+cumrepro(hour)>
-    #&clutchenergy))){
-    #batch is ready so if viviparous, start gestation, }else{ dump it
-    if(viviparous==1){
-      if((pregnant==0) & (breeding==1)){
-        v_baby=v_init_baby
-        e_baby=e_init_baby
-        EH_baby=0.
-        pregnant=1
-        testclutch=floor(cumbatch/E_0)
-        #for variable clutch size from repro and batch buffers
-        #testclutch=floor((cumbatch(hour)+cumrepro(hour))/E_0)
-        #testclutch=real(testclutch)
-        if(testclutch>clutchsize){
-          clutchsize=testclutch
-          clutchenergy = E_0*clutchsize
+    if(viviparous == 1){
+      if((pregnant == 0) & (breeding == 1)){
+        v_baby <- v_init_baby
+        e_baby <- e_init_baby
+        EH_baby <- 0
+        pregnant <- 1
+        testclutch <- floor(cumbatch / E_0)
+        if(testclutch > clutchsize){
+          clutchsize <- testclutch
+          clutchenergy <- E_0*clutchsize
         }
-        #       for variable clutch size from repro and batch buffers
+        # for variable clutch size from repro and batch buffers
         if(cumbatch<clutchenergy){
-          #        needs to draw from repro buffer - temporarily store current repro as cumrepro_temp,
-          #        { remove what is needed from the repro buffer and add it to the batch buffer
-          cumrepro_temp=cumrepro
-          cumrepro=cumrepro+cumbatch-clutchenergy
-          cumbatch=cumbatch+cumrepro_temp-cumrepro
+          # needs to draw from repro buffer - temporarily store current repro as cumrepro_temp,
+          # { remove what is needed from the repro buffer and add it to the batch buffer
+          cumrepro_temp <- cumrepro
+          cumrepro <- cumrepro+cumbatch-clutchenergy
+          cumbatch <- cumbatch+cumrepro_temp-cumrepro
         }
       }
       if(hour==1){
-        v_baby=v_baby_init
-        e_baby=e_baby_init
-        EH_baby=EH_baby_init
+        v_baby <- v_baby_init
+        e_baby <- e_baby_init
+        EH_baby <- EH_baby_init
       }
       #if(pregnant==1){
       #call deb_baby
@@ -469,16 +487,16 @@ DEB_euler<-function(
         if((Tb < VTMIN)  |  (Tb > VTMAX)){
           #goto 898
         }
-        cumbatch(hour) = cumbatch(hour)-clutchenergy
-        repro(hour)=1
-        pregnant=0
-        v_baby=v_init_baby
-        e_baby=e_init_baby
-        EH_baby=0
-        newclutch=clutchsize
-        fecundity=clutchsize
-        clutches=1
-        pregnant=0
+        cumbatch(hour) <- cumbatch(hour) - clutchenergy
+        repro(hour) <- 1
+        pregnant <- 0
+        v_baby <- v_init_baby
+        e_baby <- e_init_baby
+        EH_baby <- 0
+        newclutch <- clutchsize
+        fecundity <- clutchsize
+        clutches <- 1
+        pregnant <- 0
       }
     }else{
       #not viviparous, so lay the eggs at next period of activity
@@ -487,31 +505,31 @@ DEB_euler<-function(
         #if((Tb < VTMIN)  |  (Tb > VTMAX)){
         #}
         if(day == spawnday & spawnday != 0){
-          testclutch=floor(cumbatch/E_0)
-          if(testclutch>clutchsize){
-            clutchsize=testclutch
-            clutchenergy <- clutchsize*E_0
+          testclutch <- floor(cumbatch / E_0)
+          if(testclutch > clutchsize){
+            clutchsize <- testclutch
+            clutchenergy <- clutchsize * E_0
           }
           if(spawnday > 0){
-            clutchsize=testclutch
-            clutchenergy <- clutchsize*E_0
+            clutchsize <- testclutch
+            clutchenergy <- clutchsize * E_0
           }
-          cumbatch = cumbatch-clutchenergy
-          repro=1
-          fecundity=clutchsize
-          clutches=1
+          cumbatch <- cumbatch - clutchenergy
+          repro <- 1
+          fecundity <- clutchsize
+          clutches <- 1
         }else{
-         if(spawnday == 0){
-         testclutch=floor(cumbatch/E_0)
-          if(testclutch>clutchsize){
-            clutchsize=testclutch
-            clutchenergy <- clutchsize*E_0
+          if(spawnday == 0){
+            testclutch <- floor(cumbatch / E_0)
+            if(testclutch > clutchsize){
+              clutchsize <- testclutch
+              clutchenergy <- clutchsize * E_0
+            }
+            cumbatch <- cumbatch - clutchenergy
+            repro <- 1
+            fecundity <- clutchsize
+            clutches <- 1
           }
-          cumbatch = cumbatch-clutchenergy
-          repro=1
-          fecundity=clutchsize
-          clutches=1
-         }
         }
       }
     }
@@ -530,101 +548,98 @@ DEB_euler<-function(
     dEsdt <- -1 * (p_AmT / kap_X) * V_pres ^ (2 / 3)
   }
 
-  if(V_pres==0){
-    dEsdt=0
+  if(V_pres == 0){
+    dEsdt <- 0
   }
-  Es = Es_pres+dEsdt
-  if(Es<0){
-    Es=0
+  Es <- Es_pres + dEsdt
+  if(Es < 0){
+    Es <- 0
   }
-  if(Es>E_sm*V_pres){
-    Es=E_sm*V_pres
+  if(Es > E_sm * V_pres){
+    Es <- E_sm * V_pres
   }
-  gutfull=Es/(E_sm*V_pres)
-  if(gutfull>1){
-    gutfull=1
+  gutfull <- Es / (E_sm * V_pres)
+  if(gutfull > 1){
+    gutfull <- 1
   }
 
   #mass balance
-  JOJx=p_A*etaO[1,1]+p_D*etaO[1,2]+p_G*etaO[1,3]
-  JOJv=p_A*etaO[2,1]+p_D*etaO[2,2]+p_G*etaO[2,3]
-  JOJe=p_A*etaO[3,1]+p_D*etaO[3,2]+p_G*etaO[3,3]
-  JOJp=p_A*etaO[4,1]+p_D*etaO[4,2]+p_G*etaO[4,3]
+  JOJx <- p_A * etaO[1,1] + p_D * etaO[1,2] + p_G * etaO[1,3]
+  JOJv <- p_A * etaO[2,1] + p_D * etaO[2,2] + p_G * etaO[2,3]
+  JOJe <- p_A * etaO[3,1] + p_D * etaO[3,2] + p_G * etaO[3,3]
+  JOJp <- p_A * etaO[4,1] + p_D * etaO[4,2] + p_G * etaO[4,3]
 
-  JOJx_GM=p_D*etaO[1,2]+p_G*etaO[1,3]
-  JOJv_GM=p_D*etaO[2,2]+p_G*etaO[2,3]
-  JOJe_GM=p_D*etaO[3,2]+p_G*etaO[3,3]
-  JOJp_GM=p_D*etaO[4,2]+p_G*etaO[4,3]
+  JOJx_GM <- p_D * etaO[1,2] + p_G * etaO[1,3]
+  JOJv_GM <- p_D * etaO[2,2] + p_G * etaO[2,3]
+  JOJe_GM <- p_D * etaO[3,2] + p_G * etaO[3,3]
+  JOJp_GM <- p_D * etaO[4,2] + p_G * etaO[4,3]
 
-  JMCO2=JOJx*JM_JO[1,1]+JOJv*JM_JO[1,2]+JOJe*JM_JO[1,3]+JOJp*JM_JO[1,4]
-  JMH2O=JOJx*JM_JO[2,1]+JOJv*JM_JO[2,2]+JOJe*JM_JO[2,3]+JOJp*JM_JO[2,4]
-  JMO2=JOJx*JM_JO[3,1]+JOJv*JM_JO[3,2]+JOJe*JM_JO[3,3]+JOJp*JM_JO[3,4]
-  JMNWASTE=JOJx*JM_JO[4,1]+JOJv*JM_JO[4,2]+JOJe*JM_JO[4,3]+JOJp*JM_JO[4,4]
+  JMCO2 <- JOJx * JM_JO[1,1] + JOJv * JM_JO[1,2] + JOJe * JM_JO[1,3] + JOJp * JM_JO[1,4]
+  JMH2O <- JOJx * JM_JO[2,1] + JOJv * JM_JO[2,2] + JOJe * JM_JO[2,3] + JOJp * JM_JO[2,4]
+  JMO2 <- JOJx * JM_JO[3,1] + JOJv * JM_JO[3,2] + JOJe * JM_JO[3,3] + JOJp * JM_JO[3,4]
+  JMNWASTE <- JOJx * JM_JO[4,1] + JOJv * JM_JO[4,2] + JOJe * JM_JO[4,3] + JOJp * JM_JO[4,4]
 
-  JMCO2_GM=JOJx_GM*JM_JO[1,1]+JOJv_GM*JM_JO[1,2]+JOJe_GM*JM_JO[1,3]+JOJp_GM*JM_JO[1,4]
-  JMH2O_GM=JOJx_GM*JM_JO[2,1]+JOJv_GM*JM_JO[2,2]+JOJe_GM*JM_JO[2,3]+JOJp_GM*JM_JO[2,4]
-  JMO2_GM=JOJx_GM*JM_JO[3,1]+JOJv_GM*JM_JO[3,2]+JOJe_GM*JM_JO[3,3]+JOJp_GM*JM_JO[3,4]
-  JMNWASTE_GM=JOJx_GM*JM_JO[4,1]+JOJv_GM*JM_JO[4,2]+JOJe_GM*JM_JO[4,3]+JOJp_GM*JM_JO[4,4]
+  JMCO2_GM <- JOJx_GM * JM_JO[1,1] + JOJv_GM * JM_JO[1,2] + JOJe_GM * JM_JO[1,3] + JOJp_GM * JM_JO[1,4]
+  JMH2O_GM <- JOJx_GM * JM_JO[2,1] + JOJv_GM * JM_JO[2,2] + JOJe_GM * JM_JO[2,3] + JOJp_GM * JM_JO[2,4]
+  JMO2_GM <- JOJx_GM * JM_JO[3,1] + JOJv_GM * JM_JO[3,2] + JOJe_GM * JM_JO[3,3] + JOJp_GM * JM_JO[3,4]
+  JMNWASTE_GM <- JOJx_GM * JM_JO[4,1] + JOJv_GM * JM_JO[4,2] + JOJe_GM * JM_JO[4,3] + JOJp_GM * JM_JO[4,4]
 
-  #RQ = JMCO2/JMO2
+  #RQ <- JMCO2/JMO2
 
-  O2FLUX = -1*JMO2/(T_REF/Tb/24.4)*1000 #mlO2/h, temperature corrected (including SDA)
-  CO2FLUX = JMCO2/(T_REF/Tb/24.4)*1000
-  MLO2 = (-1*JMO2*(0.082058*(Tb+273.15))/(0.082058*293.15))*24.06*1000 #mlO2/h, stp
-  GH2OMET = JMH2O*18.01528 #g metabolic water/h
+  O2FLUX <- -1 * JMO2/(T_REF / Tb / 24.4) * 1000 #mlO2/h, temperature corrected (including SDA)
+  CO2FLUX <- JMCO2 / (T_REF / Tb / 24.4) * 1000
+  MLO2 <- (-1 * JMO2 * (0.082058 * (Tb + 273.15)) / (0.082058 * 293.15)) * 24.06 * 1000 #mlO2/h, stp
+  GH2OMET <- JMH2O * 18.01528 #g metabolic water/h
   #metabolic heat production (Watts) - growth overhead plus dissipation power (maintenance, maturity maintenance,
   #maturation/repro overheads) plus assimilation overheads - correct to 20 degrees so it can be temperature corrected
   #in MET.f for the new guessed Tb
-  DEBQMET = ((1-kappa_G)*p_G+p_D+(p_X-p_A-p_A*mu_P*eta_PA))/3600/Tcorr
+  DEBQMET <- ((1 - kappa_G) * p_G + p_D + (p_X - p_A - p_A * mu_P * eta_PA)) / 3600 / Tcorr
 
-  DRYFOOD=-1*JOJx*w_X
-  FAECES=JOJp*w_P
-  NWASTE=JMNWASTE*w_N
+  DRYFOOD <- -1 * JOJx * w_X
+  FAECES <- JOJp * w_P
+  NWASTE <- JMNWASTE * w_N
   if(pregnant==1){
-    wetgonad = ((cumrepro/mu_E)*w_E)/d_Egg+((((v_baby*e_baby)/mu_E)*w_E)/d_V + v_baby)*clutchsize
+    wetgonad <- ((cumrepro / mu_E) * w_E) / d_Egg + ((((v_baby * e_baby) / mu_E) * w_E) / d_V + v_baby) * clutchsize
   }else{
-    wetgonad = ((cumrepro/mu_E)*w_E)/d_Egg+((cumbatch/mu_E)*w_E)/d_Egg
+    wetgonad <- ((cumrepro/mu_E) * w_E) / d_Egg + ((cumbatch / mu_E) * w_E) / d_Egg
   }
-  wetstorage = ((V*E/mu_E)*w_E)/d_V
-  #    wetfood(hour) = ((Es(hour)/mu_E)*w_E)/d_V
-  wetfood = Es / 21525.37 / fdry
-  wetmass = V*andens_deb+wetgonad+wetstorage+wetfood
-  gutfreemass=V*andens_deb+wetgonad+wetstorage
-  potfreemass=V*andens_deb+(((V*E_m)/mu_E)*w_E)/d_V # this is the max potential mass if reserve density is at max value
+  wetstorage <- ((V * E / mu_E) *w_E) / d_V
+  wetfood <- ((Es / mu_E) * w_E) / fdry
+  foodin <- ((dEsdt / mu_E) * w_E) / fdry
+  #wetfood <- Es / 21525.37 / fdry
+  wetmass <- V * andens_deb + wetgonad + wetstorage + wetfood
+  gutfreemass <- V * andens_deb + wetgonad + wetstorage
+  potfreemass <- V * andens_deb + (((V * E_m) / mu_E) * w_E) / d_V # this is the max potential mass if reserve density is at max value
 
   #aging
-  dqdt = (q_pres*(V_pres/V_m)*s_G+h_aT)*(E_pres/E_m)*((vT/L_pres)-r)-r*q_pres
-  if(E_H_pres>E_Hb){
-    q = q_init + dqdt
+  dqdt <- (q_pres * (V_pres / V_m) * s_G + h_aT) * (E_pres / E_m) * ((vT / L_pres) - r) - r * q_pres
+  if(E_H_pres > E_Hb){
+    q <- q_init + dqdt
   }else{
-    q = 0
+    q <- 0
   }
-  dhsds = q_pres-r*hs_pres
-  if(E_H_pres>E_Hb){
-    hs = hs_init + dhsds
+  dhsds <- q_pres - r * hs_pres
+  if(E_H_pres > E_Hb){
+    hs <- hs_init + dhsds
   }else{
-    hs = 0
+    hs <- 0
   }
-  h_w = ((h_aT*(E_pres/E_m)*vT)/(6*V_pres^(1./3.)))^(1./3.)
-  dsurvdt = -1*surviv_pres*hs
-  surviv = surviv_pres+dsurvdt
+  h_w <- ((h_aT * (E_pres / E_m) * vT) / (6 * V_pres ^ (1 /3 ))) ^ (1 / 3)
+  dsurvdt <- -1*surviv_pres * hs
+  surviv <- surviv_pres + dsurvdt
 
   # new states
-  p_B_past=p_B
-  E_pres=E
-  V_pres=V
-  E_H_pres=E_H
-  q_pres=q
-  hs_pres=hs
-  surviv_pres=surviv
-  Es_pres=Es
+  p_B_past <- p_B
+  E_pres <- E
+  V_pres <- V
+  E_H_pres <- E_H
+  q_pres <- q
+  hs_pres <- hs
+  surviv_pres <- surviv
+  Es_pres <- Es
 
-  #deb.names<-c("length","wetmass", "E","V","E_H","q","hs","surviv","Es","gutfull","cumrepro","cumbatch","p_R","p_B","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","gutfreemass","fecundity","clutches","potfreemass")
-  #results_deb<-c(svl,wetmass,E_pres,V_pres,E_H_pres,q_pres,hs_pres,surviv_pres,Es_pres,gutfull,cumrepro,cumbatch,p_R,p_B_past,O2FLUX,CO2FLUX,MLO2,GH2OMET,DEBQMET,DRYFOOD,FAECES,NWASTE,wetgonad,wetstorage,wetfood,gutfreemass,fecundity,clutches,potfreemass)
-  #deb.names<-c("E_pres","V_pres","E_H_pres","q_pres","hs_pres","surviv_pres","Es_pres","cumrepro","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","wetmass","gutfreemass","gutfull","fecundity","clutches","potfreemass","length","p.R")
-  #results_deb<-c(E_pres,V_pres,E_H_pres,q_pres,hs_pres,surviv_pres,Es_pres,cumrepro,O2FLUX,CO2FLUX,MLO2,GH2OMET,DEBQMET,DRYFOOD,FAECES,NWASTE,wetgonad,wetstorage,wetfood,wetmass,gutfreemass,gutfull,fecundity,clutches,potfreemass,svl,p_R)
-  deb.names<-c("E_pres","V_pres","E_H_pres","q_pres","hs_pres","surviv_pres","Es_pres","cumrepro","cumbatch","p_B_past","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","wetmass","gutfreemass","gutfull","fecundity","clutches","potfreemass","length","p.R")
-  results_deb<-c(E_pres,V_pres,E_H_pres,q_pres,hs_pres,surviv_pres,Es_pres,cumrepro,cumbatch,p_B_past,O2FLUX,CO2FLUX,MLO2,GH2OMET,DEBQMET,DRYFOOD,FAECES,NWASTE,wetgonad,wetstorage,wetfood,wetmass,gutfreemass,gutfull,fecundity,clutches,potfreemass,svl,p_R)
-  names(results_deb)<-deb.names
+  deb.names <- c("E_pres", "V_pres", "E_H_pres", "q_pres", "hs_pres", "surviv_pres", "Es_pres", "cumrepro", "cumbatch", "p_B_past", "O2FLUX", "CO2FLUX","MLO2", "GH2OMET", "DEBQMET", "DRYFOOD", "FAECES", "NWASTE", "wetgonad", "wetstorage", "wetfood","wetmass", "gutfreemass","gutfull", "fecundity", "clutches", "potfreemass", "length", "p.R", "foodin")
+  results_deb <- c(E_pres, V_pres, E_H_pres, q_pres, hs_pres, surviv_pres, Es_pres, cumrepro, cumbatch, p_B_past, O2FLUX, CO2FLUX, MLO2, GH2OMET, DEBQMET, DRYFOOD, FAECES, NWASTE, wetgonad, wetstorage, wetfood, wetmass, gutfreemass, gutfull, fecundity, clutches, potfreemass, L_w, p_R, foodin)
+  names(results_deb) <- deb.names
   return(results_deb)
 }

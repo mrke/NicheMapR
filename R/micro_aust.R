@@ -150,6 +150,7 @@
 #' \code{elev}{ - elevation at point of simulation (m)}\cr\cr
 #' \code{minshade}{ - minimum shade for simulation (\%)}\cr\cr
 #' \code{maxshade}{ - maximum shade for simulation (single value - if time varying, in 'MAXSHADES') (\%)}\cr\cr
+#' \code{MINSHADES}{ - vector of minimum shades used (\%)}\cr\cr
 #' \code{MAXSHADES}{ - vector of maximum shades used (\%)}\cr\cr
 #' \code{DEP}{ - vector of depths used (cm)}\cr\cr
 #'
@@ -301,6 +302,8 @@ micro_aust <- function(
   DEP = c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200),
   minshade = 0,
   maxshade = 90,
+  MINSHADES = NA,
+  MAXSHADES = NA,
   Refhyt = 1.2,
   Usrhyt = 0.01,
   Z01 = 0,
@@ -396,11 +399,11 @@ micro_aust <- function(
     for(j in 1:length(yearlist)){
       if(yearlist[j] %in% leapyears){# add day for leap year if needed
         if(mult == 1){
-        data<-c(indata[1:59], indata[59], indata[60:365])
+          data<-c(indata[1:59], indata[59], indata[60:365])
         }else{
           data<-c(indata[1:(59*mult)], indata[(58*mult+1):(59*mult)], indata[(59*mult+1):(365*mult)])
         }
-         }else{
+      }else{
         data <- indata
       }
       if(j==1){
@@ -600,8 +603,16 @@ micro_aust <- function(
     doys12<-c(15, 46, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349) # middle day of each month
     microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
     daystart<-1
-    maxshades=rep(maxshade,ndays)
-    minshades=rep(minshade,ndays)
+    if(is.na(MAXSHADES)){
+      maxshades <- rep(maxshade,ndays)
+    }else{
+      maxshades <- MAXSHADES
+    }
+    if(is.na(MINSHADES)){
+      minshades <- rep(minshade,ndays)
+    }else{
+      minshades <- MINSHADES
+    }
     leapyears<-seq(1972,2060,4)
     for(mm in 1:nyears){
       if(mm == 1){
@@ -670,8 +681,12 @@ micro_aust <- function(
     if(soildata==0){
       soilprop<-cbind(0,0)
       # creating the shade array
-      MAXSHADES <- rep(0,ndays)+maxshade # daily max shade (%)
-      MINSHADES <- rep(0,ndays)+minshade # daily min shade (%)
+      if(is.na(MAXSHADES)){
+        MAXSHADES <- rep(0,ndays)+maxshade # daily max shade (%)
+      }
+      if(is.na(MINSHADES)){
+        MINSHADES <- rep(0,ndays)+minshade # daily min shade (%)
+      }
     }
 
     if(soildata==1){
@@ -1055,8 +1070,12 @@ micro_aust <- function(
         }
       }
     } #end vlsci check
+    if(is.na(MAXSHADES)){
     maxshades=rep(maxshade,ndays)
+    }
+    if(is.na(MINSHADES)){
     minshades=rep(minshade,ndays)
+    }
     doys<-seq(daystart,ndays,1)
     leapyears<-seq(1972,2060,4)
     for(mm in 1:nyears){
@@ -1531,10 +1550,14 @@ micro_aust <- function(
           MAXSHADES<-leapfix(maxshades1$y*100,yearlist)
           MAXSHADES<-MAXSHADES[1:ndays]
           if(manualshade==1){
+            if(is.na(MAXSHADES)){
             maxshades <- rep(maxshade,ndays)
             MAXSHADES<-maxshades
+            }
+            if(is.na(MINSHADES)){
             minshades <- rep(minshade,ndays)
             MINSHADES<-minshades
+            }
           }
         }else{
           if(manualshade==0){
