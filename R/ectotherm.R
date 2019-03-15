@@ -112,7 +112,7 @@
 #' \itemize{
 #' \item{\code{pct_H_P}{ = 73, Water in faeces (product) (\%)}\cr}
 #' \item{\code{pct_H_N}{ = 0, Water in excreted nitrogenous waste (\%)}\cr}
-#' \item{\code{pct_H_X}{ = 82, Water content of food (\%)}\cr}
+#' \item{\code{pct_H_X}{ = 0.82, Water content of food (\dec%)}\cr}
 #' \item{\code{pct_H_R}{ = 15, Minimum tolerated dehydration (\% of wet mass) - prohibits foraging if greater than this}\cr}
 #' \item{\code{pct_H_death}{ = 35, Maximum tolerated dehydration (\% of wet mass) - causes death if greater than this}\cr}
 #' \item{\code{gutfill}{ = 75, Gut fill (\%) at which satiation occurs - if greater than 100\%, animal always tries to forage}\cr}
@@ -562,7 +562,7 @@ ectotherm<-function(
   CT_kill=0,
   pct_H_P=73,
   pct_H_N=0,
-  pct_H_X=82,
+  pct_H_X=0.82,
   pct_H_R=15,
   gutfill=75,
   raindrink=0,
@@ -874,7 +874,7 @@ ectotherm<-function(
   # conversions from percent to proportion
   PTUREA1<-pct_H_N/100
   PFEWAT1<-pct_H_P/100
-  FoodWater1<-pct_H_X[1]/100
+  FoodWater1<-pct_H_X[1]
   water_stages[,3]<-water_stages[,3]/100
   water_stages[,4]<-water_stages[,4]/100
   water_stages[,5]<-water_stages[,5]/100

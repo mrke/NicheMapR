@@ -395,7 +395,7 @@ micro_aust <- function(
 
   # function to assist with interpolated data in leap years
   leapfix <- function(indata, yearlist, mult = 1){
-    leapyears<-seq(1972,2060,4)
+    leapyears<-seq(1900,2060,4)
     for(j in 1:length(yearlist)){
       if(yearlist[j] %in% leapyears){# add day for leap year if needed
         if(mult == 1){
@@ -613,7 +613,7 @@ micro_aust <- function(
     }else{
       minshades <- MINSHADES
     }
-    leapyears<-seq(1972,2060,4)
+    leapyears<-seq(1900,2060,4)
     for(mm in 1:nyears){
       if(mm == 1){
         currenty <- ystart
@@ -1077,7 +1077,7 @@ micro_aust <- function(
     minshades=rep(minshade,ndays)
     }
     doys<-seq(daystart,ndays,1)
-    leapyears<-seq(1972,2060,4)
+    leapyears<-seq(1900,2060,4)
     for(mm in 1:nyears){
       if(mm == 1){
         currenty <- ystart

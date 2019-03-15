@@ -48,7 +48,9 @@
 #' @param n_P = c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in faeces
 #' @param fdry = 0.3, Dry mass fraction of food
 #' @param n_M_nitro = c(1,4/5,3/5,4/5), Chem. indices of C, O, H and N in nitrogenous waste
-#' @param stage = 0, Initial stage (0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction)
+#' @param stages = 3, how many life stages?
+#' @param stage = 0, Initial stage (0=embryo, for STD 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction, for ABP 1-(stages-1) = instars, stages = adult)
+#' @param S_instar = rep(1.6, stages), stress at instar n: L_n^2/ L_n-1^2 (-)
 #' @param clutchsize = 2, Clutch size (#), overridden by \code{clutch_ab}
 #' @param clutch_ab = c(0,0), paramters for relationship between length (cm) and clutch size: clutch size = a*L_w-b, make a and b zero if fixed clutch size
 #' @param viviparous = 0, Viviparous reproduction? 1=yes, 0=no (if yes, animal will be held in adult-sided female's body for duration of development and will experience her body temperature
@@ -193,6 +195,7 @@ DEB<-function(
   Es_pres=0,
   cumrepro=0,
   cumbatch=0,
+  stages=3,
   stage=1,
   breeding=0,
   pregnant=0,
@@ -200,6 +203,7 @@ DEB<-function(
   fdry=0.3,
   L_b=0.42,
   L_j=1.376,
+  S_instar=rep(1.6, stages),
   spawnday=1,
   day=1,
   metab_mode=0){
@@ -433,7 +437,7 @@ DEB<-function(
   cumrepro <- max(DEB.state$R, 0)
   cumbatch <- max(DEB.state$B, 0)
 
-  L_w = V ^ (1 / 3) / del_M * 10 # lenght in mm
+  L_w = V ^ (1 / 3) / del_M * 10 # length in mm
   if(Es > E_sm * V){
     Es <- E_sm * V
   }
@@ -475,32 +479,6 @@ DEB<-function(
   }
   p_G = p_C - p_M2 - p_J - p_R
 
-  # determine stages
-  if(stage==2){
-    if(cumbatch < 0.1 * clutchenergy){
-      stage <- 3
-    }
-  }
-  if(E_H <= E_Hb){
-    stage <- 0
-  }else{
-    if(E_H < E_Hj){
-      stage <- 1
-    }else{
-      if(E_H < E_Hp){
-        stage <- 2
-      }else{
-        stage <- 3
-      }
-    }
-  }
-  if(cumbatch > 0){
-    if(E_H > E_Hp){
-      stage <- 4
-    }else{
-      stage <- stage
-    }
-  }
   testclutch <- floor((cumrepro + cumbatch) / E_0)
   # FOR VARIABLE CLUTCH SIZE FROM REPRO AND BATCH BUFFERS
   if(minclutch > 0 & floor(cumrepro + cumbatch) / E_0 > minclutch){
@@ -509,6 +487,60 @@ DEB<-function(
       clutchenergy <- clutchsize * E_0
     }
   }
+
+  # determine stages
+
+  # STD MODEL
+  if(metab_mode == 0){
+    if(stage == 2){
+      if(cumbatch < 0.1 * clutchenergy){
+        stage <- 3
+      }
+    }
+    if(E_H <= E_Hb){
+      stage <- 0
+    }else{
+      if(E_H < E_Hj){
+        stage <- 1
+      }else{
+        if(E_H < E_Hp){
+          stage <- 2
+        }else{
+          stage <- 3
+        }
+      }
+    }
+    if(cumbatch > 0){
+      if(E_H > E_Hp){
+        stage <- 4
+      }else{
+        stage <- stage
+      }
+    }
+  }
+
+  if(metab_mode == 1){
+    L_instar <- rep(0, stages)
+    L_instar[1] <- S_instar[1] ^ 0.5 * L_b
+    for(j in 2:stages){
+      L_instar[j] <- S_instar[j] ^ 0.5 * L_instar[j - 1]
+    }
+    if(stage > 0 & stage < stages - 1){
+      L_thresh <- L_instar[stage]
+    }
+    if(stage == 0){
+      if(E_H > E_Hb){
+        stage <- stage + 1
+      }
+    }else{
+      if(stage < stages - 1){
+        if(V^(1/3) > L_thresh){
+          stage <- stage + 1
+        }
+      }
+    }
+  }
+
 
   if((cumbatch>clutchenergy) | (pregnant==1)){
     if(viviparous == 1){
@@ -664,8 +696,8 @@ DEB<-function(
   surviv_pres <- surviv
   Es_pres <- Es
 
-  deb.names <- c("E_pres", "V_pres", "E_H_pres", "q_pres", "hs_pres" ,"surviv_pres", "Es_pres", "cumrepro", "cumbatch", "O2FLUX", "CO2FLUX", "MLO2", "GH2OMET", "DEBQMET", "DRYFOOD", "FAECES", "NWASTE", "wetgonad", "wetstorage", "wetfood", "wetmass", "gutfreemass", "gutfull", "fecundity", "clutches", "potfreemass", "length", "p.R", "foodin")
-  results_deb <- c(E_pres ,V_pres ,E_H_pres, q_pres, hs_pres, surviv_pres, Es_pres, cumrepro, cumbatch, O2FLUX, CO2FLUX, MLO2, GH2OMET, DEBQMET, DRYFOOD, FAECES, NWASTE, wetgonad, wetstorage, wetfood, wetmass, gutfreemass, gutfull, fecundity, clutches, potfreemass, L_w, p_R, foodin)
+  deb.names <- c("E_pres", "V_pres", "E_H_pres", "q_pres", "hs_pres" ,"surviv_pres", "Es_pres", "cumrepro", "cumbatch", "O2FLUX", "CO2FLUX", "MLO2", "GH2OMET", "DEBQMET", "DRYFOOD", "FAECES", "NWASTE", "wetgonad", "wetstorage", "wetfood", "wetmass", "gutfreemass", "gutfull", "fecundity", "clutches", "potfreemass", "length", "p.R", "foodin", "stage")
+  results_deb <- c(E_pres ,V_pres ,E_H_pres, q_pres, hs_pres, surviv_pres, Es_pres, cumrepro, cumbatch, O2FLUX, CO2FLUX, MLO2, GH2OMET, DEBQMET, DRYFOOD, FAECES, NWASTE, wetgonad, wetstorage, wetfood, wetmass, gutfreemass, gutfull, fecundity, clutches, potfreemass, L_w, p_R, foodin, stage)
   names(results_deb)<-deb.names
   return(results_deb)
 }
