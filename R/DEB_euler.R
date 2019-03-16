@@ -483,6 +483,9 @@ DEB_euler<-function(
           stage <- stage + 1
         }
       }
+      if(E_H >= E_Hp){
+        stage <- stages
+      }
     }
   }
 
