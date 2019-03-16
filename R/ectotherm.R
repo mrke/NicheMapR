@@ -201,7 +201,7 @@
 #' \strong{ Metabolic depression parameters:}
 #' \itemize{
 #' \item{\code{aestivate}{ = 0, Does the animal aestivate/go into torpor? 1=yes, 0=no}\cr}
-#' \item{\code{depress}{ = 0.3, Fraction by which \code{p_M}, \code{k_J} and \code{v} are reduced during torpor}\cr}
+#' \item{\code{depress}{ = 1, Fraction by which \code{p_M}, \code{k_J} and \code{v} are reduced during torpor}\cr}
 #'}
 #' \strong{ Reproductive phenology model parameters:}
 #' \itemize{
@@ -622,7 +622,7 @@ ectotherm <- function(
   E_H_init=0,
   stage=0,
   aestivate=0,
-  depress=0.3,
+  depress=1,
   clutchsize=5,
   clutch_ab=c(0,0),
   viviparous=0,
