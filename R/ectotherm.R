@@ -343,47 +343,23 @@
 #' \item 2 YEAR - Year of simulation
 #' \item 3 DAY - Day of simulation
 #' \item 4 TIME - Time of day (hours)
-#' \item 5 WETMASS - Wet mass (g)
-#' \item 6 E - Reserve density (J/cm3)
-#' \item 7 CUMREPRO - Energy in reproduction buffer (J)
-#' \item 8 HS - Hazard rate (1/h)
-#' \item 9 MASS_GUT - Wet gut contents (J)
-#' \item 10 SVL - Length (mm) (might be Snout Vent Length but depends on choice of length measure for DEB paramter fitting)
-#' \item 11 V - Structural volume (cm3)
-#' \item 12 E_H - Maturity state (J)
-#' \item 13 CUMBATCH - Energy in batch for egg production (J)
-#' \item 14 V_baby - Structure of baby (cm3) (only if viviparous and pregnant)
-#' \item 15 E_baby - Reserve density of baby (J/cm3) (only if viviparous and pregnant)
-#' \item 16 Pregnant - Pregnant? (only if viviparous) (0 or 1)
-#' \item 17 Stage - Life cycle stage (0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction)
-#' \item 18 WETMASS_STD - Wet mass (g) excluding stomach contents
-#' \item 19 Body_cond - \% desiccated
-#' \item 20 Surviv_Prob - Survival probability due to joint influence of ageing and mortality rates
-#' \item 21 Breeding - Breeding state (1=breeding, 0=not breeding)
-#'}
-#' debout variables:
-#' \itemize{
-#' \item 1 DOY - Day of year
-#' \item 2 YEAR - Year of simulation
-#' \item 3 DAY - Day of simulation
-#' \item 4 TIME - Time of day (hours)
-#' \item 17 Stage - Life cycle stage (0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction)
-#' \item 11 V - Structural volume (cm3)
-#' \item 6 E - Reserve density (J/cm3)
-#' \item 12 E_H - Maturity state (J)
-#' \item 10 L_w - Length (mm) (what this represents depends on choice of length measure for DEB paramter fitting)
-#' \item 5 WETMASS - Wet mass total (reserve, structure, reproduction buffer, stomach contents) (g)
-#' \item 18 WETGONAD - Wet mass of gonad (batch and reproduction buffers) (g)
-#' \item 9 WETGUT - Wet mass of food in gut (g)
-#' \item 19 PCT_DESIC - \% desiccated
-#' \item 7 CUMREPRO - Energy in reproduction buffer (J)
-#' \item 13 CUMBATCH - Energy in batch for egg production (J)
-#' \item 21 BREEDING - Breeding state (1=breeding, 0=not breeding)
-#' \item 16 PREGNANT - Pregnant? (only if viviparous) (0 or 1)
-#' \item 14 V_BABY - Structure of baby (cm3) (only if viviparous and pregnant)
-#' \item 15 E_BABY - Reserve density of baby (J/cm3) (only if viviparous and pregnant)
-#' \item 8 H_S - Hazard rate (1/h)
-#' \item 20 P_SURV - Survival probability due to joint influence of ageing and mortality rates
+#' \item 5 Stage - Life cycle stage (0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction)
+#' \item 6 V - Structural volume (cm3)
+#' \item 7 E - Reserve density (J/cm3)
+#' \item 8 E_H - Maturity state (J)
+#' \item 9 LENGTH - Physical length (mm) (what this represents depends on choice of length measure for DEB paramter fitting, e.g. snout-vent length, head length, etc.)
+#' \item 10 WETMASS - Wet mass total (reserve, structure, reproduction buffer, stomach contents) (g)
+#' \item 11 WETGONAD - Wet mass of gonad (batch and reproduction buffers) (g)
+#' \item 12 WETGUT - Wet mass of food in gut (g)
+#' \item 13 PCT_DESIC - \% desiccated
+#' \item 14 CUMREPRO - Energy in reproduction buffer (J)
+#' \item 15 CUMBATCH - Energy in batch for egg production (J)
+#' \item 16 BREEDING - Breeding state (1=breeding, 0=not breeding)
+#' \item 17 PREGNANT - Pregnant? (only if viviparous) (0 or 1)
+#' \item 18 V_BABY - Structure of baby (cm3) (only if viviparous and pregnant)
+#' \item 19 E_BABY - Reserve density of baby (J/cm3) (only if viviparous and pregnant)
+#' \item 20 H_S - Hazard rate (1/h)
+#' \item 21 P_SURV - Survival probability due to joint influence of ageing and mortality rates
 #'}
 #' yearout variables:
 #' \itemize{
@@ -391,7 +367,7 @@
 #' \item 2 BIRTHDAY - Birth day (day of year)
 #' \item 3 BIRTHMASS - Mass at birth (g)
 #' \item 4 MONMATURE - Months to maturity
-#' \item 5 SVLREPRO - Length (mm) at first reproduction
+#' \item 5 LENREPRO - Length (mm) at first reproduction
 #' \item 6 FECUNDITY  - Total fecundity
 #' \item 7 CLUTCHES - Total clutches
 #' \item 8 MINRESERVE - Minimum reserve density (J/cm3)
@@ -404,7 +380,7 @@
 #' \item 15 GenTime - Generation time (years)
 #' \item 16 R0 - Net reproductive rate
 #' \item 17 rmax - Intrinsic rate of increase
-#' \item 18 SVL - Maximum length (mm)
+#' \item 18 LENGTH - Maximum length (mm)
 #'}
 #'
 #' yearsout variables:

@@ -167,8 +167,8 @@ ectorun <- function(ecto) {
   environ.names<-c("DOY","YEAR","DAY","TIME","TC","SHADE","SOLAR","DEP","ACT","TA","TSUB","TSKY","VEL","RELHUM","ZEN","CONDEP","WATERTEMP","DAYLENGTH","WINGANGLE","WINGTEMP","FLYING","FLYTIME","PO2WATER","SALWATER")
   enbal.names<-c("DOY","YEAR","DAY","TIME","QSOL","QIRIN","QMET","QEVAP","QIROUT","QCONV","QCOND","ENB","NTRY")
   masbal.names<-c("DOY","YEAR","DAY","TIME","O2_ml","CO2_ml","NWASTE_g","H2OFree_g","H2OMet_g","DryFood_g","WetFood_g","DryFaeces_g","WetFaeces_G","Urine_g","H2OResp_g","H2OCut_g","H2OEye_g","H2OBal_g","H2OCumBal_g")
-  debout.names<-c("DOY","YEAR","DAY","TIME","STAGE","V","E","E_H","L_W","WETMASS","WETGONAD","WETGONAD","PCT_DESIC","E_R","E_B","BREEDING","PREGNANT","V_BABY","E_BABY","H_S","P_SURV")
-  yearout.names<-c("DEVTIME","BIRTHDAY","BIRTHMASS","MONMATURE","MONREPRO","SVLREPRO","FECUNDITY","CLUTCHES","ANNUALACT","MINRESERVE","LASTFOOD","TOTFOOD","MINTB","MAXTB","Pct_Dess","LifeSpan","GenTime","R0","rmax","SVL")
+  debout.names<-c("DOY","YEAR","DAY","TIME","STAGE","V","E","E_H","L_W","WETMASS","WETGONAD","WETGUT","PCT_DESIC","E_R","E_B","BREEDING","PREGNANT","V_BABY","E_BABY","H_S","P_SURV")
+  yearout.names<-c("DEVTIME","BIRTHDAY","BIRTHMASS","MONMATURE","MONREPRO","LENREPRO","FECUNDITY","CLUTCHES","ANNUALACT","MINRESERVE","LASTFOOD","TOTFOOD","MINTB","MAXTB","Pct_Dess","LifeSpan","GenTime","R0","rmax","Length")
   yearsout.names<-c("YEAR","MaxStg","MaxWgt","MaxLen","Tmax","Tmin","MinRes","MaxDes","MinShade","MaxShade","MinDep","MaxDep","Bsk","Forage","Dist","Food","Drink","NWaste","Feces","O2","Clutch","Fec","CauseDeath","tLay","tEgg","tStg1","tStg2","tStg3","tStg4","tStg5","tStg6","tStg7","tStg8","mStg1","mStg2","mStg3","mStg4","mStg5","mStg6","mStg7","mStg8","surviv","ovip_surviv","fitness","deathstage")
 
   colnames(environ)<-environ.names
