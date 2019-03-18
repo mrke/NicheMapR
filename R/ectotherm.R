@@ -601,7 +601,7 @@ ectotherm <- function(
   metab_mode=0,
   stages=8,
   y_EV_l=0.95,
-  S_instar=rep(2.660,stages-4),
+  S_instar=rep(2.660,stages),
   s_j=0.999,
   L_b=0.06148,
   V_init=3e-9,

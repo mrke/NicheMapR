@@ -314,6 +314,18 @@ DEB_euler<-function(
   #L_w in mm
   L_w <- V ^ (1 / 3) / del_M * 10
 
+  if(Es_pres > 0.0000001 * E_sm * V_pres){
+    p_A <- V_pres ^ (2 / 3) * p_AmT * f
+  }else{
+    p_A <- 0
+  }
+  p_C <- (E_m * (vT / L_pres + k_Mdot * (1 + L_T / L_pres)) * (e * g) / (e + g)) * V_pres #equation 2.20 DEB3
+  if(metab_mode == 1){
+    if(p_A > p_C & E_pres == E_m){
+      p_A <- p_C
+    }
+  }
+
   # reserve dynamics
   if(E_H_pres <= E_Hb){
     #use embryo equation for scaled reserve, U_E, from Kooijman 2009 eq. 1
@@ -323,9 +335,9 @@ DEB_euler<-function(
     dEdt <- E_temp - E_pres
   }else{
     if(Es_pres>0.0000001*E_sm*V_pres){
-      dEdt <- (p_AmT * f - E_pres * vT) / L_pres
+      dEdt <- p_A / L_pres ^ 3 - (E_pres * vT) / L_pres
     }else{
-      dEdt <- (p_AmT * 0 - E_pres * vT) / L_pres
+      dEdt <- -(E_pres * vT) / L_pres
     }
   }
   E <- E_pres + dEdt
@@ -336,23 +348,14 @@ DEB_euler<-function(
   # some powers
   p_M2 <- p_MT * V_pres
   p_J <- k_JT * E_H_pres + starve
-  if(Es_pres > 0.0000001 * E_sm * V_pres){
-    p_A <- V_pres ^ (2 / 3) * p_AmT * f
-  }else{
-    p_A <- 0
-  }
+
   p_X <- p_A / kap_X #J food eaten per hour
-  p_C <- (E_m * (vT / L_pres + k_Mdot * (1 + L_T / L_pres)) * (e * g) / (e + g)) * V_pres #equation 2.20 DEB3
   if(metab_mode == 0){
     p_R <- (1 - kap) * p_C - p_J
   }
   if(metab_mode == 1){
     if(E_H_pres > E_Hj){
-      if(Es_pres > 0){
-       p_R <- p_AmT * V ^ (2 / 3) - p_M2 - p_J # no kappa-rule - absolute reserve amount never reaches steady state so reproduction gets all of p_A minus maintenace
-      }else{
-       p_R <- p_C - p_M2 - p_J # no kappa-rule - absolute reserve amount never reaches steady state so reproduction gets all of p_C minus maintenace
-      }
+      p_R <- p_C - p_M2 - p_J # no kappa-rule - absolute reserve amount never reaches steady state so reproduction gets all of p_C minus maintenace
     }else{
       p_R <- (1 - kap) * p_C - p_J
     }
@@ -389,11 +392,7 @@ DEB_euler<-function(
       if(metab_mode == 0){
         batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * (v * V ^ (2 / 3) + k_Mdot * V) / (1 + (1 / g))) - p_J)
       }else{
-        if(Es_pres > 0){
-         batchprep <- (kap_R / lambda) * (p_AmT * V ^ (2 / 3) - p_M2 - p_J)
-        }else{
-         batchprep <- (kap_R / lambda) * ((E_m * (v * V ^ (2 / 3) + k_Mdot * V) / (1 + (1 / g))) - p_M2 - p_J)
-        }
+        batchprep <- (kap_R / lambda) * ((E_m * (v * V ^ (2 / 3) + k_Mdot * V) / (1 + (1 / g))) - p_M2 - p_J)
       }
       if(breeding == 0){
         p_B <- 0
@@ -436,31 +435,31 @@ DEB_euler<-function(
 
   # determine stages
 
-    # STD MODEL
+  # STD MODEL
   if(metab_mode == 0){
-  if(stage == 2){
-    if(cumbatch < 0.1 * clutchenergy){
-      stage <- 3
-    }
-  }
-  if(E_H <= E_Hb){
-    stage <- 0
-  }else{
-    if(E_H < E_Hj){
-      stage <- 1
-    }else{
-      if(E_H < E_Hp){
-        stage <- 2
-      }else{
+    if(stage == 2){
+      if(cumbatch < 0.1 * clutchenergy){
         stage <- 3
       }
     }
-  }
-  if(cumbatch > 0){
-    if(E_H > E_Hp){
-      stage <- 4
+    if(E_H <= E_Hb){
+      stage <- 0
+    }else{
+      if(E_H < E_Hj){
+        stage <- 1
+      }else{
+        if(E_H < E_Hp){
+          stage <- 2
+        }else{
+          stage <- 3
+        }
+      }
     }
-  }
+    if(cumbatch > 0){
+      if(E_H > E_Hp){
+        stage <- 4
+      }
+    }
   }
 
   # ABP model
@@ -673,8 +672,8 @@ DEB_euler<-function(
   surviv_pres <- surviv
   Es_pres <- Es
 
-  deb.names <- c("E_pres", "V_pres", "E_H_pres", "q_pres", "hs_pres", "surviv_pres", "Es_pres", "cumrepro", "cumbatch", "p_B_past", "O2FLUX", "CO2FLUX","MLO2", "GH2OMET", "DEBQMET", "DRYFOOD", "FAECES", "NWASTE", "wetgonad", "wetstorage", "wetfood","wetmass", "gutfreemass","gutfull", "fecundity", "clutches", "potfreemass", "length", "p.R", "foodin", "stage")
-  results_deb <- c(E_pres, V_pres, E_H_pres, q_pres, hs_pres, surviv_pres, Es_pres, cumrepro, cumbatch, p_B_past, O2FLUX, CO2FLUX, MLO2, GH2OMET, DEBQMET, DRYFOOD, FAECES, NWASTE, wetgonad, wetstorage, wetfood, wetmass, gutfreemass, gutfull, fecundity, clutches, potfreemass, L_w, p_R, foodin, stage)
+  deb.names <- c("E_pres", "V_pres", "E_H_pres", "q_pres", "hs_pres", "surviv_pres", "Es_pres", "cumrepro", "cumbatch", "p_B_past", "O2FLUX", "CO2FLUX","MLO2", "GH2OMET", "DEBQMET", "DRYFOOD", "FAECES", "NWASTE", "wetgonad", "wetstorage", "wetfood","wetmass", "gutfreemass","gutfull", "fecundity", "clutches", "potfreemass", "length", "p.R", "foodin", "stage", "p_G", "p_M2", "p_D", "p_J","p_C", "p_A")
+  results_deb <- c(E_pres, V_pres, E_H_pres, q_pres, hs_pres, surviv_pres, Es_pres, cumrepro, cumbatch, p_B_past, O2FLUX, CO2FLUX, MLO2, GH2OMET, DEBQMET, DRYFOOD, FAECES, NWASTE, wetgonad, wetstorage, wetfood, wetmass, gutfreemass, gutfull, fecundity, clutches, potfreemass, L_w, p_R, foodin, stage, p_G, p_M2, p_D, p_J, p_C, p_A)
   names(results_deb) <- deb.names
   return(results_deb)
 }

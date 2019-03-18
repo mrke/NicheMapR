@@ -243,6 +243,7 @@ DEB<-function(
 
   # Arrhenius temperature correction factor
   Tcorr <- exp(T_A * (1 / (273.15 + T_REF) - 1 / (273.15 + Tb))) / (1 + exp(T_AL * (1 / (273.15 + Tb) - 1 / T_L)) + exp(T_AH * (1 / T_H - 1 / (273.15 + Tb))))
+  Tcorr <- exp(T_A / (273.15 + T_REF) - T_A / (273.15 + Tb)) * (1 + exp(T_AL / (273.15 + T_REF) - T_AL / T_L) + exp(T_AH / T_H - T_AH / (273.15 + T_REF))) / (1 + exp(T_AL / (273.15 + Tb) - T_AL / T_L) + exp(T_AH / T_H - T_AH / (273.15 + Tb)))
 
   # metabolic acceleration if present
   s_M <- 1 # -, multiplication factor for v and {p_Am} under metabolic acceleration
@@ -345,11 +346,7 @@ DEB<-function(
         }
         if(metab_mode == 1){
           if(H > E_Hj){
-            if(Es > 0){
-              p_R <- p_Am * V ^ (2 / 3) - p_M * V - p_J # no kappa-rule - absolute reserve amount never reaches steady state so reproduction gets all of p_A minus maintenace
-            }else{
-              p_R <- p_C - p_M * V - p_J # no kappa-rule - absolute reserve amount never reaches steady state so reproduction gets all of p_C minus maintenace
-            }
+            p_R <- p_C - p_M * V - p_J # no kappa-rule - absolute reserve amount never reaches steady state so reproduction gets all of what would otherwise have gone to growth
             dV <- 0
           }else{
             p_R <- (1 - kap) * p_C - p_J
@@ -359,8 +356,14 @@ DEB<-function(
           dV <- abs(p_R) * w_V / (mu_V * d_V) * -1 # subtract from structure since not enough flow to reproduction to pay for somatic maintenance
           p_R <- 0
         }
+        p_A <- p_Am * f * L ^ 2
+        if(metab_mode == 1){
+          if(p_A > p_C & E == E_m){
+            p_A <- p_C
+          }
+        }
         if(Es > 0){
-          dE <- (p_Am * f - E * v) / L
+          dE <- p_A / L ^ 3 - (E * v) / L
         }else{
           dE <- (-E * v) / L
         }
@@ -377,7 +380,7 @@ DEB<-function(
           dH <- 0
         }
 
-        dq <- (q * (V / V_m) * s_G + h_a) * e* ((v / L) - r) - r * q # aging acceleration
+        dq <- (q * (V / V_m) * s_G + h_a) * e * ((v / L) - r) - r * q # aging acceleration
         dhs <- q - r * hs # hazard
 
         # reproduction
@@ -388,11 +391,7 @@ DEB<-function(
             if(metab_mode == 0){
               batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * (v * V ^ (2 / 3) + k_M * V) / (1 + (1 / g))) - p_J)
             }else{
-              if(Es > 0){
-                batchprep <- (kap_R / lambda) * (p_Am * V ^ (2 / 3) - p_M * V - p_J) # no kappa-rule - absolute reserve amount never reaches steady state so reproduction gets all of p_A minus maintenace
-              }else{
-                batchprep <- (kap_R / lambda) * ((E_m * (v * V ^ (2 / 3) + k_M * V) / (1 + (1 / g))) - p_J - p_M)
-              }
+              batchprep <- (kap_R / lambda) * ((E_m * (v * V ^ (2 / 3) + k_M * V) / (1 + (1 / g))) - p_J - p_M)
             }
             if(breeding == 0){
               p_B <- 0
@@ -454,24 +453,28 @@ DEB<-function(
   }else{
     p_A = 0
   }
-  p_X <- p_A / kap_X #J food eaten per hour
-  p_C <- (E_m * (vT / L_pres + k_M * (1 + L_T / L_pres)) * (e * g) / (e + g)) * V #equation 2.20 DEB3
+  p_C <- (E_m * (vT / V^(1/3) + k_M * (1 + L_T / V^(1/3))) * (e * g) / (e + g)) * V #equation 2.20 DEB3
 
   if(metab_mode == 0){
     p_R <- (1 - kap) * p_C - p_J
   }
   if(metab_mode == 1){
     if(E_H_pres > E_Hj){
-      if(Es > 0){
-        p_R <- p_AmT * L_pres^2 - p_MT * L_pres^3 - k_JT * E_Hp - starve
-      }else{
-        p_R <- p_C - p_J - p_M2
-      }
+      p_R <- p_C - p_J - p_M2
     }else{
       p_R <- (1 - kap) * p_C - p_J
     }
   }
 
+  if(metab_mode == 1){
+    #if(E_H_pres > E_Hj){
+      if(p_A > p_C & E == E_m){
+       p_A <- p_C
+      }
+    #}
+  }
+
+  p_X <- p_A / kap_X #J food eaten per hour
   if(E_H_pres >= E_Hp){
     p_D = p_M2 + p_J + (1 - kap_R) * p_R
   }else{
@@ -699,8 +702,8 @@ DEB<-function(
   surviv_pres <- surviv
   Es_pres <- Es
 
-  deb.names <- c("E_pres", "V_pres", "E_H_pres", "q_pres", "hs_pres" ,"surviv_pres", "Es_pres", "cumrepro", "cumbatch", "O2FLUX", "CO2FLUX", "MLO2", "GH2OMET", "DEBQMET", "DRYFOOD", "FAECES", "NWASTE", "wetgonad", "wetstorage", "wetfood", "wetmass", "gutfreemass", "gutfull", "fecundity", "clutches", "potfreemass", "length", "p.R", "foodin", "stage")
-  results_deb <- c(E_pres ,V_pres ,E_H_pres, q_pres, hs_pres, surviv_pres, Es_pres, cumrepro, cumbatch, O2FLUX, CO2FLUX, MLO2, GH2OMET, DEBQMET, DRYFOOD, FAECES, NWASTE, wetgonad, wetstorage, wetfood, wetmass, gutfreemass, gutfull, fecundity, clutches, potfreemass, L_w, p_R, foodin, stage)
+  deb.names <- c("E_pres", "V_pres", "E_H_pres", "q_pres", "hs_pres" ,"surviv_pres", "Es_pres", "cumrepro", "cumbatch", "O2FLUX", "CO2FLUX", "MLO2", "GH2OMET", "DEBQMET", "DRYFOOD", "FAECES", "NWASTE", "wetgonad", "wetstorage", "wetfood", "wetmass", "gutfreemass", "gutfull", "fecundity", "clutches", "potfreemass", "length", "p.R", "foodin", "stage", "p_G", "p_M2", "p_D", "p_J","p_C", "p_A")
+  results_deb <- c(E_pres ,V_pres ,E_H_pres, q_pres, hs_pres, surviv_pres, Es_pres, cumrepro, cumbatch, O2FLUX, CO2FLUX, MLO2, GH2OMET, DEBQMET, DRYFOOD, FAECES, NWASTE, wetgonad, wetstorage, wetfood, wetmass, gutfreemass, gutfull, fecundity, clutches, potfreemass, L_w, p_R, foodin, stage, p_G, p_M2, p_D, p_J, p_C, p_A)
   names(results_deb)<-deb.names
   return(results_deb)
 }
