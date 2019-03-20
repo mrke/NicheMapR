@@ -969,7 +969,7 @@ micro_aust <- function(
         return(data)
       }
       years <- yearlist
-      sol <- get_AWAP(yearlist, "rad")
+      sol <- zoo::na.approx(get_AWAP(yearlist, "rad"))
       tmax <- get_AWAP(yearlist, "tmax")
       tmin <- get_AWAP(yearlist, "tmin")
       vph09 <- get_AWAP(yearlist, "vph09")
@@ -1001,8 +1001,8 @@ micro_aust <- function(
       RHMAXX <- (VAPRES_max / es) * 100
       RHMAXX[RHMAXX>100]<-100
       RHMAXX[RHMAXX<0]<-0.01
-      WNMAXX <- rep(2, length(ndays))
-      WNMINN <- rep(0.5, length(ndays))
+      WNMAXX <- rep(2, ndays)
+      WNMINN <- rep(0.5, ndays)
       RAINFALL <- Rain
     }
 
