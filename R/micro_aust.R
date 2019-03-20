@@ -937,7 +937,7 @@ micro_aust <- function(
     }
 
     if(opendap == 1){
-      message("extracting climate data via opendap - note that there is no wind speed data, so the daily range is assumed to be from 0.5 to 2 m/s '\n'")
+      message("extracting climate data via opendap - note that there is no wind speed data, so the daily range is assumed to be from 0.5 to 2 m/s \n")
       monstart <- c("0101", "0201", "0301", "0401", "0501", "0601", "0701", "0801", "0901", "1001", "1101", "1201")
       monfinish <- c("0131.nc","0228.nc","0331.nc","0430.nc","0531.nc","0630.nc","0731.nc","0831.nc","0930.nc","1031.nc","1130.nc","1231.nc")
       monfinish2 <- c("0131.nc","0229.nc","0331.nc","0430.nc","0531.nc","0630.nc","0731.nc","0831.nc","0930.nc","1031.nc","1130.nc","1231.nc")
