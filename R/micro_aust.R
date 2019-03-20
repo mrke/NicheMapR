@@ -931,84 +931,51 @@ micro_aust <- function(
 
     if(opendap == 1){
       message("extracting climate data", '\n')
-      #baseurl<- "http://rs-data1-mel.csiro.au/thredds/dodsC/bawap/"
-      baseurl<-"http://dapds00.nci.org.au/thredds/dodsC/ub8/au/climate/"
-      for (j in 1:nyears) {
-        if (j == 1) {
-          cat(paste("reading weather input for ", yearlist[j]," \n", sep = ""))
-          nc <- nc_open(paste0(baseurl, "rad/day/",yearlist[j],"/bom-rad_day-19900101-19900131.nc"))
-          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.rad.", yearlist[j], ".nc"))
-          lon <- ncvar_get(nc, "longitude")
-          lat <- ncvar_get(nc, "latitude")
-          flat=match(abs(lat-x[2])<1/44,1)
-          latindex=which(flat %in% 1)
-          flon=match(abs(lon-x[1])<1/44,1)
-          lonindex=which(flon %in% 1)
-          start <- c(latindex,lonindex,1)
-          count <- c(1, 1, -1)
-          sol <- as.numeric(ncvar_get(nc, varid = "rad",
-                                      start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.tmax.", yearlist[j],
-                               ".nc"))
-          tmax <- as.numeric(ncvar_get(nc, varid = "tmax",
-                                       start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.tmin.", yearlist[j],
-                               ".nc"))
-          tmin <- as.numeric(ncvar_get(nc, varid = "tmin",
-                                       start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.vph09.", yearlist[j],
-                               ".nc"))
-          vph09 <- as.numeric(ncvar_get(nc, varid = "vph09",
-                                        start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.vph15.", yearlist[j],
-                               ".nc"))
-          vph15 <- as.numeric(ncvar_get(nc, varid = "vph15",
-                                        start = start, count))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.rain.", yearlist[j],
-                               ".nc"))
-          Rain <- as.numeric(ncvar_get(nc, varid = "rain",
-                                       start = start, count))
-          nc_close(nc)
-        }else{
-          cat(paste("reading weather input for ", yearlist[j],
-                    " \n", sep = ""))
-          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.rad.", yearlist[j],
-                               ".nc"))
-          sol <- c(sol, as.numeric(ncvar_get(nc, varid = "rad",
-                                             start = start, count)))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.tmax.", yearlist[j],
-                               ".nc"))
-          tmax <- c(tmax, as.numeric(ncvar_get(nc, varid = "tmax",
-                                               start = start, count)))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.tmin.", yearlist[j],
-                               ".nc"))
-          tmin <- c(tmin, as.numeric(ncvar_get(nc, varid = "tmin",
-                                               start = start, count)))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.vph09.", yearlist[j],
-                               ".nc"))
-          vph09 <- c(vph09, as.numeric(ncvar_get(nc, varid = "vph09",
-                                                 start = start, count)))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.vph15.", yearlist[j],
-                               ".nc"))
-          vph15 <- c(vph15, as.numeric(ncvar_get(nc, varid = "vph15",
-                                                 start = start, count)))
-          nc_close(nc)
-          nc <- nc_open(paste0(baseurl, "AGCD.BoM.daily.rain.", yearlist[j],
-                               ".nc"))
-          Rain <- c(Rain, as.numeric(ncvar_get(nc, varid = "rain",
-                                               start = start, count)))
-          nc_close(nc)
+      monstart <- c("0101", "0201", "0301", "0401", "0501", "0601", "0701", "0801", "0901", "1001", "1101", "1201")
+      monfinish <- c("0131.nc","0228.nc","0331.nc","0430.nc","0531.nc","0630.nc","0731.nc","0831.nc","0930.nc","1031.nc","1130.nc","1231.nc")
+      monfinish2 <- c("0131.nc","0229.nc","0331.nc","0430.nc","0531.nc","0630.nc","0731.nc","0831.nc","0930.nc","1031.nc","1130.nc","1231.nc")
+      message("extracting climate data", '\n')
+      baseurl<- "http://rs-data1-mel.csiro.au/thredds/dodsC/bawap/"
+      get_AWAP <- function(year, var){
+        for(i in 1:length(years)){
+          year <- years[i]
+          cat(paste("reading weather input for variable ", var," for year ", year, " \n", sep = ""))
+          for(mm in 1:12){
+            mstart <- monstart[mm]
+            if(year%in%leapyears){
+              mfinish <- monfinish2[mm]
+            }else{
+              mfinish <- monfinish[mm]
+            }
+            nc <- nc_open(paste0(baseurl, var,"/day/",year,"/bom-",var,"_day-",year,mstart,"-",year,mfinish))
+            lon <- ncvar_get(nc, "longitude")
+            lat <- ncvar_get(nc, "latitude")
+            flat=match(abs(lat-x[2])<1/44,1)
+            latindex=which(flat %in% 1)
+            flon=match(abs(lon-x[1])<1/44,1)
+            lonindex=which(flon %in% 1)
+            start <- c(lonindex, latindex, 1)
+            count <- c(1, 1, -1)
+            data_1 <- as.numeric(ncvar_get(nc, varid = paste0(var, "_day"),
+                                           start = start, count))
+            if(mm == 1 & i == 1){
+              data <- data_1
+            }else{
+              data <- c(data, data_1)
+            }
+            nc_close(nc)
+          }
         }
+        return(data)
       }
+      years <- yearlist
+      sol <- get_AWAP(yearlist, "rad")
+      tmax <- get_AWAP(yearlist, "tmax")
+      tmin <- get_AWAP(yearlist, "tmin")
+      vph09 <- get_AWAP(yearlist, "vph09")
+      vph15 <- get_AWAP(yearlist, "vph15")
+      Rain <- get_AWAP(yearlist, "rain")
+
       allclearsky <- leapfix(clearskysum, yearlist)
       allclearsky <- allclearsky[1:ndays]
       # convert from W/d to MJ/d
