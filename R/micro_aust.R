@@ -44,7 +44,7 @@
 #' \code{microclima}{ = 0, Use microclima and elevatr package to adjust solar radiation for terrain? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{manualshade}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
-#' \code{soildata}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
+#' \code{soildata}{ = 0, Extract emissivities from gridded data? 1=yes, 0=no}\cr\cr
 #' \code{terrain}{ = 0, Use 250m resolution terrain data? 1=yes, 0=no}\cr\cr
 #' \code{dailywind}{ = 1, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
@@ -232,7 +232,7 @@
 #'ystart <- 2014
 #'yfinish <- 2015
 #'nyears <- yfinish - ystart + 1
-#'micro<-micro_aust(loc = 'Nyrripi, Northern Territory', ystart = ystart, yfinish = yfinish, opendap = 1, elev = 0, soildata = 0, runshade = 0) # run the model for the middle of the desert in Australia, using opendap
+#'micro<-micro_aust(loc = 'Nyrripi, Northern Territory', ystart = ystart, yfinish = yfinish, opendap = 1, elev = 0, runshade = 0) # run the model for the middle of the desert in Australia, using opendap
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
@@ -317,7 +317,7 @@ micro_aust <- function(
   write_input = 0,
   writecsv = 0,
   manualshade = 1,
-  soildata = 1,
+  soildata = 0,
   terrain = 0,
   dailywind = 1,
   windfac = 1,
@@ -419,6 +419,13 @@ micro_aust <- function(
     require(RODBC)
   }
   if(opendap == 1){
+    if(is.na(elev)){
+      require(microclima)
+      require(raster)
+      cat('downloading DEM via package elevatr \n')
+      dem <- microclima::get_dem(lat = loc[2], long = loc[1]) # mercator equal area projection
+      elev <- extract(dem, loc)[1]
+    }
     require(ncdf4)
     ALTITUDES <- elev
     dbrow <- 1
@@ -930,7 +937,7 @@ micro_aust <- function(
     }
 
     if(opendap == 1){
-      message("extracting climate data", '\n')
+      message("extracting climate data via opendap - note that there is no wind speed data, so the daily range is assumed to be from 0.5 to 2 m/s '\n'")
       monstart <- c("0101", "0201", "0301", "0401", "0501", "0601", "0701", "0801", "0901", "1001", "1101", "1201")
       monfinish <- c("0131.nc","0228.nc","0331.nc","0430.nc","0531.nc","0630.nc","0731.nc","0831.nc","0930.nc","1031.nc","1130.nc","1231.nc")
       monfinish2 <- c("0131.nc","0229.nc","0331.nc","0430.nc","0531.nc","0630.nc","0731.nc","0831.nc","0930.nc","1031.nc","1130.nc","1231.nc")
@@ -1038,10 +1045,10 @@ micro_aust <- function(
       }
     } #end vlsci check
     if(is.na(MAXSHADES[1])){
-    maxshades=rep(maxshade,ndays)
+      maxshades=rep(maxshade,ndays)
     }
     if(is.na(MINSHADES[1])){
-    minshades=rep(minshade,ndays)
+      minshades=rep(minshade,ndays)
     }
     doys<-seq(daystart,ndays,1)
     leapyears<-seq(1900,2060,4)
@@ -1518,12 +1525,12 @@ micro_aust <- function(
           MAXSHADES<-MAXSHADES[1:ndays]
           if(manualshade==1){
             if(is.na(MAXSHADES)){
-            maxshades <- rep(maxshade,ndays)
-            MAXSHADES<-maxshades
+              maxshades <- rep(maxshade,ndays)
+              MAXSHADES<-maxshades
             }
             if(is.na(MINSHADES)){
-            minshades <- rep(minshade,ndays)
-            MINSHADES<-minshades
+              minshades <- rep(minshade,ndays)
+              MINSHADES<-minshades
             }
           }
         }else{
