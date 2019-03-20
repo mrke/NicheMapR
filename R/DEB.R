@@ -643,27 +643,27 @@ DEB<-function(
   }
 
   #mass balance
-  JOJx <- p_A * etaO[1,1] + p_D * etaO[1,2] + p_G * etaO[1,3]
-  JOJv <- p_A * etaO[2,1] + p_D * etaO[2,2] + p_G * etaO[2,3]
-  JOJe <- p_A * etaO[3,1] + p_D * etaO[3,2] + p_G * etaO[3,3]
-  JOJp <- p_A * etaO[4,1] + p_D * etaO[4,2] + p_G * etaO[4,3]
+  JOJx <- p_A * etaO[1,1] + p_D * etaO[1,2] + p_G * etaO[1,3] # molar flux of food (mol/time step)
+  JOJv <- p_A * etaO[2,1] + p_D * etaO[2,2] + p_G * etaO[2,3] # molar flux of reserve (mol/time step)
+  JOJe <- p_A * etaO[3,1] + p_D * etaO[3,2] + p_G * etaO[3,3] # molar flux of structure (mol/time step)
+  JOJp <- p_A * etaO[4,1] + p_D * etaO[4,2] + p_G * etaO[4,3] # molar flux of faeces (mol/time step)
 
-  JOJx_GM <- p_D * etaO[1,2] + p_G * etaO[1,3]
-  JOJv_GM <- p_D * etaO[2,2] + p_G * etaO[2,3]
-  JOJe_GM <- p_D * etaO[3,2] + p_G * etaO[3,3]
-  JOJp_GM <- p_D * etaO[4,2] + p_G * etaO[4,3]
+  JOJx_GM <- p_D * etaO[1,2] + p_G * etaO[1,3] # non-assimilation (i.e. growth and maintenance) molar flux of food (mol/time step)
+  JOJv_GM <- p_D * etaO[2,2] + p_G * etaO[2,3] # non-assimilation (i.e. growth and maintenance) molar flux of reserve (mol/time step)
+  JOJe_GM <- p_D * etaO[3,2] + p_G * etaO[3,3] # non-assimilation (i.e. growth and maintenance) molar flux of structure (mol/time step)
+  JOJp_GM <- p_D * etaO[4,2] + p_G * etaO[4,3] # non-assimilation (i.e. growth and maintenance) molar flux of faeces (mol/time step)
 
-  JMCO2 <- JOJx * JM_JO[1,1] + JOJv * JM_JO[1,2] + JOJe * JM_JO[1,3] + JOJp * JM_JO[1,4]
-  JMH2O <- JOJx * JM_JO[2,1] + JOJv * JM_JO[2,2] + JOJe * JM_JO[2,3] + JOJp * JM_JO[2,4]
-  JMO2 <- JOJx * JM_JO[3,1] + JOJv * JM_JO[3,2] + JOJe * JM_JO[3,3] + JOJp * JM_JO[3,4]
-  JMNWASTE <- JOJx * JM_JO[4,1] + JOJv * JM_JO[4,2] + JOJe * JM_JO[4,3] + JOJp * JM_JO[4,4]
+  JMCO2 <- JOJx * JM_JO[1,1] + JOJv * JM_JO[1,2] + JOJe * JM_JO[1,3] + JOJp * JM_JO[1,4] # molar flux of CO2 (mol/time step)
+  JMH2O <- JOJx * JM_JO[2,1] + JOJv * JM_JO[2,2] + JOJe * JM_JO[2,3] + JOJp * JM_JO[2,4] # molar flux of H2O (mol/time step)
+  JMO2 <- JOJx * JM_JO[3,1] + JOJv * JM_JO[3,2] + JOJe * JM_JO[3,3] + JOJp * JM_JO[3,4] # molar flux of O2 (mol/time step)
+  JMNWASTE <- JOJx * JM_JO[4,1] + JOJv * JM_JO[4,2] + JOJe * JM_JO[4,3] + JOJp * JM_JO[4,4] # molar flux of nitrogenous waste (mol/time step)
 
   JMCO2_GM <- JOJx_GM * JM_JO[1,1] + JOJv_GM * JM_JO[1,2] + JOJe_GM * JM_JO[1,3] + JOJp_GM * JM_JO[1,4]
   JMH2O_GM <- JOJx_GM * JM_JO[2,1] + JOJv_GM * JM_JO[2,2] + JOJe_GM * JM_JO[2,3] + JOJp_GM * JM_JO[2,4]
   JMO2_GM <- JOJx_GM * JM_JO[3,1] + JOJv_GM * JM_JO[3,2] + JOJe_GM * JM_JO[3,3] + JOJp_GM * JM_JO[3,4]
   JMNWASTE_GM <- JOJx_GM * JM_JO[4,1] + JOJv_GM * JM_JO[4,2] + JOJe_GM * JM_JO[4,3] + JOJp_GM * JM_JO[4,4]
 
-  #RQ <- JMCO2/JMO2
+  RQ <- JMCO2/JMO2 # respiratory quotient
 
   O2FLUX <- -1 * JMO2/(T_REF / Tb / 24.4) * 1000 #mlO2/h, temperature corrected (including SDA)
   CO2FLUX <- JMCO2 / (T_REF / Tb / 24.4) * 1000
