@@ -52,7 +52,7 @@
 #' \code{warm}{ = 0, uniform warming, °C}\cr\cr
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 #' \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
-#' \code{opendap}{ = 0, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
+#' \code{opendap}{ = 1, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
 #' \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
 
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
@@ -385,7 +385,7 @@ micro_aust <- function(
   microclima = 0,
   soilgrids = 0,
   IR = 0,
-  opendap = 0,
+  opendap = 1,
   message = 0,
   fail = nyears * 24 * 365,
   snowcond = 0,
