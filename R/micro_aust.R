@@ -1037,10 +1037,10 @@ micro_aust <- function(
         }
       }
     } #end vlsci check
-    if(is.na(MAXSHADES)){
+    if(is.na(MAXSHADES[1])){
     maxshades=rep(maxshade,ndays)
     }
-    if(is.na(MINSHADES)){
+    if(is.na(MINSHADES[1])){
     minshades=rep(minshade,ndays)
     }
     doys<-seq(daystart,ndays,1)
