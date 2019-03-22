@@ -14,9 +14,9 @@ ectotherm(Ww_g, shape, alpha_max, alpha_min, T_F_min, T_F_max, T_B_min, T_RB_min
 
 \item{shape}{= 3, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)}
 
-\item{alpha_max}{= 0.85, Maximum solar absorptivity, decimal percent}
+\item{alpha_max}{= 0.85, Maximum solar absorptivity, 0-1}
 
-\item{alpha_min}{= 0.85, Maximum solar absorptivity, decimal percent}
+\item{alpha_min}{= 0.85, Maximum solar absorptivity, 0-1}
 
 \item{T_F_min}{= 24, Minimum foraging temperature, °C (also affects burrow depth selection)}
 
@@ -28,9 +28,9 @@ ectotherm(Ww_g, shape, alpha_max, alpha_min, T_F_min, T_F_max, T_B_min, T_RB_min
 
 \item{T_pref}{= 30, Preferred body temperature, °C}
 
-\item{CT_max}{= 40, Critical thermal maximum, °C (affects burrow depth selection)}
+\item{CT_max}{= 40, Critical thermal maximum, °C (affects burrow depth selection and may be used to impose death from heat stress)}
 
-\item{CT_min}{= 6, Critical thermal minimum, °C (affects burrow depth selection)}
+\item{CT_min}{= 6, Critical thermal minimum, °C (affects burrow depth selection and may be used to impose death from cold stress)}
 
 \item{diurn}{= 1, Diurnal activity allowed?  1=yes, 0=no}
 
@@ -50,7 +50,7 @@ ectotherm(Ww_g, shape, alpha_max, alpha_min, T_F_min, T_F_max, T_B_min, T_RB_min
 
 \item{maxdepth}{= 10, Maximum depth (soil node #) to which animal can retreat if burrowing}
 
-\item{M_1}{= 0.013, Metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb) based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231}
+\item{M_1}{= 0.013, Metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb), default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231}
 
 \item{M_2}{= 0.800, Metabolic rate parameter 2}
 
@@ -77,24 +77,23 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \details{
 \strong{ Parameters controling how the model runs:}
 \itemize{
-\item{\code{microin}{ = "none", Directory where precomputed microclimate outputs (.csv files) are saved - if "none", assumes results are in list 'micro'}\cr}
 \item{\code{nyears}{ = micro$nyears, Number of years the simulation runs for - must be consistent with dimensions of environmental input data}\cr}
-\item{\code{ystrt}{ = 0, Year of the simulation to start at - will loop back over earlier periods at the end, useful for exploring cohort effects when running a life cycle with the DEB model}\cr}
 \item{\code{enberr}{ = 0.0002, Factor by which the mass is multiplied to obtain a tolerance level for the heat budget solution}\cr}
-\item{\code{live=}{ = 1, Live (metabolism/behaviour) or dead animal?}\cr}
+\item{\code{live}{ = 1, Live (metabolism/behaviour) or dead animal?}\cr}
 \item{\code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1 = yes, 0 = no}\cr}
-\item{\code{write_csv}{ = 0, Write csv files of final output? 0 = no, 1= just yearout and yearsout, 2 = all output}\cr}
-\item{\code{startday}{ = 1, day of year at which simulation starts}\cr}
+\item{\code{write_csv}{ = 0, Write csv files of final output? 0 = no, 1 = just yearout and yearsout, 2 = all output}\cr}
+\item{\code{startday}{ = 1, Day of year at which simulation starts}\cr}
 }
 \strong{ Environmental inputs:}
 
 \itemize{
-\item{\code{minshade}{ = 0., Minimum shade (\%) available to the animal}\cr}
-\item{\code{maxshades}{ = micro$MAXSHADES, Vector of daily maximum shade values}\cr}
-\item{\code{fluid}{ = 0.0, Fluid type 0=air, 1=water }\cr}
+\item{\code{minshade}{ = 0, Minimum shade (\%) available to the animal}\cr}
+\item{\code{minshades}{ = rep(minshade,length(micro$MAXSHADES), Vector of daily minimum shade values (\%)}\cr}
+\item{\code{maxshades}{ = micro$MAXSHADES, Vector of daily maximum shade values (\%)}\cr}
+\item{\code{fluid}{ = 0, Fluid type 0=air, 1=water }\cr}
 \item{\code{k_sub}{ = 2.79, Substrate thermal conductivity (W/mC)}\cr}
-\item{\code{REFL}{ = micro$REFL, Vector of daily substrate reflectances (\%)}\cr}
-\item{\code{DEP}{ = micro$DEP,}\cr}
+\item{\code{alpha_sub}{ = 1 - micro$REFL, Vector of daily substrate reflectances (0-1)}\cr}
+\item{\code{DEP}{ = micro$DEP, Depths available from the microclimate model simulation}\cr}
 \item{\code{metout}{ = micro$metout, Microclimate model output for above ground, minimum shade conditions}\cr}
 \item{\code{shadmet}{ = micro$shadmet, Microclimate model output for above ground, maximum shade conditions}\cr}
 \item{\code{soil}{ = micro$soil, Microclimate model output for soil temperature, minimum shade conditions}\cr}
@@ -105,8 +104,10 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{shadhumid}{ = micro$shadhumid, Microclimate model output for soil humidity, maximum shade conditions}\cr}
 \item{\code{soilpot}{ = micro$soilpot, Microclimate model output for soil water potential, minimum shade conditions}\cr}
 \item{\code{shadpot}{ = micro$shadpot, Microclimate model output for soil water potential, maximum shade conditions}\cr}
-\item{\code{rainfall}{ = micro$RAINFALL, Vector of daily rainfall}\cr}
-\item{\code{ectoin}{ = rbind(as.numeric(micro$elev),as.numeric(micro$REFL)[1],micro$longlat[1],micro$longlat[2]), Other items needed by the model - this needs to be tidied up}\cr}
+\item{\code{rainfall}{ = micro$RAINFALL, Vector of daily rainfall (mm)}\cr}
+\item{\code{elev}{ = as.numeric(micro$elev), Elevation of simulation (m), obtained from microclimate model output by default}\cr}
+\item{\code{longitude}{ = micro$longlat[1], Longitude (decimal degrees), obtained from microclimate model output by default}\cr}
+\item{\code{latitude}{ = micro$longlat[2], Latitude (decimal degrees), obtained from microclimate model output by default}\cr}
 }
 \strong{ Morphological parameters:}
 
@@ -115,8 +116,8 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{shape_a}{ = 1, Proportionality factor (-) for going from volume to area, keep this 1 (redundant parameter that should be removed)}\cr}
 \item{\code{shape_b}{ = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid }\cr}
 \item{\code{shape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
-\item{\code{FATOSK}{ = 0.4, Configuration factor to sky (-) for infrared calculations}\cr}
-\item{\code{FATOSB}{ = 0.4, Configuration factor to subsrate for infrared calculations}\cr}
+\item{\code{fatosk}{ = 0.4, Configuration factor to sky (-) for infrared calculations}\cr}
+\item{\code{fatosb}{ = 0.4, Configuration factor to subsrate for infrared calculations}\cr}
 \item{\code{rinsul}{ = 0, Insulative fat layer thickness (m)}\cr}
 \item{\code{F_cond}{ = 0.25, Fraction of surface contacting the substrate}\cr}
 \item{\code{c_body}{ = 3073, Specific heat of flesh J/(kg-K)}\cr}
@@ -128,7 +129,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 
 \itemize{
 \item{\code{warmsig}{ = 0, Warming signal for emergence? 1=yes, 0=no (if in burrow deeper than node 2, 0.1 degree sensitivity)}\cr}
-\item{\code{fossorial}{ = 0, Fossorial activity? 1=yes, 0=no (this option hasn't been tested)}\cr}
+\item{\code{fossorial}{ = 0, Fossorial activity? 1=yes, 0=no (this option hasn't been properly implemented)}\cr}
 \item{\code{rainact}{ = 0, Activity is limited by rainfall? 1=yes, 0=no, threshold rainfall for activity set by \code{actrainthresh}}\cr}
 \item{\code{actrainthresh}{ = 0.1, Threshold (mm) of rain causing activity if \code{rainact}=1}\cr}
 \item{\code{soilnode}{ = 4, Soil node (1-10, corresponding to values in \code{DEP}) at which eggs are laid (overridden if \code{amphibreed}=1)}\cr}
@@ -150,13 +151,14 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{pct_H_R}{ = 15, Minimum tolerated dehydration (\% of wet mass) - prohibits foraging if greater than this}\cr}
 \item{\code{pct_H_death}{ = 35, Maximum tolerated dehydration (\% of wet mass) - causes death if greater than this}\cr}
 \item{\code{gutfill}{ = 75, Gut fill (\%) at which satiation occurs - if greater than 100\%, animal always tries to forage}\cr}
-\item{\code{raindrink}{ = 0, rainfall level at which rehydration from drinking occurs - if 0 animal can always drink}\cr}
-\item{\code{foodlim}{ = 1, is the animal food limited - if 0 animal can always find food (useful for making different life stages dependent on soil moisture-based food estimates}\cr}
+\item{\code{raindrink}{ = 0, Rainfall level at which rehydration from drinking occurs - if 0 animal can always drink}\cr}
+\item{\code{foodlim}{ = 1, Is the animal food limited - if 0 animal can always find food (useful for making different life stages dependent on soil moisture-based food estimates}\cr}
 }
 \strong{ Dynamic Energy Budget (DEB) model parameters:}
 \itemize{
 \item{\code{DEB}{ = 0, Run the DEB model (1) or just heat balance (0). Latter uses allometrically predicted respiration base on \code{M_1}, \code{M_2} and \code{M_3}}\cr}
 \item{\code{intmethod}{ = 1, Use Euler (0) or DOPRI (1) method for integrating non-insect DEB model. Latter will be more accurate but slower}\cr}
+\item{\code{metab_mode}{ = 0, Run insect model? 0 = no, 1 = hemimetabolus model (abp DEB model), 2 = holometabolous model (hex DEB model)}\cr}
 \item{\code{z_mult}{ = 1, Scaling factor for DEB body-size covariation relationships - use it to make a metabolically scaled larger or smaller version of your animal}\cr}
 }
 \strong{ Core DEB parameters:}
@@ -164,20 +166,20 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{z}{ = 2.825*z_mult, Zoom factor (cm)}\cr}
 \item{\code{del_M}{ =  0.2144, Shape coefficient (-)}\cr}
 \item{\code{F_m}{ = 12420, Surface area-specific maximum feeding rate J/cm2/h}\cr}
-\item{\code{kap_X}{ = 0.85, Digestive efficiency (decimal \%)}\cr}
+\item{\code{kap_X}{ = 0.85, Digestive efficiency (0-1)}\cr}
 \item{\code{v}{ = 0.02795/24, Energy conductance (cm/h)}\cr}
-\item{\code{kap}{ = 0.8206, fraction of mobilised reserve allocated to soma}\cr}
+\item{\code{kap}{ = 0.8206, Fraction of mobilised reserve allocated to soma}\cr}
 \item{\code{p_M}{ = 48.81/24, Volume-specific somatic maintenance (J/cm3/h)}\cr}
-\item{\code{E_G}{ = 7512, Cost of structure (J/cm3)}\cr}
+\item{\code{E_G}{ = 7512, Cost of structure, including overheads (J/cm3)}\cr}
 \item{\code{kap_R}{ = 0.95, Fraction of reproduction energy fixed in eggs}\cr}
 \item{\code{k_J}{ = 0.006498/24, Maturity maintenance rate coefficient (1/h)}\cr}
 \item{\code{E_Hb}{ = 866.6*z_mult^3, Maturity at birth (J)}\cr}
 \item{\code{E_Hj}{ = E_Hb*z_mult^3, Maturity at metamorphosis (if different to E_Hb, triggers metabolic acceleration) (J)}\cr}
 \item{\code{E_Hp}{ = 1.019e+04*z.mult^3, Maturity at puberty}\cr}
-\item{\code{E_He}{ = E_He*z_mult^3, Maturity at eclosion (J)}\cr}
+\item{\code{E_He}{ = E_He*z_mult^3, Maturity at eclosion (J) (relevant only for holometabolous model)}\cr}
 \item{\code{h_a}{ = 1.051e-08*z_mult/(24^2), Weibull ageing acceleration (1/h2)}\cr}
 \item{\code{s_G}{ = 0.01, Gompertz stress coefficient (-)}\cr}
-\item{\code{E_0}{ = 9220*z_mult^4, Energy content of the egg (derived from core parameters) (J)}\cr}
+\item{\code{E_0}{ = 9220*z_mult^4, Energy content of the egg (derived from core parameters via backwards integation from birth to time zero) (J)}\cr}
 }
 \strong{ Thermal DEB parameters:}
 \itemize{
@@ -185,26 +187,26 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{T_A}{ = 8817 Arhhenius temperature}\cr}
 \item{\code{T_AL}{ = 50000, Arrhenius temperature for decrease below lower boundary of tolerance range \code{T_L}}\cr}
 \item{\code{T_AH}{ = 90000, Arrhenius temperature for decrease above upper boundary of tolerance range \code{T_H}}\cr}
-\item{\code{T_L}{ = 279, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
-\item{\code{T_H}{ = 306, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
+\item{\code{T_L}{ = 6 + 273.15, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
+\item{\code{T_H}{ = 33 + 273.15, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
 }
 \strong{ Compound/derived DEB parameters:}
 \itemize{
-\item{\code{E_m}{ = (p_M*z/kap)/v, Maximum reserve density (J/cm3)}\cr}
+\item{\code{E_m}{ = (p_M * z / kap) / v, Maximum reserve density (J/cm3)}\cr}
 }
 \strong{ Food-related axilliary DEB parameters:}
 \itemize{
 \item{\code{f}{ = 1, functional response (-), usually kept at 1 because gut model controls food availability such that f=0 when gut empty}\cr}
-\item{\code{E_sm}{ = 350, Maximum volume-specific energy density of stomach (J/cm3)}\cr}
+\item{\code{E_sm}{ = 350, Maximum structure-specific energy density of stomach (J/cm3)}\cr}
 \item{\code{K}{ = 1, Half saturation constant (J/cm2)}\cr}
 \item{\code{X}{ = 10, Food density (J/cm2)}\cr}
 }
 \strong{ Composition-related axilliary DEB parameters:}
 \itemize{
 \item{\code{rho_body_deb}{ = rho_body/1000, Animal density (g/cm3)}\cr}
-\item{\code{d_V}{ = 0.3, Dry mass fraction of structure}\cr}
-\item{\code{d_E}{ = 0.3, Dry mass fraction of reserve}\cr}
-\item{\code{d_Egg}{ = 0.3, Dry mass fraction of egg}\cr}
+\item{\code{d_V}{ = 0.3, Dry mass fraction of structure (0-1)}\cr}
+\item{\code{d_E}{ = 0.3, Dry mass fraction of reserve (0-1)}\cr}
+\item{\code{d_Egg}{ = 0.3, Dry mass fraction of egg (0-1)}\cr}
 \item{\code{mu_X}{ = 525000, Molar Gibbs energy (chemical potential) of food (J/mol)}\cr}
 \item{\code{mu_E}{ = 585000, Molar Gibbs energy (chemical potential) of reserve (J/mol)}\cr}
 \item{\code{mu_V}{ = 500000, Molar Gibbs energy (chemical potential) of structure (J/mol)}\cr}
@@ -216,12 +218,11 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{n_P}{ = c(1, 1.8, 0.5, 0.15), chem. indices of C, O, H and N in faeces}\cr}
 \item{\code{n_M_nitro}{ = c(1, 4/5, 3/5, 4/5), chem. indices of C, O, H and N in nitrogenous waste}\cr}
 }
-\strong{ Insect/metabolic acceleratoin DEB model parameters:}
+\strong{ Holometabolous insect DEB model parameters:}
 \itemize{
-\item{\code{metab_mode}{ = 0, Run insect model? 0 = no, 1 = hemimetabolus model (to do), 2 = holometabolous model}\cr}
 \item{\code{stages}{ = 8, number of stages = number of instars plus 1 for egg + 1 for pupa + 1 for imago}\cr}
 \item{\code{y_EV_l}{ = 0.95, yield of imago reserve on larval structure (mol/mol)}\cr}
-\item{\code{S_instar}{ = rep(2.660, stages-4), stress at instar n: L_n^2/ L_n-1^2 (-)}\cr}
+\item{\code{S_instar}{ = rep(2.660, stages), stress at instar n: L_n^2/ L_n-1^2 (-)}\cr}
 \item{\code{s_j}{ = 0.999, Reprod buffer/structure ratio at pupation as fraction of max}\cr}
 \item{\code{L_b}{ = 0.06148, Structural length at birth (cm)}\cr}
 }
@@ -230,12 +231,12 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{V_init}{ = 3e-9, Initial structural volume (cm3)}\cr}
 \item{\code{E_init}{ = E_0/V_init, Initial reserve density (J/cm3)}\cr}
 \item{\code{E_H_init}{ = 0, Initial maturity (J)}\cr}
-\item{\code{stage}{ = 0, Initial stage (0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction)}\cr}
+\item{\code{stage}{ = 0, Initial stage (STD model: 0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction, Insect models: 0=embryo, 1-(stages-1)=instar, with pupa as penultimate, stages=adult}\cr}
 }
 \strong{ Metabolic depression parameters:}
 \itemize{
 \item{\code{aestivate}{ = 0, Does the animal aestivate/go into torpor? 1=yes, 0=no}\cr}
-\item{\code{depress}{ = 0.3, Fraction by which \code{p_M}, \code{k_J} and \code{v} are reduced during torpor}\cr}
+\item{\code{depress}{ = 1, Fraction by which \code{p_M}, \code{k_J} and \code{v} are reduced during torpor}\cr}
 }
 \strong{ Reproductive phenology model parameters:}
 \itemize{
@@ -253,7 +254,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{amphibreed}{ = 0, Amphibious animal breeding mode: 0 is off, 1 is exotrophic aquatic (eggs start when water present in container and within breeding season), 2 is exotrophic terrestrial/aquatic (eggs start at specified soil node within breeding season, diapause at birth threshold, start larval phase if water present in container), 3 endotrophic terrestrial (eggs start at specified soil node within breeding season and continue to metamorphosis on land), 4 turtle mode (eggs start at specified soil node within breeding season, hatch and animals enter water and stay there for the rest of their life, but leave the water if no water is present)}\cr}
 \item{\code{amphistage}{ = 0, Life cycle control for amphibious animal: 0 is whole life cycle, 1 is just to metamorphosis (then reset and start again)}\cr}
 \item{\code{reset}{ = 0, Life cycle reset options, 0=quit simulation upon death, 1=restart at emergence, 2=restart at first egg laid, 3=restart at end of breeding season, 4=reset at death}\cr}
-\item{\code{act_breed}{ = 1, Threshold numbers of hours active after start of breeding season before eggs can be laid (simulating movement to the breeding site)}\cr}
+\item{\code{act_breed}{ = 0, Threshold numbers of hours active after start of breeding season before eggs can be laid (simulating movement to the breeding site)}\cr}
 \item{\code{rain_breed}{ = 0, Rain dependent breeder? 0 means no, otherwise enter rainfall threshold in mm}\cr}
 \item{\code{Tb_breed}{ = 200, Body temperature threshold below which breeding will occur}\cr}
 \item{\code{Tb_breed_hrs}{ = 24*7, Cumulative time below temperature threshold for breeding, hrs \code{Tb_breed} that will trigger breeding}\cr}
@@ -264,7 +265,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{m_i}{ = 0, Hourly inactive mortality rate (probability of mortality per hour)}\cr}
 \item{\code{m_h}{ = 0.5, Survivorship of hatchling in first year}\cr}
 }
-\strong{ Water body model parameters:}
+\strong{ Water body model parameters (not ready yet):}
 \itemize{
 \item{\code{container}{ = 0, Run the water body/container model? (aquatic start of life cycle, e.g. frog or mosquito)}\cr}
 \item{\code{wetmod}{ = 0, Use precomputed wetland temperature \code{wetlandTemps} and depths \code{wetlandDepthds}?}\cr}
@@ -276,13 +277,13 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{conthole}{ = 0, Daily loss of height (mm) due to 'hole' in container (e.g. infiltration to soil, drawdown from water tank)}\cr}
 \item{\code{contonly}{ = 1, Just run the container model and quit?}\cr}
 \item{\code{contwet}{ = 80, \% of container surface acting as a free water exchanger}\cr}
-\item{\code{wetlandTemps}{ = matrix(data = 0, nrow = 24*ndays, ncol = 1), Matrix of hourly wetland temperaures (°C)}\cr}
-\item{\code{wetlandDepths}{ = matrix(data = 0, nrow = 24*ndays, ncol = 1), Matrix of hourly wetland depths (cm)}\cr}
-\item{\code{GLMtemps}{ = matrix(data = 0, nrow = 24*ndays, ncol = 20), Matrix of hourly wetland temperatures (C) with depth}\cr}
-\item{\code{GLMO2s}{ = matrix(data = 0, nrow = 24*ndays, ncol = 20), Matrix of hourly wetland PO2 (kPa) with depth}\cr}
-\item{\code{GLMsalts}{ = matrix(data = 0, nrow = 24*ndays, ncol = 20), Matrix of hourly wetland salinity (ppm) with depth}\cr}
-\item{\code{GLMpHs}{ = matrix(data = 0, nrow = 24*ndays, ncol = 20), Matrix of hourly wetland pH with depth}\cr}
-\item{\code{GLMfoods}{ = matrix(data = 0, nrow = 24*ndays, ncol = 20), Matrix of hourly wetland food density (J/cm3) with depth}\cr}
+\item{\code{wetlandTemps}{ = matrix(data = 0, nrow = 24 * ndays, ncol = 1), Matrix of hourly wetland temperaures (°C)}\cr}
+\item{\code{wetlandDepths}{ = matrix(data = 0, nrow = 24 * ndays, ncol = 1), Matrix of hourly wetland depths (cm)}\cr}
+\item{\code{GLMtemps}{ = matrix(data = 0, nrow = 24 * ndays, ncol = 20), Matrix of hourly wetland temperatures (C) with depth}\cr}
+\item{\code{GLMO2s}{ = matrix(data = 0, nrow = 24 * ndays, ncol = 20), Matrix of hourly wetland PO2 (kPa) with depth}\cr}
+\item{\code{GLMsalts}{ = matrix(data = 0, nrow = 24 * ndays, ncol = 20), Matrix of hourly wetland salinity (ppm) with depth}\cr}
+\item{\code{GLMpHs}{ = matrix(data = 0, nrow = 24 * ndays, ncol = 20), Matrix of hourly wetland pH with depth}\cr}
+\item{\code{GLMfoods}{ = matrix(data = 0, nrow = 24 * ndays, ncol = 20), Matrix of hourly wetland food density (J/cm3) with depth}\cr}
 \item{\code{pO2thresh}{ = 10, Oxygen partial pressure tolerance threshold}\cr}
 }
 \strong{ Life stage-specific parameter allocation:}
@@ -296,8 +297,8 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \strong{ Butterfly model parameters (not yet tested):}
 \itemize{
 \item{\code{wings}{ = 0, Turn wing model on? 1=yes, 0=no}\cr}
-\item{\code{rho1_3}{ = 0.2, Wing reflectance (dec \%)}\cr}
-\item{\code{trans1}{ = 0.00, Wing transmissivity (dec \%)}\cr}
+\item{\code{rho1_3}{ = 0.2, Wing reflectance (0-1)}\cr}
+\item{\code{trans1}{ = 0.00, Wing transmissivity (0-1)}\cr}
 \item{\code{aref}{ = 0.26, Width of surface #2 (cm) (back or horizontal or reference surface)}\cr}
 \item{\code{bref}{ = 2.04, Common length (cm) where the two rectangles join}\cr}
 \item{\code{cref}{ = 1.47, Width of surface #1 (cm) (wing)}\cr}
@@ -312,210 +313,197 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 
 environ variables:
 \itemize{
-\item 1 DOY - day of year
-\item 2 YEAR - year of simulation
-\item 3 DAY - day of simulation
-\item 4 TIME - time of day (hours)
-\item 5 TC - body temperature (°C)
-\item 6 SHADE - shade selected (\%)
-\item 7 SOLAR  - solar radiation (W/m2) at animal location
-\item 8 DEP - depth below ground (cm)
-\item 9 ACT - activity state (0=inactive, 1=basking, 2=foraging)
-\item 10 TA - air temperature (°C) at animal location
-\item 11 VEL - wind speed (m/s) at animal location
-\item 12 RELHUM - relative humidity (\%) at animal location
-\item 13 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
-\item 14 CONDEP - depth of water body (cm) (may not be simulated or supplied)
-\item 15 WATERTEMP - temperature of water body (°C) (may not be simulated or supplied)
-\item 16 DAYLENGTH - day length (hours)
-\item 17 WINGANGLE - wing angle (degrees) for butterfly model
-\item 18 WINGTEMP - wing temperature (°C) for butterfly model
-\item 19 FLYING - flying state (1=flying, 0=not flying) for butterfly model
-\item 20 FLYTIME - flying time (hours) for butterfly model
+\item 1 DOY - Day of year
+\item 2 YEAR - Year of simulation
+\item 3 DAY - Day of simulation
+\item 4 TIME - Time of day (hours)
+\item 5 TC - Body temperature (°C)
+\item 6 SHADE - Shade selected (\%)
+\item 7 SOLAR  - Solar radiation (W/m2) at animal location
+\item 8 DEP - Depth below ground (cm)
+\item 9 ACT - Activity state (0=inactive, 1=basking, 2=foraging)
+\item 10 TA - Air temperature (°C) at animal location
+\item 11 VEL - Wind speed (m/s) at animal location
+\item 12 RELHUM - Relative humidity (\%) at animal location
+\item 13 ZEN - Zenith angle of sun (degrees - 90 = below the horizon)
+\item 14 CONDEP - Depth of water body (cm) (may not be simulated or supplied)
+\item 15 WATERTEMP - Temperature of water body (°C) (may not be simulated or supplied)
+\item 16 DAYLENGTH - Day length (hours)
+\item 17 WINGANGLE - Wing angle (degrees) for butterfly model
+\item 18 WINGTEMP - Wing temperature (°C) for butterfly model
+\item 19 FLYING - Flying state (1=flying, 0=not flying) for butterfly model
+\item 20 FLYTIME - Flying time (hours) for butterfly model
 }
 enbal variables:
 \itemize{
-\item 1 DOY - day of year
-\item 2 YEAR - year of simulation
-\item 3 DAY - day of simulation
-\item 4 TIME - time of day (hours)
-\item 5 QSOL - solar radiation absorbed (W)
-\item 6 QIRIN - infrared radiation absorbed (W)
-\item 7 QMET - metabolic heat production (W)
-\item 8 QEVAP - evaporative heat loss (W)
-\item 9 QIROUT - infrared radiation lost (W)
-\item 10 QCONV - heat lost by convection (W)
-\item 11 QCOND - heat lost by conduction (W)
-\item 12 ENB - energy balance (W)
-\item 13 NTRY - iterations required for solution to heat balance equation
+\item 1 DOY - Day of year
+\item 2 YEAR - Year of simulation
+\item 3 DAY - Day of simulation
+\item 4 TIME - Time of day (hours)
+\item 5 QSOL - Solar radiation absorbed (W)
+\item 6 QIRIN - Infrared radiation absorbed (W)
+\item 7 QMET - Metabolic heat production (W)
+\item 8 QEVAP - Evaporative heat loss (W)
+\item 9 QIROUT - Infrared radiation lost (W)
+\item 10 QCONV - Heat lost by convection (W)
+\item 11 QCOND - Heat lost by conduction (W)
+\item 12 ENB - Energy balance (W)
+\item 13 NTRY - Iterations that were required for solution to heat balance equation
 }
 masbal variables:
 \itemize{
-\item 1 DOY - day of year
-\item 2 YEAR - year of simulation
-\item 3 DAY - day of simulation
-\item 4 TIME - time of day (hours)
-\item 5 O2_ml - oxygen consumption rate (ml/h)
-\item 6 CO2_ml - carbon dioxide production rate (ml/h)
-\item 7 NWASTE_g - nitrogenous waste production (g/h)
-\item 8 H2OFree_g - water from food (g/h)
-\item 9 H2OMet_g - metabolic water production (g/h)
-\item 10 DryFood_g - dry food intake (g/h)
-\item 11 WetFood_g - wet foood intake (g/h)
-\item 12 DryFaeces_g - dry faeces production (g/h)
-\item 13 WetFaeces_G - wet faeces production (g/h)
-\item 14 Urine_g - urine production (g/h)
-\item 15 H2OResp_g - respiratory water loss (g/h)
-\item 16 H2OCut_g - cutaneous water loss (g/h)
-\item 17 H2OEye_g - ocular water loss (g/h)
-\item 18 H2OBal_g - instantaneous water balance (g/h)
-\item 19 H2OCumBal_g - cumulative water balance (g)
+\item 1 DOY - Day of year
+\item 2 YEAR - Year of simulation
+\item 3 DAY - Day of simulation
+\item 4 TIME - Time of day (hours)
+\item 5 O2_ml - Oxygen consumption rate (ml/h)
+\item 6 CO2_ml - Carbon dioxide production rate (ml/h)
+\item 7 NWASTE_g - Nitrogenous waste production (g/h)
+\item 8 H2OFree_g - Water from food (g/h)
+\item 9 H2OMet_g - Metabolic water production (g/h)
+\item 10 DryFood_g - Dry food intake (g/h)
+\item 11 WetFood_g - Wet foood intake (g/h)
+\item 12 DryFaeces_g - Dry faeces production (g/h)
+\item 13 WetFaeces_G - Wet faeces production (g/h)
+\item 14 Urine_g - Urine production (g/h)
+\item 15 H2OResp_g - Respiratory water loss (g/h)
+\item 16 H2OCut_g - Cutaneous water loss (g/h)
+\item 17 H2OEye_g - Ocular water loss (g/h)
+\item 18 H2OBal_g - Instantaneous water balance (g/h)
+\item 19 H2OCumBal_g - Cumulative water balance (g)
 }
 debout variables:
 \itemize{
-\item 1 DOY - day of year
-\item 2 YEAR - year of simulation
-\item 3 DAY - day of simulation
-\item 4 TIME - time of day (hours)
-\item 5 WETMASS - wet mass (g)
-\item 6 E - reserve density (J/cm3)
-\item 7 CUMREPRO - energy in reproduction buffer (J)
-\item 8 HS - hazard rate (1/h)
-\item 9 MASS_GUT - wet gut contents (g)
-\item 10 SVL - length (mm) (might be Snout Vent Length but depends on choice of length measure for DEB paramter fitting)
-\item 11 V - structural volume (cm3)
-\item 12 E_H - maturity state (J)
-\item 13 CUMBATCH - energy in batch for egg production (J)
-\item 14 V_baby - structure of baby (cm3) (only if viviparous and pregnant)
-\item 15 E_baby - reserve density of baby (J/cm3) (only if viviparous and pregnant)
-\item 16 Pregnant - pregnant? (only if viviparous) (0 or 1)
-\item 17 Stage - life cycle stage (0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction)
-\item 18 WETMASS_STD - wet mass (g) excluding stomach contents
-\item 19 Body_cond - \% desiccated
-\item 20 Surviv_Prob - survival probability due to joint influence of ageing and mortality rates
-\item 21 Breeding - breeding state (1=breeding, 0=not breeding)
+\item 1 DOY - Day of year
+\item 2 YEAR - Year of simulation
+\item 3 DAY - Day of simulation
+\item 4 TIME - Time of day (hours)
+\item 5 Stage - Life cycle stage (0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction)
+\item 6 V - Structural volume (cm3)
+\item 7 E - Reserve density (J/cm3)
+\item 8 E_H - Maturity state (J)
+\item 9 LENGTH - Physical length (mm) (what this represents depends on choice of length measure for DEB paramter fitting, e.g. snout-vent length, head length, etc.)
+\item 10 WETMASS - Wet mass total (reserve, structure, reproduction buffer, stomach contents) (g)
+\item 11 WETGONAD - Wet mass of gonad (batch and reproduction buffers) (g)
+\item 12 WETGUT - Wet mass of food in gut (g)
+\item 13 PCT_DESIC - \% desiccated
+\item 14 CUMREPRO - Energy in reproduction buffer (J)
+\item 15 CUMBATCH - Energy in batch for egg production (J)
+\item 16 BREEDING - Breeding state (1=breeding, 0=not breeding)
+\item 17 PREGNANT - Pregnant? (only if viviparous) (0 or 1)
+\item 18 V_BABY - Structure of baby (cm3) (only if viviparous and pregnant)
+\item 19 E_BABY - Reserve density of baby (J/cm3) (only if viviparous and pregnant)
+\item 20 H_S - Hazard rate (1/h)
+\item 21 P_SURV - Survival probability due to joint influence of ageing and mortality rates
 }
 yearout variables:
 \itemize{
-\item 1 DEVTIME - development time (days)
-\item 2 BIRTHDAY - birth day (day of year)
-\item 3 BIRTHMASS - mass at birth (g)
-\item 4 MONMATURE - months to maturity
-\item 5 SVLREPRO - length (mm) at first reproduction
-\item 6 FECUNDITY  - total fecundity
-\item 7 CLUTCHES - total clutches
-\item 8 MINRESERVE - minimum reserve density (J/cm3)
-\item 9 LASTFOOD - food in last year (kg)
-\item 10 TOTFOOD - total food eaten (kg)
-\item 11 MINTB - minimum body temperature (°C)
-\item 12 MAXTB - maxmium body temperature (°C)
-\item 13 Pct_Dess - maximum level of desiccation (/%)
-\item 14 LifeSpan - maximum life span (days)
-\item 15 GenTime - generation time (years)
-\item 16 R0 - net reproductive rate
-\item 17 rmax - intrinsic rate of increase
-\item 18 SVL - maximum length (mm)
+\item 1 DEVTIME - Development time (days)
+\item 2 BIRTHDAY - Birth day (day of year)
+\item 3 BIRTHMASS - Mass at birth (g)
+\item 4 MONMATURE - Months to maturity
+\item 5 LENREPRO - Length (mm) at first reproduction
+\item 6 FECUNDITY  - Total fecundity
+\item 7 CLUTCHES - Total clutches
+\item 8 MINRESERVE - Minimum reserve density (J/cm3)
+\item 9 LASTFOOD - Food in last year (kg)
+\item 10 TOTFOOD - Total food eaten (kg)
+\item 11 MINTB - Minimum body temperature (°C)
+\item 12 MAXTB - Maxmium body temperature (°C)
+\item 13 Pct_Dess - Maximum level of desiccation (/%)
+\item 14 LifeSpan - Maximum life span (days)
+\item 15 GenTime - Generation time (years)
+\item 16 R0 - Net reproductive rate
+\item 17 rmax - Intrinsic rate of increase
+\item 18 LENGTH - Maximum length (mm)
 }
+
 yearsout variables:
 \itemize{
-\item 1 YEAR - year of simulation
-\item 2 MaxStg - maximum stage reached in the year
-\item 3 MaxWgt - maximum weight reached in the year (g)
-\item 4 MaxLen - maximum length in the year (mm)
-\item 5 Tmax - maximum annual body temperature (°C)
-\item 6 Tmin  - minimum annual body temperature (°C)
-\item 7 MinRes - minimum annual reserve density (J/cm3)
-\item 8 MaxDes - maximum annual desiccation level (% of normal wet body mass)
-\item 9 MinShade - minimum annual shade selected
-\item 10 MaxShade - maximum annual shade selected
-\item 11 MinDep - minimum annual depth selected (cm)
-\item 12 MaxDep - maximum annual depth selected (cm)
-\item 13 Bsk - annual basking hours
-\item 14 Forage - annual foraging hours
-\item 15 Dist - annual distance travelled (km)
-\item 16 Food - annual food eaten (g)
-\item 17 Drink - annual water drunk (g)
-\item 18 NWaste - annual nitrogenous waste (g)
-\item 19 O2 - annual O2 production (ml)
-\item 20 Clutch - annual clutches (#)
-\item 21 Fec - annual fecundity (#)
-\item 22 CauseDeath - cause of death, 0=no death, 1=cold, 2=heat, 3=desiccation, 4=starvation, 5=ageing
-\item 23 tLay - day of year at which eggs laid
-\item 24 tEgg - day of year entering egg stage
-\item 25 tStg1 - day of year entering life cycle stage 1
-\item 26 tStg2 - day of year entering life cycle stage 2
-\item 27 tStg3 - day of year entering life cycle stage 3
-\item 28 tStg4 - day of year entering life cycle stage 4
-\item 29 tStg5 - day of year entering life cycle stage 5
-\item 30 tStg6 - day of year entering life cycle stage 6
-\item 31 tStg7 - day of year entering life cycle stage 7
-\item 32 tStg8 - day of year entering life cycle stage 8
-\item 33 mStg1 - mass entering life cycle stage 1 (g)
-\item 34 mStg2 - mass entering life cycle stage 2 (g)
-\item 35 mStg3 - mass entering life cycle stage 3 (g)
-\item 36 mStg4 - mass entering life cycle stage 4 (g)
-\item 37 mStg5 - mass entering life cycle stage 5 (g)
-\item 38 mStg6 - mass entering life cycle stage 6 (g)
-\item 39 mStg7 - mass entering life cycle stage 7 (g)
-\item 40 mStg8 - mass entering life cycle stage 8 (g)
-\item 41 surviv - survival probability at end of given year
-\item 42 ovip_surviv - breeding state (1=breeding, 0=not breeding)
-\item 43 fitness - fecundity by survival probability at end of given year
-\item 44 deathstage - life stage at which death occurred
+\item 1 YEAR - Year of simulation
+\item 2 MaxStg - Maximum stage reached in the year
+\item 3 MaxWgt - Maximum weight reached in the year (g)
+\item 4 MaxLen - Maximum length in the year (mm)
+\item 5 Tmax - Maximum annual body temperature (°C)
+\item 6 Tmin  - Minimum annual body temperature (°C)
+\item 7 MinRes - Minimum annual reserve density (J/cm3)
+\item 8 MaxDes - Maximum annual desiccation level (% of normal wet body mass)
+\item 9 MinShade - Minimum annual shade selected
+\item 10 MaxShade - Maximum annual shade selected
+\item 11 MinDep - Minimum annual depth selected (cm)
+\item 12 MaxDep - Maximum annual depth selected (cm)
+\item 13 Bsk - Annual basking hours
+\item 14 Forage - Annual foraging hours
+\item 15 Dist - Annual distance travelled (km)
+\item 16 Food - Annual food eaten (g)
+\item 17 Drink - Annual water drunk (g)
+\item 18 NWaste - Annual nitrogenous waste (g)
+\item 19 O2 - Annual O2 production (ml)
+\item 20 Clutch - Annual clutches (#)
+\item 21 Fec - Annual fecundity (#)
+\item 22 CauseDeath - Cause of death, 0=no death, 1=cold, 2=heat, 3=desiccation, 4=starvation, 5=ageing
+\item 23 tLay - Day of year at which eggs laid
+\item 24 tEgg - Day of year entering egg stage
+\item 25-32 tStg1-tStg8 - Day of year entering life cycle stages 1-8
+\item 33-41 mStg1-mStg8 - Mass entering life cycle stages 1-8 (g)
+\item 41 surviv - Survival probability at end of given year
+\item 42 ovip_surviv - Breeding state (1=breeding, 0=not breeding)
+\item 43 fitness - Fecundity by survival probability at end of given year
+\item 44 deathstage - Life stage at which death occurred
 }
 }
 \examples{
 # run the microclimate model
-micro<-micro_global(loc=c(145.620, -16.821) #Kuranda, Queensland
+micro <- micro_global(loc=c(145.620, -16.821) #Kuranda, Queensland
 
 # retrieve output
-metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
-shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
-soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
-shadsoil<-as.data.frame(micro$shadsoil) # soil temperatures, maximum shade
+metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
+shadmet <- as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
+soil <- as.data.frame(micro$soil) # soil temperatures, minimum shade
+shadsoil <- as.data.frame(micro$shadsoil) # soil temperatures, maximum shade
 
 # append dates
-days<-rep(seq(1,12),24)
-days<-days[order(days)]
-dates<-days+metout$TIME/60/24-1 # dates for hourly output
-dates2<-seq(1,12,1) # dates for daily output
-metout<-cbind(dates,metout)
-soil<-cbind(dates,soil)
-shadmet<-cbind(dates,shadmet)
-shadsoil<-cbind(dates,shadsoil)
+days <- rep(seq(1, 12), 24)
+days <- days[order(days)]
+dates <- days+metout$TIME / 60 / 24 - 1 # dates for hourly output
+dates2 <- seq(1, 12, 1) # dates for daily output
+metout <- cbind(dates, metout)
+soil <- cbind(dates, soil)
+shadmet <- cbind(dates, shadmet)
+shadsoil <- cbind(dates, shadsoil)
 
 # run the ectotherm model
-ecto<-ectotherm(T_F_min=30,T_F_max=35,T_pref=33,T_B_min=20,T_RB_min=10)
+ecto <- ectotherm(T_F_min = 30, T_F_max = 35, T_pref = 33, T_B_min = 20, T_RB_min = 10)
 
 # retrieve output
-environ<-as.data.frame(ecto$environ) # activity, Tb and environment
-enbal<-as.data.frame(ecto$enbal) # energy balance values
-masbal<-as.data.frame(ecto$masbal) # mass balance value (note most missing if DEB model not running)
+environ <- as.data.frame(ecto$environ) # activity, Tb and environment
+enbal <- as.data.frame(ecto$enbal) # energy balance values
+masbal <- as.data.frame(ecto$masbal) # mass balance value (note most missing if DEB model not running)
 
 # append dates
-environ<-cbind(dates,environ)
-masbal<-cbind(dates,masbal)
-enbal<-cbind(dates,enbal)
+environ <- cbind(dates, environ)
+masbal <- cbind(dates, masbal)
+enbal <- cbind(dates, enbal)
 
 ############### plot results ######################
 
-# Hourly Tb (black), activity (orange, 5=bask, 10=forage), depth (brown, m) and shade (green, \%/10)
-with(environ, plot(TC~dates,ylab="Tb, depth, activity and shade", xlab="month of year",
-ylim=c(-20,70),type = "l"))
-with(environ, points(ACT*5~dates,type = "l",col="orange"))
-with(environ, points(SHADE/10~dates,type = "l",col="green"))
-with(environ, points(DEP/10~dates,type = "l",col="brown"))
-#with(metout, points(TAREF~dates,type = "l",col="light blue"))
-abline(ecto$T_F_min,0,lty=2,col='red')
-abline(ecto$T_F_max,0,lty=2,col='blue')
+# Hourly Tb (black), activity (orange, 5 = bask, 10 = forage), depth (brown, m) and shade (green, \%/10)
+with(environ, plot(TC ~ dates, ylab = "Tb, depth, activity and shade", xlab="month of year",
+ylim = c(-20, 70), type = "l"))
+with(environ, points(ACT * 5 ~ dates, type = "l", col = "orange"))
+with(environ, points(SHADE / 10 ~ dates, type = "l", col = "green"))
+with(environ, points(DEP / 10 ~ dates, type = "l", col = "brown"))
+#with(metout, points(TAREF ~ dates, type = "l", col = "light blue"))
+abline(ecto$T_F_min, 0, lty = 2, col = 'red')
+abline(ecto$T_F_max, 0, lty = 2, col = 'blue')
 
 # seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)
-forage<-subset(environ,ACT==2)
-bask<-subset(environ,ACT==1)
-night<-subset(metout,ZEN==90)
-day<-subset(metout,ZEN!=90)
-with(night,plot(TIME/60~DOY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col='dark blue'))
+forage <- subset(environ, ACT == 2)
+bask <- subset(environ, ACT == 1)
+night <- subset(metout, ZEN == 90)
+day <- subset(metout, ZEN != 90)
+with(night, plot(TIME / 60 ~ DOY, ylab = "Hour of Day", xlab = "Day of Year", pch = 15, cex = 2, col = 'dark blue'))
 # nighttime hours
-with(forage,points((TIME-1)~DOY,pch=15,cex=2,col='orange')) # foraging Tbs
-with(bask,points((TIME-1)~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
+with(forage,points((TIME -1 ) ~ DOY, pch = 15, cex = 2, col = 'orange')) # foraging Tbs
+with(bask,points((TIME - 1) ~ DOY, pch = 15, cex = 2, col = 'light blue')) # basking Tbs
 }

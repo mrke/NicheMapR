@@ -78,7 +78,7 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{microclima}{ = 0, Use microclima and elevatr package to adjust solar radiation for terrain? 1=yes, 0=no}\cr\cr
 \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 \code{manualshade}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
-\code{soildata}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
+\code{soildata}{ = 0, Extract emissivities from gridded data? 1=yes, 0=no}\cr\cr
 \code{terrain}{ = 0, Use 250m resolution terrain data? 1=yes, 0=no}\cr\cr
 \code{dailywind}{ = 1, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
@@ -86,7 +86,7 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{warm}{ = 0, uniform warming, °C}\cr\cr
 \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
-\code{opendap}{ = 0, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
+\code{opendap}{ = 1, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
 \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
 \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
@@ -182,6 +182,7 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{elev}{ - elevation at point of simulation (m)}\cr\cr
 \code{minshade}{ - minimum shade for simulation (\%)}\cr\cr
 \code{maxshade}{ - maximum shade for simulation (single value - if time varying, in 'MAXSHADES') (\%)}\cr\cr
+\code{MINSHADES}{ - vector of minimum shades used (\%)}\cr\cr
 \code{MAXSHADES}{ - vector of maximum shades used (\%)}\cr\cr
 \code{DEP}{ - vector of depths used (cm)}\cr\cr
 
@@ -264,7 +265,7 @@ drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar)
 ystart <- 2014
 yfinish <- 2015
 nyears <- yfinish - ystart + 1
-micro<-micro_aust(loc = 'Nyrripi, Northern Territory', ystart = ystart, yfinish = yfinish, opendap = 1, elev = 0, soildata = 0, runshade = 0) # run the model for the middle of the desert in Australia, using opendap
+micro<-micro_aust(loc = 'Nyrripi, Northern Territory', ystart = ystart, yfinish = yfinish, opendap = 1, elev = 0, runshade = 0) # run the model for the middle of the desert in Australia, using opendap
 
 metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
