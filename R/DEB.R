@@ -206,7 +206,8 @@ DEB<-function(
   S_instar=rep(1.6, stages),
   spawnday=1,
   day=1,
-  metab_mode=0){
+  metab_mode=0,
+  age=0){
 
   if (!require("deSolve", quietly = TRUE)) {
     stop("package 'deSolve' is needed. Please install it.",
@@ -346,7 +347,7 @@ DEB<-function(
         }
         if(metab_mode == 1){
           if(H > E_Hj){
-            p_R <- p_C - p_M * V - p_J # no kappa-rule - absolute reserve amount never reaches steady state so reproduction gets all of what would otherwise have gone to growth
+            p_R <- p_C - p_M * V - p_J # no kappa-rule under abp model - reproduction gets what is left from the mobilisation flux after maintenance is paid
             dV <- 0
           }else{
             p_R <- (1 - kap) * p_C - p_J
@@ -379,7 +380,9 @@ DEB<-function(
         }else{
           dH <- 0
         }
-
+        if(metab_mode == 1 & H > E_Hj){
+          r <- 0 # no growth in abp after puberty - not setting this to zero messes up aging calculation
+        }
         dq <- (q * (V / V_m) * s_G + h_a) * e * ((v / L) - r) - r * q # aging acceleration
         dhs <- q - r * hs # hazard
 

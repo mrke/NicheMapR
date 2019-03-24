@@ -208,7 +208,8 @@ DEB_euler<-function(
   S_instar=rep(1.6, stages),
   spawnday=1,
   day=1,
-  metab_mode=0){
+  metab_mode=0,
+  age=0){
 
   # initialise for reproduction and starvation
   if(clutch_ab[1] > 0){
@@ -646,6 +647,9 @@ DEB_euler<-function(
   potfreemass <- V * andens_deb + (((V * E_m) / mu_E) * w_E) / d_V # this is the max potential mass if reserve density is at max value
 
   #aging
+  if(metab_mode == 1 & E_H_pres > E_Hj){
+    r <- 0
+  }
   dqdt <- (q_pres * (V_pres / V_m) * s_G + h_aT) * (E_pres / E_m) * ((vT / L_pres) - r) - r * q_pres
   if(E_H_pres > E_Hb){
     q <- q_init + dqdt
@@ -658,10 +662,9 @@ DEB_euler<-function(
   }else{
     hs <- 0
   }
-  h_w <- ((h_aT * (E_pres / E_m) * vT) / (6 * V_pres ^ (1 /3 ))) ^ (1 / 3)
+  #h_w <- ((h_aT * (E_pres / E_m) * vT) / (6 * V_pres ^ (1 /3 ))) ^ (1 / 3)
   dsurvdt <- -1*surviv_pres * hs
   surviv <- surviv_pres + dsurvdt
-
   # new states
   p_B_past <- p_B
   E_pres <- E
