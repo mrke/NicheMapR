@@ -222,9 +222,10 @@
 #' }
 #' @examples
 #' library(NicheMapR)
-#' dstart <- "01/01/1976"
-#' dfinish <- "31/12/1978"
-#' micro<-micro_clima(loc = 'Galapagos', soilgrids = 0, dstart = dstart, dfinish = dfinish, reanalysis = FALSE)
+#' dstart <- "02/01/2017"
+#' dfinish <- "30/12/2017"
+#' loc <- c(-5.3, 50.13) # Galapagos
+#' micro<-micro_ncep(loc = loc, dstart = dstart, dfinish = dfinish)
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
@@ -296,9 +297,9 @@ micro_ncep <- function(
   Z02 = 0,
   ZH1 = 0,
   ZH2 = 0,
-  runshade = 0,
-  solonly = 0,
+  runshade = 1,
   run.gads = 1,
+  solonly = 0,
   write_input = 0,
   writecsv = 0,
   reanalysis = TRUE,
