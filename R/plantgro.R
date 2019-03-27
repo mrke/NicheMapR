@@ -3,7 +3,7 @@
 #' Function to compute plant water content given threshold values of soil water potential at which wilting point and permanent wilting point occurs
 #' @param soilpot = micro$soilpot, matrix of soil water potential from NicheMapR microclimate model to use for calculations
 #' @param soilmoist = micro$soilmoist, matrix of soil moisture to use for calculations
-#' @param plant_temp = soil[,6], vector of plant temperature to use for calculations
+#' @param plant_temp = micro$soil[,6], vector of plant temperature to use for calculations
 #' @param root_shallow = 4, shallowest soil node to use when getting average soil moisture/water potential for calculating plant moisture/growth
 #' @param root_deep = 4, deepest soil node to use when getting average soil moisture/water potential for calculating plant moisture/growth
 #' @param growth_delay = 0, time required for plants to recover after hitting permanent wilting point, days
@@ -12,7 +12,7 @@
 #' @param permanent_wilting_point = -1500, soil water potential at permanent wilting point, J/kg
 #' @param foodwater = 82, Maximum water conten of plant, \%
 #' @export
-plantgro<-function(soilpot=soilpot, soilmoist=soilmoist, plant_temp=soil[,6], root_shallow=4, root_deep=8, temp_thresh=15, growth_delay=1, wilting_point=-200, permanent_wilting_point=-1500, foodwater=82){
+plantgro<-function(soilpot=micro$soilpot, soilmoist=micro$soilmoist, plant_temp=micro$soil[,6], root_shallow=4, root_deep=8, temp_thresh=15, growth_delay=1, wilting_point=-200, permanent_wilting_point=-1500, foodwater=82){
 
   if(root_shallow == root_deep){
     meanpot <- soilpot[, ((root_shallow + 2):(root_deep + 2))]
