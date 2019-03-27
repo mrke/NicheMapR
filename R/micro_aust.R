@@ -53,7 +53,6 @@
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 #' \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
 #' \code{opendap}{ = 1, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
-#' \code{loop}{ = 0, if doing multiple years, this shifts the starting year by the integer value}\cr\cr
 
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
@@ -371,7 +370,6 @@ micro_aust <- function(
   rainmelt = 0.0125,
   shore = 0,
   tides = 0,
-  loop = 0,
   scenario = "",
   year = "",
   barcoo = "",
@@ -1373,13 +1371,9 @@ micro_aust <- function(
                   output1<-rbind(output1,sqlQuery(channel,query))
                 }
               } # end loop through years
-              query<-paste0("SELECT a.* FROM [ausclim].[dbo].[clearskysol] as a
-                       where (a.latitude between ",lat1," and ",lat2,")
-                       and (a.longitude between ",lon1," and ",lon2,")")
-              output_ausclim<- sqlQuery(channel,query)
-              output1$clearsky<-leapfix(clearskysum, seq(1990, 2014))
+              output1$clearsky<-leapfix(clearskysum, seq(1990, 2014)) * 3600 / 1e6
               glm_sol<-coefficients(with(output1,glm(sol~rr+tmax+tmin+day+clearsky)))
-              output_AWAPDaily$clearsky<-leapfix(clearskysum, yearlist)
+              output_AWAPDaily$clearsky<-leapfix(clearskysum, yearlist) * 3600 / 1e6
               output_AWAPDaily[,9]<-glm_sol[1]+glm_sol[2]*output_AWAPDaily$rr+glm_sol[3]*output_AWAPDaily$tmax+glm_sol[4]*output_AWAPDaily$tmin+glm_sol[5]*output_AWAPDaily$day+glm_sol[6]*output_AWAPDaily$clearsky
               if(scenario!=""){
                 output_AWAPDaily[,9]=output_AWAPDaily[,9]*SOLAR_diff
@@ -1811,20 +1805,6 @@ micro_aust <- function(
           soilprops[1:4,4]<-1920
           soilprops[1:4,5]<-1.3
           soilprops[1:4,1]<-0.7
-        }
-
-        if(loop>0){
-          TMAXX<-c(TMAXX[((loop)*365+1):ndays],TMAXX[1:((loop)*365)])
-          TMINN<-c(TMINN[((loop)*365+1):ndays],TMINN[1:((loop)*365)])
-          RHMAXX<-c(RHMAXX[((loop)*365+1):ndays],RHMAXX[1:((loop)*365)])
-          RHMINN<-c(RHMINN[((loop)*365+1):ndays],RHMINN[1:((loop)*365)])
-          CCMAXX<-c(CCMAXX[((loop)*365+1):ndays],CCMAXX[1:((loop)*365)])
-          CCMINN<-c(CCMINN[((loop)*365+1):ndays],CCMINN[1:((loop)*365)])
-          WNMAXX<-c(WNMAXX[((loop)*365+1):ndays],WNMAXX[1:((loop)*365)])
-          WNMINN<-c(WNMINN[((loop)*365+1):ndays],WNMINN[1:((loop)*365)])
-          PCTWET<-c(PCTWET[((loop)*365+1):ndays],PCTWET[1:((loop)*365)])
-          moists<-cbind(moists[,((loop)*365+1):ndays],moists[,1:((loop)*365)])
-          RAINFALL<-c(RAINFALL[((loop)*365+1):ndays],RAINFALL[1:((loop)*365)])
         }
 
         # microclimate input parameters listALTT,ALREF,ALMINT,ALONG,AMINUT,ALAT
