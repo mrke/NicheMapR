@@ -374,18 +374,6 @@ DEB<-function(
           dH <- 0
         }
 
-        # reproduction
-        if(metab_mode == 0){
-          p_R <- (1 - kap) * p_C - p_J
-        }
-        if(metab_mode == 1){
-          if(H > E_Hj){
-            p_R <- p_C - p_M * V - p_J # no kappa-rule under abp model - reproduction gets what is left from the mobilisation flux after maintenance is paid
-          }else{
-            p_R <- (1 - kap) * p_C - p_J
-          }
-        }
-
         # stomach
         if(acthr > 0){
           # Regulates X dynamics
@@ -400,6 +388,16 @@ DEB<-function(
         dhs <- q - r * hs # hazard
 
         # reproduction
+        if(metab_mode == 0){
+          p_R <- (1 - kap) * p_C - p_J
+        }
+        if(metab_mode == 1){
+          if(H > E_Hj){
+            p_R <- p_C - p_M * V - p_J # no kappa-rule under abp model - reproduction gets what is left from the mobilisation flux after maintenance is paid
+          }else{
+            p_R <- (1 - kap) * p_C - p_J
+          }
+        }
         if((H <= E_Hp) | (pregnant==1)){
           p_B <- 0
         }else{

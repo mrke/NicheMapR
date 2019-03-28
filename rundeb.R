@@ -191,8 +191,8 @@ rundeb <- function(species = 'Daphnia.magna', ndays = 50, div = 24, Tbs = rep(20
   abline(v = which(debout.df$E_H_pres>E.Hp)[1]/div, lty = 2, col = 'grey')
   #debout.df$cumeggs <- cumsum(debout.df$fecundity)
   #plot(seq(1,n)/div, debout.df$cumeggs, type = 'l', xlab = 'Age (days)', ylab = 'cum. no. of young', col = 'black', lwd = 2, xlim = c(0, xmax), main = "reproduction")
-  debout.df$cumfood <- cumsum(debout.df$foodin)/div
-  plot(seq(1,n)/div, debout.df$cumfood*mass.mult, type = 'l', xlab = 'Age (days)', ylab = paste0('cum. wet food (',mass.unit,')'), col = 'black', lwd = 2, xlim = c(0, xmax), main = "food intake")
+  debout.df$cumfood <- cumsum(debout.df$DRYFOOD)/div
+  plot(seq(1,n)/div, debout.df$cumfood*mass.mult, type = 'l', xlab = 'Age (days)', ylab = paste0('cum. dry food (',mass.unit,')'), col = 'black', lwd = 2, xlim = c(0, xmax), main = "food intake")
   abline(v = which(debout.df$E_H_pres>E.Hb)[1]/div, lty = 2, col = 'grey')
   abline(v = which(debout.df$E_H_pres>E.Hp)[1]/div, lty = 2, col = 'grey')
   debout.postembryo <- subset(debout.df, E_H_pres > E.Hb)
