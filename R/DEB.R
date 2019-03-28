@@ -318,8 +318,13 @@ DEB<-function(
       L <- V ^ (1/3) # cm, structural length
       V_m <- L_m ^ 3 # cm ^ 3, maximum structural volume
       e <- E / E_m  # -, scaled reserve density
-      r <- v * (e / L - (1 + L_T / L) / L_m) / (e + g) # specific growth rate
-      dV <- V * r                 # cm^3 / t, change in structure
+      r1 <- v * (e / L - (1 + L_T / L) / L_m) / (e + g) # specific growth rate
+      if(metab_mode == 1 & H >= E_Hj){
+        r <- 0 # no growth in abp after puberty - not setting this to zero messes up aging calculation
+      }else{
+        r <- r1 # specific growth rate
+      }
+      dV <- V * r # cm^3 / t, change in structure
       p_C <- (E_m * (v / L + k_M * (1 + L_T / L)) * (e * g) / (e + g)) * V # J / t, mobilisation rate, equation 2.20 DEB3
 
       if(H < E_Hb){ # embryo
@@ -334,40 +339,54 @@ DEB<-function(
         dR <- 0
         dB <- 0
       }else{ # post-embryo
-        # structure
-        p_J <- k_J * H + S # adding starvation costs to P_J so maturation time (immature) or reproduction (mature) can be sacrificed to pay somatic maintenance
-        if(dV < 0){
-          dS <- dV * -1 * mu_V * d_V / w_V # J / t, starvation energy to be subtracted from reproduction buffer if necessary
-          dV <- 0
-        }else{
+
+        # structure and starvation
+        if(V * r1 < 0){
+         dS <- V * r1 * -1 * mu_V * d_V / w_V # J / t, starvation energy to be subtracted from reproduction buffer if necessary
+         if(B < dS){ # batch buffer has run out so draw from structure
+          dV <- V * r1
           dS <- 0
+         }
+        }else{
+         dS <- 0
         }
-        if(metab_mode == 0){
-          p_R <- (1 - kap) * p_C - p_J
-        }
-        if(metab_mode == 1){
-          if(H > E_Hj){
-            p_R <- p_C - p_M * V - p_J # no kappa-rule under abp model - reproduction gets what is left from the mobilisation flux after maintenance is paid
-            dV <- 0
-          }else{
-            p_R <- (1 - kap) * p_C - p_J
-          }
-        }
-        if(p_R < 0 & S > 0){
-          dV <- abs(p_R) * w_V / (mu_V * d_V) * -1 # subtract from structure since not enough flow to reproduction to pay for somatic maintenance
-          p_R <- 0
-        }
+
+        # assimilation
         p_A <- p_Am * f * L ^ 2
         if(metab_mode == 1){
           if(p_A > p_C & E == E_m){
             p_A <- p_C
           }
         }
+
+        # reserve
         if(Es > 0){
           dE <- p_A / L ^ 3 - (E * v) / L
         }else{
           dE <- (-E * v) / L
         }
+
+        # maturation
+        p_J <- k_J * H
+        if(H < E_Hp){
+          dH <- (1 - kap) * p_C - p_J
+        }else{
+          dH <- 0
+        }
+
+        # reproduction
+        if(metab_mode == 0){
+          p_R <- (1 - kap) * p_C - p_J
+        }
+        if(metab_mode == 1){
+          if(H > E_Hj){
+            p_R <- p_C - p_M * V - p_J # no kappa-rule under abp model - reproduction gets what is left from the mobilisation flux after maintenance is paid
+          }else{
+            p_R <- (1 - kap) * p_C - p_J
+          }
+        }
+
+        # stomach
         if(acthr > 0){
           # Regulates X dynamics
           J_X <- F_m * ((X / K) / (1 + X / K)) * V ^ (2 / 3)
@@ -375,14 +394,8 @@ DEB<-function(
         }else{
           dEs <- -1 * J_X * (p_Am / kap_X) * V ^(2 / 3)
         }
-        if(H < E_Hp){
-          dH <- (1 - kap) * p_C - p_J
-        }else{
-          dH <- 0
-        }
-        if(metab_mode == 1 & H > E_Hj){
-          r <- 0 # no growth in abp after puberty - not setting this to zero messes up aging calculation
-        }
+
+        # ageing
         dq <- (q * (V / V_m) * s_G + h_a) * e * ((v / L) - r) - r * q # aging acceleration
         dhs <- q - r * hs # hazard
 
@@ -412,6 +425,16 @@ DEB<-function(
             p_B <- p_R
           }#end check for whether batch mode is operating
         }#end check for immature or mature
+
+        # draw from reproduction and then batch buffers under starvation
+        if(dS > 0 & p_R > dS){
+          p_R <- p_R - dS
+          dS <- 0
+        }
+        if(dS > 0 & p_B > dS){
+          p_B <- p_B - dS
+          dS <- 0
+        }
 
         #accumulate energy/matter in reproduction and batch buffers
         if(H > E_Hp){
@@ -471,9 +494,9 @@ DEB<-function(
 
   if(metab_mode == 1){
     #if(E_H_pres > E_Hj){
-      if(p_A > p_C & E == E_m){
-       p_A <- p_C
-      }
+    if(p_A > p_C & E == E_m){
+      p_A <- p_C
+    }
     #}
   }
 

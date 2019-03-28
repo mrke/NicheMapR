@@ -296,22 +296,25 @@ DEB_euler<-function(
     r <- vT * (e / L_pres - (1 + L_T / L_pres) / L_m) / (e + g)
   }else{
     #equation 2.21 from DEB3
-    r <- vT * (e / L_pres - (1 + L_T / L_pres) / L_m) / (e + g)
+    r1 <- vT * (e / L_pres - (1 + L_T / L_pres) / L_m) / (e + g)
+    if(metab_mode == 1 & E_H_pres >= E_Hj){
+      r <- 0 # no growth in abp after puberty - not setting this to zero messes up aging calculation
+    }else{
+      r <- r1 # specific growth rate
+    }
     dVdt <- V_pres * r
-    if(dVdt < 0){
-      dVdt <- 0
-      starve <- dVdt * -1 * mu_V * d_V / w_V
+    if(V_pres * r1 < 0){
+      starve <- V_pres * r1 * -1 * mu_V * d_V / w_V
+      if(cumbatch < starve){
+        dVdt <- V_pres * r1
+        starve <- 0
+      }
     }else{
       starve <- 0
     }
   }
-  if(metab_mode == 1 & E_H_pres > E_Hj){
-    dVdt <- 0
-  }
   V <- V_pres + dVdt
-  if(V < 0){
-    V <- 0
-  }
+
   #L_w in mm
   L_w <- V ^ (1 / 3) / del_M * 10
 
@@ -348,7 +351,7 @@ DEB_euler<-function(
 
   # some powers
   p_M2 <- p_MT * V_pres
-  p_J <- k_JT * E_H_pres + starve
+  p_J <- k_JT * E_H_pres # adding starvation costs to P_J so maturation time (immature) or reproduction (mature) can be sacrificed to pay somatic maintenance
 
   p_X <- p_A / kap_X #J food eaten per hour
   if(metab_mode == 0){
@@ -412,7 +415,15 @@ DEB_euler<-function(
     }#end check for whether batch mode is operating
   }#end check for immature or mature
 
-
+  # draw from reproduction and then batch buffers under starvation
+  if(starve > 0 & cumrepro > starve){
+    p_R <- p_R - starve
+    starve <- 0
+  }
+  if(starve > 0 & cumbatch > starve){
+    p_B <- p_B - starve
+    starve <- 0
+  }
   #accumulate energy/matter in reproduction buffer
   if(E_H_pres > E_Hp){
     # if buffer ran out on previous day
@@ -424,7 +435,9 @@ DEB_euler<-function(
     }
   }
   cumbatch <- cumbatch + p_B #accumulate energy/matter in egg batch buffer
-
+  if(cumbatch < 0){
+    cumbatch <- 0
+  }
   testclutch <- floor((cumrepro + cumbatch) / E_0)
   #     FOR VARIABLE CLUTCH SIZE FROM REPRO AND BATCH BUFFERS
   if(minclutch > 0 & floor(cumrepro + cumbatch) / E_0 > minclutch){
