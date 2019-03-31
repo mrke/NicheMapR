@@ -1,6 +1,6 @@
 #' rundeb
 #'
-#' Function to simulate the development, growth and reproduction trajector of
+#' Function to simulate the development, growth and reproduction trajectory of
 #' an organism using DEB theory, drawing parameters from the 'AmP' parameter
 #' database at https://github.com/add-my-pet/AmPtool. It requires the
 #' 'allstat.mat' file to have been converted to 'allstat.Rda' via the R.matlab
@@ -29,38 +29,38 @@
 #' @param length.unit = 'cm', length unit for the plots, 'mm', 'cm' or 'm'
 #' @examples
 #' #library(R.matlab)
-# '#allStat<-readMat('allStat.mat') # this will take a few minutes
-# '#save(allStat, file = 'allstat.Rda') # save it as an R data file for faster future loading
-# 'load('allStat.Rda')
-# 'species <- "Daphnia.magna" # must be in the AmP collection - see allDEB.species list
-# 'Euler <- 0 # use Euler integration (faster but less accurate) (1) or deSolve's ODE solve (0)
-# 'start.stage <- 0 # stage in life cycle to start (0 = egg, 1 = juvenile, 2 = puberty)
-# 'ndays <- 50 # number days to run the simulation for
-# 'div <- 24 # time step divider (1 = days, 24 = hours, etc.) - keep small if using Euler method for integration
-# 'Tbs <- rep(20, ndays * div) # deg C, body temperature
-# 'starvetime <- 0 # length of low food period when simulating starvation
-# 'X <- 100 # J/cm2 base food density
-# 'Xs <- c(rep(X, ndays * div/2), rep(0.000005, starvetime), rep(X, ndays * div/2-starvetime + 1)) # body temperature
-# 'E_sm <- 350 # J/cm3, volume-specific stomach energy
-# 'fdry <- 0.3 # J/cm3, volume-specific stomach energy
-# 'clutchsize <- 50 # -, clutch size
-# 'kap.mult <- 1 # -, factor to multiply kappa by (caps at 1)
-# 'p.M.mult <- 1 # -, factor to multiply p.M by (caps at 1)
-# 'v.mult <- 1 # -, factor to multiply energy conductance by
-# 'z.mult <- 1 # -, factor to multiply zoom factor by
-# 'E.0.mult <- 1 # -, factor by which to multiply initial egg energy
-# 'plot <- 1 # plot results?
-# 'mass.unit <- 'g'
-# 'length.unit <- 'mm'
-# '
-# 'deb <- rundeb(species = species, ndays = ndays, div = div, Tbs = Tbs,
-# '              clutchsize = clutchsize, kap.mult = kap.mult, v.mult = v.mult,
-# '              p.M.mult = p.M.mult, Xs = Xs, z.mult = z.mult, E.0.mult = E.0.mult,
-# '              mass.unit = mass.unit, length.unit = length.unit, start.stage = start.stage,
-# '              E_sm = E_sm, Euler = Euler, plot = plot)
-# '
-# 'debout <- as.data.frame(deb$debout) # retrieve the output
-# 'parameters <- deb$pars # retrieve the extracted parameters
+#' #allStat<-readMat('allStat.mat') # this will take a few minutes
+#' #save(allStat, file = 'allstat.Rda') # save it as an R data file for faster future loading
+#' load('allStat.Rda')
+#' species <- "Daphnia.magna" # must be in the AmP collection - see allDEB.species list
+#' Euler <- 0 # use Euler integration (faster but less accurate) (1) or deSolve's ODE solve (0)
+#' start.stage <- 0 # stage in life cycle to start (0 = egg, 1 = juvenile, 2 = puberty)
+#' ndays <- 50 # number days to run the simulation for
+#' div <- 24 # time step divider (1 = days, 24 = hours, etc.) - keep small if using Euler method for integration
+#' Tbs <- rep(20, ndays * div) # deg C, body temperature
+#' starvetime <- 0 # length of low food period when simulating starvation
+#' X <- 100 # J/cm2 base food density
+#' Xs <- c(rep(X, ndays * div/2), rep(0.000005, starvetime), rep(X, ndays * div/2-starvetime + 1)) # body temperature
+#' E_sm <- 350 # J/cm3, volume-specific stomach energy
+#' fdry <- 0.3 # J/cm3, volume-specific stomach energy
+#' clutchsize <- 50 # -, clutch size
+#' kap.mult <- 1 # -, factor to multiply kappa by (caps at 1)
+#' p.M.mult <- 1 # -, factor to multiply p.M by (caps at 1)
+#' v.mult <- 1 # -, factor to multiply energy conductance by
+#' z.mult <- 1 # -, factor to multiply zoom factor by
+#' E.0.mult <- 1 # -, factor by which to multiply initial egg energy
+#' plot <- 1 # plot results?
+#' mass.unit <- 'g'
+#' length.unit <- 'mm'
+#'
+#' deb <- rundeb(species = species, ndays = ndays, div = div, Tbs = Tbs,
+#'               clutchsize = clutchsize, kap.mult = kap.mult, v.mult = v.mult,
+#'               p.M.mult = p.M.mult, Xs = Xs, z.mult = z.mult, E.0.mult = E.0.mult,
+#'               mass.unit = mass.unit, length.unit = length.unit, start.stage = start.stage,
+#'               E_sm = E_sm, Euler = Euler, plot = plot)
+#'
+#' debout <- as.data.frame(deb$debout) # retrieve the output
+#' parameters <- deb$pars # retrieve the extracted parameters
 #' @export
 rundeb <- function(
   allstat = allstat,
