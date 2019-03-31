@@ -859,11 +859,11 @@ micro_ncep <- function(
     }
     slope <- 0 # already corrected for by microclima
     azmuth <- 0 # already corrected for by microclima
-    maxshades<-rep(0.1,ndays)
-    minshades<-rep(0,ndays)
-    shademax<-maxshades
-    maxshade<-.1
-    minshade<-0
+    maxshades <- rep(90,ndays)
+    minshades <- rep(0,ndays)
+    shademax <- maxshades
+    maxshade <- 90
+    minshade <- 0
 
     if(run.gads==1){
       ####### get solar attenuation due to aerosols with program GADS #####################
