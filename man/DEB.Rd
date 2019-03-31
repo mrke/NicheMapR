@@ -20,12 +20,12 @@ DEB(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 * step,
   mi = 0, mh = 0.5, arrhenius = matrix(data = matrix(data =
   c(rep(T_A, 8), rep(T_AL, 8), rep(T_AH, 8), rep(T_L, 8), rep(T_H, 8)),
   nrow = 8, ncol = 5), nrow = 8, ncol = 5), acthr = 1, X = 10,
-  E_pres = 6011.93, V_pres = 3.9752^3, E_H_pres = 73592,
-  q_pres = 0, hs_pres = 0, surviv_pres = 1, Es_pres = 0,
-  cumrepro = 0, cumbatch = 0, stages = 3, stage = 1,
-  breeding = 0, pregnant = 0, Tb = 33, fdry = 0.3, L_b = 0.42,
-  L_j = 1.376, S_instar = rep(1.6, stages), spawnday = 1, day = 1,
-  metab_mode = 0)
+  E_pres = E_0/1e-09, V_pres = 1e-09, E_H_pres = 0, q_pres = 0,
+  hs_pres = 0, p_surv_pres = 1, E_s_pres = 0, p_B_pres = 0,
+  E_R = 0, E_B = 0, stages = 6, stage = 0, breeding = 0,
+  pregnant = 0, Tb = 33, fdry = 0.3, L_b = 0.42, L_j = 1.376,
+  S_instar = rep(1.618, stages), spawnday = 1, day = 1,
+  metab_mode = 0, age = 0)
 }
 \arguments{
 \item{step}{= 1/24, step size (days)}
@@ -140,13 +140,11 @@ DEB(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 * step,
 
 \item{hs_pres}{=0}
 
-\item{surviv_pres}{= 1}
+\item{E_s_pres}{= 0}
 
-\item{Es_pres}{= 0}
+\item{E_R}{= 0}
 
-\item{cumrepro}{= 0}
-
-\item{cumbatch}{= 0}
+\item{E_B}{= 0}
 
 \item{stages}{= 3, how many life stages?}
 
@@ -164,58 +162,76 @@ DEB(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 * step,
 
 \item{X}{= 11}
 
-\item{stage}{= 1}
+\item{p_surv}{= 1}
+
+\item{stage}{= 0}
 }
 \value{
-E_pres
+stage Life cycle stage, -
 
-V_pres
+V Structure, cm^3
 
-E_H_pres
+E Reserve density, J/cm^3
 
-q_pres
+E_H Maturity, J
 
-hs_pres
+E_s Stomach energy content, J
 
-surviv_pres
+E_R Reproduction buffer energy, J
 
-Es_pres
+E_B Reproduction batch energy, J
 
-cumrepro
+q Aging acceleration
 
-cumbatch
+hs Hazard rate
 
-O2FLUX
+length Physical length, cm
 
-CO2FLUX
+wetmass Total wet mass, g
 
-MLO2
+wetgonad Wet mass of gonad, g
 
-GH2OMET
+wetgut Wet mass of food in gut, g
 
-DEBQMET
+wetstorage Wet mass of reserve, g
 
-DRYFOOD,
+p_surv Survival probability, -
 
-FAECES
+fecundity Eggs produced at a given time point, #
 
-NWASTE
+clutches Clutches produced at a given time point
 
-wetgonad
+O2FLUX Oxygen flux, mol/time
 
-wetstorage
+CO2FLUX Carbon dioxide flux, mol/time
 
-wetfood
+MLO2 Oxgen consumption rate, ml/hour
 
-wetmass
+GH2OMET Metabolic water flux, mol/time
 
-gutfreemass
+DEBQMET Metabolic heat generation, J/time
 
-gutfull
+DRYFOOD Dry food intake, mol/time
 
-fecundity
+FAECES Faeces production, mol/time
 
-clutches
+NWASTE Nitrogenous waste production, mol/time
+
+p_A Assimilation power, J/time
+
+p_C Catabolic power, J/time
+
+p_M Somatic maintenance power, J/time
+
+p_G Growth power, J/time
+
+p_D Dissipation power, J/time
+
+p_J Maturity power, J/time
+
+p_R Reproduction power, J/time
+
+p_B Reproduction batch power, J/time
 }
 \description{
 Implementation of the Standarad Dynamic Energy Budget model of Kooijman
@@ -226,33 +242,32 @@ on the step size chosen)
 Michael Kearney Dec 2015, updated to include ODE solver Feb 2019
 }
 \examples{
-# simulate growth and reproduction at different constant body temperatures at constant food for a lizard (Eulamprus quoyii - default parameter values, starting as a hatchling)
+# simulate growth and reproduction at different constant body temperatures at
+# constant food for a lizard (Tiliqua rugosa - default parameter values, starting
+# as an egg)
 
-n<-3000 # time steps
-step<-1 # step size (days)
+n <- 3000 # time steps
+step <- 1 # step size (days)
 
-Tbs=seq(25,35,2.5) # sequence of body temperatures to use
+Tbs=seq(25, 35, 5) # sequence of body temperatures to use
 
 for(j in 1:length(Tbs)){
-debout<-matrix(data = 0, nrow = n, ncol=27)
-deb.names<-c("E_pres","V_pres","E_H_pres","q_pres","hs_pres","surviv_pres","Es_pres","cumrepro","cumbatch","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","wetmass","gutfreemass","gutfull","fecundity","clutches","potfreemass")
-colnames(debout)<-deb.names
+  debout<-matrix(data = 0, nrow = n, ncol = 33)
+  deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "O2FLUX", "CO2FLUX", "MLO2", "GH2OMET", "DEBQMET", "DRYFOOD", "FAECES", "NWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
+  colnames(debout)<-deb.names
 
-# initialise
-debout[1,]<-DEB(Tb = Tbs[j], step = step)
+  # initialise
+  debout[1,]<-DEB(Tb = Tbs[j], step = step)
 
-for(i in 2:n){
-debout[i,]<-DEB(Tb = Tbs[j], breeding = 1, step = step,E_pres=debout[(i-1),1],V_pres=debout[(i-1),2],E_H_pres=debout[(i-1),3],q_pres=debout[(i-1),4],hs_pres=debout[(i-1),5],surviv_pres=debout[(i-1),6],Es_pres=debout[(i-1),7],cumrepro=debout[(i-1),8],cumbatch=debout[(i-1),9])
-}
+  for(i in 2:n){
+    debout[i,] <- DEB(Tb = Tbs[j], breeding = 1, step = step, E_pres = debout[(i - 1), 3], V_pres = debout[(i - 1), 2], E_H_pres = debout[(i - 1), 4], q = debout[(i - 1), 8], hs = debout[(i - 1), 9], p_surv = debout[(i - 1), 15], E_s_pres = debout[(i - 1), 5], E_R = debout[(i - 1), 6], E_B = debout[(i - 1), 7])
+  }
 
-if(j==1){
-  plot((seq(1,n)/365),debout[,21],ylim=c(100,1500),type='l',xlab='years',ylab='wet mass, g', col=j)
-}else{
-  points((seq(1,n)/365),debout[,21],ylim=c(100,1500),type='l',xlab='years',ylab='wet mass, g',col=j)
-}
+  if(j == 1){
+    plot((seq(1, n) / 365), debout[, 11], ylim = c(100, 1500), type = 'l', xlab = 'years', ylab = 'wet mass, g', col = j)
+  }else{
+    points((seq(1,n) / 365), debout[, 11], ylim = c(100, 1500), type = 'l', xlab = 'years', ylab = 'wet mass, g',col = j)
+  }
 
 } #end loop through body temperatures
-
-
-
 }

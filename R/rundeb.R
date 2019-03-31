@@ -27,7 +27,6 @@
 #' @param plot = 1, produce example plots? 0=no, 1=yes
 #' @param mass.unit = 'g', mass unit for the plots, 'mg', 'g' or 'kg'
 #' @param length.unit = 'cm', length unit for the plots, 'mm', 'cm' or 'm'
-#' @export
 #' @examples
 #' #library(R.matlab)
 # '#allStat<-readMat('allStat.mat') # this will take a few minutes
@@ -62,6 +61,7 @@
 # '
 # 'debout <- as.data.frame(deb$debout) # retrieve the output
 # 'parameters <- deb$pars # retrieve the extracted parameters
+#' @export
 rundeb <- function(
   allstat = allstat,
   species = 'Daphnia.magna',

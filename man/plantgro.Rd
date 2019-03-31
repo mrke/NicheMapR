@@ -4,26 +4,31 @@
 \alias{plantgro}
 \title{plantgro}
 \usage{
-plantgro(soilpot = soilpot, soilmoist = soilmoist, root_shallow = 4,
-  root_deep = 8, growth_delay = 1, wilting_thresh = -200,
-  permanent_wilting_point = -1500, FoodWater = 82)
+plantgro(soilpot = micro$soilpot, soilmoist = micro$soilmoist,
+  plant_temp = micro$soil[, 6], root_shallow = 4, root_deep = 8,
+  temp_thresh = 15, growth_delay = 1, wilting_point = -200,
+  permanent_wilting_point = -1500, foodwater = 82)
 }
 \arguments{
-\item{soilpot}{= soilpot, vector of soil water potential to use for calculations}
+\item{soilpot}{= micro$soilpot, matrix of soil water potential from NicheMapR microclimate model to use for calculations}
 
-\item{soilmoist}{= soilmoist, vector of soil moisture to use for calculations}
+\item{soilmoist}{= micro$soilmoist, matrix of soil moisture to use for calculations}
 
-\item{root_shallow}{= 4shallowest soil node to use when getting average soil moisture/water potential for calculating plant moisture/growth}
+\item{plant_temp}{= micro$soil[,6], vector of plant temperature to use for calculations}
+
+\item{root_shallow}{= 4, shallowest soil node to use when getting average soil moisture/water potential for calculating plant moisture/growth}
 
 \item{root_deep}{= 4, deepest soil node to use when getting average soil moisture/water potential for calculating plant moisture/growth}
 
+\item{temp_thresh}{= 15, growth temperature threshold for degree day calculation, °C}
+
 \item{growth_delay}{= 0, time required for plants to recover after hitting permanent wilting point, days}
 
-\item{wilting_thresh}{= -200, soil water potential at wilting point, J/kg}
+\item{wilting_point}{= -200, soil water potential at wilting point, J/kg}
 
 \item{permanent_wilting_point}{= -1500, soil water potential at permanent wilting point, J/kg}
 
-\item{FoodWater}{= 82, Maximum water conten of plant, \%}
+\item{foodwater}{= 82, Maximum water conten of plant, \%}
 }
 \description{
 Function to compute plant water content given threshold values of soil water potential at which wilting point and permanent wilting point occurs

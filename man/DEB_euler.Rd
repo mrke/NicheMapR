@@ -20,12 +20,12 @@ DEB_euler(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 *
   mi = 0, mh = 0.5, arrhenius = matrix(data = matrix(data =
   c(rep(T_A, 8), rep(T_AL, 8), rep(T_AH, 8), rep(T_L, 8), rep(T_H, 8)),
   nrow = 8, ncol = 5), nrow = 8, ncol = 5), acthr = 1, X = 10,
-  E_pres = 6011.93, V_pres = 3.9752^3, E_H_pres = 73592,
-  q_pres = 0, hs_pres = 0, surviv_pres = 1, Es_pres = 0,
-  cumrepro = 0, cumbatch = 0, stages = 3, stage = 1,
-  p_B_past = 0, breeding = 0, pregnant = 0, Tb = 33, fdry = 0.3,
-  L_b = 0.42, L_j = 1.376, S_instar = rep(1.6, stages),
-  spawnday = 1, day = 1, metab_mode = 0)
+  E_pres = E_0/1e-09, V_pres = 1e-09, E_H_pres = 0, q_pres = 0,
+  hs_pres = 0, p_surv = 1, E_s_pres = 0, p_B_pres = 0, E_R = 0,
+  E_B = 0, stages = 7, stage = 0, breeding = 0, pregnant = 0,
+  Tb = 33, fdry = 0.3, L_b = 0.42, L_j = 1.376,
+  S_instar = rep(1.618, stages), spawnday = 1, day = 1,
+  metab_mode = 0, age = 0)
 }
 \arguments{
 \item{step}{= 1/24, step size (days)}
@@ -130,29 +130,27 @@ DEB_euler(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 *
 
 \item{X}{= 11, Food density (J/cm2)}
 
-\item{E_pres}{= 6011.93}
+\item{E_pres}{= E_0/1e-9}
 
-\item{V_pres}{= 3.9752^3}
+\item{V_pres}{= 1e-9}
 
-\item{E_H_pres}{= 73592}
+\item{E_H_pres}{= 0}
 
-\item{q_pres}{=0}
+\item{q_pres}{= 0}
 
-\item{hs_pres}{=0}
+\item{hs_pres}{= 0}
 
-\item{surviv_pres}{= 1}
+\item{p_surv}{= 1}
 
-\item{Es_pres}{= 0}
+\item{E_s_pres}{= 0}
 
-\item{cumrepro}{= 0}
+\item{E_R}{= 0}
 
-\item{cumbatch}{= 0}
+\item{E_B}{= 0}
 
-\item{stages}{= 3, how many life stages?}
+\item{stages}{= 7, how many life stages?}
 
 \item{stage}{= 0, Initial stage (0=embryo, for STD 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction, for ABP 1-(stages-1) = instars, stages = adult)}
-
-\item{p_B_past}{= 0}
 
 \item{breeding}{= 0}
 
@@ -166,60 +164,76 @@ DEB_euler(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 *
 
 \item{X}{= 11}
 
-\item{stage}{= 1}
+\item{p_B_past}{= 0}
+
+\item{stage}{= 0}
 }
 \value{
-E_pres
+stage Life cycle stage, -
 
-V_pres
+V Structure, cm^3
 
-E_H_pres
+E Reserve density, J/cm^3
 
-q_pres
+E_H Maturity, J
 
-hs_pres
+E_s Stomach energy content, J
 
-surviv_pres
+E_R Reproduction buffer energy, J
 
-Es_pres
+E_B Reproduction batch energy, J
 
-cumrepro
+q Aging acceleration
 
-cumbatch
+hs Hazard rate
 
-p_B_past
+length Physical length, cm
 
-O2FLUX
+wetmass Total wet mass, g
 
-CO2FLUX
+wetgonad Wet mass of gonad, g
 
-MLO2
+wetgut Wet mass of food in gut, g
 
-GH2OMET
+wetstorage Wet mass of reserve, g
 
-DEBQMET
+p_surv Survival probability, -
 
-DRYFOOD,
+fecundity Eggs produced at a given time point, #
 
-FAECES
+clutches Clutches produced at a given time point
 
-NWASTE
+O2FLUX Oxygen flux, mol/time
 
-wetgonad
+CO2FLUX Carbon dioxide flux, mol/time
 
-wetstorage
+MLO2 Oxgen consumption rate, ml/hour
 
-wetfood
+GH2OMET Metabolic water flux, mol/time
 
-wetmass
+DEBQMET Metabolic heat generation, J/time
 
-gutfreemass
+DRYFOOD Dry food intake, mol/time
 
-gutfull
+FAECES Faeces production, mol/time
 
-fecundity
+NWASTE Nitrogenous waste production, mol/time
 
-clutches
+p_A Assimilation power, J/time
+
+p_C Catabolic power, J/time
+
+p_M Somatic maintenance power, J/time
+
+p_G Growth power, J/time
+
+p_D Dissipation power, J/time
+
+p_J Maturity power, J/time
+
+p_R Reproduction power, J/time
+
+p_B Reproduction batch power, J/time
 }
 \description{
 Implementation of the Standarad Dynamic Energy Budget model of Kooijman
@@ -229,33 +243,32 @@ are ok for long-lived (months to years) animals
 Michael Kearney Dec 2015
 }
 \examples{
-# simulate growth and reproduction at different constant body temperatures at constant food for a lizard (Eulamprus quoyii - default parameter values, starting as a hatchling)
+# simulate growth and reproduction at different constant body temperatures at
+# constant food for a lizard (Tiliqua rugosa - default parameter values, starting
+# as an egg)
 
-n<-3000 # time steps
-step<-1 # step size (days)
+n <- 3000 # time steps
+step <- 1 # step size (days)
 
-Tbs=seq(25,35,2.5) # sequence of body temperatures to use
+Tbs=seq(25, 35, 5) # sequence of body temperatures to use
 
 for(j in 1:length(Tbs)){
-debout<-matrix(data = 0, nrow = n, ncol=27)
-deb.names<-c("E_pres","V_pres","E_H_pres","q_pres","hs_pres","surviv_pres","Es_pres","cumrepro","cumbatch","p_B_past","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","wetmass","gutfreemass","gutfull","fecundity","clutches","potfreemass")
-colnames(debout)<-deb.names
+  debout<-matrix(data = 0, nrow = n, ncol = 33)
+  deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "O2FLUX", "CO2FLUX", "MLO2", "GH2OMET", "DEBQMET", "DRYFOOD", "FAECES", "NWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
+  colnames(debout)<-deb.names
 
-# initialise
-debout[1,]<-DEB(Tb = Tbs[j], step = step)
+  # initialise
+  debout[1,]<-DEB_euler(Tb = Tbs[j], step = step)
 
-for(i in 2:n){
-debout[i,]<-DEB(Tb = Tbs[j], breeding = 1, step = step,E_pres=debout[(i-1),1],V_pres=debout[(i-1),2],E_H_pres=debout[(i-1),3],q_pres=debout[(i-1),4],hs_pres=debout[(i-1),5],surviv_pres=debout[(i-1),6],Es_pres=debout[(i-1),7],cumrepro=debout[(i-1),8],cumbatch=debout[(i-1),9],p_B_past=debout[(i-1),10])
-}
+  for(i in 2:n){
+    debout[i,] <- DEB_euler(Tb = Tbs[j], breeding = 1, step = step, E_pres = debout[(i - 1), 3], V_pres = debout[(i - 1), 2], E_H_pres = debout[(i - 1), 4], q = debout[(i - 1), 8], hs = debout[(i - 1), 9], p_surv = debout[(i - 1), 15], E_s_pres = debout[(i - 1), 5], E_R = debout[(i - 1), 6], E_B = debout[(i - 1), 7], p_B_past = debout[(i - 1), 33])
+  }
 
-if(j==1){
-  plot((seq(1,n)/365),debout[,22],ylim=c(100,1500),type='l',xlab='years',ylab='wet mass, g', col=j)
-}else{
-  points((seq(1,n)/365),debout[,22],ylim=c(100,1500),type='l',xlab='years',ylab='wet mass, g',col=j)
-}
+  if(j == 1){
+    plot((seq(1, n) / 365), debout[, 11], ylim = c(100, 1500), type = 'l', xlab = 'years', ylab = 'wet mass, g', col = j)
+  }else{
+    points((seq(1,n) / 365), debout[, 11], ylim = c(100, 1500), type = 'l', xlab = 'years', ylab = 'wet mass, g',col = j)
+  }
 
 } #end loop through body temperatures
-
-
-
 }

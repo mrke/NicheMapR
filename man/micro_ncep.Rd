@@ -6,7 +6,7 @@
 \title{NCEP implementation of the microclimate model, with package microclima computing hourly forcing.}
 \usage{
 micro_clima(loc = 'Galapagos', dstart = "01/01/2017", dfinish = "31/12/2017",
-REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200),
+REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 Usrhyt = 0.01, ...)
 }
 \arguments{
@@ -27,6 +27,10 @@ Usrhyt = 0.01, ...)
 \item{aspect}{Aspect in degrees (0 = north) (if NA, then derived from DEM with microclima)}
 
 \item{DEP}{Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface}
+
+\item{minshade}{Minimum shade level to use (\%)}
+
+\item{maxshade}{Maximum shade level to us (\%)}
 
 \item{Usrhyt}{Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest}
 
@@ -257,9 +261,10 @@ drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar)
 }
 \examples{
 library(NicheMapR)
-dstart <- "01/01/1976"
-dfinish <- "31/12/1978"
-micro<-micro_clima(loc = 'Galapagos', soilgrids = 0, dstart = dstart, dfinish = dfinish, reanalysis = FALSE)
+dstart <- "02/01/2017"
+dfinish <- "30/12/2017"
+loc <- c(-5.3, 50.13) # Galapagos
+micro<-micro_ncep(loc = loc, dstart = dstart, dfinish = dfinish)
 
 metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
