@@ -67,69 +67,76 @@
 #' @param E_H_pres = 73592
 #' @param q_pres =0
 #' @param hs_pres =0
-#' @param surviv_pres = 1
-#' @param Es_pres = 0
-#' @param cumrepro = 0
-#' @param cumbatch = 0
-#' @param stage = 1
+#' @param p_surv = 1
+#' @param E_s_pres = 0
+#' @param E_R = 0
+#' @param E_B = 0
+#' @param stage = 0
 #' @param breeding = 0
 #' @param pregnant = 0
 #' @param Tb = 33
-#' @return E_pres
-#' @return V_pres
-#' @return E_H_pres
-#' @return q_pres
-#' @return hs_pres
-#' @return surviv_pres
-#' @return Es_pres
-#' @return cumrepro
-#' @return cumbatch
-#' @return O2FLUX
-#' @return CO2FLUX
-#' @return MLO2
-#' @return GH2OMET
-#' @return DEBQMET
-#' @return DRYFOOD,
-#' @return FAECES
-#' @return NWASTE
-#' @return wetgonad
-#' @return wetstorage
-#' @return wetfood
-#' @return wetmass
-#' @return gutfreemass
-#' @return gutfull
-#' @return fecundity
-#' @return clutches
+#' @return stage Life cycle stage, -
+#' @return V Structure, cm^3
+#' @return E Reserve density, J/cm^3
+#' @return E_H Maturity, J
+#' @return E_s Stomach energy content, J
+#' @return E_R Reproduction buffer energy, J
+#' @return E_B Reproduction batch energy, J
+#' @return q Aging acceleration
+#' @return hs Hazard rate
+#' @return length Physical length, cm
+#' @return wetmass Total wet mass, g
+#' @return wetgonad Wet mass of gonad, g
+#' @return wetgut Wet mass of food in gut, g
+#' @return wetstorage Wet mass of reserve, g
+#' @return p_surv Survival probability, -
+#' @return fecundity Eggs produced at a given time point, #
+#' @return clutches Clutches produced at a given time point
+#' @return O2FLUX Oxygen flux, mol/time
+#' @return CO2FLUX Carbon dioxide flux, mol/time
+#' @return MLO2 Oxgen consumption rate, ml/hour
+#' @return GH2OMET Metabolic water flux, mol/time
+#' @return DEBQMET Metabolic heat generation, J/time
+#' @return DRYFOOD Dry food intake, mol/time
+#' @return FAECES Faeces production, mol/time
+#' @return NWASTE Nitrogenous waste production, mol/time
+#' @return p_A Assimilation power, J/time
+#' @return p_C Catabolic power, J/time
+#' @return p_M Somatic maintenance power, J/time
+#' @return p_G Growth power, J/time
+#' @return p_D Dissipation power, J/time
+#' @return p_J Maturity power, J/time
+#' @return p_R Reproduction power, J/time
+#' @return p_B Reproduction batch power, J/time
 #' @examples
-#' # simulate growth and reproduction at different constant body temperatures at constant food for a lizard (Eulamprus quoyii - default parameter values, starting as a hatchling)
+#' # simulate growth and reproduction at different constant body temperatures at
+#' # constant food for a lizard (Tiliqua rugosa - default parameter values, starting
+#' # as an egg)
 #'
-#' n<-3000 # time steps
-#' step<-1 # step size (days)
+#' n <- 3000 # time steps
+#' step <- 1 # step size (days)
 #'
-#' Tbs=seq(25,35,2.5) # sequence of body temperatures to use
+#' Tbs=seq(25, 35, 5) # sequence of body temperatures to use
 #'
 #' for(j in 1:length(Tbs)){
-#' debout<-matrix(data = 0, nrow = n, ncol=27)
-#' deb.names<-c("E_pres","V_pres","E_H_pres","q_pres","hs_pres","surviv_pres","Es_pres","cumrepro","cumbatch","O2FLUX","CO2FLUX","MLO2","GH2OMET","DEBQMET","DRYFOOD","FAECES","NWASTE","wetgonad","wetstorage","wetfood","wetmass","gutfreemass","gutfull","fecundity","clutches","potfreemass")
-#' colnames(debout)<-deb.names
+#'   debout<-matrix(data = 0, nrow = n, ncol = 33)
+#'   deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "O2FLUX", "CO2FLUX", "MLO2", "GH2OMET", "DEBQMET", "DRYFOOD", "FAECES", "NWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
+#'   colnames(debout)<-deb.names
 #'
-#' # initialise
-#' debout[1,]<-DEB(Tb = Tbs[j], step = step)
+#'   # initialise
+#'   debout[1,]<-DEB(Tb = Tbs[j], step = step)
 #'
-#' for(i in 2:n){
-#' debout[i,]<-DEB(Tb = Tbs[j], breeding = 1, step = step,E_pres=debout[(i-1),1],V_pres=debout[(i-1),2],E_H_pres=debout[(i-1),3],q_pres=debout[(i-1),4],hs_pres=debout[(i-1),5],surviv_pres=debout[(i-1),6],Es_pres=debout[(i-1),7],cumrepro=debout[(i-1),8],cumbatch=debout[(i-1),9])
-#' }
+#'   for(i in 2:n){
+#'     debout[i,] <- DEB(Tb = Tbs[j], breeding = 1, step = step, E_pres = debout[(i - 1), 3], V_pres = debout[(i - 1), 2], E_H_pres = debout[(i - 1), 4], q = debout[(i - 1), 8], hs = debout[(i - 1), 9], p_surv = debout[(i - 1), 15], E_s_pres = debout[(i - 1), 5], E_R = debout[(i - 1), 6], E_B = debout[(i - 1), 7])
+#'   }
 #'
-#' if(j==1){
-#'   plot((seq(1,n)/365),debout[,21],ylim=c(100,1500),type='l',xlab='years',ylab='wet mass, g', col=j)
-#' }else{
-#'   points((seq(1,n)/365),debout[,21],ylim=c(100,1500),type='l',xlab='years',ylab='wet mass, g',col=j)
-#' }
+#'   if(j == 1){
+#'     plot((seq(1, n) / 365), debout[, 11], ylim = c(100, 1500), type = 'l', xlab = 'years', ylab = 'wet mass, g', col = j)
+#'   }else{
+#'     points((seq(1,n) / 365), debout[, 11], ylim = c(100, 1500), type = 'l', xlab = 'years', ylab = 'wet mass, g',col = j)
+#'   }
 #'
 #' } #end loop through body temperatures
-#'
-#'
-#'
 #' @export
 DEB<-function(
   step=1/24,
@@ -186,24 +193,25 @@ DEB<-function(
   arrhenius=matrix(data = matrix(data = c(rep(T_A,8),rep(T_AL,8),rep(T_AH,8),rep(T_L,8),rep(T_H,8)),nrow = 8, ncol = 5), nrow = 8, ncol = 5),
   acthr=1,
   X=10,
-  E_pres=6011.93,
-  V_pres=3.9752^3,
-  E_H_pres=73592,
+  E_pres=E_0/1e-9,
+  V_pres=1e-9,
+  E_H_pres=0,
   q_pres=0,
   hs_pres=0,
-  surviv_pres=1,
-  Es_pres=0,
-  cumrepro=0,
-  cumbatch=0,
-  stages=3,
-  stage=1,
+  p_surv_pres=1,
+  E_s_pres=0,
+  p_B_pres=0,
+  E_R=0,
+  E_B=0,
+  stages=6,
+  stage=0,
   breeding=0,
   pregnant=0,
   Tb=33,
   fdry=0.3,
   L_b=0.42,
   L_j=1.376,
-  S_instar=rep(1.6, stages),
+  S_instar=rep(1.618, stages),
   spawnday=1,
   day=1,
   metab_mode=0,
@@ -223,6 +231,7 @@ DEB<-function(
   clutches <- 0
   clutchenergy <- E_0 * clutchsize
   starve <- 0
+  p_B <- 0
 
   #DEB mass balance-related calculations
   n_O <- cbind(n_X, n_V, n_E, n_P) # matrix of composition of organics, i.e. food, structure, reserve and faeces
@@ -288,7 +297,7 @@ DEB<-function(
   w_P <- wO[4]
 
   # initial conditions for solver
-  init <- c(V_pres, E_pres, E_H_pres, Es_pres, starve, q_pres, hs_pres, cumrepro, cumbatch)
+  init <- c(V_pres, E_pres, E_H_pres, E_s_pres, starve, q_pres, hs_pres, E_R, E_B)
 
   # parameters
   indata <- list(k_J = k_JT, p_Am = p_AmT, k_M = k_M, p_M = p_MT,
@@ -457,16 +466,12 @@ DEB<-function(
   starve <- max(DEB.state$S, 0)
   q <- max(DEB.state$q, 0)
   hs <- max(DEB.state$hs, 0)
-  cumrepro <- max(DEB.state$R, 0)
-  cumbatch <- max(DEB.state$B, 0)
+  E_R <- max(DEB.state$R, 0)
+  E_B <- max(DEB.state$B, 0)
 
   L_w = V ^ (1 / 3) / del_M * 10 # length in mm
   if(Es > E_sm * V){
     Es <- E_sm * V
-  }
-  gutfull <- Es / (E_sm * V)
-  if(gutfull > 1){
-    gutfull <- 1
   }
 
   # some powers
@@ -506,9 +511,9 @@ DEB<-function(
   }
   p_G = p_C - p_M2 - p_J - p_R
 
-  testclutch <- floor((cumrepro + cumbatch) / E_0)
+  testclutch <- floor((E_R + E_B) / E_0)
   # FOR VARIABLE CLUTCH SIZE FROM REPRO AND BATCH BUFFERS
-  if(minclutch > 0 & floor(cumrepro + cumbatch) / E_0 > minclutch){
+  if(minclutch > 0 & floor(E_R + E_B) / E_0 > minclutch){
     if(testclutch <= orig_clutchsize){# ! MAKE SMALLEST CLUTCH ALLOWABLE FOR THIS REPRO EVENT
       clutchsize <- minclutch
       clutchenergy <- clutchsize * E_0
@@ -518,26 +523,41 @@ DEB<-function(
   # determine stages
 
   # STD MODEL
-  if(metab_mode == 0){
-    if(stage == 2){
-      if(cumbatch < 0.1 * clutchenergy){
-        stage <- 3
+  if(metab_mode == 0 & E_Hb == E_Hj){
+    if(E_H <= E_Hb){
+      stage <- 0
+    }else{
+      if(E_H < E_Hp){
+        stage <- 1
+      }else{
+        stage <- 2
       }
     }
+    if(E_B > 0){
+      if(E_H > E_Hp){
+        stage <- 3
+      }else{
+        stage <- stage
+      }
+    }
+  }
+
+  # ABJ MODEL
+  if(metab_mode == 0 & E_Hb != E_Hj){
     if(E_H <= E_Hb){
       stage <- 0
     }else{
       if(E_H < E_Hj){
         stage <- 1
-      }else{
-        if(E_H < E_Hp){
-          stage <- 2
-        }else{
-          stage <- 3
-        }
+      }
+      if(E_H >= E_Hj){
+        stage <- 2
+      }
+      if(E_H > E_Hp){
+        stage <- 3
       }
     }
-    if(cumbatch > 0){
+    if(E_B > 0){
       if(E_H > E_Hp){
         stage <- 4
       }else{
@@ -546,15 +566,14 @@ DEB<-function(
     }
   }
 
+  # ABP acceleration model
   if(metab_mode == 1){
     L_instar <- rep(0, stages)
     L_instar[1] <- S_instar[1] ^ 0.5 * L_b
     for(j in 2:stages){
       L_instar[j] <- S_instar[j] ^ 0.5 * L_instar[j - 1]
     }
-    if(stage > 0 & stage < stages - 1){
-      L_thresh <- L_instar[stage]
-    }
+    L_thresh <- L_instar[stage]
     if(stage == 0){
       if(E_H > E_Hb){
         stage <- stage + 1
@@ -572,25 +591,25 @@ DEB<-function(
   }
 
 
-  if((cumbatch>clutchenergy) | (pregnant==1)){
+  if((E_B>clutchenergy) | (pregnant==1)){
     if(viviparous == 1){
       if((pregnant == 0) & (breeding == 1)){
         v_baby <- v_init_baby
         e_baby <- e_init_baby
         EH_baby <- 0
         pregnant <- 1
-        testclutch <- floor(cumbatch / E_0)
+        testclutch <- floor(E_B / E_0)
         if(testclutch > clutchsize){
           clutchsize <- testclutch
           clutchenergy <- E_0*clutchsize
         }
         # for variable clutch size from repro and batch buffers
-        if(cumbatch<clutchenergy){
-          # needs to draw from repro buffer - temporarily store current repro as cumrepro_temp,
+        if(E_B<clutchenergy){
+          # needs to draw from repro buffer - temporarily store current repro as E_R_temp,
           # { remove what is needed from the repro buffer and add it to the batch buffer
-          cumrepro_temp <- cumrepro
-          cumrepro <- cumrepro+cumbatch-clutchenergy
-          cumbatch <- cumbatch+cumrepro_temp-cumrepro
+          E_R_temp <- E_R
+          E_R <- E_R+E_B-clutchenergy
+          E_B <- E_B+E_R_temp-E_R
         }
       }
       if(hour==1){
@@ -605,7 +624,7 @@ DEB<-function(
         if((Tb < VTMIN)  |  (Tb > VTMAX)){
           #goto 898
         }
-        cumbatch(hour) <- cumbatch(hour) - clutchenergy
+        E_B(hour) <- E_B(hour) - clutchenergy
         repro(hour) <- 1
         pregnant <- 0
         v_baby <- v_init_baby
@@ -623,7 +642,7 @@ DEB<-function(
         #if((Tb < VTMIN)  |  (Tb > VTMAX)){
         #}
         if(day == spawnday & spawnday != 0){
-          testclutch <- floor(cumbatch / E_0)
+          testclutch <- floor(E_B / E_0)
           if(testclutch > clutchsize){
             clutchsize <- testclutch
             clutchenergy <- clutchsize * E_0
@@ -632,18 +651,18 @@ DEB<-function(
             clutchsize <- testclutch
             clutchenergy <- clutchsize * E_0
           }
-          cumbatch <- cumbatch - clutchenergy
+          E_B <- E_B - clutchenergy
           repro <- 1
           fecundity <- clutchsize
           clutches <- 1
         }else{
           if(spawnday == 0){
-            testclutch <- floor(cumbatch / E_0)
+            testclutch <- floor(E_B / E_0)
             if(testclutch > clutchsize){
               clutchsize <- testclutch
               clutchenergy <- clutchsize * E_0
             }
-            cumbatch <- cumbatch - clutchenergy
+            E_B <- E_B - clutchenergy
             repro <- 1
             fecundity <- clutchsize
             clutches <- 1
@@ -687,7 +706,7 @@ DEB<-function(
   JMO2_GM <- JOJx_GM * JM_JO[3,1] + JOJv_GM * JM_JO[3,2] + JOJe_GM * JM_JO[3,3] + JOJp_GM * JM_JO[3,4]
   JMNWASTE_GM <- JOJx_GM * JM_JO[4,1] + JOJv_GM * JM_JO[4,2] + JOJe_GM * JM_JO[4,3] + JOJp_GM * JM_JO[4,4]
 
-  RQ <- JMCO2/JMO2 # respiratory quotient
+  RQ <- JMCO2 / JMO2 # respiratory quotient
 
   O2FLUX <- -1 * JMO2/(T_REF / Tb / 24.4) * 1000 #mlO2/h, temperature corrected (including SDA)
   CO2FLUX <- JMCO2 / (T_REF / Tb / 24.4) * 1000
@@ -702,20 +721,16 @@ DEB<-function(
   FAECES <- JOJp * w_P
   NWASTE <- JMNWASTE * w_N
   if(pregnant==1){
-    wetgonad <- ((cumrepro / mu_E) * w_E) / d_Egg + ((((v_baby * e_baby) / mu_E) * w_E) / d_V + v_baby) * clutchsize
+    wetgonad <- ((E_R / mu_E) * w_E) / d_Egg + ((((v_baby * e_baby) / mu_E) * w_E) / d_V + v_baby) * clutchsize
   }else{
-    wetgonad <- ((cumrepro/mu_E) * w_E) / d_Egg + ((cumbatch / mu_E) * w_E) / d_Egg
+    wetgonad <- ((E_R/mu_E) * w_E) / d_Egg + ((E_B / mu_E) * w_E) / d_Egg
   }
-  wetstorage <- ((V * E / mu_E) *w_E) / d_V
-  wetfood <- ((Es / mu_E) * w_E) / fdry
-  foodin <- ((dEsdt / mu_E) * w_E) / fdry
-  #wetfood <- Es / 21525.37 / fdry
-  wetmass <- V * andens_deb + wetgonad + wetstorage + wetfood
-  gutfreemass <- V * andens_deb + wetgonad + wetstorage
-  potfreemass <- V * andens_deb + (((V * E_m) / mu_E) * w_E) / d_V # this is the max potential mass if reserve density is at max value
+  wetstorage <- ((V * E / mu_E) * w_E) / d_V
+  wetgut <- ((Es / mu_E) * w_E) / fdry
+  wetmass <- V * andens_deb + wetgonad + wetstorage + wetgut
 
-  dsurvdt <- -1*surviv_pres * hs
-  surviv <- surviv_pres + dsurvdt
+  dsurvdt <- -1 * p_surv_pres * hs
+  p_surv <- p_surv_pres + dsurvdt
 
   # new states
   E_pres <- E
@@ -723,11 +738,11 @@ DEB<-function(
   E_H_pres <- E_H
   q_pres <- q
   hs_pres <- hs
-  surviv_pres <- surviv
-  Es_pres <- Es
+  p_surv_pres <- p_surv
+  E_s_pres <- Es
 
-  deb.names <- c("E_pres", "V_pres", "E_H_pres", "q_pres", "hs_pres" ,"surviv_pres", "Es_pres", "cumrepro", "cumbatch", "O2FLUX", "CO2FLUX", "MLO2", "GH2OMET", "DEBQMET", "DRYFOOD", "FAECES", "NWASTE", "wetgonad", "wetstorage", "wetfood", "wetmass", "gutfreemass", "gutfull", "fecundity", "clutches", "potfreemass", "length", "p.R", "foodin", "stage", "p_G", "p_M2", "p_D", "p_J","p_C", "p_A")
-  results_deb <- c(E_pres ,V_pres ,E_H_pres, q_pres, hs_pres, surviv_pres, Es_pres, cumrepro, cumbatch, O2FLUX, CO2FLUX, MLO2, GH2OMET, DEBQMET, DRYFOOD, FAECES, NWASTE, wetgonad, wetstorage, wetfood, wetmass, gutfreemass, gutfull, fecundity, clutches, potfreemass, L_w, p_R, foodin, stage, p_G, p_M2, p_D, p_J, p_C, p_A)
-  names(results_deb)<-deb.names
-  return(results_deb)
+  deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv_pres", "fecundity", "clutches", "O2FLUX", "CO2FLUX", "MLO2", "GH2OMET", "DEBQMET", "DRYFOOD", "FAECES", "NWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
+  results.deb <- c(stage, V_pres, E_pres, E_H_pres, E_s_pres, E_R, E_B, q_pres, hs_pres, L_w, wetmass, wetgonad, wetgut, wetstorage, p_surv_pres, fecundity, clutches, O2FLUX, CO2FLUX, MLO2, GH2OMET, DEBQMET, DRYFOOD, FAECES, NWASTE, p_A, p_C, p_M2, p_G, p_D, p_J, p_R, p_B)
+  names(results.deb) <- deb.names
+  return(results.deb)
 }
