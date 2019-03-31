@@ -11,6 +11,8 @@
 #' @param slope Slope in degrees (if NA, then derived from DEM with package microclima)
 #' @param aspect Aspect in degrees (0 = north) (if NA, then derived from DEM with microclima)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
+#' @param minshade Minimum shade level to use (\%)
+#' @param maxshade Maximum shade level to us (\%)
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
 #' @param coastal Compute coastal effects with microclima? T (TRUE) or F (FALSE) (can take a while and may have high memory requirements depending on DEM size)
 #' @param ... Additional arguments, see Details
@@ -29,7 +31,7 @@
 #' @return sunsnow Hourly predictions of snow temperature under the minimum specified shade
 #' @return shadsnow Hourly predictions snow temperature under the maximum specified shade
 #' @usage micro_clima(loc = 'Galapagos', dstart = "01/01/2017", dfinish = "31/12/2017",
-#' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200),
+#' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export
 #' @details
@@ -291,6 +293,10 @@ micro_ncep <- function(
   slope = NA,
   aspect = NA,
   DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200),
+  minshade = 0,
+  maxshade = 90,
+  MINSHADES = NA,
+  MAXSHADES = NA,
   Refhyt = 2,
   Usrhyt = 0.01,
   Z01 = 0,
@@ -495,6 +501,21 @@ micro_ncep <- function(
         Please enter a correct value (0.1 - 2cm).", '\n')
     errors<-1
   }
+  if(minshade>maxshade | minshade==maxshade){
+    message("ERROR: Your value for minimum shade (minshade) is greater than or equal to the maximum shade (maxshade).
+        Please correct this.", '\n')
+    errors<-1
+  }
+  if(minshade>100 | minshade<0){
+    message("ERROR: Your value for minimum shade (minshade) is out of bounds.
+        Please input a value between 0 and 100.", '\n')
+    errors<-1
+  }
+  if(maxshade>100 | maxshade<0){
+    message("ERROR: Your value for maximum shade (maxshade) is out of bounds.
+        Please input a value between 0 and 100.", '\n')
+    errors<-1
+  }
   # end error trapping
 
   if(errors==0){ # continue
@@ -520,6 +541,16 @@ micro_ncep <- function(
     ida<-ndays
     microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
     daystart<-1
+    if(is.na(MAXSHADES)){
+      maxshades <- rep(maxshade,ndays)
+    }else{
+      maxshades <- MAXSHADES
+    }
+    if(is.na(MINSHADES)){
+      minshades <- rep(minshade,ndays)
+    }else{
+      minshades <- MINSHADES
+    }
     idayst <- 1 # start day
 
     ################## location and terrain #################################
@@ -859,11 +890,6 @@ micro_ncep <- function(
     }
     slope <- 0 # already corrected for by microclima
     azmuth <- 0 # already corrected for by microclima
-    maxshades <- rep(90,ndays)
-    minshades <- rep(0,ndays)
-    shademax <- maxshades
-    maxshade <- 90
-    minshade <- 0
 
     if(run.gads==1){
       ####### get solar attenuation due to aerosols with program GADS #####################
