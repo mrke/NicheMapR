@@ -104,7 +104,7 @@ rundeb <- function(
   }
 
   # checking if 5 parameter Arrhenius function has been defined
-  if(exists("T.L")==FALSE){T_L <- -173.15}else{T_L <- T.L}
+  if(exists("T.L")==FALSE){T_L <- 173.15}else{T_L <- T.L}
   if(exists("T.H")==FALSE){T_H <- 373.15}else{T_H <- T.H}
   if(exists("T.AL")==FALSE){T_AL <- 5E04}else{T_AL <- T.AL}
   if(exists("T.AH")==FALSE){T_AH <- 9E04}else{T_AH <- T.AH}
@@ -525,7 +525,7 @@ rundeb <- function(
     points(seq(1, n) / div, (debout.df$V + debout.df$wetstorage) * mass.mult, type = 'l', col = 'grey', lwd =2)
     abline(v = which(debout.df$E_H > E.Hb)[1] / div, lty = 2, col = 'grey')
     abline(v = which(debout.df$E_H > E.Hp)[1] / div, lty = 2, col = 'grey')
-    legend(-(n/div/20), max(debout.df$wetmass) * 1.1, c('repro. buffer', 'food in gut', 'reserve', 'structure'), lty = c(1, 1, 1, 1), col = c("pink", "brown", "grey", "dark green"), bty = 'n')
+    legend(-(n/div/20), max(debout.df$wetmass) * 1.05, c('repro. buffer', 'food in gut', 'reserve', 'structure'), lty = c(1, 1, 1, 1), col = c("pink", "brown", "grey", "dark green"), bty = 'n')
     plot(seq(1, n) / div, debout.df$length * length.mult, type = 'l', xlab = 'Age (days)', ylab = paste0('Length (', length.unit, ')'), col = 'black', lwd = 2, xlim = c(0, xmax), main = "growth, length")
     abline(v = which(debout.df$E_H > E.Hb)[1] / div, lty = 2, col = 'grey')
     abline(v = which(debout.df$E_H > E.Hp)[1] / div, lty = 2, col = 'grey')
@@ -537,8 +537,8 @@ rundeb <- function(
     nonrepro.mass <- (debout.postembryo$wetmass - debout.postembryo$wetgonad) * mass.mult
     slope <- lm(log10(debout.postembryo$MLO2) ~ log10((nonrepro.mass)))$coefficients[2]
     plot(nonrepro.mass, debout.postembryo$MLO2, type = 'l', xlab = paste0('wet mass (', mass.unit, ')'), ylab = "O2 consumption, ml/hr", col = 'black', lwd = 2, main = paste0('respiration, allometric exponent = ',round(slope, 3)))
-    abline(v = nonrepro.mass[which(debout.df$E_H > E.Hb)[1]], lty = 2, col = 'grey')
-    abline(v = nonrepro.mass[which(debout.df$E_H > E.Hp)[1]], lty = 2, col = 'grey')
+    abline(v = debout.df$wetmass[which(debout.df$E_H > E.Hb)[1]] * mass.mult, lty = 2, col = 'grey')
+    abline(v = debout.df$wetmass[which(debout.df$E_H > E.Hp)[1]] * mass.mult, lty = 2, col = 'grey')
   }
   return(list(debout = debout, pars = pars))
 }
