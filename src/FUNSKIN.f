@@ -20,191 +20,191 @@ C     ALONG WITH THIS PROGRAM. IF NOT, SEE HTTP://WWW.GNU.ORG/LICENSES/.
 C	  THIS FUNCTION IS USED FOR TRANSIENT HEAT BUDGET CALCULATIONS TO COMPUTE
 C     SKIN TEMPERATURE - IT IS CALLED BY DSUB AND SOLVED VIA ZBRENT
 
-      Implicit None
+      IMPLICIT NONE
 
-      DOUBLE PRECISION A,A1,A2,A3,A4,A4b,A5,A6,ABSMAX,ABSMIN,AEFF,AirVol
-      DOUBLE PRECISION AL,ALT,AMASS,ANDENS,Area,aref,ASEMAJR,ASIL,ASILP
-      DOUBLE PRECISION ASQ,ATOT,B,BP,bref,BSEMINR,BSQ,C,CO2MOL,convar,CP
-      DOUBLE PRECISION cref,CSEMINR,CSQ,customgeom,CUTFA,DELTAR,DENAIR
-      DOUBLE PRECISION DEPSUB,DP,E,EMISAN,EMISSB,EMISSK,Enb,ESAT,EXTREF
-      DOUBLE PRECISION F12,f13,f14,f15,f16,F21,f23,f24,f25,f26,f31,F32
-      DOUBLE PRECISION f41,F42,f51,F52,f61,Fatcond,FATOSB,FATOSK
-      DOUBLE PRECISION Flshcond,FLTYPE,FLUID,flymetab,flyspeed,flytime
-      DOUBLE PRECISION FUNskin,G,GEVAP,GN,H2O_BalPast,HC,HD,HR,HTOVPR
-      DOUBLE PRECISION MR_1,MR_2,MR_3,O2MAX,O2MIN,PCTEYE,peyes,phi
-      DOUBLE PRECISION phimax,phimin,PI,PTCOND,ptcond_orig,QCOND,QCONV
-      DOUBLE PRECISION Qgenet,QIRIN,QIROUT,QMETAB,QRESP,Qsevap,QSOLAR
-      DOUBLE PRECISION QSOLR,QSWEAT,R,R1,RELHUM,Rflesh,rho1_3,RHUM
-      DOUBLE PRECISION Rinsul,RQ,Rskin,RW,S1,S2,shade,shp,sidex,SIG
-      DOUBLE PRECISION SkinT,SkinW,SPHEAT,SUBTK,TA,TAVE,tbask,TC,Tdigpr
-      DOUBLE PRECISION temerge,Tlung,Tmaxpr,Tminpr,TOBJ,TPREF,TQSOL,TR
-      DOUBLE PRECISION TRAD,trans1,Tskin,TSKY,TSUBST,TVINC,TVIR,TWING,VD
+      DOUBLE PRECISION A,A1,A2,A3,A4,A4B,A5,A6,ABSMAX,ABSMIN,AEFF,AIRVOL
+      DOUBLE PRECISION AL,ALT,AMASS,ANDENS,AREA,AREF,ASEMAJR,ASIL,ASILP
+      DOUBLE PRECISION ASQ,ATOT,B,BP,BREF,BSEMINR,BSQ,C,CO2MOL,CONVAR,CP
+      DOUBLE PRECISION CREF,CSEMINR,CSQ,CUSTOMGEOM,CUTFA,DELTAR,DENAIR
+      DOUBLE PRECISION DEPSUB,DP,E,EMISAN,EMISSB,EMISSK,ENB,ESAT,EXTREF
+      DOUBLE PRECISION F12,F13,F14,F15,F16,F21,F23,F24,F25,F26,F31,F32
+      DOUBLE PRECISION F41,F42,F51,F52,F61,FATCOND,FATOSB,FATOSK
+      DOUBLE PRECISION FLSHCOND,FLTYPE,FLUID,FLYMETAB,FLYSPEED,FLYTIME
+      DOUBLE PRECISION FUNSKIN,G,GEVAP,GN,H2O_BALPAST,HC,HD,HR,HTOVPR
+      DOUBLE PRECISION MR_1,MR_2,MR_3,O2MAX,O2MIN,PCTEYE,PEYES,PHI
+      DOUBLE PRECISION PHIMAX,PHIMIN,PI,PTCOND,PTCOND_ORIG,QCOND,QCONV
+      DOUBLE PRECISION QGENET,QIRIN,QIROUT,QMETAB,QRESP,QSEVAP,QSOLAR
+      DOUBLE PRECISION QSOLR,QSWEAT,R,R1,RELHUM,RFLESH,RHO1_3,RHUM
+      DOUBLE PRECISION RINSUL,RQ,RSKIN,RW,S1,S2,SHADE,SHP,SIDEX,SIG
+      DOUBLE PRECISION SKINT,SKINW,SPHEAT,SUBTK,TA,TAVE,TBASK,TC,TDIGPR
+      DOUBLE PRECISION TEMERGE,TLUNG,TMAXPR,TMINPR,TOBJ,TPREF,TQSOL,TR
+      DOUBLE PRECISION TRAD,TRANS1,TSKIN,TSKY,TSUBST,TVINC,TVIR,TWING,VD
       DOUBLE PRECISION VDAIR,VDSURF,VEL,VOL,WB,WCUT,WEVAP,WEYES,WQSOL
-      DOUBLE PRECISION WRESP,WTRPOT,X,Xtry
+      DOUBLE PRECISION WRESP,WTRPOT,X,XTRY
 
-      INTEGER climbing,DEB1,flight,flyer,flytest,geometry,IHOUR,LIVE
-      INTEGER MICRO,nodnum,wingcalc,wingmod
+      INTEGER CLIMBING,DEB1,FLIGHT,FLYER,FLYTEST,GEOMETRY,IHOUR,LIVE
+      INTEGER MICRO,NODNUM,WINGCALC,WINGMOD
 
-      dimension customgeom(8),shp(3)
+      DIMENSION CUSTOMGEOM(8),SHP(3)
       
-      COMMON/ANPARMS/Rinsul,R1,Area,VOL,Fatcond
-      COMMON/Behav2/geometry,nodnum,customgeom,shp
-      common/climb/climbing
+      COMMON/ANPARMS/RINSUL,R1,AREA,VOL,FATCOND
+      COMMON/BEHAV2/GEOMETRY,NODNUM,CUSTOMGEOM,SHP
+      COMMON/CLIMB/CLIMBING
       COMMON/ELLIPS/ASEMAJR,BSEMINR,CSEMINR
-      COMMON/EVAP1/PCTEYE,WEYES,WRESP,WCUT,AEFF,CUTFA,HD,peyes,SkinW,
-     & SkinT,HC,convar
-      COMMON/fly/flytime,flyspeed,flymetab,flight,flyer,flytest
+      COMMON/EVAP1/PCTEYE,WEYES,WRESP,WCUT,AEFF,CUTFA,HD,PEYES,SKINW,
+     & SKINT,HC,CONVAR
+      COMMON/FLY/FLYTIME,FLYSPEED,FLYMETAB,FLIGHT,FLYER,FLYTEST
       COMMON/FUN1/QSOLAR,QIRIN,QMETAB,QRESP,QSEVAP,QIROUT,QCONV,QCOND
-      COMMON/FUN2/AMASS,RELHUM,ATOT,FATOSK,FATOSB,EMISAN,SIG,Flshcond
-      COMMON/FUN3/AL,TA,VEL,PTCOND,SUBTK,DEPSUB,TSUBST,ptcond_orig
-      COMMON/FUN4/Tskin,R,WEVAP,TR,ALT,BP,H2O_BalPast
+      COMMON/FUN2/AMASS,RELHUM,ATOT,FATOSK,FATOSB,EMISAN,SIG,FLSHCOND
+      COMMON/FUN3/AL,TA,VEL,PTCOND,SUBTK,DEPSUB,TSUBST,PTCOND_ORIG
+      COMMON/FUN4/TSKIN,R,WEVAP,TR,ALT,BP,H2O_BALPAST
       COMMON/FUN6/SPHEAT,ABSMAX,ABSMIN,O2MAX,O2MIN,LIVE
-      Common/Guess/Xtry
-      COMMON/REVAP1/Tlung,DELTAR,EXTREF,RQ,MR_1,MR_2,MR_3,DEB1
-      COMMON/REVAP2/GEVAP,AirVol,CO2MOL
-      Common/soln/Enb
-      COMMON/TPREFR/TMAXPR,TMINPR,TDIGPR,TPREF,tbask,temerge
-      Common/Treg/Tc
+      COMMON/GUESS/XTRY
+      COMMON/REVAP1/TLUNG,DELTAR,EXTREF,RQ,MR_1,MR_2,MR_3,DEB1
+      COMMON/REVAP2/GEVAP,AIRVOL,CO2MOL
+      COMMON/SOLN/ENB
+      COMMON/TPREFR/TMAXPR,TMINPR,TDIGPR,TPREF,TBASK,TEMERGE
+      COMMON/TREG/TC
       COMMON/WCONV/FLTYPE
       COMMON/WDSUB1/ANDENS,ASILP,EMISSB,EMISSK,FLUID,G,IHOUR
       COMMON/WDSUB2/QSOLR,TOBJ,TSKY,MICRO
-      COMMON/WINGFUN/rho1_3,trans1,aref,bref,cref,phi,F21,f31,f41,f51,
-     & sidex,WQSOL,phimin,phimax,twing,F12,F32,F42,F52,f61,TQSOL,A1,A2,
-     & A3,A4,A4b,A5,A6,f13,f14,f15,f16,f23,f24,f25,f26,wingcalc,wingmod
+      COMMON/WINGFUN/RHO1_3,TRANS1,AREF,BREF,CREF,PHI,F21,F31,F41,F51,
+     & SIDEX,WQSOL,PHIMIN,PHIMAX,TWING,F12,F32,F42,F52,F61,TQSOL,A1,A2,
+     & A3,A4,A4B,A5,A6,F13,F14,F15,F16,F23,F24,F25,F26,WINGCALC,WINGMOD
       COMMON/WMET/QSWEAT
-      COMMON/WSOLAR/ASIL,Shade
+      COMMON/WSOLAR/ASIL,SHADE
 
 
       DATA PI/3.14159265/
 
 C     THE GUESSED VARIABLE, X, IS CORE TEMPERATURE (C); SEE SUB. MET
-C     FOR DETAILED EXPLANATION OF CALCULATION OF SURF. TEMP., Tskin,
+C     FOR DETAILED EXPLANATION OF CALCULATION OF SURF. TEMP., TSKIN,
 C     FROM TC AND MASS
-c     This assumes uniform body temperature.
+C     THIS ASSUMES UNIFORM BODY TEMPERATURE.
 
-C     Control of body temperature guesses for stability purposes
-      If (X .gt. 80.) then
+C     CONTROL OF BODY TEMPERATURE GUESSES FOR STABILITY PURPOSES
+      IF (X .GT. 80.) THEN
        X = 80.
-      else
-       If (X .lt. -20.0) then
-        X = Tsky + 0.1
-       Endif
-      Endif
-
-      Tskin = X
-      Xtry = X
-
-c     Get the metabolic rate
-C     CHECKING FOR INANIMATE OBJECT
-      IF (LIVE .EQ. 0) THEN
-C      Inanimate
-       QMETAB = 0.0
-       Tskin = X
       ELSE
-c      Alive, but is it too cold?
-       If (Tc .ge. 0.0) then
-        CALL MET
-       else
-C       Too cold, super low metabolism
-        Qmetab = 0.0001
-        Tskin = X
-       Endif
+       IF (X .LT. -20.0) THEN
+        X = TSKY + 0.1
+       ENDIF
       ENDIF
 
-c     Get the respiratory water loss
-C     Checking for fluid type
-      if (FLTYPE .EQ. 0.00) THEN
-C      AIR
-C      Call for respiratory water & energy loss
-       If (Qmetab .ge. 0.000) then
-        CALL RESP
-       else
-c       Negative metabolic rate. No physiological meaning - dead.
-        Qresp = 0.00000
-        Qmetab = 0.00000
-       endif
-      endif
+      TSKIN = X
+      XTRY = X
 
-C     Net internal heat generation
-      Qgenet = Qmetab - Qresp
-C     Net internal heat generation/unit volume. Use for estimating skin temp.
-      Gn = Qgenet/Vol
+C     GET THE METABOLIC RATE
+C     CHECKING FOR INANIMATE OBJECT
+      IF (LIVE .EQ. 0) THEN
+C      INANIMATE
+       QMETAB = 0.0
+       TSKIN = X
+      ELSE
+C      ALIVE, BUT IS IT TOO COLD?
+       IF (TC .GE. 0.0) THEN
+        CALL MET
+       ELSE
+C       TOO COLD, SUPER LOW METABOLISM
+        QMETAB = 0.0001
+        TSKIN = X
+       ENDIF
+      ENDIF
+
+C     GET THE RESPIRATORY WATER LOSS
+C     CHECKING FOR FLUID TYPE
+      IF (FLTYPE .EQ. 0.00) THEN
+C      AIR
+C      CALL FOR RESPIRATORY WATER & ENERGY LOSS
+       IF (QMETAB .GE. 0.000) THEN
+        CALL RESP
+       ELSE
+C       NEGATIVE METABOLIC RATE. NO PHYSIOLOGICAL MEANING - DEAD.
+        QRESP = 0.00000
+        QMETAB = 0.00000
+       ENDIF
+      ENDIF
+
+C     NET INTERNAL HEAT GENERATION
+      QGENET = QMETAB - QRESP
+C     NET INTERNAL HEAT GENERATION/UNIT VOLUME. USE FOR ESTIMATING SKIN TEMP.
+      GN = QGENET/VOL
       IF (LIVE .EQ. 0) THEN
        GN = 0.
       ENDIF
 
 C     COMPUTING SURFACE TEMPERATURE AS DICTATED BY GEOMETRY
 
-C     First set average body temperature for estimation of avearage lung temperature
-      IF(geometry.eq.1)then
-C      Cylinder: From p. 270 Bird, Stewart & Lightfoot. 1960. Transport Phenomena.
-C      Tave = (gR**2/(8k)) + Tskin, where Tskin = Tcore - gR**2/(4k)
-C      Note:  these should all be solved simultaneously.  This is an approximation
-C      using cylinder geometry. Subcutaneous fat is allowed in cylinder & sphere
-C      calculations.
-       Rflesh = R1 - Rinsul
-C      Computing average torso temperature from core to skin
-       Tlung = (Gn*Rflesh**2)/(8.*Flshcond) + Tskin
-      endif
-      if(geometry.eq.2)then
-C      Ellipsoid: Derived 24 October, 1993  W. Porter
+C     FIRST SET AVERAGE BODY TEMPERATURE FOR ESTIMATION OF AVEARAGE LUNG TEMPERATURE
+      IF(GEOMETRY.EQ.1)THEN
+C      CYLINDER: FROM P. 270 BIRD, STEWART & LIGHTFOOT. 1960. TRANSPORT PHENOMENA.
+C      TAVE = (GR**2/(8K)) + TSKIN, WHERE TSKIN = TCORE - GR**2/(4K)
+C      NOTE:  THESE SHOULD ALL BE SOLVED SIMULTANEOUSLY.  THIS IS AN APPROXIMATION
+C      USING CYLINDER GEOMETRY. SUBCUTANEOUS FAT IS ALLOWED IN CYLINDER & SPHERE
+C      CALCULATIONS.
+       RFLESH = R1 - RINSUL
+C      COMPUTING AVERAGE TORSO TEMPERATURE FROM CORE TO SKIN
+       TLUNG = (GN*RFLESH**2)/(8.*FLSHCOND) + TSKIN
+      ENDIF
+      IF(GEOMETRY.EQ.2)THEN
+C      ELLIPSOID: DERIVED 24 OCTOBER, 1993  W. PORTER
        A = ASEMAJR
        B = BSEMINR
        C = CSEMINR
        ASQ = A**2
        BSQ = B**2
        CSQ = C**2
-C      Computing average torso temperature from core to skin
-       Tlung = (Gn/(4.*Flshcond)) * ((ASQ*BSQ*CSQ)/
-     &  (ASQ*BSQ+ASQ*CSQ+BSQ*CSQ)) + Tskin
-      endif
-      if(geometry.eq.4)then
-C      Sphere:
+C      COMPUTING AVERAGE TORSO TEMPERATURE FROM CORE TO SKIN
+       TLUNG = (GN/(4.*FLSHCOND)) * ((ASQ*BSQ*CSQ)/
+     &  (ASQ*BSQ+ASQ*CSQ+BSQ*CSQ)) + TSKIN
+      ENDIF
+      IF(GEOMETRY.EQ.4)THEN
+C      SPHERE:
        RFLESH = R1 - RINSUL
        RSKIN = R1
 C      FAT LAYER, IF ANY
-       S1 = (QGENET/(4.*PI*Flshcond))*((RFLESH - RSKIN)/(RFLESH*RSKIN))
+       S1 = (QGENET/(4.*PI*FLSHCOND))*((RFLESH - RSKIN)/(RFLESH*RSKIN))
 C      COMPUTING AVERAGE TORSO TEMPERATURE FROM CORE TO SKIN (12 BECAUSE TLUNG IS 1/2 THE TC-TSKIN DIFFERENCE, 6*AK1)
-       TLUNG = (GN*RFLESH**2)/(12.*Flshcond) + TSKIN
-      endif
-      IF((geometry.eq.3).OR.(geometry.EQ.5))then
-C      Model lizard as cylinder
-C      Cylinder: From p. 270 Bird, Stewart & Lightfoot. 1960. Transport Phenomena.
-C      Tave = (gR**2/(8k)) + Tskin, where Tskin = Tcore - gR**2/(4k)
-C      Note:  these should all be solved simultaneously.  This is an approximation
-C      using cylinder geometry. Subcutaneous fat is allowed in cylinder & sphere
-C      calculations.
-       Rflesh = R1 - Rinsul
-C      Computing average torso temperature from core to skin
-       Tlung = (Gn*Rflesh**2)/(8.*Flshcond) + Tskin
-      endif
-C     Limiting lung temperature extremes
-      if (Tlung .gt. Tc) then
-       Tlung = Tc
-      endif
-      if (Tlung .lt. -3.) then
-       Tlung = -3.
-      endif
+       TLUNG = (GN*RFLESH**2)/(12.*FLSHCOND) + TSKIN
+      ENDIF
+      IF((GEOMETRY.EQ.3).OR.(GEOMETRY.EQ.5))THEN
+C      MODEL LIZARD AS CYLINDER
+C      CYLINDER: FROM P. 270 BIRD, STEWART & LIGHTFOOT. 1960. TRANSPORT PHENOMENA.
+C      TAVE = (GR**2/(8K)) + TSKIN, WHERE TSKIN = TCORE - GR**2/(4K)
+C      NOTE:  THESE SHOULD ALL BE SOLVED SIMULTANEOUSLY.  THIS IS AN APPROXIMATION
+C      USING CYLINDER GEOMETRY. SUBCUTANEOUS FAT IS ALLOWED IN CYLINDER & SPHERE
+C      CALCULATIONS.
+       RFLESH = R1 - RINSUL
+C      COMPUTING AVERAGE TORSO TEMPERATURE FROM CORE TO SKIN
+       TLUNG = (GN*RFLESH**2)/(8.*FLSHCOND) + TSKIN
+      ENDIF
+C     LIMITING LUNG TEMPERATURE EXTREMES
+      IF (TLUNG .GT. TC) THEN
+       TLUNG = TC
+      ENDIF
+      IF (TLUNG .LT. -3.) THEN
+       TLUNG = -3.
+      ENDIF
 
       CALL CONV
       CALL RESP
-      CALL Sevap
+      CALL SEVAP
       CALL RADOUT
       CALL COND
 
-      if (FLTYPE .EQ. 1.00) THEN
-C      WATER Environment
-       Qsevap = 0.00
+      IF (FLTYPE .EQ. 1.00) THEN
+C      WATER ENVIRONMENT
+       QSEVAP = 0.00
        WEVAP = 0.0
        QIRIN = 0.0
        QIROUT = 0.00
        QCOND = 0.00
       ENDIF
       
-      Trad=(QIRIN/(EMISAN*1*ATOT*SIG))**(1./4.)-273.15
-      HTOVPR = 2.5012E+06 - 2.3787E+03 * Ta
-      Tave=(Trad+Tskin)/2.
-      HR=4*EMISAN*SIG*(Tave+273)**3
+      TRAD=(QIRIN/(EMISAN*1*ATOT*SIG))**(1./4.)-273.15
+      HTOVPR = 2.5012E+06 - 2.3787E+03 * TA
+      TAVE=(TRAD+TSKIN)/2.
+      HR=4*EMISAN*SIG*(TAVE+273)**3
       
 C     INITIALIZING FOR SUB. WETAIR2
       WB = 0.0
@@ -217,18 +217,18 @@ C     INITIALIZING FOR SUB. WETAIR2
      * DENAIR,CP,WTRPOT)
       VDSURF = VD
       
-      if((geometry.eq.4).or.(geometry.eq.2))then
+      IF((GEOMETRY.EQ.4).OR.(GEOMETRY.EQ.2))THEN
        S2=((ASQ*BSQ*CSQ)/(ASQ*BSQ+ASQ*CSQ+BSQ*CSQ))
-       Enb=hc*CONVAR*(Tskin-Ta)+SIG*emisan*CONVAR*((Tskin+273)**4
-     & -(Trad+273)**4)+hD*CONVAR*(skinw/100)*HTOVPR*(VDSURF-VDAIR)-
-     & QSOLAR-(2*Flshcond*VOL*(Tc-Tskin))/S2
-      else
-       Enb=hc*CONVAR*(Tskin-Ta)+SIG*emisan*CONVAR*((Tskin+273)**4
-     & -(Trad+273)**4)+hD*CONVAR*(skinw/100)*HTOVPR*(VDSURF-VDAIR)-
-     & QSOLAR-(4*Flshcond*VOL*(Tc-Tskin))/Rflesh**2
-      endif
+       ENB=HC*CONVAR*(TSKIN-TA)+SIG*EMISAN*CONVAR*((TSKIN+273)**4
+     & -(TRAD+273)**4)+HD*CONVAR*(SKINW/100)*HTOVPR*(VDSURF-VDAIR)-
+     & QSOLAR-(2*FLSHCOND*VOL*(TC-TSKIN))/S2
+      ELSE
+       ENB=HC*CONVAR*(TSKIN-TA)+SIG*EMISAN*CONVAR*((TSKIN+273)**4
+     & -(TRAD+273)**4)+HD*CONVAR*(SKINW/100)*HTOVPR*(VDSURF-VDAIR)-
+     & QSOLAR-(4*FLSHCOND*VOL*(TC-TSKIN))/RFLESH**2
+      ENDIF
 
-      FUNskin = Enb
+      FUNSKIN = ENB
       
       RETURN
       END

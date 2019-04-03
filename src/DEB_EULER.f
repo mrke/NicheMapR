@@ -1,4 +1,4 @@
-       SUBROUTINE DEB_EULER(HOUR)
+      SUBROUTINE DEB_EULER(HOUR)
 
 C     NICHEMAPR: SOFTWARE FOR BIOPHYSICAL MECHANISTIC NICHE MODELLING
 
@@ -264,16 +264,16 @@ C     & *(1/(273+TB)-1/T_L))+EXP(T_AH*(1/T_H-1/(273+TB))))
      &(273.15+T_REF)-T_AL/T_L)+EXP(T_AH/T_H-T_AH/(273.15+T_REF)))/(1+EXP
      &(T_AL/(273.15+TB)-T_AL/T_L)+EXP(T_AH/T_H-T_AH/(273.15+TB))))
 
-c     metabolic acceleration if present
+C     METABOLIC ACCELERATION IF PRESENT
       S_M = 1.
-      IF(E_Hj.ne.E_Hb)THEN
-       IF(E_H_pres.lt.E_Hb)THEN
-        S_M = 1. ! -, multiplication factor for v and {p_Am}
+      IF(E_HJ.NE.E_HB)THEN
+       IF(E_H_PRES.LT.E_HB)THEN
+        S_M = 1. ! -, MULTIPLICATION FACTOR FOR V AND {P_AM}
        ELSE
-        IF(E_H_pres.lt.E_Hj)THEN
-         S_M = V_pres ** (1. / 3.) / L_b
+        IF(E_H_PRES.LT.E_HJ)THEN
+         S_M = V_PRES ** (1. / 3.) / L_B
         ELSE
-         S_M = L_j / L_b
+         S_M = L_J / L_B
         ENDIF
        ENDIF
       ENDIF
@@ -298,8 +298,8 @@ C     ENDIF
       ELSE
        F=FUNCT
       ENDIF
-      ! option for specific life stages to not be food limited
-      if(int(FOODLIM).eq.0)then
+      ! OPTION FOR SPECIFIC LIFE STAGES TO NOT BE FOOD LIMITED
+      IF(INT(FOODLIM).EQ.0)THEN
           FUNCT=1.
           X_FOOD = HALFSAT*10000.
       ENDIF
@@ -341,7 +341,7 @@ C     TEMPERATURE CORRECTIONS AND COMPOUND PARAMETERS
       ENDIF
 
 C	  HARDWIRING IN FOR LOCUSTS AT THE MOMENT      
-      IF((STAGE.eq.3).AND.(LENGTHDAY.LE.11).AND.(METAB_MODE.EQ.1))THEN
+      IF((STAGE.EQ.3).AND.(LENGTHDAY.LE.11).AND.(METAB_MODE.EQ.1))THEN
        P_MV = P_MV*DEPRESS
        K_M = P_MV/E_G
        K_J = K_J*DEPRESS
@@ -446,9 +446,9 @@ C     EQUATION 2.20 DEB3
       P_C = (E_M*(VDOT/L_PRES+K_M*(1+L_T/L_PRES))*(E_SCALED*G)/
      & (E_SCALED+G))*V_PRES
      
-      IF(METAB_MODE.eq.1)THEN
-       IF((p_A.gt.p_C).and.(E_PRES.EQ.E_M))THEN
-        p_A=p_C
+      IF(METAB_MODE.EQ.1)THEN
+       IF((P_A.GT.P_C).AND.(E_PRES.EQ.E_M))THEN
+        P_A=P_C
        ENDIF
       ENDIF
       
@@ -512,12 +512,12 @@ C     TALLYING LIFETIME FOOD EATEN
        ENDIF
       ENDIF
 
-      if(METAB_MODE.eq.0)THEN
+      IF(METAB_MODE.EQ.0)THEN
        P_R = (1.-KAP)*P_C-P_J
       ENDIF
-      if(METAB_MODE.eq.1)THEN
-       IF(E_H_PRES.GT.E_Hj)THEN
-        P_R = P_C-P_M*V_PRES-P_J ! no kappa-rule under abp model - reproduction gets what is left from the mobilisation flux after maintenance is paid
+      IF(METAB_MODE.EQ.1)THEN
+       IF(E_H_PRES.GT.E_HJ)THEN
+        P_R = P_C-P_M*V_PRES-P_J ! NO KAPPA-RULE UNDER ABP MODEL - REPRODUCTION GETS WHAT IS LEFT FROM THE MOBILISATION FLUX AFTER MAINTENANCE IS PAID
         DVDT=0.
        ELSE
         P_R = (1.-KAP)*P_C-P_J
@@ -528,13 +528,13 @@ C     TALLYING LIFETIME FOOD EATEN
        P_B = 0.
       ELSE
        IF(BATCH.EQ.1)THEN
-        if(metab_mode.eq.0)then
+        IF(METAB_MODE.EQ.0)THEN
          BATCHPREP=(KAP_R/LAMBDA)*((1-KAP)*(E_M*(VDOT*V_PRES**(2./3.)+
      &    K_M*V_PRES)/(1+(1/G)))-P_J)
-        else
+        ELSE
          BATCHPREP=(KAP_R/LAMBDA)*((E_M*(VDOT*V_PRES**(2./3.)+
-     &   K_M*V_PRES)/(1+(1/G)))-P_M*V_PRES**3-P_J) ! no kappa-rule under abp model - reproduction gets what is left from the mobilisation flux after maintenance is paid
-        endif
+     &   K_M*V_PRES)/(1+(1/G)))-P_M*V_PRES**3-P_J) ! NO KAPPA-RULE UNDER ABP MODEL - REPRODUCTION GETS WHAT IS LEFT FROM THE MOBILISATION FLUX AFTER MAINTENANCE IS PAID
+        ENDIF
         IF(BREEDING.EQ.0)THEN
          P_B =0.
         ELSE
@@ -565,16 +565,16 @@ C       END CHECK FOR WHETHER BATCH MODE IS OPERATING
 C     END CHECK FOR IMMATURE OR MATURE
       ENDIF
   
-      ! draw from reproduction and then batch buffers under starvation
-      if((starve.gt.0.).and.(cumrepro(HOUR-1).gt.starve))THEN
-       p_R = p_R - starve
-       starve = 0.
-       starving = 0
+      ! DRAW FROM REPRODUCTION AND THEN BATCH BUFFERS UNDER STARVATION
+      IF((STARVE.GT.0.).AND.(CUMREPRO(HOUR-1).GT.STARVE))THEN
+       P_R = P_R - STARVE
+       STARVE = 0.
+       STARVING = 0
       ENDIF
-      IF((starve.gt.0.).and.(cumbatch(HOUR-1).gt.starve))THEN
-       p_B = p_B - starve
-       starve = 0.
-       starving = 0
+      IF((STARVE.GT.0.).AND.(CUMBATCH(HOUR-1).GT.STARVE))THEN
+       P_B = P_B - STARVE
+       STARVE = 0.
+       STARVING = 0
       ENDIF
 
 C     MATURITY
@@ -620,7 +620,7 @@ C    ENDIF
       ENDIF
       
       IF((METAB_MODE.EQ.1).AND.(E_H_PRES.GT.E_HJ))THEN
-       R=0. ! no growth in abp after puberty - not setting this to zero messes up aging calculation
+       R=0. ! NO GROWTH IN ABP AFTER PUBERTY - NOT SETTING THIS TO ZERO MESSES UP AGING CALCULATION
       ENDIF
       DQDT = (Q_PRES*(V_PRES/V_M)*S_G+H_A)*(E_PRES/E_M)*
      & ((VDOT/L_PRES)-R)-R*Q_PRES
@@ -773,12 +773,12 @@ C     IF IT IS THE BEGINNING OF THE DAY
 
 
       V(HOUR)=V_PRES+DVDT
-      if((E_H(HOUR).gt.E_HJ).and.(E_H_pres.le.E_HJ))THEN
-       L_J = V(HOUR)**(1./3.) ! metamorphosis has occurred (ABJ model)
-      endif
-      if((E_H(HOUR).gt.E_Hb).and.(E_H_pres.le.E_Hb))THEN
-       L_b = V(HOUR)**(1./3.) ! birth length (needed for ABJ model)
-      endif
+      IF((E_H(HOUR).GT.E_HJ).AND.(E_H_PRES.LE.E_HJ))THEN
+       L_J = V(HOUR)**(1./3.) ! METAMORPHOSIS HAS OCCURRED (ABJ MODEL)
+      ENDIF
+      IF((E_H(HOUR).GT.E_HB).AND.(E_H_PRES.LE.E_HB))THEN
+       L_B = V(HOUR)**(1./3.) ! BIRTH LENGTH (NEEDED FOR ABJ MODEL)
+      ENDIF
       
       IF(V(HOUR).LT.0)THEN
        V(HOUR)=0
@@ -999,19 +999,19 @@ C       CHANGE BELOW TO ACTIVE OR NOT ACTIVE RATHER THAN DEPTH-BASED, IN CASE OF
 
 C     MASS BALANCE
 
-      ! molar fluxes of food, structure, reserve and faeces (mol/hour)
+      ! MOLAR FLUXES OF FOOD, STRUCTURE, RESERVE AND FAECES (MOL/HOUR)
       JOJX=P_A*ETAO(1,1)+P_D*ETAO(1,2)+P_G*ETAO(1,3) 
       JOJV=P_A*ETAO(2,1)+P_D*ETAO(2,2)+P_G*ETAO(2,3)
       JOJE=P_A*ETAO(3,1)+P_D*ETAO(3,2)+P_G*ETAO(3,3)
       JOJP=P_A*ETAO(4,1)+P_D*ETAO(4,2)+P_G*ETAO(4,3)
 
-      ! non-assimilation (i.e. growth and maintenance) molar fluxes as above
+      ! NON-ASSIMILATION (I.E. GROWTH AND MAINTENANCE) MOLAR FLUXES AS ABOVE
       JOJX_GM=P_D*ETAO(1,2)+P_G*ETAO(1,3)
       JOJV_GM=P_D*ETAO(2,2)+P_G*ETAO(2,3)
       JOJE_GM=P_D*ETAO(3,2)+P_G*ETAO(3,3)
       JOJP_GM=P_D*ETAO(4,2)+P_G*ETAO(4,3)
 
-      ! molar fluxes of 'minerals', CO2, H2O, O2 and nitrogenous waste (mol/h)
+      ! MOLAR FLUXES OF 'MINERALS', CO2, H2O, O2 AND NITROGENOUS WASTE (MOL/H)
       JMCO2=JOJX*JM_JO(1,1)+JOJV*JM_JO(1,2)+JOJE*JM_JO(1
      &    ,3)+JOJP*JM_JO(1,4)
       JMH2O=JOJX*JM_JO(2,1)+JOJV*JM_JO(2,2)+JOJE*JM_JO(
@@ -1023,7 +1023,7 @@ C     MASS BALANCE
 
       RQ = JMCO2/JMO2 ! RESPIRATORY QUOTIENT
 
-      ! non-asslimilation molar fluxes of 'minerals', CO2, H2O, O2 and nitrogenous waste (mol/h)
+      ! NON-ASSLIMILATION MOLAR FLUXES OF 'MINERALS', CO2, H2O, O2 AND NITROGENOUS WASTE (MOL/H)
       JMCO2_GM=JOJX_GM*JM_JO(1,1)+JOJV_GM*JM_JO(1,2)
      & +JOJE_GM*JM_JO(1,3)+JOJP_GM*JM_JO(1,4)
       JMH2O_GM=JOJX_GM*JM_JO(2,1)+JOJV_GM*JM_JO(2,2)

@@ -275,16 +275,16 @@ C     & *(1/(273.15+TB)-1/T_L))+EXP(T_AH*(1/T_H-1/(273.15+TB))))
      &(273.15+T_REF)-T_AL/T_L)+EXP(T_AH/T_H-T_AH/(273.15+T_REF)))/(1+EXP
      &(T_AL/(273.15+TB)-T_AL/T_L)+EXP(T_AH/T_H-T_AH/(273.15+TB))))
 
-c     metabolic acceleration if present
+C     METABOLIC ACCELERATION IF PRESENT
       S_M = 1.
-      IF(E_Hj.ne.E_Hb)THEN
-       IF(E_H_pres.lt.E_Hb)THEN
-        S_M = 1. ! -, multiplication factor for v and {p_Am}
+      IF(E_HJ.NE.E_HB)THEN
+       IF(E_H_PRES.LT.E_HB)THEN
+        S_M = 1. ! -, MULTIPLICATION FACTOR FOR V AND {P_AM}
        ELSE
-        IF(E_H_pres.lt.E_Hj)THEN
-         S_M = V_pres ** (1. / 3.) / L_b
+        IF(E_H_PRES.LT.E_HJ)THEN
+         S_M = V_PRES ** (1. / 3.) / L_B
         ELSE
-         S_M = L_j / L_b
+         S_M = L_J / L_B
         ENDIF
        ENDIF
       ENDIF
@@ -306,8 +306,8 @@ c     metabolic acceleration if present
       ELSE
        F=FUNCT
       ENDIF
-      ! option for specific life stages to not be food limited
-      if(int(FOODLIM).eq.0)then
+      ! OPTION FOR SPECIFIC LIFE STAGES TO NOT BE FOOD LIMITED
+      IF(INT(FOODLIM).EQ.0)THEN
        FUNCT=1.
        X_FOOD = HALFSAT*10000.
       ENDIF
@@ -347,8 +347,8 @@ C     TEMPERATURE CORRECTIONS AND COMPOUND PARAMETERS
        H_A = H_AREF*TCORR*DEPRESS
       ENDIF
 
-c	  HARDWIRING IN FOR LOCUSTS AT THE MOMENT      
-      IF((STAGE.eq.3).AND.(LENGTHDAY.LE.11).AND.(METAB_MODE.EQ.1))THEN
+C	  HARDWIRING IN FOR LOCUSTS AT THE MOMENT      
+      IF((STAGE.EQ.3).AND.(LENGTHDAY.LE.11).AND.(METAB_MODE.EQ.1))THEN
        P_MV = P_MV*DEPRESS
        K_M = P_MV/E_G
        K_J = K_J*DEPRESS
@@ -416,49 +416,49 @@ C --- DIMENSION OF THE SYSTEM
 C --- OUTPUT ROUTINE (AND DENSE OUTPUT) IS USED DURING INTEGRATION
       IOUT=0
 C --- INITIAL VALUES AND ENDPOINT OF INTEGRATION
-      RPAR(1)=DBLE(k_J)
-      RPAR(2)=DBLE(p_Am)
-      RPAR(3)=DBLE(k_M)
+      RPAR(1)=DBLE(K_J)
+      RPAR(2)=DBLE(P_AM)
+      RPAR(3)=DBLE(K_M)
       RPAR(4)=DBLE(P_XM)
       RPAR(5)=DBLE(VDOT)
-      RPAR(6)=DBLE(E_m)
-      RPAR(7)=DBLE(L_m)
+      RPAR(6)=DBLE(E_M)
+      RPAR(7)=DBLE(L_M)
       RPAR(8)=DBLE(L_T)
-      RPAR(9)=DBLE(kap)
-      RPAR(10)=DBLE(g)
+      RPAR(9)=DBLE(KAP)
+      RPAR(10)=DBLE(G)
       RPAR(11)=DBLE(M_V)
-      RPAR(12)=DBLE(mu_E)
-      RPAR(13)=DBLE(mu_V)
-      RPAR(14)=DBLE(d_V)
-      RPAR(15)=DBLE(w_V)
+      RPAR(12)=DBLE(MU_E)
+      RPAR(13)=DBLE(MU_V)
+      RPAR(14)=DBLE(D_V)
+      RPAR(15)=DBLE(W_V)
       RPAR(16)=DBLE(ACTHR(HOUR))
       RPAR(17)=DBLE(X_FOOD)
       RPAR(18)=DBLE(HALFSAT)
-      RPAR(19)=DBLE(E_Hp)
-      RPAR(20)=DBLE(E_Hb)
-      RPAR(21)=DBLE(s_G)
-      RPAR(22)=DBLE(h_a)
-      RPAR(23)=DBLE(pregnant)
-      RPAR(24)=DBLE(batch)
+      RPAR(19)=DBLE(E_HP)
+      RPAR(20)=DBLE(E_HB)
+      RPAR(21)=DBLE(S_G)
+      RPAR(22)=DBLE(H_A)
+      RPAR(23)=DBLE(PREGNANT)
+      RPAR(24)=DBLE(BATCH)
       RPAR(25)=DBLE(KAP_R)
-      RPAR(26)=DBLE(lambda)
-      RPAR(27)=DBLE(breeding)
-      RPAR(28)=DBLE(kap_X)
+      RPAR(26)=DBLE(LAMBDA)
+      RPAR(27)=DBLE(BREEDING)
+      RPAR(28)=DBLE(KAP_X)
       RPAR(29)=DBLE(WAITING)
-      RPAR(30)=DBLE(f)
+      RPAR(30)=DBLE(F)
       RPAR(31)=DBLE(ESM)
       RPAR(32)=DBLE(METAB_MODE)
       RPAR(33)=DBLE(E_HJ)
       RPAR(34)=DBLE(P_MV)
       X=0.0D0
       YY(1)=0.0D0
-      YY(2)=MAX(DBLE(V_pres),0.)
-      YY(3)=MAX(DBLE(E_pres),0.)
-      YY(4)=MAX(DBLE(E_H_pres),0.)
+      YY(2)=MAX(DBLE(V_PRES),0.)
+      YY(3)=MAX(DBLE(E_PRES),0.)
+      YY(4)=MAX(DBLE(E_H_PRES),0.)
       YY(5)=MAX(DBLE(ES_PRES),0.)
-      YY(6)=MAX(DBLE(starve),0.)
-      YY(7)=MAX(DBLE(q_pres),0.)
-      YY(8)=MAX(DBLE(hs_pres),0.)
+      YY(6)=MAX(DBLE(STARVE),0.)
+      YY(7)=MAX(DBLE(Q_PRES),0.)
+      YY(8)=MAX(DBLE(HS_PRES),0.)
       YY(9)=MAX(DBLE(CUMREPRO_INIT),0.)
       YY(10)=MAX(DBLE(CUMBATCH_INIT),0.)
       XEND=1.D+00
@@ -486,7 +486,7 @@ C --- CALL OF THE SUBROUTINE DOPRI5
       ED(HOUR)=MAX(YY(3),0.)
       E_H(HOUR)=MAX(YY(4),0.)
       ES(HOUR)=MAX(YY(5),0.)
-      IF(ES(HOUR).gt.(ESM*V(HOUR)))THEN
+      IF(ES(HOUR).GT.(ESM*V(HOUR)))THEN
        ES(HOUR) = ESM*V(HOUR)
       ENDIF
       ES_INIT=ES(HOUR)
@@ -507,12 +507,12 @@ C --- CALL OF THE SUBROUTINE DOPRI5
       IF(GUTFULL.GT.1)THEN
        GUTFULL=1
       ENDIF      
-      if((E_H(HOUR).gt.E_HJ).and.(E_H_pres.le.E_HJ))THEN
-       L_J = V(HOUR)**(1./3.) ! metamorphosis has occurred (ABJ model)
-      endif
-      if((E_H(HOUR).gt.E_Hb).and.(E_H_pres.le.E_Hb))THEN
-       L_b = V(HOUR)**(1./3.) ! birth length (needed for ABJ model)
-      endif
+      IF((E_H(HOUR).GT.E_HJ).AND.(E_H_PRES.LE.E_HJ))THEN
+       L_J = V(HOUR)**(1./3.) ! METAMORPHOSIS HAS OCCURRED (ABJ MODEL)
+      ENDIF
+      IF((E_H(HOUR).GT.E_HB).AND.(E_H_PRES.LE.E_HB))THEN
+       L_B = V(HOUR)**(1./3.) ! BIRTH LENGTH (NEEDED FOR ABJ MODEL)
+      ENDIF
       
 C     POWERS
       P_M = P_MV*V_PRES
@@ -525,17 +525,17 @@ C     POWERS
 C     EQUATION 2.20 DEB3
       P_C = (E_M*(VDOT/L_PRES+K_M*(1+L_T/L_PRES))*(E_SCALED*G)/
      & (E_SCALED+G))*V_PRES
-      IF(METAB_MODE.eq.1)THEN
-       IF((P_A.GT.P_C).and.(E_PRES.EQ.E_M))THEN
+      IF(METAB_MODE.EQ.1)THEN
+       IF((P_A.GT.P_C).AND.(E_PRES.EQ.E_M))THEN
         P_A=P_C
        ENDIF
       ENDIF     
-      if(METAB_MODE.eq.0)THEN
+      IF(METAB_MODE.EQ.0)THEN
        P_R = (1.-KAP)*P_C-P_J
       ENDIF
-      if(METAB_MODE.eq.1)THEN
-       IF(E_H_PRES.GT.E_Hj)THEN
-        P_R = P_C-P_M*V_PRES-P_J ! no kappa-rule under abp model - reproduction gets what is left from the mobilisation flux after maintenance is paid
+      IF(METAB_MODE.EQ.1)THEN
+       IF(E_H_PRES.GT.E_HJ)THEN
+        P_R = P_C-P_M*V_PRES-P_J ! NO KAPPA-RULE UNDER ABP MODEL - REPRODUCTION GETS WHAT IS LEFT FROM THE MOBILISATION FLUX AFTER MAINTENANCE IS PAID
         DVDT=0.
        ELSE
         P_R = (1.-KAP)*P_C-P_J
@@ -834,19 +834,19 @@ C       CHANGE BELOW TO ACTIVE OR NOT ACTIVE RATHER THAN DEPTH-BASED, IN CASE OF
 
 C     MASS BALANCE
  
-      ! molar fluxes of food, structure, reserve and faeces (mol/hour)
+      ! MOLAR FLUXES OF FOOD, STRUCTURE, RESERVE AND FAECES (MOL/HOUR)
       JOJX=P_A*ETAO(1,1)+P_D*ETAO(1,2)+P_G*ETAO(1,3) 
       JOJV=P_A*ETAO(2,1)+P_D*ETAO(2,2)+P_G*ETAO(2,3)
       JOJE=P_A*ETAO(3,1)+P_D*ETAO(3,2)+P_G*ETAO(3,3)
       JOJP=P_A*ETAO(4,1)+P_D*ETAO(4,2)+P_G*ETAO(4,3)
 
-      ! non-assimilation (i.e. growth and maintenance) molar fluxes as above
+      ! NON-ASSIMILATION (I.E. GROWTH AND MAINTENANCE) MOLAR FLUXES AS ABOVE
       JOJX_GM=P_D*ETAO(1,2)+P_G*ETAO(1,3)
       JOJV_GM=P_D*ETAO(2,2)+P_G*ETAO(2,3)
       JOJE_GM=P_D*ETAO(3,2)+P_G*ETAO(3,3)
       JOJP_GM=P_D*ETAO(4,2)+P_G*ETAO(4,3)
 
-      ! molar fluxes of 'minerals', CO2, H2O, O2 and nitrogenous waste (mol/h)
+      ! MOLAR FLUXES OF 'MINERALS', CO2, H2O, O2 AND NITROGENOUS WASTE (MOL/H)
       JMCO2=JOJX*JM_JO(1,1)+JOJV*JM_JO(1,2)+JOJE*JM_JO(1
      &    ,3)+JOJP*JM_JO(1,4)
       JMH2O=JOJX*JM_JO(2,1)+JOJV*JM_JO(2,2)+JOJE*JM_JO(
@@ -858,7 +858,7 @@ C     MASS BALANCE
 
       RQ = JMCO2/JMO2 ! RESPIRATORY QUOTIENT
 
-      ! non-asslimilation molar fluxes of 'minerals', CO2, H2O, O2 and nitrogenous waste (mol/h)
+      ! NON-ASSLIMILATION MOLAR FLUXES OF 'MINERALS', CO2, H2O, O2 AND NITROGENOUS WASTE (MOL/H)
       JMCO2_GM=JOJX_GM*JM_JO(1,1)+JOJV_GM*JM_JO(1,2)
      & +JOJE_GM*JM_JO(1,3)+JOJP_GM*JM_JO(1,4)
       JMH2O_GM=JOJX_GM*JM_JO(2,1)+JOJV_GM*JM_JO(2,2)

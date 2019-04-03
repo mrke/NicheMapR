@@ -2,19 +2,19 @@ C	  THIS IS THE GEAR ADAMS PREDICTOR CORRECTOR ALGORITHM - LSODE
       SUBROUTINE LSODE (F, NEQ, Y, TT, TOUT, ITOL, RTOL, ATOL, ITASK,    
      1            ISTATE, IOPT, RWORK, LRW, IWORK, LIW, JAC, MF, TRANCT,
      &            NDAYY)  
-      use aacommondat
+      USE AACOMMONDAT
       EXTERNAL F, JAC                                                   
       INTEGER NEQ, ITOL, ITASK, ISTATE, IOPT, LRW, IWORK, LIW, MF, NN   
 
-      Character*1 TranIn       
-      DOUBLE PRECISION Y, TT, TOUT, RTOL, ATOL, RWORK, Timout                    
+      CHARACTER*1 TRANIN       
+      DOUBLE PRECISION Y, TT, TOUT, RTOL, ATOL, RWORK, TIMOUT                    
       DIMENSION NEQ(1), Y(1), RTOL(1), ATOL(1), RWORK(LRW), IWORK(LIW)
 
 C-----------------------------------------------------------------------
 
 C-----------------------------------------------------------------------
       EXTERNAL PREPJ, SOLSY  
-      double precision Enberr,Tprint 
+      DOUBLE PRECISION ENBERR,TPRINT 
       INTEGER I, I1, I2, IER, IFLAG, ILLIN, IMXER, INIT, IOWNS,         
      1   JSTART, KFLAG, KGO, L, LACOR, LENIW, LENRW, LENWM, LEWT, LF0,  
      2   LIWM, LSAVF, LWM, LYH, MAXORD, METH, MITER, ML, MORD, MU,      
@@ -47,19 +47,19 @@ C-----------------------------------------------------------------------
      3   MXSTEP, MXHNIL, NHNIL, NTREP, NSLAST, NYH, IOWNS(6),           
      4   IER, JSTART, KFLAG, L, METH, MITER, MAXORD, N, NQ, NST, NFE,   
      5   NJE, NQU 
-c	Output print interval in from Sub. Itaday
-      Common/Usrop2/Enberr,tprint   
-      common/outsub/IT  
-      COMMON/TRANINIT/tranin
-      common/daystorun/nn
-C     ALLOCATE (XP(nn*25),YP(nn*25),ZP1(nn*25),ZP2(nn*25),ZP3(nn*25))
-C     ALLOCATE (ZP4(nn*25),ZP5(nn*25),ZP6(nn*25),ZP7(nn*25))      
+C	OUTPUT PRINT INTERVAL IN FROM SUB. ITADAY
+      COMMON/USROP2/ENBERR,TPRINT   
+      COMMON/OUTSUB/IT  
+      COMMON/TRANINIT/TRANIN
+      COMMON/DAYSTORUN/NN
+C     ALLOCATE (XP(NN*25),YP(NN*25),ZP1(NN*25),ZP2(NN*25),ZP3(NN*25))
+C     ALLOCATE (ZP4(NN*25),ZP5(NN*25),ZP6(NN*25),ZP7(NN*25))      
 C                                                                       
       DATA  MORD(1),MORD(2)/12,5/, MXSTP0/500/, MXHNL0/10/
-c	Initializing first output time
-      Timout = Tprint
+C	INITIALIZING FIRST OUTPUT TIME
+      TIMOUT = TPRINT
       TN = TT
-      if((TRANIN .eq. 'n') .or. (TRANIN .eq. 'N'))then
+      IF((TRANIN .EQ. 'N') .OR. (TRANIN .EQ. 'N'))THEN
         ISTATE = 1    
       ENDIF
 C-----------------------------------------------------------------------
@@ -318,17 +318,17 @@ C-----------------------------------------------------------------------
  280  IF ((TN + H) .NE. TN) GO TO 290                                   
       NHNIL = NHNIL + 1  
 
-      IF (NHNIL .GT. MXHNIL) then 
-      Go to 290
-      else                                 
-        CALL XERRWV(101, 1, 0, 0, 0, 2, TN, H)
-      Endif
-
-      IF (NHNIL .LT. MXHNIL)then
+      IF (NHNIL .GT. MXHNIL) THEN 
       GO TO 290
-      else                  
+      ELSE                                 
+        CALL XERRWV(101, 1, 0, 0, 0, 2, TN, H)
+      ENDIF
+
+      IF (NHNIL .LT. MXHNIL)THEN
+      GO TO 290
+      ELSE                  
         CALL XERRWV(102, 1, 1, MXHNIL, 0, 0, 0.0D0, 0.0D0)
-      endif                     
+      ENDIF                     
  290  CONTINUE                                                          
 C-----------------------------------------------------------------------
 C     CALL STODE(NEQ,Y,YH,NYH,YH,EWT,SAVF,ACOR,WM,IWM,F,JAC,PREPJ,SOLSY)
@@ -346,38 +346,38 @@ C-----------------------------------------------------------------------
  300  INIT = 1                                                          
       GO TO (310, 400, 330, 340, 350), ITASK                            
 C ITASK = 1.  IF TOUT HAS BEEN REACHED, INTERPOLATE. -------------------
- 310  Continue
-        If ((TN - Timout)*H .LT. 0.0D0)then
-c         Try again
+ 310  CONTINUE
+        IF ((TN - TIMOUT)*H .LT. 0.0D0)THEN
+C         TRY AGAIN
           GO TO 250
-         else 
-c         Integrator time greater than the print interval: interpolate to get
-c         a value at the print interval                         
-        CALL INTDY (Timout, 0, RWORK(LYH), NYH, Y, IFLAG)
-c         Intdy sets time to zero because it thinks things are over. Correcting this.
+         ELSE 
+C         INTEGRATOR TIME GREATER THAN THE PRINT INTERVAL: INTERPOLATE TO GET
+C         A VALUE AT THE PRINT INTERVAL                         
+        CALL INTDY (TIMOUT, 0, RWORK(LYH), NYH, Y, IFLAG)
+C         INTDY SETS TIME TO ZERO BECAUSE IT THINKS THINGS ARE OVER. CORRECTING THIS.
           TT = TOUT
-C         IF THE PRINT TIME INTERVAL IS SMALL, e.g. 10 min AND THE TIME CONSTANT IS LONG (LARGE 
-C         ANIMAL), e.g. 90 min, THE INTEGRATOR TIME INTERVAL, H, GETS LARGE AND FREQUENT CALLS 
-C         TO NERR = 52 RESULT STATING THAT THE TIME IS NOT IN THE INTERVAL.  Some
-C         of this can be ameliorated by inserting the code just below that continually
-c         downsizes H. It slows execution some, but eliminates a lot of the error 
-c         messages.
+C         IF THE PRINT TIME INTERVAL IS SMALL, E.G. 10 MIN AND THE TIME CONSTANT IS LONG (LARGE 
+C         ANIMAL), E.G. 90 MIN, THE INTEGRATOR TIME INTERVAL, H, GETS LARGE AND FREQUENT CALLS 
+C         TO NERR = 52 RESULT STATING THAT THE TIME IS NOT IN THE INTERVAL.  SOME
+C         OF THIS CAN BE AMELIORATED BY INSERTING THE CODE JUST BELOW THAT CONTINUALLY
+C         DOWNSIZES H. IT SLOWS EXECUTION SOME, BUT ELIMINATES A LOT OF THE ERROR 
+C         MESSAGES.
           IF(H.GT.TPRINT)THEN
                 H = TPRINT/2.
           ENDIF
-c         Call output subroutine; successful output for this interval
-          Call Osub2(Timout,Y,TRANCT,NDAYY)
-c       Checking to see if the day is done
-          if(TN.lt. Tout)then
-c           Incrementing output by another hour if not the end of the day
-            Timout = Timout + Tprint
-c           Reinitialize counter for problems
-            Nst = 0
-           else
-            go to 420
-          endif
-          Go to 250
-        Endif
+C         CALL OUTPUT SUBROUTINE; SUCCESSFUL OUTPUT FOR THIS INTERVAL
+          CALL OSUB2(TIMOUT,Y,TRANCT,NDAYY)
+C       CHECKING TO SEE IF THE DAY IS DONE
+          IF(TN.LT. TOUT)THEN
+C           INCREMENTING OUTPUT BY ANOTHER HOUR IF NOT THE END OF THE DAY
+            TIMOUT = TIMOUT + TPRINT
+C           REINITIALIZE COUNTER FOR PROBLEMS
+            NST = 0
+           ELSE
+            GO TO 420
+          ENDIF
+          GO TO 250
+        ENDIF
                                                        
       GO TO 420                                                         
 C ITASK = 3.  JUMP TO EXIT IF TOUT WAS REACHED. ------------------------
@@ -426,11 +426,11 @@ C-----------------------------------------------------------------------
       RETURN                                                            
 C                                                                       
  430  NTREP = NTREP + 1                                                 
-      IF (NTREP .LT. 5)then
+      IF (NTREP .LT. 5)THEN
       RETURN 
-      else                                         
+      ELSE                                         
         CALL XERRWV(301, 1, 0, 0, 0, 1, TT, 0.0D0)
-      endif                              
+      ENDIF                              
       GO TO 800                                                         
 C-----------------------------------------------------------------------
 C BLOCK H.                                                              
@@ -598,7 +598,7 @@ C----------------------- END OF SUBROUTINE LSODE -----------------------
      1   ROWND, ROWNS, EL0, H, HMIN, HMXI, HU, TN, UROUND,              
      2   C, R, S, TP                                                    
 C     DIMENSION YH(NYH,1), DKY(1)     
-c     kearney changed dimensions below to fix array bound error
+C     KEARNEY CHANGED DIMENSIONS BELOW TO FIX ARRAY BOUND ERROR
       DIMENSION YH(NYH,2), DKY(1)      
       COMMON /LS0001/ ROWND, ROWNS(210),                                
      1   EL0, H, HMIN, HMXI, HU, TN, UROUND, IOWND(14), IOWNS(6),       
@@ -672,9 +672,9 @@ C80   CALL XERRWV(30HINTDY--  K (I1) ILLEGAL       ,
       RETURN                                                            
 C90   CALL XERRWV(30HINTDY--  TT (R1) ILLEGAL       ,                    
  90   CALL XERRWV(52, 1, 0, 0, 0, 1, TT, 0.0D0)                               
-c      CALL XERRWV(                                                      
-c     1  60H      TT NOT IN INTERVAL TCUR - HU (= R1) TO TCUR (R2)       ,
-c     1   60, 52, 1, 0, 0, 0, 2, TP, TN)                                 
+C      CALL XERRWV(                                                      
+C     1  60H      TT NOT IN INTERVAL TCUR - HU (= R1) TO TCUR (R2)       ,
+C     1   60, 52, 1, 0, 0, 0, 2, TP, TN)                                 
       IFLAG = -2                                                        
       RETURN                                                            
 C----------------------- END OF SUBROUTINE INTDY -----------------------
@@ -690,9 +690,9 @@ C----------------------- END OF SUBROUTINE INTDY -----------------------
      2   EL0, H, HMIN, HMXI, HU, TN, UROUND,                            
      3   DCON, DDN, DEL, DELP, DSM, DUP, EXDN, EXSM, EXUP,              
      4   R, RH, RHDN, RHSM, RHUP, TOLD, VNORM                           
-c      DIMENSION NEQ(1), Y(1), YH(NYH,1), YH1(1), EWT(1), SAVF(1),       
-c     1   ACOR(1), WM(1), IWM(1)
-c     kearney changed dimensions below to solve array bound error
+C      DIMENSION NEQ(1), Y(1), YH(NYH,1), YH1(1), EWT(1), SAVF(1),       
+C     1   ACOR(1), WM(1), IWM(1)
+C     KEARNEY CHANGED DIMENSIONS BELOW TO SOLVE ARRAY BOUND ERROR
       DIMENSION NEQ(1), Y(1), YH(NYH,2), YH1(1), EWT(1), SAVF(1),       
      1   ACOR(1), WM(3), IWM(21)     
       COMMON /LS0001/ ROWND, CONIT, CRATE, EL(13), ELCO(13,12),         
@@ -898,9 +898,9 @@ C-----------------------------------------------------------------------
  230    Y(I) = YH(I,1)                                                  
       CALL F (NEQ, TN, Y, SAVF)                                         
       NFE = NFE + 1
-      if(NFE.eq.617)then
-      continue
-      endif                                                     
+      IF(NFE.EQ.617)THEN
+      CONTINUE
+      ENDIF                                                     
       IF (IPUP .LE. 0) GO TO 250                                        
 C-----------------------------------------------------------------------
 C IF INDICATED, THE MATRIX P = I - H*EL(1)*J IS REEVALUATED AND         
@@ -1255,7 +1255,7 @@ C----------------------- END OF SUBROUTINE CFODE -----------------------
      2   CON, DI, FAC, HL0, R, R0, SRUR, YI, YJ, YJJ, VNORM             
 C     DIMENSION NEQ(1), Y(1), YH(NYH,1), EWT(1), FTEM(1), SAVF(1),      
 C    1   WM(1), IWM(1) 
-c     kearney changed dimensions below to solve array bound error
+C     KEARNEY CHANGED DIMENSIONS BELOW TO SOLVE ARRAY BOUND ERROR
       DIMENSION NEQ(1), Y(1), YH(NYH,2), EWT(1), FTEM(1), SAVF(1),      
      1   WM(3), IWM(21)      
       COMMON /LS0001/ ROWND, ROWNS(210),                                
@@ -1412,7 +1412,7 @@ C----------------------- END OF SUBROUTINE PREPJ -----------------------
      1   ROWND, ROWNS, EL0, H, HMIN, HMXI, HU, TN, UROUND,              
      2   DI, HL0, PHL0, R                                               
 C     DIMENSION WM(1), IWM(1), X(1), TEM(1)
-c     kearney changed dimensions below to fix array bound error
+C     KEARNEY CHANGED DIMENSIONS BELOW TO FIX ARRAY BOUND ERROR
       DIMENSION WM(3), IWM(21), X(1), TEM(1)                             
       COMMON /LS0001/ ROWND, ROWNS(210),                                
      1   EL0, H, HMIN, HMXI, HU, TN, UROUND, IOWND(14), IOWNS(6),       
@@ -2331,154 +2331,154 @@ C
 C GET LOGICAL UNIT NUMBER. ---------------------------------------------
       LUN = LUNIT                                                       
 C WRITE THE MESSAGE. ---------------------------------------------------
-      if(nerr .eq. 101)then
-c        WRITE (LUN, *)'LSODE--  WARNING.. INTERNAL TT',R1,' AND H ',R2
-c        WRITE (LUN, *)'ARE SUCH THAT IN THE MACHINE, TT + H = TT ON THE'
-c	  WRITE (LUN, *)' NEXT STEP (H = STEP SIZE).' 
-c	  WRITE (LUN, *)' SOLVER WILL CONTINUE ANYWAY'
-      endif 
-      if(nerr .eq. 102)then
-c        WRITE (LUN, *)'LSODE--  ABOVE WARNING HAS BEEN ISSUED ',I1,   
-c     &  'TIMES. IT WILL NOT BE ISSUED AGAIN FOR THIS PROBLEM'                                 
-      endif
-      if(nerr .eq. 301)then
-c        WRITE (LUN, *)'LSODE--  REPEATED CALLS WITH ISTATE = 1',
-c     &  ' AND TOUT = TT',R1
-      endif
-      if(nerr .eq. 201)then
-c        WRITE (LUN, *)'LSODE--  AT CURRENT TT',R1,' MXSTEP ',I1,
-c     &  ' STEPS TAKEN ON THIS CALL BEFORE REACHING TOUT'
-      endif 
-      if(nerr .eq. 202)then
-c        WRITE (LUN, *)'LSODE--  AT TT ',R1,' EWT ',I1,' HAS BECOME',
-c     &  R2,' .LE. 0.0' 
-      endif
-      if(nerr .eq. 203)then
-c        WRITE (LUN, *)'LSODE--  AT TT ',R1,' TOO MUCH ACCURACY REQUESTED    
-c     &  ',' FOR PRECISION OF MACHINE..  SEE ',TOLSF ,R2   
-      endif
-      if(nerr .eq. 204)then
-c        WRITE (LUN, *)'LSODE--  AT TT ',R1,' AND STEP SIZE H ',R2,
-c     &  ' THE ERROR TEST FAILED REPEATEDLY OR WITH ABS(H) = ',R2 
-      endif
-      if(nerr .eq. 205)then
-c        WRITE (LUN, *)'LSODE--  AT TT ',R1,' AND STEP SIZE H ',R2,
-c     &  ' THE CORRECTOR CONVERGENCE FAILED REPEATEDLY ',
-c     &  ' OR WITH ABS(H) = ',R2                    
-      endif
-      if(nerr .eq. 1)then
-c        WRITE (LUN, *)'LSODE--  ISTATE ',I1,' ILLEGAL INPUT'                 
-      endif
-      if(nerr .eq. 2)then
-c        WRITE (LUN, *)'LSODE--  ITASK ',I1,' ILLEGAL.'   
-      endif
-      if(nerr .eq. 3)then
-c        WRITE (LUN, *)'LSODE--  ISTATE .GT. 1 BUT LSODE NOT INITIALIZED'   
-      endif
-      if(nerr .eq. 4)then
-c        WRITE (LUN, *)'LSODE--  NEQ = ',I1,' .LT. 0'                  
-      endif
-      if(nerr .eq. 5)then
-c        WRITE (LUN, *)'LSODE--  ISTATE = 3 AND NEQ INCREASED (',I1,
-c     &  ' TO ',I2,' )'
-      endif
-      if(nerr .eq. 6)then
-c        WRITE (LUN, *)'LSODE--  Tolerance ITOL (',I1,') ILLEGAL.'    
-      endif
-      if(nerr .eq. 7)then
-c        WRITE (LUN, *)'LSODE--  IOPT (',I1,' ) ILLEGAL.'    
-      endif
-      if(nerr .eq. 8)then
-c        WRITE (LUN, *)'32HLSODE--  MF (',I1,') ILLEGAL.'    
-      endif
-      if(nerr .eq. 9)then
-c        WRITE (LUN, *)'LSODE--  ML (',I1,') ILLEGAL.. .LT. 0 OR .GE. ',
-c     &  'NEQ (',I2,').'
-      endif
-      if(nerr .eq. 10)then
-c        WRITE (LUN, *)'LSODE--  MU (',I1,') ILLEGAL.. .LT. 0 OR .GE. ',
-c     &  'NEQ (',I2,').'
-      endif
-      if(nerr .eq. 11)then
-c        WRITE (LUN, *)'LSODE--  MAXORD (',I1,') .LT. 0'                 
-      endif
-      if(nerr .eq. 12)then
-c        WRITE (LUN, *)'LSODE--  MXSTEP (',I1,') .LT. 0'                 
-      endif
-      if(nerr .eq. 13)then
-c        WRITE (LUN, *)'LSODE--  MXHNIL (',I1,') .LT. 0'               
-      endif
-      if(nerr .eq. 14)then
-c        WRITE (LUN, *)'40HLSODE--  TOUT (',R1,') BEHIND TT (',R2,')'        ,          
-      endif
-      if(nerr .eq. 15)then
-c        WRITE (LUN, *)'LSODE--  HMAX (',R1,') .LT. 0.0'                  
-      endif
-      if(nerr .eq. 16)then
-c        WRITE (LUN, *)'LSODE--  HMIN (',R1,') .LT. 0.0'                 
-      endif
-      if(nerr .eq. 17)then
-c        WRITE (LUN, *)'LSODE--  RWORK LENGTH NEEDED, LENRW (',I1,'),',
-c     &  'EXCEEDS LRW (',I2,')'
-      endif
-      if(nerr .eq. 18)then
-c        WRITE (LUN, *)'LSODE--  IWORK LENGTH NEEDED, LENIW (',I1,')',
-c     &  'EXCEEDS LIW (',I2,')'
-      endif
-      if(nerr .eq. 19)then
-c        WRITE (LUN, *)'LSODE--  RTOL(',I1,') IS ',I2,' .LT. 0.0 '         
-      endif
-      if(nerr .eq. 20)then
-c        WRITE (LUN, *)'LSODE--  ATOL(',I1,') IS ',R1,' .LT. 0.0'         
-      endif
-      if(nerr .eq. 21)then
-c        WRITE (LUN, *)'LSODE--  EWT(',I1,') IS ',R1,' .LE. 0.0'        
-      endif
-      if(nerr .eq. 22)then
-c        WRITE (LUN, *)'LSODE--  TOUT (',R1,') TOO CLOSE TO TT ',
-c     &  '(',R2,') TO START INTEGRATION.'
-      endif
-      if(nerr .eq. 23)then
-c        WRITE (LUN, *)'LSODE--  ITASK = ',I1,' AND TOUT (',R1,
-c     &  ') BEHIND TCUR - HU (= ',R2,').'
-      endif
-      if(nerr .eq. 24)then
-c        WRITE (LUN, *)'LSODE--  ITASK = 4 OR 5 AND TCRIT (',R1,
-c     &  ') BEHIND TCUR (',R2,').'    
-      endif
-      if(nerr .eq. 25)then
-c        WRITE (LUN, *)'LSODE--  ITASK = 4 OR 5 AND TCRIT (',R1,
-c     &  ') BEHIND TOUT (',R2,')'
-      endif
-      if(nerr .eq. 26)then
-c        WRITE (LUN, *)'LSODE--  AT START OF PROBLEM, TOO MUCH ACCURACY'    
-      endif
-      if(nerr .eq. 27)then
-c        WRITE (LUN, *)'LSODE--  TROUBLE FROM INTDY. ITASK = ',I1, 
-c     &  'TOUT = ',R1 
-      endif
-      if(nerr .eq. 302)then
-c        WRITE (LUN, *)'LSODE--  REPEATED OCCURRENCES OF ILLEGAL INPUT'     
-      endif
-      if(nerr .eq. 303)then
-c        WRITE (LUN, *)'LSODE--  RUN ABORTED.. APPARENT INFINITE LOOP'      
-      endif
-      if(nerr .eq. 51)then
-c        WRITE (LUN, *)'INTDY--  K (',I1,') ILLEGAL'                   
-      endif
-      if(nerr .eq. 52)then
-c        WRITE (LUN, *)'INTDY--  TT (',R1,') ILLEGAL; TT NOT IN INTERVAL
-c     &  ','TCUR - HU (= ',R1,') TO TCUR (',R2,')'   
-      endif
+      IF(NERR .EQ. 101)THEN
+C        WRITE (LUN, *)'LSODE--  WARNING.. INTERNAL TT',R1,' AND H ',R2
+C        WRITE (LUN, *)'ARE SUCH THAT IN THE MACHINE, TT + H = TT ON THE'
+C	  WRITE (LUN, *)' NEXT STEP (H = STEP SIZE).' 
+C	  WRITE (LUN, *)' SOLVER WILL CONTINUE ANYWAY'
+      ENDIF 
+      IF(NERR .EQ. 102)THEN
+C        WRITE (LUN, *)'LSODE--  ABOVE WARNING HAS BEEN ISSUED ',I1,   
+C     &  'TIMES. IT WILL NOT BE ISSUED AGAIN FOR THIS PROBLEM'                                 
+      ENDIF
+      IF(NERR .EQ. 301)THEN
+C        WRITE (LUN, *)'LSODE--  REPEATED CALLS WITH ISTATE = 1',
+C     &  ' AND TOUT = TT',R1
+      ENDIF
+      IF(NERR .EQ. 201)THEN
+C        WRITE (LUN, *)'LSODE--  AT CURRENT TT',R1,' MXSTEP ',I1,
+C     &  ' STEPS TAKEN ON THIS CALL BEFORE REACHING TOUT'
+      ENDIF 
+      IF(NERR .EQ. 202)THEN
+C        WRITE (LUN, *)'LSODE--  AT TT ',R1,' EWT ',I1,' HAS BECOME',
+C     &  R2,' .LE. 0.0' 
+      ENDIF
+      IF(NERR .EQ. 203)THEN
+C        WRITE (LUN, *)'LSODE--  AT TT ',R1,' TOO MUCH ACCURACY REQUESTED    
+C     &  ',' FOR PRECISION OF MACHINE..  SEE ',TOLSF ,R2   
+      ENDIF
+      IF(NERR .EQ. 204)THEN
+C        WRITE (LUN, *)'LSODE--  AT TT ',R1,' AND STEP SIZE H ',R2,
+C     &  ' THE ERROR TEST FAILED REPEATEDLY OR WITH ABS(H) = ',R2 
+      ENDIF
+      IF(NERR .EQ. 205)THEN
+C        WRITE (LUN, *)'LSODE--  AT TT ',R1,' AND STEP SIZE H ',R2,
+C     &  ' THE CORRECTOR CONVERGENCE FAILED REPEATEDLY ',
+C     &  ' OR WITH ABS(H) = ',R2                    
+      ENDIF
+      IF(NERR .EQ. 1)THEN
+C        WRITE (LUN, *)'LSODE--  ISTATE ',I1,' ILLEGAL INPUT'                 
+      ENDIF
+      IF(NERR .EQ. 2)THEN
+C        WRITE (LUN, *)'LSODE--  ITASK ',I1,' ILLEGAL.'   
+      ENDIF
+      IF(NERR .EQ. 3)THEN
+C        WRITE (LUN, *)'LSODE--  ISTATE .GT. 1 BUT LSODE NOT INITIALIZED'   
+      ENDIF
+      IF(NERR .EQ. 4)THEN
+C        WRITE (LUN, *)'LSODE--  NEQ = ',I1,' .LT. 0'                  
+      ENDIF
+      IF(NERR .EQ. 5)THEN
+C        WRITE (LUN, *)'LSODE--  ISTATE = 3 AND NEQ INCREASED (',I1,
+C     &  ' TO ',I2,' )'
+      ENDIF
+      IF(NERR .EQ. 6)THEN
+C        WRITE (LUN, *)'LSODE--  TOLERANCE ITOL (',I1,') ILLEGAL.'    
+      ENDIF
+      IF(NERR .EQ. 7)THEN
+C        WRITE (LUN, *)'LSODE--  IOPT (',I1,' ) ILLEGAL.'    
+      ENDIF
+      IF(NERR .EQ. 8)THEN
+C        WRITE (LUN, *)'32HLSODE--  MF (',I1,') ILLEGAL.'    
+      ENDIF
+      IF(NERR .EQ. 9)THEN
+C        WRITE (LUN, *)'LSODE--  ML (',I1,') ILLEGAL.. .LT. 0 OR .GE. ',
+C     &  'NEQ (',I2,').'
+      ENDIF
+      IF(NERR .EQ. 10)THEN
+C        WRITE (LUN, *)'LSODE--  MU (',I1,') ILLEGAL.. .LT. 0 OR .GE. ',
+C     &  'NEQ (',I2,').'
+      ENDIF
+      IF(NERR .EQ. 11)THEN
+C        WRITE (LUN, *)'LSODE--  MAXORD (',I1,') .LT. 0'                 
+      ENDIF
+      IF(NERR .EQ. 12)THEN
+C        WRITE (LUN, *)'LSODE--  MXSTEP (',I1,') .LT. 0'                 
+      ENDIF
+      IF(NERR .EQ. 13)THEN
+C        WRITE (LUN, *)'LSODE--  MXHNIL (',I1,') .LT. 0'               
+      ENDIF
+      IF(NERR .EQ. 14)THEN
+C        WRITE (LUN, *)'40HLSODE--  TOUT (',R1,') BEHIND TT (',R2,')'        ,          
+      ENDIF
+      IF(NERR .EQ. 15)THEN
+C        WRITE (LUN, *)'LSODE--  HMAX (',R1,') .LT. 0.0'                  
+      ENDIF
+      IF(NERR .EQ. 16)THEN
+C        WRITE (LUN, *)'LSODE--  HMIN (',R1,') .LT. 0.0'                 
+      ENDIF
+      IF(NERR .EQ. 17)THEN
+C        WRITE (LUN, *)'LSODE--  RWORK LENGTH NEEDED, LENRW (',I1,'),',
+C     &  'EXCEEDS LRW (',I2,')'
+      ENDIF
+      IF(NERR .EQ. 18)THEN
+C        WRITE (LUN, *)'LSODE--  IWORK LENGTH NEEDED, LENIW (',I1,')',
+C     &  'EXCEEDS LIW (',I2,')'
+      ENDIF
+      IF(NERR .EQ. 19)THEN
+C        WRITE (LUN, *)'LSODE--  RTOL(',I1,') IS ',I2,' .LT. 0.0 '         
+      ENDIF
+      IF(NERR .EQ. 20)THEN
+C        WRITE (LUN, *)'LSODE--  ATOL(',I1,') IS ',R1,' .LT. 0.0'         
+      ENDIF
+      IF(NERR .EQ. 21)THEN
+C        WRITE (LUN, *)'LSODE--  EWT(',I1,') IS ',R1,' .LE. 0.0'        
+      ENDIF
+      IF(NERR .EQ. 22)THEN
+C        WRITE (LUN, *)'LSODE--  TOUT (',R1,') TOO CLOSE TO TT ',
+C     &  '(',R2,') TO START INTEGRATION.'
+      ENDIF
+      IF(NERR .EQ. 23)THEN
+C        WRITE (LUN, *)'LSODE--  ITASK = ',I1,' AND TOUT (',R1,
+C     &  ') BEHIND TCUR - HU (= ',R2,').'
+      ENDIF
+      IF(NERR .EQ. 24)THEN
+C        WRITE (LUN, *)'LSODE--  ITASK = 4 OR 5 AND TCRIT (',R1,
+C     &  ') BEHIND TCUR (',R2,').'    
+      ENDIF
+      IF(NERR .EQ. 25)THEN
+C        WRITE (LUN, *)'LSODE--  ITASK = 4 OR 5 AND TCRIT (',R1,
+C     &  ') BEHIND TOUT (',R2,')'
+      ENDIF
+      IF(NERR .EQ. 26)THEN
+C        WRITE (LUN, *)'LSODE--  AT START OF PROBLEM, TOO MUCH ACCURACY'    
+      ENDIF
+      IF(NERR .EQ. 27)THEN
+C        WRITE (LUN, *)'LSODE--  TROUBLE FROM INTDY. ITASK = ',I1, 
+C     &  'TOUT = ',R1 
+      ENDIF
+      IF(NERR .EQ. 302)THEN
+C        WRITE (LUN, *)'LSODE--  REPEATED OCCURRENCES OF ILLEGAL INPUT'     
+      ENDIF
+      IF(NERR .EQ. 303)THEN
+C        WRITE (LUN, *)'LSODE--  RUN ABORTED.. APPARENT INFINITE LOOP'      
+      ENDIF
+      IF(NERR .EQ. 51)THEN
+C        WRITE (LUN, *)'INTDY--  K (',I1,') ILLEGAL'                   
+      ENDIF
+      IF(NERR .EQ. 52)THEN
+C        WRITE (LUN, *)'INTDY--  TT (',R1,') ILLEGAL; TT NOT IN INTERVAL
+C     &  ','TCUR - HU (= ',R1,') TO TCUR (',R2,')'   
+      ENDIF
   
-c      IF (NI .EQ. 1) WRITE (LUN, 20) I1                                 
-c20    FORMAT(6X,23HIN ABOVE MESSAGE,  I1 =,I10)
-c      IF (NI .EQ. 2) WRITE (LUN, 30) I1,I2                              
-c 30   FORMAT(6X,23HIN ABOVE MESSAGE,  I1 =,I10,3X,4HI2 =,I10)           
-c      IF (NR .EQ. 1) WRITE (LUN, 40) R1                                 
-c 40   FORMAT(6X,23HIN ABOVE MESSAGE,  R1 =,D21.13)                      
-c      IF (NR .EQ. 2) WRITE (LUN, 50) R1,R2                              
-c 50   FORMAT(6X,15HIN ABOVE,  R1 =,D21.13,3X,4HR2 =,D21.13)             
+C      IF (NI .EQ. 1) WRITE (LUN, 20) I1                                 
+C20    FORMAT(6X,23HIN ABOVE MESSAGE,  I1 =,I10)
+C      IF (NI .EQ. 2) WRITE (LUN, 30) I1,I2                              
+C 30   FORMAT(6X,23HIN ABOVE MESSAGE,  I1 =,I10,3X,4HI2 =,I10)           
+C      IF (NR .EQ. 1) WRITE (LUN, 40) R1                                 
+C 40   FORMAT(6X,23HIN ABOVE MESSAGE,  R1 =,D21.13)                      
+C      IF (NR .EQ. 2) WRITE (LUN, 50) R1,R2                              
+C 50   FORMAT(6X,15HIN ABOVE,  R1 =,D21.13,3X,4HR2 =,D21.13)             
 C ABORT THE RUN IF IERT = 2. -------------------------------------------
  100  IF (IERT .NE. 2) RETURN                                           
       STOP                                                              

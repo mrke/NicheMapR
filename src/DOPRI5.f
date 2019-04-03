@@ -3,7 +3,7 @@
      &                  SOLOUT,IOUT,
      &                  WORK,LWORK,IWORK,LIWORK,RPAR,IPAR,IDID,VSTI)
 C ----------------------------------------------------------
-C     THIS IS ACTUALLY DOPRI6 FROM THE R PACKAGE deTestSet
+C     THIS IS ACTUALLY DOPRI6 FROM THE R PACKAGE DETESTSET
 C     THERE WAS SOMETHING CAUSING DOPRI5 TO HANG WHEN RUNNING IN R
 
 C     NUMERICAL SOLUTION OF A SYSTEM OF FIRST 0RDER
@@ -15,8 +15,8 @@ C
 C     AUTHORS: E. HAIRER AND G. WANNER
 C              UNIVERSITE DE GENEVE, DEPT. DE MATHEMATIQUES
 C              CH-1211 GENEVE 24, SWITZERLAND
-C              E-MAIL:  Ernst.Hairer@math.unige.ch
-C                       Gerhard.Wanner@math.unige.ch
+C              E-MAIL:  ERNST.HAIRER@MATH.UNIGE.CH
+C                       GERHARD.WANNER@MATH.UNIGE.CH
 C
 C     THIS CODE IS DESCRIBED IN:
 C         E. HAIRER, S.P. NORSETT AND G. WANNER, SOLVING ORDINARY
@@ -25,7 +25,7 @@ C         SPRINGER SERIES IN COMPUTATIONAL MATHEMATICS,
 C         SPRINGER-VERLAG (1993)
 C
 C     VERSION OF APRIL 25, 1996
-C     (latest correction of a small bug: August 8, 2005)
+C     (LATEST CORRECTION OF A SMALL BUG: AUGUST 8, 2005)
 C
 C     INPUT PARAMETERS
 C     ----------------
@@ -217,7 +217,7 @@ C -------- NMAX , THE MAXIMAL NUMBER OF STEPS -----
          NMAX=IWORK(1)
          IF(NMAX.LE.0)THEN
             IF (IPRINT.GT.0) THEN
-         CALL Rprinti1( 'Wrong input iwork(1) = ',IWORK(1))
+         CALL RPRINTI1( 'WRONG INPUT IWORK(1) = ',IWORK(1))
             ENDIF
             ARRET=.TRUE.
          END IF
@@ -229,7 +229,7 @@ C -------- METH   COEFFICIENTS OF THE METHOD
          METH=IWORK(2)
          IF(METH.LE.0.OR.METH.GE.4)THEN
             IF (IPRINT.GT.0) THEN
-         CALL Rprinti1('Curious input iwork(2) = ',IWORK(2))
+         CALL RPRINTI1('CURIOUS INPUT IWORK(2) = ',IWORK(2))
             ENDIF
             ARRET=.TRUE.
          END IF
@@ -243,14 +243,14 @@ C -------- NRDENS   NUMBER OF DENSE OUTPUT COMPONENTS
       NRDENS=IWORK(5)
       IF(NRDENS.LT.0.OR.NRDENS.GT.N)THEN
          IF (IPRINT.GT.0) THEN
-         CALL Rprinti1('Curious input iwork(5) = ',IWORK(5))
+         CALL RPRINTI1('CURIOUS INPUT IWORK(5) = ',IWORK(5))
           ENDIF
 
          ARRET=.TRUE.
       ELSE
             IF(NRDENS.GT.0.AND.IOUT.LT.2)THEN
                IF (IPRINT.GT.0) THEN
-         CALL Rprint(' Warning: put IOUT=2 for dense output ')
+         CALL RPRINT(' WARNING: PUT IOUT=2 FOR DENSE OUTPUT ')
                ENDIF
 
             END IF
@@ -266,8 +266,8 @@ C -------- UROUND   SMALLEST NUMBER SATISFYING 1.D0+UROUND>1.D0
          UROUND=WORK(1)
          IF(UROUND.LE.1.D-35.OR.UROUND.GE.1.D0)THEN
             IF (IPRINT.GT.0) THEN
-         CALL Rprintd1(
-     &        ' Which machine do you have? your uround was : ',WORK(1))
+         CALL RPRINTD1(
+     &        ' WHICH MACHINE DO YOU HAVE? YOUR UROUND WAS : ',WORK(1))
             ENDIF
 
             ARRET=.TRUE.
@@ -280,8 +280,8 @@ C -------  SAFETY FACTOR -------------
          SAFE=WORK(2)
          IF(SAFE.GE.1.D0.OR.SAFE.LE.1.D-4)THEN
             IF (IPRINT.GT.0) THEN
-         CALL Rprintd1(
-     &          'Curious input for safety factor work(2) = ',WORK(2))
+         CALL RPRINTD1(
+     &          'CURIOUS INPUT FOR SAFETY FACTOR WORK(2) = ',WORK(2))
             ENDIF
             ARRET=.TRUE.
          END IF
@@ -307,7 +307,7 @@ C --------- BETA FOR STEP CONTROL STABILIZATION -----------
             BETA=WORK(5)
             IF(BETA.GT.0.2D0)THEN
                IF (IPRINT.GT.0) THEN
-         CALL Rprintd1('Curious input for beta: work(5) = ',WORK(5))
+         CALL RPRINTD1('CURIOUS INPUT FOR BETA: WORK(5) = ',WORK(5))
             ENDIF
             ARRET=.TRUE.
          END IF
@@ -335,7 +335,7 @@ C ------ TOTAL STORAGE REQUIREMENT -----------
       ISTORE=IEYS+5*NRDENS-1
       IF(ISTORE.GT.LWORK)THEN
         IF (IPRINT.GT.0) THEN
-         CALL Rprinti1('Insufficient storage for work, min. = ',ISTORE)
+         CALL RPRINTI1('INSUFFICIENT STORAGE FOR WORK, MIN. = ',ISTORE)
          ENDIF
 
         ARRET=.TRUE.
@@ -344,7 +344,7 @@ C ------ TOTAL STORAGE REQUIREMENT -----------
       ISTORE=ICOMP+NRDENS-1
       IF(ISTORE.GT.LIWORK)THEN
         IF (IPRINT.GT.0) THEN
-         CALL Rprinti1('Insufficient storage for iwork, min. = ',ISTORE)
+         CALL RPRINTI1('INSUFFICIENT STORAGE FOR IWORK, MIN. = ',ISTORE)
          ENDIF
 
         ARRET=.TRUE.
@@ -457,10 +457,10 @@ C --- THE FIRST 6 STAGES
   26  YSTI(I)=Y(I)+H*(A61*K1(I)+A62*K2(I)+A63*K3(I)+A64*K4(I)+A65*K5(I))
       XPH=X+H
       CALL FCN(N,XPH,YSTI,K6,RPAR,IPAR)
-      do 127 i=1,n
-      vsti(i)=h*(ad1*k1(i)+ad2*k2(i)+ad3*k3(i)+ad4*k4(i)+ad5*k5(i)
-     +  +ad6*k6(i))
-127   continue
+      DO 127 I=1,N
+      VSTI(I)=H*(AD1*K1(I)+AD2*K2(I)+AD3*K3(I)+AD4*K4(I)+AD5*K5(I)
+     +  +AD6*K6(I))
+127   CONTINUE
       DO 27 I=1,N
 
   27  Y1(I)=Y(I)+H*(A71*K1(I)+A73*K3(I)+A74*K4(I)+A75*K5(I)+A76*K6(I))
@@ -483,12 +483,12 @@ C ------- STIFFNESS DETECTION
  64         CONTINUE
             IF (STDEN.GT.0.D0) HLAMB=SQRT(STNUM/STDEN)
 
-            IF (HLAMB.GT.3.25D0 .OR. .NOT.(HLAMB .GT. 0.0d0) ) THEN
+            IF (HLAMB.GT.3.25D0 .OR. .NOT.(HLAMB .GT. 0.0D0) ) THEN
                NONSTI=0
                IASTI=IASTI+1
                IF (IASTI.EQ.15) THEN
                   IF (IPRINT.GT.0) THEN
-         CALL Rprintd1('The problem seems to become stiff at x = ',X )
+         CALL RPRINTD1('THE PROBLEM SEEMS TO BECOME STIFF AT X = ',X )
                   ENDIF
                   IF (IPRINT.LE.0) GOTO 76
                END IF
@@ -513,20 +513,20 @@ C --- ERROR ESTIMATION
       END IF
       ERR=SQRT(ERR/N)
       ERRTA=0.0D+0
-      if(itol.eq.0) then
-      do 741 i=1,n
-      SK=ATOLI+RTOLI*MAX(ABS(y(I)),ABS(Y1(i)))
-      errta=errta+(vsti(i)/sk)**2
-741   continue
-      else
-      do 442 I=1,N
-      SK=ATOL(I)+RTOL(I)*MAX(ABS(y(I)),ABS(Y1(I)))
-442   ERRTA=ERRTA+(VSTI(I)/sk)**2
-      endif
-      errta=sqrt(errta/n)
+      IF(ITOL.EQ.0) THEN
+      DO 741 I=1,N
+      SK=ATOLI+RTOLI*MAX(ABS(Y(I)),ABS(Y1(I)))
+      ERRTA=ERRTA+(VSTI(I)/SK)**2
+741   CONTINUE
+      ELSE
+      DO 442 I=1,N
+      SK=ATOL(I)+RTOL(I)*MAX(ABS(Y(I)),ABS(Y1(I)))
+442   ERRTA=ERRTA+(VSTI(I)/SK)**2
+      ENDIF
+      ERRTA=SQRT(ERRTA/N)
 C --- COMPUTATION OF HNEW
-cks:      write(6,9044) err,errta
-c9044  format(1x,'two error estimates',2g22.10)
+CKS:      WRITE(6,9044) ERR,ERRTA
+C9044  FORMAT(1X,'TWO ERROR ESTIMATES',2G22.10)
       FAC11=ERR**EXPO1
 C --- LUND-STABILIZATION
       FAC=FAC11/FACOLD**BETA
@@ -535,8 +535,8 @@ C --- WE REQUIRE  FAC1 <= HNEW/H <= FAC2
       HNEW=H/FAC
       IF(ERR.LE.1.D0)THEN
 C --- STEP IS ACCEPTED
-cks:      write(6,799) hnew
-c799   format(1x,'step is accepted',g22.10)
+CKS:      WRITE(6,799) HNEW
+C799   FORMAT(1X,'STEP IS ACCEPTED',G22.10)
          FACOLD=MAX(ERR,1.0D-4)
          NACCPT=NACCPT+1
 C ------- STIFFNESS DETECTION
@@ -587,22 +587,22 @@ C --- FAIL EXIT
       RETURN
   77  CONTINUE
       IF (IPRINT.GT.0) THEN
-       CALL Rprintd1('Exit of DOPRI5 at x = ', X)
-       CALL Rprintd1('Step size too small, h = ',H)
+       CALL RPRINTD1('EXIT OF DOPRI5 AT X = ', X)
+       CALL RPRINTD1('STEP SIZE TOO SMALL, H = ',H)
       ENDIF
       IDID=-3
       RETURN
   78  CONTINUE
       IF (IPRINT.GT.0) THEN
-      CALL Rprintd1('Exit of DOPRI5 at x = ', X)
-      CALL Rprinti1(
-     &     'More than nmax steps are needed ' ,NMAX)
+      CALL RPRINTD1('EXIT OF DOPRI5 AT X = ', X)
+      CALL RPRINTI1(
+     &     'MORE THAN NMAX STEPS ARE NEEDED ' ,NMAX)
       ENDIF
       IDID=-2
       RETURN
   79  CONTINUE
       IF (IPRINT.GT.0) THEN
-      CALL Rprintd1('Exit of DOPRI5 at x = ', X)
+      CALL RPRINTD1('EXIT OF DOPRI5 AT X = ', X)
       ENDIF
       IDID=2
       RETURN
@@ -672,32 +672,32 @@ C ----  H**IORD * MAX ( NORM (F0), NORM (DER2)) = 0.01
       RETURN
       END
 C
-c      FUNCTION CONTD5(II,X,CON,ICOMP,ND)
+C      FUNCTION CONTD5(II,X,CON,ICOMP,ND)
 C ----------------------------------------------------------
 C     THIS FUNCTION CAN BE USED FOR CONTINUOUS OUTPUT IN CONNECTION
 C     WITH THE OUTPUT-SUBROUTINE FOR DOPRI5. IT PROVIDES AN
 C     APPROXIMATION TO THE II-TH COMPONENT OF THE SOLUTION AT X.
 C ----------------------------------------------------------
-c      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-c      DIMENSION CON(5*ND),ICOMP(ND),VSTI(4)
-c      COMMON /CONDO5/XOLD,H
+C      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C      DIMENSION CON(5*ND),ICOMP(ND),VSTI(4)
+C      COMMON /CONDO5/XOLD,H
 C ----- COMPUTE PLACE OF II-TH COMPONENT
-c      I=0
-c      DO 5 J=1,ND
-c      IF (ICOMP(J).EQ.II) I=J
-c   5  CONTINUE
-c      IF (I.EQ.0) THEN
-c         WRITE (6,*) ' NO DENSE OUTPUT AVAILABLE FOR COMP.',II
-c         RETURN
-c      END IF
-c      THETA=(X-XOLD)/H
-c      THETA1=1.D0-THETA
-c      CONTD5=CON(I)+THETA*(CON(ND+I)+THETA1*(CON(2*ND+I)+THETA*
-c     &           (CON(3*ND+I)+THETA1*CON(4*ND+I))))
-c      RETURN
-c      END
+C      I=0
+C      DO 5 J=1,ND
+C      IF (ICOMP(J).EQ.II) I=J
+C   5  CONTINUE
+C      IF (I.EQ.0) THEN
+C         WRITE (6,*) ' NO DENSE OUTPUT AVAILABLE FOR COMP.',II
+C         RETURN
+C      END IF
+C      THETA=(X-XOLD)/H
+C      THETA1=1.D0-THETA
+C      CONTD5=CON(I)+THETA*(CON(ND+I)+THETA1*(CON(2*ND+I)+THETA*
+C     &           (CON(3*ND+I)+THETA1*CON(4*ND+I))))
+C      RETURN
+C      END
 C
-C ks: make this a subroutine  and loop over all states...
+C KS: MAKE THIS A SUBROUTINE  AND LOOP OVER ALL STATES...
       SUBROUTINE CONTD5(NEQ,X,CON,ICOMP,ND,VAL)
 C ----------------------------------------------------------
 C     THIS FUNCTION CAN BE USED FOR CONTINUOUS OUTPUT IN CONNECTION
@@ -783,4 +783,3 @@ C ---- DENSE OUTPUT OF SHAMPINE (1986)
       AD6=-0.004
       RETURN
       END
-

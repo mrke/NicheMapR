@@ -1,4 +1,4 @@
-      Function FUNC(xi)
+      FUNCTION FUNC(XI)
 C     NICHEMAPR: SOFTWARE FOR BIOPHYSICAL MECHANISTIC NICHE MODELLING
 
 C     COPYRIGHT (C) 2018 MICHAEL R. KEARNEY AND WARREN P. PORTER
@@ -16,32 +16,32 @@ C     GENERAL PUBLIC LICENSE FOR MORE DETAILS.
 C     YOU SHOULD HAVE RECEIVED A COPY OF THE GNU GENERAL PUBLIC LICENSE
 C     ALONG WITH THIS PROGRAM. IF NOT, SEE HTTP://WWW.GNU.ORG/LICENSES/.
 
-C     Function Xi calculates Xi as part of the adjacent rectangles
-C     configuration/numerical integration calculations.
+C     FUNCTION XI CALCULATES XI AS PART OF THE ADJACENT RECTANGLES
+C     CONFIGURATION/NUMERICAL INTEGRATION CALCULATIONS.
 
 
-      Implicit none
+      IMPLICIT NONE
 
-      double precision angle,ans,degangl,fa,fb,fb1,fb2,fc,fc1,fc2,func
-      double precision pi,x,xi
+      DOUBLE PRECISION ANGLE,ANS,DEGANGL,FA,FB,FB1,FB2,FC,FC1,FC2,FUNC
+      DOUBLE PRECISION PI,X,XI
       
-      Common/intgl/x,angle
-      data pi/3.14159265/
+      COMMON/INTGL/X,ANGLE
+      DATA PI/3.14159265/
 
-c     x = lengths ratio, a/b
-c     xi = all (sequential) values between integration limits
-c     sin**2(angle) = 0.5*(1.-cos(2*angle)
-c     debugging info: angle in degrees
+C     X = LENGTHS RATIO, A/B
+C     XI = ALL (SEQUENTIAL) VALUES BETWEEN INTEGRATION LIMITS
+C     SIN**2(ANGLE) = 0.5*(1.-COS(2*ANGLE)
+C     DEBUGGING INFO: ANGLE IN DEGREES
 
-      degangl = angle*180./pi
-      fa = sqrt(1.0 + xi**2*(0.5*(1.-cos(2*angle))))
-      fb1 = (x-xi*cos(angle))
-      fb2 = sqrt(1.0+xi**2* (0.5*(1.-cos(2*angle))))
-      fb = atan(fb1/fb2)
-      fc1 = xi*cos(angle)
-      fc2 = sqrt(1.0+xi**2* (0.5*(1.-cos(2*angle))))
-      fc=atan(fc1/fc2)
-      ans = fa * (fb + fc)
-      func = ans
-      Return
-      End
+      DEGANGL = ANGLE*180./PI
+      FA = SQRT(1.0 + XI**2*(0.5*(1.-COS(2*ANGLE))))
+      FB1 = (X-XI*COS(ANGLE))
+      FB2 = SQRT(1.0+XI**2* (0.5*(1.-COS(2*ANGLE))))
+      FB = ATAN(FB1/FB2)
+      FC1 = XI*COS(ANGLE)
+      FC2 = SQRT(1.0+XI**2* (0.5*(1.-COS(2*ANGLE))))
+      FC=ATAN(FC1/FC2)
+      ANS = FA * (FB + FC)
+      FUNC = ANS
+      RETURN
+      END
