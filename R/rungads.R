@@ -11,6 +11,21 @@
 #' @useDynLib "NicheMapR"
 #' @export
 rungads <- function(lat, lon, relhum, season) {
+  os = Sys.info()['sysname']
+  if (os == "Windows") {
+    if (R.Version()$arch=="x86_64") {
+      libpath='/NicheMapR/libs/x64/NicheMapR.dll'
+    } else {
+      libpath='/NicheMapR/libs/i386/NicheMapR.dll'
+    }
+  } else if (os == "Linux") {
+    libpath='/NicheMapR/libs/NicheMapR.so'
+  } else if (os == "Darwin") {
+    libpath='/NicheMapR/libs/NicheMapR.so'
+  }
+  if(is.loaded("gads", "NicheMapR", type = "FORTRAN")==FALSE){
+    dyn.load(paste(lib.loc = .libPaths()[1],libpath,sep=""))
+  }
   curdir<-getwd()
   setwd(path.package("NicheMapR"))
   lat5s<-seq(-90,90,5) #lat range for GADS

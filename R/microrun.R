@@ -19,6 +19,21 @@
 #' @useDynLib "NicheMapR"
 #' @export
 microclimate <- function(micro) {
+  os = Sys.info()['sysname']
+  if (os == "Windows") {
+    if (R.Version()$arch=="x86_64") {
+      libpath='/NicheMapR/libs/x64/NicheMapR.dll'
+    } else {
+      libpath='/NicheMapR/libs/i386/NicheMapR.dll'
+    }
+  } else if (os == "Linux") {
+    libpath='/NicheMapR/libs/NicheMapR.so'
+  } else if (os == "Darwin") {
+    libpath='/NicheMapR/libs/NicheMapR.so'
+  }
+  if(is.loaded("microclimate", "NicheMapR", type = "FORTRAN")==FALSE){
+    dyn.load(paste(lib.loc = .libPaths()[1],libpath,sep=""))
+  }
   doynum<-micro$microinput[1]
   a <- .Fortran("microclimate",
                 as.integer(doynum),
@@ -81,7 +96,7 @@ microclimate <- function(micro) {
                 drlam=matrix(data = 0., nrow = 24*doynum, ncol = 113),
                 drrlam=matrix(data = 0., nrow = 24*doynum, ncol = 113),
                 srlam=matrix(data = 0., nrow = 24*doynum, ncol = 113), PACKAGE = "NicheMapR")
-
+  dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
   metout <- matrix(data = 0., nrow = 24*doynum, ncol = 19)
   shadmet <- matrix(data = 0., nrow = 24*doynum, ncol = 19)
   soil <- matrix(data = 0., nrow = 24*doynum, ncol = 12)
