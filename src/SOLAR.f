@@ -1,107 +1,108 @@
       SUBROUTINE SOLAR
-C     NicheMapR: software for biophysical mechanistic niche modelling
+C     NICHEMAPR: SOFTWARE FOR BIOPHYSICAL MECHANISTIC NICHE MODELLING
 
-C     Copyright (C) 2018 Michael R. Kearney and Warren P. Porter
+C     COPYRIGHT (C) 2018 MICHAEL R. KEARNEY AND WARREN P. PORTER
 
-c     This program is free software: you can redistribute it and/or modify
-c     it under the terms of the GNU General Public License as published by
-c     the Free Software Foundation, either version 3 of the License, or (at
-c      your option) any later version.
+C     THIS PROGRAM IS FREE SOFTWARE: YOU CAN REDISTRIBUTE IT AND/OR MODIFY
+C     IT UNDER THE TERMS OF THE GNU GENERAL PUBLIC LICENSE AS PUBLISHED BY
+C     THE FREE SOFTWARE FOUNDATION, EITHER VERSION 3 OF THE LICENSE, OR (AT
+C      YOUR OPTION) ANY LATER VERSION.
 
-c     This program is distributed in the hope that it will be useful, but
-c     WITHOUT ANY WARRANTY; without even the implied warranty of
-c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-c     General Public License for more details.
+C     THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT
+C     WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+C     MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. SEE THE GNU
+C     GENERAL PUBLIC LICENSE FOR MORE DETAILS.
 
-c     You should have received a copy of the GNU General Public License
-c     along with this program. If not, see http://www.gnu.org/licenses/.
+C     YOU SHOULD HAVE RECEIVED A COPY OF THE GNU GENERAL PUBLIC LICENSE
+C     ALONG WITH THIS PROGRAM. IF NOT, SEE HTTP://WWW.GNU.ORG/LICENSES/.
 
-c     Computes solar radiation absorbed, either for body or (if butterfly) wings
+C     COMPUTES SOLAR RADIATION ABSORBED, EITHER FOR BODY OR (IF BUTTERFLY) WINGS
 
-      Implicit None
+      IMPLICIT NONE
 
-      double precision ABSSB,ABSAN,AL,AMASS,ANDENS,ASIL,ASILN,ASILP,ATOT
-      double precision DEPSUB,EMISAN,EMISSB,EMISSK,FATOSB,FATOSK
-      double precision FATOBJ,Flshcond,FLUID,G,PI,PTCOND,PCTDIF,Qsevap
-      double precision QCOND,QCONV,QIRIN,QIROUT,QMETAB,Qnorm,Qresp
-      double precision QSDIFF,QSDIR,QSOBJ,QSOLAR,QSOLR,QSRSB,QSSKY
-      double precision RELHUM,Shade,SIG,SUBTK,ptcond_orig,sidex,WQSOL
-      double precision TA,TOBJ,TSKY,TSUBST,VEL,WC,ZEN,Zenith
-      double precision rho1_3,trans1,aref,bref,cref,phi,F21,f31,f41,f51
-     &,TQSOL,phimin,phimax,twing,F12,F32,F42,F52,f61,f13,f14,f15,f16
-      double precision A1,A2,A3,A4,A4b,A5,A6,f23,f24,f25,f26
-      double precision SPHEAT,ABSMAX,ABSMIN,O2MAX,O2MIN
+      DOUBLE PRECISION A1,A2,A3,A4,A4B,A5,A6,ABSAN,ABSMAX,ABSMIN,ABSSB
+      DOUBLE PRECISION AL,AMASS,ANDENS,AREF,ASIL,ASILN,ASILP,ATOT,BREF
+      DOUBLE PRECISION CREF,DEPSUB,EMISAN,EMISSB,EMISSK,F12,F13,F14,F15
+      DOUBLE PRECISION F16,F21,F23,F24,F25,F26,F31,F32,F41,F42,F51,F52
+      DOUBLE PRECISION F61,FATOBJ,FATOSB,FATOSK,FLSHCOND,FLUID,G,O2MAX
+      DOUBLE PRECISION O2MIN,PCTDIF,PHI,PHIMAX,PHIMIN,PI,PTCOND
+      DOUBLE PRECISION PTCOND_ORIG,QCOND,QCONV,QIRIN,QIROUT,QMETAB,QNORM
+      DOUBLE PRECISION QRESP,QSDIFF,QSDIR,QSEVAP,QSOBJ,QSOLAR,QSOLR
+      DOUBLE PRECISION QSRSB,QSSKY,RELHUM,RHO1_3,SHADE,SIDEX,SIG,SPHEAT
+      DOUBLE PRECISION SUBTK,TA,TOBJ,TQSOL,TRANS1,TSKY,TSUBST,TWING,VEL
+      DOUBLE PRECISION WC,WQSOL,ZEN,ZENITH
 
-      INTEGER IHOUR,MICRO,NM,wingmod,wingcalc,LIVE
+      INTEGER IHOUR,LIVE,MICRO,NM,WINGCALC,WINGMOD
 
       COMMON/FUN1/QSOLAR,QIRIN,QMETAB,QRESP,QSEVAP,QIROUT,QCONV,QCOND
-      COMMON/FUN2/AMASS,RELHUM,ATOT,FATOSK,FATOSB,EMISAN,SIG,Flshcond
-      COMMON/FUN3/AL,TA,VEL,PTCOND,SUBTK,DEPSUB,TSUBST,ptcond_orig
+      COMMON/FUN2/AMASS,RELHUM,ATOT,FATOSK,FATOSB,EMISAN,SIG,FLSHCOND
+      COMMON/FUN3/AL,TA,VEL,PTCOND,SUBTK,DEPSUB,TSUBST,PTCOND_ORIG
       COMMON/FUN5/WC,ZEN,PCTDIF,ABSSB,ABSAN,ASILN,FATOBJ,NM
       COMMON/FUN6/SPHEAT,ABSMAX,ABSMIN,O2MAX,O2MIN,LIVE
-      COMMON/WINGFUN/rho1_3,trans1,aref,bref,cref,phi,F21,f31,f41,f51
-     &,sidex,WQSOL,phimin,phimax,twing,F12,F32,F42,F52
-     &,f61,TQSOL,A1,A2,A3,A4,A4b,A5,A6,f13,f14,f15,f16,f23,f24,f25,f26
-     &,wingcalc,wingmod
-      COMMON/WSOLAR/ASIL,Shade
       COMMON/WDSUB1/ANDENS,ASILP,EMISSB,EMISSK,FLUID,G,IHOUR
       COMMON/WDSUB2/QSOLR,TOBJ,TSKY,MICRO
-      Data PI/3.14159265/
+      COMMON/WINGFUN/RHO1_3,TRANS1,AREF,BREF,CREF,PHI,F21,F31,F41,F51
+     &,SIDEX,WQSOL,PHIMIN,PHIMAX,TWING,F12,F32,F42,F52
+     &,F61,TQSOL,A1,A2,A3,A4,A4B,A5,A6,F13,F14,F15,F16,F23,F24,F25,F26
+     &,WINGCALC,WINGMOD
+      COMMON/WSOLAR/ASIL,SHADE
+      
+      DATA PI/3.14159265/
 
-C     Checking for scattered skylight only when sun below horizon
-      Zenith=Zen*180./PI
+C     CHECKING FOR SCATTERED SKYLIGHT ONLY WHEN SUN BELOW HORIZON
+      ZENITH=ZEN*180./PI
 C     DIRECT BEAM COMPONENT
-      If(Zenith.lt.90.00)then
-C      DIRECT BEAM (normal to the direct beam)
-       if(live.eq.0)then ! don't make it adjust posture, it's dead!
-        Qnorm=QSOLR
-       else
-        Qnorm=(QSOLR/COS(ZEN))
-       endif
-       if(qnorm.gt.1367.)then
-c       making sure that low sun angles don't lead to solar values
-c       greater than the solar constant
-        qnorm=1367.
-       endif
-       if(zenith.ge.90.)then
-        qnorm=0.000
-       endif
-       QSDIR=ABSAN*ASIL*(1.00-PCTDIF)*Qnorm*(1.0-(shade/100.))
-      else
-       Qsdir=0.00
-       qnorm=0.00
-      endif
+      IF(ZENITH.LT.90.00)THEN
+C      DIRECT BEAM (NORMAL TO THE DIRECT BEAM)
+       IF(LIVE.EQ.0)THEN ! DON'T MAKE IT ADJUST POSTURE, IT'S DEAD!
+        QNORM=QSOLR
+       ELSE
+        QNORM=(QSOLR/COS(ZEN))
+       ENDIF
+       IF(QNORM.GT.1367.)THEN
+C       MAKING SURE THAT LOW SUN ANGLES DON'T LEAD TO SOLAR VALUES
+C       GREATER THAN THE SOLAR CONSTANT
+        QNORM=1367.
+       ENDIF
+       IF(ZENITH.GE.90.)THEN
+        QNORM=0.000
+       ENDIF
+       QSDIR=ABSAN*ASIL*(1.00-PCTDIF)*QNORM*(1.0-(SHADE/100.))
+      ELSE
+       QSDIR=0.00
+       QNORM=0.00
+      ENDIF
 
-      if(wingmod.eq.2)then
-       call wings(rho1_3,absan,trans1,QSOLR,aref,bref,cref,phi,
-     & F21,f31,f41,f51,f61,f12,f32,f42,f52,sidex,WQSOL,TQSOL,A1,A2,
-     & A3,A4,A4b,A5,A6,f13,f14,f15,f16,f23,f24,f25,f26,asilp)
-       QSRSB=ABSAN*1*ATOT/2*(1.0-ABSSB)*QSOLR*(1.0-(shade/100.))
+      IF(WINGMOD.EQ.2)THEN
+       CALL WINGS(RHO1_3,ABSAN,TRANS1,QSOLR,AREF,BREF,CREF,PHI,
+     & F21,F31,F41,F51,F61,F12,F32,F42,F52,SIDEX,WQSOL,TQSOL,A1,A2,
+     & A3,A4,A4B,A5,A6,F13,F14,F15,F16,F23,F24,F25,F26,ASILP)
+       QSRSB=ABSAN*1*ATOT/2*(1.0-ABSSB)*QSOLR*(1.0-(SHADE/100.))
        QSOLAR=QSRSB+TQSOL
-      else
+      ELSE
 C      DIFFUSE COMPONENTS (SKY AND SUBSTRATE)
-       QSOBJ=ABSAN*FATOBJ*ATOT*PCTDIF*Qnorm
-       if(wingmod.eq.1)then
-        if(phi.lt.90)then
+       QSOBJ=ABSAN*FATOBJ*ATOT*PCTDIF*QNORM
+       IF(WINGMOD.EQ.1)THEN
+        IF(PHI.LT.90)THEN
          QSSKY=0.
-        else
-         QSSKY=ABSAN*FATOSK*ATOT*PCTDIF*Qnorm*(1.0-(shade/100.))
-        endif
-       else
-        QSSKY=ABSAN*FATOSK*ATOT*PCTDIF*Qnorm*(1.0-(shade/100.))
-       endif
-       QSRSB=ABSAN*FATOSB*ATOT*(1.0-ABSSB)*QSOLR*(1.0-(shade/100.))
+        ELSE
+         QSSKY=ABSAN*FATOSK*ATOT*PCTDIF*QNORM*(1.0-(SHADE/100.))
+        ENDIF
+       ELSE
+        QSSKY=ABSAN*FATOSK*ATOT*PCTDIF*QNORM*(1.0-(SHADE/100.))
+       ENDIF
+       QSRSB=ABSAN*FATOSB*ATOT*(1.0-ABSSB)*QSOLR*(1.0-(SHADE/100.))
        QSDIFF=QSSKY+QSRSB+QSOBJ
-       if(wingmod.eq.1)then
-        if(phi.lt.90)then
+       IF(WINGMOD.EQ.1)THEN
+        IF(PHI.LT.90)THEN
          QSOLAR=QSDIFF
-        else
+        ELSE
          QSOLAR=QSDIR+QSDIFF
-        endif
-       else
+        ENDIF
+       ELSE
         QSOLAR=QSDIR+QSDIFF
-       endif
-      endif
+       ENDIF
+      ENDIF
 
       RETURN
       END
