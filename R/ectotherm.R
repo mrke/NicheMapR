@@ -337,7 +337,7 @@
 #' \item 10 DryFood_g - Dry food intake (g/h)
 #' \item 11 WetFood_g - Wet foood intake (g/h)
 #' \item 12 DryFaeces_g - Dry faeces production (g/h)
-#' \item 13 WetFaeces_G - Wet faeces production (g/h)
+#' \item 13 WetFaeces_g - Wet faeces production (g/h)
 #' \item 14 Urine_g - Urine production (g/h)
 #' \item 15 H2OResp_g - Respiratory water loss (g/h)
 #' \item 16 H2OCut_g - Cutaneous water loss (g/h)
