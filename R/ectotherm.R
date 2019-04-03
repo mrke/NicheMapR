@@ -289,17 +289,24 @@
 #' \item 8 DEP - Depth below ground (cm)
 #' \item 9 ACT - Activity state (0=inactive, 1=basking, 2=foraging)
 #' \item 10 TA - Air temperature (°C) at animal location
-#' \item 11 VEL - Wind speed (m/s) at animal location
-#' \item 12 RELHUM - Relative humidity (\%) at animal location
-#' \item 13 ZEN - Zenith angle of sun (degrees - 90 = below the horizon)
-#' \item 14 CONDEP - Depth of water body (cm) (may not be simulated or supplied)
-#' \item 15 WATERTEMP - Temperature of water body (°C) (may not be simulated or supplied)
-#' \item 16 DAYLENGTH - Day length (hours)
-#' \item 17 WINGANGLE - Wing angle (degrees) for butterfly model
-#' \item 18 WINGTEMP - Wing temperature (°C) for butterfly model
-#' \item 19 FLYING - Flying state (1=flying, 0=not flying) for butterfly model
-#' \item 20 FLYTIME - Flying time (hours) for butterfly model
-#'}
+#' \item 11 TSUB - air temperature (&deg;C) at animal location
+#' \item 12 TSKY - air temperature (&deg;C) at animal location
+#' \item 13 VEL - Wind speed (m/s) at animal location
+#' \item 14 RELHUM - Relative humidity (\%) at animal location
+#' \item 15 ZEN - Zenith angle of sun (degrees - 90 = below the horizon)
+#' \item 16 CONDEP - Depth of water body (cm) (may not be simulated or supplied)
+#' \item 17 WATERTEMP - Temperature of water body (°C) (may not be simulated or supplied)
+#' \item 18 DAYLENGTH - Day length (hours)
+#' \item 19 WINGANGLE - Wing angle (degrees) for butterfly model
+#' \item 20 WINGTEMP - Wing temperature (°C) for butterfly model
+#' \item 21 FLYING - Flying state (1=flying, 0=not flying) for butterfly model
+#' \item 22 FLYTIME - Flying time (hours) for butterfly model
+#' \item 23. PO2WATER - dissolved oxygen in water, if running GLM water body model
+#' \item 24. SALWATER - salinity of water, if running GLM water body model
+#' \item 25. ABSAN - solar absorptivity (fractional)
+#' \item 26. PCOND - proportion of animal's surface in contact with ground (fractional)
+#' \item 27. POSTURE - postural orientation (1=perpendicular to sun, 2=parallel, 0=in-between)'}
+#' }
 #' enbal variables:
 #' \itemize{
 #' \item 1 DOY - Day of year

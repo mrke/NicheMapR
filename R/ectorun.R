@@ -101,6 +101,10 @@ ectorun <- function(ecto) {
   enbal <- matrix(data = 0., nrow = 24*ndays, ncol = 13)
   masbal <- matrix(data = 0., nrow = 24*ndays, ncol = 19)
   debout <- matrix(data = 0., nrow = 24*ndays, ncol = 21)
+  environ[,2] <- environ[,2] - 1 # make first hour midnight
+  enbal[,2] <- enbal[,2] - 1 # make first hour midnight
+  masbal[,2] <- masbal[,2] - 1 # make first hour midnight
+  debout[,2] <- debout[,2] - 1 # make first hour midnight
   yearout <- matrix(data = 0., nrow = 1, ncol = 20)
   yearsout <- matrix(data = 0., nrow = ceiling(ndays/365), ncol = 45)
 
