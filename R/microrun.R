@@ -80,7 +80,7 @@ microclimate <- function(micro) {
                 shadplant=matrix(data = 0., nrow = 24*doynum, ncol = 14),
                 drlam=matrix(data = 0., nrow = 24*doynum, ncol = 113),
                 drrlam=matrix(data = 0., nrow = 24*doynum, ncol = 113),
-                srlam=matrix(data = 0., nrow = 24*doynum, ncol = 113),PACKAGE = "NicheMapR")
+                srlam=matrix(data = 0., nrow = 24*doynum, ncol = 113), PACKAGE = "NicheMapR")
 
   metout <- matrix(data = 0., nrow = 24*doynum, ncol = 19)
   shadmet <- matrix(data = 0., nrow = 24*doynum, ncol = 19)
