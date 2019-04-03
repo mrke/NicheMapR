@@ -101,10 +101,6 @@ ectorun <- function(ecto) {
   enbal <- matrix(data = 0., nrow = 24*ndays, ncol = 13)
   masbal <- matrix(data = 0., nrow = 24*ndays, ncol = 19)
   debout <- matrix(data = 0., nrow = 24*ndays, ncol = 21)
-  environ[,2] <- environ[,2] - 1 # make first hour midnight
-  enbal[,2] <- enbal[,2] - 1 # make first hour midnight
-  masbal[,2] <- masbal[,2] - 1 # make first hour midnight
-  debout[,2] <- debout[,2] - 1 # make first hour midnight
   yearout <- matrix(data = 0., nrow = 1, ncol = 20)
   yearsout <- matrix(data = 0., nrow = ceiling(ndays/365), ncol = 45)
 
@@ -118,6 +114,10 @@ ectorun <- function(ecto) {
   enbal<-a$enbal
   masbal<-a$masbal
   debout<-a$debout
+  environ[,4] <- environ[,4] - 1 # make first hour midnight
+  enbal[,4] <- enbal[,4] - 1 # make first hour midnight
+  masbal[,4] <- masbal[,4] - 1 # make first hour midnight
+  debout[,4] <- debout[,4] - 1 # make first hour midnight
   yearout<-a$yearout
   yearsout<-a$yearsout
   environ.names<-c("DOY","YEAR","DAY","TIME","TC","SHADE","SOLAR","DEP","ACT","TA","TSUB","TSKY","VEL","RELHUM","ZEN","CONDEP","WATERTEMP","DAYLENGTH","WINGANGLE","WINGTEMP","FLYING","FLYTIME","PO2WATER","SALWATER","ABSAN","PTCOND","POSTURE")
