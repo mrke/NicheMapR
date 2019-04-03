@@ -8,7 +8,7 @@
 #' @param relhum Integer specifying relative humdity to use, 1:8 corresponds to 0,50,70,80,90,95,98,99 percent relative humidity
 #' @param season Season to obtain data for, 0 = summer, 1 = winter
 #' @return optdep A vector of wavelength-specific optical depths
-#' @useDynLib "gads"
+#' @useDynLib "NicheMapR"
 #' @export
 rungads <- function(lat, lon, relhum, season) {
   curdir<-getwd()
@@ -22,7 +22,7 @@ rungads <- function(lat, lon, relhum, season) {
     as.double(lon5),
     as.double(relhum),
     as.double(season),
-    optdep=matrix(data = 0., nrow = 25, ncol = 2), PACKAGE="gads")
+    optdep=matrix(data = 0., nrow = 25, ncol = 2), PACKAGE="NicheMapR")
   setwd(curdir)
   optdep <- matrix(data = 0., nrow = 25, ncol = 2)
   storage.mode(optdep)<-"double"

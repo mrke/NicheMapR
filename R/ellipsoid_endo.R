@@ -65,7 +65,7 @@
 #'plot(masses,endo$UCT, col='red',type='l', ylim=ylims, xlab="body mass (kg)",ylab="temperature (deg C)", main = "Upper and Lower Critical Temperatures vs Mass")
 #'points(masses,endo$LCT, type='l', col='blue')
 #'
-#'micro<-micro_global(loc = 'Birdsville, Australia') # run the model with default location and settings
+#'micro<-micro_global(loc = c(139.5, -25.9)) # run the microclimate model at Birdsville with default settings
 #'
 #'metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #'shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade

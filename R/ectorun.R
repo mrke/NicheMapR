@@ -33,119 +33,57 @@
 #' @param MINSHADES Minimum shade levels
 #' @param MAXSHADES Maximum shade levels
 #' @param S_instar For the Insect DEB model
+#' @useDynLib "NicheMapR"
 #' @export
 ectorun <- function(ecto) {
 
   ndays<-ecto$ndays
 
-  os = Sys.info()['sysname']
-  if (os == "Windows") {
-      if (R.Version()$arch=="x86_64") {
-        libpath='/NicheMapR/libs/win/x64/ectotherm.dll'
-      } else {
-        libpath='/NicheMapR/libs/win/i386/ectotherm.dll'
-      }
-  } else if (os == "Linux") {
-      libpath='/NicheMapR/libs/linux/ECTOTHERM.so'
-  } else if (os == "Darwin") {
-      libpath='/NicheMapR/libs/mac/ECTOTHERM.so'
-  }
+  a <- .Fortran("ectotherm",
+                as.integer(ecto$ndays),
+                as.integer(ecto$nstages),
+                as.double(ecto$ectoinput),
+                as.double(ecto$metout),
+                as.double(ecto$shadmet),
+                as.double(ecto$soil),
+                as.double(ecto$shadsoil),
+                as.double(ecto$soilmoist),
+                as.double(ecto$shadmoist),
+                as.double(ecto$soilpot),
+                as.double(ecto$shadpot),
+                as.double(ecto$humid),
+                as.double(ecto$shadhumid),
+                as.double(ecto$DEP),
+                as.double(ecto$RAINFALL),
+                as.double(ecto$debmod),
+                as.double(ecto$deblast),
+                as.double(ecto$foodwaters),
+                as.double(ecto$foodlevels),
+                as.double(ecto$wetlandTemps),
+                as.double(ecto$wetlandDepths),
+                as.double(ecto$GLMtemps),
+                as.double(ecto$GLMO2s),
+                as.double(ecto$GLMsalts),
+                as.double(ecto$GLMpHs),
+                as.double(ecto$GLMfoods),
+                as.double(ecto$arrhenius),
+                as.double(ecto$thermal_stages),
+                as.double(ecto$behav_stages),
+                as.double(ecto$water_stages),
+                as.double(ecto$nutri_stages),
+                as.double(ecto$minshades),
+                as.double(ecto$maxshades),
+                as.double(ecto$S_instar),
+                environ=matrix(data = 0., nrow = ndays*24, ncol = 27),
+                enbal=matrix(data = 0., nrow = ndays*24, ncol = 13),
+                masbal=matrix(data = 0., nrow = ndays*24, ncol = 19),
+                debout=matrix(data = 0., nrow = ndays*24, ncol = 21),
+                yearout=matrix(data = 0., nrow = 1, ncol = 20),
+                yearsout=matrix(data = 0., nrow = ceiling(ndays/365), ncol = 45),
+                PACKAGE = "NicheMapR"
+  )
 
- if(is.loaded("ectotherm", "ECTOTHERM", type = "FORTRAN")==FALSE){
-    dyn.load(paste(lib.loc = .libPaths()[1],libpath,sep=""))
-    a <- .Fortran("ectotherm",
-      as.integer(ecto$ndays),
-      as.integer(ecto$nstages),
-      as.double(ecto$ectoinput),
-      as.double(ecto$metout),
-      as.double(ecto$shadmet),
-      as.double(ecto$soil),
-      as.double(ecto$shadsoil),
-      as.double(ecto$soilmoist),
-      as.double(ecto$shadmoist),
-      as.double(ecto$soilpot),
-      as.double(ecto$shadpot),
-      as.double(ecto$humid),
-      as.double(ecto$shadhumid),
-      as.double(ecto$DEP),
-      as.double(ecto$RAINFALL),
-      as.double(ecto$debmod),
-      as.double(ecto$deblast),
-      as.double(ecto$foodwaters),
-      as.double(ecto$foodlevels),
-      as.double(ecto$wetlandTemps),
-      as.double(ecto$wetlandDepths),
-      as.double(ecto$GLMtemps),
-      as.double(ecto$GLMO2s),
-      as.double(ecto$GLMsalts),
-      as.double(ecto$GLMpHs),
-      as.double(ecto$GLMfoods),
-      as.double(ecto$arrhenius),
-      as.double(ecto$thermal_stages),
-      as.double(ecto$behav_stages),
-      as.double(ecto$water_stages),
-      as.double(ecto$nutri_stages),
-      as.double(ecto$minshades),
-      as.double(ecto$maxshades),
-      as.double(ecto$S_instar),
-      environ=matrix(data = 0., nrow = ndays*24, ncol = 24),
-      enbal=matrix(data = 0., nrow = ndays*24, ncol = 13),
-      masbal=matrix(data = 0., nrow = ndays*24, ncol = 19),
-      debout=matrix(data = 0., nrow = ndays*24, ncol = 21),
-      yearout=matrix(data = 0., nrow = 1, ncol = 20),
-      yearsout=matrix(data = 0., nrow = ceiling(ndays/365), ncol = 45),
-      PACKAGE = "ectotherm"
-    )
-    dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
-  } else {
-    a <- .Fortran("ectotherm",
-      as.integer(ecto$ndays),
-      as.integer(ecto$nstages),
-      as.double(ecto$ectoinput),
-      as.double(ecto$metout),
-      as.double(ecto$shadmet),
-      as.double(ecto$soil),
-      as.double(ecto$shadsoil),
-      as.double(ecto$soilmoist),
-      as.double(ecto$shadmoist),
-      as.double(ecto$soilpot),
-      as.double(ecto$shadpot),
-      as.double(ecto$humid),
-      as.double(ecto$shadhumid),
-      as.double(ecto$DEP),
-      as.double(ecto$RAINFALL),
-      as.double(ecto$debmod),
-      as.double(ecto$deblast),
-      as.double(ecto$foodwaters),
-      as.double(ecto$foodlevels),
-      as.double(ecto$wetlandTemps),
-      as.double(ecto$wetlandDepths),
-      as.double(ecto$GLMtemps),
-      as.double(ecto$GLMO2s),
-      as.double(ecto$GLMsalts),
-      as.double(ecto$GLMpHs),
-      as.double(ecto$GLMfoods),
-      as.double(ecto$arrhenius),
-      as.double(ecto$thermal_stages),
-      as.double(ecto$behav_stages),
-      as.double(ecto$water_stages),
-      as.double(ecto$nutri_stages),
-      as.double(ecto$minshades),
-      as.double(ecto$maxshades),
-      as.double(ecto$S_instar),
-      environ=matrix(data = 0., nrow = ndays*24, ncol = 24),
-      enbal=matrix(data = 0., nrow = ndays*24, ncol = 13),
-      masbal=matrix(data = 0., nrow = ndays*24, ncol = 19),
-      debout=matrix(data = 0., nrow = ndays*24, ncol = 21),
-      yearout=matrix(data = 0., nrow = 1, ncol = 20),
-      yearsout=matrix(data = 0., nrow = ceiling(ndays/365), ncol = 45),
-      PACKAGE = "ECTOTHERM"
-    )
-    # need to load and unload the microclimate dll or else it crashes second time round - probably due to memory leak
-    dyn.unload(paste(lib.loc = .libPaths()[1],libpath,sep=""))
-    dyn.load(paste(lib.loc = .libPaths()[1],libpath,sep=""))
-  }
-  environ <- matrix(data = 0., nrow = 24*ndays, ncol = 24)
+  environ <- matrix(data = 0., nrow = 24*ndays, ncol = 27)
   enbal <- matrix(data = 0., nrow = 24*ndays, ncol = 13)
   masbal <- matrix(data = 0., nrow = 24*ndays, ncol = 19)
   debout <- matrix(data = 0., nrow = 24*ndays, ncol = 21)
@@ -164,7 +102,7 @@ ectorun <- function(ecto) {
   debout<-a$debout
   yearout<-a$yearout
   yearsout<-a$yearsout
-  environ.names<-c("DOY","YEAR","DAY","TIME","TC","SHADE","SOLAR","DEP","ACT","TA","TSUB","TSKY","VEL","RELHUM","ZEN","CONDEP","WATERTEMP","DAYLENGTH","WINGANGLE","WINGTEMP","FLYING","FLYTIME","PO2WATER","SALWATER")
+  environ.names<-c("DOY","YEAR","DAY","TIME","TC","SHADE","SOLAR","DEP","ACT","TA","TSUB","TSKY","VEL","RELHUM","ZEN","CONDEP","WATERTEMP","DAYLENGTH","WINGANGLE","WINGTEMP","FLYING","FLYTIME","PO2WATER","SALWATER","ABSAN","PTCOND","POSTURE")
   enbal.names<-c("DOY","YEAR","DAY","TIME","QSOL","QIRIN","QMET","QEVAP","QIROUT","QCONV","QCOND","ENB","NTRY")
   masbal.names<-c("DOY","YEAR","DAY","TIME","O2_ml","CO2_ml","NWASTE_g","H2OFree_g","H2OMet_g","DryFood_g","WetFood_g","DryFaeces_g","WetFaeces_G","Urine_g","H2OResp_g","H2OCut_g","H2OEye_g","H2OBal_g","H2OCumBal_g")
   debout.names<-c("DOY","YEAR","DAY","TIME","STAGE","V","E","E_H","L_W","WETMASS","WETGONAD","WETGUT","PCT_DESIC","E_R","E_B","BREEDING","PREGNANT","V_BABY","E_BABY","H_S","P_SURV")

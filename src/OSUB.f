@@ -358,7 +358,7 @@ c     phase change for freezing moist soil
 
 C     Modification by M. Kearney for effect of cloud cover on direct solar radiation, using the
 C     Angstrom formula (formula 5.33 on P. 177 of "Climate Data and Resources" by Edward Linacre 1992
-      IF (CLOUD .GT. 0.) THEN
+      IF ((CLOUD .GT. 0.).and.(HOURLY.eq.0)) THEN ! allowing for hourly cloud to be used for longwave calcs if longwave not provided
        SOLR = SOLR*(0.36+0.64*(1.-(CLOUD/100)))
       ENDIF
 
