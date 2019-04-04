@@ -4,10 +4,9 @@ knitr::opts_chunk$set(
 )
 
 ## ------------------------------------------------------------------------
-library(NicheMapR)
-
-micro<-micro_global(loc="Madison, Wisconsin, USA")
-longlat <- c(micro$longlat[1], micro$longlat[2]) # save the longitude and latitude and pass directly below
+library(NicheMapR) 
+longlat <- c(-89.40123, 43.07305) # Madison, Wisconsin, USA
+micro<-micro_global(loc = longlat)
 
 ## ---- echo=FALSE, results='asis'-----------------------------------------
 knitr::kable(head(micro$metout[,1:9], 2), digits = 2)
@@ -26,7 +25,7 @@ with(subset(soil,DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15
     "b", main=paste(minshade,"% shade"))})
 
 ## ---- fig.width=7, fig.height=6------------------------------------------
-micro<-micro_global(loc = "Madison, Wisconsin, USA", runshade = 0, minshade = 50)
+micro<-micro_global(loc = longlat, runshade = 0, minshade = 50)
 
 soil<-as.data.frame(micro$soil) # get the soil data
 minshade<-micro$minshade # get the value for minimum shade
@@ -175,7 +174,7 @@ for(i in 1:10){
 ## ---- fig.width=7, fig.height=6------------------------------------------
 timeinterval<-365
 nyears<-2 # running two years, first one acting as a 'burn in' year and discarded
-micro<-micro_global(loc="Madison, Wisconsin, USA", runmoist = 1, snowmodel = 1, timeinterval = timeinterval, nyears = 2)
+micro<-micro_global(loc = longlat, runmoist = 1, snowmodel = 1, timeinterval = timeinterval, nyears = 2)
 soil<-as.data.frame(micro$soil)[(365*24+1):(365*24*nyears),] # get the minimum shade soil temperature output, discarding the first year
 metout<-as.data.frame(micro$metout)[(365*24+1):(365*24*nyears),] # get the minimum shade above ground conditions, discarding the first year
 minshade<-micro$minshade # get the value for minimum shade
@@ -208,7 +207,7 @@ timeinterval<-365
   mocktides<-rep(c(rep(0,12),rep(1,13)),timeinterval*nyears) # made a sequence of tides, where 1 means tide is in and 2 means out, and offset it to 24 hour cycle
   mocktides<-mocktides[1:8760] # subset it to a year long of 24 hour tides
   tides[1:(timeinterval*nyears*24),1]<-mocktides # put the mock tides in the tides vector, column 1
-micro<-micro_global(loc="Madison, Wisconsin, USA", shore = 1, soiltype = 0, timeinterval = timeinterval, nyears = nyears, tides = tides)
+micro<-micro_global(loc=longlat, shore = 1, soiltype = 0, timeinterval = timeinterval, nyears = nyears, tides = tides)
 soil<-as.data.frame(micro$soil) # get the minimum shade soil temperature output first year
 minshade<-micro$minshade # get the value for minimum shade
 # append dates

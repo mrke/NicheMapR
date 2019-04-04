@@ -654,12 +654,16 @@ micro_global <- function(
     # load global climate files
     gcfolder<-paste(.libPaths()[1],"/gcfolder.rda",sep="")
     if(file.exists(gcfolder)==FALSE){
+      folder<-"c:/globalclimate"
+      if(file.exists(paste0(folder,"/global_climate.nc"))==FALSE){
       message("You don't appear to have the global climate data set - \n run function get.global.climate(folder = 'folder you want to put it in') .....\n exiting function micro_global")
       opt <- options(show.error.messages=FALSE)
       on.exit(options(opt))
       stop()
+      }
+    }else{
+      load(gcfolder)
     }
-    load(gcfolder)
     if (!requireNamespace("raster", quietly = TRUE)) {
       stop("package 'raster' is needed. Please install it.",
         call. = FALSE)
@@ -670,7 +674,7 @@ micro_global <- function(
     }
 
     message('extracting climate data \n')
-    global_climate<-raster::brick(paste(folder,"/global_climate.nc",sep=""))
+    global_climate<-raster::brick(paste0(folder,"/global_climate.nc"))
     CLIMATE <- raster::extract(global_climate,x)
     ALTT<-as.numeric(CLIMATE[,1])
     delta_elev <- 0
