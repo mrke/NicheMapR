@@ -7,10 +7,10 @@ knitr::opts_chunk$set(
 library(NicheMapR)
 library(zoo)
 
-## ------------------------------------------------------------------------
+## ---- message=FALSE, warnings=FALSE--------------------------------------
 head(SCANsites)
 
-## ------------------------------------------------------------------------
+## ---- message=FALSE, warnings=FALSE--------------------------------------
 sitenum <- '2184' # Ford Dry Lake
 site <- subset(SCANsites, id == sitenum) # subset the SCANsites dataset for Ford Dry Lake
 name <- site$name # the name of the sites
@@ -22,10 +22,10 @@ ystart <- 2015 # start yeaar
 yfinish <- 2015 # end year
 nyears <- yfinish - ystart + 1 # number of years to run
 
-## ------------------------------------------------------------------------
+## ---- message=FALSE, warnings=FALSE--------------------------------------
 weather <- SCAN_FordDryLake_2015 # make SCAN_FordDrylake_2015 supplied package data the weather input variable
 
-## ------------------------------------------------------------------------
+## ---- message=FALSE, warnings=FALSE--------------------------------------
 writecsv <- 0 # make Fortran code write output as csv files
 runshade <- 1 # run the model twice, once for each shade level (1) or just for the first shade level (0)?
 runmoist <- 1 # run soil moisture model (0 = no, 1 = yes)?
@@ -37,7 +37,7 @@ IR <- 0 # compute clear-sky longwave radiation using Campbell and Norman (1998) 
 message <- 0 # do not allow the Fortran integrator to output warnings
 fail <- 24*365 # how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)
 
-## ------------------------------------------------------------------------
+## ---- message=FALSE, warnings=FALSE--------------------------------------
 longlat <- c(Longitude, Latitude) # decimal degrees longitude and latitude from the SCAN site data table
 doynum <- floor(nrow(weather) / 24) # number of days to run, determined by counting the number of rows in the weather dataset and dividing by 24 to get days, but keeping it as a whole number
 idayst <- 1 # start month
@@ -49,7 +49,7 @@ ALONG <- abs(trunc(longlat[1])) # degrees longitude
 ALMINT <- (abs(longlat[1]) - ALONG) * 60 # minutes latitude
 ALREF <- ALONG # reference longitude for time zone
 
-## ------------------------------------------------------------------------
+## ---- message=FALSE, warnings=FALSE--------------------------------------
 EC <- 0.0167238 # Eccenricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)
 RUF <- 0.004 # Roughness height (m), , e.g. sand is 0.05, grass may be 2.0, current allowed range: 0.001 (snow) - 2.0 cm.
 # Next four parameters are segmented velocity profiles due to bushes, rocks etc. on the surface
@@ -94,7 +94,7 @@ a <- lm(OPTDEPTH~poly(LAMBDA, 6, raw = TRUE),data = optdep)
 LAMBDA <- c(290, 295, 300, 305, 310, 315, 320, 330, 340, 350, 360, 370, 380, 390, 400, 420, 440, 460, 480, 500, 520, 540, 560, 580, 600, 620, 640, 660, 680, 700, 720, 740, 760, 780, 800, 820, 840, 860, 880, 900, 920, 940, 960, 980, 1000, 1020, 1080, 1100, 1120, 1140, 1160, 1180, 1200, 1220, 1240, 1260, 1280, 1300, 1320, 1380, 1400, 1420, 1440, 1460, 1480, 1500, 1540, 1580, 1600, 1620, 1640, 1660, 1700, 1720, 1780, 1800, 1860, 1900, 1950, 2000, 2020, 2050, 2100, 2120, 2150, 2200, 2260, 2300, 2320, 2350, 2380, 2400, 2420, 2450, 2490, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000)
 TAI <- predict(a, data.frame(LAMBDA))
 
-## ------------------------------------------------------------------------
+## ---- message=FALSE, warnings=FALSE--------------------------------------
 # check if first element is NA and, if so, use next non-NA value for na.approx function
 if(is.na(weather$TAVG.H[1])==TRUE){ # mean hourly air temperature
   weather$TAVG.H[1]<-weather$TAVG.H[which(!is.na(weather$TAVG.H))[1]]
@@ -121,7 +121,7 @@ WNhr <- weather$WSPDV.H <- na.approx(weather$WSPDV.H * 0.44704) # convert wind s
 ZENhr <- TAIRhr * 0 - 1 # negative zenith angles to force model to compute them
 IRDhr <- TAIRhr * 0 - 1 # negative zenith angles to force model to compute them
 
-## ------------------------------------------------------------------------
+## ---- message=FALSE, warnings=FALSE--------------------------------------
 # run global microclimate model in clear sky mode to get clear sky radiation
 micro <- micro_global(loc = c(Longitude, Latitude), timeinterval = 365, clearsky = 1)
 # append dates
@@ -153,7 +153,7 @@ a <- na.approx(a, na.rm = FALSE) # apply na.approx, but leave any trailing NAs
 a[is.na(a)] <- 0 # make trailing NAs zero
 CLDhr <- a # now we have hourly cloud cover 
 
-## ------------------------------------------------------------------------
+## ---- message=FALSE, warnings=FALSE--------------------------------------
 # aggregate hourly data to daily min / max
 CCMAXX <- aggregate(CLDhr, by = list(weather$Date), FUN = max)[,2]#c(100, 100) # max cloud cover (%)
 CCMINN <- aggregate(CLDhr, by = list(weather$Date), FUN = min)[,2]#c(0, 15.62) # min cloud cover (%)
@@ -165,7 +165,7 @@ RHMINN <- aggregate(RHhr, by = list(weather$Date), FUN = min)[,2]#c(11.05, 27.9)
 WNMAXX <- aggregate(WNhr, by = list(weather$Date), FUN = max)[,2]#c(1.35, 2.0) # max wind speed (m/s)
 WNMINN <- aggregate(WNhr, by = list(weather$Date), FUN = min)[,2]#c(0.485, 0.610) # min wind speed (m/s)
 
-## ------------------------------------------------------------------------
+## ---- message=FALSE, warnings=FALSE--------------------------------------
 tannul <- mean(c(TMAXX, TMINN)) # annual mean temperature for getting monthly deep soil temperature (°C)
 tannulrun <- rep(tannul, doynum) # monthly deep soil temperature (2m) (°C)
 # creating the arrays of environmental variables that are assumed not to change with month for this simulation
@@ -175,7 +175,7 @@ SLES <- rep(SLE, doynum) # set up vector of ground emissivities for each day
 REFLS <- rep(REFL, doynum) # set up vector of soil reflectances for each day
 PCTWET <- rep(PCTWET, doynum) # set up vector of soil wetness for each day
 
-## ------------------------------------------------------------------------
+## ---- message=FALSE, warnings=FALSE--------------------------------------
 # set up a profile of soil properites with depth for each day to be run
 Numtyps <- 1 # number of soil types
 Nodes <- matrix(data = 0, nrow = 10, ncol = doynum) # array of all possible soil nodes for max time span of 20 years
@@ -196,7 +196,7 @@ soilprops[1, 4]<-SpecHeat # insert specific heat to profile 1
 soilprops[1, 5]<-Density # insert mineral density to profile 1
 soilinit <- rep(tannul, 20) # make iniital soil temps equal to mean annual
 
-## ------------------------------------------------------------------------
+## ---- message=FALSE, warnings=FALSE--------------------------------------
 #use Campbell and Norman Table 9.1 soil moisture properties
 soiltype <- 3 # 3 = sandy loam
 PE <- rep(CampNormTbl9_1[soiltype, 4],19) #air entry potential J/kg
@@ -225,7 +225,7 @@ SoilMoist_Init <- rep(0.2, 10) # initial soil water content for each node, m3/m3
 moists <- matrix(nrow = 10, ncol = doynum, data = 0) # set up an empty vector for soil moisture values through time
 moists[1:10,]<-SoilMoist_Init # insert inital soil moisture
 
-## ------------------------------------------------------------------------
+## ---- message=FALSE, warnings=FALSE--------------------------------------
 snowtemp <- 1.5 # temperature at which precipitation falls as snow (used for snow model)
 snowdens <- 0.375 # snow density (Mg/m3)
 densfun <- c(0.5979, 0.2178, 0.001, 0.0038) # slope and intercept of linear model of snow density as a function of day of year - if it is c(0, 0) then fixed density used
@@ -236,11 +236,11 @@ snowcond <- 0 # effective snow thermal conductivity W/mC (if zero, uses inbuilt 
 intercept <- 0 # snow interception fraction for when there's shade (0-1)
 grasshade <- 0 # if 1, means shade is removed when snow is present, because shade is cast by grass/low veg
 
-## ------------------------------------------------------------------------
+## ---- message=FALSE, warnings=FALSE--------------------------------------
 # intertidal simulation input vector (col 1 = tide in(1)/out(0), col 2 = sea water temperature in °C, col 3 = % wet from wave splash)
 tides <- matrix(data = 0, nrow = 24 * doynum, ncol = 3) # matrix for tides
 
-## ------------------------------------------------------------------------
+## ---- message=FALSE, warnings=FALSE--------------------------------------
 # microclimate input parameters list
 microinput <- c(doynum, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept, grasshade, solonly)
 
@@ -249,7 +249,7 @@ microin <- list(microinput = microinput, tides = tides, doy = doy, SLES = SLES, 
 
 micro <- microclimate(microin) # run the model in Fortran
 
-## ------------------------------------------------------------------------
+## ---- message=FALSE, warnings=FALSE--------------------------------------
 # retrieve ouptut
 dates <- weather$datetime[1:nrow(micro$metout)]
 metout <- as.data.frame(micro$metout) # retrieve above ground microclimatic conditions, min shade
@@ -275,7 +275,7 @@ shadhumid <- cbind(dates, shadhumid)
 soilpot <- cbind(dates, soilpot)
 shadpot <- cbind(dates, shadpot)
 
-## ---- fig.width = 7, fig.height = 10-------------------------------------
+## ---- message=FALSE, warnings=FALSE, fig.width = 7, fig.height = 10------
 # choose a time window to plot
 tstart <- as.POSIXct("2015-05-01",format="%Y-%m-%d")
 tfinish <- as.POSIXct("2015-07-31",format="%Y-%m-%d")

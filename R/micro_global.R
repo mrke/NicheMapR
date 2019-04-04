@@ -633,7 +633,7 @@ micro_global <- function(
       cat('extracting data from SoilGrids \n')
       if (!requireNamespace("jsonlite", quietly = TRUE)) {
         stop("package 'jsonlite' is needed to extract data from SoilGrids, please install it.",
-          call. = FALSE)
+             call. = FALSE)
       }
       require(jsonlite)
       ov <- fromJSON(paste0('https://rest.soilgrids.org/query?lon=',x[1],'&lat=',x[2],',&attributes=BLDFIE,SLTPPT,SNDPPT,CLYPPT'), flatten = TRUE)
@@ -656,21 +656,21 @@ micro_global <- function(
     if(file.exists(gcfolder)==FALSE){
       folder<-"c:/globalclimate"
       if(file.exists(paste0(folder,"/global_climate.nc"))==FALSE){
-      message("You don't appear to have the global climate data set - \n run function get.global.climate(folder = 'folder you want to put it in') .....\n exiting function micro_global")
-      opt <- options(show.error.messages=FALSE)
-      on.exit(options(opt))
-      stop()
+        message("You don't appear to have the global climate data set - \n run function get.global.climate(folder = 'folder you want to put it in') .....\n exiting function micro_global")
+        opt <- options(show.error.messages=FALSE)
+        on.exit(options(opt))
+        stop()
       }
     }else{
       load(gcfolder)
     }
     if (!requireNamespace("raster", quietly = TRUE)) {
       stop("package 'raster' is needed. Please install it.",
-        call. = FALSE)
+           call. = FALSE)
     }
     if (!requireNamespace("ncdf4", quietly = TRUE)) {
       stop("package 'ncdf4' is needed. Please install it.",
-        call. = FALSE)
+           call. = FALSE)
     }
 
     message('extracting climate data \n')
@@ -687,17 +687,17 @@ micro_global <- function(
     RAINFALL <- CLIMATE[,2:13]
     if(is.na(RAINFALL[1])){
       cat("no climate data for this site, using dummy data so solar is still produced \n")
-    CLIMATE <- raster::extract(global_climate,cbind(140,-35))
-    ALTT<-as.numeric(CLIMATE[,1])
-    delta_elev <- 0
-    if(is.na(elev) == FALSE){ # check if user-specified elevation
-      delta_elev <- ALTT - elev # get delta for lapse rate correction
-      ALTT <- elev # now make final elevation the user-specified one
-    }
-    adiab_corr_max <- delta_elev * lapse_max
-    adiab_corr_min <- delta_elev * lapse_min
-    RAINFALL <- CLIMATE[,2:13]*0
-    #stop()
+      CLIMATE <- raster::extract(global_climate,cbind(140,-35))
+      ALTT<-as.numeric(CLIMATE[,1])
+      delta_elev <- 0
+      if(is.na(elev) == FALSE){ # check if user-specified elevation
+        delta_elev <- ALTT - elev # get delta for lapse rate correction
+        ALTT <- elev # now make final elevation the user-specified one
+      }
+      adiab_corr_max <- delta_elev * lapse_max
+      adiab_corr_min <- delta_elev * lapse_min
+      RAINFALL <- CLIMATE[,2:13]*0
+      #stop()
     }
     RAINYDAYS <- CLIMATE[,14:25]/10
     WNMAXX <- CLIMATE[,26:37]/10
@@ -866,11 +866,15 @@ micro_global <- function(
       } #end check if running gads
     }
     ################ soil properties  ##################################################
-
-    Numtyps <- 2 # number of soil types
-    Nodes <- matrix(data = 0, nrow = 10, ncol = ndays) # array of all possible soil nodes for max time span of 20 years
-    Nodes[1,1:ndays]<-3 # deepest node for first substrate type
-    Nodes[2,1:ndays]<-9 # deepest node for second substrate type
+    Nodes <- matrix(data = 0, nrow = 10, ncol = ndays) # deepest nodes for each substrate type
+    if(soilgrids == 1){
+      Numtyps <- 10 # number of substrate types
+      Nodes[1:10,] <- c(1:10) # deepest nodes for each substrate type
+    }else{
+      Numtyps <- 2 # number of soil types
+      Nodes[1,1:ndays]<-3 # deepest node for first substrate type
+      Nodes[2,1:ndays]<-9 # deepest node for second substrate type
+    }
     REFLS<-rep(REFL,ndays) # soil reflectances
     PCTWET<-rep(PCTWET,ndays) # soil wetness
     if(runmoist==0){
@@ -889,29 +893,47 @@ micro_global <- function(
     # columns are:
     #1) bulk density (Mg/m3)
     #2) volumetric water content at saturation (0.1 bar matric potential) (m3/m3)
-    #3) clay content (%)
-    #4) thermal conductivity (W/mK)
-    #5) specific heat capacity (J/kg-K)
-    #6) mineral density (Mg/m3)
+    #3) thermal conductivity (W/mK)
+    #4) specific heat capacity (J/kg-K)
+    #5) mineral density (Mg/m3)
     soilprops<-matrix(data = 0, nrow = 10, ncol = 5) # create an empty soil properties matrix
-    soilprops[1,1]<-BulkDensity # insert soil bulk density to profile 1
-    soilprops[2,1]<-BulkDensity # insert soil bulk density to profile 2
-    soilprops[1,2]<-min(0.26, 1 - BulkDensity / Density) # insert saturated water content to profile 1
-    soilprops[2,2]<-min(0.26, 1 - BulkDensity / Density) # insert saturated water content to profile 2
-    if(cap==1){ # insert thermal conductivity to profile 1, and see if 'organic cap' added on top
-      soilprops[1,3]<-0.2 # mineral thermal conductivity
+    if(soilgrids == 1){
+      soilprops[,1]<-BulkDensity
+      soilprops[,2]<-min(0.26, 1 - BulkDensity / Density) # not used if soil moisture computed
+      soilprops[,3]<-Thcond
+      soilprops[,4]<-SpecHeat
+      soilprops[,5]<-Density
+      if(cap==1){
+        soilprops[1:2,3]<-0.2
+        soilprops[1:2,4]<-1920
+      }
+      if(cap==2){
+        soilprops[1:2,3]<-0.1
+        soilprops[3:4,3]<-0.25
+        soilprops[1:4,4]<-1920
+        soilprops[1:4,5]<-1.3
+        soilprops[1:4,1]<-0.7
+      }
     }else{
-      soilprops[1,3]<-Thcond # mineral thermal conductivity
+      soilprops[1,1]<-BulkDensity # insert soil bulk density to profile 1
+      soilprops[2,1]<-BulkDensity # insert soil bulk density to profile 2
+      soilprops[1,2]<-min(0.26, 1 - BulkDensity / Density) # insert saturated water content to profile 1
+      soilprops[2,2]<-min(0.26, 1 - BulkDensity / Density) # insert saturated water content to profile 2
+      if(cap==1){ # insert thermal conductivity to profile 1, and see if 'organic cap' added on top
+        soilprops[1,3]<-0.2 # mineral thermal conductivity
+      }else{
+        soilprops[1,3]<-Thcond # mineral thermal conductivity
+      }
+      soilprops[2,3]<-Thcond # insert thermal conductivity to profile 2
+      if(cap==1){ # insert specific heat to profile 1, and see if 'organic cap' added on top
+        soilprops[1,4]<-1920 # mineral heat capacity
+      }else{
+        soilprops[1,4]<-SpecHeat
+      }
+      soilprops[2,4]<-SpecHeat # insert specific heat to profile 2
+      soilprops[1,5]<-Density # insert mineral density to profile 1
+      soilprops[2,5]<-Density # insert mineral density to profile 2
     }
-    soilprops[2,3]<-Thcond # insert thermal conductivity to profile 2
-    if(cap==1){ # insert specific heat to profile 1, and see if 'organic cap' added on top
-      soilprops[1,4]<-1920 # mineral heat capacity
-    }else{
-      soilprops[1,4]<-SpecHeat
-    }
-    soilprops[2,4]<-SpecHeat # insert specific heat to profile 2
-    soilprops[1,5]<-Density # insert mineral density to profile 1
-    soilprops[2,5]<-Density # insert mineral density to profile 2
     #########################################################################################
 
     # Next four parameters are segmented velocity profiles due to bushes, rocks etc. on the surface

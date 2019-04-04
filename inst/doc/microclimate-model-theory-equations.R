@@ -3,27 +3,27 @@ knitr::opts_chunk$set(
  eval = TRUE
 )
 
-## ----message=FALSE, fig.width=8, fig.height=3,echo=FALSE, results='asis', fig.align='center', fig.cap='Stucture of the NicheMapR microclimate model Fortran program. Solid boxes are subroutines and dashed boxes are functions.', fig.pos='!h'----
+## ----fig.width=8, fig.height=3,echo=FALSE, results='asis', fig.align='center', fig.cap='Stucture of the NicheMapR microclimate model Fortran program. Solid boxes are subroutines and dashed boxes are functions.', fig.pos='!h', message=FALSE, warnings=FALSE----
 library(png)
 library(grid)
 img <- readPNG("Fig1.png")
  grid.raster(img)
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6, fig.align='center', fig.cap='Solar spectral irradiance as a function of wavelength'----
+## ----echo=FALSE, message=FALSE, warnings=FALSE, results='asis', fig.width=7, fig.height=6, fig.align='center', fig.cap='Solar spectral irradiance as a function of wavelength'----
 optical<-read.csv("OPTICAL.csv")
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(mar = c(5,5,4,2) + 0.1)
 ylab=expression(paste("solar spectral irradiance,  W m"^{-2}))
 plot(optical[,2]~optical[,1],type='l',ylab=expression(paste("solar spectral irradiance,  W m"^{-2})),xlab="wavelength, nm")
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6, fig.align='center', fig.cap='Wavelength-specific optical thickness for different atmospheric components'----
+## ----echo=FALSE, message=FALSE, warnings=FALSE, results='asis', fig.width=7, fig.height=6, fig.align='center', fig.cap='Wavelength-specific optical thickness for different atmospheric components'----
 par(mfrow = c(2,2)) # set up for 2 plots in 2 columns
 plot(optical[,3]~optical[,1],type='l',ylab="optical thickness, cm",xlab="wavelength, nm",main="a) molecular")
 plot(optical[,5]~optical[,1],type='l',ylab="optical thickness, cm",xlab="wavelength, nm",main="b) ozone")
 plot(optical[,6]~optical[,1],type='l',ylab="optical thickness, cm",xlab="wavelength, nm",main="c) water")
 plot(optical[,4]~optical[,1],type='l',ylab="optical thickness, cm",xlab="wavelength, nm",main="d) aerosol")
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=10, fig.align='center', fig.cap='Seasonal, latitudinal and altitudinal correction factors for atmospheric ozone', fig.subcap=c('seasonal and latitudinal correction factors','altitudinal correction factors')----
+## ----echo=FALSE, message=FALSE, warnings=FALSE, results='asis', fig.width=7, fig.height=10, fig.align='center', fig.cap='Seasonal, latitudinal and altitudinal correction factors for atmospheric ozone', fig.subcap=c('seasonal and latitudinal correction factors','altitudinal correction factors')----
 altfct<-read.csv("ALTFCT.csv")
 oz<-read.csv("OZ.csv")
 par(mfrow = c(2,1)) # set up for 2 plots in 1 columns
