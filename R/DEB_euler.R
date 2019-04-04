@@ -52,7 +52,6 @@
 #' @param S_instar = rep(1.6, stages), stress at instar n: L_n^2/ L_n-1^2 (-)
 #' @param clutchsize = 2, Clutch size (#), overridden by \code{clutch_ab}
 #' @param clutch_ab = c(0,0), paramters for relationship between length (cm) and clutch size: clutch size = a*L_w-b, make a and b zero if fixed clutch size
-#' @param viviparous = 0, Viviparous reproduction? 1=yes, 0=no (if yes, animal will be held in adult-sided female's body for duration of development and will experience her body temperature
 #' @param minclutch = 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate
 #' @param batch = 1, Invoke Pequerie et al.'s batch laying model?
 #' @param lambda = 1/2
@@ -73,7 +72,6 @@
 #' @param p_B_past = 0
 #' @param stage = 0
 #' @param breeding = 0
-#' @param pregnant = 0
 #' @param Tb = 33
 #' @return stage Life cycle stage, -
 #' @return V Structure, cm^3
@@ -181,7 +179,6 @@ DEB_euler<-function(
   n_M_nitro=c(1,4/5,3/5,4/5),
   clutchsize=2,
   clutch_ab=c(0.085,0.7),
-  viviparous=0,
   minclutch=0,
   batch=1,
   lambda=1/2,
@@ -206,7 +203,6 @@ DEB_euler<-function(
   stages=7,
   stage=0,
   breeding=0,
-  pregnant=0,
   Tb=33,
   fdry=0.3,
   L_b=0.42,
@@ -397,7 +393,7 @@ DEB_euler<-function(
   p_G <- p_C - p_M2 - p_J - p_R
 
   # reproduction
-  if((E_H_pres <= E_Hp) | (pregnant == 1)){
+  if((E_H_pres <= E_Hp)){
     p_B <- 0
   }else{
     if(batch==1){
@@ -525,63 +521,26 @@ DEB_euler<-function(
     }
   }
 
-  if((E_B>clutchenergy) | (pregnant==1)){
-    if(viviparous == 1){
-      if((pregnant == 0) & (breeding == 1)){
-        v_baby <- v_init_baby
-        e_baby <- e_init_baby
-        EH_baby <- 0
-        pregnant <- 1
+  if((E_B>clutchenergy)){
+    if((Tb >= VTMIN)  |  (Tb <= VTMAX)){
+      if(day == spawnday & spawnday != 0){
         testclutch <- floor(E_B / E_0)
         if(testclutch > clutchsize){
           clutchsize <- testclutch
-          clutchenergy <- E_0*clutchsize
+          clutchenergy <- clutchsize * E_0
         }
-        # for variable clutch size from repro and batch buffers
-        if(E_B<clutchenergy){
-          # needs to draw from repro buffer - temporarily store current repro as E_R_temp,
-          # { remove what is needed from the repro buffer and add it to the batch buffer
-          E_R_temp <- E_R
-          E_R <- E_R+E_B-clutchenergy
-          E_B <- E_B+E_R_temp-E_R
+        if(spawnday > 0){
+          clutchsize <- testclutch
+          clutchenergy <- clutchsize * E_0
         }
-      }
-      if(hour==1){
-        v_baby <- v_baby_init
-        e_baby <- e_baby_init
-        EH_baby <- EH_baby_init
-      }
-      #if(pregnant==1){
-      #call deb_baby
-      #}
-      if(EH_baby>E_Hb){
-        if((Tb < VTMIN)  |  (Tb > VTMAX)){
-          #goto 898
-        }
-        E_B(hour) <- E_B(hour) - clutchenergy
-        repro(hour) <- 1
-        pregnant <- 0
-        v_baby <- v_init_baby
-        e_baby <- e_init_baby
-        EH_baby <- 0
-        newclutch <- clutchsize
+        E_B <- E_B - clutchenergy
+        repro <- 1
         fecundity <- clutchsize
         clutches <- 1
-        pregnant <- 0
-      }
-    }else{
-      #not viviparous, so lay the eggs at next period of activity
-      if((Tb >= VTMIN)  |  (Tb <= VTMAX)){
-        #    change below to active or not active rather than depth-based, in case of fossorial
-        #if((Tb < VTMIN)  |  (Tb > VTMAX)){
-        #}
-        if(day == spawnday & spawnday != 0){
+      }else{
+        if(spawnday == 0){
           testclutch <- floor(E_B / E_0)
           if(testclutch > clutchsize){
-            clutchsize <- testclutch
-            clutchenergy <- clutchsize * E_0
-          }
-          if(spawnday > 0){
             clutchsize <- testclutch
             clutchenergy <- clutchsize * E_0
           }
@@ -589,18 +548,6 @@ DEB_euler<-function(
           repro <- 1
           fecundity <- clutchsize
           clutches <- 1
-        }else{
-          if(spawnday == 0){
-            testclutch <- floor(E_B / E_0)
-            if(testclutch > clutchsize){
-              clutchsize <- testclutch
-              clutchenergy <- clutchsize * E_0
-            }
-            E_B <- E_B - clutchenergy
-            repro <- 1
-            fecundity <- clutchsize
-            clutches <- 1
-          }
         }
       }
     }
@@ -681,11 +628,7 @@ DEB_euler<-function(
   DRYFOOD <- -1 * JOJx * w_X
   FAECES <- JOJp * w_P
   NWASTE <- JMNWASTE * w_N
-  if(pregnant==1){
-    wetgonad <- ((E_R / mu_E) * w_E) / d_Egg + ((((v_baby * e_baby) / mu_E) * w_E) / d_V + v_baby) * clutchsize
-  }else{
-    wetgonad <- ((E_R/mu_E) * w_E) / d_Egg + ((E_B / mu_E) * w_E) / d_Egg
-  }
+  wetgonad <- ((E_R/mu_E) * w_E) / d_Egg + ((E_B / mu_E) * w_E) / d_Egg
   wetstorage <- ((V * E / mu_E) * w_E) / d_V
   wetgut <- ((Es / mu_E) * w_E) / fdry
   wetmass <- V * andens_deb + wetgonad + wetstorage + wetgut
