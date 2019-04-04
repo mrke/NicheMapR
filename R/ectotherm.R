@@ -301,11 +301,11 @@
 #' \item 20 WINGTEMP - Wing temperature (°C) for butterfly model
 #' \item 21 FLYING - Flying state (1=flying, 0=not flying) for butterfly model
 #' \item 22 FLYTIME - Flying time (hours) for butterfly model
-#' \item 23. PO2WATER - dissolved oxygen in water, if running GLM water body model
-#' \item 24. SALWATER - salinity of water, if running GLM water body model
-#' \item 25. ABSAN - solar absorptivity (fractional)
-#' \item 26. PCOND - proportion of animal's surface in contact with ground (fractional)
-#' \item 27. POSTURE - postural orientation (1=perpendicular to sun, 2=parallel, 0=in-between)'}
+#' \item 23 PO2WATER - dissolved oxygen in water, if running GLM water body model
+#' \item 24 SALWATER - salinity of water, if running GLM water body model
+#' \item 25 ABSAN - solar absorptivity (fractional)
+#' \item 26 PCOND - proportion of animal's surface in contact with ground (fractional)
+#' \item 27 POSTURE - postural orientation (1=perpendicular to sun, 2=parallel, 0=in-between)
 #' }
 #' enbal variables:
 #' \itemize{
