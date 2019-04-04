@@ -22,14 +22,15 @@ Suggests:
     readr,
     rutils,
     jsonlite,
-    microclima
+    microclima,
+    RNCEP
 Imports:
     ncdf4,
     raster
-VignetteBuilder: rmarkdown
+VignetteBuilder: knitr
 Vignettes: properties-of-air,ectotherm-model-tutorial,microclimate-model-
     tutorial,microclimate-monthly-input-example,microclimate-inputs,microclimate-
-    model-theory-equations,microclimate-hourly-input-example
+    model-theory-equations,microclimate-hourly-input-example,microclimate-IO
 Encoding: UTF-8
 URL: https://github.com/mrke/NicheMapR
 BugReports: https://github.com/mrke/NicheMapR/issues
