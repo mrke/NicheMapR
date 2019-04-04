@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 # 1. Introduction
 This document is Appendix 1 for the NicheMapR microclimate model software note (Kearney and Porter 2016). It provides a detailed explanation of the underlying theory and equations of the microclimate model used in NicheMapR. All of the calcuations described here are coded in Fortran in a set of subroutines and functions depicted in Figure 1. The Fortran code is compiled as a dynamic link library that can be called from R, as described in Kearney and Porter (2016).
 
-```{r message=FALSE, fig.width=8, fig.height=3,echo=FALSE, results='asis', fig.align='center', fig.cap='Stucture of the NicheMapR microclimate model Fortran program. Solid boxes are subroutines and dashed boxes are functions.', fig.pos='!h'}
+```{r fig.width=8, fig.height=3,echo=FALSE, results='asis', fig.align='center', fig.cap='Stucture of the NicheMapR microclimate model Fortran program. Solid boxes are subroutines and dashed boxes are functions.', fig.pos='!h', message=FALSE, warnings=FALSE}
 library(png)
 library(grid)
 img <- readPNG("Fig1.png")
@@ -40,7 +40,7 @@ The SOLRAD subroutine used in the NicheMapR microclimate model for calculating c
 ## 2.1 Extra-terrestrial Radiation
 The total solar irradiance reaching an imaginary plane perpendicular to the sun's rays at the outer edge of the atmosphere is obtained by integrating across all wavelengths of radiation emitted by the sun after correcting for the distance of the earth from the sun and for the angle at which the sun is shining on that plane. Thus, the wavelength-specific irradiance reaching this plane is $$ \large{ I_\lambda = S_\lambda \left( {\frac{a}{r}} \right) ^2 \cos Z } $$ where $S_\lambda$ is solar spectral irradiance reaching a plane perpendicular to the incoming radiation at one astronomical unit from the sun (Fig. 2, data stored internally in SOLRAD), *a* is the length of the long (semi-major) axis of the earth's elliptical orbit around the sun, *r* is the distance between the earth and the sun and *Z* is the angle between the sun's rays and a line extending perpendicular to the imaginary plane (so no direct radiation is received by this plane if *Z* > 90$^\circ$, but see below for twilight conditions).
 
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6, fig.align='center', fig.cap='Solar spectral irradiance as a function of wavelength'}
+```{r echo=FALSE, message=FALSE, warnings=FALSE, results='asis', fig.width=7, fig.height=6, fig.align='center', fig.cap='Solar spectral irradiance as a function of wavelength'}
 optical<-read.csv("OPTICAL.csv")
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(mar = c(5,5,4,2) + 0.1)
@@ -62,7 +62,7 @@ The total vertical monochromatic extinction depends on Rayleigh scattering (due 
 $$\large{ _\lambda \tau(h)=_\lambda \tau_R(h) + _\lambda \tau_A(h)+ _\lambda \tau_O(h) + _\lambda \tau_W(h) } $$
 The separate extinction factors are first obtained for sea level and then adjusted for elevation $h$. Wavelength-specific sea level Rayleigh and ozone optical thicknesses are taken from Elterman (1968, 1970) for atmospheric pressure P = 1013 mb, a sea level meteorological range $MR_0$ (visibility at 0.55 $\mu$) of 25 km and a total atmospheric ozone content $X$ of 0.34 cm NTP (normal temperature and pressure; T = 18 $^\circ$C and P = 1013 mb) (Fig. 3a,b). Rayleigh optical thickness is subsequently adjusted by the ratio of the barometric pressure to the reference pressure. Wavelength-specific sea level optical thickness for 1 cm precipitable water vapour in the air column is taken from Gates and Harrop (1963) (Fig. 3c).
 
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=6, fig.align='center', fig.cap='Wavelength-specific optical thickness for different atmospheric components'}
+```{r echo=FALSE, message=FALSE, warnings=FALSE, results='asis', fig.width=7, fig.height=6, fig.align='center', fig.cap='Wavelength-specific optical thickness for different atmospheric components'}
 par(mfrow = c(2,2)) # set up for 2 plots in 2 columns
 plot(optical[,3]~optical[,1],type='l',ylab="optical thickness, cm",xlab="wavelength, nm",main="a) molecular")
 plot(optical[,5]~optical[,1],type='l',ylab="optical thickness, cm",xlab="wavelength, nm",main="b) ozone")
@@ -72,7 +72,7 @@ plot(optical[,4]~optical[,1],type='l',ylab="optical thickness, cm",xlab="wavelen
 
 Total atmospheric ozone shows significant seasonal and latitudinal variations, and is assumed to follow the variation in Figure 4 (data from Robinson 1966, p. 114). A correction factor of the ratio of the latitude/season-specific ozone to the reference level (0.34 cm) is thus applied to the elevation-adjusted extinction term for ozone (Fig. 4).
 
-```{r echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=10, fig.align='center', fig.cap='Seasonal, latitudinal and altitudinal correction factors for atmospheric ozone', fig.subcap=c('seasonal and latitudinal correction factors','altitudinal correction factors')}
+```{r echo=FALSE, message=FALSE, warnings=FALSE, results='asis', fig.width=7, fig.height=10, fig.align='center', fig.cap='Seasonal, latitudinal and altitudinal correction factors for atmospheric ozone', fig.subcap=c('seasonal and latitudinal correction factors','altitudinal correction factors')}
 altfct<-read.csv("ALTFCT.csv")
 oz<-read.csv("OZ.csv")
 par(mfrow = c(2,1)) # set up for 2 plots in 1 columns
