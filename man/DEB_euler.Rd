@@ -15,17 +15,16 @@ DEB_euler(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 *
   kap_X_P = 0.1, n_X = c(1, 1.8, 0.5, 0.15), n_E = c(1, 1.8, 0.5,
   0.15), n_V = c(1, 1.8, 0.5, 0.15), n_P = c(1, 1.8, 0.5, 0.15),
   n_M_nitro = c(1, 4/5, 3/5, 4/5), clutchsize = 2,
-  clutch_ab = c(0.085, 0.7), viviparous = 0, minclutch = 0,
-  batch = 1, lambda = 1/2, VTMIN = 26, VTMAX = 39, ma = 1e-04,
-  mi = 0, mh = 0.5, arrhenius = matrix(data = matrix(data =
-  c(rep(T_A, 8), rep(T_AL, 8), rep(T_AH, 8), rep(T_L, 8), rep(T_H, 8)),
-  nrow = 8, ncol = 5), nrow = 8, ncol = 5), acthr = 1, X = 10,
-  E_pres = E_0/1e-09, V_pres = 1e-09, E_H_pres = 0, q_pres = 0,
-  hs_pres = 0, p_surv = 1, E_s_pres = 0, p_B_pres = 0, E_R = 0,
-  E_B = 0, stages = 7, stage = 0, breeding = 0, pregnant = 0,
-  Tb = 33, fdry = 0.3, L_b = 0.42, L_j = 1.376,
-  S_instar = rep(1.618, stages), spawnday = 1, day = 1,
-  metab_mode = 0, age = 0)
+  clutch_ab = c(0.085, 0.7), minclutch = 0, batch = 1,
+  lambda = 1/2, VTMIN = 26, VTMAX = 39, ma = 1e-04, mi = 0,
+  mh = 0.5, arrhenius = matrix(data = matrix(data = c(rep(T_A, 8),
+  rep(T_AL, 8), rep(T_AH, 8), rep(T_L, 8), rep(T_H, 8)), nrow = 8, ncol =
+  5), nrow = 8, ncol = 5), acthr = 1, X = 10, E_pres = E_0/1e-09,
+  V_pres = 1e-09, E_H_pres = 0, q_pres = 0, hs_pres = 0,
+  p_surv = 1, E_s_pres = 0, p_B_pres = 0, E_R = 0, E_B = 0,
+  stages = 7, stage = 0, breeding = 0, Tb = 33, fdry = 0.3,
+  L_b = 0.42, L_j = 1.376, S_instar = rep(1.618, stages),
+  spawnday = 1, day = 1, metab_mode = 0, age = 0)
 }
 \arguments{
 \item{step}{= 1/24, step size (days)}
@@ -112,8 +111,6 @@ DEB_euler(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 *
 
 \item{clutch_ab}{= c(0,0), paramters for relationship between length (cm) and clutch size: clutch size = a*L_w-b, make a and b zero if fixed clutch size}
 
-\item{viviparous}{= 0, Viviparous reproduction? 1=yes, 0=no (if yes, animal will be held in adult-sided female's body for duration of development and will experience her body temperature}
-
 \item{minclutch}{= 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate}
 
 \item{batch}{= 1, Invoke Pequerie et al.'s batch laying model?}
@@ -153,8 +150,6 @@ DEB_euler(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 *
 \item{stage}{= 0, Initial stage (0=embryo, for STD 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction, for ABP 1-(stages-1) = instars, stages = adult)}
 
 \item{breeding}{= 0}
-
-\item{pregnant}{= 0}
 
 \item{Tb}{= 33}
 
