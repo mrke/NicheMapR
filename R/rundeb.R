@@ -143,15 +143,15 @@ rundeb <- function(
   pars <- c(F.m = F.m, kap.X = kap.X, kap.P = kap.P, p.Am = p.Am, p.M = p.M, k.J = k.J, v = v, E.m = E.m, E.G = E.G, kap = kap, kap.R = kap.R, E.Hb = E.Hb, E.Hj = E.Hj, E.Hp = E.Hp, h.a = h.a, s.G = s.G, T.A = T.A)
 
   # initialise DEB output matrix
-  deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "O2FLUX", "CO2FLUX", "MLO2", "GH2OMET", "DEBQMET", "DRYFOOD", "FAECES", "NWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
-  debout<-matrix(data = 0, nrow = n, ncol=33)
+  deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "JMO2", "JMCO2", "JMH2O", "JMNWASTE", "O2ML", "CO2ML", "GH2OMET", "DEBQMETW", "GDRYFOOD", "GFAECES", "GNWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
+  debout<-matrix(data = 0, nrow = n, ncol=36)
   colnames(debout)<-deb.names
 
   # initial conditions
   i <- 1
   age <- 0
   if(start.stage == 0){ # egg
-    V_pres <- 1e-9
+    V_pres <- 3e-9
     E_pres <- E.0 / V_pres
     E_H_pres <- 0
     E_s <- 0
@@ -185,7 +185,7 @@ rundeb <- function(
                           E_Hp=E.Hp,
                           h_a=h.a*(step^2),
                           s_G=s.G,
-                          T_REF=T.ref-273.15,
+                          T_REF=T.ref,
                           T_A=T.A,
                           T_AL=T_AL,
                           T_AH=T_AH,
@@ -261,7 +261,7 @@ rundeb <- function(
                     E_Hp=E.Hp,
                     h_a=h.a*(step^2),
                     s_G=s.G,
-                    T_REF=T.ref-273.15,
+                    T_REF=T.ref,
                     T_A=T.A,
                     T_AL=T_AL,
                     T_AH=T_AH,
@@ -329,7 +329,7 @@ rundeb <- function(
     if(day > 365){
       day <- 1
     }
-    if(debout[(i-1),3] > E.Hb){
+    if(debout[(i-1), 14] > E.Hb){
       age <- age + 1
     }
     spawnday <- day
@@ -351,7 +351,7 @@ rundeb <- function(
                               E_Hp=E.Hp,
                               h_a=h.a*(step^2),
                               s_G=s.G,
-                              T_REF=T.ref-273.15,
+                              T_REF=T.ref,
                               T_A=T.A,
                               T_AL=T_AL,
                               T_AH=T_AH,
@@ -395,7 +395,7 @@ rundeb <- function(
                               hs=debout[(i-1),9],
                               p_surv=debout[(i-1),15],
                               E_s=debout[(i-1),5],
-                              p_B_pres=debout[(i-1),33],
+                              p_B_pres=debout[(i-1),36],
                               E_R=debout[(i-1),6],
                               E_B=debout[(i-1),7],
                               stage=debout[(i-1),1],
@@ -427,7 +427,7 @@ rundeb <- function(
                         E_Hp=E.Hp,
                         h_a=h.a*(step^2),
                         s_G=s.G,
-                        T_REF=T.ref-273.15,
+                        T_REF=T.ref,
                         T_A=T.A,
                         T_AL=T_AL,
                         T_AH=T_AH,
@@ -471,7 +471,7 @@ rundeb <- function(
                         hs=debout[(i-1),9],
                         p_surv=debout[(i-1),15],
                         E_s=debout[(i-1),5],
-                        p_B_pres=debout[(i-1),33],
+                        p_B_pres=debout[(i-1),36],
                         E_R=debout[(i-1),6],
                         E_B=debout[(i-1),7],
                         stage=debout[(i-1),1],
@@ -521,14 +521,14 @@ rundeb <- function(
     plot(seq(1, n) / div, debout.df$length * length.mult, type = 'l', xlab = 'Age (days)', ylab = paste0('Length (', length.unit, ')'), col = 'black', lwd = 2, xlim = c(0, xmax), main = "growth, length")
     abline(v = which(debout.df$E_H > E.Hb)[1] / div, lty = 2, col = 'grey')
     abline(v = which(debout.df$E_H > E.Hp)[1] / div, lty = 2, col = 'grey')
-    debout.df$cumfood <- cumsum(debout.df$DRYFOOD) / d.V
+    debout.df$cumfood <- cumsum(debout.df$GDRYFOOD) / d.V
     plot(seq(1, n) / div, debout.df$cumfood * mass.mult, type = 'l', xlab = 'Age (days)', ylab = paste0('cum. wet food (', mass.unit, ')'), col = 'black', lwd = 2, xlim = c(0, xmax), main = "food intake")
     abline(v = which(debout.df$E_H > E.Hb)[1] / div, lty = 2, col = 'grey')
     abline(v = which(debout.df$E_H > E.Hp)[1] / div, lty = 2, col = 'grey')
     debout.postembryo <- subset(debout.df, E_H > E.Hb)
     nonrepro.mass <- (debout.postembryo$wetmass - debout.postembryo$wetgonad) * mass.mult
-    slope <- lm(log10(debout.postembryo$MLO2) ~ log10((nonrepro.mass)))$coefficients[2]
-    plot(nonrepro.mass, debout.postembryo$MLO2, type = 'l', xlab = paste0('wet mass (', mass.unit, ')'), ylab = "O2 consumption, ml/hr", col = 'black', lwd = 2, main = paste0('respiration, allometric exponent = ',round(slope, 3)))
+    slope <- lm(log10(debout.postembryo$O2ML) ~ log10((nonrepro.mass)))$coefficients[2]
+    plot(nonrepro.mass, debout.postembryo$O2ML, type = 'l', xlab = paste0('wet mass (', mass.unit, ')'), ylab = "O2 consumption, ml/hr", col = 'black', lwd = 2, main = paste0('respiration, allometric exponent = ',round(slope, 3)))
     abline(v = debout.df$wetmass[which(debout.df$E_H > E.Hb)[1]] * mass.mult, lty = 2, col = 'grey')
     abline(v = debout.df$wetmass[which(debout.df$E_H > E.Hp)[1]] * mass.mult, lty = 2, col = 'grey')
   }

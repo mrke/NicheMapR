@@ -22,7 +22,7 @@
 #' @param h_a = 2.16e-11*(step^2), Weibull ageing acceleration (1/h2)
 #' @param s_G = 0.01, Gompertz stress coefficient (-)
 #' @param E_0 = 1.04e+06, Energy content of the egg (derived from core parameters) (J)
-#' @param T_REF = 20, Reference temperature for rate correction (deg C)
+#' @param T_REF = 20+273.15, Reference temperature for rate correction (deg C)
 #' @param T_A = 8085 Arhhenius temperature
 #' @param T_AL = 18721, Arrhenius temperature for decrease below lower boundary of tolerance range \code{T_L}
 #' @param T_AH = 90000, Arrhenius temperature for decrease above upper boundary of tolerance range \code{T_H}
@@ -60,8 +60,8 @@
 #' @param arrhenius = matrix(data = matrix(data = c(rep(T_A,8),rep(T_AL,8),rep(T_AH,8),rep(T_L,8),rep(T_H,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A,T_AL,T_AH,T_L,T_H)
 #' @param acthr = 1
 #' @param X = 11
-#' @param E_pres = E_0/1e-9
-#' @param V_pres = 1e-9
+#' @param E_pres = E_0/3e-9
+#' @param V_pres = 3e-9
 #' @param E_H_pres = 0
 #' @param q_pres = 0
 #' @param hs_pres = 0
@@ -153,7 +153,7 @@ DEB_euler<-function(
   E_Hp=1.865e+05,
   h_a=2.16e-11/(step^2),
   s_G=0.01,
-  T_REF=20,
+  T_REF=20+273.15,
   T_A=8085,
   T_AL=18721,
   T_AH=9.0E+04,
@@ -172,10 +172,10 @@ DEB_euler<-function(
   mu_V=500000,
   mu_P=480000,
   kap_X_P=0.1,
-  n_X=c(1,1.8,0.5,.15),
+  n_X=c(1,1.8,0.5,0.15),
   n_E=c(1,1.8,0.5,0.15),
-  n_V=c(1,1.8,0.5,.15),
-  n_P=c(1,1.8,0.5,.15),
+  n_V=c(1,1.8,0.5,0.15),
+  n_P=c(1,1.8,0.5,0.15),
   n_M_nitro=c(1,4/5,3/5,4/5),
   clutchsize=2,
   clutch_ab=c(0.085,0.7),
@@ -190,8 +190,8 @@ DEB_euler<-function(
   arrhenius=matrix(data = matrix(data = c(rep(T_A,8),rep(T_AL,8),rep(T_AH,8),rep(T_L,8),rep(T_H,8)),nrow = 8, ncol = 5), nrow = 8, ncol = 5),
   acthr=1,
   X=10,
-  E_pres=E_0/1e-9,
-  V_pres=1e-9,
+  E_pres=E_0/3e-9,
+  V_pres=3e-9,
   E_H_pres=0,
   q_pres=0,
   hs_pres=0,
@@ -248,8 +248,8 @@ DEB_euler<-function(
   w_N <- CHON %*% n_M_nitro
 
   # Arrhenius temperature correction factor
-  #Tcorr <- exp(T_A * (1 / (273.15 + T_REF) -1 / (273.15 + Tb))) / (1 + exp(T_AL * (1 / (273.15 + Tb) - 1 / T_L)) + exp(T_AH * (1 / T_H - 1 / (273.15 + Tb))))
-  Tcorr <- exp(T_A / (273.15 + T_REF) - T_A / (273.15 + Tb)) * (1 + exp(T_AL / (273.15 + T_REF) - T_AL / T_L) + exp(T_AH / T_H - T_AH / (273.15 + T_REF))) / (1 + exp(T_AL / (273.15 + Tb) - T_AL / T_L) + exp(T_AH / T_H - T_AH / (273.15 + Tb)))
+  #Tcorr <- exp(T_A * (1 / T_REF -1 / (273.15 + Tb))) / (1 + exp(T_AL * (1 / (273.15 + Tb) - 1 / T_L)) + exp(T_AH * (1 / T_H - 1 / (273.15 + Tb))))
+  Tcorr <- exp(T_A / T_REF - T_A / (273.15 + Tb)) * (1 + exp(T_AL / T_REF - T_AL / T_L) + exp(T_AH / T_H - T_AH / T_REF)) / (1 + exp(T_AL / (273.15 + Tb) - T_AL / T_L) + exp(T_AH / T_H - T_AH / (273.15 + Tb)))
 
   s_M <- 1 # -, multiplication factor for v and {p_Am} under metabolic acceleration
   if(E_Hj != E_Hb){
@@ -554,16 +554,16 @@ DEB_euler<-function(
   }
 
   # feeding (gut) model
-  if(E_H_pres > E_Hb){
+  if(E_H > E_Hb){
     if(acthr > 0){
       # Regulates X dynamics
-      J_X <- F_mT * ((X / K) / (1 + X / K)) * V_pres ^ (2 / 3)
-      dEsdt <- J_X * f - (p_AmT / kap_X) * V_pres ^ (2 / 3)
+      J_X <- F_mT * ((X / K) / (1 + X / K)) * V ^ (2 / 3)
+      dEsdt <- J_X * f - (p_AmT / kap_X) * V ^ (2 / 3)
     }else{
-      dEsdt <- -1 * (p_AmT / kap_X) * V_pres ^ (2 / 3)
+      dEsdt <- -1 * (p_AmT / kap_X) * V ^ (2 / 3)
     }
   }else{
-    dEsdt <- -1 * (p_AmT / kap_X) * V_pres ^ (2 / 3)
+    dEsdt <- -1 * (p_AmT / kap_X) * V ^ (2 / 3)
   }
 
   if(V_pres == 0){
@@ -573,22 +573,22 @@ DEB_euler<-function(
   if(Es < 0){
     Es <- 0
   }
-  if(Es > E_sm * V_pres){
-    Es <- E_sm * V_pres
+  if(Es > E_sm * V){
+    Es <- E_sm * V
   }
 
   #aging
-  if(metab_mode == 1 & E_H_pres > E_Hj){
+  if(metab_mode == 1 & E_H > E_Hj){
     r <- 0
   }
-  dqdt <- (q_pres * (V_pres / V_m) * s_G + h_aT) * (E_pres / E_m) * ((vT / L_pres) - r) - r * q_pres
-  if(E_H_pres > E_Hb){
+  dqdt <- (q_pres * (V / V_m) * s_G + h_aT) * (E / E_m) * ((vT / V) - r) - r * q_pres
+  if(E_H > E_Hb){
     q <- q_init + dqdt
   }else{
     q <- 0
   }
   dhsds <- q_pres - r * hs_pres
-  if(E_H_pres > E_Hb){
+  if(E_H > E_Hb){
     hs <- hs_init + dhsds
   }else{
     hs <- 0
@@ -614,21 +614,32 @@ DEB_euler<-function(
   JMO2_GM <- JOJx_GM * JM_JO[3,1] + JOJv_GM * JM_JO[3,2] + JOJe_GM * JM_JO[3,3] + JOJp_GM * JM_JO[3,4]
   JMNWASTE_GM <- JOJx_GM * JM_JO[4,1] + JOJv_GM * JM_JO[4,2] + JOJe_GM * JM_JO[4,3] + JOJp_GM * JM_JO[4,4]
 
-  RQ <- JMCO2 / JMO2 # respiratory quotient
+  #RQ <- JMCO2 / JMO2 # respiratory quotient
 
-  O2FLUX <- -1 * JMO2 / (T_REF / Tb / 24.4) * 1000 # mlO2/h, temperature corrected (including SDA)
-  CO2FLUX <- JMCO2 / (T_REF / Tb / 24.4) * 1000 # mlCO2/h, temperature corrected (including SDA)
-  MLO2 <- (-1 * JMO2 * (0.082058 * (Tb + 273.15)) / (0.082058 * 293.15)) * 24.06 * 1000 #mlO2/h, stp
-  GH2OMET <- JMH2O * 18.01528 #g metabolic water/h
+  #PV=nRT
+  #T=273.15 #K
+  #R=0.082058 #L*atm/mol*K
+  #n=1 #mole
+  #P=1 #atm
+  #V=nRT/P=1*0.082058*273.15=22.41414
+  #T=293.15
+  #V=nRT/P=1*0.082058*293.15/1=24.0553
+  P_atm <- 1
+  R_const <- 0.082058
+  gas_cor <- R_const * T_REF / P_atm * (Tb + 273.15) / T_REF * 1000 # 1 mole to ml/time at Tb and atmospheric pressure
+  O2ML <- -1 * JMO2 * gas_cor # mlO2/time, temperature corrected (including SDA)
+  CO2ML <- JMCO2 * gas_cor # mlCO2/time, temperature corrected (including SDA)
+  GH2OMET <- JMH2O * 18.01528 # g metabolic water/time
+
   #metabolic heat production (Watts) - growth overhead plus dissipation power (maintenance, maturity maintenance,
   #maturation/repro overheads) plus assimilation overheads - correct to 20 degrees so it can be temperature corrected
   #in MET.f for the new guessed Tb
-  DEBQMET <- ((1 - kappa_G) * p_G + p_D + (p_X - p_A - p_A * mu_P * eta_PA)) / 3600 / Tcorr
+  DEBQMETW <- ((1 - kappa_G) * p_G + p_D + (p_X - p_A - p_A * mu_P * eta_PA)) / 3600 / Tcorr
 
-  DRYFOOD <- -1 * JOJx * w_X
-  FAECES <- JOJp * w_P
-  NWASTE <- JMNWASTE * w_N
-  wetgonad <- ((E_R/mu_E) * w_E) / d_Egg + ((E_B / mu_E) * w_E) / d_Egg
+  GDRYFOOD <- -1 * JOJx * w_X
+  GFAECES <- JOJp * w_P
+  GNWASTE <- JMNWASTE * w_N
+  wetgonad <- ((E_R / mu_E) * w_E) / d_Egg + ((E_B / mu_E) * w_E) / d_Egg
   wetstorage <- ((V * E / mu_E) * w_E) / d_V
   wetgut <- ((Es / mu_E) * w_E) / fdry
   wetmass <- V * andens_deb + wetgonad + wetstorage + wetgut
@@ -644,8 +655,8 @@ DEB_euler<-function(
   p_surv <- surviv
   E_s_pres <- Es
 
-  deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "O2FLUX", "CO2FLUX", "MLO2", "GH2OMET", "DEBQMET", "DRYFOOD", "FAECES", "NWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
-  results.deb <- c(stage, V_pres, E_pres, E_H_pres, E_s_pres, E_R, E_B, q_pres, hs_pres, L_w, wetmass, wetgonad, wetgut, wetstorage, p_surv, fecundity, clutches, O2FLUX, CO2FLUX, MLO2, GH2OMET, DEBQMET, DRYFOOD, FAECES, NWASTE, p_A, p_C, p_M2, p_G, p_D, p_J, p_R, p_B)
+  deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "JMO2", "JMCO2", "JMH2O", "JMNWASTE", "O2ML", "CO2ML", "GH2OMET", "DEBQMETW", "GDRYFOOD", "GFAECES", "GNWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
+  results.deb <- c(stage, V_pres, E_pres, E_H_pres, E_s_pres, E_R, E_B, q_pres, hs_pres, L_w, wetmass, wetgonad, wetgut, wetstorage, p_surv, fecundity, clutches, JMO2, JMCO2, JMH2O, JMNWASTE, O2ML, CO2ML, GH2OMET, DEBQMETW, GDRYFOOD, GFAECES, GNWASTE, p_A, p_C, p_M2, p_G, p_D, p_J, p_R, p_B)
   names(results.deb) <- deb.names
   return(results.deb)
 }
