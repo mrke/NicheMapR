@@ -95,7 +95,6 @@ legend(ndays/div/30, max(debout$wetmass) * 0.85, c('repro. buffer', 'food in gut
 text(0, max(debout$wetmass) * 1, labels = "embryo")
 text(which(debout$E_H > E.Hp)[1] / div - which(debout$E_H > E.Hp)[1] / div * .5, max(debout$wetmass) * 1, labels = "immature")
 text(which(debout$E_H > E.Hp)[1] / div * 1.2, max(debout$wetmass) * 1, labels = "adult")
-
 ```
 
 Note how the embryo starts off as near zero structure and is mostly reserve, and that the overall mass declines through development but the structure goes up. Also note that the point of maturity is where the reproduction buffer starts to grow, but the time of first clutch (the sudden drops in mass reflecting the eggs being released to the environment) is some time later once enough reproduction has been accumulated. 
@@ -136,7 +135,29 @@ img <- readPNG("DEB_mass_budget.png")
 
 The first equation is simply a statement of the conservation of mass; the flows of all the elements in the different metabolic processes, when added together, must sum to zero. The second equation states the relationship between the four organic mass fluxes and the three energy fluxes of assimilation, growth and 'dissipation' (maturity and maturity maintenance, somatic maintenance, heating costs and reproduction overhead costs), given the conversion coefficent matrix for energy/mass. 
 
-The point is that knowing the energy fluxes, computed from the DEB model as it evolves through time, and the stoichiomeric composition of food, structure, reserve and faeces, one can compute the oxygen, carbon dioxide, metabolic water and nitrogenous waste fluxes. Although we don't usually have explicit data on these elemental compositions, the default values [based on chemical analyses of microbes - see Roels (1983)] give  good predictions in practice. Thus, by producing a DEB model we can get realistic dynamics of development, growth and reproduction under fluctuating temperature and food scenarios, and we also get estimates of the fluxes of food, faeces, metabolic water, respiratory gases and nitrogenous waste production 'for free'. This is one of the many pay-offs for abstracting biomass into pools of reserve and structure.
+The point is that knowing the energy fluxes, computed from the DEB model as it evolves through time, and the stoichiomeric composition of food, structure, reserve and faeces, one can compute the oxygen, carbon dioxide, metabolic water and nitrogenous waste fluxes. Although we don't usually have explicit data on these elemental compositions, the default values [based on chemical analyses of microbes - see Roels (1983)] give  good predictions in practice. Thus, by producing a DEB model we can get realistic dynamics of development, growth and reproduction under fluctuating temperature and food scenarios, and we also get estimates of the fluxes of food, faeces, metabolic water, respiratory gases and nitrogenous waste production 'for free' (see Figure below for *Eulamprus quoyii*. This is one of the many pay-offs for abstracting biomass into pools of reserve and structure.
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=8, fig.height=5, eval=FALSE}
+par(mfrow = c(2,3))
+plot(seq(1, ndays) / div, debout$O2FLUX * (T.ref / (Tbs + 273.15)), type = 'l', xlab = 'Age (days)', ylab = 'ml O2 / hour', col = 'dark green', lwd = 2, ylim = c(0, max(debout$O2FLUX * (T.ref / (Tbs + 273.15)))), main = "oxygen consumption")
+abline(v = which(debout$E_H > E.Hb)[1] / div, lty = 2, col = 'grey')
+abline(v = which(debout$E_H > E.Hp)[1] / div, lty = 2, col = 'grey')
+plot(seq(1, ndays) / div, debout$CO2FLUX * (T.ref / (Tbs + 273.15)), type = 'l', xlab = 'Age (days)', ylab = 'ml CO2 / hour', col = 'dark green', lwd = 2, ylim = c(0, max(debout$CO2FLUX * (T.ref / (Tbs + 273.15)))), main = "carbon dioxide production")
+abline(v = which(debout$E_H > E.Hb)[1] / div, lty = 2, col = 'grey')
+abline(v = which(debout$E_H > E.Hp)[1] / div, lty = 2, col = 'grey')
+plot(seq(1, ndays) / div, debout$GH2OMET, type = 'l', xlab = 'Age (days)', ylab = 'g metabolic water / hour', col = 'dark green', lwd = 2, ylim = c(0, max(debout$GH2OMET)), main = "metabolic water production")
+abline(v = which(debout$E_H > E.Hb)[1] / div, lty = 2, col = 'grey')
+abline(v = which(debout$E_H > E.Hp)[1] / div, lty = 2, col = 'grey')
+plot(seq(1, ndays) / div, debout$NWASTE, type = 'l', xlab = 'Age (days)', ylab = 'g uric acid / hour', col = 'dark green', lwd = 2, ylim = c(0, max(debout$NWASTE)), main = "nitrogenous waste production")
+abline(v = which(debout$E_H > E.Hb)[1] / div, lty = 2, col = 'grey')
+abline(v = which(debout$E_H > E.Hp)[1] / div, lty = 2, col = 'grey')
+plot(seq(1, ndays) / div, debout$DRYFOOD, type = 'l', xlab = 'Age (days)', ylab = 'g dry food / hour', col = 'dark green', lwd = 2, ylim = c(0, max(debout$DRYFOOD)), main = "food intake")
+abline(v = which(debout$E_H > E.Hb)[1] / div, lty = 2, col = 'grey')
+abline(v = which(debout$E_H > E.Hp)[1] / div, lty = 2, col = 'grey')
+plot(seq(1, ndays) / div, debout$FAECES, type = 'l', xlab = 'Age (days)', ylab = 'g faeces / hour', col = 'dark green', lwd = 2, ylim = c(0, max(debout$FAECES)), main = "faeces output")
+abline(v = which(debout$E_H > E.Hb)[1] / div, lty = 2, col = 'grey')
+abline(v = which(debout$E_H > E.Hp)[1] / div, lty = 2, col = 'grey')
+```
 
 ## The DEB parameters required for a full energy and mass budget
 

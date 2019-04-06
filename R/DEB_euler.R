@@ -616,8 +616,8 @@ DEB_euler<-function(
 
   RQ <- JMCO2 / JMO2 # respiratory quotient
 
-  O2FLUX <- -1 * JMO2/(T_REF / Tb / 24.4) * 1000 #mlO2/h, temperature corrected (including SDA)
-  CO2FLUX <- JMCO2 / (T_REF / Tb / 24.4) * 1000
+  O2FLUX <- -1 * JMO2 / (T_REF / Tb / 24.4) * 1000 # mlO2/h, temperature corrected (including SDA)
+  CO2FLUX <- JMCO2 / (T_REF / Tb / 24.4) * 1000 # mlCO2/h, temperature corrected (including SDA)
   MLO2 <- (-1 * JMO2 * (0.082058 * (Tb + 273.15)) / (0.082058 * 293.15)) * 24.06 * 1000 #mlO2/h, stp
   GH2OMET <- JMH2O * 18.01528 #g metabolic water/h
   #metabolic heat production (Watts) - growth overhead plus dissipation power (maintenance, maturity maintenance,
