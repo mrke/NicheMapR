@@ -128,8 +128,6 @@ knitr::kable(head(ecto$masbal[,c(1:5, 15:17)], 12))
 * **H2OResp_g** - respiratory water loss (g/h)
 * **H2OCut_g** - cutaneous water loss (g/h)
 * **H2OEye_g** - ocular water loss (g/h)
-* **H2OBal_g** - instantaneous water balance (g/h)
-* **H2OCumBal_g** - cumulative water balance (g)
 
 There are a number of other columns in this output but they are of value zero because we are not running the Dynamic Energy Budget model (i.e. `DEB = 0` by default). We are instead obtaining the oxygen consumption rate (ml/h) by an allometric function based on Eq. 2 from Andrews & Pough 1985,
 
@@ -290,9 +288,9 @@ The capacity to compute body temperature, metabolic rates, activity times and so
 The preliminary computations made in this tutorial can provide the starting point for an energy and mass budget analysis that could ultimately allow you to predict reproductive success and survival rates, key vital rates from which to infer distribution and abundance. One of the most powerful ways of achieving a full mass balance and life cycle trajectory is by using the Dynamic Energy Budget (DEB) theory and its associated models (Kooijman, 2010). DEB theory integrated into the NicheMapR package as described further in the vignette [Introduction to Dynamic Energy Budget models in NicheMapR](deb-model-tutorial.html). Below is an example of the sort of calculation that can be made with the integration of DEB theory and the ectotherm model - a simulation of the Australian Water Skink, *Eulamprus quoyii* growing at Townsville Australia (see Schwarzkopf et al. 2016). This example is explained further in the DEB vignette just mentioned.
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=8, fig.height=5}
+rm(list=ls())
 longlat <- c(146.77, -19.29) # Townsville, northern Australia
 nyear <- 5
-ndays <- nyear * 365
 micro <- micro_global(loc = longlat, timeinterval = 365, nyear = nyear)
 
 load('allstat.Rda') # load the allstat file
@@ -319,7 +317,20 @@ for(i in 1:length(par.names)){
 if(exists("E.Hj")==FALSE){E.Hj <- E.Hb}
 if(exists("E.He")==FALSE){E.He <- E.Hb}
 if(exists("L.j")==FALSE){L.j <- L.b}
-F.m <- p.Am / kap.X * 100 # redefining F.m to max possible value
+F.m <- p.Am / kap.X # redefining F.m to max possible value
+z.mult <- 1         # DEB body size scaling parameter
+
+# assign missing 5-par thermal response curve parameters if necessary
+if(exists("T.L")==FALSE){T.L <- CT_min + 273.15}
+if(exists("T.H")==FALSE){T.H <- CT_max + 273.15}
+if(exists("T.AL")==FALSE){T.AL <- 5E04}
+if(exists("T.AH")==FALSE){T.AH <- 9E04}
+
+# overwrite nitrogenous waste indices with those of uric acid (currently ammonia by default)
+n.NC <- 1
+n.NH <- 4/5
+n.NO <- 3/5
+n.NN <- 4/5
 
 # morph, behav and water loss
 pct_wet <- 0.2    # % of surface area acting as a free-water exchanger
@@ -346,9 +357,7 @@ diurn <- 1        # diurnal activity
 minshades <- rep(0, nyear * 365)   # min available shade?
 maxshades <- micro$MAXSHADES # max available shade?
 
-z.mult <- 1       # DEB body size scaling parameter
-
-# DEB initial state and misc.
+# DEB initial state
 
 # egg
 V_init <- 3e-9
@@ -356,20 +365,25 @@ E_init <- E.0 / V_init
 E_H_init <- 0
 stage <- 0
 
-# assign missing 5-par thermal response curve parameters if necessary
-if(exists("T.L")==FALSE){T.L <- CT_min + 273.15}
-if(exists("T.H")==FALSE){T.H <- CT_max + 273.15}
-if(exists("T.AL")==FALSE){T.AL <- 5E04}
-if(exists("T.AH")==FALSE){T.AH <- 9E04}
+# hatchling
+# V_init <- L.b^3
+# E_init <- E.m
+# E_H_init <- E.Hb
+# stage <- 1
+
+# mature
+# V_init <- L.p^3
+# E_init <- E.m
+# E_H_init <- E.Hp+2
+# stage <- 2
 
 # reproduction parameters
 viviparous <- 1 # live bearing (1) or egg laying (0)
-clutchsize <- 4 # how many eggs per clutch?
+clutchsize <- 5 # how many eggs per clutch?
 photostart <- 3 # winter solstice is the start of the reproduction cycle
 photofinish <- 2 # autumnal equinox is the end of the reproduction cycle
 
 # run the ectotherm model
-
 ecto<-ectotherm(DEB=1,
                 viviparous=viviparous,
                 clutchsize=clutchsize,
@@ -445,8 +459,11 @@ environ<-as.data.frame(ecto$environ) # behaviour, Tb and environment
 enbal<-as.data.frame(ecto$enbal) # heat balance outputs
 masbal<-as.data.frame(ecto$masbal) # mass balance outputs
 debout<-as.data.frame(ecto$debout) # DEB model outputs
+yearout <- as.data.frame(ecto$yearout) # whole life cycle summary
+yearsout <- as.data.frame(ecto$yearsout) # annual summaries
+ndays <- nyear * 365
 par(mfrow = c(1,1))
-plot(seq(1, ndays * 24) / 24, debout$WETMASS, type = 'l', xlab = 'time (days)', 
+plot(seq(1, ndays * 24) / 24, debout$WETMASS, type = 'l', xlab = 'date', 
      ylab = paste0('wet mass (g)'), col = 'pink', lwd = 2, 
      ylim = c(0, max(debout$WETMASS)))
 points(seq(1, ndays * 24) / 24, debout$V, type = 'l', xlab = 'date', 
@@ -457,12 +474,12 @@ points(seq(1, ndays * 24) / 24, debout$WETMASS-debout$WETGONAD-debout$WETGUT,
        type = 'l', lwd = 2, col = 'grey')
 abline(v = (seq(1, ndays * 24) / 24)[which(debout$E_H>E.Hb)[1]], lty = 2, col = 'grey')
 abline(v = (seq(1, ndays * 24) / 24)[which(debout$E_H>E.Hp)[1]], lty = 2, col = 'grey')
-legend(365 * 1.5, max(debout$WETMASS) * 1.05, 
+legend(1200, max(debout$WETMASS) * 0.3, 
        c('repro. buffer', 'food in gut', 'reserve', 'structure'), lty = rep(1, 4), 
        col = c("pink", "brown", "grey", "dark green"), bty = 'n')
-text(0, max(debout$WETMASS) * 1, labels = "embryo")
-text(which(debout$E_H > E.Hp)[1] / 24 - which(debout$E_H > E.Hp)[1] / 24 * .5, max(debout$WETMASS) * 1, labels = "immature")
-text(which(debout$E_H > E.Hp)[1] / 24 * 1.2, max(debout$WETMASS) * 1, labels = "adult")
+text(0, max(debout$WETMASS) * 1, labels = "embryo", cex = 0.85)
+text((which(debout$E_H > E.Hp)[1] - which(debout$E_H > E.Hp)[1] * .5) / 24 , max(debout$WETMASS) * 1, labels = "immature", cex = 0.85)
+text(which(debout$E_H > E.Hp)[1] * 1.2 / 24, max(debout$WETMASS) * 1, labels = "adult", cex = 0.85)
 ```
 
 ## References

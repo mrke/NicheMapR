@@ -7,6 +7,8 @@ vignette: >
   %\VignetteIndexEntry{Microclimate Model IO}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+editor_options:
+  chunk_output_type: console
 ---
 
 ```{r, echo = FALSE}

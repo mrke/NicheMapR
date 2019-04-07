@@ -1,3 +1,4 @@
+doc
 Meta
 .Rproj.user
 .Rhistory
@@ -20,7 +21,6 @@ calculating skinwet_to share.R
 calculating skinwet_to share_liopholis ex.R
 compile_micro.R
 deb-model-theory-equations - Copy.Rmd
-deb-model-tutorial.Rmd
 debmodeltest.R
 download.USA.grids.R
 ecto_modular.R
@@ -65,3 +65,8 @@ testing.ncep.R
 thaw.R
 water skink forecast.gif
 CHESS-met_v1.2_SupportingDocumentation.rtf
+deb-model-tutorial.html
+DEB_mass_budget.png
+DEB_scheme.png
+Eulamprus_tympanum.png
+debtest.R

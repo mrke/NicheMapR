@@ -1,13 +1,14 @@
 ---
 title: 'Properties of Air: A Manual for Use in Biophysical Ecology, 5th Edition'
-author: C. Richard Tracy, William R. Welch, Berry Pinshow, Michael R. Kearney and
-  Warren P. Porter
+author: "C. Richard Tracy, William R. Welch, Berry Pinshow, Michael R. Kearney and Warren P. Porter"
 date: '`r Sys.Date()`'
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Properties of Air}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+editor_options:
+  chunk_output_type: console  
 ---
 
 ```{r, echo = FALSE}

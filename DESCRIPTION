@@ -23,10 +23,11 @@ Suggests:
     rutils,
     jsonlite,
     microclima,
-    RNCEP
+    RNCEP,
 Imports:
     ncdf4,
-    raster
+    raster,
+    deSolve
 VignetteBuilder: knitr
 Vignettes: properties-of-air,ectotherm-model-tutorial,microclimate-model-
     tutorial,microclimate-monthly-input-example,microclimate-inputs,microclimate-

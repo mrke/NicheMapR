@@ -418,7 +418,7 @@ yearout variables:
 \item 10 TOTFOOD - Total food eaten (kg)
 \item 11 MINTB - Minimum body temperature (°C)
 \item 12 MAXTB - Maxmium body temperature (°C)
-\item 13 Pct_Dess - Maximum level of desiccation (/%)
+\item 13 Pct_Des - Maximum level of desiccation (/%)
 \item 14 LifeSpan - Maximum life span (days)
 \item 15 GenTime - Generation time (years)
 \item 16 R0 - Net reproductive rate
@@ -442,22 +442,21 @@ yearsout variables:
 \item 12 MaxDep - Maximum annual depth selected (cm)
 \item 13 Bsk - Annual basking hours
 \item 14 Forage - Annual foraging hours
-\item 15 Dist - Annual distance travelled (km)
-\item 16 Food - Annual food eaten (g)
+\item 15 Dist - Annual distance travelled (flying insect) (km)
+\item 16 Food - Annual food eaten (g, dry)
 \item 17 Drink - Annual water drunk (g)
 \item 18 NWaste - Annual nitrogenous waste (g)
-\item 19 O2 - Annual O2 production (ml)
-\item 20 Clutch - Annual clutches (#)
-\item 21 Fec - Annual fecundity (#)
-\item 22 CauseDeath - Cause of death, 0=no death, 1=cold, 2=heat, 3=desiccation, 4=starvation, 5=ageing
-\item 23 tLay - Day of year at which eggs laid
-\item 24 tEgg - Day of year entering egg stage
-\item 25-32 tStg1-tStg8 - Day of year entering life cycle stages 1-8
-\item 33-41 mStg1-mStg8 - Mass entering life cycle stages 1-8 (g)
-\item 41 surviv - Survival probability at end of given year
-\item 42 ovip_surviv - Breeding state (1=breeding, 0=not breeding)
-\item 43 fitness - Fecundity by survival probability at end of given year
-\item 44 deathstage - Life stage at which death occurred
+\item 19 Faeces - Annual faeces production (g, dry)
+\item 20 O2 - Annual O2 production (ml)
+\item 21 Clutch - Annual clutches (#)
+\item 22 Fec - Annual fecundity (#)
+\item 23 CauseDeath - Cause of death, 0=no death, 1=cold, 2=heat, 3=desiccation, 4=starvation, 5=ageing
+\item 24 tLay - Day of year at which eggs laid
+\item 25 tEgg - Day of year entering egg stage
+\item 26-33 tStg1-tStg8 - Day of year entering life cycle stages 1-8
+\item 34-41 mStg1-mStg8 - Body weight upon entering life cycle stages 1-8 (g, wet)
+\item 42 surviv - Survival probability at end of given year
+\item 43 deathstage - Life stage at which death occurred
 }
 }
 \examples{

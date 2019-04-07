@@ -93,7 +93,7 @@ ectorun <- function(ecto) {
                 masbal=matrix(data = 0., nrow = ndays*24, ncol = 19),
                 debout=matrix(data = 0., nrow = ndays*24, ncol = 21),
                 yearout=matrix(data = 0., nrow = 1, ncol = 20),
-                yearsout=matrix(data = 0., nrow = ceiling(ndays/365), ncol = 45),
+                yearsout=matrix(data = 0., nrow = ceiling(ndays/365), ncol = 43),
                 PACKAGE = "NicheMapR"
   )
 
@@ -102,7 +102,7 @@ ectorun <- function(ecto) {
   masbal <- matrix(data = 0., nrow = 24*ndays, ncol = 19)
   debout <- matrix(data = 0., nrow = 24*ndays, ncol = 21)
   yearout <- matrix(data = 0., nrow = 1, ncol = 20)
-  yearsout <- matrix(data = 0., nrow = ceiling(ndays/365), ncol = 45)
+  yearsout <- matrix(data = 0., nrow = ceiling(ndays/365), ncol = 43)
 
   storage.mode(environ)<-"double"
   storage.mode(enbal)<-"double"
@@ -124,8 +124,8 @@ ectorun <- function(ecto) {
   enbal.names<-c("DOY","YEAR","DAY","TIME","QSOL","QIRIN","QMET","QEVAP","QIROUT","QCONV","QCOND","ENB","NTRY")
   masbal.names<-c("DOY","YEAR","DAY","TIME","O2_ml","CO2_ml","NWASTE_g","H2OFree_g","H2OMet_g","DryFood_g","WetFood_g","DryFaeces_g","WetFaeces_G","Urine_g","H2OResp_g","H2OCut_g","H2OEye_g","H2OBal_g","H2OCumBal_g")
   debout.names<-c("DOY","YEAR","DAY","TIME","STAGE","V","E","E_H","L_W","WETMASS","WETGONAD","WETGUT","PCT_DESIC","E_R","E_B","BREEDING","PREGNANT","V_BABY","E_BABY","H_S","P_SURV")
-  yearout.names<-c("DEVTIME","BIRTHDAY","BIRTHMASS","MONMATURE","MONREPRO","LENREPRO","FECUNDITY","CLUTCHES","ANNUALACT","MINRESERVE","LASTFOOD","TOTFOOD","MINTB","MAXTB","Pct_Dess","LifeSpan","GenTime","R0","rmax","Length")
-  yearsout.names<-c("YEAR","MaxStg","MaxWgt","MaxLen","Tmax","Tmin","MinRes","MaxDes","MinShade","MaxShade","MinDep","MaxDep","Bsk","Forage","Dist","Food","Drink","NWaste","Feces","O2","Clutch","Fec","CauseDeath","tLay","tEgg","tStg1","tStg2","tStg3","tStg4","tStg5","tStg6","tStg7","tStg8","mStg1","mStg2","mStg3","mStg4","mStg5","mStg6","mStg7","mStg8","surviv","ovip_surviv","fitness","deathstage")
+  yearout.names<-c("DEVTIME","BIRTHDAY","BIRTHMASS","MONMATURE","MONREPRO","LENREPRO","FECUNDITY","CLUTCHES","ANNUALACT","MINRESERVE","LASTFOOD","TOTFOOD","MINTB","MAXTB","Pct_Des","LifeSpan","GenTime","R0","rmax","Length")
+  yearsout.names<-c("YEAR","MaxStg","MaxWgt","MaxLen","Tmax","Tmin","MinRes","MaxDes","MinShade","MaxShade","MinDep","MaxDep","Bsk","Forage","Dist","Food","Drink","NWaste","Faeces","O2","Clutch","Fec","CauseDeath","tLay","tEgg","tStg1","tStg2","tStg3","tStg4","tStg5","tStg6","tStg7","tStg8","mStg1","mStg2","mStg3","mStg4","mStg5","mStg6","mStg7","mStg8","surviv","deathstage")
 
   colnames(environ)<-environ.names
   colnames(enbal)<-enbal.names

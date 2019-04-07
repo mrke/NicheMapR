@@ -8,9 +8,9 @@ DEB(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 * step,
   kap_X = 0.85, v = 0.065 * step, kap = 0.886, p_M = 32 * step,
   E_G = 7767, kap_R = 0.95, k_J = 0.002 * step, E_Hb = 73590,
   E_Hj = E_Hb, E_Hp = 186500, h_a = 2.16e-11/(step^2), s_G = 0.01,
-  T_REF = 20, T_A = 8085, T_AL = 18721, T_AH = 90000, T_L = 288,
-  T_H = 315, E_0 = 1040000, f = 1, E_sm = 1116, K = 1,
-  andens_deb = 1, d_V = 0.3, d_E = 0.3, d_Egg = 0.3,
+  T_REF = 20 + 273.15, T_A = 8085, T_AL = 18721, T_AH = 90000,
+  T_L = 288, T_H = 315, E_0 = 1040000, f = 1, E_sm = 1116,
+  K = 1, andens_deb = 1, d_V = 0.3, d_E = 0.3, d_Egg = 0.3,
   mu_X = 525000, mu_E = 585000, mu_V = 5e+05, mu_P = 480000,
   kap_X_P = 0.1, n_X = c(1, 1.8, 0.5, 0.15), n_E = c(1, 1.8, 0.5,
   0.15), n_V = c(1, 1.8, 0.5, 0.15), n_P = c(1, 1.8, 0.5, 0.15),
@@ -19,8 +19,8 @@ DEB(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 * step,
   lambda = 1/2, VTMIN = 26, VTMAX = 39, ma = 1e-04, mi = 0,
   mh = 0.5, arrhenius = matrix(data = matrix(data = c(rep(T_A, 8),
   rep(T_AL, 8), rep(T_AH, 8), rep(T_L, 8), rep(T_H, 8)), nrow = 8, ncol =
-  5), nrow = 8, ncol = 5), acthr = 1, X = 10, E_pres = E_0/1e-09,
-  V_pres = 1e-09, E_H_pres = 0, q_pres = 0, hs_pres = 0,
+  5), nrow = 8, ncol = 5), acthr = 1, X = 10, E_pres = E_0/3e-09,
+  V_pres = 3e-09, E_H_pres = 0, q_pres = 0, hs_pres = 0,
   p_surv_pres = 1, E_s_pres = 0, p_B_pres = 0, E_R = 0, E_B = 0,
   stages = 6, stage = 0, breeding = 0, Tb = 33, fdry = 0.3,
   L_b = 0.42, L_j = 1.376, S_instar = rep(1.618, stages),
@@ -59,7 +59,7 @@ DEB(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 * step,
 
 \item{s_G}{= 0.01, Gompertz stress coefficient (-)}
 
-\item{T_REF}{= 20, Reference temperature for rate correction (deg C)}
+\item{T_REF}{= 20+273.15, Reference temperature for rate correction (deg C)}
 
 \item{T_A}{= 8085 Arhhenius temperature}
 
