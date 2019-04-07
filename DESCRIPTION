@@ -28,7 +28,7 @@ Imports:
     ncdf4,
     raster,
     deSolve
-VignetteBuilder: knitr
+VignetteBuilder: rmarkdown
 Vignettes: properties-of-air,ectotherm-model-tutorial,microclimate-model-
     tutorial,microclimate-monthly-input-example,microclimate-inputs,microclimate-
     model-theory-equations,microclimate-hourly-input-example,microclimate-IO
