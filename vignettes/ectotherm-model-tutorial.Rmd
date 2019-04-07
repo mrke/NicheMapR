@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
  eval = TRUE
 )
 ```
+
 This vignette provides tutorial for the *NicheMapR* ectotherm model. It only considers the base heat and (partial) water budget model. For details on the implementation of the Dynamic Energy Budget model (for simulating growth, development and reproduction as well as full water budgets), see the vignette [Introduction to Dynamic Energy Budget models in NicheMapR](deb-model-tutorial.html).
 
 ## Overview
@@ -24,7 +25,7 @@ The *NicheMapR* ectotherm model is run with the function *ectotherm*. This inclu
 
 ### Basic operation: modelling heat and activity budgets for the average day of each month
 
-As with the microclimate model tutorial, this first example involves the most basic case of running the model to produce 12 days of output, one for each month of the year (but the model can be run from any outputs from the various microclimate model functinos). Try running the model with the default inputs for a location of your choice, e.g.:
+As with the [Introduction to the NicheMapR microclimate model](microclimate-model-tutorial.html), this first example involves the most basic case of running the model to produce 12 days of output, one for each month of the year (but the model can be run from any outputs from the various microclimate model functinos). Try running the model with the default inputs for a location of your choice, e.g.:
 
 ```{r, message=FALSE, warnings=FALSE}
 library(NicheMapR)

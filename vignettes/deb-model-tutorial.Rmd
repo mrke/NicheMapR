@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette demonstrates the Dynamic Energy Budget (DEB) model functions of the NicheMapR package. The package includes stand-alone R functions for simulating DEB models as well as the integartion of DEB models with the NicheMapR ectotherm model (see [Introduction to the NicheMapR ectotherm model](deb-model-tutorial.html)).
+This vignette demonstrates the Dynamic Energy Budget (DEB) model functions of the NicheMapR package. The package includes stand-alone R functions for simulating DEB models as well as the integartion of DEB models with the NicheMapR ectotherm model (see [Introduction to the NicheMapR ectotherm model](ectotherm-model-tutorial.html)).
 
 The document first provides a short overview of DEB theory in the context of mechanistic niche modelling, and describes the modelling scheme overall and the parameters required. It then shows how to bring existing DEB parameter estimates into R (there are now estimates for ~1,800 species) and how to run simulations from them using the DEB R functions within the package. Finally it demonstrates how to use the DEB model within the NicheMapR ectotherm function to predict the full life-cycle heat, water, energy and nutritional budget as a function of microclimate. 
 
@@ -314,9 +314,9 @@ deb <- rundeb(species = species, ndays = ndays, div = div, Tbs = Tbs, clutchsize
 
 ## Integration of DEB with the ectotherm model
 
-Finally, we can put the microclimate, heat budget and DEB model together by turning on the DEB model in the NicheMapR ectotherm function and passing it the DEB parameters for the species of interest. Here we simulate *Eulamprus quoyii* in the location of Townsville, northern Australia, as was done in the [Introduction to the NicheMapR ectotherm model](deb-model-tutorial.html) vignette.
+Finally, we can put the microclimate, heat budget and DEB model together by turning on the DEB model in the NicheMapR ectotherm function and passing it the DEB parameters for the species of interest. Here we simulate *Eulamprus quoyii* in the location of Townsville, northern Australia, as was done in the [Introduction to the NicheMapR ectotherm model](ectotherm-model-tutorial.html) vignette.
 
-First, a microclimate must be simulated. The code below specifies the 'micro_global' function to run daily for five years in Townsville, with all other settings as default. It is based on a long-term average monthly climatology (the 'micro_ncep' function can be used for historical daily weather data globally, and there are other continent-specific functions for simulating microclimate in NicheMapR).
+First, a microclimate must be simulated. The code below specifies the 'micro_global' function to run daily for five years in Townsville, with all other settings as default. See the vignette [Introduction to the NicheMapR microclimate model](microclimate-model-tutorial.html) for more details on the microclimate model. The 'micro_global' function uses a long-term average monthly climatology. The 'micro_ncep' function can be used for historical daily weather data globally, and there are other continent-specific functions for simulating microclimate in NicheMapR ('micro_aust', 'micro_usa', 'micro_uk' and 'micro_nz').
 
 ```{r, warning=FALSE, message=FALSE, eval=TRUE}
 longlat <- c(146.77, -19.29) # Townsville, northern Australia
@@ -367,7 +367,7 @@ n.NO <- 3/5
 n.NN <- 4/5
 ```
 
-Next, as described previously in the [Introduction to the NicheMapR ectotherm model](deb-model-tutorial.html) vignette, we need to define the morphological, behavioural and physiological parameters for the biophysical models of heat and water exachange.
+Next, as described previously in the [Introduction to the NicheMapR ectotherm model](ectotherm-model-tutorial.html) vignette, we need to define the morphological, behavioural and physiological parameters for the biophysical models of heat and water exachange.
 
 ```{r, warning=FALSE, message=FALSE, eval=TRUE}
 # morph, behav and water loss
@@ -513,7 +513,7 @@ yearout <- as.data.frame(ecto$yearout) # whole life cycle summary
 yearsout <- as.data.frame(ecto$yearsout) # annual summaries
 ```
 
-The output tables **environ**, **enbal** and **masbal** were retrieved from the model run as done in the [Introduction to the NicheMapR ectotherm model](deb-model-tutorial.html) vignette. Now the **masbal** table includes values for all the DEB-based mass flow calculations:
+The output tables **environ**, **enbal** and **masbal** were retrieved from the model run as done in the [Introduction to the NicheMapR ectotherm model](ectotherm-model-tutorial.html) vignette. Now the **masbal** table includes values for all the DEB-based mass flow calculations:
 
 ```{r, echo=FALSE, results='asis', message=FALSE, warnings=FALSE}
 knitr::kable(tail(masbal[, c(1:11)], 12))
