@@ -309,7 +309,7 @@ p.caption {
   font-size: 1.15em;
 }
 </style>
-<p>This vignette demonstrates the Dynamic Energy Budget (DEB) model functions of the NicheMapR package. The package includes stand-alone R functions for simulating DEB models as well as the integartion of DEB models with the NicheMapR ectotherm model (see <a href="deb-model-tutorial.html">Introduction to the NicheMapR ectotherm model</a>).</p>
+<p>This vignette demonstrates the Dynamic Energy Budget (DEB) model functions of the NicheMapR package. The package includes stand-alone R functions for simulating DEB models as well as the integartion of DEB models with the NicheMapR ectotherm model (see <a href="ectotherm-model-tutorial.html">Introduction to the NicheMapR ectotherm model</a>).</p>
 <p>The document first provides a short overview of DEB theory in the context of mechanistic niche modelling, and describes the modelling scheme overall and the parameters required. It then shows how to bring existing DEB parameter estimates into R (there are now estimates for ~1,800 species) and how to run simulations from them using the DEB R functions within the package. Finally it demonstrates how to use the DEB model within the NicheMapR ectotherm function to predict the full life-cycle heat, water, energy and nutritional budget as a function of microclimate.</p>
 <div id="overview" class="section level2">
 <h2>Overview</h2>
@@ -613,8 +613,8 @@ p.caption {
 </div>
 <div id="integration-of-deb-with-the-ectotherm-model" class="section level2">
 <h2>Integration of DEB with the ectotherm model</h2>
-<p>Finally, we can put the microclimate, heat budget and DEB model together by turning on the DEB model in the NicheMapR ectotherm function and passing it the DEB parameters for the species of interest. Here we simulate <em>Eulamprus quoyii</em> in the location of Townsville, northern Australia, as was done in the <a href="deb-model-tutorial.html">Introduction to the NicheMapR ectotherm model</a> vignette.</p>
-<p>First, a microclimate must be simulated. The code below specifies the ‘micro_global’ function to run daily for five years in Townsville, with all other settings as default. It is based on a long-term average monthly climatology (the ‘micro_ncep’ function can be used for historical daily weather data globally, and there are other continent-specific functions for simulating microclimate in NicheMapR).</p>
+<p>Finally, we can put the microclimate, heat budget and DEB model together by turning on the DEB model in the NicheMapR ectotherm function and passing it the DEB parameters for the species of interest. Here we simulate <em>Eulamprus quoyii</em> in the location of Townsville, northern Australia, as was done in the <a href="ectotherm-model-tutorial.html">Introduction to the NicheMapR ectotherm model</a> vignette.</p>
+<p>First, a microclimate must be simulated. The code below specifies the ‘micro_global’ function to run daily for five years in Townsville, with all other settings as default. See the vignette <a href="microclimate-model-tutorial.html">Introduction to the NicheMapR microclimate model</a> for more details on the microclimate model. The ‘micro_global’ function uses a long-term average monthly climatology. The ‘micro_ncep’ function can be used for historical daily weather data globally, and there are other continent-specific functions for simulating microclimate in NicheMapR (‘micro_aust’, ‘micro_usa’, ‘micro_uk’ and ‘micro_nz’).</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">longlat &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">146.77</span>, <span class="fl">-19.29</span>) <span class="co"># Townsville, northern Australia</span></a>
 <a class="sourceLine" id="cb7-2" title="2">nyear &lt;-<span class="st"> </span><span class="dv">5</span></a>
 <a class="sourceLine" id="cb7-3" title="3">micro &lt;-<span class="st"> </span><span class="kw">micro_global</span>(<span class="dt">loc =</span> longlat, <span class="dt">timeinterval =</span> <span class="dv">365</span>, <span class="dt">nyear =</span> nyear)</a></code></pre></div>
@@ -657,7 +657,7 @@ p.caption {
 <a class="sourceLine" id="cb8-36" title="36">n.NH &lt;-<span class="st"> </span><span class="dv">4</span><span class="op">/</span><span class="dv">5</span></a>
 <a class="sourceLine" id="cb8-37" title="37">n.NO &lt;-<span class="st"> </span><span class="dv">3</span><span class="op">/</span><span class="dv">5</span></a>
 <a class="sourceLine" id="cb8-38" title="38">n.NN &lt;-<span class="st"> </span><span class="dv">4</span><span class="op">/</span><span class="dv">5</span></a></code></pre></div>
-<p>Next, as described previously in the <a href="deb-model-tutorial.html">Introduction to the NicheMapR ectotherm model</a> vignette, we need to define the morphological, behavioural and physiological parameters for the biophysical models of heat and water exachange.</p>
+<p>Next, as described previously in the <a href="ectotherm-model-tutorial.html">Introduction to the NicheMapR ectotherm model</a> vignette, we need to define the morphological, behavioural and physiological parameters for the biophysical models of heat and water exachange.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="co"># morph, behav and water loss</span></a>
 <a class="sourceLine" id="cb9-2" title="2">pct_wet &lt;-<span class="st"> </span><span class="fl">0.2</span>    <span class="co"># % of surface area acting as a free-water exchanger</span></a>
 <a class="sourceLine" id="cb9-3" title="3">alpha_max &lt;-<span class="st"> </span><span class="fl">0.85</span> <span class="co"># maximum solar absorptivity</span></a>
@@ -787,7 +787,7 @@ p.caption {
 <a class="sourceLine" id="cb12-76" title="76">debout&lt;-<span class="kw">as.data.frame</span>(ecto<span class="op">$</span>debout) <span class="co"># DEB model outputs</span></a>
 <a class="sourceLine" id="cb12-77" title="77">yearout &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(ecto<span class="op">$</span>yearout) <span class="co"># whole life cycle summary</span></a>
 <a class="sourceLine" id="cb12-78" title="78">yearsout &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(ecto<span class="op">$</span>yearsout) <span class="co"># annual summaries</span></a></code></pre></div>
-<p>The output tables <strong>environ</strong>, <strong>enbal</strong> and <strong>masbal</strong> were retrieved from the model run as done in the <a href="deb-model-tutorial.html">Introduction to the NicheMapR ectotherm model</a> vignette. Now the <strong>masbal</strong> table includes values for all the DEB-based mass flow calculations:</p>
+<p>The output tables <strong>environ</strong>, <strong>enbal</strong> and <strong>masbal</strong> were retrieved from the model run as done in the <a href="ectotherm-model-tutorial.html">Introduction to the NicheMapR ectotherm model</a> vignette. Now the <strong>masbal</strong> table includes values for all the DEB-based mass flow calculations:</p>
 <table>
 <thead>
 <tr class="header">
@@ -812,13 +812,13 @@ p.caption {
 <td align="right">5</td>
 <td align="right">1825</td>
 <td align="right">12</td>
-<td align="right">2.176617</td>
-<td align="right">0.9494807</td>
-<td align="right">0.0045788</td>
-<td align="right">0.0305019</td>
-<td align="right">0.0018343</td>
-<td align="right">0.0066955</td>
-<td align="right">0.0371974</td>
+<td align="right">2.175278</td>
+<td align="right">0.9488354</td>
+<td align="right">0.0045763</td>
+<td align="right">0.0304887</td>
+<td align="right">0.0018332</td>
+<td align="right">0.0066926</td>
+<td align="right">0.0371814</td>
 </tr>
 <tr class="even">
 <td>43790</td>
@@ -826,13 +826,13 @@ p.caption {
 <td align="right">5</td>
 <td align="right">1825</td>
 <td align="right">13</td>
-<td align="right">2.077854</td>
-<td align="right">0.9063990</td>
-<td align="right">0.0043569</td>
-<td align="right">0.0290235</td>
-<td align="right">0.0017454</td>
-<td align="right">0.0063710</td>
-<td align="right">0.0353945</td>
+<td align="right">2.076573</td>
+<td align="right">0.9057816</td>
+<td align="right">0.0043545</td>
+<td align="right">0.0290109</td>
+<td align="right">0.0017443</td>
+<td align="right">0.0063682</td>
+<td align="right">0.0353792</td>
 </tr>
 <tr class="odd">
 <td>43791</td>
@@ -840,13 +840,13 @@ p.caption {
 <td align="right">5</td>
 <td align="right">1825</td>
 <td align="right">14</td>
-<td align="right">2.169115</td>
-<td align="right">0.9462092</td>
-<td align="right">0.0045618</td>
-<td align="right">0.0303886</td>
-<td align="right">0.0018275</td>
-<td align="right">0.0066707</td>
-<td align="right">0.0370592</td>
+<td align="right">2.167781</td>
+<td align="right">0.9455661</td>
+<td align="right">0.0045593</td>
+<td align="right">0.0303754</td>
+<td align="right">0.0018264</td>
+<td align="right">0.0066678</td>
+<td align="right">0.0370432</td>
 </tr>
 <tr class="even">
 <td>43792</td>
@@ -854,13 +854,13 @@ p.caption {
 <td align="right">5</td>
 <td align="right">1825</td>
 <td align="right">15</td>
-<td align="right">2.110565</td>
-<td align="right">0.9206687</td>
-<td align="right">0.0044300</td>
-<td align="right">0.0295104</td>
-<td align="right">0.0017747</td>
-<td align="right">0.0064779</td>
-<td align="right">0.0359883</td>
+<td align="right">2.109263</td>
+<td align="right">0.9200417</td>
+<td align="right">0.0044276</td>
+<td align="right">0.0294976</td>
+<td align="right">0.0017736</td>
+<td align="right">0.0064751</td>
+<td align="right">0.0359727</td>
 </tr>
 <tr class="odd">
 <td>43793</td>
@@ -868,13 +868,13 @@ p.caption {
 <td align="right">5</td>
 <td align="right">1825</td>
 <td align="right">16</td>
-<td align="right">2.192439</td>
-<td align="right">0.9563847</td>
-<td align="right">0.0046147</td>
-<td align="right">0.0307411</td>
-<td align="right">0.0018487</td>
-<td align="right">0.0067480</td>
-<td align="right">0.0374892</td>
+<td align="right">2.191092</td>
+<td align="right">0.9557354</td>
+<td align="right">0.0046122</td>
+<td align="right">0.0307279</td>
+<td align="right">0.0018476</td>
+<td align="right">0.0067451</td>
+<td align="right">0.0374730</td>
 </tr>
 <tr class="even">
 <td>43794</td>
@@ -882,13 +882,13 @@ p.caption {
 <td align="right">5</td>
 <td align="right">1825</td>
 <td align="right">17</td>
-<td align="right">2.159708</td>
-<td align="right">0.9421070</td>
-<td align="right">0.0045405</td>
-<td align="right">0.0302467</td>
-<td align="right">0.0018189</td>
-<td align="right">0.0066395</td>
-<td align="right">0.0368862</td>
+<td align="right">2.158379</td>
+<td align="right">0.9414666</td>
+<td align="right">0.0045380</td>
+<td align="right">0.0302336</td>
+<td align="right">0.0018179</td>
+<td align="right">0.0066366</td>
+<td align="right">0.0368702</td>
 </tr>
 <tr class="odd">
 <td>43795</td>
@@ -896,13 +896,13 @@ p.caption {
 <td align="right">5</td>
 <td align="right">1825</td>
 <td align="right">18</td>
-<td align="right">2.130425</td>
-<td align="right">0.9293337</td>
-<td align="right">0.0044745</td>
-<td align="right">0.0298071</td>
-<td align="right">0.0017925</td>
-<td align="right">0.0065430</td>
-<td align="right">0.0363501</td>
+<td align="right">2.254407</td>
+<td align="right">0.9833538</td>
+<td align="right">0.0048474</td>
+<td align="right">0.0322947</td>
+<td align="right">0.0019418</td>
+<td align="right">0.0070891</td>
+<td align="right">0.0393838</td>
 </tr>
 <tr class="even">
 <td>43796</td>
@@ -910,13 +910,13 @@ p.caption {
 <td align="right">5</td>
 <td align="right">1825</td>
 <td align="right">19</td>
-<td align="right">2.108555</td>
-<td align="right">0.9197942</td>
-<td align="right">0.0044255</td>
-<td align="right">0.0294802</td>
-<td align="right">0.0017729</td>
-<td align="right">0.0064713</td>
-<td align="right">0.0359515</td>
+<td align="right">2.107320</td>
+<td align="right">0.9191964</td>
+<td align="right">0.0044232</td>
+<td align="right">0.0294684</td>
+<td align="right">0.0017719</td>
+<td align="right">0.0064687</td>
+<td align="right">0.0359371</td>
 </tr>
 <tr class="odd">
 <td>43797</td>
@@ -924,13 +924,13 @@ p.caption {
 <td align="right">5</td>
 <td align="right">1825</td>
 <td align="right">20</td>
-<td align="right">2.242558</td>
-<td align="right">0.9782493</td>
-<td align="right">0.0047296</td>
-<td align="right">0.0315064</td>
-<td align="right">0.0018947</td>
-<td align="right">0.0069160</td>
-<td align="right">0.0384224</td>
+<td align="right">2.241237</td>
+<td align="right">0.9776101</td>
+<td align="right">0.0047272</td>
+<td align="right">0.0314937</td>
+<td align="right">0.0018936</td>
+<td align="right">0.0069132</td>
+<td align="right">0.0384069</td>
 </tr>
 <tr class="even">
 <td>43798</td>
@@ -938,13 +938,13 @@ p.caption {
 <td align="right">5</td>
 <td align="right">1825</td>
 <td align="right">21</td>
-<td align="right">2.337244</td>
-<td align="right">1.0195540</td>
-<td align="right">0.0049563</td>
-<td align="right">0.0330159</td>
-<td align="right">0.0019855</td>
-<td align="right">0.0072474</td>
-<td align="right">0.0402633</td>
+<td align="right">2.335855</td>
+<td align="right">1.0188825</td>
+<td align="right">0.0049537</td>
+<td align="right">0.0330024</td>
+<td align="right">0.0019844</td>
+<td align="right">0.0072444</td>
+<td align="right">0.0402469</td>
 </tr>
 <tr class="odd">
 <td>43799</td>
@@ -952,13 +952,13 @@ p.caption {
 <td align="right">5</td>
 <td align="right">1825</td>
 <td align="right">22</td>
-<td align="right">2.361835</td>
-<td align="right">1.0302816</td>
-<td align="right">0.0050281</td>
-<td align="right">0.0334945</td>
-<td align="right">0.0020143</td>
-<td align="right">0.0073524</td>
-<td align="right">0.0408469</td>
+<td align="right">2.360421</td>
+<td align="right">1.0295984</td>
+<td align="right">0.0050255</td>
+<td align="right">0.0334806</td>
+<td align="right">0.0020131</td>
+<td align="right">0.0073494</td>
+<td align="right">0.0408301</td>
 </tr>
 <tr class="even">
 <td>43800</td>
@@ -966,13 +966,13 @@ p.caption {
 <td align="right">5</td>
 <td align="right">1825</td>
 <td align="right">23</td>
-<td align="right">2.355926</td>
-<td align="right">1.0277045</td>
-<td align="right">0.0050293</td>
-<td align="right">0.0335026</td>
-<td align="right">0.0020148</td>
-<td align="right">0.0073542</td>
-<td align="right">0.0408568</td>
+<td align="right">2.354508</td>
+<td align="right">1.0270198</td>
+<td align="right">0.0050267</td>
+<td align="right">0.0334887</td>
+<td align="right">0.0020136</td>
+<td align="right">0.0073512</td>
+<td align="right">0.0408398</td>
 </tr>
 </tbody>
 </table>
@@ -993,134 +993,134 @@ p.caption {
 <tbody>
 <tr class="odd">
 <td>43789</td>
-<td align="right">0.0006984</td>
-<td align="right">0.0025866</td>
-<td align="right">0.0045788</td>
+<td align="right">0.0006981</td>
+<td align="right">0.0025855</td>
+<td align="right">0.0045763</td>
 <td align="right">0</td>
-<td align="right">0.0001993</td>
-<td align="right">0</td>
-<td align="right">0.0302486</td>
+<td align="right">0.0001989</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0302357</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
 <td>43790</td>
-<td align="right">0.0006645</td>
-<td align="right">0.0024612</td>
-<td align="right">0.0043569</td>
+<td align="right">0.0006642</td>
+<td align="right">0.0024601</td>
+<td align="right">0.0043545</td>
 <td align="right">0</td>
-<td align="right">0.0002064</td>
-<td align="right">0</td>
-<td align="right">0.0287658</td>
+<td align="right">0.0002059</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0287535</td>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
 <td>43791</td>
-<td align="right">0.0006958</td>
-<td align="right">0.0025770</td>
-<td align="right">0.0045618</td>
+<td align="right">0.0006955</td>
+<td align="right">0.0025759</td>
+<td align="right">0.0045593</td>
 <td align="right">0</td>
-<td align="right">0.0001999</td>
-<td align="right">0</td>
-<td align="right">0.0301350</td>
+<td align="right">0.0001994</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0301221</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
 <td>43792</td>
-<td align="right">0.0006757</td>
-<td align="right">0.0025025</td>
-<td align="right">0.0044300</td>
+<td align="right">0.0006754</td>
+<td align="right">0.0025014</td>
+<td align="right">0.0044276</td>
 <td align="right">0</td>
-<td align="right">0.0002040</td>
-<td align="right">0</td>
-<td align="right">0.0292542</td>
+<td align="right">0.0002035</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0292416</td>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
 <td>43793</td>
-<td align="right">0.0007039</td>
-<td align="right">0.0026069</td>
-<td align="right">0.0046147</td>
+<td align="right">0.0007035</td>
+<td align="right">0.0026057</td>
+<td align="right">0.0046122</td>
 <td align="right">0</td>
-<td align="right">0.0001979</td>
-<td align="right">0</td>
-<td align="right">0.0304889</td>
+<td align="right">0.0001975</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0304758</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
 <td>43794</td>
-<td align="right">0.0006925</td>
-<td align="right">0.0025649</td>
-<td align="right">0.0045405</td>
+<td align="right">0.0006922</td>
+<td align="right">0.0025638</td>
+<td align="right">0.0045380</td>
 <td align="right">0</td>
-<td align="right">0.0002005</td>
-<td align="right">0</td>
-<td align="right">0.0299927</td>
+<td align="right">0.0002000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0299799</td>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
 <td>43795</td>
-<td align="right">0.0006825</td>
-<td align="right">0.0025277</td>
-<td align="right">0.0044745</td>
+<td align="right">0.0007394</td>
+<td align="right">0.0027386</td>
+<td align="right">0.0048474</td>
 <td align="right">0</td>
-<td align="right">0.0002026</td>
-<td align="right">0</td>
-<td align="right">0.0295518</td>
+<td align="right">0.0295393</td>
+<td align="right">0.0049249</td>
+<td align="right">-0.0022268</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
 <td>43796</td>
-<td align="right">0.0006750</td>
-<td align="right">0.0024999</td>
-<td align="right">0.0044255</td>
+<td align="right">0.0006747</td>
+<td align="right">0.0024989</td>
+<td align="right">0.0044232</td>
 <td align="right">0</td>
-<td align="right">0.0002040</td>
-<td align="right">0</td>
-<td align="right">0.0292241</td>
+<td align="right">0.0002042</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0292118</td>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
 <td>43797</td>
-<td align="right">0.0007214</td>
-<td align="right">0.0026718</td>
-<td align="right">0.0047296</td>
+<td align="right">0.0007211</td>
+<td align="right">0.0026707</td>
+<td align="right">0.0047272</td>
 <td align="right">0</td>
-<td align="right">0.0001933</td>
-<td align="right">0</td>
-<td align="right">0.0312574</td>
+<td align="right">0.0001935</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0312442</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
 <td>43798</td>
-<td align="right">0.0007559</td>
-<td align="right">0.0027998</td>
-<td align="right">0.0049563</td>
+<td align="right">0.0007556</td>
+<td align="right">0.0027986</td>
+<td align="right">0.0049537</td>
 <td align="right">0</td>
-<td align="right">0.0001800</td>
-<td align="right">0</td>
-<td align="right">0.0327775</td>
+<td align="right">0.0001802</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0327636</td>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
 <td>43799</td>
-<td align="right">0.0007669</td>
-<td align="right">0.0028404</td>
-<td align="right">0.0050281</td>
+<td align="right">0.0007666</td>
+<td align="right">0.0028392</td>
+<td align="right">0.0050255</td>
 <td align="right">0</td>
-<td align="right">0.0001699</td>
-<td align="right">0</td>
-<td align="right">0.0332654</td>
+<td align="right">0.0001701</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0332511</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
 <td>43800</td>
-<td align="right">0.0007671</td>
-<td align="right">0.0028410</td>
-<td align="right">0.0050293</td>
+<td align="right">0.0007668</td>
+<td align="right">0.0028399</td>
+<td align="right">0.0050267</td>
 <td align="right">0</td>
-<td align="right">0.0001625</td>
-<td align="right">0</td>
-<td align="right">0.0332809</td>
+<td align="right">0.0001627</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0332665</td>
 <td align="right">0</td>
 </tr>
 </tbody>
@@ -1173,13 +1173,13 @@ p.caption {
 <td align="right">1825</td>
 <td align="right">12</td>
 <td align="right">3</td>
-<td align="right">22.15641</td>
+<td align="right">22.14259</td>
 <td align="right">5952.236</td>
-<td align="right">14380.24</td>
-<td align="right">127.9166</td>
-<td align="right">56.48810</td>
-<td align="right">9.158005</td>
-<td align="right">2.154599</td>
+<td align="right">14380.07</td>
+<td align="right">127.8900</td>
+<td align="right">56.09950</td>
+<td align="right">9.101443</td>
+<td align="right">1.850733</td>
 </tr>
 <tr class="even">
 <td>43790</td>
@@ -1188,13 +1188,13 @@ p.caption {
 <td align="right">1825</td>
 <td align="right">13</td>
 <td align="right">3</td>
-<td align="right">22.15652</td>
+<td align="right">22.14270</td>
 <td align="right">5952.236</td>
-<td align="right">14380.24</td>
-<td align="right">127.9168</td>
-<td align="right">56.45659</td>
-<td align="right">9.158496</td>
-<td align="right">2.122380</td>
+<td align="right">14380.07</td>
+<td align="right">127.8902</td>
+<td align="right">56.06831</td>
+<td align="right">9.102251</td>
+<td align="right">1.818528</td>
 </tr>
 <tr class="odd">
 <td>43791</td>
@@ -1203,13 +1203,13 @@ p.caption {
 <td align="right">1825</td>
 <td align="right">14</td>
 <td align="right">3</td>
-<td align="right">22.15662</td>
+<td align="right">22.14281</td>
 <td align="right">5952.236</td>
-<td align="right">14380.24</td>
-<td align="right">127.9170</td>
-<td align="right">56.42359</td>
-<td align="right">9.159006</td>
-<td align="right">2.088645</td>
+<td align="right">14380.07</td>
+<td align="right">127.8904</td>
+<td align="right">56.03566</td>
+<td align="right">9.103093</td>
+<td align="right">1.784808</td>
 </tr>
 <tr class="even">
 <td>43792</td>
@@ -1218,13 +1218,13 @@ p.caption {
 <td align="right">1825</td>
 <td align="right">15</td>
 <td align="right">3</td>
-<td align="right">22.15673</td>
+<td align="right">22.14292</td>
 <td align="right">5952.236</td>
-<td align="right">14380.24</td>
-<td align="right">127.9172</td>
-<td align="right">56.39153</td>
-<td align="right">9.159497</td>
-<td align="right">2.055885</td>
+<td align="right">14380.07</td>
+<td align="right">127.8906</td>
+<td align="right">56.00395</td>
+<td align="right">9.103907</td>
+<td align="right">1.752062</td>
 </tr>
 <tr class="odd">
 <td>43793</td>
@@ -1233,13 +1233,13 @@ p.caption {
 <td align="right">1825</td>
 <td align="right">16</td>
 <td align="right">3</td>
-<td align="right">22.15684</td>
+<td align="right">22.14303</td>
 <td align="right">5952.236</td>
-<td align="right">14380.24</td>
-<td align="right">127.9174</td>
-<td align="right">56.35814</td>
-<td align="right">9.160004</td>
-<td align="right">2.021759</td>
+<td align="right">14380.07</td>
+<td align="right">127.8908</td>
+<td align="right">55.97091</td>
+<td align="right">9.104751</td>
+<td align="right">1.717950</td>
 </tr>
 <tr class="even">
 <td>43794</td>
@@ -1248,13 +1248,13 @@ p.caption {
 <td align="right">1825</td>
 <td align="right">17</td>
 <td align="right">3</td>
-<td align="right">22.15695</td>
+<td align="right">22.14314</td>
 <td align="right">5952.236</td>
-<td align="right">14380.24</td>
-<td align="right">127.9176</td>
-<td align="right">56.32528</td>
-<td align="right">9.160500</td>
-<td align="right">1.988182</td>
+<td align="right">14380.07</td>
+<td align="right">127.8910</td>
+<td align="right">55.93840</td>
+<td align="right">9.105577</td>
+<td align="right">1.684388</td>
 </tr>
 <tr class="odd">
 <td>43795</td>
@@ -1263,13 +1263,13 @@ p.caption {
 <td align="right">1825</td>
 <td align="right">18</td>
 <td align="right">3</td>
-<td align="right">22.15706</td>
+<td align="right">22.14326</td>
 <td align="right">5952.236</td>
-<td align="right">14380.24</td>
-<td align="right">127.9178</td>
-<td align="right">56.29290</td>
-<td align="right">9.160984</td>
-<td align="right">1.955092</td>
+<td align="right">14380.07</td>
+<td align="right">127.8913</td>
+<td align="right">56.50972</td>
+<td align="right">9.106456</td>
+<td align="right">2.254586</td>
 </tr>
 <tr class="even">
 <td>43796</td>
@@ -1278,13 +1278,13 @@ p.caption {
 <td align="right">1825</td>
 <td align="right">19</td>
 <td align="right">3</td>
-<td align="right">22.15717</td>
+<td align="right">22.14336</td>
 <td align="right">5952.236</td>
-<td align="right">14380.24</td>
-<td align="right">127.9180</td>
-<td align="right">56.26086</td>
-<td align="right">9.161458</td>
-<td align="right">1.922366</td>
+<td align="right">14380.07</td>
+<td align="right">127.8915</td>
+<td align="right">56.47802</td>
+<td align="right">9.107254</td>
+<td align="right">2.221873</td>
 </tr>
 <tr class="odd">
 <td>43797</td>
@@ -1293,13 +1293,13 @@ p.caption {
 <td align="right">1825</td>
 <td align="right">20</td>
 <td align="right">3</td>
-<td align="right">22.15728</td>
+<td align="right">22.14348</td>
 <td align="right">5952.236</td>
-<td align="right">14380.24</td>
-<td align="right">127.9182</td>
-<td align="right">56.22662</td>
-<td align="right">9.161961</td>
-<td align="right">1.887390</td>
+<td align="right">14380.07</td>
+<td align="right">127.8917</td>
+<td align="right">56.44415</td>
+<td align="right">9.108102</td>
+<td align="right">2.186911</td>
 </tr>
 <tr class="even">
 <td>43798</td>
@@ -1308,13 +1308,13 @@ p.caption {
 <td align="right">1825</td>
 <td align="right">21</td>
 <td align="right">3</td>
-<td align="right">22.15740</td>
+<td align="right">22.14360</td>
 <td align="right">5952.236</td>
-<td align="right">14380.24</td>
-<td align="right">127.9185</td>
-<td align="right">56.19074</td>
-<td align="right">9.162484</td>
-<td align="right">1.850739</td>
+<td align="right">14380.07</td>
+<td align="right">127.8919</td>
+<td align="right">56.40864</td>
+<td align="right">9.108987</td>
+<td align="right">2.150275</td>
 </tr>
 <tr class="odd">
 <td>43799</td>
@@ -1323,13 +1323,13 @@ p.caption {
 <td align="right">1825</td>
 <td align="right">22</td>
 <td align="right">3</td>
-<td align="right">22.15752</td>
+<td align="right">22.14372</td>
 <td align="right">5952.236</td>
-<td align="right">14380.24</td>
-<td align="right">127.9187</td>
-<td align="right">56.15433</td>
-<td align="right">9.163009</td>
-<td align="right">1.813556</td>
+<td align="right">14380.07</td>
+<td align="right">127.8922</td>
+<td align="right">56.37262</td>
+<td align="right">9.109880</td>
+<td align="right">2.113107</td>
 </tr>
 <tr class="even">
 <td>43800</td>
@@ -1338,13 +1338,13 @@ p.caption {
 <td align="right">1825</td>
 <td align="right">23</td>
 <td align="right">3</td>
-<td align="right">22.15764</td>
+<td align="right">22.14385</td>
 <td align="right">5952.236</td>
-<td align="right">14380.24</td>
-<td align="right">127.9189</td>
-<td align="right">56.11790</td>
-<td align="right">9.163530</td>
-<td align="right">1.776364</td>
+<td align="right">14380.07</td>
+<td align="right">127.8924</td>
+<td align="right">56.33658</td>
+<td align="right">9.110769</td>
+<td align="right">2.075931</td>
 </tr>
 </tbody>
 </table>
@@ -1367,146 +1367,146 @@ p.caption {
 <tr class="odd">
 <td>43789</td>
 <td align="right">0</td>
-<td align="right">7790.009</td>
-<td align="right">46662.03</td>
+<td align="right">6823.687</td>
+<td align="right">46656.55</td>
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">0.0943271</td>
-<td align="right">89000.21</td>
-<td align="right">1.09e-05</td>
-<td align="right">0.8685985</td>
+<td align="right">0.0652823</td>
+<td align="right">133113.9</td>
+<td align="right">1.08e-05</td>
+<td align="right">0.8690920</td>
 </tr>
 <tr class="even">
 <td>43790</td>
 <td align="right">0</td>
-<td align="right">7801.217</td>
-<td align="right">46662.03</td>
+<td align="right">6834.888</td>
+<td align="right">46656.55</td>
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">0.0947001</td>
-<td align="right">88609.30</td>
-<td align="right">1.09e-05</td>
-<td align="right">0.8685890</td>
+<td align="right">0.0655850</td>
+<td align="right">132453.2</td>
+<td align="right">1.08e-05</td>
+<td align="right">0.8690826</td>
 </tr>
 <tr class="odd">
 <td>43791</td>
 <td align="right">0</td>
-<td align="right">7812.952</td>
-<td align="right">46662.03</td>
+<td align="right">6846.616</td>
+<td align="right">46656.55</td>
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">0.0950916</td>
-<td align="right">88202.40</td>
-<td align="right">1.09e-05</td>
-<td align="right">0.8685795</td>
+<td align="right">0.0659027</td>
+<td align="right">131766.0</td>
+<td align="right">1.08e-05</td>
+<td align="right">0.8690731</td>
 </tr>
 <tr class="even">
 <td>43792</td>
 <td align="right">0</td>
-<td align="right">7824.348</td>
-<td align="right">46662.03</td>
+<td align="right">6858.005</td>
+<td align="right">46656.55</td>
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">0.0954726</td>
-<td align="right">87809.58</td>
-<td align="right">1.09e-05</td>
-<td align="right">0.8685701</td>
+<td align="right">0.0662121</td>
+<td align="right">131103.2</td>
+<td align="right">1.08e-05</td>
+<td align="right">0.8690637</td>
 </tr>
 <tr class="odd">
 <td>43793</td>
 <td align="right">0</td>
-<td align="right">7836.219</td>
-<td align="right">46662.03</td>
+<td align="right">6869.870</td>
+<td align="right">46656.55</td>
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">0.0958704</td>
-<td align="right">87402.79</td>
-<td align="right">1.09e-05</td>
-<td align="right">0.8685606</td>
+<td align="right">0.0665353</td>
+<td align="right">130417.4</td>
+<td align="right">1.08e-05</td>
+<td align="right">0.8690543</td>
 </tr>
 <tr class="even">
 <td>43794</td>
 <td align="right">0</td>
-<td align="right">7847.899</td>
-<td align="right">46662.03</td>
+<td align="right">6881.543</td>
+<td align="right">46656.55</td>
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">0.0962626</td>
-<td align="right">87004.92</td>
-<td align="right">1.09e-05</td>
-<td align="right">0.8685512</td>
+<td align="right">0.0668542</td>
+<td align="right">129747.1</td>
+<td align="right">1.08e-05</td>
+<td align="right">0.8690449</td>
 </tr>
 <tr class="odd">
 <td>43795</td>
 <td align="right">0</td>
-<td align="right">7859.410</td>
-<td align="right">46662.03</td>
+<td align="right">6894.012</td>
+<td align="right">46656.55</td>
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">0.0966500</td>
-<td align="right">86615.14</td>
-<td align="right">1.09e-05</td>
-<td align="right">0.8685417</td>
+<td align="right">0.0671959</td>
+<td align="right">129036.2</td>
+<td align="right">1.08e-05</td>
+<td align="right">0.8690355</td>
 </tr>
 <tr class="even">
 <td>43796</td>
 <td align="right">0</td>
-<td align="right">7870.794</td>
-<td align="right">46662.03</td>
+<td align="right">6905.390</td>
+<td align="right">46656.55</td>
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">0.0970340</td>
-<td align="right">86231.86</td>
-<td align="right">1.09e-05</td>
-<td align="right">0.8685322</td>
+<td align="right">0.0675085</td>
+<td align="right">128391.9</td>
+<td align="right">1.08e-05</td>
+<td align="right">0.8690260</td>
 </tr>
 <tr class="odd">
 <td>43797</td>
 <td align="right">0</td>
-<td align="right">7882.961</td>
-<td align="right">46662.03</td>
+<td align="right">6917.550</td>
+<td align="right">46656.55</td>
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">0.0974453</td>
-<td align="right">85824.67</td>
-<td align="right">1.09e-05</td>
-<td align="right">0.8685228</td>
+<td align="right">0.0678436</td>
+<td align="right">127708.0</td>
+<td align="right">1.08e-05</td>
+<td align="right">0.8690166</td>
 </tr>
 <tr class="even">
 <td>43798</td>
 <td align="right">0</td>
-<td align="right">7895.711</td>
-<td align="right">46662.03</td>
+<td align="right">6930.293</td>
+<td align="right">46656.55</td>
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">0.0978773</td>
-<td align="right">85400.64</td>
-<td align="right">1.09e-05</td>
-<td align="right">0.8685133</td>
+<td align="right">0.0681958</td>
+<td align="right">126996.4</td>
+<td align="right">1.08e-05</td>
+<td align="right">0.8690072</td>
 </tr>
 <tr class="odd">
 <td>43799</td>
 <td align="right">0</td>
-<td align="right">7908.646</td>
-<td align="right">46662.03</td>
+<td align="right">6943.220</td>
+<td align="right">46656.55</td>
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">0.0983166</td>
-<td align="right">84973.23</td>
-<td align="right">1.09e-05</td>
-<td align="right">0.8685038</td>
+<td align="right">0.0685541</td>
+<td align="right">126279.8</td>
+<td align="right">1.08e-05</td>
+<td align="right">0.8689978</td>
 </tr>
 <tr class="even">
 <td>43800</td>
 <td align="right">0</td>
-<td align="right">7921.584</td>
-<td align="right">46662.03</td>
+<td align="right">6956.150</td>
+<td align="right">46656.55</td>
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">0.0987571</td>
-<td align="right">84548.50</td>
-<td align="right">1.09e-05</td>
-<td align="right">0.8684944</td>
+<td align="right">0.0689137</td>
+<td align="right">125568.4</td>
+<td align="right">1.08e-05</td>
+<td align="right">0.8689883</td>
 </tr>
 </tbody>
 </table>
@@ -1552,7 +1552,7 @@ p.caption {
 <a class="sourceLine" id="cb13-16" title="16"><span class="kw">text</span>(<span class="dv">0</span>, <span class="kw">max</span>(debout<span class="op">$</span>WETMASS) <span class="op">*</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">labels =</span> <span class="st">&quot;embryo&quot;</span>, <span class="dt">cex =</span> <span class="fl">0.85</span>)</a>
 <a class="sourceLine" id="cb13-17" title="17"><span class="kw">text</span>((<span class="kw">which</span>(debout<span class="op">$</span>E_H <span class="op">&gt;</span><span class="st"> </span>E.Hp)[<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="kw">which</span>(debout<span class="op">$</span>E_H <span class="op">&gt;</span><span class="st"> </span>E.Hp)[<span class="dv">1</span>] <span class="op">*</span><span class="st"> </span><span class="fl">.5</span>) <span class="op">/</span><span class="st"> </span><span class="dv">24</span> , <span class="kw">max</span>(debout<span class="op">$</span>WETMASS) <span class="op">*</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">labels =</span> <span class="st">&quot;immature&quot;</span>, <span class="dt">cex =</span> <span class="fl">0.85</span>)</a>
 <a class="sourceLine" id="cb13-18" title="18"><span class="kw">text</span>(<span class="kw">which</span>(debout<span class="op">$</span>E_H <span class="op">&gt;</span><span class="st"> </span>E.Hp)[<span class="dv">1</span>] <span class="op">*</span><span class="st"> </span><span class="fl">1.2</span> <span class="op">/</span><span class="st"> </span><span class="dv">24</span>, <span class="kw">max</span>(debout<span class="op">$</span>WETMASS) <span class="op">*</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">labels =</span> <span class="st">&quot;adult&quot;</span>, <span class="dt">cex =</span> <span class="fl">0.85</span>)</a></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAwAAAAHgCAMAAAAlhPoXAAAAllBMVEUAAAAAADoAAGYAK2sAOjoAOpAAZAAAZrY6AAA6ADo6AGY6OgA6Ojo6OpA6kNtmAABmADpmAGZmZmZmkJBmtrZmtv+HTACQOgCQOjqQkGaQtpCQ29uQ2/+lKiq2ZgC2tma225C2/7a2/9u2//++voe+vqO+vr7bkDrb29vb2//b/7bb////tmb/wMv/25D//7b//9v///8m6mNUAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAdiElEQVR4nO2diXrcOHaFKSey5E5ScqZHUdyRa9JRxpVEtfH9Xy4EuIEkQCzEynv+b9ouVbEIjHzO5cVe1QAQpkpdAQBSAgMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABIAwMA0sAAgDQwACANDABI49kAFQBZkMoAfm8HgBswACANDABIU4IBfvktOnk5ICNggPjlgIzIyAC3l1f5tTAACMYeDfA/1rWxKcf17iBLkhng/lZVj5/19duPqno6N/81Bvj9ufryUd///Uf18E9PzUWnp5pd9g+fwhdv39/X73x/OzjWSW6Ac1OlsWz3u4MsSWYAJqTT4+f1+ak+N+q/fnu/vTRSO335uL81xmCyu7+93t8aIxwfP/U3HPAtURhg1yQzAJNVo/Dr8yvPfZr/eArU/ME1xn64/vbR/G+WGzUiFJ4awsv6+lxV1St7ZDzxbzTK5Q+T9+5hY0F7K1Zy9fDjy0d/u9v3/3jjRYHdkMwALYcm8vOshhmAJTeN+htbNBccn1gGdGbCnURdZoDxqTF5gDRfO7IHyKEeDMAeJvfuYWNeuemtRAPgCZANl4b6svk2yQzQCVJpgOtv/9X8zQ3w94UBhqeG8JJ/ep4b4NDlMO1N15m2AZqv8W+eYYDcuEww/Irig6QpUD01wJACMa3e335v0h+eAv33IgUaviO85AlLNTdA8/epe9ho6yQYoL0Vf2w0VYABMuIiweQ7io/SNYJZS/fhfWKAxhRNg7cL1ieWbPNG8L+J6YvSAI1mD8snwKtF9jMYoL8VDJAdMvnrHLB6SdJu0If3aQr0x3PFc3ZuAJbd1NJuULkBeLYkM4DQjbPOYID+VkiBMmMm+aINoL2CZz+cSW6uNkCj1uvzA5coe3Dc3zoD3LuHjbbE0QDDrZ54I7i/HQyQFFnE1xtA45F8DXCSK03dBjg2afufzd8nPqhWPfzx20ffnOAPGwv6WzXfZN2g/e1YSSd0gyZiVP9UzesG0D0kcjXA9dmu5x7snLWEf8UA2hwpVwMAILDe3tUaYOXOJRgAs0Gpo2ntKhVu0EKGAeKXAyzR5fFKX+j1DwMkKAdYoe/qlH9m1EUKAyQoZ3+sp+g+bq25xvGLNQyQopydcZkT4Oa6i5Tf1BZQggFAxizk79MBhneU9owa1gQGAFuQ6X9VdjYmMb12eYV5ITAAcGcmer1grR4UxipeXGNhshIMgDZAnkjUvC48l0eFWUVcvwkDpChnJ6i0rJKeXa5ko+Ll3CAYwAUYwAK1kL0YwErEk+usvgkDpChnD/Qyk2htfVjKyAB2QbyePn+s9A8DJChnB6wp1GhcdlWmlvqXGMD0m2UYAGTGegiXveuSK9nUx/mrMACwRZfBGA9LbZnDJr2R7ZODAQMAK0wSeNV3tBeOF1vWaVKO1XdLMADaAPmglb/FsNSWOWyyG7l8NZQB2DJchnJDBhigRPThv17qWvkFda5kKWJ+vUnVJIQxwKnfhuqs2o8KBigQM40Zj8sa50r6erlFf0YQAwh7h6h2pYIBisM0xMrGZQ0u1FxsVLNcDCBs56zalQoGKA1jlUnGZQ0urJ3jf4YG8PwEABlgrjHjcVmFAZzrZv/FOlwboHsEeGkDgOTYRFjhqvUvSeewbaidy1dD9QKx3ZUZyt2tYICSsEox5uOyBhdu07BsQpIxGAeIX05x2OXYxsNSFA1QDVh8CQZIim0T03hYyjhXMizRiUC9QCzzP2MgbA9c3Axg8JXZ1NAtMnYnnAF4/4/y7F8YoBB6bVpOTjaR9JYpPN4IZoBO+hgIKxuH4CwYwODCxPoPZ4D2gBcvA2EgGZbZT/cdQ02LuZJ7FTdSwhMApMIpOTc2jXGuFJJABmD9PE913xzeeDuQCJf4byFpdk1i+YfrBmWHCr2rB4LRBigAx84ZGwOkjv8YCEtRTnJM9WnZ/SN+z/jCxPqHARKUk5bLxUx4zuI0/lIG8ocBUpSTkssU/YVORdjUxb4Ar8AA8ctJx2WO/kqXQmxqY39/v5RgAOCJhf5V8ouTnEQywE/+x0/FpzAAIUwNEKlxGraEn0z1AorLYAAyLOW/aoBNcywNKxTktj/lKK4uwQBoA/hgqvsVA/Qfpc/Pzfmpkj0MkGE5SRDUL8zBWbkybvXc0KoeBrCBgAEmb0hjfP7yt1E9DGDDng0g1bW3rdlC0nXiuLN+exggfjkJkGf16q3ZMjHABsHrhN9TggHARlTN2oXOdd1DkTCWeif38Uf7smCA/aMUtWprtnTyt4vyPoABdo9a1LM3k8X/+ZiVTPDTwO+v7BIMgDbAFlZELduaLVKtRvShvjOA091/DSgugAHilxOXFV1LtrGNaIBwac4vGYprYYD45cRkNamRbM0WyQAhknwb2Y/AAPHLicmqqBdbswWXv8GUBTvxu6leAAaIX05E1mU938Y2rAF0sjdWvlT0drIfKcEAwBGdrOd7EwaryPaQrxD99pgFA+wYnawnexMGmv25SfqBRC8CA+wWfVoz2ZvQd/G6dH/tu4FFL1KCAdAGcMLUAEHyHzftR5P9CAwQv5womDRrhZUxPg2wXfr+6qIFBohfTgyMdO3dAA7STyX8HhggfjkRMJvWM+5NuF3+9tpPLf0WGCB+OeExDOt+ov+2qL+paA+UYABgiamsNxtArXyF+nOSfgsMsDvMZX1xHwDYlPHYFxcOGGBvmKX/wqW2Bah1rxJ/ntJvKcEAaANYYJPW2Mp/Jezr475NQRGBAeKXExKrrN7CACrZqw2QacozJ5AB7m/tcdg4JzgutkmNybWauN/5QPxGIdrnhDHAqT8aSXlGEgwQAutOHe21SuUrunoKkn5LEAPc3wbZ45zgePie1bC3dF9KoFMih/PhcU5wNPzK36a1W1LKM6eEJwAwwWP8X835p5SsfU6oNkD3CPDSBgB6NoxpzVDm/DP5Fy/9lkC9QO1R2VWliP9oA3jm4skACuVPtJ/HJDZfYBwgfjn+CTipbRL6dyX9lsgGqAYsvgQDaAgi/1no353yO4Ia4Pr8qvoIBvDH9vivCP1dT/9etc8J1A06RnoP3aA0DWB12u4W+au6e6bid7595oR5AnSdP56eAPS4CJhe6VaSPPFvM5+9a58TrBeI9f/AAE5cLsYG2CZ/Zehv/qIgfkawNsDx4R0GcOFyMTaA1+AvdPeQCP0d4RrBp+qARrA9c/2vbuvjLH9F0sMgJH5GwF6g6/M/wgDWDLrXGsA9/iuz/pqW+Bkhu0HvbxUMYMck8K/q21n+yv5OYqG/AyPB8ctRM4haawBf6u/7O2mqv4YBUpSjZBHVVSJ3DP/r/Z3u9S6ZEgxABZmoFYfbOchfKv4h83GudOnAAPlgagBP8h8zH/cqlw8MkA3SuC493trWANLQ//Mn1F87GeDczfJR9vB4Lbem0gaQy3rxztBJanxjeeIP9bfYGuD2Uj21r+5v6k1PPJZbEzGAIq4vnwh24V+m/j7x31znPWBpgNu/ipqf/hSm3JqGAVS6nr1n2/0j6/OB+kVKaAMQMIBS19P3rOQvDf1IfWbAAPHLWaIO7JP3bOL/TPno8FdgbwBhtcuGZjB6gQRWdC2+6yj/YedCqF+CUy/Qgf/5entR7Hnis1wCrAX22bCwUfePLO+H+hXYG+D+1nYDnR4/Vbte+SyXAGtx3fowd2mfJ+SvxCUFajOf85cP1b6HPsutd98GWFX25DB3vQEkvZ7o81zF5QnQJj7sCQADbGdd2VMDrN5I1uuD4V4dW9oAfTIUtNx65wbQKHtymPuaAWShH6mPHpduUN4P1AT/I0aCN6NTtmgA9V1koR/qNwLjAPHLEdCGdvEwd8UlK81eyF9LCQbYL/rMZlwcLP9cGvoR/M0pYS7QbjHo2b9c1PFfEvqR+NtSwmzQvWLSsdmrf3GdvNGL1McWrAeIX06PycCWIvwr5A/1W1NCG2CnBjAa2ZUZQBb4a6jfDRggfjktZlMbFhdJtQ/1OwMDxC+HYzi3Z3aRPPhD/e7AAPHLYRhObasV8q+R+XiiBAPsENOZzYIBkPcHAQZIgcEAwHgp/0sif7K7GXrFwQBsHcxp5QRUv+XuEdP8Z2A51gv1e8LBAMfHz+vzU310nwpqU269vzaAYft3AGO9AXFbEHOuXusNq2Fsyq13agDjqxf9PlC/T9wMwCZCb1gNY1NuvTsD2KU/M/kj8/GMSwr0xI7Au70gBXLBKv2ZR3+o3ztOjeDq4V2zGuz+tnpKMAxghET+YStHkDDdoKeq2zDlXCl2TqHaC2TRAEbwj0EQA/Tr5mu+dH7z7XYE5J8bQcYB+p1T6lrZV0TTAObxf5L9QP3hCDIO4PkJsJs2gPEA8KTfH/IPSZhxgFO/WsZLG2AvBjAN/5PsB/IPS6BxgH4HXWWeRNAAhvkPkp+oYBwgVjmG8V+c9AP5hyfQOIDyLgMWX9qFAcziP7r9YxNyOvS5apzi73ZFYyl/RP9YBDLAsaoO13/5FDtEt9yueIzi/2zGW5SKkcctBVqf5sB7Susjj/4YCGOY9H8KyT+yn3i4jQOcnurrs3pfIB73r9+YAXwMhBXfBrAM/5B/RFy6QQ/1uYnrK8fDtGcn3f+3xkAYx0L+SP4j4zYOcP3tg/+nYhgjUB4jRsgA+vgP+afD7YSY2/f3VQPUp7b756zcPxEGGJnqP0wlgAKHNgAL78fDWgrks9y6cANctB1ACP8pcekGPT6xnqBNKyLJ9ALp5I/sJzHYFygsGgNMZ73FrBhogQGCgvCfO2EGwjyWW5fcBjAN/5B/Mlx6gbbtCWdZbl2uAUzTf8g/Ie4nxUcqty7bAOpPkfxngftJ8ZHKrUs1wGr8n7R9of+EOLQB2kk+scqtCzXAavcPRr6ywcUAz5EbwSViEP+x3j0HXFKgTWshbcstE5Pwj+wnB0poBJcHsp9iQCM4QDkr8R99n5mBRrD3ckzkj77PXHBJgSqMBK+w0v2D8J8fJcwFKsoABvEf8s8IGMBvOer4j8ZvlpRggIJA+C8NGMAnCP/FAQP4w0j+0H9eOPQCfW97QXFM6gxl+t93fSL8Z4i7AXBM6gR96xfhP0dsDXAc93feNCC8NwNo+/4x9JUn7k+ASOXWRRgA4b9USmgEZ28AyL9cXAxwe6keP4/bpsTtqRdIlf4j+ykABwOcH95P7IikaG2AvNF1/iD8Z43bdGi2LWK8XqCs0WQ/OOoic9wWxDADYByAocl+EP5zx/0JcMTmuMrWL+RfDM5tgJNy53O/5dYZG0CR/mPiT2q+SlBc6tgLtHL+o/XttORqAL38of/QyKQuR3EDjAM4lwP5R8Rc6CtilxHIAPc3zbLJ4nuBpOkP1vx6IYzU5TitCdZuDHTqJwqdVTOGdmGA2VuD+hH+bQkvdBXu26OvNAKEnVN2ek6wJPz/RPZjRQq1S3BOgW4v6nEAYe+sfZ4TvMx/IH8jcpD8FDcDsIdAvCdAdgZYxv8+94H8JeSm+QmOm+NqRoGHQQIvbYDcDKCQP3b7FMla9QIujWCDORD97lnK0eKCDTCP/5D/SCGqF3BJgZpHwOYNoos1gCr5Jyz/8lQv4NgIPlVuMyHGBZUu386AWfgX53xSkn9+jVlXgvQCcYO0DlFNmi7ZAMMPxOS/H9ULOBigXxe/YoDTw3vjEJYn7csA0/hPpONzd5qf4DQSrJsI13aD8vNUfRggnzaAaIDdy3/HqhcIMheoHwg7Pn7uygBE5E9B9wNBDDAMhB2fdmQAcfh3nz0/lITfE2Y2aC/7Jl3ajQGW4X9H8ieo/I5A06H7oeD72/4MsCv501V+RwkLYrJglv2Uv9yRvPRbYAAjhvR/F8k/lD8CAxgxTX/KlT+kP6cEAyRvA8zif5nyh/alwAD6cvr+z1LDP6S/AgygLWcS/guTP7SvAwbQldPnP6VlP5C+ETCArhxB/oXoH2HfghIMkBIx/c8//UHXvjUwwDqtAfIP/5C+IzDAKhP556l/SH8TJRggXRsg6/CPuQw+gAHU5WSb/kD6/oAB1OXkmP5A+Z6BAZTl5Bb+If0QwACKcob0J4vwD+2HogQDJCGf8A/thwQGkJJL+gPxhwYGkJFF6xfij0EJBojeBkgf/iH+WMAAy3IS6x/ijwkMsCwnZe8PxB8ZGGBRTrLwT1P81+f5PuOnqjqw/6IUDwPMy0kU/mmqv5YY4PZy4P/FoQQDROWSIPyTFT9DYoBX8ZjFwMAAU+Lrf4fqv33/wbbEZIdENIH8+u2PZ/6ie/tcTdKb6/Pv3cdM9LcX9lO3+353g+57YYABJsROfwoS/2WVyaW3F3Y2HDsk4vp8YCdqvTaqf+3ebl+NZ2xdn7vrOgO8Dk+A0/CB8qi57ZRggHhtgLjhvyD128Ez+DaNP3/5YBrm5+Xyd9qdw8/jERPdx18+5gYYbhC0QQADCOVE1P8OE58RLuVW402G3yb5zY/87fYnIfGffiwYYLhB0AYBDCCUEyv92bX6694A3Ular9dvTMhTAwiabj9u/lwYoL8BDOC3aAWN+qOE/52LnyE8Aepe4a5PgLoO2yUEA3TEaf0SUH899Od0sm2T/CNrA7yq2wBdE6HLeCZdoeQNEIMY+qeh/rpXLOvEqY8P77ybp+374bFe1gvE3mSHKt7fqmkvELsBDBCc8K3fvaf9EzrFntre/Lajf3wmdOMA97fWBMPH7ECt6q9CN2h/gxIN0Dh5/SzhrAwQWv+k1L9gOdknJwIdktcP9Z1VU5oyagMMg19hyiEtfgZBAwzHpPLGzebbhTVAJ/9fQcohr/6apAGEpO2c+ymRQvbjuRzaiU8pEH8CTLJ/j+VgVVcphGoDdI+AzNsA085PX+VA/AURqBeI9WgxlNP4sugFCtD5g9BfGITHAbx3fkL8PSsLGrsxYH3f/jlO0zmyAaoBL7fbgtex368Qv8Da/GVhEoTmHrs0gNPtgrQBJOHfsRyIf86aeGEA+9uFMIAs/XEoB9qXcH2uJksfhxdNZvTwY0yBbi9/fan67pL62H4oLIwMuA5sJNA4wJjqZDkOIE9/LMshJv6fq0wu7dYDdJPehhdH7grRAM3rU/dE6D8UJ0XHIMwT4P6mW8Sc1ACK1q9NObTEbwkT7zDteXjRjggfRQMchnHi4cN9GGCY6ufldr4NoGr9mpYD8Wtg4h0Wvgwv2kkBZ9EAwhTR/sOdGIA/9zzeziMbOz+hfj2jAZpXw4vTmgFOezNA5NuZs0n/UL8ReAJEv50pWzr/IX5T1toAJ7kBhg/FhZExKMEA/toA6+F/rRyo3wJFL9CJr32UG2DoBRoXRmJz3B5vBtCEf/UnUL8V/eJf7TiAuHb+WFVf/sYXQPKFkc3P5Y4DeL6dJwNos3/FZ1B/NFSrRwJCxgAG2b/sQ6Q+ceBtgHiboo9QMYBJ58/iY6g/HnwfuARrJ0swwHacOn+gfgqQMICD/KF+IhAwgP3QF1IfOpRggE1tAIvsp70I6ifFzg1glfyzy6B+YuzbAHbJ/y+onx57NoCd/L9+/QX502O3BrDr+eSxP/rJ2HtlekokXyJZ9bs9d6c+tm+wqaH9VYkowQAOWMkfzV7PzE+J7KbGiac+tiumjo+f/Zup2KUBhu1uTYD6zfi1yuTS6SmR/QSf6amPJz7v7TC8Gf3/T8cODWAjf6g/BNNTIm8vrbynpz52p4ANb6aqawkGsMnNf1rIf576oA3giekpke1pKYtTH49PLAMar0rEvgywQf1W5YBVpqdEco59sK+H5QJf/hSPgkzFjgzQqd/kanmzFwbwxHSlS//W7NTH28tfQp//ZcJuDGAb/F3LAXqmp0TyIH/u98AaT308Vk/CVanqug8DbEt9zMsBRkxPieTJP1f49NTHbueck3r7wBiUYAAdxqkPdjUBc4o3gHHwh/qBhMINYKd+P2WCPVGCAVQCNwz+xqEfbQCClGsAI/VbbWEOAxCkVAMYyN96/34YgCBlGkA31fOrtfjl5YDdU6AB1oP/VzfxS8oBm1Ge9BjpCEgDSjDABLX8v27QPgiBcp5D8gkQI2UZQKV+aD9LYACH20lXWHDkA76Qfoa0iyDZn4//x5ZH/jnMjmMTH57aD/qTMKbrJ2OTmwFkC43YnzL1+9Y+2gCe6BdBtnugP36O00PZ1De+DmzcHH26fjI6uRmgY2KCX/VC/UHiPgywxtdVJpeOiyBf++WRvdgPwgfCe+lWRmZqgBbpotNwOQ8M4Il+EeT0FIzhwLy5AcT1k9HrmrUBGIL6Qzd1YQBfdIsglwb41s77Xxog2crI7A1QM2EqH7ZegQF80q18sXkCpCDYQdmto5VJnfHt0MNZKJ22O533Rz+KbYDDdI+INIQxwKnv0TqrurZMbgfpF0q/CJJpnEu7P/qRd/bc357YB+NxkOL6yeh1DWKA9mhYzklx1J/ydqvdC6AM+kWQx667fzj6sR0H4B98du/N1k/GJogBhAfarGerGlB8Vab9WLk52gAEye4JIAEGAMEI1QboHgGb2gA9MAAIRqBeIJbfMZSHfcMAIAvKGAeIAwxAkBIMAEAwYABAGhgAkKYEA6ANAIIBA8QvB2QEDBC/HJARMED8ckBGJDOABb9sLt5ArHJATiQyQOJitoFKeqKEOvbAACOopCdKqGMPDDCCSnqihDr2wAAjqKQnSqhjDwwwgkp6ooQ69sAAI6ikJ0qoYw8MMIJKeqKEOvbAACOopCdKqGMPDDCCSnqihDr2lFRXALwDAwDSwACANDAAIA0MAEgDAwDSwACANDAAIA0MAEgDAwDSwACANDAAIA0MAEgTwwDn9mSpHGkPPHiqhUpmV9vrb/w4qmUFM6ppW8cSfptzIhiAHS6Y7sDYdfojnsdKZlfb7nz2ZQUzqmlXxwJ+mwvCG6A9Wez4FLwgF/rD/oZKZlfbc3vK4rKCGdW0q2MBv80l4Q3QHiN+SnFWpp5T928zVDK32p6rA5fVsoL51LSvY/6/TQkRDMCfi+c8fwnHf26S1oNQyQxr2xpgUcGsatpWo4Tf5pzwBmhTwDwTwdsLO+7veBgrmWFtuX6WFcyqpryORfw259A2QEvzr5fzP1kxBhhe5llHOcRTIE6Tqeb80C4nBeJk/tucQ7wRzGn+mXJutmXfCK6nBsj7tzmHdjdo+w/U/Ovl3HF3zr4bdGLSzH+bc4gPhPF/m6bZlvPQzTn/gbC+F6iA3+acGFMhThkPhx+rqmJxa6xkdrXt0otlBTOqaVfHAn6bczAZDpAGBgCkgQEAaWAAQBoYAJAGBgCkgQEAaWAAQBoYAJAGBgCkgQEAaWAAQBoYAJAGBgCkgQEAaWAAQBoYAJAGBgCkgQEAaWAAQBoYAJAGBgCkgQEAaWAAQBoYAJAGBgCkgQEAaWCAXJjsIXt+TVcRWsAAuSAa4PYCA0QCBsgFGCAJMEAOsE3EfzADtPuLX5+r6vGTvcvOXAQhgQEy4Pjloz6zffTZCROn5m/+BGAvrs9wQFhggPS0RwsdH95v39/bn5gBbi9M+1kfMLcHYID0jGcgsb9YDsQM0P7cmgMEAwZIz2kwQJP1f/nP7gnQOIEDAwQFBkjP8ATg4b5PgfI+W243wADp6U7TfXhvz4Sv+jYAYn8EYIAMYP09rBeoDf7VoW0An3i/KJ4DYYEBcqAfB+CHijLNH/txAHQCBQYGAKSBAQBpYABAGhgAkAYGAKSBAQBpYABAGhgAkAYGAKSBAQBpYABAGhgAkAYGAKSBAQBpYABAGhgAkAYGAKSBAQBpYABAGhgAkAYGAKSBAQBpYABAGhgAkOb/Abk9OihCmZRmAAAAAElFTkSuQmCC" /><!-- --></p>
 <p>And finally there are tables summarising various life history events per year and over the entire simulation – the <strong>yearsout</strong> and <strong>yearout</strong> tables.</p>
 <p>Here is the <strong>yearsout</strong> table, and a description of the different outputs.</p>
 <table>
@@ -1574,62 +1574,62 @@ p.caption {
 <tr class="odd">
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">11.93716</td>
-<td align="right">80.78683</td>
+<td align="right">11.80677</td>
+<td align="right">80.77325</td>
 <td align="right">37.11558</td>
-<td align="right">15.35612</td>
-<td align="right">0.9984943</td>
+<td align="right">15.35613</td>
+<td align="right">0.9767551</td>
 <td align="right">0</td>
-<td align="right">0</td>
-<td align="right">90</td>
+<td align="right">-8.380172e+306</td>
+<td align="right">100</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="right">3</td>
-<td align="right">35.09317</td>
-<td align="right">107.47810</td>
-<td align="right">37.08226</td>
-<td align="right">15.36329</td>
-<td align="right">1.0000000</td>
+<td align="right">34.75413</td>
+<td align="right">107.23668</td>
+<td align="right">37.08215</td>
+<td align="right">15.36321</td>
+<td align="right">0.9785912</td>
 <td align="right">0</td>
-<td align="right">0</td>
-<td align="right">90</td>
+<td align="right">-8.380172e+306</td>
+<td align="right">100</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">3</td>
-<td align="right">48.44002</td>
-<td align="right">119.72034</td>
-<td align="right">37.09355</td>
-<td align="right">15.36901</td>
-<td align="right">1.0000000</td>
+<td align="right">48.21578</td>
+<td align="right">119.59657</td>
+<td align="right">37.09410</td>
+<td align="right">15.36913</td>
+<td align="right">0.9999615</td>
 <td align="right">0</td>
-<td align="right">0</td>
-<td align="right">90</td>
+<td align="right">-8.380172e+306</td>
+<td align="right">100</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">3</td>
-<td align="right">54.55187</td>
-<td align="right">125.33869</td>
-<td align="right">37.10330</td>
-<td align="right">15.36997</td>
+<td align="right">54.38529</td>
+<td align="right">125.28021</td>
+<td align="right">37.10343</td>
+<td align="right">15.37013</td>
 <td align="right">1.0000000</td>
 <td align="right">0</td>
-<td align="right">0</td>
-<td align="right">90</td>
+<td align="right">-8.380172e+306</td>
+<td align="right">100</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
 <td align="right">3</td>
-<td align="right">56.88721</td>
-<td align="right">127.91894</td>
-<td align="right">37.10668</td>
-<td align="right">15.37184</td>
+<td align="right">56.68539</td>
+<td align="right">127.89239</td>
+<td align="right">37.10685</td>
+<td align="right">15.37189</td>
 <td align="right">1.0000000</td>
 <td align="right">0</td>
-<td align="right">0</td>
-<td align="right">90</td>
+<td align="right">-8.380172e+306</td>
+<td align="right">100</td>
 </tr>
 </tbody>
 </table>
@@ -1654,70 +1654,70 @@ p.caption {
 <tr class="odd">
 <td align="right">0</td>
 <td align="right">-20</td>
-<td align="right">683</td>
-<td align="right">528</td>
+<td align="right">671</td>
+<td align="right">525</td>
 <td align="right">0</td>
-<td align="right">10.50155</td>
+<td align="right">10.45293</td>
 <td align="right">0</td>
-<td align="right">5.831065</td>
-<td align="right">1.095360</td>
-<td align="right">2327.686</td>
+<td align="right">5.824355</td>
+<td align="right">1.090289</td>
+<td align="right">2332.279</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="right">0</td>
 <td align="right">-20</td>
-<td align="right">1429</td>
-<td align="right">1008</td>
+<td align="right">1296</td>
+<td align="right">982</td>
 <td align="right">0</td>
-<td align="right">40.99087</td>
+<td align="right">40.67610</td>
 <td align="right">0</td>
-<td align="right">24.060602</td>
-<td align="right">4.275538</td>
-<td align="right">10069.118</td>
+<td align="right">23.889991</td>
+<td align="right">4.242706</td>
+<td align="right">10002.679</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
 <td align="right">0</td>
 <td align="right">-20</td>
-<td align="right">2207</td>
-<td align="right">1433</td>
+<td align="right">1959</td>
+<td align="right">1398</td>
 <td align="right">0</td>
-<td align="right">84.14607</td>
+<td align="right">83.63270</td>
 <td align="right">0</td>
-<td align="right">51.912532</td>
-<td align="right">8.776825</td>
-<td align="right">22577.313</td>
+<td align="right">51.592695</td>
+<td align="right">8.723278</td>
+<td align="right">22436.494</td>
 <td align="right">1</td>
 <td align="right">5</td>
 </tr>
 <tr class="even">
 <td align="right">0</td>
 <td align="right">-20</td>
-<td align="right">3020</td>
-<td align="right">1841</td>
+<td align="right">2669</td>
+<td align="right">1801</td>
 <td align="right">0</td>
-<td align="right">133.88200</td>
+<td align="right">133.27695</td>
 <td align="right">0</td>
-<td align="right">85.203031</td>
-<td align="right">13.964513</td>
-<td align="right">37893.800</td>
+<td align="right">84.809433</td>
+<td align="right">13.901404</td>
+<td align="right">37715.671</td>
 <td align="right">3</td>
 <td align="right">15</td>
 </tr>
 <tr class="odd">
 <td align="right">0</td>
 <td align="right">-20</td>
-<td align="right">3867</td>
-<td align="right">2241</td>
+<td align="right">3515</td>
+<td align="right">2201</td>
 <td align="right">0</td>
-<td align="right">186.79310</td>
+<td align="right">186.16423</td>
 <td align="right">0</td>
-<td align="right">121.214759</td>
-<td align="right">19.483386</td>
-<td align="right">54637.669</td>
+<td align="right">120.798732</td>
+<td align="right">19.417792</td>
+<td align="right">54447.587</td>
 <td align="right">5</td>
 <td align="right">25</td>
 </tr>
@@ -1747,10 +1747,10 @@ p.caption {
 <td align="right">60</td>
 <td align="right">0</td>
 <td align="right">0</td>
-<td align="right">1.092073</td>
+<td align="right">1.092589</td>
 <td align="right">0</td>
 <td align="right">0.00000</td>
-<td align="right">0.9989711</td>
+<td align="right">0.9989683</td>
 <td align="right">-1</td>
 </tr>
 <tr class="even">
@@ -1760,36 +1760,36 @@ p.caption {
 <td align="right">60</td>
 <td align="right">0</td>
 <td align="right">12</td>
-<td align="right">1.092073</td>
+<td align="right">1.092589</td>
 <td align="right">0</td>
-<td align="right">12.49218</td>
-<td align="right">0.9923903</td>
+<td align="right">12.27773</td>
+<td align="right">0.9923556</td>
 <td align="right">-1</td>
 </tr>
 <tr class="odd">
 <td align="right">0</td>
-<td align="right">96</td>
+<td align="right">99</td>
 <td align="right">1</td>
 <td align="right">60</td>
 <td align="right">0</td>
 <td align="right">173</td>
-<td align="right">1.092073</td>
+<td align="right">1.092589</td>
 <td align="right">0</td>
-<td align="right">38.14436</td>
-<td align="right">0.9739555</td>
+<td align="right">38.01870</td>
+<td align="right">0.9739641</td>
 <td align="right">-1</td>
 </tr>
 <tr class="even">
 <td align="right">0</td>
-<td align="right">276</td>
+<td align="right">277</td>
 <td align="right">1</td>
 <td align="right">60</td>
 <td align="right">0</td>
 <td align="right">173</td>
-<td align="right">1.092073</td>
+<td align="right">1.092589</td>
 <td align="right">0</td>
-<td align="right">38.14436</td>
-<td align="right">0.9353673</td>
+<td align="right">38.01870</td>
+<td align="right">0.9355530</td>
 <td align="right">-1</td>
 </tr>
 <tr class="odd">
@@ -1799,10 +1799,10 @@ p.caption {
 <td align="right">60</td>
 <td align="right">0</td>
 <td align="right">173</td>
-<td align="right">1.092073</td>
+<td align="right">1.092589</td>
 <td align="right">0</td>
-<td align="right">38.14436</td>
-<td align="right">0.8684944</td>
+<td align="right">38.01870</td>
+<td align="right">0.8689883</td>
 <td align="right">-1</td>
 </tr>
 </tbody>
@@ -1860,7 +1860,7 @@ p.caption {
 <td align="right">0</td>
 <td align="right">12.36066</td>
 <td align="right">0</td>
-<td align="right">127.3063</td>
+<td align="right">127.2752</td>
 <td align="right">0</td>
 <td align="right">1.1e-06</td>
 <td align="right">0</td>
@@ -1886,16 +1886,16 @@ p.caption {
 <tbody>
 <tr class="odd">
 <td align="right">5952.236</td>
-<td align="right">919.8121</td>
-<td align="right">1018039</td>
-<td align="right">15.35612</td>
+<td align="right">919.3981</td>
+<td align="right">1014108</td>
+<td align="right">15.35613</td>
 <td align="right">37.11558</td>
 <td align="right">0</td>
 <td align="right">0</td>
-<td align="right">3.483302</td>
-<td align="right">0.5839665</td>
-<td align="right">-0.1544258</td>
-<td align="right">56.1179</td>
+<td align="right">3.483352</td>
+<td align="right">0.5840057</td>
+<td align="right">-0.1544043</td>
+<td align="right">56.33658</td>
 </tr>
 </tbody>
 </table>
