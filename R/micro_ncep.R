@@ -814,6 +814,7 @@ micro_ncep <- function(
       TAIRhr <- tref$tref + tref$telev + tref$tcad # reference Tair plus offsets due to lapse rate and cold air drainage
       SOLRhr <- hourlyradwind$swrad / 0.0036
       SOLRhr[SOLRhr < 0] <- 0
+      SOLRhr <- zoo::na.approx(SOLRhr)
       cloudhr <- hourlydata$cloudcover
       IRDhr <- hourlydata$downlong / 0.0036
       CLDhr <- hourlydata$cloudcover
