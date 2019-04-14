@@ -354,6 +354,7 @@ micro_ncep <- function(
   rainmelt = 0.0125,
   shore = 0,
   tides = 0,
+  deepsoil = NA,
   rainhour = 0,
   rainhourly = 0,
   rainoff = 0,
@@ -503,17 +504,17 @@ micro_ncep <- function(
   }
   if(minshade>maxshade | minshade==maxshade){
     message("ERROR: Your value for minimum shade (minshade) is greater than or equal to the maximum shade (maxshade).
-        Please correct this.", '\n')
+            Please correct this.", '\n')
     errors<-1
   }
   if(minshade>100 | minshade<0){
     message("ERROR: Your value for minimum shade (minshade) is out of bounds.
-        Please input a value between 0 and 100.", '\n')
+            Please input a value between 0 and 100.", '\n')
     errors<-1
   }
   if(maxshade>100 | maxshade<0){
     message("ERROR: Your value for maximum shade (maxshade) is out of bounds.
-        Please input a value between 0 and 100.", '\n')
+            Please input a value between 0 and 100.", '\n')
     errors<-1
   }
   # end error trapping
@@ -951,18 +952,22 @@ micro_ncep <- function(
     soilinit<-rep(avetemp,20)
     tannul<-mean(unlist(ALLTEMPS))
 
-    if(nyears==1){
-      avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
-      tannulrun<-rep(avetemp,ndays)
-    }else{
-      avetemp<-rowMeans(cbind(TMAXX, TMINN), na.rm=TRUE)
-      if(length(TMAXX)<365){
-        tannulrun<-rep((sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2),length(TMAXX))
+    if(is.na(deepsoil)){
+      if(nyears==1){
+        avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
+        deepsoil<-rep(avetemp,ndays)
       }else{
-        tannulrun<-raster::movingFun(avetemp,n=365,fun=mean,type='to')
-        yearone<-rep((sum(TMAXX[1:365])+sum(TMINN[1:365]))/(365*2),365)
-        tannulrun[1:365]<-yearone
+        avetemp<-rowMeans(cbind(TMAXX, TMINN), na.rm=TRUE)
+        if(length(TMAXX)<365){
+          deepsoil<-rep((sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2),length(TMAXX))
+        }else{
+          deepsoil<-raster::movingFun(avetemp,n=365,fun=mean,type='to')
+          yearone<-rep((sum(TMAXX[1:365])+sum(TMINN[1:365]))/(365*2),365)
+          deepsoil[1:365]<-yearone
+        }
       }
+    }else{
+      tannul <- mean(deepsoil)
     }
 
     SLES<-matrix(nrow = ndays, data = 0)
@@ -1054,7 +1059,7 @@ micro_ncep <- function(
     TIMAXS <- c(1, 1, 0, 0)
     TIMINS <- c(0, 0, 1, 1)
     # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
-    micro<-list(tides=tides,microinput=microinput,doy=doy,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,IRDhr=IRDhr,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,DD=DD,L=L,LAI=LAI1)
+    micro<-list(tides=tides,microinput=microinput,doy=doy,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,IRDhr=IRDhr,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=deepsoil,PE=PE,KS=KS,BB=BB,BD=BD,DD=DD,L=L,LAI=LAI1)
     # write all input to csv files in their own folder
     if(write_input==1){
       if(dir.exists("micro csv input")==FALSE){
@@ -1085,7 +1090,7 @@ micro_ncep <- function(
       write.table(soilprops, file="micro csv input/soilprop.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(moists,file="micro csv input/moists.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(RAINFALL,file="micro csv input/rain.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(tannulrun,file="micro csv input/tannulrun.csv", sep = ",", col.names = NA, qmethod = "double")
+      write.table(deepsoil,file="micro csv input/tannulrun.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(PE,file="micro csv input/PE.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(BD,file="micro csv input/BD.csv", sep = ",", col.names = NA, qmethod = "double")
       write.table(DD,file="micro csv input/DD.csv", sep = ",", col.names = NA, qmethod = "double")
@@ -1168,4 +1173,4 @@ micro_ncep <- function(
       }
     }
   } # end error trapping
-} # end of micro_ncep function
+  } # end of micro_ncep function

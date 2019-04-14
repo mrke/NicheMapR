@@ -17,11 +17,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette provides tutorial for the *NicheMapR* ectotherm model. It only considers the base heat and (partial) water budget model. For details on the implementation of the Dynamic Energy Budget model (for simulating growth, development and reproduction as well as full water budgets), see the vignette [Introduction to Dynamic Energy Budget models in NicheMapR](deb-model-tutorial.html).
+This vignette provides tutorial for the NicheMapR ectotherm model. It only considers the base heat and (partial) water budget model. For details on the implementation of the Dynamic Energy Budget model (for simulating growth, development and reproduction as well as full water budgets), see the vignette [Introduction to Dynamic Energy Budget models in NicheMapR](deb-model-tutorial.html).
 
 ## Overview
 
-The *NicheMapR* ectotherm model is run with the function *ectotherm*. This includes computations of steady state heat budgets for animals that do not produce signficant metabolic heat. It includes a range of morphological, physiological and behavioural options to capture how organisms exchange heat and water with their environments, and to compute the consequences of this for body temperature, activity constraints and different aspects of the mass budget. It is designed to take the output of the *NicheMapR* microclimate model as the driving environmental inputs, but you could construct custom versions of these if desired.
+The NicheMapR ectotherm model is run with the function `ectotherm`. This includes computations of steady state heat budgets for animals that do not produce signficant metabolic heat. It includes a range of morphological, physiological and behavioural options to capture how organisms exchange heat and water with their environments, and to compute the consequences of this for body temperature, activity constraints and different aspects of the mass budget. It is designed to take the output of the NicheMapR microclimate model as the driving environmental inputs, but you could construct custom versions of these if desired.
 
 ### Basic operation: modelling heat and activity budgets for the average day of each month
 
@@ -284,9 +284,13 @@ with(bask,points(TIME~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
 
 ## Discussion
 
-The capacity to compute body temperature, metabolic rates, activity times and some aspects of the water budget under realistic microclimates allow many important inferences to be made about the ability of different types of animals to live in different climates and habitats. In some cases such processes may be limiting factors in the distribution. For example, Kearney and Porter (2004) found that activity time was likely to be a limiting factor for a nocturnal lizard in southern Australia. More often, these constraints act to limit the overall energy and water budget in a more subtle manner. 
+The capacity to compute body temperature, metabolic rates, activity times and some aspects of the water budget under realistic microclimates allows many inferences to be made about the ability of different types of animals to live in different climates and habitats. In some cases such processes may be limiting factors of the distribution. For example, Kearney and Porter (2004) found that activity time was likely to be a limiting factor for a nocturnal lizard in southern Australia. More often, these constraints act to limit the overall energy and water budget in a more subtle manner. 
 
-The preliminary computations made in this tutorial can provide the starting point for an energy and mass budget analysis that could ultimately allow you to predict reproductive success and survival rates, key vital rates from which to infer distribution and abundance. One of the most powerful ways of achieving a full mass balance and life cycle trajectory is by using the Dynamic Energy Budget (DEB) theory and its associated models (Kooijman, 2010). DEB theory integrated into the NicheMapR package as described further in the vignette [Introduction to Dynamic Energy Budget models in NicheMapR](deb-model-tutorial.html). Below is an example of the sort of calculation that can be made with the integration of DEB theory and the ectotherm model - a simulation of the Australian Water Skink, *Eulamprus quoyii* growing at Townsville Australia (see Schwarzkopf et al. 2016). This example is explained further in the DEB vignette just mentioned.
+The preliminary computations made in this tutorial can provide the starting point for an energy and mass budget analysis that could ultimately allow you to predict reproductive success and survival rates, the 'vital rates' that link individuals to populations. 
+
+One of the most powerful ways of achieving a full mass balance and life cycle trajectory is by using the Dynamic Energy Budget (DEB) theory and its associated models (Kooijman, 2010). DEB theory integrated into the NicheMapR package as described further in the vignette [Introduction to Dynamic Energy Budget models in NicheMapR](deb-model-tutorial.html). 
+
+Below is an example of the sort of calculation that can be made with the integration of DEB theory and the ectotherm model - a simulation of the Australian Water Skink, *Eulamprus quoyii* growing at Townsville Australia (see Schwarzkopf et al. 2016). This example is explained further in the DEB vignette just mentioned.
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=8, fig.height=5}
 rm(list=ls())

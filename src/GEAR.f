@@ -599,7 +599,7 @@ C----------------------- END OF SUBROUTINE LSODE -----------------------
      2   C, R, S, TP                                                    
 C     DIMENSION YH(NYH,1), DKY(1)     
 C     KEARNEY CHANGED DIMENSIONS BELOW TO FIX ARRAY BOUND ERROR
-      DIMENSION YH(NYH,2), DKY(1)      
+      DIMENSION YH(NYH,MAXORD+1), DKY(1)      
       COMMON /LS0001/ ROWND, ROWNS(210),                                
      1   EL0, H, HMIN, HMXI, HU, TN, UROUND, IOWND(14), IOWNS(6),       
      4   IER, JSTART, KFLAG, L, METH, MITER, MAXORD, N, NQ, NST, NFE,   
@@ -693,8 +693,8 @@ C----------------------- END OF SUBROUTINE INTDY -----------------------
 C      DIMENSION NEQ(1), Y(1), YH(NYH,1), YH1(1), EWT(1), SAVF(1),       
 C     1   ACOR(1), WM(1), IWM(1)
 C     KEARNEY CHANGED DIMENSIONS BELOW TO SOLVE ARRAY BOUND ERROR
-      DIMENSION NEQ(1), Y(1), YH(NYH,2), YH1(1), EWT(1), SAVF(1),       
-     1   ACOR(1), WM(3), IWM(21)     
+      DIMENSION NEQ(1), Y(1), YH(NYH,MAXORD+1), YH1(MAXORD+1), EWT(1),       
+     1   SAVF(1), ACOR(1), WM(3), IWM(21)     
       COMMON /LS0001/ ROWND, CONIT, CRATE, EL(13), ELCO(13,12),         
      1   HOLD, RC, RMAX, TESCO(3,12),                                   
      2   EL0, H, HMIN, HMXI, HU, TN, UROUND, IOWND(14),                 
@@ -1256,7 +1256,7 @@ C----------------------- END OF SUBROUTINE CFODE -----------------------
 C     DIMENSION NEQ(1), Y(1), YH(NYH,1), EWT(1), FTEM(1), SAVF(1),      
 C    1   WM(1), IWM(1) 
 C     KEARNEY CHANGED DIMENSIONS BELOW TO SOLVE ARRAY BOUND ERROR
-      DIMENSION NEQ(1), Y(1), YH(NYH,2), EWT(1), FTEM(1), SAVF(1),      
+      DIMENSION NEQ(1), Y(1), YH(NYH,MAXORD+1), EWT(1),FTEM(1), SAVF(1),      
      1   WM(3), IWM(21)      
       COMMON /LS0001/ ROWND, ROWNS(210),                                
      1   EL0, H, HMIN, HMXI, HU, TN, UROUND, IOWND(14), IOWNS(6),       

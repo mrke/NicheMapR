@@ -236,7 +236,7 @@
 #' \item{\code{container}{ = 0, Run the water body/container model? (aquatic start of life cycle, e.g. frog or mosquito)}\cr}
 #' \item{\code{wetmod}{ = 0, Use precomputed wetland temperature \code{wetlandTemps} and depths \code{wetlandDepthds}?}\cr}
 #' \item{\code{conth}{ = 10, Cylindrical container/pond height (cm)}\cr}
-#' \item{\code{contw}{ = 100., Cylindrical container/pond diameter (cm)}\cr}
+#' \item{\code{contw}{ = 100, Cylindrical container/pond diameter (cm)}\cr}
 #' \item{\code{contype}{ = 1, Is 'containter' sitting on the surface, like a bucket (0) or sunk into the ground like a pond (1)}\cr}
 #' \item{\code{rainmult}{ = 1, Rainfall multiplier to reflect catchment (don't make this zero unless you want a drought!)}\cr}
 #' \item{\code{continit}{ = 0, Initial container water level (cm)}\cr}
@@ -733,7 +733,7 @@ ectotherm <- function(
   CO2gas <- 0.03 # % CO2 in air
   N2gas <- 79.02 # % nitrogen in air
   gas <- c(O2gas, CO2gas, N2gas) # gas vector
-  transt <- 0 # running transient heat budge?
+  transt <- 0 # running transient heat budget?
   tranin <- 1 # use air temperature at animal height as initial temperature for transient heat budget?
   tcinit <- metout[1, "TALOC"] # initial temperature for transient heat budget
   nodnum <- 10 # depth at which foraging occurs in fossorial species, probably not working properly, may not need it
