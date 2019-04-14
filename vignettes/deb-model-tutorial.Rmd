@@ -27,7 +27,7 @@ The document first provides a short overview of DEB theory in the context of mec
 
 ## Overview
 
-DEB theory is a thermodynamically formalised framework for capturing the 'macro-metabolic' processes of feeding, assimilation, storage, mobilisation, maintenance, development, growth, reproduction and senescence of an organism across the whole life cycle. It was developed by Kooijman over ~30 years (Kooijman 1986a, Kooijman 1986b, Kooijman 1993, Kooijman 2000, Kooijman 2010). There is a family of models under DEB theory which capture qualitatively different metabolic schemes, including 'von Bertalanffy growth' and more complex patterns such as those of holometabolus insects.
+DEB theory is a thermodynamically formalised framework for capturing the 'macro-metabolic' processes of feeding, assimilation, storage, mobilisation, maintenance, development, growth, reproduction and senescence of an organism across the whole life cycle. It was developed by Kooijman over ~30 years (Kooijman 1986a, 1986b, 1993, 2000, 2010). There is a family of models under DEB theory which capture qualitatively different metabolic schemes, including 'von Bertalanffy growth' and more complex patterns such as those of holometabolus insects.
 
 Earlier versions of the 'Niche Mapper' biophysical modeling framework (e.g. Porter et al. 1973; Kearney and Porter 2004) incorporated 'static energy budgets', i.e. considering only one particular life stage a snapshot in time, using descriptive empirical functions of metabolic processes such as allometric functions for metabolic rate. DEB theory provides a more mechanistic basis for doing this dynamically through the ontogeny, thereby capturing the temporal dimension of the niche.
 

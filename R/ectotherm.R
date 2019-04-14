@@ -45,6 +45,7 @@
 #' \item{\code{nyears}{ = micro$nyears, Number of years the simulation runs for - must be consistent with dimensions of environmental input data}\cr}
 #' \item{\code{enberr}{ = 0.0002, Factor by which the mass is multiplied to obtain a tolerance level for the heat budget solution}\cr}
 #' \item{\code{live}{ = 1, Live (metabolism/behaviour) or dead animal?}\cr}
+#' \item{\code{delta_shade}{ = 3, Percent shade increment step, 0-100\%, allowing different thermoregulatory precision (smaller values increase run time)}\cr}
 #' \item{\code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1 = yes, 0 = no}\cr}
 #' \item{\code{write_csv}{ = 0, Write csv files of final output? 0 = no, 1 = just yearout and yearsout, 2 = all output}\cr}
 #' \item{\code{startday}{ = 1, Day of year at which simulation starts}\cr}
@@ -512,6 +513,7 @@ ectotherm <- function(
   enberr=0.0002,
   live=1,
   write_input=0,
+  delta_shade=3,
   startday=1,
   minshade=0,
   minshades=rep(minshade, length(micro$MAXSHADES)),
@@ -741,7 +743,6 @@ ectotherm <- function(
   SPARE4 <- 1 # spare input
   SPARE2 <- 1 # spare input
   SPARE3 <- 0 # spare input
-  SPARE5 <- 0 # spare input
   o2max <- F_O2 # O2 extraction efficiency
   minshd <- minshades[1] # minimum shade available
   maxshd <- maxshades[1] # maximum shade available
@@ -805,7 +806,7 @@ ectotherm <- function(
   tannul <- as.numeric(mean(soil[, 12])) # annual mean temperature, deg C
   tester <- 0 # unused
   microyear <- 1 # extraneous
-  ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PCTDIF, EMISSK, EMISSB, ABSSB, shade, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, SPARE1, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, SPARE2, F_O2, T_pref, F_cond, skint, gas, transt, soilnode, o2max, SPARE4, tannul, nodnum, postur, maxshd, minshd, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, tranin, tcinit, nyears, lat, rainmult, DOYstart, SPARE5, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, F_m, k_sub, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod))
+  ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PCTDIF, EMISSK, EMISSB, ABSSB, shade, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, SPARE1, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, SPARE2, F_O2, T_pref, F_cond, skint, gas, transt, soilnode, o2max, SPARE4, tannul, nodnum, postur, maxshd, minshd, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, tranin, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, F_m, k_sub, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod))
   debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, FoodWater1, f, s_G, K, X[1], metab_mode, stages, y_EV_l, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He)
   deblast <- c(iyear, countday, V_init, E_init, ES_init, cumrepro_init, q_init, hs_init, cumbatch_init, V_baby_init, E_baby_init, E_H_init, stage)
 

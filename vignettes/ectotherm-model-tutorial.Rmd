@@ -76,7 +76,7 @@ When the sun rises (**ZEN** < 90&deg;, at the 6 am in in this case) the model tr
 
 If the body temperature is above the minimum foraging temperature `T_F_min`, then activity state is set to 2. If the animal's predicted temperature is above the preferred temperature `T_pref` (30 &deg;C by default), then the animal changes posture to be parallel to the sun's rays and thereby minimise solar heat gain. If this prevents the `T_pref` from being exceeded then the animal is recorded to be in this posture, does not happen in this part of the simulation. 
 
-If the postural adjustment fails, then shade seeking is invoked if allowed (`shade_seek = 1`), which is what has happened in this example at 7 am. The shade jumps in 3% intervals, and 33% was sufficient in this case. As the day moves on, the animal in this example can remain active near its preferred body temperature but only by moving into deeper shade, to the maximum level of 90% in this case (vector `maxshades` which, by default, comes from the microclimate model settings). 
+If the postural adjustment fails, then shade seeking is invoked if allowed (`shade_seek = 1`), which is what has happened in this example at 7 am. The shade jumps in 3% intervals (`delta_shade = 3`), and 33% was sufficient in this case. As the day moves on, the animal in this example can remain active near its preferred body temperature but only by moving into deeper shade, to the maximum level of 90% in this case (vector `maxshades` which, by default, comes from the microclimate model settings). 
 
 Once the maximum shade is reached, the animal's preferred temperature is allowed to rise in 0.5 degree increments until the maximum foraging temperature is reached `T_F_max`, upon which the animal is forced to become inactive. This happens by 11 am in the example.
 
@@ -230,7 +230,7 @@ with(forage,points(TIME~DOY,pch=15,cex=2,col='orange')) # foraging Tbs
 with(bask,points(TIME~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
 ```
 
-In Fig. 2 you can see the annual activity window, with dark blue representing the nighttime hours, light blue the foraging hours and orange the activity hours. Activity is possible for this lizard at this tropical location throughout all daylight hours except 6am in July, when it is only warm enough to bask.
+In Fig. 2 you can see the annual activity window, with dark blue representing the nighttime hours, light blue the foraging hours and orange the activity hours. Activity is possible for this lizard at this tropical location throughout they year.
 
 Explore what changing the thermal thresholds `CT_min`, `T_RB_min`, `T_B_min`, `T_F_min`, `T_F_max` and `CT_max` does to these plots, as well as variation in available shade `maxshades` and burrow depths `mindepth` and `maxdepth`. Here is an example of the effect of reducing maximum shade in all months from 90% to 10%:
 
