@@ -25,11 +25,12 @@ C	  DEFINES DYNAMICALLY VARYING ARRAYS AND VECTORS
       
       DOUBLE PRECISION, ALLOCATABLE, PUBLIC :: ARRHENIUS(:,:),DAY(:),
      &FOODLEVELS(:),FOODWATERS(:),L_INSTAR(:),MAXSHADES(:),MINSHADES(:),
-     & NUTRI_STAGES(:,:),POND_ENV(:,:,:,:),RAINFALL2(:),S_INSTAR(:),
-     & TBS(:),THERMAL_STAGES(:,:),TRANSIENT(:),WATER_STAGES(:,:),
-     & WETLANDDEPTHS(:),WETLANDTEMPS(:),XP(:),YP(:),ZD1(:),ZD2(:),
-     & ZD3(:),ZD4(:),ZD5(:),ZD6(:),ZD7(:),ZP1(:),ZP2(:),ZP3(:),ZP4(:),
-     & ZP5(:),ZP6(:),ZP7(:),FEC(:),SURV(:),ACT(:),FOR(:),LX(:),MX(:)
+     & NUTRI_STAGES(:,:),POND_ENV(:,:,:,:),RAINFALL2(:),RAINHR(:),
+     & S_INSTAR(:),TBS(:),THERMAL_STAGES(:,:),TRANSIENT(:),
+     & WATER_STAGES(:,:),WETLANDDEPTHS(:),WETLANDTEMPS(:),XP(:),YP(:),
+     & ZD1(:),ZD2(:),ZD3(:),ZD4(:),ZD5(:),ZD6(:),ZD7(:),ZP1(:),ZP2(:),
+     & ZP3(:),ZP4(:),ZP5(:),ZP6(:),ZP7(:),FEC(:),SURV(:),ACT(:),FOR(:),
+     & LX(:),MX(:)
      
       END MODULE AACOMMONDAT
 

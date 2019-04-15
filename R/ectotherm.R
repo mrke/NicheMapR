@@ -71,6 +71,7 @@
 #' \item{\code{soilpot}{ = micro$soilpot, Microclimate model output for soil water potential, minimum shade conditions}\cr}
 #' \item{\code{shadpot}{ = micro$shadpot, Microclimate model output for soil water potential, maximum shade conditions}\cr}
 #' \item{\code{rainfall}{ = micro$RAINFALL, Vector of daily rainfall (mm)}\cr}
+#' \item{\code{rainhr}{ = rep(-1,nrow(metout)), Vector of hourly rainfall (mm), overwrites rainfall if not negative}\cr}
 #' \item{\code{elev}{ = as.numeric(micro$elev), Elevation of simulation (m), obtained from microclimate model output by default}\cr}
 #' \item{\code{longitude}{ = micro$longlat[1], Longitude (decimal degrees), obtained from microclimate model output by default}\cr}
 #' \item{\code{latitude}{ = micro$longlat[2], Latitude (decimal degrees), obtained from microclimate model output by default}\cr}
@@ -533,6 +534,7 @@ ectotherm <- function(
   soilpot=micro$soilpot,
   shadpot=micro$shadpot,
   rainfall=micro$RAINFALL,
+  rainhr=rep(-1,nrow(metout),
   elev=as.numeric(micro$elev),
   longitude=as.numeric(micro$longlat[1]),
   latitude=as.numeric(micro$longlat[2]),
@@ -847,6 +849,7 @@ ectotherm <- function(
     write.csv(debmod, file = "ecto csv input/debmod.csv")
     write.csv(deblast, file = "ecto csv input/deblast.csv")
     write.csv(rainfall, file = "ecto csv input/rainfall.csv")
+    write.csv(rainhr, file = "ecto csv input/rainhr.csv")
     write.csv(DEP, file = "ecto csv input/dep.csv")
     write.csv(foodwaters, file = "ecto csv input/foodwaters.csv")
     write.csv(foodlevels, file = "ecto csv input/foodlevels.csv")
@@ -877,7 +880,7 @@ ectotherm <- function(
     write.table(shadhumid[(seq(1, ndays * 24)), ], file = "ecto csv input/shadhumid.csv", sep = ",", row.names = FALSE)
   }
   # final input list
-  ecto <- list(ndays = ndays, nstages = stages, ectoinput = ectoinput, metout = metout[, 1:18], shadmet = shadmet[, 1:18], soil = soil, shadsoil = shadsoil, soilmoist = soilmoist, shadmoist = shadmoist, soilpot = soilpot, shadpot = shadpot, humid = humid, shadhumid = shadhumid, DEP = DEP, rainfall = rainfall, iyear = iyear, countday = countday, debmod = debmod, deblast = deblast, foodwaters = foodwaters, foodlevels = foodlevels, wetlandTemps = wetlandTemps, wetlandDepths = wetlandDepths, GLMtemps = GLMtemps, GLMO2s = GLMO2s, GLMsalts = GLMsalts, GLMpHs = GLMpHs, GLMfoods = GLMfoods, arrhenius = arrhenius, thermal_stages = thermal_stages, behav_stages = behav_stages, water_stages = water_stages, nutri_stages = nutri_stages, minshades = minshades, maxshades = maxshades, S_instar = S_instar)
+  ecto <- list(ndays = ndays, nstages = stages, ectoinput = ectoinput, metout = metout[, 1:18], shadmet = shadmet[, 1:18], soil = soil, shadsoil = shadsoil, soilmoist = soilmoist, shadmoist = shadmoist, soilpot = soilpot, shadpot = shadpot, humid = humid, shadhumid = shadhumid, DEP = DEP, rainfall = rainfall, rainhr = rainhr, iyear = iyear, countday = countday, debmod = debmod, deblast = deblast, foodwaters = foodwaters, foodlevels = foodlevels, wetlandTemps = wetlandTemps, wetlandDepths = wetlandDepths, GLMtemps = GLMtemps, GLMO2s = GLMO2s, GLMsalts = GLMsalts, GLMpHs = GLMpHs, GLMfoods = GLMfoods, arrhenius = arrhenius, thermal_stages = thermal_stages, behav_stages = behav_stages, water_stages = water_stages, nutri_stages = nutri_stages, minshades = minshades, maxshades = maxshades, S_instar = S_instar)
 
   message('running ectotherm model ... \n')
 
@@ -893,9 +896,9 @@ ectotherm <- function(
   yearsout <- ectout$yearsout[1:nyears, ]
 
   if(DEB==0){
-    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,rainfall=rainfall,enbal=enbal,environ=environ,masbal=masbal,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
+    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,rainfall=rainfall,rainhr=rainhr,enbal=enbal,environ=environ,masbal=masbal,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
   }else{
-    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,rainfall=rainfall,enbal=enbal,masbal=masbal,environ=environ,debout=debout,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
+    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,rainfall=rainfall,rainhr=rainhr,enbal=enbal,masbal=masbal,environ=environ,debout=debout,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
   }
 
 }

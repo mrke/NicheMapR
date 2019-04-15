@@ -13,7 +13,8 @@
 #' @param humid Hourly predictions of the soil humidity under the minimum specified shade
 #' @param shadhumid Hourly predictions of the soil humidity under the maximum specified shade
 #' @param DEP Depths used for the microclimate model
-#' @param RAINFALL Daily rainfall
+#' @param rainfall Daily rainfall
+#' @param rainhr Hourly rainfall (overwrites rainfall if non-negative
 #' @param debmod Dynamic Energy Budget (DEB) model paramters
 #' @param deblast Initial DEB state
 #' @param foodwaters Food water content (add units)
@@ -69,6 +70,7 @@ ectorun <- function(ecto) {
                 as.double(ecto$shadhumid),
                 as.double(ecto$DEP),
                 as.double(ecto$rainfall),
+                as.double(ecto$rainhr),
                 as.double(ecto$debmod),
                 as.double(ecto$deblast),
                 as.double(ecto$foodwaters),
