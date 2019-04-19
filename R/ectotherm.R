@@ -238,8 +238,8 @@
 #' \itemize{
 #' \item{\code{container}{ = 0, Run the water body/container model? (aquatic start of life cycle, e.g. frog or mosquito)}\cr}
 #' \item{\code{wetmod}{ = 0, Use precomputed wetland temperature \code{wetlandTemps} and depths \code{wetlandDepthds}?}\cr}
-#' \item{\code{conth}{ = 10, Cylindrical container/pond height (cm)}\cr}
-#' \item{\code{contw}{ = 100, Cylindrical container/pond diameter (cm)}\cr}
+#' \item{\code{conth}{ = 100, Cylindrical container/pond height (mm)}\cr}
+#' \item{\code{contw}{ = 1000, Cylindrical container/pond diameter (mm)}\cr}
 #' \item{\code{contype}{ = 1, Is 'containter' sitting on the surface, like a bucket (0) or sunk into the ground like a pond (1)}\cr}
 #' \item{\code{rainmult}{ = 1, Rainfall multiplier to reflect catchment (don't make this zero unless you want a drought!)}\cr}
 #' \item{\code{continit}{ = 0, Initial container water level (cm)}\cr}
@@ -297,7 +297,7 @@
 #' \item 13 VEL - Wind speed (m/s) at animal location
 #' \item 14 RELHUM - Relative humidity (\%) at animal location
 #' \item 15 ZEN - Zenith angle of sun (degrees - 90 = below the horizon)
-#' \item 16 CONDEP - Depth of water body (cm) (may not be simulated or supplied)
+#' \item 16 CONDEP - Depth of water body (mm) (may not be simulated or supplied)
 #' \item 17 WATERTEMP - Temperature of water body (°C) (may not be simulated or supplied)
 #' \item 18 DAYLENGTH - Day length (hours)
 #' \item 19 WINGANGLE - Wing angle (degrees) for butterfly model
@@ -647,8 +647,8 @@ ectotherm <- function(
   m_h=0.5,
   container=0,
   wetmod=0,
-  conth=10,
-  contw=100,
+  conth=100,
+  contw=1000,
   contype=1,
   rainmult=1,
   continit=0,
