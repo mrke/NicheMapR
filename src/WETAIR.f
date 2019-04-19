@@ -1,56 +1,98 @@
-      subroutine wetair(db,wb,rh,dp,bp,e,esat,vd,rw,tvir,tvinc,denair,
-     +                  cp,wtrpot)
-      implicit none
+      SUBROUTINE WETAIR(DB,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,
+     *                      CP,WTRPOT)
 
-C     NicheMapR: software for biophysical mechanistic niche modelling
+C     NICHEMAPR: SOFTWARE FOR BIOPHYSICAL MECHANISTIC NICHE MODELLING
 
-C     Copyright (C) 2018 Michael R. Kearney and Warren P. Porter
+C     COPYRIGHT (C) 2018 MICHAEL R. KEARNEY AND WARREN P. PORTER
 
-c     This program is free software: you can redistribute it and/or modify
-c     it under the terms of the GNU General Public License as published by
-c     the Free Software Foundation, either version 3 of the License, or (at
-c      your option) any later version.
+C     THIS PROGRAM IS FREE SOFTWARE: YOU CAN REDISTRIBUTE IT AND/OR MODIFY
+C     IT UNDER THE TERMS OF THE GNU GENERAL PUBLIC LICENSE AS PUBLISHED BY
+C     THE FREE SOFTWARE FOUNDATION, EITHER VERSION 3 OF THE LICENSE, OR (AT
+C      YOUR OPTION) ANY LATER VERSION.
 
-c     This program is distributed in the hope that it will be useful, but
-c     WITHOUT ANY WARRANTY; without even the implied warranty of
-c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-c     General Public License for more details.
+C     THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT
+C     WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+C     MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. SEE THE GNU
+C     GENERAL PUBLIC LICENSE FOR MORE DETAILS.
 
-c     You should have received a copy of the GNU General Public License
-c     along with this program. If not, see http://www.gnu.org/licenses/.
+C     YOU SHOULD HAVE RECEIVED A COPY OF THE GNU GENERAL PUBLIC LICENSE
+C     ALONG WITH THIS PROGRAM. IF NOT, SEE HTTP://WWW.GNU.ORG/LICENSES/.
 
-c     Subroutine wetair calculates several properties of humid air.
-c     This version was taken from
-c     Tracy, C. R., W. R. Welch, B. Pinshow, M. R. Kearney, and W. P.
-c     Porter. 2016. Properties of air: A manual for use in biophysical ecology.
-c     5th edition. The University of Wisconsin, Madison.
-c     which is available as a vignette in the NicheMapR package
+C     SUBROUTINE WETAIR CALCULATES SEVERAL PROPERTIES OF HUMID AIR.  THIS VERSION
+C     WAS TAKEN FROM "PROPERTIES OF AIR: A MANUAL FOR USE IN BIOPHYSICAL ECOLOGY"
 
-      double precision tk,db,wb,wbd,wbsat,esat,vapprs,dltae,wtrpot,cp
-      double precision tvir,rw,vd,e,bp,dp,rh,denair,tvinc
-      tk  = db + 273.15
-      esat = vapprs(db)
-      if (dp .lt. 999.0) go to 100
-      if (rh .gt. -1.0) go to 200
-      wbd = db - wb
-      wbsat = vapprs(wb)
-      dltae = 0.000660 * (1.0 + 0.00115 * wb) * bp * wbd
-      e = wbsat - dltae
-      go to 300
-100   e = vapprs(dp)
-      go to 300
-200   e = esat * rh / 100
-      go to 400
-300   rh = (e / esat) * 100
-400   rw = ((0.62197 * 1.0053 * e) / (bp - 1.0053 * e))
-      vd = e * 0.018016 / (0.998 * 8.31434 * tk)
-      tvir = tk * ((1.0 + rw / (18.016 / 28.966)) / (1.0 + rw))
-      tvinc = tvir - tk
-      denair = 0.0034838 * bp / (0.999 * tvir)
-      cp = (1004.84 + (rw * 1846.40)) / (1.0 + rw)
-      if (rh .le. 0.0) go to 500
-      wtrpot = 4.615e+5 * tk * dlog(rh / 100.0)
-      go to 600
-500   wtrpot = -999
-600   return
-      end
+C*********************************************************************
+
+C     SUBROUTINE WETAIR CALCULATES SEVERAL PROPERTIES OF HUMID AIR SHOWN AS
+C     OUTPUT VARIABLES BELOW.  THE PROGRAM IS BASED ON EQUATIONS FROM LIST,
+C     R. J. 1971.  SMITHSONIAN METEOROLOGICAL TABLES. SMITHSONIAN
+C     INSTITUTION PRESS. WASHINGTON, DC.  WETAIR MUST BE USED IN CONJUNCTION
+C     WITH FUNCTION VAPPRS.
+
+C     INPUT VARIABLES ARE SHOWN BELOW.  THE USER MUST SUPPLY KNOWN VALUES
+C     FOR DB AND BP (BP AT ONE STANDARD ATMOSPHERE IS 101 325 PASCALS).
+C     VALUES FOR THE REMAINING VARIABLES ARE DETERMINED BY WHETHER THE USER
+C     HAS EITHER (1) PSYCHROMETRIC DATA (WB OR RH), OR (2) HYGROMETRIC DATA
+C     (DP).
+
+C     (1) PSYCHROMETRIC DATA:
+C     IF WB IS KNOWN BUT NOT RH THEN SET RH = -1. AND DP = 999.
+C     IF RH IS KNOWN BUT NOT WB THEN SET WB = 0. AND DP = 999.
+
+C     (2) HYGROMETRIC DATA:
+C     IF DP IS KNOWN THEN SET WB = 0. AND RH = 0.
+
+C************************* INPUT VARIABLES ***************************
+
+C     DB = DRY BULB TEMPERATURE (DEGREE CELSIUS)
+C     WB = WET BULB TEMPERATURE (DEGREE CELSIUS)
+C     RH = RELATIVE HUMIDITY (PER CENT)
+C     DP = DEW POINT TEMPERATURE (DEGREE CELSIUS)
+C     BP = BAROMETRIC PRESSURE (PASCAL)
+
+C************************* OUTPUT VARIABLES **************************
+
+C     E =      VAPOR PRESSURE (PASCAL)
+C     ESAT =   SATURATION VAPOR PRESSURE (PASCAL)
+C     VD =     VAPOR DENSITY (KILOGRAM PER CUBIC METRE)
+C     RW =     MIXING RATIO (KILOGRAM PER KILOGRAM)
+C     TVIR =   VIRTUAL TEMPERATURE (KELVIN)
+C     TVINC =  VIRTUAL TEMPERATURE INCREMENT (KELVIN)
+C     DENAIR = DENSITY OF HUMID AIR (KILOGRAM PER CUBIC METRE)
+C     CP =     SPECIFIC HEAT OF AIR AT CONSTANT PRESSURE (JOULE PER
+C            KILOGRAM KELVIN)
+C     WTRPOT = WATER POTENTIAL (PASCAL)
+
+C*********************************************************************
+      IMPLICIT NONE
+
+      DOUBLE PRECISION BP,CP,DB,DENAIR,DLTAE,DP,E,ESAT,RH,RW,TK,TVINC
+      DOUBLE PRECISION TVIR,VAPPRS,VD,WB,WBD,WBSAT,WTRPOT
+
+
+      TK  = DB + 273.15
+      ESAT = VAPPRS(DB)
+      IF (DP .LT. 999.0) GO TO 100
+      IF (RH .GT. -1.0) GO TO 200
+      WBD = DB - WB
+      WBSAT = VAPPRS(WB)
+      DLTAE = 0.000660 * (1.0 + 0.00115 * WB) * BP * WBD
+      E = WBSAT - DLTAE
+      GO TO 300
+100   E = VAPPRS(DB)
+      GO TO 300
+200   E = ESAT * RH / 100.
+      GO TO 400
+300   RH = (E / ESAT) * 100.
+400   RW = ((0.62197 * 1.0053 * E) / (BP - 1.0053 * E))
+      VD = E * 0.018016 / (0.998 * 8.31434 * TK)
+      TVIR = TK * ((1.0 + RW / (18.016 / 28.966)) / (1.0 + RW))
+      TVINC = TVIR - TK
+      DENAIR = 0.0034838 * BP / (0.999 * TVIR)
+      CP = (1004.84 + (RW * 1846.40)) / (1.0 + RW)
+      IF (RH .LE. 0.0) GO TO 500
+      WTRPOT = 4.615E+5 * TK * DLOG(RH / 100.0)
+      GO TO 600
+500   WTRPOT = -999
+600   RETURN
+      END

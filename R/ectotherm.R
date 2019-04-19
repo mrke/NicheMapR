@@ -242,7 +242,7 @@
 #' \item{\code{contype}{ = 1, Is 'containter' sitting on the surface, like a bucket (0) or sunk into the ground like a pond (1)}\cr}
 #' \item{\code{rainmult}{ = 1, Rainfall multiplier to reflect catchment (don't make this zero unless you want a drought!)}\cr}
 #' \item{\code{continit}{ = 0, Initial container water level (cm)}\cr}
-#' \item{\code{conthole}{ = 0, Daily loss of height (mm) due to 'hole' in container (e.g. infiltration to soil, drawdown from water tank)}\cr}
+#' \item{\code{conthole}{ = 0, Daily (or hourly if rainhr vector filled) loss of height (mm) due to 'hole' in container (e.g. infiltration to soil, drawdown from water tank)}\cr}
 #' \item{\code{contonly}{ = 1, Just run the container model and quit?}\cr}
 #' \item{\code{contwet}{ = 80, \% of container surface acting as a free water exchanger}\cr}
 #' \item{\code{wetlandTemps}{ = matrix(data = 0, nrow = 24 * ndays, ncol = 1), Matrix of hourly wetland temperaures (°C)}\cr}
@@ -534,7 +534,7 @@ ectotherm <- function(
   soilpot=micro$soilpot,
   shadpot=micro$shadpot,
   rainfall=micro$RAINFALL,
-  rainhr=rep(-1,nrow(metout),
+  rainhr=rep(-1,nrow(metout)),
   elev=as.numeric(micro$elev),
   longitude=as.numeric(micro$longlat[1]),
   latitude=as.numeric(micro$longlat[2]),

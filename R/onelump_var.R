@@ -39,7 +39,7 @@
 #' library(NicheMapR)
 #'
 #' # get microclimate data
-#' loc <- "Alice Springs, Australia"
+#' loc <- c(133.8779, -23.6987) # Alice Springs, Australia
 #' Usrhyt <- 0.05 # height of midpoint of animal, m
 #' micro <- micro_global(loc = loc, Usrhyt = Usrhyt) # run the model with default location and settings
 #' metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
@@ -116,13 +116,13 @@ onelump_var <- function(t, y, indata) {
   with(as.list(c(indata, y)), {
     sigma <- 5.67e-8 # Stefan-Boltzman, W/(m.K)
     Tair <- Tairf(t) # interpolate air temp to current time step
-    vel <- velf(t) # interpolate wind speed to current time step
-    Qsol <- Qsolf(t) # interpolate solar to current time step
+    vel <- max(0,velf(t)) # interpolate wind speed to current time step
+    Qsol <- max(0,Qsolf(t)) # interpolate solar to current time step
     Trad <- Tradf(t) # interpolate radiant temp to current time step
-    Zen <- Zenf(t) # interpolate zenith angle to current time step
+    Zen <- min(max(0,Zenf(t)),90) # interpolate zenith angle to current time step
     Zenith <- Zen * pi / 180 # zenith angle in radians
     Tc <- y
-    Tskin <- Tc + 0.1
+    Tskin <- Tc + 0.01
     vel[vel < 0.01] <- 0.01 # don't let wind speed go too low - always some free convection
     S2 <- 0.0001 # shape factor, arbitrary initialization, because not defined except for ellipsoid
     DENSTY <- press / (287.04 * (Tair + 273.15)) # air density, kg/m3
@@ -184,7 +184,7 @@ onelump_var <- function(t, y, indata) {
       ASILP <- min(pi * A1 * C1, pi * B1 * C1) # min silhouette area, m2
       S2 <-
         (A1 ^ 2 * B1 ^ 2 * C1 ^ 2) / (A1 ^ 2 * B1 ^ 2 + A1 ^ 2 * C1 ^ 2 + B1 ^
-            2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
+                                        2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
       kflesh <-
         0.5 + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
     }
@@ -238,13 +238,13 @@ onelump_var <- function(t, y, indata) {
     }
     # end geometry section ############################################################
 
-    if (max(Zen) >= 89) {
+    if (max(Zen) >= 90) {
       Qnorm <- 0
     } else{
       if(orient == 1){
-       Qnorm <- (Qsol / cos(Zenith))
+        Qnorm <- (Qsol / cos(Zenith))
       }else{
-       Qnorm <- Qsol
+        Qnorm <- Qsol
       }
     }
     if (Qnorm > 1367) {
@@ -314,7 +314,7 @@ onelump_var <- function(t, y, indata) {
 
     GR <-
       abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Tskin - Tair) /
-          VISDYN ^ 2) # Grashof number
+            VISDYN ^ 2) # Grashof number
     Raylei <- GR * PR # Rayleigh number
 
     # get Nusselt for Free Convect
@@ -354,22 +354,23 @@ onelump_var <- function(t, y, indata) {
       NUfre = 2 + 0.60 * Raylei
     }
     hc_free <- NUfre * THCOND / L # convection coefficent, forced
+
     hc <- hc_free + hc_forced # combined convection coefficient
     Nu <- hc * L / THCOND # Nu combined
-    Rconv <- 1 / (hc * ATOT) # convective resistance, eq. 3 of Kearney, Huey and Porter 2017 Appendix 1
+    Rconv <- 1 / (hc * ATOT) # convective resistance, eq. 3 of Kearney, Huey and Porter in prep. Appendix 1
 
-    hr <- 4 * emis * sigma * ((Tc + Trad) / 2 + 273.15) ^ 3 # radiation resistance, eq. 47 of Kearney, Huey and Porter 2017 Appendix 1
+    hr <- 4 * emis * sigma * ((Tc + Trad) / 2 + 273.15) ^ 3 # radiation resistance, eq. 47 of Kearney, Huey and Porter in prep. Appendix 1
 
     if(geom == 2){ # ellipsoid
-      j <- (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * kflesh) + Tair) + hr * ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
+      j <- (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * kflesh) + Tair) + hr * ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter in prep. Appendix 1
     }else{ # assume cylinder
-      j <- (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * kflesh) + Tair) + hr * ATOT * ((q * R ^ 2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
+      j <- (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * kflesh) + Tair) + hr * ATOT * ((q * R ^ 2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter in prep. Appendix 1
     }
-    kTc <- ATOT * (Tc * hc + Tc * hr) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
-    k <- ATOT * (hc + hr) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
+    kTc <- ATOT * (Tc * hc + Tc * hr) / C #based on eq. 52 of Kearney, Huey and Porter in prep. Appendix 1
+    k <- ATOT * (hc + hr) / C #based on eq. 52 of Kearney, Huey and Porter in prep. Appendix 1
     Tcf <- j / k # final Tc = j/k
     Tci <- Tc # initial temperature
-    Tc <- (Tci - Tcf) * exp(-1 * k * t) + Tcf # Tc at time t, Eq. 1 of Kearney, Huey and Porter 2017 Appendix 1
+    Tc <- (Tci - Tcf) * exp(-1 * k * t) + Tcf # Tc at time t, Eq. 1 of Kearney, Huey and Porter in prep. Appendix 1
     tau <- 1/k # time constant
     dTc <- j - kTc # rate of temperature change (deg C/sec)
 
