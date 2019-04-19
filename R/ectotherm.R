@@ -515,6 +515,7 @@ ectotherm <- function(
   enberr=0.0002,
   live=1,
   write_input=0,
+  transient=0,
   delta_shade=3,
   startday=1,
   minshade=0,
