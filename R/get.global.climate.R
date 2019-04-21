@@ -22,7 +22,7 @@ if(substr(ANSWER, 1, 1) == "y"){
   if(dir.exists(folder)==FALSE){
     dir.create(folder)
   }
-  climate.file<-"https://www.dropbox.com/s/9eg1aaooid4lbqv/global%20climate.zip?raw=1"
+  climate.file<-"https://github.com/mrke/NicheMapR/blob/master/global%20climate.zip"
   destin<-paste(folder,"/global climate.zip",sep="")
   cat("downloading 'Global Climate.zip' \n")
   download.file(climate.file, destin, mode="wb")
