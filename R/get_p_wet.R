@@ -72,45 +72,45 @@ get_p_wet <- function(cut.known = 0, resp.known = 0, eye.known = 0, vent.known =
   T_ref_vent = 30, T_A = 8817, T_AL = 50000, T_AH = 90000, T_L = 279, T_H = 306,
   alt = 0, bp = 101325) {
 
-# cut.known = 0#Is cutaneous water loss supplied? 0 = no (invokes estimation by partitioning respiratory), 1 = yes
-# resp.known = 0#Is respiratory water loss supplied? 0 = no (invokes estimation by partitioning respiratory), 1 = yes
-# eye.known = 0#Is ocular water loss supplied? 0 = no (invokes estimation by ocular surface area paritioning), 1 = yes
-# vent.known = 0#Is ventilation rate supplied? 0 = no (rely on estimate from V_O2), 1 = yes
-# press.known = 0#Is barometric pressure known (1, uses altitude) or has it been provided as the 'bp' variable (0)
-# A_tot.known = 0#Is total surface area known? 0 = no (uses allometric equation for Dipsosaurus dorsalis, the desert iguana), 1 = yes
-# A_head.known = 0#Is head surface area known? 0 = no (assumes x %), 1 = yes
-# E_tot = 0.344 / 60 / 1000#Observed total evaporative water loss rate, g/s
-# E_cut = 0.108 / 60 / 1000#Observed cutaneous evaporative water loss rate, g/s
-# E_resp = 0.0371 / 60 / 1000#Observed respiratory evaporative water loss rate, g/s
-# E_eye = 0.199 / 60 / 1000#Observed ocular evaporative water loss rate, g/s
-# mass.g = 26.72667#Mass of animal, g
-# A_tot = 0#Total surface area, m2
-# fcond = 0.25#Fraction of total area area touching surfaces, dec% (therefore no evaporation or convection)
-# feye = 0.002054259#Fraction of total area area comprising the eye
-# eye_frac = 0.58#Fraction of time eye is open, dec%
-# T_b = 25#Core body temperature, deg C
-# T_s = 24.99#Skin (surface) temperature, deg C
-# T_a = 24.98#Air temperature, deg C
-# vel = 0.0021#wind speed, m / s
-# RHex = 100#relative humidity of exhaled air, %
-# RHin = 30#relative humidity of atmosphere, %
-# E_O2 = 15#Oxygen extraction efficiency, %
-# RQ = 0.766 #Respiratory quotient, dec%
-# M_1 = 0.013#Metabolic rate equation parameter 1 V_O2 = M_1 * M ^ M_2 * 10 ^ (M_3 * T_b) based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231
-# M_2 = 0.800#Metabolic rate equation parameter 2
-# M_3 = 0.038#Metabolic rate equation parameter 3
-# V_O2_STP = 0.0209  / 60 / 1000#M_1 * mass.g ^ M_2 * 10 ^ (M_3 * T_b) / 3600 / 1000#Oxygen consumption rate corrected to STP, L O2 / s
-# T_ref_O2 = 25#Reference temperature for oxygen consumption rate correction (deg C)
-# V_air_STP = V_O2_STP / (0.2094 * E_O2 / 100)#Ventilation rate at STP, L/s
-# T_ref_vent = 25#Reference temperature for ventilation rate correction (deg C)
-# rho_flesh = 1000#Density of flesh (kg/m3)
-# T_A = 8817#Arhhenius temperature (K)
-# T_AL = 50000#Arrhenius temperature for decrease below lower boundary of tolerance range T_L (K)
-# T_AH = 90000#Arrhenius temperature for decrease above upper boundary of tolerance range T_H (K)
-# T_L = 279#Lower boundary (K) of temperature tolerance range for Arrhenius thermal response
-# T_H = 306#Upper boundary (K) of temperature tolerance range for Arrhenius thermal response
-# alt = 0.03#Altitude (km)
-# bp	= 101325#Barometric pressure (pascal)
+# cut.known = 0 # Is cutaneous water loss supplied? 0 = no (invokes estimation by partitioning respiratory), 1 = yes
+# resp.known = 0 # Is respiratory water loss supplied? 0 = no (invokes estimation by partitioning respiratory), 1 = yes
+# eye.known = 0 # Is ocular water loss supplied? 0 = no (invokes estimation by ocular surface area paritioning), 1 = yes
+# vent.known = 0 # Is ventilation rate supplied? 0 = no (rely on estimate from V_O2), 1 = yes
+# press.known = 0 # Is barometric pressure known (1, uses altitude) or has it been provided as the 'bp' variable (0)
+# A_tot.known = 0 # Is total surface area known? 0 = no (uses allometric equation for Dipsosaurus dorsalis, the desert iguana), 1 = yes
+# A_head.known = 0 # Is head surface area known? 0 = no (assumes x %), 1 = yes
+# E_tot = 0.344 / 60 / 1000 # Observed total evaporative water loss rate, g/s
+# E_cut = 0.108 / 60 / 1000 # Observed cutaneous evaporative water loss rate, g/s
+# E_resp = 0.0371 / 60 / 1000 # Observed respiratory evaporative water loss rate, g/s
+# E_eye = 0.199 / 60 / 1000 # Observed ocular evaporative water loss rate, g/s
+# mass.g = 26.72667 # Mass of animal, g
+# A_tot = 0 # Total surface area, m2
+# fcond = 0.25 # Fraction of total area area touching surfaces, dec% (therefore no evaporation or convection)
+# feye = 0.002054259 # Fraction of total area area comprising the eye
+# eye_frac = 0.58 # Fraction of time eye is open, dec%
+# T_b = 25 # Core body temperature, deg C
+# T_s = 24.99 # Skin (surface) temperature, deg C
+# T_a = 24.98 # Air temperature, deg C
+# vel = 0.0021 # wind speed, m / s
+# RHex = 100 # relative humidity of exhaled air, %
+# RHin = 30 # relative humidity of atmosphere, %
+# E_O2 = 15 # Oxygen extraction efficiency, %
+# RQ = 0.766 # Respiratory quotient, dec%
+# M_1 = 0.013 # Metabolic rate equation parameter 1 V_O2 = M_1 * M ^ M_2 * 10 ^ (M_3 * T_b) based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231
+# M_2 = 0.800 # Metabolic rate equation parameter 2
+# M_3 = 0.038 # Metabolic rate equation parameter 3
+# V_O2_STP = 0.0209  / 60 / 1000 # M_1 * mass.g ^ M_2 * 10 ^ (M_3 * T_b) / 3600 / 1000#Oxygen consumption rate corrected to STP, L O2 / s
+# T_ref_O2 = 25 # Reference temperature for oxygen consumption rate correction (deg C)
+# V_air_STP = V_O2_STP / (0.2094 * E_O2 / 100) # Ventilation rate at STP, L/s
+# T_ref_vent = 25 # Reference temperature for ventilation rate correction (deg C)
+# rho_flesh = 1000 # Density of flesh (kg/m3)
+# T_A = 8817 # Arhhenius temperature (K)
+# T_AL = 50000 # Arrhenius temperature for decrease below lower boundary of tolerance range T_L (K)
+# T_AH = 90000 # Arrhenius temperature for decrease above upper boundary of tolerance range T_H (K)
+# T_L = 279 # Lower boundary (K) of temperature tolerance range for Arrhenius thermal response
+# T_H = 306 # Upper boundary (K) of temperature tolerance range for Arrhenius thermal response
+# alt = 0.03 # Altitude (km)
+# bp	= 101325 # Barometric pressure (pascal)
 
   require(NicheMapR)
 
