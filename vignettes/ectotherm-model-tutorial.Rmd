@@ -5,8 +5,8 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Ectotherm Model Tutorial}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console
 ---
@@ -17,13 +17,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette provides tutorial for the NicheMapR ectotherm model. It only considers the base heat and (partial) water budget model. For details on the implementation of the Dynamic Energy Budget model (for simulating growth, development and reproduction as well as full water budgets), see the vignette [Introduction to Dynamic Energy Budget models in NicheMapR](deb-model-tutorial.html).
+# Overview
 
-## Overview
+This vignette is a tutorial for the NicheMapR ectotherm model. It only considers the steady state heat and (partial) water budget model. For details on the implementation of the Dynamic Energy Budget model (for simulating growth, development and reproduction as well as full water budgets), see the vignette [Introduction to Dynamic Energy Budget models in NicheMapR](deb-model-tutorial.html).
 
-The NicheMapR ectotherm model is run with the function `ectotherm`. This includes computations of steady state heat budgets for animals that do not produce signficant metabolic heat. It includes a range of morphological, physiological and behavioural options to capture how organisms exchange heat and water with their environments, and to compute the consequences of this for body temperature, activity constraints and different aspects of the mass budget. It is designed to take the output of the NicheMapR microclimate model as the driving environmental inputs, but you could construct custom versions of these if desired.
+The NicheMapR ectotherm model is run with the function `ectotherm`. It includes a range of morphological, physiological and behavioural options to capture how organisms exchange heat and water with their environments, and to compute the consequences of this for body temperature, activity constraints and different aspects of the mass budget. It is designed to take the output of the NicheMapR microclimate model as the driving environmental inputs, but you could construct custom versions of these if desired.
 
-### Basic operation: modelling heat and activity budgets for the average day of each month
+# Basic operation
 
 As with the [Introduction to the NicheMapR microclimate model](microclimate-model-tutorial.html), this first example involves the most basic case of running the model to produce 12 days of output, one for each month of the year (but the model can be run from any outputs from the various microclimate model functinos). Try running the model with the default inputs for a location of your choice, e.g.:
 
@@ -34,18 +34,19 @@ micro <- micro_global(loc = longlat)
 ecto <- ectotherm() # uses default settings (the Eastern Water Skink)
 ```
 
-The results are stored as a list in the variable *ecto*. The main ones to focus on for now are
+The results are returned as a list of tables, here called **ecto**. The main ones to focus on for now are
 
 * **environ** The body temperature, activity and envionments experienced by the animal
 * **enbal** The components of the computed heat budget
 * **masbal** The components of the computed mass budget
 
-#### Output table environ
+# Output table environ
 
 The output table **environ** looks like this (some columns of the first 13 hrs are shown):
 
 ```{r, echo=FALSE, results='asis', message=FALSE, warnings=FALSE}
-knitr::kable(head(ecto$environ[,c(4:15,25:27)], 13), digits = 2)
+knitr::kable(head(ecto$environ[,c(4:15,25)], 13), digits = 2)
+knitr::kable(head(ecto$environ[,c(26:27)], 13), digits = 2)
 ```
 
 and includes the following variables (among others):
@@ -72,17 +73,17 @@ The algorithm choosing the depth at which to put the animal starts at the shallo
 
 Note how the wind speed is set to an arbitrarily low value when then animal is sheltering under ground, and the air, substrate and 'sky' temperatures are set to be equal to the soil temperature at the chosen depth.
 
-When the sun rises (**ZEN** < 90&deg;, at the 6 am in in this case) the model tries placing the animal on the surface in the open, as long as the animal's body temeprature is above the emergence (retreat to basking transition) temperature `T_RB_min` (17.5 &deg;C by default). If the resulting computed body temperature is above the minimum basking threshold `T_B_min` (also 17.5 &deg;C by default), that becomes the selected environment and the activity state **ACT** is reported as 1. 
+When the sun rises (**ZEN** < 90&deg;, at the 6 am in in this case) the model tries placing the animal on the surface in the open, as long as the animal's body temeprature is above the emergence temperature `T_RB_min` (i.e. retreat to basking transition, which is 17.5 &deg;C by default). If the resulting computed body temperature is above the minimum basking threshold `T_B_min` (also 17.5 &deg;C by default), that becomes the selected environment and the activity state **ACT** is reported as 1. 
 
-If the body temperature is above the minimum foraging temperature `T_F_min`, then activity state is set to 2. If the animal's predicted temperature is above the preferred temperature `T_pref` (30 &deg;C by default), then the animal changes posture to be parallel to the sun's rays and thereby minimise solar heat gain. If this prevents the `T_pref` from being exceeded then the animal is recorded to be in this posture, does not happen in this part of the simulation. 
+If the body temperature is above the minimum foraging temperature `T_F_min`, then activity state is set to 2. If the animal's predicted temperature is above the preferred temperature `T_pref` (30 &deg;C by default), then the animal changes posture to be parallel to the sun's rays and thereby minimise solar heat gain. If this prevents the `T_pref` from being exceeded then the animal is recorded to be in this posture. 
 
-If the postural adjustment fails, then shade seeking is invoked if allowed (`shade_seek = 1`), which is what has happened in this example at 7 am. The shade jumps in 3% intervals (`delta_shade = 3`), and 33% was sufficient in this case. As the day moves on, the animal in this example can remain active near its preferred body temperature but only by moving into deeper shade, to the maximum level of 90% in this case (vector `maxshades` which, by default, comes from the microclimate model settings). 
+If the postural adjustment fails, then shade seeking is invoked if allowed (`shade_seek = 1`), which is what has happened in this example at 7 am. The shade is set to jump up in 3% intervals (`delta_shade = 3`), and 33% was sufficient in this case. As the day moves on, the animal in this example can remain active near its preferred body temperature but only by moving into deeper shade, to the maximum level of 90% in this case (vector `maxshades` which, by default, comes from the microclimate model settings). 
 
-Once the maximum shade is reached, the animal's preferred temperature is allowed to rise in 0.5 degree increments until the maximum foraging temperature is reached `T_F_max`, upon which the animal is forced to become inactive. This happens by 11 am in the example.
+Once the maximum shade is reached, the animal's preferred temperature is allowed to rise in 0.5 degree increments until the maximum foraging temperature is reached `T_F_max`, upon which the animal is forced to become inactive.
 
-The animal may also change its posture when cold to point normal to the sun (**postur** = 1) and potenitally increase the contact with the substrate (**pctcond** will increase by 10%) if the ground is warmer than the body. These postural adjustments aren't necessary in this particular simulation, but can be important under cooler climates.
+The animal may also change its posture when cold to point normal to the sun (**postur** = 1) and potenitally increase the contact with the substrate (**pcond** will increase by 20%) if the ground is warmer than the body. These postural adjustments aren't necessary in this particular simulation, but can be important under cooler climates.
 
-#### Output table enbal
+# Output table enbal
 
 The output table **enbal** looks like this:
 
@@ -111,9 +112,9 @@ where the complete heat budget is
 
 $$ENB = QSOL + QIRIN + QMET - QEVAP - QIROUT - QCONV - QCOND$$
 
-**QIRIN**, **QIROUT**, **QSOL** and **QMET** will always be positive, but **QEVAP**, **QCONV** and **QCOND** may be positive or negative. E.g. in this case, **QCONV** is zero in the burrow, positive (i.e. causing cooling) in the morning, and becomes negative (causing heating) by 7 am. Note that more iterations of the model, **NTRY**, are required when the animal is out of its burrow, due to the model repeatedly trying different options (e.g. increasing shade, increasing the target temperature, etc.) until it finds a solution.
+**QIRIN**, **QIROUT**, **QSOL** and **QMET** will always be positive, but **QEVAP**, **QCONV** and **QCOND** may be positive or negative. For example in this case, **QCOND** is near zero in the burrow, positive (i.e. causing cooling) in the morning, and becomes negative (causing heating) by 8 am. Note that more iterations of the model, **NTRY**, are required when the animal is out of its burrow, due to the model repeatedly trying different options (e.g. increasing shade, increasing the target temperature, etc.) until it finds a solution.
 
-#### Output table masbal
+# Output table masbal
 
 Finally, the table **masbal** includes the following outputs (among others):
 
@@ -142,7 +143,7 @@ Finally, the parameter `pct_eyes` is the \% of the total surface area taken up b
 
 If you are interested in the other quantities available in the **masbal** output, you will need to develop a DEB model for your species (see the [Dynamic Energy Budget lab](http://www.bio.vu.nl/thb/deb/deblab/), particularly the [Add-my-pet Portal](http://www.bio.vu.nl/thb/deb/deblab/add_my_pet/), for details, as well as the vignette [Introduction to Dynamic Energy Budget models in NicheMapR](deb-model-tutorial.html) which explains the **debout** ouptut table).
 
-## Plotting some output
+# Plotting some output
 
 Now let's take broader look at the simulation outcome, by plotting the results. We will this time be explicit about the parameter values as follows:
 
@@ -174,7 +175,12 @@ maxshades <- micro$MAXSHADES # max available shade?
 Run the ectotherm model, retrieve the output and create some mock dates.
 
 ```{r, warning=FALSE, message=FALSE}
-ecto <- ectotherm(Ww_g = Ww_g, alpha_max = alpha_max, alpha_min = alpha_min, pct_wet = pct_wet, T_F_max = T_F_max, T_F_min = T_F_min, T_B_min = T_B_min, T_RB_min = T_RB_min, CT_max = CT_max, CT_min = CT_min, T_pref = T_pref, mindepth = mindepth, maxdepth = maxdepth, shade_seek = shade_seek, burrow = burrow, climb = climb, minshades = minshades, nocturn = nocturn, diurn = diurn, crepus = crepus, maxshades = maxshades)
+ecto <- ectotherm(Ww_g = Ww_g, alpha_max = alpha_max, alpha_min = alpha_min, pct_wet = pct_wet,
+                  T_F_max = T_F_max, T_F_min = T_F_min, T_B_min = T_B_min, T_RB_min = T_RB_min,
+                  CT_max = CT_max, CT_min = CT_min, T_pref = T_pref, mindepth = mindepth, 
+                  maxdepth = maxdepth, shade_seek = shade_seek, burrow = burrow, climb = climb,
+                  minshades = minshades, nocturn = nocturn, diurn = diurn, crepus = crepus,
+                  maxshades = maxshades)
 
 # retrieve output
 environ <- as.data.frame(ecto$environ) # behaviour, Tb and environment
@@ -197,44 +203,45 @@ enbal <- cbind(dates,enbal)
 
 Plot the body temperature, shade, activity and depth selected through time.
 
-```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE}
+```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 90%**"}
 with(environ, plot(TC ~ dates, ylab = "T_b, depth, activity and shade", 
-                   xlab = "month of year", ylim = c(0, 50), type = "l", 
-                   main = "Fig. 1 Body temperature, depth, shade and activity, 
-                   90% max shade"))
+                   xlab = "month of year", ylim = c(0, 50), type = "l"))
 with(environ, points(ACT * 5 ~ dates, type = "l", col = "orange"))
 with(environ, points(SHADE / 10 ~ dates, type = "h", col = "dark green"))
 with(environ, points(DEP / 10 ~ dates, type = "l",col = "brown"))
 abline(T_F_max, 0, lty = 2,col = 'red')
 abline(T_F_min, 0, lty = 2,col = 'blue')
 abline(T_pref, 0, lty = 2,col = 'orange')
-text(0.1, T_F_max + 2, "T_F_max", col = 'red')
-text(0.1, T_F_min - 2, "T_F_min", col = 'blue')
-text(0.1, T_pref + 2, "T_pref", col = 'orange')
-legend(x = 5, y = T_F_max + 17, legend = c("T_b (°C)", "depth (cm/10)", "activity, 0 5 or 10)", "shade (%/10)"), 
+text(0.5, T_F_max + 2, "T_F_max", col = 'red')
+text(0.5, T_F_min - 2, "T_F_min", col = 'blue')
+text(0.5, T_pref + 2, "T_pref", col = 'orange')
+legend(x = 5, y = T_F_max + 17, 
+       legend = c("T_b (°C)", "depth (cm/10)", "activity, 0 5 or 10)", "shade (%/10)"), 
        col = c("black", "brown", "orange", "dark green"), lty = rep(1, 4), bty = "n")
 ```
 
-In Fig. 1 you can see the daily cycles, for each month, of the body temperature (black), % shade selected (green, divided by 10 for plotting), activity level in orange (multiplied by 5 for plotting, so 5 = basking, 10 = active) and depth in brown (m). Also superimposed are the foraging thresholds `T_F_min` (blue dashed line) and `T_F_max` (red dashed line), and the preferred or target temperature `T_pref` (orange dashed line). Note how this lizard is active every day, but requires shade for this, and how body temperature jumps up on some evenings when it goes into its burrow (remember when inactive the body temperature may rise to a maximum of half way between `T_F_max` and `CT_max` before the animal moves deeper into the burrow).
+In Figure 1 you can see the daily cycles, for each month, of the body temperature (black), % shade selected (green, divided by 10 for plotting), activity level in orange (multiplied by 5 for plotting, so 5 = basking, 10 = active) and depth in brown (m). Also superimposed are the foraging thresholds `T_F_min` (blue dashed line) and `T_F_max` (red dashed line), and the preferred or target temperature `T_pref` (orange dashed line). 
 
-```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE}
+Note how this lizard is active every day, but requires shade for this, and how body temperature jumps up on some evenings when it goes into its burrow (remember when inactive the body temperature may rise to a maximum of half way between `T_F_max` and `CT_max` before the animal moves deeper into the burrow).
+
+```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Annual activity window for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 90%**"}
 # seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)
 forage<-subset(environ,ACT==2)
 bask<-subset(environ,ACT==1)
 night<-subset(environ,Solar==0)
 day<-subset(environ,Solar==0)
 with(night,plot(TIME ~ DOY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col=
-    'dark blue', main = "Fig. 2 Annual activity window, 90% max shade"))
+    'dark blue'))
 # nighttime hours
 with(forage,points(TIME~DOY,pch=15,cex=2,col='orange')) # foraging Tbs
 with(bask,points(TIME~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
 ```
 
-In Fig. 2 you can see the annual activity window, with dark blue representing the nighttime hours, light blue the foraging hours and orange the activity hours. Activity is possible for this lizard at this tropical location throughout they year.
+In Figure 2 you can see the annual activity window, with dark blue representing the nighttime hours, light blue the basking hours and orange the foraging hours. Activity is possible for this lizard at this tropical location throughout they year.
 
 Explore what changing the thermal thresholds `CT_min`, `T_RB_min`, `T_B_min`, `T_F_min`, `T_F_max` and `CT_max` does to these plots, as well as variation in available shade `maxshades` and burrow depths `mindepth` and `maxdepth`. Here is an example of the effect of reducing maximum shade in all months from 90% to 10%:
 
-```{r, echo=FALSE, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE}
+```{r, echo=FALSE, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"}
 micro <- micro_global(loc = longlat, maxshade = 10)
 maxshades <- micro$MAXSHADES
 
@@ -258,31 +265,34 @@ environ <- cbind(dates,environ)
 masbal <- cbind(dates,masbal)
 enbal <- cbind(dates,enbal)
 
-with(environ, plot(TC ~ dates, ylab = "T_b, depth, activity and shade", xlab = "month of year", ylim = c(0, 50), type = "l", main = "Fig. 3 Body temperature, depth, shade and activity, 10% max shade"))
+with(environ, plot(TC ~ dates, ylab = "T_b, depth, activity and shade", xlab = "month of year", ylim = c(0, 50), type = "l"))
 with(environ, points(ACT * 5 ~ dates, type = "l", col = "orange"))
 with(environ, points(SHADE / 10 ~ dates, type = "h", col = "dark green"))
 with(environ, points(DEP / 10 ~ dates, type = "l",col = "brown"))
 abline(T_F_max, 0, lty = 2,col = 'red')
 abline(T_F_min, 0, lty = 2,col = 'blue')
 abline(T_pref, 0, lty = 2,col = 'orange')
-text(0.1, T_F_max + 2, "T_F_max", col = 'red')
-text(0.1, T_F_min - 2, "T_F_min", col = 'blue')
-text(0.1, T_pref + 2, "T_pref", col = 'orange')
-legend(x = 5, y = T_F_max + 17, legend = c("T_b (°C)", "depth (cm/10)", "activity, 0 5 or 10)", "shade (%/10)"), col = c("black", "brown", "orange", "dark green"), lty = rep(1, 4), bty = "n")
+text(0.5, T_F_max + 2, "T_F_max", col = 'red')
+text(0.5, T_F_min - 2, "T_F_min", col = 'blue')
+text(0.5, T_pref + 2, "T_pref", col = 'orange')
+legend(x = 5, y = T_F_max + 17, 
+       legend = c("T_b (°C)", "depth (cm/10)", "activity, 0 5 or 10)", "shade (%/10)"), 
+       col = c("black", "brown", "orange", "dark green"), lty = rep(1, 4), bty = "n")
+```
 
-# seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)
+```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Annual activity window for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"}
 forage<-subset(environ,ACT==2)
 bask<-subset(environ,ACT==1)
 night<-subset(environ,Solar==0)
 day<-subset(environ,Solar==0)
 with(night,plot(TIME ~ DOY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col=
-    'dark blue', main = "Fig. 4 Annual activity window, 10% max shade"))
+    'dark blue'))
 # nighttime hours
 with(forage,points(TIME~DOY,pch=15,cex=2,col='orange')) # foraging Tbs
 with(bask,points(TIME~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
 ```
 
-## Discussion
+# Discussion
 
 The capacity to compute body temperature, metabolic rates, activity times and some aspects of the water budget under realistic microclimates allows many inferences to be made about the ability of different types of animals to live in different climates and habitats. In some cases such processes may be limiting factors of the distribution. For example, Kearney and Porter (2004) found that activity time was likely to be a limiting factor for a nocturnal lizard in southern Australia. More often, these constraints act to limit the overall energy and water budget in a more subtle manner. 
 
@@ -487,7 +497,7 @@ text((which(debout$E_H > E.Hp)[1] - which(debout$E_H > E.Hp)[1] * .5) / 24 , max
 text(which(debout$E_H > E.Hp)[1] * 1.2 / 24, max(debout$WETMASS) * 1, labels = "adult", cex = 0.85)
 ```
 
-## References
+# References
 
 Andrews, R. M., and H. F. Pough. 1985. Metabolism of squamate reptiles: allometric and ecological relationships. Physiological Zoology 58:214-231.
 
