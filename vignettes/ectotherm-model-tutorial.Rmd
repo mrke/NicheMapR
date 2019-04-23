@@ -25,7 +25,7 @@ The NicheMapR ectotherm model is run with the function `ectotherm`. It includes 
 
 # Basic operation
 
-As with the [Introduction to the NicheMapR microclimate model](microclimate-model-tutorial.html), this first example involves the most basic case of running the model to produce 12 days of output, one for each month of the year (but the model can be run from any outputs from the various microclimate model functinos). Try running the model with the default inputs for a location of your choice, e.g.:
+As with the [Introduction to the NicheMapR microclimate model](microclimate-model-tutorial.html), this first example involves the most basic case of running the model to produce 12 days of output, one for each month of the year (but the model can be run from any outputs from the various microclimate model functions). Try running the model with the default inputs for a location of your choice, e.g.:
 
 ```{r, message=FALSE, warnings=FALSE}
 library(NicheMapR)
@@ -36,7 +36,7 @@ ecto <- ectotherm() # uses default settings (the Eastern Water Skink)
 
 The results are returned as a list of tables, here called **ecto**. The main ones to focus on for now are
 
-* **environ** The body temperature, activity and envionments experienced by the animal
+* **environ** The body temperature, activity and environments experienced by the animal
 * **enbal** The components of the computed heat budget
 * **masbal** The components of the computed mass budget
 
@@ -73,7 +73,7 @@ The algorithm choosing the depth at which to put the animal starts at the shallo
 
 Note how the wind speed is set to an arbitrarily low value when then animal is sheltering under ground, and the air, substrate and 'sky' temperatures are set to be equal to the soil temperature at the chosen depth.
 
-When the sun rises (**ZEN** < 90&deg;, at the 6 am in in this case) the model tries placing the animal on the surface in the open, as long as the animal's body temeprature is above the emergence temperature `T_RB_min` (i.e. retreat to basking transition, which is 17.5 &deg;C by default). If the resulting computed body temperature is above the minimum basking threshold `T_B_min` (also 17.5 &deg;C by default), that becomes the selected environment and the activity state **ACT** is reported as 1. 
+When the sun rises (**ZEN** < 90&deg;, at the 6 am in in this case) the model tries placing the animal on the surface in the open, as long as the animal's body temperature is above the emergence temperature `T_RB_min` (i.e. retreat to basking transition, which is 17.5 &deg;C by default). If the resulting computed body temperature is above the minimum basking threshold `T_B_min` (also 17.5 &deg;C by default), that becomes the selected environment and the activity state **ACT** is reported as 1. 
 
 If the body temperature is above the minimum foraging temperature `T_F_min`, then activity state is set to 2. If the animal's predicted temperature is above the preferred temperature `T_pref` (30 &deg;C by default), then the animal changes posture to be parallel to the sun's rays and thereby minimise solar heat gain. If this prevents the `T_pref` from being exceeded then the animal is recorded to be in this posture. 
 
@@ -81,7 +81,7 @@ If the postural adjustment fails, then shade seeking is invoked if allowed (`sha
 
 Once the maximum shade is reached, the animal's preferred temperature is allowed to rise in 0.5 degree increments until the maximum foraging temperature is reached `T_F_max`, upon which the animal is forced to become inactive.
 
-The animal may also change its posture when cold to point normal to the sun (**postur** = 1) and potenitally increase the contact with the substrate (**pcond** will increase by 20%) if the ground is warmer than the body. These postural adjustments aren't necessary in this particular simulation, but can be important under cooler climates.
+The animal may also change its posture when cold to point normal to the sun (**postur** = 1) and potentially increase the contact with the substrate (**pcond** will increase by 20%) if the ground is warmer than the body. These postural adjustments aren't necessary in this particular simulation, but can be important under cooler climates.
 
 # Output table enbal
 
@@ -141,7 +141,7 @@ From the percentage of the skin that is 'wet' `pct_wet` one can estimate the cut
 
 Finally, the parameter `pct_eyes` is the \% of the total surface area taken up by the eyes when open, and is used to compute ocular water loss when the animal is active (this can be a substantial part of the water loss). 
 
-If you are interested in the other quantities available in the **masbal** output, you will need to develop a DEB model for your species (see the [Dynamic Energy Budget lab](http://www.bio.vu.nl/thb/deb/deblab/), particularly the [Add-my-pet Portal](http://www.bio.vu.nl/thb/deb/deblab/add_my_pet/), for details, as well as the vignette [Introduction to Dynamic Energy Budget models in NicheMapR](deb-model-tutorial.html) which explains the **debout** ouptut table).
+If you are interested in the other quantities available in the **masbal** output, you will need to develop a DEB model for your species (see the [Dynamic Energy Budget lab](http://www.bio.vu.nl/thb/deb/deblab/), particularly the [Add-my-pet Portal](http://www.bio.vu.nl/thb/deb/deblab/add_my_pet/), for details, as well as the vignette [Introduction to Dynamic Energy Budget models in NicheMapR](deb-model-tutorial.html) which explains the **debout** output table).
 
 # Plotting some output
 
@@ -214,7 +214,7 @@ abline(T_F_min, 0, lty = 2,col = 'blue')
 abline(T_pref, 0, lty = 2,col = 'orange')
 text(0.5, T_F_max + 2, "T_F_max", col = 'red')
 text(0.5, T_F_min - 2, "T_F_min", col = 'blue')
-text(0.5, T_pref + 2, "T_pref", col = 'orange')
+text(0.3, T_pref + 2, "T_pref", col = 'orange')
 legend(x = 5, y = T_F_max + 17, 
        legend = c("T_b (°C)", "depth (cm/10)", "activity, 0 5 or 10)", "shade (%/10)"), 
        col = c("black", "brown", "orange", "dark green"), lty = rep(1, 4), bty = "n")
@@ -226,15 +226,13 @@ Note how this lizard is active every day, but requires shade for this, and how b
 
 ```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Annual activity window for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 90%**"}
 # seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)
-forage<-subset(environ,ACT==2)
-bask<-subset(environ,ACT==1)
-night<-subset(environ,Solar==0)
-day<-subset(environ,Solar==0)
-with(night,plot(TIME ~ DOY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,col=
-    'dark blue'))
-# nighttime hours
-with(forage,points(TIME~DOY,pch=15,cex=2,col='orange')) # foraging Tbs
-with(bask,points(TIME~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
+forage <- subset(environ, ACT == 2) # get foraging hours
+bask <- subset(environ, ACT == 1) # get basking hours
+night <- subset(environ, Solar == 0) # get night hours
+with(night, plot(TIME ~ DOY, ylab = "Hour of Day", xlab = "Day of Year", pch = 15, cex = 2, 
+                 col = 'dark blue')) # nighttime hours
+with(forage, points(TIME ~ DOY, pch = 15, cex = 2, col = 'orange')) # foraging Tbs
+with(bask, points(TIME ~ DOY, pch = 15, cex = 2, col = 'light blue')) # basking Tbs
 ```
 
 In Figure 2 you can see the annual activity window, with dark blue representing the nighttime hours, light blue the basking hours and orange the foraging hours. Activity is possible for this lizard at this tropical location throughout they year.

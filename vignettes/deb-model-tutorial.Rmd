@@ -5,8 +5,8 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{DEB Model Tutorial}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 editor_options:
   chunk_output_type: console
 ---
@@ -21,27 +21,27 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette demonstrates the Dynamic Energy Budget (DEB) model functions of the NicheMapR package. The package includes stand-alone R functions for simulating DEB models as well as the integartion of DEB models with the NicheMapR ectotherm model (see [Introduction to the NicheMapR ectotherm model](ectotherm-model-tutorial.html)).
+# Overview
+
+This vignette demonstrates the Dynamic Energy Budget (DEB) model functions of the NicheMapR package. The package includes stand-alone R functions for simulating DEB models as well as the integration of DEB models with the NicheMapR ectotherm model (see [Introduction to the NicheMapR ectotherm model](ectotherm-model-tutorial.html)).
 
 The document first provides a short overview of DEB theory in the context of mechanistic niche modelling, and describes the modelling scheme overall and the parameters required. It then shows how to bring existing DEB parameter estimates into R (there are now estimates for ~1,800 species) and how to run simulations from them using the DEB R functions within the package. Finally it demonstrates how to use the DEB model within the NicheMapR ectotherm function to predict the full life-cycle heat, water, energy and nutritional budget as a function of microclimate. 
 
-## Overview
-
-DEB theory is a thermodynamically formalised framework for capturing the 'macro-metabolic' processes of feeding, assimilation, storage, mobilisation, maintenance, development, growth, reproduction and senescence of an organism across the whole life cycle. It was developed by Kooijman over ~30 years (Kooijman 1986a, 1986b, 1993, 2000, 2010). There is a family of models under DEB theory which capture qualitatively different metabolic schemes, including 'von Bertalanffy growth' and more complex patterns such as those of holometabolus insects.
+DEB theory is a thermodynamically formalised framework for capturing the 'macro-metabolic' processes of feeding, assimilation, storage, mobilisation, maintenance, development, growth, reproduction and senescence of an organism across the whole life cycle. It was developed by Kooijman over ~30 years (Kooijman 1986a, 1986b, 1993, 2000, 2010). There is a family of models under DEB theory which capture qualitatively different metabolic schemes, including 'von Bertalanffy growth' and more complex patterns such as those of holometabolus insects (Llandres et al. 2015).
 
 Earlier versions of the 'Niche Mapper' biophysical modeling framework (e.g. Porter et al. 1973; Kearney and Porter 2004) incorporated 'static energy budgets', i.e. considering only one particular life stage a snapshot in time, using descriptive empirical functions of metabolic processes such as allometric functions for metabolic rate. DEB theory provides a more mechanistic basis for doing this dynamically through the ontogeny, thereby capturing the temporal dimension of the niche.
 
 There are natural feedbacks between the biophysical and DEB models including the interaction between size, heat and water exchange, the interaction between feeding and activity, and the interaction between metabolism and the water budget. It thereby provides a holistic picture of the heat, water, energy and nutritional budget and its life history consequences in a given sequence of environments.
 
-## Example DEB simulation
+# Example DEB simulation
 
 First let's take a look at what comes out of a DEB model. Figure 1 shows the prediction of length through time under the 'standard' DEB model for the Australian lizard, the Eastern Water Skink, *Eulamprus quoyii*. 
 
-In this simulation the lizard is growing at constant temperature (25 &deg;C) and *ad libitum* constant food. Under these conditions, the DEB standard model equates to the von Bertalanffy growth equation from the point of birth. Note that the reasoning that leads to von Bertalanffy growth being a special case of DEB theory is not the same as that used by P&auml;tter (1920) to derive the original 'von Bertalanffy' growth equation.
+In this simulation the lizard is growing at constant temperature (25 &deg;C) and *ad libitum* constant food. Under these conditions, the DEB standard model equates to the von Bertalanffy growth equation from the point of birth. Note that the reasoning that leads to von Bertalanffy growth being a special case of DEB theory is not the same as that used by P&uutter (1920) to derive the original 'von Bertalanffy' growth equation.
 
 Before birth, growth is faster than what the von Bertalanffy equation would predict because of the the DEB assumptions of embryonic growth. These assumptions, simply put, are that an embryo is the same as a hatchling metabolically speaking except that it does not feed, and that the concentration of the nutritive substance ('reserve') has started off extremely high, and has not reached its steady state concentration (technically a steady state density). The initial concentration is extremely high because the lizard starts off as a tiny structure (fertilised cell) with a large amount of yolk, i.e. reserve. Once the animal is born, i.e. starts feeding, reserve reaches a steady state, and the von Bertalanffy-like growth dynamics ensue.
 
-```{r fig1, warning=FALSE, message=FALSE, echo=FALSE, fig.width=8, fig.height=5, eval=TRUE, fig.cap="**Figure 1. DEB model prediction of length through time of the lizard *Eulamprus quoyii* growing under constant, *ad libitum* food at 25 &deg;C. Photo by the author.** "}
+```{r fig1, warning=FALSE, message=FALSE, echo=FALSE, fig.width=8, fig.height=5, eval=TRUE, fig.cap="DEB model prediction of length through time of the lizard *Eulamprus quoyii* growing under constant, *ad libitum* food at 25 &deg;C. Photo by the author."}
 library(NicheMapR)
 library(knitr) # this packages has a function for producing formatted tables.
 
@@ -83,11 +83,11 @@ img<-readPNG("Eulamprus_tympanum.png")
 grid.raster(img, width = 0.38, height = 0.38, x = .7)
 ```
 
-The next plot shows the growth in mass. In DEB theory, biomass is partitioned into three types, reserve, structure and reproduction buffer. The first two were mentioned already in the discussion of length above. Reserve should be though of as stored metabolites in the form of polymers (proteins, lipids, carbohydrates) that are made by the process of assimilation, and mobilised to run the metabolism. The structure is what is built from the reserve and the amount of structure is proportional to the cube of the length of the organism. A given cell in the organism should be conceived as being part reserve and part structure. An egg is pure reserve. The process of reproduction is the build up of material in the body that is the same composition as reserve and packaged up into eggs to be released into the environment.
+The next plot shows the growth in mass. In DEB theory, biomass is partitioned into three types, reserve, structure and reproduction buffer. The first two were mentioned already in the discussion of length, above. Reserve should be though of as stored metabolites in the form of polymers (proteins, lipids, carbohydrates) that are made by the process of assimilation, and mobilised to run the metabolism. The structure is what is built from the reserve and the amount of structure is proportional to the cube of the length of the organism. A given cell in the organism should be conceived as being part reserve and part structure. An egg is pure reserve. The process of reproduction is the build up of material in the body that is the same composition as reserve and packaged up into eggs to be released into the environment.
 
 In Figure 2, the partitioning of the total biomass is indicated by the different coloured lines, starting with the structure in green, then adding on top of that the reserve, and then on top of that the reproduction buffer. You can also see in brown the food in the gut which of course also contributes to the wet weight of an animal.
 
-```{r fig2, warning=FALSE, message=FALSE, echo=FALSE, fig.width=8, fig.height=5, eval=TRUE, fig.cap="**Figure 2. DEB model prediction of wet weight through time of the lizard *Eulamprus quoyii* growing under constant *ad libitum* food at 25 &deg;C, partitioning total biomass mass into structure, reserve, reproduction buffer and gut contents.**"}
+```{r fig2, warning=FALSE, message=FALSE, echo=FALSE, fig.width=8, fig.height=5, eval=TRUE, fig.cap="DEB model prediction of wet weight through time of the lizard *Eulamprus quoyii* growing under constant *ad libitum* food at 25 &deg;C, partitioning total biomass mass into structure, reserve, reproduction buffer and gut contents."}
 plot(seq(1, ndays) / div, debout$V, type = 'l', xlab = 'Age (days)', ylab = paste0('wet mass (', mass.unit, ')'), col = 'dark green', lwd = 2, ylim = c(0, max(debout$wetmass)))
 points(seq(1, ndays) / div, debout$V + debout$wetstorage + debout$wetgonad + debout$wetgut, type = 'l', lwd = 2, col = 'pink')
 points(seq(1, ndays) / div, debout$V + debout$wetstorage + debout$wetgut, type = 'l', col = 'brown', lwd = 2)
@@ -102,7 +102,7 @@ text(which(debout$E_H > E.Hp)[1] / div * 1.2, max(debout$wetmass) * 1, labels = 
 
 Note in Figure 2 how the embryo starts off as near zero structure and is mostly reserve, and that the overall mass declines through development but the structure goes up. Also note that the point of maturity is where the reproduction buffer starts to grow, but the time of first clutch (the sudden drops in mass reflecting the eggs being released to the environment) is some time later once enough reproduction has been accumulated. 
 
-## The DEB scheme
+# The DEB scheme
 
 Only a very cursory discussion of the rationale behind the DEB theory can be provided here, and it is recommended that the reader consults the core DEB references already mentioned (Kooijman 1986a, Kooijman 1986b, Kooijman 1993, Kooijman 2000, Kooijman 2010 -- this is a very good order to read them in too).
 
@@ -110,9 +110,9 @@ Figure 3 summarises the DEB scheme, showing the network of macro-metabolic proce
 
 The mobilisation rate depends on the concentration (density) of the reserve as well as the inherent energy conductance of the organism. You should think of the reserve as blobs of polymers in a matrix of structure that need to be accessed from the periphery, and it is this surface area/volume interaction between reserve and structure that determines the dynamics of mobilisation. Also, if you imagine enzymes eating away at the surface of the blobs of reserve, the density of those enzymes (or their speed of action) would represent the energy conductance. The reserve dams up according to both the rate of assimilation, and also the rate of mobilisation. The energy conductance in part determines the pace of life.
 
-Mobilised reserve (energy as well as mass for building blocks) is partitioned according to the parameter kappa $\kappa$, so that a certain fraction goes to the processes of somatic growth and somatic maintenance. Growth is the synthesis of structure from the reserve, and requires energy to do the work of building as well as the energy and matter (and water) that goes into the newly made structural biomass. This structure requires maintenance directly proportional to how much structural biomass has been made and maintenance takes priority over growth. The mobilisation rate of the reserve is proportional to the surfacea area of the structure, and so increases more slowly than the requirements for maintenance. Thus growth slows down through time as the organism approaches an asymptotic maximum size that reflects the point where everything going down the branch to growth and maintenance is consumed by maintenance. This is how the von Bertalanffy growth curve emerges from DEB theory.
+Mobilised reserve (energy as well as mass for building blocks) is partitioned according to the parameter kappa $\kappa$, so that a certain fraction goes to the processes of somatic growth and somatic maintenance. Growth is the synthesis of structure from the reserve, and requires energy to do the work of building as well as the energy and matter (and water) that goes into the newly made structural biomass. This structure requires energy for maintenance in direct proportion to how much structural biomass has been made, and maintenance takes priority over growth. The mobilisation rate of the reserve is proportional to the surface area of the structure, and so increases more slowly than the requirements for maintenance. Thus growth slows down through time as the organism approaches an asymptotic maximum size that reflects the point where everything going down the branch to growth and maintenance is consumed by maintenance. This is how the von Bertalanffy growth curve emerges from DEB theory.
 
-```{r fig3, fig.width=8, fig.height=4,echo=FALSE, results='asis', fig.align='center', fig.cap='**Figure 3. Stucture of the standard model of Dynamic Energy Budget theory, from Marques et al. (2018). Boxes represent state variables, arrows represent processes.**', fig.pos='!h', message=FALSE, warnings=FALSE, eval=TRUE}
+```{r fig3, fig.width=8, fig.height=4,echo=FALSE, results='asis', fig.align='center', fig.cap='Stucture of the standard model of Dynamic Energy Budget theory, from Marques et al. (2018). Boxes represent state variables, arrows represent processes.', fig.pos='!h', message=FALSE, warnings=FALSE, eval=TRUE}
 library(png)
 library(grid)
 img <- readPNG("DEB_scheme.png")
@@ -129,7 +129,7 @@ In the simplest case, there are four 'organic' molecules, the food $X$, the stru
 
 Figure 4 shows the mass budget scheme used in the DEB theory. The symbol $\dot{J}$ means mass, the symbol $\dot{p}$ represents energy flow (power), and the dot above means a flux (per time). The elemental composition of the different molecules is represented by $n_{1,2}$ where 1 represents the element (C, H, O or N) and 2 represents the 'molecule' (e.g. $V$ for structure or $C$ for $CO_2$). The fluxes (moles per time) of food, structure, reserve and faeces. 
 
-```{r fig4, fig.width=8, fig.height=4,echo=FALSE, results='asis', fig.align='center', fig.cap='**Figure 4. Stoichiometric equations of the standard model of Dynamic Energy Budget theory, taken from Kooijman (2010).**', fig.pos='!h', message=FALSE, warnings=FALSE, eval=TRUE}
+```{r fig4, fig.width=8, fig.height=4,echo=FALSE, results='asis', fig.align='center', fig.cap='Stoichiometric equations of the standard model of Dynamic Energy Budget theory, taken from Kooijman (2010).', fig.pos='!h', message=FALSE, warnings=FALSE, eval=TRUE}
 library(png)
 library(grid)
 img <- readPNG("DEB_mass_budget.png")
@@ -140,7 +140,7 @@ The first equation in Figure 4 is simply a statement of the conservation of mass
 
 The key point is that knowing the energy fluxes, computed from the DEB model as it evolves through time, and the stoichiomeric composition of food, structure, reserve and faeces, one can compute the oxygen, carbon dioxide, metabolic water and nitrogenous waste fluxes. Although we don't usually have explicit data on these elemental compositions, the default values [based on general estimates of organismal stoichiometry, e.g. Roels (1983)] give  good predictions in practice. Thus, by producing a DEB model we can get realistic dynamics of development, growth and reproduction under fluctuating temperature and food scenarios, and we also get estimates of the fluxes of food, faeces, metabolic water, respiratory gases and nitrogenous waste production 'for free', as shown in in Figure 5 for *Eulamprus quoyii*. This is one of the many pay-offs for abstracting biomass into pools of reserve and structure.
 
-```{r fig5, warning=FALSE, message=FALSE, echo=FALSE, fig.width=8, fig.height=5, eval=TRUE, fig.cap="**Figure 5. DEB predictions of some mass fluxes for the lizard *Eulamprus quoyii* growing under constant *ad libitum* food at 25 &deg;C. In panel a, the red line is the prediction from a general allometric relation for lizards (Andrews and Pough 1985). 'RQ' is the respiratory quotient, the ratio of $CO_2$ to $O_2$ production.**"}
+```{r fig5, warning=FALSE, message=FALSE, echo=FALSE, fig.width=8, fig.height=5, eval=TRUE, fig.cap="DEB predictions of some mass fluxes for the lizard *Eulamprus quoyii* growing under constant *ad libitum* food at 25 &deg;C. In panel a, the red line is the prediction from a general allometric relation for lizards (Andrews and Pough 1985). 'RQ' is the respiratory quotient, the ratio of $CO_2$ to $O_2$ production."}
 par(mfrow = c(2,3))
 plot(seq(1, ndays) / div, debout$O2ML, type = 'l', xlab = 'Age (days)', ylab = 'ml O2 / hour', col = 'dark green', lwd = 2, ylim = c(0, max(debout$O2ML)), main = "a. oxygen consumption")
 points(seq(1, ndays) / div, 10^(0.038*Tbs)*0.013*(debout$wetmass-debout$wetgonad-debout$wetgut)**0.800*(debout$wetmass-debout$wetgonad-debout$wetgut), type = 'l', col = 'red') 
@@ -165,7 +165,7 @@ abline(v = which(debout$E_H > E.Hb)[1] / div, lty = 2, col = 'grey')
 abline(v = which(debout$E_H > E.Hp)[1] / div, lty = 2, col = 'grey')
 ```
 
-## The DEB parameters required for a full energy and mass budget
+# The DEB parameters required for a full energy and mass budget
 
 To run a DEB simulation you of course need some DEB parameters. The number of parameters required depends on the number of processes being made explicit in the DEB model. Minimally, one needs the following seven 'core' parameters to predict the dynamics of just the state variables structure, reserve and maturity/reproduction, at one temperature and one food level, across the whole life cycle (Table 1 -- this table excludes the parameters $k_J$, the maturity maintenance rate coefficient, and $\kappa_R$, the conversion efficiency of reproduction buffer to eggs, which are usually left as default values because they are difficult to estimate and the plausible range of values typically has low influence on the predictions).
 
@@ -174,10 +174,10 @@ tabl <- "
 *Parameter*                         |	*Parameter Symbol*    |	*Unit*
 ----------------------------------- | --------------------- | ------------------
 max surface-specific assimilation rate | $\\{\\dot{p}_{Am}\\}$ | $J\\:cm^{-2}\\:d^{-1}$
-energy conductance                  | $\\dot{v}$            | $t^{-1}$
+energy conductance                  | $\\dot{v}$            | $d^{-1}$
 allocation fraction to soma         | $\\kappa$             | -
 volume-specific somatic maintenance cost | $[\\dot{p}_{M}]$ | $J\\:cm^{-3}\\:d^{-1}$
-specific cost for structure         | $[E_g]$               | $J\\:cm^{-3}$
+volume-specific cost for structure         | $[E_g]$               | $J\\:cm^{-3}$
 maturity at birth                   | $E_{H}^{b}$           | $J$
 maturity at puberty                 | $E_{H}^{p}$           | $J$
 
@@ -186,7 +186,7 @@ Table: **Table 1. Minimal required core parameters of the standard DEB model.**
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
 
-These parameters relate to the abstract state variables, i.e. they don't represent measureable 'real-world' quantities. However, because they have a one-to-many relationship with certain life history traits, it is possible to obtain good estimates through inversely fitting them to such observations. The minimal set of data required to estimate these parameters are observations of length and weight at the three life stages birth, 'puberty' and maximum size, as well as time to birth and time to puberty at known temperatures, and maximum reproduction rate at known temperature, all at constant *ad libitum* food.
+These parameters relate to the abstract state variables, i.e. they don't represent measurable 'real-world' quantities. However, because they have a one-to-many relationship with certain life history traits, it is possible to obtain good estimates through inversely fitting them to such observations. The minimal set of data required to estimate these parameters are observations of length and weight at the three life stages birth, 'puberty' and maximum size, as well as time to birth and time to puberty at known temperatures, and maximum reproduction rate at known temperature, all at constant *ad libitum* food.
 
 In addition, at least one extra parameter is needed to model aging, and between one and five extra parameters to model the thermal response (Table 2).
 
@@ -241,7 +241,7 @@ cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
 A sophisticated and well-document scheme is now available for estimating DEB parameters, as described in Marques et al. (2018). The software package, [debtool](https://github.com/add-my-pet/DEBtool_M) is open source. It is currently maintained in Matlab but an [R version](https://github.com/add-my-pet/DEBtool_R) is being developed.
 
-## Getting DEB parameters into R
+# Getting DEB parameters into R
 
 DEB Parameters are now available for over 1800 species [Add-my-pet Portal](http://www.bio.vu.nl/thb/deb/deblab/add_my_pet/). The [AmPtool github repository](https://github.com/add-my-pet/AmPtool) houses the file 'allStat.mat', which includes parameters and implied properties for all species in the AmP collection (Marques et al. 2018). This file can be read into R with the 'R.matlab' package and saved as an R data object. The initial read of the .mat file takes a while (~5-10 minutes), but the '.Rda' file to which it is converted loads much faster (seconds).
 
@@ -250,7 +250,7 @@ Here is the code to read and convert the 'allStat.mat' file.
 ```{r, eval=FALSE}
 install.packages('R.matlab')
 library(R.matlab)
-allStat <- readMat('allStat.mat') # this will take a few mintues
+allStat <- readMat('allStat.mat') # this will take a few minutes
 save(allStat, file = 'allstat.Rda') # save it as an R data file for faster future loading
 ```
 
@@ -282,15 +282,15 @@ for(i in 1:length(par.names)){
 }
 ```
 
-## The R functions for DEB in NicheMapR
+# The R functions for DEB in NicheMapR
 
-The NicheMapR package has DEB functions that integrate the DEB model through time as a function of body temperature and food. There are two DEB funtions - 'DEB' and 'DEB_euler'. The latter uses a simple integration where the rates of change of the state variables (i.e. structure, reserve, maturity, reproduction buffer) are assumed to be constant within a time period and the state at a given time is the simply the state at time period before plus the rate of change for the current time period. This integration method is fast but inaccurate for large step sizes/rapid environmental changes. The 'DEB' function uses the deSolve package to integrate through time, specifically the ode45 method. An ODE (ordinary differential equation) solver dynamically adjusts the step size according to how fast the system is evolving, and is far more accurate but more computationally intensive. 
+The NicheMapR package has DEB functions that integrate the DEB model through time as a function of body temperature and food. There are two DEB functions - 'DEB' and 'DEB_euler'. The latter uses a simple integration where the rates of change of the state variables (i.e. structure, reserve, maturity, reproduction buffer) are assumed to be constant within a time period and the state at a given time is the simply the state at time period before plus the rate of change for the current time period. This integration method is fast but inaccurate for large step sizes/rapid environmental changes. The 'DEB' function uses the deSolve package to integrate through time, specifically the ode45 method. An ODE (ordinary differential equation) solver dynamically adjusts the step size according to how fast the system is evolving, and is far more accurate but more computationally intensive. 
 
-The NicheMapR DEB functions include a stomach model, which requires a parameter for the maximum structure-specific stomach energy density $E_{sm}$ as discussed above. It also includes a reproduction batch model as originally described in Pequerie et al. (2009), which requires the parameter `clutchsize`.
+The NicheMapR DEB functions include a stomach model, which requires a parameter for the maximum structure-specific stomach energy density $E_{sm}$ as discussed above. It also includes a reproduction batch model as originally described in Pecquerie et al. (2009), which requires the parameter `clutchsize`.
 
 A wrapper function called 'rundeb' calls either of these DEB routines for a specified species for a specified duration and sequence of body temperatures and food levels. The step size can be given via parameter `div`, which determines how frequently output is provided (and dictates the accuracy of the DEB_euler function if used).
 
-The 'rundeb' function makes some plots by default of growth, food and respiration. It also allows some exploration of the effects of varying parameters, specifically the reproduction allocation parameter kappa, somatic maintenance costs, initial egg size/energy content and overall size. The latter, controlled by the factor `z.mult`, causes scaling to occur according to the DEB theory covariation rules, whereby size at birth, size at puberty, ultimate size, egg size and longevity all covary in a particular manner. By default, the rundeb function plots some outpus on growth and mass flows, as shown in the example simulation below. Simply change the species name to any other one in the collection (must be a 'std', 'abj' or 'abp' model, see [typified models](http://www.debtheory.org/wiki/index.php?title=Typified_models)).
+The 'rundeb' function makes some plots by default of growth, food and respiration. It also allows some exploration of the effects of varying parameters, specifically the reproduction allocation parameter kappa, somatic maintenance costs, initial egg size/energy content and overall size. The latter, controlled by the factor `z.mult`, causes scaling to occur according to the DEB theory covariation rules, whereby size at birth, size at puberty, ultimate size, egg size and longevity all co-vary in a particular manner. By default, the rundeb function plots some outputs on growth and mass flows, as shown in the example simulation below. Simply change the species name to any other one in the collection (must be a 'std', 'abj' or 'abp' model, see [typified models](http://www.debtheory.org/wiki/index.php?title=Typified_models)).
 
 ```{r fig6, warning=FALSE, message=FALSE, fig.height=5, fig.width=8, eval=TRUE}
 library(NicheMapR)
@@ -300,7 +300,8 @@ div <- 1 # time step divider (1 = days, 24 = hours, etc.) - keep small if using 
 Tbs <- rep(25, ndays * div) # °C, body temperature
 starvetime <- 0 # length of low food period when simulating starvation
 X <- 100 # J/cm2 base food density
-Xs <- c(rep(X, ndays * div / 2), rep(0.000005, starvetime), rep(X, ndays * div / 2 - starvetime + 1)) # food density (J/cm2 or J/cm3)
+Xs <- c(rep(X, ndays * div / 2), rep(0.000005, starvetime), 
+        rep(X, ndays * div / 2 - starvetime + 1)) # food density (J/cm2 or J/cm3)
 E_sm <- 350 # J/cm3, volume-specific stomach energy
 clutchsize <- 5 # -, clutch size
 
@@ -309,10 +310,12 @@ length.unit <- 'mm'
 plot <- 1 # plot results?
 start.stage <- 1 # stage in life cycle to start (0 = egg, 1 = juvenile, 2 = puberty)
 
-deb <- rundeb(species = species, ndays = ndays, div = div, Tbs = Tbs, clutchsize = clutchsize, Xs = Xs, mass.unit = mass.unit, length.unit = length.unit, start.stage = start.stage, E_sm = E_sm, plot = plot)
+deb <- rundeb(species = species, ndays = ndays, div = div, Tbs = Tbs, clutchsize = clutchsize, 
+              Xs = Xs, mass.unit = mass.unit, length.unit = length.unit, 
+              start.stage = start.stage, E_sm = E_sm, plot = plot)
 ```
 
-## Integration of DEB with the ectotherm model
+# Integration of DEB with the ectotherm model
 
 Finally, we can put the microclimate, heat budget and DEB model together by turning on the DEB model in the NicheMapR ectotherm function and passing it the DEB parameters for the species of interest. Here we simulate *Eulamprus quoyii* in the location of Townsville, northern Australia, as was done in the [Introduction to the NicheMapR ectotherm model](ectotherm-model-tutorial.html) vignette.
 
@@ -367,7 +370,7 @@ n.NO <- 3/5
 n.NN <- 4/5
 ```
 
-Next, as described previously in the [Introduction to the NicheMapR ectotherm model](ectotherm-model-tutorial.html) vignette, we need to define the morphological, behavioural and physiological parameters for the biophysical models of heat and water exachange.
+Next, as described previously in the [Introduction to the NicheMapR ectotherm model](ectotherm-model-tutorial.html) vignette, we need to define the morphological, behavioural and physiological parameters for the biophysical models of heat and water exchange.
 
 ```{r, warning=FALSE, message=FALSE, eval=TRUE}
 # morph, behav and water loss
@@ -516,8 +519,9 @@ yearsout <- as.data.frame(ecto$yearsout) # annual summaries
 The output tables **environ**, **enbal** and **masbal** were retrieved from the model run as done in the [Introduction to the NicheMapR ectotherm model](ectotherm-model-tutorial.html) vignette. Now the **masbal** table includes values for all the DEB-based mass flow calculations:
 
 ```{r, echo=FALSE, results='asis', message=FALSE, warnings=FALSE}
-knitr::kable(tail(masbal[, c(1:11)], 12))
-knitr::kable(tail(masbal[, c(12:19)], 12))
+knitr::kable(tail(masbal[, c(1:9)], 12))
+knitr::kable(tail(masbal[, c(10:15)], 12))
+knitr::kable(tail(masbal[, c(16:19)], 12))
 ```
 
 * **DOY** - Day of year
@@ -543,8 +547,9 @@ knitr::kable(tail(masbal[, c(12:19)], 12))
 There is also now the output table **debout** which contains the following variables:
 
 ```{r, echo=FALSE, results='asis', message=FALSE, warnings=FALSE}
-knitr::kable(tail(debout[, c(1:12)], 12))
-knitr::kable(tail(debout[, c(13:21)], 12))
+knitr::kable(tail(debout[, c(1:10)], 12))
+knitr::kable(tail(debout[, c(11:16)], 12))
+knitr::kable(tail(debout[, c(17:21)], 12))
 ```
 
 * **DOY** - Day of year
@@ -569,9 +574,9 @@ knitr::kable(tail(debout[, c(13:21)], 12))
 * **H_S** - Hazard rate (1/h)
 * **P_SURV** - Survival probability (ageing and mortality rates combined) (-)
 
-Here is a plot of the wet mass, using the same colour scheme to represent the different biomass components as in Figure 2.
+Figure 6 shows plot of the wet mass, using the same colour scheme to represent the different biomass components as in Figure 2.
 
-```{r, warning=FALSE, message=FALSE, eval=TRUE, fig.width=8, fig.height=5}
+```{r, warning=FALSE, message=FALSE, eval=TRUE, fig.width=8, fig.height=5, fig.cap="DEB model prediction of wet weight through time of the lizard *Eulamprus quoyii* growing under constant *ad libitum* under field conditions in Townsville, Queensland Australia, partitioning total biomass mass into structure, reserve, reproduction buffer and gut contents."}
 par(mfrow = c(1,1))
 plot(seq(1, ndays * 24) / 24, debout$WETMASS, type = 'l', xlab = 'date', 
      ylab = paste0('wet mass (g)'), col = 'pink', lwd = 2, 
@@ -588,8 +593,10 @@ legend(1200, max(debout$WETMASS) * 0.3,
        c('repro. buffer', 'food in gut', 'reserve', 'structure'), lty = rep(1, 4), 
        col = c("pink", "brown", "grey", "dark green"), bty = 'n')
 text(0, max(debout$WETMASS) * 1, labels = "embryo", cex = 0.85)
-text((which(debout$E_H > E.Hp)[1] - which(debout$E_H > E.Hp)[1] * .5) / 24 , max(debout$WETMASS) * 1, labels = "immature", cex = 0.85)
-text(which(debout$E_H > E.Hp)[1] * 1.2 / 24, max(debout$WETMASS) * 1, labels = "adult", cex = 0.85)
+text((which(debout$E_H > E.Hp)[1] - which(debout$E_H > E.Hp)[1] * .5) / 24 ,
+     max(debout$WETMASS) * 1, labels = "immature", cex = 0.85)
+text(which(debout$E_H > E.Hp)[1] * 1.2 / 24, max(debout$WETMASS) * 1,
+     labels = "adult", cex = 0.85)
 ```
 
 And finally there are tables summarising various life history events per year and over the entire simulation -- the **yearsout** and **yearout** tables.
@@ -597,11 +604,11 @@ And finally there are tables summarising various life history events per year an
 Here is the **yearsout** table, and a description of the different outputs.
 
 ```{r, echo=FALSE, results='asis', message=FALSE, warnings=FALSE}
-knitr::kable(yearsout[, c(1:10)])
-knitr::kable(yearsout[, c(11:22)])
+knitr::kable(yearsout[, c(1:7)])
+knitr::kable(yearsout[, c(8:14)])
+knitr::kable(yearsout[, c(15:22)])
 knitr::kable(yearsout[, c(23:28, 34:36, 42:43)])
 ```
-
 
 * **YEAR** - Year of simulation
 * **MaxStg** - Maximum stage reached in the year
@@ -636,8 +643,9 @@ knitr::kable(yearsout[, c(23:28, 34:36, 42:43)])
 And here is the **yearout** table.
 
 ```{r, echo=FALSE, results='asis', message=FALSE, warnings=FALSE}
-knitr::kable(yearout[, c(1:9)])
-knitr::kable(yearout[, c(10:20)])
+knitr::kable(yearout[, c(1:7)])
+knitr::kable(yearout[, c(8:14)])
+knitr::kable(yearout[, c(15:20)])
 ```
 
 * **DEVTIME** - Development time (days)
@@ -651,7 +659,7 @@ knitr::kable(yearout[, c(10:20)])
 * **LASTFOOD** - Food in last year (kg)
 * **TOTFOOD** - Total food eaten (kg)
 * **MINTB** - Minimum body temperature (°C)
-* **MAXTB** - Maxmium body temperature (°C)
+* **MAXTB** - Maximum body temperature (°C)
 * **Pct_Des** - Maximum level of desiccation (/%)
 * **LifeSpan** - Maximum life span (days)
 * **GenTime** - Generation time (years)
@@ -661,19 +669,19 @@ knitr::kable(yearout[, c(10:20)])
 
 You can see that the **yearout** table contains predictions of the net reproductive rate and intrinsic rate of increase, which are computed based on a life table of survival probabilities and fecundities per year and can be mapped as an ultimate summary of the suitability of a given location (see e.g. Kearney 2012). 
 
-The survival probabilies are based on the combination of the DEB-based aging model as well as the hourly mortality probabilities for the animal when it is active (parameter `m_a`, by default set to 1e-4), when it is inactive (`m_i`, by default set to zero) and in its first year as a hatchling (`m_h`, 0.5 by default). These 'vital rate' statistics can be used as the basis of further population modelling and to indirectly infer maximum tolerable mortality rates from processes other than senescence.
+The survival probabilities are based on the combination of the DEB-based aging model as well as the hourly mortality probabilities for the animal when it is active (parameter `m_a`, by default set to 1e-4), when it is inactive (`m_i`, by default set to zero) and in its first year as a hatchling (`m_h`, 0.5 by default). These 'vital rate' statistics can be used as the basis of further population modelling and to indirectly infer maximum tolerable mortality rates from processes other than senescence.
 
-## References
+# References
 
-Andrews, R. M., and H. F. Pough. 1985. Metabolism of squamate reptiles: allometric and ecological relationships. Physiological Zoology 58:214–231.
+Andrews, R. M., and H. F. Pough. 1985. Metabolism of squamate reptiles: allometric and ecological relationships. Physiological Zoology 58:214-231.
 
 Kearney, M., and W. P. Porter. 2004. Mapping the fundamental niche: physiology, climate, and the distribution of a nocturnal lizard. Ecology 85:3119-3131.
 
-Kearney, M. 2012. Metabolic theory, life history and the distribution of a terrestrial ectotherm. Functional Ecology 26:167–179.
+Kearney, M. 2012. Metabolic theory, life history and the distribution of a terrestrial ectotherm. Functional Ecology 26:167-179.
 
-Kooijman, S. A. L. M. 1986a. Energy budgets can explain body size relations. Journal of Theoretical Biology 121:269–282.
+Kooijman, S. A. L. M. 1986a. Energy budgets can explain body size relations. Journal of Theoretical Biology 121:269-282.
 
-Kooijman S. A. L. M. 1986b. What the hen can tell about her eggs: egg development on the basis of energy budgets. Journal of Mathematical Biology 23: 163–185.
+Kooijman S. A. L. M. 1986b. What the hen can tell about her eggs: egg development on the basis of energy budgets. Journal of Mathematical Biology 23: 163-185.
 
 Kooijman, S. A. L. M. 1993. Dynamic Energy Budgets in Biological Systems - Theory and Applications in Ecotoxicology. Cambridge University Press, Cambridge.
 
@@ -681,13 +689,15 @@ Kooijman, S. A. L. M. 2000. Dynamic energy and mass budgets in biological system
 
 Kooijman, S. A. L. M. 2010. Dynamic Energy Budget Theory for Metabolic Organisation. Cambridge University Press, Great Britain.
 
+Llandres, A. L., G. M. Marques, J. L. Maino, S. A. L. M. Kooijman, M. R. Kearney, and J. Casas. 2015. A dynamic energy budget for the whole life-cycle of holometabolous insects. Ecological Monographs 85:353–371.
+
 Marques, G. M., S. Augustine, K. Lika, L. Pecquerie, T. Domingos, and S. A. L. M. Kooijman. 2018. The AmP project: Comparing species on the basis of dynamic energy budget parameters. PLOS Computational Biology 14:e1006100.
 
-Pecquerie, L., P. Petitgas, and S. A. L. M. Kooijman. 2009. Modeling fish growth and reproduction in the context of the Dynamic Energy Budget theory to predict environmental impact on anchovy spawning duration. Journal of Sea Research 62:93–105.
+Pecquerie, L., P. Petitgas, and S. A. L. M. Kooijman. 2009. Modeling fish growth and reproduction in the context of the Dynamic Energy Budget theory to predict environmental impact on anchovy spawning duration. Journal of Sea Research 62:93-105.
 
-Porter, W. P., J. W. Mitchell, W. A. Beckman, and C. B. DeWitt. 1973. Behavioral implications of mechanistic ecology - Thermal and behavioral modeling of desert ectotherms and their microenvironment. Oecologia 13:1–54.
+Porter, W. P., J. W. Mitchell, W. A. Beckman, and C. B. DeWitt. 1973. Behavioral implications of mechanistic ecology - Thermal and behavioral modeling of desert ectotherms and their microenvironment. Oecologia 13:1-54.
 
-Pütter, A. 1920. Studien über physiologische Ähnlichkeit. VI. Wachstumsähnlichkeiten. Pflügers Archiv für die gesamte Physiologie des Menschen und der Tiere 180:298–340.
+P&uuml;tter, A. 1920. Studien &uuml;ber physiologische &Auml;hnlichkeit. VI. Wachstums&auml;hnlichkeiten. Pfl&auml;gers Archiv f&uuml;r die gesamte Physiologie des Menschen und der Tiere 180:298-340.
 
 Roels, J. A. 1983. Energetics and Kinetics in Biotechnology. Elsevier, Amsterdam.
 
