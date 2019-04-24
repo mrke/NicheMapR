@@ -24,7 +24,7 @@ c     values to solve the equations.
       double precision AIND,CONST,TD,TI,TAB
       INTEGER I,I1,IA,IFINAL,ILOCT,ISTART,JULNUM,DOY,errcount,maxerr
       INTEGER errout,numrun
-      CHARACTER*3 INAME,NAME,SYMBOL
+      CHARACTER(3) INAME,NAME,SYMBOL
       COMMON/TABLE/TI(211),TD(211)
       COMMON/TABLE2/ILOCT(21)
       COMMON/CARRAY/INAME(20),SYMBOL(23)
@@ -38,9 +38,9 @@ C     TI = INDEPENDENT VARIABLE (TIME)
 C     TD = DEPENDENT VARIABLE (e.g. Qsolar, Tair, Wind, etc.)
 c     TI(istart) = 0.00  (minutes @ start of day)
 c     TI(ifinal) = 1440. (minutes @ end of day)
-
+      TAB=0.D+0
+      
 C     MATCHING SUPPLIED NAME (NAME) WITH REFERENCE TABLE LIST (INAME)
-
       DO 10 I=1,20
       IA=I
       IF(INAME(I).EQ.NAME) GOTO 11

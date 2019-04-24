@@ -235,9 +235,6 @@ C     1 kg/m3 * 1000g/1 kg * 1 m3/1000000.
          endif
        endif
        if(cursnow.ge.minsnow)then ! snow is present
-        !if(cursnow.gt.100)then
-        !    g_a=0.1
-        !endif
         call WETAIR(0,WB,100,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,CP,
      &  WTRPOT) ! get specific heat and mixing ratio of humid air at zero C
         cpsnow = (2100*snowdens+(1.005+1.82*(RW/1.+RW))*1000* ! based on https://en.wiktionary.org/wiki/humid_heat

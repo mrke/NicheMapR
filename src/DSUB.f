@@ -56,7 +56,7 @@ c     along with this program. If not, see http://www.gnu.org/licenses/.
       INTEGER M1,DOY,N,N1,NAIR,NOSCAT,NOUT,hourly,rainhourly
       INTEGER Numtyps,hour,runmoist,evenrain,sat,runsnow,maxcount
 
-      CHARACTER*3 INAME,SYMBOL
+      CHARACTER(3) INAME,SYMBOL
 
       DIMENSION T(30),TT(30), DTDT(18), DEPP(30),sumphase2(10)
       DIMENSION DENDAY(30),SPDAY(30),TKDAY(30),densfun(4),qphase(10)
@@ -185,7 +185,8 @@ c    1 CONTINUE
       IF(NAIR.LE.0) GO TO 77
       DO 76 I=1,NAIR
        J=NAIR+1-I
-   76 ZZ(I)=ABS(DEP(J))
+       ZZ(I)=ABS(DEP(J))
+   76 CONTINUE
    77 CONTINUE
 
 C     SURFACE ABSORPTIVITY FOR SUB. DSUB CALCULATIONS
@@ -236,9 +237,10 @@ C       mass*specific heat product (per unit area)
         RCSP=DENDAY(I)*SPDAY(I)
         WC(I)=RCSP*(DEPP(I+1)-DEPP(I-1))/2.
         SOK=TKDAY(I)
-   51   C(I)=SOK/(DEPP(I+1)-DEPP(I))
+        C(I)=SOK/(DEPP(I+1)-DEPP(I))
+   51  CONTINUE
       else ! snow model
-       maxsnode2=1!int(maxsnode1)
+       maxsnode2=int(maxsnode1)
        TT=T
        call soilprops(TT,ALTT,soilprop,moist)
        TT=T
@@ -251,7 +253,7 @@ C       mass*specific heat product (per unit area)
          WC(1)=RCSP*DEPP(2)/2.
          SOK=TKDAY(1)
          if(DEPP(2).lt.1e-8)then
-          C(1)=0
+          C(1)=0.
          else
           C(1)=SOK/DEPP(2)
          endif
@@ -269,7 +271,7 @@ C         mass*specific heat product (per unit area)
          else
 C         mass*specific heat product (per unit area)
 c         RCSP = DENDAY(I)*SPDAY(I)
-          WC(I)=0
+          WC(I)=0.
           SOK =TKDAY(1)
           if(maxsnode2.eq.0)then
            C(I)=SOK/DEPP(10)
@@ -569,12 +571,13 @@ C     SET UP THE OUTPUT
       I1=14
       I2=32
       DO 20 I=I1,I2
-      if(runsnow.eq.1)then
-       II=8 ! only output non snow profile
-      else
+       if(runsnow.eq.1)then
+        II=8 ! only output non snow profile
+       else
        II=0
-      endif
-   20 OUT(I)=T(I+II-12)
+        endif
+       OUT(I)=T(I+II-12)
+   20 CONTINUE
       L=I1+N
       OUT(L)=TDS
       IF(NAIR.LE.0) RETURN
@@ -583,13 +586,15 @@ C     SURFACE  (T(21-30))
       I1=33
       I2=42
       DO 22 I=I1,I2
-   22 OUT(I)=T(I-12)
+       OUT(I)=T(I-12)
+   22 CONTINUE
 C     INSERTING VELOCITIES FROM THE GROUND UP, BUT NOT INCLUDING THE
 C     SURFACE (V(1-10))
       I1=43
       I2=52
       DO 24 I=I1,I2
-   24 OUT(I)=VV(I-42)
+       OUT(I)=VV(I-42)
+   24 CONTINUE
 
   200 RETURN
       END

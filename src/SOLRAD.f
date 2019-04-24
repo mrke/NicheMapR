@@ -98,11 +98,11 @@ C     REPINT(N)    RECIPROCAL OF EPINT
       integer microdaily,cnt,ILOCT
       INTEGER I97,I98,I99,methour,lamb,I100,I101
 
-      CHARACTER*12 FNAME
-      CHARACTER*80 LABL1,LABL2,LABL3
-      CHARACTER*1 ANS1,ANS2,ANS3,ANS4,ANS5,ANS6,ANS7,ANS10
-      character*1 ANS11,ANS14,ANS15,ANS16,ANS17,ANS18
-      CHARACTER*1 SINE,SNSLOP,solout
+      CHARACTER(12) FNAME
+      CHARACTER(80) LABL1,LABL2,LABL3
+      CHARACTER(1) ANS1,ANS2,ANS3,ANS4,ANS5,ANS6,ANS7,ANS10
+      character(1) ANS11,ANS14,ANS15,ANS16,ANS17,ANS18
+      CHARACTER(1) SINE,SNSLOP,solout
 
       DIMENSION DRINT(111),SRINT(111),GRINT(111)
       DIMENSION DRRLAM(111),DRRINT(111)
@@ -365,10 +365,15 @@ C    HOUR(S) AFTER SOLAR NOON WHEN TAIR = TAIR, MAX
       hh=0
       altdeg=0
       ahoriz=0
+      CDRNT = 0.D+0
+      M=0
+      DZSL=0.
+      dazsun=0.
+      
 C     FORMAT STATEMENTS
   991 FORMAT(1X,2F4.0,1I6,1E12.4)
 
-C        INITIALIZING Output ARRAYS
+C     INITIALIZING Output ARRAYS
       TIME(1)=0.
       TIME(25)=1440.
       TSTOR(1)=0.
@@ -619,7 +624,7 @@ C     BEFORE SUNRISE  SKIP CALCULATIONS
 C     LONG NIGHT
    33 Continue
    34 Continue
-      CDRNT = 0.0
+      CDRNT = 0.D+0
       If (TestZZ .le. 106.0) then
        CGRNT=GRINT(NMAX)*.01434
       else
@@ -634,7 +639,7 @@ C     AFTER SUNSET  SKIP CALCULATIONS
    35 Continue
    36 Continue
 
-      CDRNT = 0.00
+      CDRNT = 0.D+0
       If (TestZZ .le. 106.0) then
        CGRNT=GRINT(NMAX)*.01434
       else

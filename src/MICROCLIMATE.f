@@ -118,10 +118,10 @@ c     OSUB outputs the microclimate calculations.
       INTEGER microdaily,DOYF,DOYS,DOYF2,DOYS2,runmoist,evenrain,runsnow
       INTEGER errcount,HOURLY,rainhourly,IRmode,solonly
 
-      CHARACTER*80 LABL1,LABL2,LABL3
-      CHARACTER*3 IBLK,INAME,SYMBOL
-      CHARACTER*1 solout,SINE,ANS14,SNSLOP
-      CHARACTER*12 FNAME
+      CHARACTER(80) LABL1,LABL2,LABL3
+      CHARACTER(3) IBLK,INAME,SYMBOL
+      CHARACTER(1) solout,SINE,ANS14,SNSLOP
+      CHARACTER(12) FNAME
 
       DIMENSION snownode(10),snode(10),qphase(10)
       DIMENSION microinput1(60)

@@ -61,7 +61,7 @@ C     VERSION 2 SEPT. 2000
      & layermass,xtrain,QFREZE,grasshade
 
       integer maxsnode2,maxsnode3,maxcount,js,numrun,rainhourly,hourly
-      INTEGER CONS,I,IEND,IFINAL,ILOCT,IOUT,IPRINT,ITEST,trouble
+      INTEGER I,IEND,IFINAL,ILOCT,IOUT,IPRINT,ITEST,trouble
       INTEGER J,JULNUM,MM,DOY,N,NAIR,ND,NOUT,dew,writecsv,runsnow
       INTEGER I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,slipped,sat
       INTEGER I91,I92,I93,I94,I95,I96,runmoist,evenrain,step,timestep
@@ -70,8 +70,8 @@ C     VERSION 2 SEPT. 2000
 
       INTEGER methour,IRmode,microdaily,runshade,k,lamb,cnd
 
-      CHARACTER*3 SYMBOL,INAME,STP
-      CHARACTER*6 NAME, HEAD
+      CHARACTER(3) SYMBOL,INAME,STP
+      CHARACTER(6) NAME, HEAD
 C      IOUT IS THE NUMBER OF THE OUTPUT TERM DESIRED AS NUMBERED IN NAME ARRAY
 C      FILES 6,7,10 & 12 ARE CONSOLE, OUTPUT, METOUT & SOIL RESPECTIVELY
 C      FILES 6,I2,I3 & I10 ARE CONSOLE, OUTPUT, METOUT & SOIL RESPECTIVELY
@@ -152,13 +152,13 @@ C     PERCENT GROUND SHADE & ELEVATION (M) TO METOUT
       if((time.gt.0).and.(int(time).eq.int(lastime)))then
           trouble=trouble+1
       endif
-
-C     SETTING CONSOLE OUTPUT VARIABLE
-      CONS=0
+      
+C     INTITIALISE
       maxsnode3=0
       rainmelt=0.
       snowout=0.
       snowpres=0.
+      methour=0
       if(runsnow.eq.0)then
        maxsnode1=0.
        maxsnode2=0
@@ -244,7 +244,6 @@ C       SETTING THIS MONTH'S PERCENT OF SURFACE WITH FREE WATER/SNOW ON IT
     5 CONTINUE
 
       if(runsnow.eq.1)then
-      write(*,*) DOY
        PTWET=PCTWET(DOY)
        rainfall=RAIN(DOY)
       endif
@@ -270,12 +269,14 @@ C     SET UP OUTPUT FOR C, WC
  19   CONTINUE
       DO 40 I=1,NOUT
        J=IABS(IOUT(I))
-   40 HEAD(I)=NAME(J)
+       HEAD(I)=NAME(J)
+   40 CONTINUE
 
    20 CONTINUE
       DO 50 I=1,NOUT
        J=IABS(IOUT(I))
-   50 OUT2(I)=OUT(J)
+       OUT2(I)=OUT(J)
+   50 CONTINUE
 
       IF (TIME .LT. 1440.) GO TO 150
       IFINAL=0
@@ -303,12 +304,7 @@ C     SETTING UP THE 'OUTPUT'
       IRDOWN=TAB('IRD',TIME)
 
 c     phase change for freezing moist soil
-       methour=0
-       methour=int((TIME/60+1)+24*(DOY-1))
-      if((time.eq.0).and.(julday(DOY).eq.125).and.(methour.gt.30700))
-     & then
-         j=1
-      endif
+      methour=int((TIME/60+1)+24*(DOY-1))
       if((methour.eq.1).and.(DOY.eq.1))then
         meanT=tt
         meanTpast=tt_past
@@ -318,42 +314,42 @@ c     phase change for freezing moist soil
        else
         js=1
        endif
-C      do 1131 j=js,js+9 ! loop through soil nodes
-C       if(j.lt.js+9)then
-C        meanT(j)=(tt(j)+tt(j+1))/2. ! current temp
-C        meanTpast(j)=(tt_past(j)+tt_past(j+1))/2. ! last hour's temp
-C       else
-C        meanT(j)=tt(j) ! current temp
-C        meanTpast(j)=tt_past(j) ! last hour's temp
-C       endif
-C       if((meanTpast(j).gt.0).and.(meanT(j).le.0))then ! phase change, freezing
-C        if(j.lt.js+9)then
-C         layermass(j-js+1)=(dep(j-js+1+4)-dep(j-js+4))*10000*
-C    &     moist(j-js+1)
-C        else
-C         layermass(j-js+1)=(dep(j-js+4)+100-dep(j-js+4))*10000*
-C    &     moist(j-js+1)! deep soil
-C        endif
-C        qphase2(j-js+1)=(meanTpast(j)-meanT(j))*layermass(j-js+1)*4.186
-C        sumphase2(j-js+1)=qphase2(j-js+1)+sumphase2(j-js+1)
-C        if(sumphase2(j-js+1).gt.(HTOFN*layermass(j-js+1)))then
-C         t(j)=-0.1
-C         t(j+1)=-0.1
-C         tt(j)=-0.1
-C         tt(j+1)=-0.1
-C         y(j)=-0.1
-C         y(j+1)=-0.1
-C         sumphase2(j-js+1)=0.
-C        else
-C         t(j)=0.1
-C         t(j+1)=0.1
-C         tt(j)=0.1
-C         tt(j+1)=0.1
-C         y(j)=0.1
-C         y(j+1)=0.1
-C        endif
-C       endif
-C1131   continue
+       do 1131 j=js,js+9 ! loop through soil nodes
+        if(j.lt.js+9)then
+         meanT(j)=(tt(j)+tt(j+1))/2. ! current temp
+         meanTpast(j)=(tt_past(j)+tt_past(j+1))/2. ! last hour's temp
+        else
+         meanT(j)=tt(j) ! current temp
+         meanTpast(j)=tt_past(j) ! last hour's temp
+        endif
+        if((meanTpast(j).gt.0).and.(meanT(j).le.0))then ! phase change, freezing
+         if(j.lt.js+9)then
+          layermass(j-js+1)=(dep(j-js+1+4)-dep(j-js+4))*10000*
+     &     moist(j-js+1)
+         else
+          layermass(j-js+1)=(dep(j-js+4)+100-dep(j-js+4))*10000*
+     &     moist(j-js+1)! deep soil
+         endif
+         qphase2(j-js+1)=(meanTpast(j)-meanT(j))*layermass(j-js+1)*4.186
+         sumphase2(j-js+1)=qphase2(j-js+1)+sumphase2(j-js+1)
+         if(sumphase2(j-js+1).gt.(HTOFN*layermass(j-js+1)))then
+          t(j)=-0.1
+          t(j+1)=-0.1
+          tt(j)=-0.1
+          tt(j+1)=-0.1
+          y(j)=-0.1
+          y(j+1)=-0.1
+          sumphase2(j-js+1)=0.
+         else
+          t(j)=0.1
+          t(j+1)=0.1
+          tt(j)=0.1
+          tt(j+1)=0.1
+          y(j)=0.1
+          y(j+1)=0.1
+         endif
+        endif
+1131   continue
       endif
 
 
@@ -484,9 +480,8 @@ C     FROST
 c     convert to W/m2
       QEVAP = OUT(101)*4.185*10000./60.
       if(runsnow.eq.1)then
-       methour=0
        methour=(int(SIOUT(1)/60)+1)+24*(DOY-1)
-       if(densfun(1).gt.0)then
+      if(densfun(1).gt.0)then
         if(densfun(2).gt.0)then ! exponential function
          snowdens=(densfun(1)-densfun(2))*(1-EXP(-1*densfun(3)*
      &   cursnow-densfun(4)*snowage))+densfun(2)
@@ -498,7 +493,7 @@ c     convert to W/m2
         snowhr(methour-1)=snowhr(methour-1)/densrat
         endif
        endif
-       if((OUT(2).le.snowtemp).and.(rainfall.gt.0.0))then
+      if((OUT(2).le.snowtemp).and.(rainfall.gt.0.0))then
 c       compute snow fall using conversion from daily rain to daily snow (disaggregated over 24 hours) and convert from mm rain to cm snow
         if((time.lt.1e-8).or.(int(rainhourly).eq.1))then
 c        account for undercatch
@@ -521,7 +516,6 @@ c        account for undercatch
       else
        snowfall=0.
       endif
-
       if(out(4).gt.0)then
        HTOVPR=2500.8-2.36*out(4)+0.0016*out(4)**2-0.00006*out(4)**3
       else
@@ -529,7 +523,6 @@ c        account for undercatch
       endif
       HTOVPR=HTOVPR*1000 !convert from J/g to J/kg
       WATER = QEVAP/HTOVPR ! kg/s/m2
-
 C     kg/s/m2 TO g/h/m2
       GWSURF  = WATER * 1000. * 3600.
       if(gwsurf.lt.0)then
@@ -694,9 +687,6 @@ C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
        endif
        if(methour.gt.1)then
         cursnow=snowhr(methour-1)+netsnow-rainmelt-melted
-        if(cursnow.gt.0)then
-         cursnow=cursnow+0.
-        endif
         snowhr(methour)=cursnow
         if(snowhr(methour).lt.0)then
          snowhr(methour)=0.
@@ -762,9 +752,6 @@ c      ensure that recently fallen snow is frozen
         endif
        else
         cursnow=netsnow-rainmelt-melted
-        if(cursnow.gt.0)then
-         cursnow=cursnow+0.
-        endif
         snowhr(methour)=cursnow
         SNOWOUT=snowhr(methour)
         tt_past=tt
@@ -1554,7 +1541,6 @@ C      INCREMENT MONTH/TIME INTERVAL COUNTER
 
       lastime=time
       lastsurf=max(maxval(abs(out(14:22))),abs(out(4)))
-
   154 FORMAT(1F4.0,A,1F7.2,A,F6.2,A,F6.2,A,F6.2,A,F6.2,A,F7.3,A,F7.3,A,
      &F6.2,A,F6.2,A,F6.2,A,1F6.2,A,1F7.2,A,1F7.2,A,1F2.0,A,1F2.0,A,F7.2,
      &A,F7.2,A,F7.3)
