@@ -25,12 +25,12 @@ C     Computes snow layer and thermal properties
       DOUBLE PRECISION daysincesnow,lastday,Thconduct,Density,Spheat
       DOUBLE PRECISION densfun,maxsnode1,minsnow,intercept
       DOUBLE PRECISION siout,snownode,snode,undercatch,rainmeltf,TT
-      DOUBLE PRECISION DENDAY,SPDAY,TKDAY,T,WC,C,DEP,IOUT,OUT,snowcond
+      DOUBLE PRECISION DENDAY,SPDAY,TKDAY,T,WC,C,DEP,OUT,snowcond
       double precision snowdens,snowmelt,snowtemp,cursnow,snowage
      & ,prevden,grasshade
      
       INTEGER DAYCT,I,JULNUM,DOY,Numtyps,ITEST,NON,SNON,methour
-      INTEGER I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,maxsnode
+      INTEGER I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,IOUT,maxsnode
       INTEGER I91,I92,I93,I94,I95,I96,I97,I98,I99,I100,I101
       DIMENSION DENDAY(30),SPDAY(30),TKDAY(30),snode(8),densfun(4)
       DIMENSION snownode(8),Thconduct(30),Density(30),Spheat(30),TT(30)
