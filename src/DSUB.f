@@ -58,9 +58,9 @@ c     along with this program. If not, see http://www.gnu.org/licenses/.
 
       CHARACTER*3 INAME,SYMBOL
 
-      DIMENSION T(30),TT(30), DTDT(18), DEPP(30),sumphase2(8)
-      DIMENSION DENDAY(30),SPDAY(30),TKDAY(30),densfun(4),qphase(8)
-      DIMENSION soilprop(10,5),moist(10),snownode(8),snode(8)
+      DIMENSION T(30),TT(30), DTDT(18), DEPP(30),sumphase2(10)
+      DIMENSION DENDAY(30),SPDAY(30),TKDAY(30),densfun(4),qphase(10)
+      DIMENSION soilprop(10,5),moist(10),snownode(10),snode(10)
       DIMENSION Thconduct(30),Density(30),Spheat(30),tt_past(30)
 
       COMMON/AIRRAY/ZZ(10),VV(10)
@@ -69,8 +69,8 @@ c     along with this program. If not, see http://www.gnu.org/licenses/.
       COMMON/PAR/SIGP,RCSP,SOK,SAB,HGTP,RUFP,BEGP,MON,PRTP,ERRP,END,
      1 SLEP,DAS,NONP,SUN,PLT,FIN,STP
       COMMON/NONSCR/M1,N1,XXX,TIMEF,DTAU,ERR1,H,NOUT,NAIR,IPRINT
-      COMMON/ARRAY/X(30),WC(20),C(20),DEP(30),IOUT(100),
-     1 OUT(101),ITEST(23)
+      COMMON/ARRAY/X(30),WC(20),C(20),DEP(30),OUT(101),IOUT(100),
+     1 ITEST(23)
       COMMON/CARRAY/INAME(20),SYMBOL(23)
       COMMON/FUN1/SKYIN,GRDIN,MASS,PCTEVP,TCI,TSI,TIM,TGRD,CC,CS,RS,
      *A,B,D,F,HTRN,F1,F2,TS,SMET,RB,SHDLIZ
@@ -112,7 +112,7 @@ C     Densitys = substrate densities, e.g. snow, soil type(s)
 C     Spheats = substrate specific heats, e.g. snow, soil type(s)
 C     Nodes = Deepest node for the each substrate type number for each time interval (duration) of vertical arrangement of substrates
 C     Nodes(max node depth,subst type) are real numbers. The number to the left of the decimal point is the deepest node for the substrate type, which is to the right of the decimal point.
-
+      j=1
       if(runsnow.eq.1)then
        if(cursnow.lt.minsnow)then
         maxsnode1=0.
@@ -184,7 +184,7 @@ c    1 CONTINUE
    74 continue
       IF(NAIR.LE.0) GO TO 77
       DO 76 I=1,NAIR
-        J=NAIR+1-I
+       J=NAIR+1-I
    76 ZZ(I)=ABS(DEP(J))
    77 CONTINUE
 
@@ -208,7 +208,7 @@ C        SETTING THIS MONTH'S PERCENT OF SURFACE WITH FREE WATER/SNOW ON IT
         endif
        endif
       endif
-      if(condep>10)then ! use Fresnel's reflection law, p. 212 Gates 1980
+      if(condep.gt.10.)then ! use Fresnel's reflection law, p. 212 Gates 1980
         inrad = TAB('ZEN',TIME)*pi/180.
         refrad=asin(sin(inrad)/1.33)
         SABNEW = 1.-0.5*((sin(inrad-refrad)**2/(sin(inrad+refrad)**2))+
@@ -238,7 +238,7 @@ C       mass*specific heat product (per unit area)
         SOK=TKDAY(I)
    51   C(I)=SOK/(DEPP(I+1)-DEPP(I))
       else ! snow model
-       maxsnode2=int(maxsnode1)
+       maxsnode2=1!int(maxsnode1)
        TT=T
        call soilprops(TT,ALTT,soilprop,moist)
        TT=T
@@ -480,9 +480,9 @@ C       DRY SURFACE
 C       SNOW or WET SURFACE
 C       GETTING THE RELATIVE HUMIDITY FOR THIS POINT IN TIME
          RH = TAB('REL',TIME)
-      if(RH.gt.100.)then
-            RH= 100.
-      endif
+         if(RH.gt.100.)then
+          RH = 100.
+         endif
          WB = 0.
          DP = 999.
 C        BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
@@ -505,7 +505,7 @@ C       CHECKING FOR DIVIDE BY ZERO
          IF(T(1).EQ.TAIR)THEN
            T(1)= T(1)+0.1
          ENDIF
-         HC = max(ABS((QCONV*4.184/60.*10000)/(T(1)-TAIR)),0.5)
+         HC = max(ABS((QCONV*4.184/60.*10000)/(T(1)-TAIR)),0.5D+0)
          HD = (HC/(CP*DENAIR))*(0.71/0.60)**0.666
          CALL EVAP(T(1),TAIR,RH,HD,QEVAP,SAT)
          if(runsnow.eq.1)then
@@ -536,17 +536,18 @@ C     COMPUTE DERIVATIVES OF THE REST OF THE SOIL NODES
       DO 10 I=2,N
       if(runsnow.eq.1)then
        if((maxsnode1.gt.0).and.(I.eq.int((9-maxsnode1))))then
-         DTDT(I)=(C(I-1)*(T(I-1)-T(I))+C(I)*(T(I+1)-T(I)))/WC(I)
+         DTDT(I)=(C(I-1)*(T(I-1)-T(I))+C(I)*(T(I+1)-T(I)))/WC(I) ! soil
        else
         if(WC(i-1).gt.0)then
-         DTDT(I)=(C(I-1)*(T(I-1)-T(I))+C(I)*(T(I+1)-T(I)))/WC(I)
+         DTDT(I)=(C(I-1)*(T(I-1)-T(I))+C(I)*(T(I+1)-T(I)))/WC(I) ! snow or soil
         else
-         dtdt(i)=dtdt(1)
+         dtdt(i)=dtdt(1) ! empty snow node - make it behave like surface
         endif
        endif
       else
-       DTDT(I)=(C(I-1)*(T(I-1)-T(I))+C(I)*(T(I+1)-T(I)))/WC(I)
+       DTDT(I)=(C(I-1)*(T(I-1)-T(I))+C(I)*(T(I+1)-T(I)))/WC(I) ! below the surface
       endif
+
    10 continue
 C     SET UP THE OUTPUT
       OUT(1)=TIME

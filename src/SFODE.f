@@ -43,7 +43,7 @@ C     AT RETURN X AND Y CONTAIN THEIR LAST GOOD VALUES
       INTEGER I97,I98,I99,I100,I101,errout,maxerr,errcount,JULNUM,DOY
       integer solonly
 
-      DIMENSION curmoist2(18),moist(10),qphase(8),sumphase2(8)
+      DIMENSION curmoist2(18),moist(10),qphase(10),sumphase2(10)
 
       COMMON/NONSCR/N,NN,X,XMAX,DX,ERR,H,NCOND,NFACTR,IPRINT
       common/moistcom/moist,ep

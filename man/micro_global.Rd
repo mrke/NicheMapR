@@ -31,7 +31,7 @@ Usrhyt = 0.01, ...)
 
 \item{minshade}{Minimum shade level to use (\%)}
 
-\item{maxshade}{Maximum shade level to us (\%)}
+\item{maxshade}{Maximum shade level to use (\%)}
 
 \item{Usrhyt}{Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest}
 

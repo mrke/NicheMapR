@@ -805,7 +805,7 @@ c  ENDE ALTER INPUT
          ende=.false.
          do while (.not.ende)
             read (ntap,510,end=511)
-     *            thet,(pha(il,ic,it),ila=1,ilamb)
+     *      thet,(pha(il,ic,min(112,it)),ila=1,ilamb)
   510       format(e11.3,1x,70e10.3)
             it=it+1
          end do

@@ -123,7 +123,7 @@ c     OSUB outputs the microclimate calculations.
       CHARACTER*1 solout,SINE,ANS14,SNSLOP
       CHARACTER*12 FNAME
 
-      DIMENSION snownode(8),snode(8),qphase(8)
+      DIMENSION snownode(10),snode(10),qphase(10)
       DIMENSION microinput1(60)
       DIMENSION soilprop(10,5),soilprop1(10,5),moist(10)
       DIMENSION DEPS(21),curmoist2(18)
@@ -131,7 +131,7 @@ c     OSUB outputs the microclimate calculations.
       DIMENSION tai1(111),tai(111)
       DIMENSION Dep1(10),minutes(25)
       DIMENSION TIMINS1(4),TIMAXS1(4)
-      DIMENSION soilinit1(20),hori1(24),densfun(4),sumphase2(8)
+      DIMENSION soilinit1(20),hori1(24),densfun(4),sumphase2(10)
       DIMENSION julstnd(2),depp(30),Thconduct(30),Density(30),Spheat(30)
       DIMENSION hori(24),azi(24),PE(19),KS(19),BD(19),BB(19),DD(19)
       DIMENSION PE1(19),KS1(19),BD1(19),BB1(19),L(19),L1(19),DD1(19)
@@ -141,8 +141,8 @@ c     OSUB outputs the microclimate calculations.
       COMMON/WORK/WORK(1720)
       COMMON/LABEL/LABL1,LABL2,LABL3,FNAME,SINE,ANS14,SNSLOP
       COMMON/NONSCR/MM,N,TIME,TIMEF,DTAU,ERR1,H,NOUT,NDUM1,IPRINT
-      COMMON/ARRAY/T(30),WC(20),C(20),DEP(30),IOUT(100),
-     & OUT(101),ITEST(23)
+      COMMON/ARRAY/T(30),WC(20),C(20),DEP(30),OUT(101),IOUT(100),
+     1 ITEST(23)
       COMMON/CARRAY/INAME(20),SYMBOL(23)
       COMMON/TABLE/TI(211),TD(211)
       COMMON/TABLE2/ILOCT(21)
@@ -201,10 +201,7 @@ c    Variable soil properties data from Iomet1
 
       DATA IBLK/'   '/
       DATA IFINAL/1/
-C    INITIALIZING MONTH OF YEAR COUNTER
-      DATA DOY/1/
-c    INITIALIZING DATAKY COUNTER
-      DATA CNT/1/
+
       DATA MINUTES/0,60,120,180,240,300,360,420,480,540,600,660,720,780
      &    ,840,900,960,1020,1080,1140,1200,1260,1320,1380,1440/
 C     SIG=.8126E-10     1
@@ -249,7 +246,11 @@ C     DROP OUT OPTION.  IOT=1,2,3,4,5,6
      &julday(nn2),LAIs(nn2),pctwet(nn2),rainhr(nn2*25),DRLAMBDA(nn2*24,
      &113),DRRLAMBDA(nn2*24,113),SRLAMBDA(nn2*24,113),sunsnow(nn2*24,11)
      &,shdsnow(nn2*24,11),plant(nn2*24,14),shadplant(nn2*24,14))
-      minsnow=2
+C    INITIALIZING MONTH OF YEAR COUNTER
+      DOY=1
+c    INITIALIZING DATAKY COUNTER
+      CNT=1      
+      minsnow=2.
       QFREZE=0.
       xtrain=0.
       M=0
@@ -335,8 +336,8 @@ c901    continue
       do 9191 i=1,25*nn2
        snowhr(i)=0.
 9191  continue
-      moists=max(moists1,0.01)
-      moist(1:10)=max(moists1(1:10,1),0.01)
+      moists=max(moists1,0.01D+0)
+      moist(1:10)=max(moists1(1:10,1),0.01D+0)
       surflux=0.
       do 919 i=1,24
       hori(i)=hori1(i)
@@ -450,8 +451,8 @@ c    WRITE(I2,*)i,' ',j,' ',Thconds(i,j),' ',Thconds1(i,j)
       RHMINN(i)=RHMINN1(i)
       CCMAXX(i)=CCMAXX1(i)
       CCMINN(i)=CCMINN1(i)
-      WNMAXX(i)=max(WNMAXX1(i),0.1)
-      WNMINN(i)=max(WNMINN1(i),0.1)
+      WNMAXX(i)=max(WNMAXX1(i),0.1D+0)
+      WNMINN(i)=max(WNMINN1(i),0.1D+0)
       TMAXX(i)=TMAXX1(i)
       TMINN(i)=TMINN1(i)
       REFLS(i)=REFLS1(i)
@@ -775,12 +776,12 @@ C    ***********************************************************
        TD(12:35)=TAIRhr1(DOYS:DOYF)
        TD(37:60)=RHhr1(DOYS:DOYF)
        TD(62:85)=CLDhr1(DOYS:DOYF)
-       TD(87:110)=max(WNhr1(DOYS:DOYF),0.1)*6000.
+       TD(87:110)=max(WNhr1(DOYS:DOYF),0.1D+0)*6000.
        TD(112:135)=SOLRhr1(DOYS:DOYF)/ 4.185 / 10000. * 60.
        TD(36)=TAIRhr1(DOYF)
        TD(61)=RHhr1(DOYF)
        TD(86)=CLDhr1(DOYF)
-       TD(111)=max(WNhr1(DOYF),0.1)*6000.
+       TD(111)=max(WNhr1(DOYF),0.1D+0)*6000.
        TD(136)=SOLRhr1(DOYF)/ 4.185 / 10000. * 60.
        if(ZENhr1(1).gt.0)then
         TD(137:160)=ZENhr1(DOYS:DOYF)
@@ -899,7 +900,7 @@ C        MAX. SHADE BOUNDING CONDITION
               SHAYD=MAXSHADES(DOY)-0.1
           ENDIF
           MAXSHD = MAXSHADES(DOY)
-          maxsnode1=0
+          maxsnode1=0. ! reset snow settings
           do 2202 i=1,8
            snode(i)=0
 2202      continue

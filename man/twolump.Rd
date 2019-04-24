@@ -7,7 +7,7 @@
 ode(y = c(Tc_init, Ts_init, To_init), times = time, func = twolump, parms = indata)
 }
 \arguments{
-\item{t}{= seq(1,3600,60), time intervals (s) at which output is required}
+\item{t}{time intervals (s) at which output is required}
 
 \item{Tc_init}{= 5, initial core temperature (deg C)}
 
@@ -77,8 +77,9 @@ To Outer temperature (deg C)
 Tcf Final (steady state) temperature (deg C), if conditions remained constant indefinately
 }
 \description{
-Transient, 'one-lump', heat budget for computing rate of change of temperature
-under a constant or variable environment
+Transient, 'two-lump', heat budget for computing rate of change of temperature
+under environmental conditions that vary with time, using interpolation functions to
+estimate environmental conditions at particular time intervals.
 Michael Kearney, Raymond Huey and Warren Porter developed this R function and example in September 2017.
 }
 \examples{
@@ -86,8 +87,9 @@ library(deSolve) # note due to some kind of bug in deSolve, it must be loaded be
 library(NicheMapR)
 
 # get microclimate data
-loc <- "Alice Springs, Australia"
-micro <- micro_global(loc = loc) # run the model with default location and settings
+loc <- c(133.8779, -23.6987) # Alice Springs, Australia
+Usrhyt <- 0.05 # height of midpoint of animal, m
+micro <- micro_global(loc = loc, Usrhyt = Usrhyt) # run the model with specified location and animal height
 metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 soil <- as.data.frame(micro$soil) # soil temperatures, minimum shade
 

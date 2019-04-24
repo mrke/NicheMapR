@@ -77,8 +77,8 @@ C      FILES 6,7,10 & 12 ARE CONSOLE, OUTPUT, METOUT & SOIL RESPECTIVELY
 C      FILES 6,I2,I3 & I10 ARE CONSOLE, OUTPUT, METOUT & SOIL RESPECTIVELY
 
       DIMENSION DEPP(30),OUT2(55),NAME(55),curmoist(10),densfun(4)
-      DIMENSION HEAD(55),snownode(8),snode(8),tt(30),y(30),tt_past(30)
-      DIMENSION DRLAM(111),DRRLAM(111),SRLAM(111),qphase(8)
+      DIMENSION HEAD(55),snownode(10),snode(10),tt(30),y(30),tt_past(30)
+      DIMENSION DRLAM(111),DRRLAM(111),SRLAM(111),qphase(10)
 
       DIMENSION curhumid(10),soiltemp(10),meanT(30),meanTpast(30)
       DIMENSION moist(10),soilprop(10,5),layermass(10)
@@ -90,8 +90,8 @@ C      FILES 6,I2,I3 & I10 ARE CONSOLE, OUTPUT, METOUT & SOIL RESPECTIVELY
 
       COMMON/TABLE/TI(211),TD(211)
       COMMON/TABLE2/ILOCT(21)
-      COMMON/ARRAY/T(30),WC(20),C(20),DEP(30),IOUT(100),
-     1 OUT(101),ITEST(23)
+      COMMON/ARRAY/T(30),WC(20),C(20),DEP(30),OUT(101),IOUT(100),
+     1 ITEST(23)
       COMMON/PAR/SIGP,RCSP,SOK,SAB,HGTP,RUFP,BEGP,MON,PRTP,ERRP,END,
      1 SLEP,DAS,NONP,SUN,PLT,FIN,STP
       COMMON/CARRAY/INAME(20),SYMBOL(23)
@@ -244,6 +244,7 @@ C       SETTING THIS MONTH'S PERCENT OF SURFACE WITH FREE WATER/SNOW ON IT
     5 CONTINUE
 
       if(runsnow.eq.1)then
+      write(*,*) DOY
        PTWET=PCTWET(DOY)
        rainfall=RAIN(DOY)
       endif
@@ -317,42 +318,42 @@ c     phase change for freezing moist soil
        else
         js=1
        endif
-       do 1131 j=js,js+9 ! loop through soil nodes
-        if(j.lt.js+9)then
-         meanT(j)=(tt(j)+tt(j+1))/2. ! current temp
-         meanTpast(j)=(tt_past(j)+tt_past(j+1))/2. ! last hour's temp
-        else
-         meanT(j)=tt(j) ! current temp
-         meanTpast(j)=tt_past(j) ! last hour's temp
-        endif
-        if((meanTpast(j).gt.0).and.(meanT(j).le.0))then ! phase change, freezing
-         if(j.lt.js+9)then
-          layermass(j-js+1)=(dep(j-js+1+4)-dep(j-js+4))*10000*
-     &     moist(j-js+1)
-         else
-          layermass(j-js+1)=(dep(j-js+4)+100-dep(j-js+4))*10000*
-     &     moist(j-js+1)! deep soil
-         endif
-         qphase2(j-js+1)=(meanTpast(j)-meanT(j))*layermass(j-js+1)*4.186
-         sumphase2(j-js+1)=qphase2(j-js+1)+sumphase2(j-js+1)
-         if(sumphase2(j-js+1).gt.(HTOFN*layermass(j-js+1)))then
-          t(j)=-0.1
-          t(j+1)=-0.1
-          tt(j)=-0.1
-          tt(j+1)=-0.1
-          y(j)=-0.1
-          y(j+1)=-0.1
-          sumphase2(j-js+1)=0.
-         else
-          t(j)=0.1
-          t(j+1)=0.1
-          tt(j)=0.1
-          tt(j+1)=0.1
-          y(j)=0.1
-          y(j+1)=0.1
-         endif
-        endif
-1131   continue
+C      do 1131 j=js,js+9 ! loop through soil nodes
+C       if(j.lt.js+9)then
+C        meanT(j)=(tt(j)+tt(j+1))/2. ! current temp
+C        meanTpast(j)=(tt_past(j)+tt_past(j+1))/2. ! last hour's temp
+C       else
+C        meanT(j)=tt(j) ! current temp
+C        meanTpast(j)=tt_past(j) ! last hour's temp
+C       endif
+C       if((meanTpast(j).gt.0).and.(meanT(j).le.0))then ! phase change, freezing
+C        if(j.lt.js+9)then
+C         layermass(j-js+1)=(dep(j-js+1+4)-dep(j-js+4))*10000*
+C    &     moist(j-js+1)
+C        else
+C         layermass(j-js+1)=(dep(j-js+4)+100-dep(j-js+4))*10000*
+C    &     moist(j-js+1)! deep soil
+C        endif
+C        qphase2(j-js+1)=(meanTpast(j)-meanT(j))*layermass(j-js+1)*4.186
+C        sumphase2(j-js+1)=qphase2(j-js+1)+sumphase2(j-js+1)
+C        if(sumphase2(j-js+1).gt.(HTOFN*layermass(j-js+1)))then
+C         t(j)=-0.1
+C         t(j+1)=-0.1
+C         tt(j)=-0.1
+C         tt(j+1)=-0.1
+C         y(j)=-0.1
+C         y(j+1)=-0.1
+C         sumphase2(j-js+1)=0.
+C        else
+C         t(j)=0.1
+C         t(j+1)=0.1
+C         tt(j)=0.1
+C         tt(j+1)=0.1
+C         y(j)=0.1
+C         y(j+1)=0.1
+C        endif
+C       endif
+C1131   continue
       endif
 
 
@@ -490,7 +491,7 @@ c     convert to W/m2
          snowdens=(densfun(1)-densfun(2))*(1-EXP(-1*densfun(3)*
      &   cursnow-densfun(4)*snowage))+densfun(2)
         else ! linear function
-         snowdens=min(0.9167,densfun(1)*snowage+densfun(2))
+         snowdens=min(0.9167D+0,densfun(1)*snowage+densfun(2))
         endif
         densrat=snowdens/prevden
         if(methour.gt.1)then
@@ -540,9 +541,10 @@ c     don't lose water if heat is just going into melting snow
       endif
       methour=0
       methour=(int(SIOUT(1)/60)+1)+24*(DOY-1)
-
 ************** begin main code for snow model ********************************
       if(runsnow.eq.1)then
+c       write(*,*) "in osub"
+c       write(*,*) methour
 c      get cm snow lost due to rainfall - from Anderson model
        if((OUT(2).ge.snowtemp).and.(rainfall.gt.0).and.((time.lt.1e-8)
      & .or.(int(rainhourly).eq.1)))then ! mean air temperature warmer than snow temperature and more than 1 mm rain and midnight
@@ -594,16 +596,16 @@ C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
           if(j.ne.maxsnode2+1)then ! not at the bottom yet
            if(meanT(cnd).gt.melthresh)then ! check if greater than threshold above 0 deg C (here 0.4 deg C)
             meltheat=(meanT(cnd)-melthresh)*cpsnow* ! g snow melted (change in temp x heat capacity x g snow (1m2 * height of layer)
-     &       (snode(j+8-maxsnode2)-snode(cnd))*10000*snowdens+ ! plus mass times heat of fusion since the layer got above zero
-     &        HTOFN*(snode(j+8-maxsnode2)-snode(cnd))*
-     &        10000*snowdens
+     &       (snode(max(1,j+8-maxsnode2))-snode(max(1,cnd)))*10000* ! plus mass times heat of fusion since the layer got above zero
+     &        snowdens+HTOFN*(snode(max(1,j+8-maxsnode2))-
+     &        snode(max(1,cnd)))*10000*snowdens
             melt=melt+meltheat/HTOFN !(snow depth in cm x snow density in g/cm3 converted units of g/m2) gives J heat input,
            endif                     ! divided by heat of fusion to get g melted
           else
            if(meanT(cnd).gt.melthresh)then ! doing deepest node - depth here is flexible and is the difference between current snow and the
             meltheat=(meanT(cnd)-melthresh)*cpsnow* ! height of the current maximum node used of the 8 possible
-     &       (cursnow-snownode(maxsnode2))*10000*snowdens+
-     &       HTOFN*(cursnow-snownode(maxsnode2))*10000*snowdens
+     &       (cursnow-snownode(max(1,maxsnode2)))*10000*snowdens+
+     &       HTOFN*(cursnow-snownode(max(1,maxsnode2)))*10000*snowdens
             melt=melt+meltheat/HTOFN
            endif
           endif
@@ -611,10 +613,10 @@ C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
            if(j.lt.8)then
             if(j.ne.maxsnode2+1)then ! not at bottom yet
              if((meanTpast(cnd).ge.0).and.(meanT(cnd).le.0))then ! phase change, freezing
-              layermass(cnd)=max(0.,(snode(j+8-maxsnode2)-snode(cnd))*
-     &        10000*snowdens)
-              qphase(cnd)=(meanTpast((cnd))-meanT(cnd))*
-     &        layermass(cnd)*cpsnow
+              layermass(cnd)=max(0.D+0,(snode(max(1,j+8-maxsnode2))-
+     &        snode(max(1,cnd)))*10000*snowdens)
+              qphase(max(1,cnd))=(meanTpast(max(1,cnd))-meanT(max(1,cnd)
+     &        ))*layermass(max(1,cnd))*cpsnow
               t(cnd)=0.
               t(cnd+1)=0.
               tt(cnd)=0.
@@ -623,28 +625,29 @@ C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
               y(cnd+1)=0.
              endif
             else
-             if((meanTpast(cnd).ge.0).and.(meanT(cnd).le.0))then ! phase change, freezing
-              layermass(cnd)=max(0.,(cursnow-snownode(maxsnode2))*10000
-     &        *snowdens)
-              qphase(cnd)=(meanTpast(cnd)-meanT(cnd))*layermass(cnd)*
-     &        cpsnow
-              t(cnd)=0.
+             if((meanTpast(max(1,cnd)).ge.0).and.
+     &(meanT(max(1,cnd)).le.0))then ! phase change, freezing        
+              layermass(cnd)=max(0.D+0,(cursnow-snownode(max(1,maxsnode2
+     &        )))*10000*snowdens)
+              qphase(max(1,cnd))=(meanTpast(max(1,cnd))-meanT(max(1,cnd
+     &        )))*layermass(max(1,cnd))*cpsnow
+              t(max(1,cnd))=0.
               t(cnd+1)=0.
-              tt(cnd)=0.
+              tt(max(1,cnd))=0.
               tt(cnd+1)=0.
-              y(cnd)=0.
+              y(max(1,cnd))=0.
               y(cnd+1)=0.
              endif
             endif
            else
             if((meanTpast(8).ge.0).and.(meanT(8).le.0))then ! phase change, freezing
-             layermass(8)=max(0.,(cursnow-snownode(8))*10000
+             layermass(8)=max(0.D+0,(cursnow-snownode(8))*10000
      &       *snowdens)
              qphase(8)=(meanTpast(8)-meanT(8))*layermass(8)*
      &       cpsnow
-             t(cnd)=0.
-             tt(cnd)=0.
-             y(cnd)=0.
+             t(max(1,cnd))=0.
+             tt(max(1,cnd))=0.
+             y(max(1,cnd))=0.
             endif
            endif
           endif
@@ -657,14 +660,15 @@ C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
            do 1121 j=1,(maxsnode2+1) ! loop through snow nodes
             if(j.lt.9)then
              cnd=j+7-maxsnode2
-             if((t(cnd).lt.-1e-8).and.(qphase(cnd).gt.0))then
-              t(cnd)=-0.5
+             if((t(max(1,cnd)).lt.-1e-8).and.(qphase(max(1,cnd))
+     &        .gt.0))then
+              t(max(1,cnd))=-0.5
               t(cnd+1)=-0.5
-              tt(cnd)=-0.5
+              tt(max(1,cnd))=-0.5
               tt(cnd+1)=-0.5
-              y(cnd)=-0.5
+              y(max(1,cnd))=-0.5
               y(cnd+1)=-0.5
-              qphase(cnd)=0.
+              qphase(max(1,cnd))=0.
              endif
             endif
 1121       continue
@@ -690,6 +694,9 @@ C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
        endif
        if(methour.gt.1)then
         cursnow=snowhr(methour-1)+netsnow-rainmelt-melted
+        if(cursnow.gt.0)then
+         cursnow=cursnow+0.
+        endif
         snowhr(methour)=cursnow
         if(snowhr(methour).lt.0)then
          snowhr(methour)=0.
@@ -714,7 +721,7 @@ C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
        endif
        endif
        cursnow=snowhr(methour)
-c      make sure snow is 0 degrees or less, now that melting is done
+C      make sure snow is 0 degrees or less, now that melting is done
        do 102 i=1,8
         if(snode(i).gt.0)then
          if(tt(i).gt.0)then
@@ -755,6 +762,9 @@ c      ensure that recently fallen snow is frozen
         endif
        else
         cursnow=netsnow-rainmelt-melted
+        if(cursnow.gt.0)then
+         cursnow=cursnow+0.
+        endif
         snowhr(methour)=cursnow
         SNOWOUT=snowhr(methour)
         tt_past=tt
@@ -782,18 +792,19 @@ C       SETTING THIS MONTH'S PERCENT OF SURFACE WITH FREE WATER/SNOW ON IT
        SNOWOUT=snowhr(methour)
        call snowlayer
        if(methour.gt.1)then
-       if((SNOWOUT-snownode(int(maxsnode1)).lt.0.5) ! avoid getting too close to a given node - save to xtrain and add/subtract later
-     &  .and.(snowout.le.snowhr(methour-1)).and.(SNOWOUT.gt.0))then
-        xtrain=xtrain+(SNOWOUT-snownode(int(maxsnode1)))*snowdens
-        SNOWOUT=snownode(int(maxsnode1))-.1
-        snowhr(methour)=SNOWOUT
-       endif
+        if((SNOWOUT-snownode(max(1,int(maxsnode1))).lt.0.5) ! avoid getting too close to a given node - save to xtrain and add/subtract later
+     &   .and.(snowout.le.snowhr(methour-1)).and.(SNOWOUT.gt.0))then
+         xtrain=xtrain+(SNOWOUT-snownode(max(1,int(maxsnode1))))
+     &    *snowdens
+         SNOWOUT=snownode(max(1,int(maxsnode1)))-.1
+         snowhr(methour)=SNOWOUT
+        endif
        endif
        call snowlayer
-       if(((snowout.lt.minsnow+0.5).or.(snowout.lt.snownode(int ! avoid getting too close to a given node - save to xtrain and add/subtract later
-     &  (maxsnode1))+0.5)).and.(snowout.gt.0))THEN
+       if(((snowout.lt.minsnow+0.5).or.(snowout.lt.snownode(max(1,int ! avoid getting too close to a given node - save to xtrain and add/subtract later
+     &  (maxsnode1)))+0.5)).and.(snowout.gt.0))THEN
         xtrain=0.5*snowdens
-        SNOWOUT=snownode(int(maxsnode1))+0.5
+        SNOWOUT=snownode(max(1,int(maxsnode1)))+0.5
         snowhr(methour)=SNOWOUT
        endif
        call snowlayer
@@ -904,7 +915,7 @@ C       CHECK FOR OUTSIZE T(1)
         IF(TTEST.GT. 100)THEN
          T(1)=TAIR + 1.0
         ENDIF
-        HC=max(ABS((QCONV*4.184/60.*10000)/(T(1)-TAIR)),0.5)
+        HC=max(ABS((QCONV*4.184/60.*10000)/(T(1)-TAIR)),0.5D+0)
         HD=(HC/(CP*DENAIR))*(0.71/0.60)**0.666
         sat=2 ! setting for evap to simulate wet surface and return SI units
         CALL EVAP(soiltemp(1),TAIR,RH,HD,QEVAP,SAT)

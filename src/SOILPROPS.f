@@ -42,7 +42,7 @@ c     Predicting the effect of temperature on soil thermal conductivity. Soil Sc
       double precision snowdens,snowmelt,snowtemp,cursnow,
      & snowage,prevden,cpsnow,grasshade
      
-      INTEGER DAYCT,I,J,II,maxcount
+      INTEGER I,J,II,maxcount
       INTEGER JULNUM,DOY,Numtyps
       INTEGER NON,evenrain,runmoist,runsnow,trouble
       INTEGER I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92,I93
@@ -52,7 +52,7 @@ c     Predicting the effect of temperature on soil thermal conductivity. Soil Sc
       dimension soilprop(10,5),TSOI(30),moistt(10)
       DIMENSION Thconduct(30),Density(30),Spheat(30)
       dimension drydensity(10),bar(10),k_m(10)
-      dimension spht(10),dens(10),snownode(8),snode(8),densfun(4)
+      dimension spht(10),dens(10),snownode(10),snode(10),densfun(4)
 
       COMMON/SOYVAR1/Numtyps
       COMMON/SOYVAR2/Thconduct,Density,Spheat
@@ -72,8 +72,7 @@ c     Predicting the effect of temperature on soil thermal conductivity. Soil Sc
      * AZMUTH,SLOPE,TSNHR,TSRHR,Hemis
       COMMON/WIOCONS2/IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART,IEND2
      
-      DATA DAYCT/1/
-      HTOFN=333500 !J/kg
+      HTOFN=333500. !J/kg
 
       do 3 j=1,numtyps
       drydensity(j)=soilprop(j,1)
@@ -232,7 +231,7 @@ C     1 kg/m3 * 1000g/1 kg * 1 m3/1000000.
            snowdens=(densfun(1)-densfun(2))*(1-EXP(-1*densfun(3)*cursnow
      &      -densfun(4)*snowage))+densfun(2)
          else ! linear function
-          snowdens=min(0.9167,densfun(1)*snowage+densfun(2))
+          snowdens=min(0.9167D+0,densfun(1)*snowage+densfun(2))
          endif
        endif
        if(cursnow.ge.minsnow)then ! snow is present
@@ -260,7 +259,7 @@ C     1 kg/m3 * 1000g/1 kg * 1 m3/1000000.
          endif
          ! now only give layers with snow the density of snow, otherwise zero (which means they have no influence)
          if((snode(i).gt.0).or.
-     &    (((snode(i).lt.1e-8).and.(snode(i+1).gt.0))))then
+     &    (((snode(i).lt.1e-8).and.(snode(min(8,i+1)).gt.0))))then
           Density(i)=snowdens
          else
           Density(i)=0.

@@ -77,9 +77,9 @@ library(deSolve) # note due to some kind of bug in deSolve, it must be loaded be
 library(NicheMapR)
 
 # get microclimate data
-loc <- "Alice Springs, Australia"
+loc <- c(133.8779, -23.6987) # Alice Springs, Australia
 Usrhyt <- 0.05 # height of midpoint of animal, m
-micro <- micro_global(loc = loc, Usrhyt = Usrhyt) # run the model with default location and settings
+micro <- micro_global(loc = loc, Usrhyt = Usrhyt) # run the model with specified location and animal height
 metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 soil <- as.data.frame(micro$soil) # soil temperatures, minimum shade
 
@@ -95,7 +95,7 @@ soil <- cbind(dates, soil)
 microclimate <- cbind(metout[, 1:5], metout[, 8], soil[, 4], metout[, 13:15], metout[, 6])
 colnames(microclimate) <- c('dates', 'DOY', 'TIME', 'TALOC', 'TA1.2m', 'VLOC', 'TS', 'ZEN', 'SOLR', 'TSKYC', 'RHLOC')
 
-# define animal parameters - here simulating a 1000 g cylinder
+# define animal parameters - here simulating a 1000 g ellipsoid
 cp <- 3342 # specific heat of flesh, J/kg-C
 rho <- 1000 # animal density, kg/m3
 q <- 0 # metabolic rate, W/m3

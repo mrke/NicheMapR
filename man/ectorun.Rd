@@ -31,7 +31,9 @@ ectorun(ecto)
 
 \item{DEP}{Depths used for the microclimate model}
 
-\item{RAINFALL}{Daily rainfall}
+\item{rainfall}{Daily rainfall}
+
+\item{rainhr}{Hourly rainfall (overwrites rainfall if non-negative}
 
 \item{debmod}{Dynamic Energy Budget (DEB) model paramters}
 

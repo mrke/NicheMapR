@@ -47,7 +47,7 @@ C     THIS SUBROUTINE CALLED BY SOLRAD SETS UP I/O FOR SOLRAD
       CHARACTER*80 LABL1,LABL2,LABL3
       CHARACTER*12 FNAME
 
-      DIMENSION TIMINS(4),TIMAXS(4),snownode(8),snode(8),densfun(4)
+      DIMENSION TIMINS(4),TIMAXS(4),snownode(10),snode(10),densfun(4)
       DIMENSION julstnd(2),Thconduct(30),Density(30),Spheat(30)
 
 c     Variable substrate properties, times & locations

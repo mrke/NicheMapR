@@ -261,7 +261,7 @@ c     # check that water potential doesn't become too large
 
 c     # new water balance at end of the time step
       do 7 I=2,M
-       WN(I)=max(WS(I)*(PE(I)/P(I))**B1(I),1.E-7)! cap minimum water content
+       WN(I)=max(WS(I)*(PE(I)/P(I))**B1(I),1.D-7)! cap minimum water content
        P(I)=PE(I)*(WS(I)/WN(I))**BB(I)! recompute water potential after capping water content to prevent instabilities
        H(I)=EXP(MW*P(I)/(R*T(I-1)))
 7     continue

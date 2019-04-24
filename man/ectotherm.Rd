@@ -80,6 +80,8 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{nyears}{ = micro$nyears, Number of years the simulation runs for - must be consistent with dimensions of environmental input data}\cr}
 \item{\code{enberr}{ = 0.0002, Factor by which the mass is multiplied to obtain a tolerance level for the heat budget solution}\cr}
 \item{\code{live}{ = 1, Live (metabolism/behaviour) or dead animal?}\cr}
+\item{\code{transient}{ = 0, Run a transient (i.e. include heat storage) simulation (1=yes, 0=no)? No behaviour yet - assums full sun}\cr}
+\item{\code{delta_shade}{ = 3, Percent shade increment step, 0-100\%, allowing different thermoregulatory precision (smaller values increase run time)}\cr}
 \item{\code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1 = yes, 0 = no}\cr}
 \item{\code{write_csv}{ = 0, Write csv files of final output? 0 = no, 1 = just yearout and yearsout, 2 = all output}\cr}
 \item{\code{startday}{ = 1, Day of year at which simulation starts}\cr}
@@ -105,6 +107,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{soilpot}{ = micro$soilpot, Microclimate model output for soil water potential, minimum shade conditions}\cr}
 \item{\code{shadpot}{ = micro$shadpot, Microclimate model output for soil water potential, maximum shade conditions}\cr}
 \item{\code{rainfall}{ = micro$RAINFALL, Vector of daily rainfall (mm)}\cr}
+\item{\code{rainhr}{ = rep(-1,nrow(metout)), Vector of hourly rainfall (mm), overwrites rainfall if not negative}\cr}
 \item{\code{elev}{ = as.numeric(micro$elev), Elevation of simulation (m), obtained from microclimate model output by default}\cr}
 \item{\code{longitude}{ = micro$longlat[1], Longitude (decimal degrees), obtained from microclimate model output by default}\cr}
 \item{\code{latitude}{ = micro$longlat[2], Latitude (decimal degrees), obtained from microclimate model output by default}\cr}
@@ -119,7 +122,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{fatosk}{ = 0.4, Configuration factor to sky (-) for infrared calculations}\cr}
 \item{\code{fatosb}{ = 0.4, Configuration factor to subsrate for infrared calculations}\cr}
 \item{\code{rinsul}{ = 0, Insulative fat layer thickness (m)}\cr}
-\item{\code{F_cond}{ = 0.25, Fraction of surface contacting the substrate}\cr}
+\item{\code{pct_cond}{ = 10, Percentage of surface contacting the substrate (\%)}\cr}
 \item{\code{c_body}{ = 3073, Specific heat of flesh J/(kg-K)}\cr}
 \item{\code{k_flesh}{ = 0.5, Thermal conductivity of flesh (W/mC, range: 0.412-2.8)}\cr}
 \item{\code{rho_body}{ = 1000, Density of flesh (kg/m3)}\cr}
@@ -270,12 +273,12 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \itemize{
 \item{\code{container}{ = 0, Run the water body/container model? (aquatic start of life cycle, e.g. frog or mosquito)}\cr}
 \item{\code{wetmod}{ = 0, Use precomputed wetland temperature \code{wetlandTemps} and depths \code{wetlandDepthds}?}\cr}
-\item{\code{conth}{ = 10, Cylindrical container/pond height (cm)}\cr}
-\item{\code{contw}{ = 100., Cylindrical container/pond diameter (cm)}\cr}
+\item{\code{conth}{ = 100, Cylindrical container/pond height (mm)}\cr}
+\item{\code{contw}{ = 1000, Cylindrical container/pond diameter (mm)}\cr}
 \item{\code{contype}{ = 1, Is 'containter' sitting on the surface, like a bucket (0) or sunk into the ground like a pond (1)}\cr}
 \item{\code{rainmult}{ = 1, Rainfall multiplier to reflect catchment (don't make this zero unless you want a drought!)}\cr}
 \item{\code{continit}{ = 0, Initial container water level (cm)}\cr}
-\item{\code{conthole}{ = 0, Daily loss of height (mm) due to 'hole' in container (e.g. infiltration to soil, drawdown from water tank)}\cr}
+\item{\code{conthole}{ = 0, Daily (or hourly if rainhr vector filled) loss of height (mm) due to 'hole' in container (e.g. infiltration to soil, drawdown from water tank)}\cr}
 \item{\code{contonly}{ = 1, Just run the container model and quit?}\cr}
 \item{\code{contwet}{ = 80, \% of container surface acting as a free water exchanger}\cr}
 \item{\code{wetlandTemps}{ = matrix(data = 0, nrow = 24 * ndays, ncol = 1), Matrix of hourly wetland temperaures (°C)}\cr}
@@ -329,7 +332,7 @@ environ variables:
 \item 13 VEL - Wind speed (m/s) at animal location
 \item 14 RELHUM - Relative humidity (\%) at animal location
 \item 15 ZEN - Zenith angle of sun (degrees - 90 = below the horizon)
-\item 16 CONDEP - Depth of water body (cm) (may not be simulated or supplied)
+\item 16 CONDEP - Depth of water body (mm) (may not be simulated or supplied)
 \item 17 WATERTEMP - Temperature of water body (°C) (may not be simulated or supplied)
 \item 18 DAYLENGTH - Day length (hours)
 \item 19 WINGANGLE - Wing angle (degrees) for butterfly model

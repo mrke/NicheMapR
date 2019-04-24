@@ -29,11 +29,11 @@ C     Computes snow layer and thermal properties
       double precision snowdens,snowmelt,snowtemp,cursnow,snowage
      & ,prevden,grasshade
      
-      INTEGER DAYCT,I,JULNUM,DOY,Numtyps,ITEST,NON,SNON,methour
+      INTEGER I,JULNUM,DOY,Numtyps,ITEST,NON,SNON,methour
       INTEGER I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,IOUT,maxsnode
       INTEGER I91,I92,I93,I94,I95,I96,I97,I98,I99,I100,I101
-      DIMENSION DENDAY(30),SPDAY(30),TKDAY(30),snode(8),densfun(4)
-      DIMENSION snownode(8),Thconduct(30),Density(30),Spheat(30),TT(30)
+      DIMENSION DENDAY(30),SPDAY(30),TKDAY(30),snode(10),densfun(4)
+      DIMENSION snownode(10),Thconduct(30),Density(30),Spheat(30),TT(30)
 
       COMMON/SOYVAR1/Numtyps
       COMMON/SOYVAR2/Thconduct,Density,Spheat
@@ -46,10 +46,9 @@ C     Computes snow layer and thermal properties
      &,maxsnode1,snode,cursnow,daysincesnow,lastday,undercatch,rainmeltf
      &,densfun,snowcond,intercept,snowage,prevden,grasshade
       COMMON/SIUNIT/SIOUT(10)
-      COMMON/ARRAY/T(30),WC(20),C(20),DEP(30),IOUT(100),
-     1 OUT(101),ITEST(23)
+      COMMON/ARRAY/T(30),WC(20),C(20),DEP(30),OUT(101),IOUT(100),
+     1 ITEST(23)
 
-      DATA DAYCT/1/
       maxsnode=0
       if(cursnow.gt.300)then
        maxsnode1=0.
@@ -57,14 +56,14 @@ C     Computes snow layer and thermal properties
 
       methour=int(SIOUT(1)/60)+1+24*(DOY-1)
 
-      if(cursnow.lt.minsnow)then
+      if(cursnow.lt.minsnow)then ! get rid of snow
        maxsnode=0
        maxsnode1=0.
        do 34 i=1,8
         snode(i)=0.
 34     continue
        snowhr(methour)=0.
-        do 52 i=1,8
+        do 52 i=1,8 ! set temperature of snow nodes to that of soil node 1
          snode(i)=0.
          t(i)=t(1)
          tt(i)=tt(1)
@@ -84,7 +83,7 @@ C     Computes snow layer and thermal properties
         maxsnode=7
        endif
 
-c     now buildup the snow nodes accordingly but start from the bottom
+c     now build up the snow nodes accordingly but start from the bottom
        do 3 i=1,maxsnode
         snode(i+(8-maxsnode))=snownode(i)
 3      continue
@@ -111,6 +110,5 @@ c     current snow depth in cm
       endif
 
   900 CONTINUE
-
       RETURN
       END
