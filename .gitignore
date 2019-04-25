@@ -16,7 +16,6 @@ UK dem terr50 code.R
 addTrans.R
 aererg.txt
 agg_Cosby_LAI_SLGAloamtop_stemp.csv
-allstat.Rda
 calculating skinwet_to share.R
 calculating skinwet_to share_liopholis ex.R
 compile_micro.R
