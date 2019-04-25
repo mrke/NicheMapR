@@ -579,8 +579,8 @@ C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
         PSTD=101325.
         PATMOS=PSTD*((1.-(0.0065*ALTT/288.))**(1./0.190284))
         BP = PATMOS
-        call WETAIR(0.,WB,100.,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,CP,
-     &  WTRPOT) ! get specific heat and mixing ratio of humid air at zero C
+        call WETAIR(0.D+0,WB,100.D+0,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,
+     &  DENAIR,CP,WTRPOT) ! get specific heat and mixing ratio of humid air at zero C
         cpsnow = (2.100*snowdens+(1.005+1.82*(RW/1.+RW))* ! based on https://en.wiktionary.org/wiki/humid_heat
      &   (1-snowdens)) ! compute weighted specific heat accounting for ice vs airm SI units
          hcap=cpsnow+HTOFN !J/gC
@@ -645,7 +645,6 @@ C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
            endif
           endif
 1100     continue
-
          sumphase=sum(qphase)+sumphase
          sumlayer=sum(layermass)
          if(cursnow.lt.200)then
@@ -672,7 +671,6 @@ C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
          endif
         endif
        endif
-
        melted=melt*0.0001 ! convert from g/m2 of ice to cm snow
        if(DOY.gt.1)then
         melted=melted*snowmelt
@@ -1018,7 +1016,6 @@ c     end check for soil moisture model running
       if(gwsurf.lt.0)then
        gwsurf=0
       endif
-
       if(int(SIOUT(1)).eq.1440)then
        methour=(int(1380/60)+1)+24*(DOY-1)
       else
@@ -1458,7 +1455,7 @@ c     end check for previous slippage
      &shadsoil(methour,9),",",shadsoil(methour,10),",",
      &shadsoil(methour,11),",",shadsoil(methour,12)
       if(runsnow.eq.1)then
-      WRITE(I7,159) JULDAY(DOY),",",SIOUT(1),",",
+      WRITE(I8,159) JULDAY(DOY),",",SIOUT(1),",",
      &TT(1),",",TT(2),",",TT(3),",",
      &TT(4),",",TT(5),",",TT(6),",",
      &TT(7),",",TT(8),",",TT(9)
