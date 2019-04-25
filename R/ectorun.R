@@ -37,23 +37,7 @@
 #' @useDynLib "NicheMapR"
 #' @export
 ectorun <- function(ecto) {
-  os = Sys.info()['sysname']
-  if (os == "Windows") {
-    if (R.Version()$arch=="x86_64") {
-      libpath='/NicheMapR/libs/x64/NicheMapR.dll'
-    } else {
-      libpath='/NicheMapR/libs/i386/NicheMapR.dll'
-    }
-  } else if (os == "Linux") {
-    libpath='/NicheMapR/libs/NicheMapR.so'
-  } else if (os == "Darwin") {
-    libpath='/NicheMapR/libs/NicheMapR.so'
-  }
-  if(is.loaded("ectotherm", "NicheMapR", type = "FORTRAN")==FALSE){
-    dyn.load(paste(lib.loc = .libPaths()[1],libpath,sep=""))
-  }
   ndays<-ecto$ndays
-
   a <- .Fortran("ectotherm",
                 as.integer(ecto$ndays),
                 as.integer(ecto$nstages),
