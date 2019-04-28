@@ -3,8 +3,8 @@
 #' An implementation of the NicheMapR microclimate model that uses the GRIDMET daily weather database http://www.climatologylab.org/gridmet.html, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "metdata_elevationdata.nc".
 #' @encoding UTF-8
 #' @param loc Longitude and latitude (decimal degrees)
-#' @param dstart First day to run, date in format "d-m-Y" e.g. "01-01-2016"
-#' @param dfinish Last day to run, date in format "d-m-Y" e.g. "31-12-2016"
+#' @param dstart First day to run, date in format "d/m/Y" e.g. "01-01-2016"
+#' @param dfinish Last day to run, date in format "d/m/Y" e.g. "31-12-2016"
 #' @param REFL Soil solar reflectance, decimal \%
 #' @param elev Elevation, if to be user specified (m)
 #' @param slope Slope in degrees
@@ -50,7 +50,7 @@
 #' \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
 #' \code{warm}{ = 0, uniform warming, °C}\cr\cr
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
-#' \code{opendap}{ = 1, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
+#' \code{opendap}{ = 1, query met grids via opendap}\cr\cr
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
@@ -227,7 +227,7 @@
 #' library(NicheMapR)
 #' dstart <- "01/01/2016"
 #' dfinish <- "31/12/2017"
-#' micro<-micro_usa() # run the model at the default location (Madison, Wisconsin) for 2016 to 2017 using opendap ((does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)
+#' micro<-micro_usa() # run the model at the default location (Madison, Wisconsin) for 2016 to 2017 using opendap
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
@@ -555,15 +555,15 @@ micro_usa <- function(
       stop("package 'raster' is needed. Please install it.",
         call. = FALSE)
     }
-    if (!require("ncdf4", quietly = TRUE)) {
-      stop("package 'ncdf4' is needed. Please install it.",
+    if (!require("RNetCDF", quietly = TRUE)) {
+      stop("package 'RNetCDF' is needed. Please install it.",
         call. = FALSE)
     }
     longlat <- loc
     x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
 
     require("raster")
-    require("ncdf4")
+    require("RNetCDF")
 
     # get the local timezone reference longitude
     if(timezone==1){ # this now requires registration
@@ -612,18 +612,18 @@ micro_usa <- function(
 
         cat("extracting elevation via opendaps \n")
         baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/MET/"
-        nc <- ncdf4::nc_open(paste0(baseurl, "/elev/metdata_elevationdata.nc"))
-        lon <- ncdf4::ncvar_get(nc, "lon")
-        lat <- ncdf4::ncvar_get(nc, "lat")
+        nc <- RNetCDF::open.nc(paste0(baseurl, "/elev/metdata_elevationdata.nc"))
+        lon <- RNetCDF::var.get.nc(nc, "lon")
+        lat <- RNetCDF::var.get.nc(nc, "lat")
         flat=match(abs(lat-x[2])<1/48,1)
         latindex=which(flat %in% 1)
         flon=match(abs(lon-x[1])<1/48,1)
         lonindex=which(flon %in% 1)
         start <- c(lonindex, latindex, 1)
-        count <- c(1, 1, -1)
-        USADEM <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "elevation",
+        count <- c(1, 1, NA)
+        USADEM <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "elevation",
           start = start, count = count)))
-        ncdf4::nc_close(nc)
+        RNetCDF::close.nc(nc)
       }else{
         USADEM <- extract(raster::raster(paste0(spatial,"/metdata_elevationdata.nc")), x) # metres above sea level
       }
@@ -717,48 +717,48 @@ micro_usa <- function(
         baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_met_"
         cat(paste0("reading weather input for ", dstart, " to ", dfinish, " \n"))
         cat(paste0("tmin weather input \n"))
-        nc <- ncdf4::nc_open(paste0(baseurl, "tmmn_1979_CurrentYear_CONUS.nc"))
-        day <- retry(as.numeric(ncvar_get(nc, varid = "day")))
-        lon <- ncdf4::ncvar_get(nc, "lon")
-        lat <- ncdf4::ncvar_get(nc, "lat")
+        nc <- RNetCDF::open.nc(paste0(baseurl, "tmmn_1979_CurrentYear_CONUS.nc"))
+        day <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "day")))
+        lon <- RNetCDF::var.get.nc(nc, "lon")
+        lat <- RNetCDF::var.get.nc(nc, "lat")
         flat <- match(abs(lat-x[2])<1/48,1)
         latindex <- which(flat %in% 1)
         flon <- match(abs(lon-x[1])<1/48,1)
         lonindex <- which(flon %in% 1)
         start <- c(lonindex, latindex, which(day == startday) - 1)
         count <- c(1, 1, countday)
-        Tmin <- retry(as.numeric(ncvar_get(nc, varid = "daily_minimum_temperature", start = start, count = count))) - 273.15
-        nc_close(nc)
+        Tmin <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_minimum_temperature", start = start, count = count))) - 273.15
+        RNetCDF::close.nc(nc)
         cat(paste0("tmax weather input \n"))
-        nc <- nc_open(paste0(baseurl, "tmmx_1979_CurrentYear_CONUS.nc"))
-        Tmax <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "daily_maximum_temperature", start = start, count = count))) - 273.15
-        ncdf4::nc_close(nc)
+        nc <- RNetCDF::open.nc(paste0(baseurl, "tmmx_1979_CurrentYear_CONUS.nc"))
+        Tmax <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_maximum_temperature", start = start, count = count))) - 273.15
+        RNetCDF::close.nc(nc)
         cat(paste0("rhmin weather input \n"))
-        nc <- ncdf4::nc_open(paste0(baseurl, "rmin_1979_CurrentYear_CONUS.nc"))
-        rhmin <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "daily_minimum_relative_humidity", start = start, count = count)))
-        ncdf4::nc_close(nc)
+        nc <- RNetCDF::open.nc(paste0(baseurl, "rmin_1979_CurrentYear_CONUS.nc"))
+        rhmin <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_minimum_relative_humidity", start = start, count = count)))
+        RNetCDF::close.nc(nc)
         cat(paste0("rhmax weather input \n"))
-        nc <- ncdf4::nc_open(paste0(baseurl, "rmax_1979_CurrentYear_CONUS.nc"))
-        rhmax <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "daily_maximum_relative_humidity", start = start, count = count)))
-        ncdf4::nc_close(nc)
+        nc <- RNetCDF::open.nc(paste0(baseurl, "rmax_1979_CurrentYear_CONUS.nc"))
+        rhmax <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_maximum_relative_humidity", start = start, count = count)))
+        RNetCDF::close.nc(nc)
         cat(paste0("rain weather input \n"))
-        nc <- ncdf4::nc_open(paste0(baseurl, "pr_1979_CurrentYear_CONUS.nc"))
-        Rain <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "precipitation_amount", start = start, count = count)))
-        ncdf4::nc_close(nc)
+        nc <- RNetCDF::open.nc(paste0(baseurl, "pr_1979_CurrentYear_CONUS.nc"))
+        Rain <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "precipitation_amount", start = start, count = count)))
+        RNetCDF::close.nc(nc)
         cat(paste0("solar weather input \n"))
-        nc <- ncdf4::nc_open(paste0(baseurl, "srad_1979_CurrentYear_CONUS.nc"))
-        solar <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "daily_mean_shortwave_radiation_at_surface", start = start, count = count)))
-        ncdf4::nc_close(nc)
+        nc <- RNetCDF::open.nc(paste0(baseurl, "srad_1979_CurrentYear_CONUS.nc"))
+        solar <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_mean_shortwave_radiation_at_surface", start = start, count = count)))
+        RNetCDF::close.nc(nc)
         cat(paste0("wind weather input \n"))
-        nc <- ncdf4::nc_open(paste0(baseurl, "vs_1979_CurrentYear_CONUS.nc"))
-        Wind <- retry(as.numeric(ncdf4::ncvar_get(nc, varid = "daily_mean_wind_speed", start = start, count = count)))
-        ncdf4::nc_close(nc)
+        nc <- RNetCDF::open.nc(paste0(baseurl, "vs_1979_CurrentYear_CONUS.nc"))
+        Wind <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_mean_wind_speed", start = start, count = count)))
+        RNetCDF::close.nc(nc)
       }else{
         cat("extracting weather data \n")
-        nc <- ncdf4::nc_open(paste(spatial, "/tmmx_", yearlist[1], ".nc",
+        nc <- RNetCDF::open.nc(paste(spatial, "/tmmx_", yearlist[1], ".nc",
           sep = ""))
-        lon <- matrix(ncdf4::ncvar_get(nc, "lon"))
-        lat <- matrix(ncdf4::ncvar_get(nc, "lat"))
+        lon <- matrix(RNetCDF::var.get.nc(nc, "lon"))
+        lat <- matrix(RNetCDF::var.get.nc(nc, "lat"))
         lon_1 <- as.numeric(longlat[1])
         lat_1 <- as.numeric(longlat[2])
         dist1 <- abs(lon - lon_1)
@@ -766,86 +766,86 @@ micro_usa <- function(
         dist2 <- abs(lat - lat_1)
         index2 <- which.min(dist2)
         start <- c(index2, index1, 1)
-        count <- c(1, 1, -1)
+        count <- c(1, 1, NA)
         for (j in 1:nyears) {
           if (j == 1) {
             cat(paste("reading weather input for ", yearlist[j],
               " \n", sep = ""))
-            nc <- ncdf4::nc_open(paste(spatial, "/tmmn_", yearlist[j],
+            nc <- RNetCDF::open.nc(paste(spatial, "/tmmn_", yearlist[j],
               ".nc", sep = ""))
-            tmin <- as.numeric(ncdf4::ncvar_get(nc, varid = "air_temperature",
+            tmin <- as.numeric(RNetCDF::var.get.nc(nc, variable = "air_temperature",
               start = start, count = count))
-            ncdf4::nc_close(nc)
-            nc <- ncdf4::nc_open(paste(spatial, "/tmmx_", yearlist[j],
+            RNetCDF::close.nc(nc)
+            nc <- RNetCDF::open.nc(paste(spatial, "/tmmx_", yearlist[j],
               ".nc", sep = ""))
-            tmax <- as.numeric(ncdf4::ncvar_get(nc, varid = "air_temperature",
+            tmax <- as.numeric(RNetCDF::var.get.nc(nc, variable = "air_temperature",
               start = start, count = count))
-            ncdf4::nc_close(nc)
-            nc <- ncdf4::nc_open(paste(spatial, "/rmin_", yearlist[j],
+            RNetCDF::close.nc(nc)
+            nc <- RNetCDF::open.nc(paste(spatial, "/rmin_", yearlist[j],
               ".nc", sep = ""))
-            rhmin <- as.numeric(ncdf4::ncvar_get(nc, varid = "relative_humidity",
+            rhmin <- as.numeric(RNetCDF::var.get.nc(nc, variable = "relative_humidity",
               start = start, count = count))
-            ncdf4::nc_close(nc)
-            nc <- ncdf4::nc_open(paste(spatial, "/rmax_", yearlist[j],
+            RNetCDF::close.nc(nc)
+            nc <- RNetCDF::open.nc(paste(spatial, "/rmax_", yearlist[j],
               ".nc", sep = ""))
-            rhmax <- as.numeric(ncdf4::ncvar_get(nc, varid = "relative_humidity",
+            rhmax <- as.numeric(RNetCDF::var.get.nc(nc, variable = "relative_humidity",
               start = start, count = count))
-            ncdf4::nc_close(nc)
-            nc <- ncdf4::nc_open(paste(spatial, "/pr_", yearlist[j],
+            RNetCDF::close.nc(nc)
+            nc <- RNetCDF::open.nc(paste(spatial, "/pr_", yearlist[j],
               ".nc", sep = ""))
-            Rain <- as.numeric(ncdf4::ncvar_get(nc, varid = "precipitation_amount",
+            Rain <- as.numeric(RNetCDF::var.get.nc(nc, variable = "precipitation_amount",
               start = start, count = count))
-            ncdf4::nc_close(nc)
-            nc <- ncdf4::nc_open(paste(spatial, "/srad_", yearlist[j],
+            RNetCDF::close.nc(nc)
+            nc <- RNetCDF::open.nc(paste(spatial, "/srad_", yearlist[j],
               ".nc", sep = ""))
-            solar <- as.numeric(ncdf4::ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
+            solar <- as.numeric(RNetCDF::var.get.nc(nc, variable = "surface_downwelling_shortwave_flux_in_air",
               start = start, count = count))
-            ncdf4::nc_close(nc)
-            nc <- ncdf4::nc_open(paste(spatial, "/vs_", yearlist[j],
+            RNetCDF::close.nc(nc)
+            nc <- RNetCDF::open.nc(paste(spatial, "/vs_", yearlist[j],
               ".nc", sep = ""))
-            Wind <- as.numeric(ncdf4::ncvar_get(nc, varid = "wind_speed",
+            Wind <- as.numeric(RNetCDF::var.get.nc(nc, variable = "wind_speed",
               start = start, count = count))
-            ncdf4::nc_close(nc)
+            RNetCDF::close.nc(nc)
             Tmax <- tmax - 273.15
             Tmin <- tmin - 273.15
           } else {
             cat(paste("reading weather input for ", yearlist[j],
               " \n", sep = ""))
-            nc <- ncdf4::nc_open(paste(spatial, "/tmmn_", yearlist[j],
+            nc <- RNetCDF::open.nc(paste(spatial, "/tmmn_", yearlist[j],
               ".nc", sep = ""))
-            tmin <- as.numeric(ncdf4::ncvar_get(nc, varid = "air_temperature",
+            tmin <- as.numeric(RNetCDF::var.get.nc(nc, variable = "air_temperature",
               start = start, count = count))
-            ncdf4::nc_close(nc)
-            nc <- ncdf4::nc_open(paste(spatial, "/tmmx_", yearlist[j],
+            RNetCDF::close.nc(nc)
+            nc <- RNetCDF::open.nc(paste(spatial, "/tmmx_", yearlist[j],
               ".nc", sep = ""))
-            tmax <- as.numeric(ncdf4::ncvar_get(nc, varid = "air_temperature",
+            tmax <- as.numeric(RNetCDF::var.get.nc(nc, variable = "air_temperature",
               start = start, count = count))
-            ncdf4::nc_close(nc)
-            nc <- ncdf4::nc_open(paste(spatial, "/rmin_", yearlist[j],
+            RNetCDF::close.nc(nc)
+            nc <- RNetCDF::open.nc(paste(spatial, "/rmin_", yearlist[j],
               ".nc", sep = ""))
-            rhmin <- c(rhmin, as.numeric(ncdf4::ncvar_get(nc, varid = "relative_humidity",
+            rhmin <- c(rhmin, as.numeric(RNetCDF::var.get.nc(nc, variable = "relative_humidity",
               start = start, count = count)))
-            ncdf4::nc_close(nc)
-            nc <- ncdf4::nc_open(paste(spatial, "/rmax_", yearlist[j],
+            RNetCDF::close.nc(nc)
+            nc <- RNetCDF::open.nc(paste(spatial, "/rmax_", yearlist[j],
               ".nc", sep = ""))
-            rhmax <- c(rhmax, as.numeric(ncdf4::ncvar_get(nc, varid = "relative_humidity",
+            rhmax <- c(rhmax, as.numeric(RNetCDF::var.get.nc(nc, variable = "relative_humidity",
               start = start, count = count)))
-            ncdf4::nc_close(nc)
-            nc <- ncdf4::nc_open(paste(spatial, "/pr_", yearlist[j],
+            RNetCDF::close.nc(nc)
+            nc <- RNetCDF::open.nc(paste(spatial, "/pr_", yearlist[j],
               ".nc", sep = ""))
-            Rain <- c(Rain, as.numeric(ncdf4::ncvar_get(nc, varid = "precipitation_amount",
+            Rain <- c(Rain, as.numeric(RNetCDF::var.get.nc(nc, variable = "precipitation_amount",
               start = start, count = count)))
-            ncdf4::nc_close(nc)
-            nc <- ncdf4::nc_open(paste(spatial, "/srad_", yearlist[j],
+            RNetCDF::close.nc(nc)
+            nc <- RNetCDF::open.nc(paste(spatial, "/srad_", yearlist[j],
               ".nc", sep = ""))
-            solar <- c(solar, as.numeric(ncdf4::ncvar_get(nc, varid = "surface_downwelling_shortwave_flux_in_air",
+            solar <- c(solar, as.numeric(RNetCDF::var.get.nc(nc, variable = "surface_downwelling_shortwave_flux_in_air",
               start = start, count = count)))
-            ncdf4::nc_close(nc)
-            nc <- ncdf4::nc_open(paste(spatial, "/vs_", yearlist[j],
+            RNetCDF::close.nc(nc)
+            nc <- RNetCDF::open.nc(paste(spatial, "/vs_", yearlist[j],
               ".nc", sep = ""))
-            Wind <- c(Wind, as.numeric(ncdf4::ncvar_get(nc, varid = "wind_speed",
+            Wind <- c(Wind, as.numeric(RNetCDF::var.get.nc(nc, variable = "wind_speed",
               start = start, count = count)))
-            ncdf4::nc_close(nc)
+            RNetCDF::close.nc(nc)
             Tmax <- c(Tmax, tmax - 273.15)
             Tmin <- c(Tmin, tmin - 273.15)
           }
@@ -1003,10 +1003,10 @@ micro_usa <- function(
 
       Intrvls<-rep(0,ndays)
       Intrvls[1] <- 1 # user-supplied last day-of-year in each time interval sequence
-      Numtyps <- 1 # number of substrate types
+      Numtyps <- 10 # number of substrate types
       Numint <- 1  # number of time intervals
       Nodes <- matrix(data = 0, nrow = 10, ncol = ndays) # deepest nodes for each substrate type
-      Nodes[1,1] <- 10. # deepest nodes for each substrate type
+      Nodes[1:10,] <- c(1:10) # deepest nodes for each substrate type
       ALREF <- abs(trunc(x[1]))
 
       HEMIS <- ifelse(x[2]<0, 2, 1)

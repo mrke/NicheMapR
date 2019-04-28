@@ -563,8 +563,8 @@ micro_ncep <- function(
       stop("package 'RNCEP' is needed. Please install it.",
            call. = FALSE)
     }
-    if (!require("ncdf4", quietly = TRUE)) {
-      stop("package 'ncdf4' is needed. Please install it.",
+    if (!require("RNetCDF", quietly = TRUE)) {
+      stop("package 'RNetCDF' is needed. Please install it.",
            call. = FALSE)
     }
     if (!require("microclima", quietly = TRUE)) {
@@ -573,7 +573,7 @@ micro_ncep <- function(
     }
     require("raster")
     require("RNCEP")
-    require("ncdf4")
+    require("RNetCDF")
     require("microclima")
     longlat <- loc
     x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
@@ -671,9 +671,9 @@ micro_ncep <- function(
 
     if(save != 2){
       ncquery <- function(filename, var, start, count, year){
-        nc <- ncdf4::nc_open(paste(spatial, "/",filename,year,".nc", sep = ""))
-        out <- as.numeric(ncdf4::ncvar_get(nc, varid = var, start = start, count = count))
-        ncdf4::nc_close(nc)
+        nc <- RNetCDF::open.nc(paste(spatial, "/",filename,year,".nc", sep = ""))
+        out <- as.numeric(RNetCDF::var.get.nc(nc, variable = var, start = start, count = count))
+        RNetCDF::close.nc(nc)
         out
       }
       if(is.na(spatial) == FALSE){
@@ -708,9 +708,9 @@ micro_ncep <- function(
         years <- as.numeric(unique(format(tme, "%Y")))
         nyears <- length(years)
         # now getting starting point and count for reading netcdf files
-        nc <- ncdf4::nc_open(paste(spatial, "/air.2m.gauss.", years[1], ".nc", sep = ""))
-        lon2 <- matrix(ncdf4::ncvar_get(nc, "lon"))
-        lat2 <- matrix(ncdf4::ncvar_get(nc, "lat"))
+        nc <- RNetCDF::open.nc(paste(spatial, "/air.2m.gauss.", years[1], ".nc", sep = ""))
+        lon2 <- matrix(RNetCDF::var.get.nc(nc, "lon"))
+        lat2 <- matrix(RNetCDF::var.get.nc(nc, "lat"))
         lon_1 <- long
         if(lon_1 < 0){lon_1 <- 180 - (long*-1) + 180}
         lat_1 <- lat
@@ -721,10 +721,10 @@ micro_ncep <- function(
         index2 <- which.min(dist2)
         lat3 <- lat2[index2]
         start <- c(index1, index2, 1, 1) # for chosen years
-        count <- c(1, 1, 1, -1) # for chosen years
+        count <- c(1, 1, 1, NA) # for chosen years
         start2 <- c(index1, index2, 1, 1460-3) # for year prior to chosen years (getting the last day)
         count2 <- c(1, 1, 1, 4) # for year prior/year after chosen years (getting the last four or first four values, i.e. hours 0, 6, 12, 18)
-        ncdf4::nc_close(nc)
+        RNetCDF::close.nc(nc)
         if(lon3 > 180){lon3 <- lon3 - 180} # ensure longitude is -180 to 180
 
         for (j in 1:(nyears+2)) {

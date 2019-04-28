@@ -52,7 +52,7 @@
 #' \code{warm}{ = 0, uniform warming, °C}\cr\cr
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 #' \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
-#' \code{opendap}{ = 1, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
+#' \code{opendap}{ = 1, query met grids via opendap}\cr\cr
 
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
@@ -424,7 +424,7 @@ micro_aust <- function(
       dem <- microclima::get_dem(lat = loc[2], long = loc[1]) # mercator equal area projection
       elev <- extract(dem, loc)[1]
     }
-    require(ncdf4)
+    require(RNetCDF)
     ALTITUDES <- elev
     dbrow <- 1
   }
@@ -952,23 +952,23 @@ micro_aust <- function(
             }else{
               mfinish <- monfinish[mm]
             }
-            nc <- nc_open(paste0(baseurl, var,"/day/",year,"/bom-",var,"_day-",year,mstart,"-",year,mfinish))
-            lon <- ncvar_get(nc, "longitude")
-            lat <- ncvar_get(nc, "latitude")
+            nc <- RNetCDF::open.nc(paste0(baseurl, var,"/day/",year,"/bom-",var,"_day-",year,mstart,"-",year,mfinish))
+            lon <- RNetCDF::var.get.nc(nc, "longitude")
+            lat <- RNetCDF::var.get.nc(nc, "latitude")
             flat=match(abs(lat-x[2])<1/44,1)
             latindex=which(flat %in% 1)
             flon=match(abs(lon-x[1])<1/44,1)
             lonindex=which(flon %in% 1)
             start <- c(lonindex, latindex, 1)
-            count <- c(1, 1, -1)
-            data_1 <- as.numeric(ncvar_get(nc, varid = paste0(var, "_day"),
+            count <- c(1, 1, NA)
+            data_1 <- as.numeric(RNetCDF::var.get.nc(nc, variable = paste0(var, "_day"),
                                            start = start, count))
             if(mm == 1 & i == 1){
               data <- data_1
             }else{
               data <- c(data, data_1)
             }
-            nc_close(nc)
+            RNetCDF::close.nc(nc)
           }
         }
         return(data)
