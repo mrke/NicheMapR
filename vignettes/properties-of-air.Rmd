@@ -5,10 +5,10 @@ date: '`r Sys.Date()`'
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Properties of Air}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 editor_options:
-  chunk_output_type: console  
+  chunk_output_type: console
 ---
 
 ```{r, echo = FALSE}
@@ -452,7 +452,37 @@ ylab = expression(paste("BLACK BODY EMITTANCE ( ", italic(phi), ") W m"^{-2}))
 xlab = expression(paste("AIR TEMPERATURE (",italic(t),") ",degree*C))
 plot(tairs,DRYAIR(db=tairs)$bbemit,type='n',ylim=ylim,ylab=ylab, xlab=xlab,cex.lab=1.5,cex.axis=1.5,lwd=2)
 Hmisc::minor.tick(nx=10,ny=10)
-source('c:/git/NicheMapR/minor.ticks.R')
+minor.ticks<-function (nx = 2, ny = 2, tick.ratio = 0.5)
+{
+    ax <- function(w, n, tick.ratio) {
+        range <- par("usr")[if (w == "x")
+            1:2
+        else 3:4]
+        tick.pos <- if (w == "x")
+            par("xaxp")
+        else par("yaxp")
+        distance.between.minor <- (tick.pos[2] - tick.pos[1])/tick.pos[3]/n
+        possible.minors <- tick.pos[1] - (0:100) * distance.between.minor
+        low.candidates <- possible.minors >= range[1]
+        low.minor <- if (any(low.candidates)) 
+            min(possible.minors[low.candidates])
+        else tick.pos[1]
+        possible.minors <- tick.pos[2] + (0:100) * distance.between.minor
+        hi.candidates <- possible.minors <= range[2]
+        hi.minor <- if (any(hi.candidates)) 
+            max(possible.minors[hi.candidates])
+        else tick.pos[2]
+        axis(if (w == "x") 
+            1
+        else 2, seq(low.minor, hi.minor, by = distance.between.minor), 
+            labels = FALSE, tcl = par("tcl") * tick.ratio)
+    }
+    if (nx > 1)
+        xticks=ax("x", ny, tick.ratio = tick.ratio)
+    if (ny > 1)
+        yticks=ax("y", ny, tick.ratio = tick.ratio)
+    return(list(xticks=xticks, yticks=yticks))
+}
 tix<-minor.ticks(nx=10,ny=10)
 abline(h = tix$yticks, col = 'grey', lty = 1)
 abline(v = tix$xticks, col = 'grey', lty = 1)
