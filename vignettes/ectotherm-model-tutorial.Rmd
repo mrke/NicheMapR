@@ -8,7 +8,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
-  chunk_output_type: console
 ---
 
 ```{r, echo = FALSE}
@@ -58,8 +57,8 @@ and includes the following variables (among others):
 * **DEP** - depth below ground (cm)
 * **ACT** - activity state (0=inactive, 1=basking, 2=foraging)
 * **TA** - air temperature (&deg;C) at animal location
-* **TSUB** - air temperature (&deg;C) at animal location
-* **TSKY** - air temperature (&deg;C) at animal location
+* **TSUB** - substrate temperature (&deg;C) at animal location
+* **TSKY** - overhead (sky) temperature (&deg;C) at animal location
 * **VEL** - wind speed (m/s) at animal location
 * **RELHUM** - relative humidity (\%) at animal location
 * **ZEN** - zenith angle of sun (degrees, where 90&deg; = below the horizon)
@@ -71,9 +70,9 @@ The model has considered, for each hour of the day, where the organism could be 
 
 The algorithm choosing the depth at which to put the animal starts at the shallowest depth allowed (here node 2 which is 2.5 cm, but it could be node 1 which is the surface) and moves deeper only if it would go below the stated critical thermal minimum `CT_min` (6 &deg;C by default) or if it would be more than half way between the maximum foraging temperature `T_F_max` (34 &deg;C by default) and the critical thermal maximum `CT_max` (40 &deg;C by default). 
 
-Note how the wind speed is set to an arbitrarily low value when then animal is sheltering under ground, and the air, substrate and 'sky' temperatures are set to be equal to the soil temperature at the chosen depth.
+Note how the wind speed is set to an arbitrarily low value when then animal is sheltering under ground, and the air, substrate and 'sky' temperatures are equal to the soil temperature at the chosen depth.
 
-When the sun rises (**ZEN** < 90&deg;, at the 6 am in in this case) the model tries placing the animal on the surface in the open, as long as the animal's body temperature is above the emergence temperature `T_RB_min` (i.e. retreat to basking transition, which is 17.5 &deg;C by default). If the resulting computed body temperature is above the minimum basking threshold `T_B_min` (also 17.5 &deg;C by default), that becomes the selected environment and the activity state **ACT** is reported as 1. 
+When the sun rises (**ZEN** < 90&deg;, at 6 am in in this case) the model tries placing the animal on the surface in the open, as long as the animal's body temperature is above the emergence temperature `T_RB_min` (i.e. retreat to basking transition, which is 17.5 &deg;C by default). If the resulting computed body temperature is above the minimum basking threshold `T_B_min` (also 17.5 &deg;C by default), that becomes the selected environment and the activity state **ACT** is reported as 1. 
 
 If the body temperature is above the minimum foraging temperature `T_F_min`, then activity state is set to 2. If the animal's predicted temperature is above the preferred temperature `T_pref` (30 &deg;C by default), then the animal changes posture to be parallel to the sun's rays and thereby minimise solar heat gain. If this prevents the `T_pref` from being exceeded then the animal is recorded to be in this posture. 
 
