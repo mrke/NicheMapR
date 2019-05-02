@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Michael Kearney" />
+
+<meta name="date" content="2019-05-02" />
+
+<title>Introduction to the NicheMapR ectotherm model</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to the NicheMapR ectotherm model</h1>
+<h4 class="author"><em>Michael Kearney</em></h4>
+<h4 class="date"><em>2019-05-02</em></h4>
+
+
+
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>This vignette is a tutorial for the NicheMapR ectotherm model. It only considers the steady state heat and (partial) water budget model. For details on the implementation of the Dynamic Energy Budget model (for simulating growth, development and reproduction as well as full water budgets), see the vignette <a href="deb-model-tutorial.html">Introduction to Dynamic Energy Budget models in NicheMapR</a>.</p>
+<p>The NicheMapR ectotherm model is run with the function <code>ectotherm</code>. It includes a range of morphological, physiological and behavioural options to capture how organisms exchange heat and water with their environments, and to compute the consequences of this for body temperature, activity constraints and different aspects of the mass budget. It is designed to take the output of the NicheMapR microclimate model as the driving environmental inputs, but you could construct custom versions of these if desired.</p>
+</div>
+<div id="basic-operation" class="section level1">
+<h1>Basic operation</h1>
+<p>As with the <a href="microclimate-model-tutorial.html">Introduction to the NicheMapR microclimate model</a>, this first example involves the most basic case of running the model to produce 12 days of output, one for each month of the year (but the model can be run from any outputs from the various microclimate model functions). Try running the model with the default inputs for a location of your choice, e.g.:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(NicheMapR)</a>
+<a class="sourceLine" id="cb1-2" title="2">longlat &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">146.77</span>, <span class="fl">-19.29</span>) <span class="co"># Townsville, northern Australia</span></a>
+<a class="sourceLine" id="cb1-3" title="3">micro &lt;-<span class="st"> </span><span class="kw">micro_global</span>(<span class="dt">loc =</span> longlat)</a>
+<a class="sourceLine" id="cb1-4" title="4">ecto &lt;-<span class="st"> </span><span class="kw">ectotherm</span>() <span class="co"># uses default settings (the Eastern Water Skink)</span></a></code></pre></div>
+<p>The results are returned as a list of tables, here called <strong>ecto</strong>. The main ones to focus on for now are</p>
+<ul>
+<li><strong>environ</strong> The body temperature, activity and environments experienced by the animal</li>
+<li><strong>enbal</strong> The components of the computed heat budget</li>
+<li><strong>masbal</strong> The components of the computed mass budget</li>
+</ul>
+</div>
+<div id="output-table-environ" class="section level1">
+<h1>Output table environ</h1>
+<p>The output table <strong>environ</strong> looks like this (some columns of the first 13 hrs are shown):</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">TIME</th>
+<th align="right">TC</th>
+<th align="right">SHADE</th>
+<th align="right">SOLAR</th>
+<th align="right">DEP</th>
+<th align="right">ACT</th>
+<th align="right">TA</th>
+<th align="right">TSUB</th>
+<th align="right">TSKY</th>
+<th align="right">VEL</th>
+<th align="right">RELHUM</th>
+<th align="right">ZEN</th>
+<th align="right">ABSAN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">28.97</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">-2.5</td>
+<td align="right">0</td>
+<td align="right">28.77</td>
+<td align="right">28.77</td>
+<td align="right">28.77</td>
+<td align="right">0.01</td>
+<td align="right">99.00</td>
+<td align="right">90.00</td>
+<td align="right">0.85</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">28.44</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">-2.5</td>
+<td align="right">0</td>
+<td align="right">28.25</td>
+<td align="right">28.25</td>
+<td align="right">28.25</td>
+<td align="right">0.01</td>
+<td align="right">99.00</td>
+<td align="right">90.00</td>
+<td align="right">0.85</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">27.98</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">-2.5</td>
+<td align="right">0</td>
+<td align="right">27.80</td>
+<td align="right">27.80</td>
+<td align="right">27.80</td>
+<td align="right">0.01</td>
+<td align="right">99.00</td>
+<td align="right">90.00</td>
+<td align="right">0.85</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">27.60</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">-2.5</td>
+<td align="right">0</td>
+<td align="right">27.42</td>
+<td align="right">27.42</td>
+<td align="right">27.42</td>
+<td align="right">0.01</td>
+<td align="right">99.00</td>
+<td align="right">90.00</td>
+<td align="right">0.85</td>
+</tr>
+<tr class="odd">
+<td align="right">4</td>
+<td align="right">27.26</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">-2.5</td>
+<td align="right">0</td>
+<td align="right">27.09</td>
+<td align="right">27.09</td>
+<td align="right">27.09</td>
+<td align="right">0.01</td>
+<td align="right">99.00</td>
+<td align="right">90.00</td>
+<td align="right">0.85</td>
+</tr>
+<tr class="even">
+<td align="right">5</td>
+<td align="right">26.95</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">-2.5</td>
+<td align="right">0</td>
+<td align="right">26.78</td>
+<td align="right">26.78</td>
+<td align="right">26.78</td>
+<td align="right">0.01</td>
+<td align="right">99.00</td>
+<td align="right">90.00</td>
+<td align="right">0.85</td>
+</tr>
+<tr class="odd">
+<td align="right">6</td>
+<td align="right">29.66</td>
+<td align="right">0</td>
+<td align="right">55.23</td>
+<td align="right">0.0</td>
+<td align="right">2</td>
+<td align="right">24.88</td>
+<td align="right">25.50</td>
+<td align="right">16.48</td>
+<td align="right">0.12</td>
+<td align="right">78.54</td>
+<td align="right">83.13</td>
+<td align="right">0.85</td>
+</tr>
+<tr class="even">
+<td align="right">7</td>
+<td align="right">29.76</td>
+<td align="right">33</td>
+<td align="right">95.16</td>
+<td align="right">0.0</td>
+<td align="right">2</td>
+<td align="right">27.18</td>
+<td align="right">29.94</td>
+<td align="right">18.45</td>
+<td align="right">0.19</td>
+<td align="right">68.52</td>
+<td align="right">69.68</td>
+<td align="right">0.85</td>
+</tr>
+<tr class="odd">
+<td align="right">8</td>
+<td align="right">29.95</td>
+<td align="right">54</td>
+<td align="right">78.52</td>
+<td align="right">0.0</td>
+<td align="right">2</td>
+<td align="right">28.76</td>
+<td align="right">32.44</td>
+<td align="right">20.43</td>
+<td align="right">0.27</td>
+<td align="right">62.89</td>
+<td align="right">55.98</td>
+<td align="right">0.85</td>
+</tr>
+<tr class="even">
+<td align="right">9</td>
+<td align="right">29.76</td>
+<td align="right">72</td>
+<td align="right">40.92</td>
+<td align="right">0.0</td>
+<td align="right">2</td>
+<td align="right">29.34</td>
+<td align="right">33.18</td>
+<td align="right">22.57</td>
+<td align="right">0.34</td>
+<td align="right">61.87</td>
+<td align="right">42.12</td>
+<td align="right">0.85</td>
+</tr>
+<tr class="odd">
+<td align="right">10</td>
+<td align="right">29.73</td>
+<td align="right">84</td>
+<td align="right">16.21</td>
+<td align="right">0.0</td>
+<td align="right">2</td>
+<td align="right">29.67</td>
+<td align="right">32.48</td>
+<td align="right">24.50</td>
+<td align="right">0.41</td>
+<td align="right">61.50</td>
+<td align="right">28.17</td>
+<td align="right">0.85</td>
+</tr>
+<tr class="even">
+<td align="right">11</td>
+<td align="right">30.24</td>
+<td align="right">90</td>
+<td align="right">7.08</td>
+<td align="right">0.0</td>
+<td align="right">2</td>
+<td align="right">30.24</td>
+<td align="right">32.82</td>
+<td align="right">25.95</td>
+<td align="right">0.49</td>
+<td align="right">54.38</td>
+<td align="right">14.20</td>
+<td align="right">0.85</td>
+</tr>
+<tr class="odd">
+<td align="right">12</td>
+<td align="right">31.08</td>
+<td align="right">90</td>
+<td align="right">7.33</td>
+<td align="right">0.0</td>
+<td align="right">2</td>
+<td align="right">31.10</td>
+<td align="right">33.42</td>
+<td align="right">26.82</td>
+<td align="right">0.64</td>
+<td align="right">54.38</td>
+<td align="right">1.93</td>
+<td align="right">0.85</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="right">PTCOND</th>
+<th align="right">POSTURE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p>and includes the following variables (among others):</p>
+<ul>
+<li><strong>TIME</strong> - time of day (hours)</li>
+<li><strong>TC</strong> - body temperature (°C)</li>
+<li><strong>SHADE</strong> - shade selected (%)</li>
+<li><strong>SOLAR</strong> - solar radiation (W/m2) at animal location</li>
+<li><strong>DEP</strong> - depth below ground (cm)</li>
+<li><strong>ACT</strong> - activity state (0=inactive, 1=basking, 2=foraging)</li>
+<li><strong>TA</strong> - air temperature (°C) at animal location</li>
+<li><strong>TSUB</strong> - substrate temperature (°C) at animal location</li>
+<li><strong>TSKY</strong> - overhead (sky) temperature (°C) at animal location</li>
+<li><strong>VEL</strong> - wind speed (m/s) at animal location</li>
+<li><strong>RELHUM</strong> - relative humidity (%) at animal location</li>
+<li><strong>ZEN</strong> - zenith angle of sun (degrees, where 90° = below the horizon)</li>
+<li><strong>ABSAN</strong> - solar absorptivity (fractional)</li>
+<li><strong>PCOND</strong> - proportion of animal’s surface in contact with ground (fractional)</li>
+<li><strong>POSTURE</strong> - postural orientation (1=perpendicular to sun, 2=parallel, 0=in-between)</li>
+</ul>
+<p>The model has considered, for each hour of the day, where the organism could be in its habitat conditional on the behavioural options set. The default simulation is for the Eastern Water Skink, <em>Eulamprus quoyii</em>, which is diurnal (<code>diurn = 1</code>, <code>nocturn = 0</code>, <code>crepus = 0</code>). So, for the nighttime and twilight hours, the animal is assumed to be underground (<code>burrow = 1</code>).</p>
+<p>The algorithm choosing the depth at which to put the animal starts at the shallowest depth allowed (here node 2 which is 2.5 cm, but it could be node 1 which is the surface) and moves deeper only if it would go below the stated critical thermal minimum <code>CT_min</code> (6 °C by default) or if it would be more than half way between the maximum foraging temperature <code>T_F_max</code> (34 °C by default) and the critical thermal maximum <code>CT_max</code> (40 °C by default).</p>
+<p>Note how the wind speed is set to an arbitrarily low value when then animal is sheltering under ground, and the air, substrate and ‘sky’ temperatures are equal to the soil temperature at the chosen depth.</p>
+<p>When the sun rises (<strong>ZEN</strong> &lt; 90°, at 6 am in in this case) the model tries placing the animal on the surface in the open, as long as the animal’s body temperature is above the emergence temperature <code>T_RB_min</code> (i.e. retreat to basking transition, which is 17.5 °C by default). If the resulting computed body temperature is above the minimum basking threshold <code>T_B_min</code> (also 17.5 °C by default), that becomes the selected environment and the activity state <strong>ACT</strong> is reported as 1.</p>
+<p>If the body temperature is above the minimum foraging temperature <code>T_F_min</code>, then activity state is set to 2. If the animal’s predicted temperature is above the preferred temperature <code>T_pref</code> (30 °C by default), then the animal changes posture to be parallel to the sun’s rays and thereby minimise solar heat gain. If this prevents the <code>T_pref</code> from being exceeded then the animal is recorded to be in this posture.</p>
+<p>If the postural adjustment fails, then shade seeking is invoked if allowed (<code>shade_seek = 1</code>), which is what has happened in this example at 7 am. The shade is set to jump up in 3% intervals (<code>delta_shade = 3</code>), and 33% was sufficient in this case. As the day moves on, the animal in this example can remain active near its preferred body temperature but only by moving into deeper shade, to the maximum level of 90% in this case (vector <code>maxshades</code> which, by default, comes from the microclimate model settings).</p>
+<p>Once the maximum shade is reached, the animal’s preferred temperature is allowed to rise in 0.5 degree increments until the maximum foraging temperature is reached <code>T_F_max</code>, upon which the animal is forced to become inactive.</p>
+<p>The animal may also change its posture when cold to point normal to the sun (<strong>postur</strong> = 1) and potentially increase the contact with the substrate (<strong>pcond</strong> will increase by 20%) if the ground is warmer than the body. These postural adjustments aren’t necessary in this particular simulation, but can be important under cooler climates.</p>
+</div>
+<div id="output-table-enbal" class="section level1">
+<h1>Output table enbal</h1>
+<p>The output table <strong>enbal</strong> looks like this:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">DOY</th>
+<th align="right">YEAR</th>
+<th align="right">DAY</th>
+<th align="right">TIME</th>
+<th align="right">QSOL</th>
+<th align="right">QIRIN</th>
+<th align="right">QMET</th>
+<th align="right">QEVAP</th>
+<th align="right">QIROUT</th>
+<th align="right">QCONV</th>
+<th align="right">QCOND</th>
+<th align="right">ENB</th>
+<th align="right">NTRY</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">4.74</td>
+<td align="right">0.02</td>
+<td align="right">0.00</td>
+<td align="right">4.75</td>
+<td align="right">0.01</td>
+<td align="right">0.00</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0.00</td>
+<td align="right">4.71</td>
+<td align="right">0.02</td>
+<td align="right">0.00</td>
+<td align="right">4.72</td>
+<td align="right">0.01</td>
+<td align="right">0.00</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">0.00</td>
+<td align="right">4.68</td>
+<td align="right">0.02</td>
+<td align="right">0.00</td>
+<td align="right">4.69</td>
+<td align="right">0.01</td>
+<td align="right">0.00</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">0.00</td>
+<td align="right">4.66</td>
+<td align="right">0.02</td>
+<td align="right">0.00</td>
+<td align="right">4.67</td>
+<td align="right">0.01</td>
+<td align="right">0.00</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">0.00</td>
+<td align="right">4.64</td>
+<td align="right">0.02</td>
+<td align="right">0.00</td>
+<td align="right">4.65</td>
+<td align="right">0.01</td>
+<td align="right">0.00</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">0.00</td>
+<td align="right">4.62</td>
+<td align="right">0.01</td>
+<td align="right">0.00</td>
+<td align="right">4.63</td>
+<td align="right">0.01</td>
+<td align="right">0.00</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">6</td>
+<td align="right">1.27</td>
+<td align="right">4.28</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">4.80</td>
+<td align="right">0.76</td>
+<td align="right">0.01</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">7</td>
+<td align="right">0.79</td>
+<td align="right">4.47</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">4.80</td>
+<td align="right">0.48</td>
+<td align="right">0.00</td>
+<td align="right">0</td>
+<td align="right">13</td>
+</tr>
+<tr class="odd">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">0.43</td>
+<td align="right">4.61</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">4.81</td>
+<td align="right">0.24</td>
+<td align="right">0.00</td>
+<td align="right">0</td>
+<td align="right">20</td>
+</tr>
+<tr class="even">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">9</td>
+<td align="right">0.17</td>
+<td align="right">4.70</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">4.80</td>
+<td align="right">0.08</td>
+<td align="right">-0.01</td>
+<td align="right">0</td>
+<td align="right">26</td>
+</tr>
+<tr class="odd">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">10</td>
+<td align="right">0.06</td>
+<td align="right">4.73</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">4.80</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0</td>
+<td align="right">30</td>
+</tr>
+<tr class="even">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">11</td>
+<td align="right">0.02</td>
+<td align="right">4.79</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">4.83</td>
+<td align="right">-0.01</td>
+<td align="right">0.00</td>
+<td align="right">0</td>
+<td align="right">33</td>
+</tr>
+<tr class="odd">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">12</td>
+<td align="right">0.02</td>
+<td align="right">4.83</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">4.89</td>
+<td align="right">-0.02</td>
+<td align="right">0.00</td>
+<td align="right">0</td>
+<td align="right">35</td>
+</tr>
+</tbody>
+</table>
+<p>It quantifies the different pathways of exchange in each hour of the simulation:</p>
+<ul>
+<li><strong>DOY</strong> - day of year</li>
+<li><strong>YEAR</strong> - year of simulation</li>
+<li><strong>DAY</strong> - day of simulation</li>
+<li><strong>TIME</strong> - time of day (hours)</li>
+<li><strong>TC</strong> - body temperature (°C)</li>
+<li><strong>QSOL</strong> - solar radiation absorbed (W)</li>
+<li><strong>QIRIN</strong> - infrared radiation absorbed (W)</li>
+<li><strong>QMET</strong> - metabolic heat production (W)</li>
+<li><strong>QEVAP</strong> - evaporative heat loss (W)</li>
+<li><strong>QIROUT</strong> - infrared radiation lost (W)</li>
+<li><strong>QCONV</strong> - heat lost by convection (W)</li>
+<li><strong>QCOND</strong> - heat lost by conduction (W)</li>
+<li><strong>ENB</strong> - energy balance (°C)</li>
+<li><strong>NTRY</strong> - iterations required for solution to heat balance equation</li>
+</ul>
+<p>where the complete heat budget is</p>
+<p><span class="math display">\[ENB = QSOL + QIRIN + QMET - QEVAP - QIROUT - QCONV - QCOND\]</span></p>
+<p><strong>QIRIN</strong>, <strong>QIROUT</strong>, <strong>QSOL</strong> and <strong>QMET</strong> will always be positive, but <strong>QEVAP</strong>, <strong>QCONV</strong> and <strong>QCOND</strong> may be positive or negative. For example in this case, <strong>QCOND</strong> is near zero in the burrow, positive (i.e. causing cooling) in the morning, and becomes negative (causing heating) by 8 am. Note that more iterations of the model, <strong>NTRY</strong>, are required when the animal is out of its burrow, due to the model repeatedly trying different options (e.g. increasing shade, increasing the target temperature, etc.) until it finds a solution.</p>
+</div>
+<div id="output-table-masbal" class="section level1">
+<h1>Output table masbal</h1>
+<p>Finally, the table <strong>masbal</strong> includes the following outputs (among others):</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">DOY</th>
+<th align="right">YEAR</th>
+<th align="right">DAY</th>
+<th align="right">TIME</th>
+<th align="right">O2_ml</th>
+<th align="right">H2OResp_g</th>
+<th align="right">H2OCut_g</th>
+<th align="right">H2OEye_g</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">3.136250</td>
+<td align="right">-0.0000451</td>
+<td align="right">0.0000936</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">2.995113</td>
+<td align="right">-0.0000428</td>
+<td align="right">0.0000889</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">2.876750</td>
+<td align="right">-0.0000409</td>
+<td align="right">0.0000850</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2.781285</td>
+<td align="right">-0.0000392</td>
+<td align="right">0.0000819</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">2.700800</td>
+<td align="right">-0.0000379</td>
+<td align="right">0.0000793</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">2.628903</td>
+<td align="right">-0.0000366</td>
+<td align="right">0.0000769</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">6</td>
+<td align="right">3.330621</td>
+<td align="right">0.0010365</td>
+<td align="right">0.0064347</td>
+<td align="right">0.0019329</td>
+</tr>
+<tr class="even">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">7</td>
+<td align="right">3.361748</td>
+<td align="right">0.0010641</td>
+<td align="right">0.0077939</td>
+<td align="right">0.0023412</td>
+</tr>
+<tr class="odd">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">3.416273</td>
+<td align="right">0.0011011</td>
+<td align="right">0.0088440</td>
+<td align="right">0.0026567</td>
+</tr>
+<tr class="even">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">9</td>
+<td align="right">3.360424</td>
+<td align="right">0.0010237</td>
+<td align="right">0.0090680</td>
+<td align="right">0.0027239</td>
+</tr>
+<tr class="odd">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">10</td>
+<td align="right">3.353533</td>
+<td align="right">0.0009950</td>
+<td align="right">0.0091297</td>
+<td align="right">0.0027425</td>
+</tr>
+<tr class="even">
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">11</td>
+<td align="right">3.505575</td>
+<td align="right">0.0012816</td>
+<td align="right">0.0123138</td>
+<td align="right">0.0036990</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>DOY</strong> - day of year</li>
+<li><strong>YEAR</strong> - year of simulation</li>
+<li><strong>DAY</strong> - day of simulation</li>
+<li><strong>TIME</strong> - time of day (hours)</li>
+<li><strong>O2_ml</strong> - oxygen consumption rate (ml/h)</li>
+<li><strong>H2OResp_g</strong> - respiratory water loss (g/h)</li>
+<li><strong>H2OCut_g</strong> - cutaneous water loss (g/h)</li>
+<li><strong>H2OEye_g</strong> - ocular water loss (g/h)</li>
+</ul>
+<p>There are a number of other columns in this output but they are of value zero because we are not running the Dynamic Energy Budget model (i.e. <code>DEB = 0</code> by default). We are instead obtaining the oxygen consumption rate (ml/h) by an allometric function based on Eq. 2 from Andrews &amp; Pough 1985,</p>
+<p><span class="math inline">\(V_{O_2} = M_1 M^{M_2} 10^{M_3 T_b}\)</span></p>
+<p>where <span class="math inline">\(M\)</span> is the mass in grams, <span class="math inline">\(T_b\)</span> is the body temperature, and <span class="math inline">\(M_1\)</span>, <span class="math inline">\(M_2\)</span> and <span class="math inline">\(M_3\)</span> are constants which can be user-defined. From this, in conjunction with the oxygen extraction efficiency <code>F_O2</code> and the difference in temperature between expired and inspired air <code>delta_air</code> (0.1 °C by default), the respiratory water loss <strong>H2OResp_g</strong> can be computed. Note that it is negative in the burrow, i.e. a tiny amount of water is gained from breathing, due to the water being highly saturated.</p>
+<p>From the percentage of the skin that is ‘wet’ <code>pct_wet</code> one can estimate the cutaneous water loss <strong>H2O_cut</strong>. The <code>pct_wet</code> parameter represents the % surface area that would act as free water surface if all the little pores letting water through the skin were collected together in one place.</p>
+<p>Finally, the parameter <code>pct_eyes</code> is the % of the total surface area taken up by the eyes when open, and is used to compute ocular water loss when the animal is active (this can be a substantial part of the water loss).</p>
+<p>If you are interested in the other quantities available in the <strong>masbal</strong> output, you will need to develop a DEB model for your species (see the <a href="http://www.bio.vu.nl/thb/deb/deblab/">Dynamic Energy Budget lab</a>, particularly the <a href="http://www.bio.vu.nl/thb/deb/deblab/add_my_pet/">Add-my-pet Portal</a>, for details, as well as the vignette <a href="deb-model-tutorial.html">Introduction to Dynamic Energy Budget models in NicheMapR</a> which explains the <strong>debout</strong> output table).</p>
+</div>
+<div id="plotting-some-output" class="section level1">
+<h1>Plotting some output</h1>
+<p>Now let’s take broader look at the simulation outcome, by plotting the results. We will this time be explicit about the parameter values as follows:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">Ww_g &lt;-<span class="st"> </span><span class="dv">40</span>        <span class="co"># wet weight of animal (g)</span></a>
+<a class="sourceLine" id="cb2-2" title="2">pct_wet &lt;-<span class="st"> </span><span class="fl">0.2</span>    <span class="co"># % of surface area acting as a free-water exchanger</span></a>
+<a class="sourceLine" id="cb2-3" title="3">alpha_min &lt;-<span class="fl">0.85</span>  <span class="co"># minimum solar absorbtivity (dec %)</span></a>
+<a class="sourceLine" id="cb2-4" title="4">alpha_max &lt;-<span class="st"> </span><span class="fl">0.85</span> <span class="co"># maximum solar absorbtivity (dec %)</span></a>
+<a class="sourceLine" id="cb2-5" title="5">shape &lt;-<span class="st"> </span><span class="dv">3</span>        <span class="co"># lizard shape</span></a>
+<a class="sourceLine" id="cb2-6" title="6">T_RB_min &lt;-<span class="st"> </span><span class="fl">17.5</span>  <span class="co"># min Tb at which they will attempt to leave retreat</span></a>
+<a class="sourceLine" id="cb2-7" title="7">T_B_min &lt;-<span class="st"> </span><span class="fl">17.5</span>   <span class="co"># min Tb at which leaves retreat to bask</span></a>
+<a class="sourceLine" id="cb2-8" title="8">T_F_min &lt;-<span class="st"> </span><span class="dv">24</span>     <span class="co"># minimum Tb at which activity occurs</span></a>
+<a class="sourceLine" id="cb2-9" title="9">T_F_max &lt;-<span class="st"> </span><span class="dv">34</span>     <span class="co"># maximum Tb at which activity occurs</span></a>
+<a class="sourceLine" id="cb2-10" title="10">T_pref &lt;-<span class="st"> </span><span class="dv">30</span>      <span class="co"># preferred Tb (will try and regulate to this)</span></a>
+<a class="sourceLine" id="cb2-11" title="11">CT_max &lt;-<span class="st"> </span><span class="dv">40</span>      <span class="co"># critical thermal minimum (affects choice of retreat)</span></a>
+<a class="sourceLine" id="cb2-12" title="12">CT_min &lt;-<span class="st"> </span><span class="dv">6</span>       <span class="co"># critical thermal maximum (affects choice of retreat)</span></a>
+<a class="sourceLine" id="cb2-13" title="13">mindepth &lt;-<span class="st"> </span><span class="dv">2</span>     <span class="co"># min depth (node, 1-10) allowed</span></a>
+<a class="sourceLine" id="cb2-14" title="14">maxdepth &lt;-<span class="st"> </span><span class="dv">10</span>    <span class="co"># max depth (node, 1-10) allowed</span></a>
+<a class="sourceLine" id="cb2-15" title="15">shade_seek &lt;-<span class="st"> </span><span class="dv">1</span>   <span class="co"># shade seeking?</span></a>
+<a class="sourceLine" id="cb2-16" title="16">burrow &lt;-<span class="st"> </span><span class="dv">1</span>       <span class="co"># can it burrow?</span></a>
+<a class="sourceLine" id="cb2-17" title="17">climb &lt;-<span class="st"> </span><span class="dv">0</span>        <span class="co"># can it climb to thermoregulate?</span></a>
+<a class="sourceLine" id="cb2-18" title="18">nocturn &lt;-<span class="st"> </span><span class="dv">0</span>      <span class="co"># nocturnal activity</span></a>
+<a class="sourceLine" id="cb2-19" title="19">crepus &lt;-<span class="st"> </span><span class="dv">0</span>       <span class="co"># crepuscular activity</span></a>
+<a class="sourceLine" id="cb2-20" title="20">diurn &lt;-<span class="st"> </span><span class="dv">1</span>        <span class="co"># diurnal activity</span></a>
+<a class="sourceLine" id="cb2-21" title="21">minshades &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">12</span>)   <span class="co"># min available shade?</span></a>
+<a class="sourceLine" id="cb2-22" title="22">maxshades &lt;-<span class="st"> </span>micro<span class="op">$</span>MAXSHADES <span class="co"># max available shade?</span></a></code></pre></div>
+<p>Run the ectotherm model, retrieve the output and create some mock dates.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">ecto &lt;-<span class="st"> </span><span class="kw">ectotherm</span>(<span class="dt">Ww_g =</span> Ww_g, <span class="dt">alpha_max =</span> alpha_max, <span class="dt">alpha_min =</span> alpha_min, <span class="dt">pct_wet =</span> pct_wet,</a>
+<a class="sourceLine" id="cb3-2" title="2">                  <span class="dt">T_F_max =</span> T_F_max, <span class="dt">T_F_min =</span> T_F_min, <span class="dt">T_B_min =</span> T_B_min, <span class="dt">T_RB_min =</span> T_RB_min,</a>
+<a class="sourceLine" id="cb3-3" title="3">                  <span class="dt">CT_max =</span> CT_max, <span class="dt">CT_min =</span> CT_min, <span class="dt">T_pref =</span> T_pref, <span class="dt">mindepth =</span> mindepth, </a>
+<a class="sourceLine" id="cb3-4" title="4">                  <span class="dt">maxdepth =</span> maxdepth, <span class="dt">shade_seek =</span> shade_seek, <span class="dt">burrow =</span> burrow, <span class="dt">climb =</span> climb,</a>
+<a class="sourceLine" id="cb3-5" title="5">                  <span class="dt">minshades =</span> minshades, <span class="dt">nocturn =</span> nocturn, <span class="dt">diurn =</span> diurn, <span class="dt">crepus =</span> crepus,</a>
+<a class="sourceLine" id="cb3-6" title="6">                  <span class="dt">maxshades =</span> maxshades)</a>
+<a class="sourceLine" id="cb3-7" title="7"></a>
+<a class="sourceLine" id="cb3-8" title="8"><span class="co"># retrieve output</span></a>
+<a class="sourceLine" id="cb3-9" title="9">environ &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(ecto<span class="op">$</span>environ) <span class="co"># behaviour, Tb and environment</span></a>
+<a class="sourceLine" id="cb3-10" title="10">enbal &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(ecto<span class="op">$</span>enbal) <span class="co"># heat balance outputs</span></a>
+<a class="sourceLine" id="cb3-11" title="11">masbal &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(ecto<span class="op">$</span>masbal) <span class="co"># mass balance outputs</span></a>
+<a class="sourceLine" id="cb3-12" title="12">metout &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(micro<span class="op">$</span>metout) <span class="co"># above ground microclimate</span></a>
+<a class="sourceLine" id="cb3-13" title="13">environ &lt;-<span class="st"> </span><span class="kw">cbind</span>(environ,metout<span class="op">$</span>SOLR) <span class="co"># add solar radiation for activity window plots</span></a>
+<a class="sourceLine" id="cb3-14" title="14"><span class="kw">colnames</span>(environ)[<span class="kw">ncol</span>(environ)] &lt;-<span class="st"> &quot;Solar&quot;</span></a>
+<a class="sourceLine" id="cb3-15" title="15"></a>
+<a class="sourceLine" id="cb3-16" title="16"><span class="co"># append dates</span></a>
+<a class="sourceLine" id="cb3-17" title="17">days &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">12</span>),<span class="dv">24</span>)</a>
+<a class="sourceLine" id="cb3-18" title="18">days &lt;-<span class="st"> </span>days[<span class="kw">order</span>(days)]</a>
+<a class="sourceLine" id="cb3-19" title="19">dates &lt;-<span class="st"> </span>days<span class="op">+</span>metout<span class="op">$</span>TIME<span class="op">/</span><span class="dv">60</span><span class="op">/</span><span class="dv">24-1</span> <span class="co"># dates for hourly output</span></a>
+<a class="sourceLine" id="cb3-20" title="20">dates2 &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">12</span>,<span class="dv">1</span>) <span class="co"># dates for daily output</span></a>
+<a class="sourceLine" id="cb3-21" title="21">metout &lt;-<span class="st"> </span><span class="kw">cbind</span>(dates,metout)</a>
+<a class="sourceLine" id="cb3-22" title="22">environ &lt;-<span class="st"> </span><span class="kw">cbind</span>(dates,environ)</a>
+<a class="sourceLine" id="cb3-23" title="23">masbal &lt;-<span class="st"> </span><span class="kw">cbind</span>(dates,masbal)</a>
+<a class="sourceLine" id="cb3-24" title="24">enbal &lt;-<span class="st"> </span><span class="kw">cbind</span>(dates,enbal)</a></code></pre></div>
+<p>Plot the body temperature, shade, activity and depth selected through time.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">with</span>(environ, <span class="kw">plot</span>(TC <span class="op">~</span><span class="st"> </span>dates, <span class="dt">ylab =</span> <span class="st">&quot;T_b, depth, activity and shade&quot;</span>, </a>
+<a class="sourceLine" id="cb4-2" title="2">                   <span class="dt">xlab =</span> <span class="st">&quot;month of year&quot;</span>, <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">50</span>), <span class="dt">type =</span> <span class="st">&quot;l&quot;</span>))</a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="kw">with</span>(environ, <span class="kw">points</span>(ACT <span class="op">*</span><span class="st"> </span><span class="dv">5</span> <span class="op">~</span><span class="st"> </span>dates, <span class="dt">type =</span> <span class="st">&quot;l&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;orange&quot;</span>))</a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="kw">with</span>(environ, <span class="kw">points</span>(SHADE <span class="op">/</span><span class="st"> </span><span class="dv">10</span> <span class="op">~</span><span class="st"> </span>dates, <span class="dt">type =</span> <span class="st">&quot;h&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;dark green&quot;</span>))</a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="kw">with</span>(environ, <span class="kw">points</span>(DEP <span class="op">/</span><span class="st"> </span><span class="dv">10</span> <span class="op">~</span><span class="st"> </span>dates, <span class="dt">type =</span> <span class="st">&quot;l&quot;</span>,<span class="dt">col =</span> <span class="st">&quot;brown&quot;</span>))</a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="kw">abline</span>(T_F_max, <span class="dv">0</span>, <span class="dt">lty =</span> <span class="dv">2</span>,<span class="dt">col =</span> <span class="st">&#39;red&#39;</span>)</a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="kw">abline</span>(T_F_min, <span class="dv">0</span>, <span class="dt">lty =</span> <span class="dv">2</span>,<span class="dt">col =</span> <span class="st">&#39;blue&#39;</span>)</a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="kw">abline</span>(T_pref, <span class="dv">0</span>, <span class="dt">lty =</span> <span class="dv">2</span>,<span class="dt">col =</span> <span class="st">&#39;orange&#39;</span>)</a>
+<a class="sourceLine" id="cb4-9" title="9"><span class="kw">text</span>(<span class="fl">0.5</span>, T_F_max <span class="op">+</span><span class="st"> </span><span class="dv">2</span>, <span class="st">&quot;T_F_max&quot;</span>, <span class="dt">col =</span> <span class="st">&#39;red&#39;</span>)</a>
+<a class="sourceLine" id="cb4-10" title="10"><span class="kw">text</span>(<span class="fl">0.5</span>, T_F_min <span class="op">-</span><span class="st"> </span><span class="dv">2</span>, <span class="st">&quot;T_F_min&quot;</span>, <span class="dt">col =</span> <span class="st">&#39;blue&#39;</span>)</a>
+<a class="sourceLine" id="cb4-11" title="11"><span class="kw">text</span>(<span class="fl">0.3</span>, T_pref <span class="op">+</span><span class="st"> </span><span class="dv">2</span>, <span class="st">&quot;T_pref&quot;</span>, <span class="dt">col =</span> <span class="st">&#39;orange&#39;</span>)</a>
+<a class="sourceLine" id="cb4-12" title="12"><span class="kw">legend</span>(<span class="dt">x =</span> <span class="dv">5</span>, <span class="dt">y =</span> T_F_max <span class="op">+</span><span class="st"> </span><span class="dv">17</span>, </a>
+<a class="sourceLine" id="cb4-13" title="13">       <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;T_b (°C)&quot;</span>, <span class="st">&quot;depth (cm/10)&quot;</span>, <span class="st">&quot;activity, 0 5 or 10)&quot;</span>, <span class="st">&quot;shade (%/10)&quot;</span>), </a>
+<a class="sourceLine" id="cb4-14" title="14">       <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;brown&quot;</span>, <span class="st">&quot;orange&quot;</span>, <span class="st">&quot;dark green&quot;</span>), <span class="dt">lty =</span> <span class="kw">rep</span>(<span class="dv">1</span>, <span class="dv">4</span>), <span class="dt">bty =</span> <span class="st">&quot;n&quot;</span>)</a></code></pre></div>
+<div class="figure">
+<img src="data:image/png;base64,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" alt="Body temperature, depth, shade and activity of for the lizard Eulamprus quoyii with shade options ranging from 0% to 90%" />
+<p class="caption"><strong>Body temperature, depth, shade and activity of for the lizard <em>Eulamprus quoyii</em> with shade options ranging from 0% to 90%</strong></p>
+</div>
+<p>In Figure 1 you can see the daily cycles, for each month, of the body temperature (black), % shade selected (green, divided by 10 for plotting), activity level in orange (multiplied by 5 for plotting, so 5 = basking, 10 = active) and depth in brown (m). Also superimposed are the foraging thresholds <code>T_F_min</code> (blue dashed line) and <code>T_F_max</code> (red dashed line), and the preferred or target temperature <code>T_pref</code> (orange dashed line).</p>
+<p>Note how this lizard is active every day, but requires shade for this, and how body temperature jumps up on some evenings when it goes into its burrow (remember when inactive the body temperature may rise to a maximum of half way between <code>T_F_max</code> and <code>CT_max</code> before the animal moves deeper into the burrow).</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="co"># seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)</span></a>
+<a class="sourceLine" id="cb5-2" title="2">forage &lt;-<span class="st"> </span><span class="kw">subset</span>(environ, ACT <span class="op">==</span><span class="st"> </span><span class="dv">2</span>) <span class="co"># get foraging hours</span></a>
+<a class="sourceLine" id="cb5-3" title="3">bask &lt;-<span class="st"> </span><span class="kw">subset</span>(environ, ACT <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) <span class="co"># get basking hours</span></a>
+<a class="sourceLine" id="cb5-4" title="4">night &lt;-<span class="st"> </span><span class="kw">subset</span>(environ, Solar <span class="op">==</span><span class="st"> </span><span class="dv">0</span>) <span class="co"># get night hours</span></a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="kw">with</span>(night, <span class="kw">plot</span>(TIME <span class="op">~</span><span class="st"> </span>DOY, <span class="dt">ylab =</span> <span class="st">&quot;Hour of Day&quot;</span>, <span class="dt">xlab =</span> <span class="st">&quot;Day of Year&quot;</span>, <span class="dt">pch =</span> <span class="dv">15</span>, <span class="dt">cex =</span> <span class="dv">2</span>, </a>
+<a class="sourceLine" id="cb5-6" title="6">                 <span class="dt">col =</span> <span class="st">&#39;dark blue&#39;</span>)) <span class="co"># nighttime hours</span></a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="kw">with</span>(forage, <span class="kw">points</span>(TIME <span class="op">~</span><span class="st"> </span>DOY, <span class="dt">pch =</span> <span class="dv">15</span>, <span class="dt">cex =</span> <span class="dv">2</span>, <span class="dt">col =</span> <span class="st">&#39;orange&#39;</span>)) <span class="co"># foraging Tbs</span></a>
+<a class="sourceLine" id="cb5-8" title="8"><span class="kw">with</span>(bask, <span class="kw">points</span>(TIME <span class="op">~</span><span class="st"> </span>DOY, <span class="dt">pch =</span> <span class="dv">15</span>, <span class="dt">cex =</span> <span class="dv">2</span>, <span class="dt">col =</span> <span class="st">&#39;light blue&#39;</span>)) <span class="co"># basking Tbs</span></a></code></pre></div>
+<div class="figure">
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAMAAABNUi8GAAAAYFBMVEUAAAAAADoAAGYAAIsAOpAAZrY6AAA6ADo6AGY6Ojo6OpA6kNtmAABmADpmtv+QOgCQkGaQ27aQ2/+t2Oa2ZgC225C2/7a2///bkDrb////pQD/tmb/25D//7b//9v///+JEAueAAAACXBIWXMAAA7DAAAOwwHHb6hkAAASxElEQVR4nO2dCXcbxxEGIVuknZASExqJoYDH//+X2QMLAhKOxsw0twhWvWeZ1mu0P2zX2wvgzuJVBMxi7gAip1BQQaOggkZBBY2CChoFFTQKKmgUVNAoqKBRUEGjoIJGQQWNggoaBRU0CipoFFTQKKigUVBBo6CCRkEFjYIKGgUVNAoqaBRU0CiooFFQQaOggkZBBY2CChoFFTQKKmgUVNAoqKBRUEGjoIJGQQWNggoaBRU0CipoFFTQKKigUVBBo6CCRkEFjYIKGgUVNAoqaBRU0CiooFFQQaOggkZBBY2CChoFFTQKKmgUVNAoqKBRUEGjoIJGQQWNggoaBRU0CipoFFTQKKigUVBBo6CCRkEFjYIKGgUVNAoqaBRU0CiooFFQQaOggkZBBY2CCprGgi5EQswlaNt2cq0oqKBRUEGDEPT3fc6++ILyqs7n6hNzZ0dPDnNZ/anoCnqiXEFLwyhotDx1yignUGEUNFqeOmWUE6gwChotT50yyglUGAWNlqdOGeUEKoyCRstTp4xyAhVGQaPlqVNGOYEKo6DR8tQpo5xAhVHQaHnqlFFOoMIoaLQ8dcooJ1BhFDRanjpllBOoMAoaLU+dMsoJVBgFjZanThnlBCqMgkbLU6eMcgIVRkGj5alTRjmBCqOg0fLUKaOcQIVR0Gh56pRRTqDCKGi0PHXKKCdQYRQ0Wp46ZZQTqDAKGi1PnTLKCVQYBY2Wp04Z5QQqjIJGy1OnjHICFUZBo+WpU0Y5gQqjoNHy1CmjnECFUdBoeeqUUU6gwihotDx1yignUGEUNFqeOmWUE6gwChotT50yyglUGAWNlqdOGeUEKoyCRstTp4xyAhVGQaPlqVNGOYEKo6DR8tQpo5xAhVHQaHnqlFFOoMIoaLQ8dcooJ1BhFDRanjpllBOoMHhBXx7GRW5++zvSLnHbpk4Z5QQqDF3Q1eJu/GE9/XCyXeK2TZ0yyglUGLigLw9bLVdff5xvl7htU6eMcgIVBi7o8/336cf1kYO8gipoKLp70BPlCloaBi5odw662YV6DloeJjX6Jxe0O8iPV/FH9p8K2t4JVBi8oJe1S9y2qVNGOYEK82EFPbwMeOK2TZ0yyglUGLygq07B4TR05VV8aZjU6J9c0NWXx+409OZVQSvCpEb/3IKOt5leHrpLJAUtDpMa/XMLOt2oX379oaDFYVKjf25BtzfqlzcKWhwmNfrnFnR7YH++P/Z9JgVV0FD0tKv48SD/8hARlMMnEvSDgLhRz0FBaSjoHgpKQ0H3UFAaCrqHgtJQ0D0UlIaC7qGgNBR0DwWloaB7KCgNBd1DQWkgBP3fPmdffEH5hZ0V9AgXbsfL6k/NX0H3UNAjKKiC1lUraLSwoB1HUDmCgiooGgVVUDQKqqBoFFRB0SiogqJRUAVFo6AKikZBFRSNgiooGgVlCHpZkktz/7VH2+qfys/XX5ZdQRW0rlpBo4UF7RS0vlpBo4UF7RS0vlpBo4UF7RS0vlpBo4UF7RS0vlpBo4UF7RS0vlpBo4UF7RS0vlpBo4UF7RS0vlpBo4UF7RS0vlpBo4UF7RS0vlpBo4UF7RS0vlpBo4UF7RS0vlpBo4UF7RS0vlpBo4UF7T6LoKlOoMIoaLQ8dcooJ1BhFDRanjpllBOoMAoaLU+dMsoJVBgFjZanThnlBCqMgkbLU6eMcgIVRkGj5alTRjmBCqOg0fLUKaOcQIVR0Gh56pRRTqDCwAV9vu/Xi18vFscW41bQ9k6gwnwEQVdff/Q/fQ+0S9y2qVNGOYEK8wEE3ag5aHquXeK2TZ0yyglUmA8g6NPtIOj6yEFeQRU0FN096IlyBS0Ngxe0uz5a3LxOl0vn2iVu29Qpo5xAhYEL+jo4+uWxu5A/4qeCKmgsuvdBT5QraGmYDyvoYks04CEuKE+dMsoJVJgPK+jhdonbNnXKKCdQYeYUtDu7vIm+KNCuJ3Hbpk4Z5QQqzLx70FV3hD528TMwXsWPeB+0NExq9KsW9PWsoy8PRz+EP9QucdumThnlBCrM7IKOih638OXhzGmAgipoKHqZoP0Xlb53Fh75mGioOPItkUPtErdt6pRRTqDCzCpof4Y5mnnsg/aL2p0JeIgLylOnjHICFWbeq/gvj9EXBdr1JG7b1CmjnECFmfsQX4+CKmgoeuEh/sQNpEvbnQl4iAvKU6eMcgIVZlZBl19/rG6m73uWoqAKGopecg5697ruLpKOfdPzwnbnAh7igvLUKaOcQIWZV9Dvr09//j38U46CKmgo+uWCvjzcvT5/e1RQmBOoMLOeg666q6PlnYd4mBOoMPPeZlre9FfyVRfxCqqgsejeBz1RrqClYRQ0Wp46ZZQTqDDzXsX3d+mrTkB//v8mbtvUKaOcQIWZUdDl+DWl1emvLIfbnQ14iAvKU6eMcgIVZj5B19M3RfwkCeYEKsxsgu58EXlZ9ZtJCqqgoegXCrrzpJCVXxZBOYEKM6Og2wN7xbeVf/7/Jm7b1CmjnECFUdBoeeqUUU6gwihotDx1yignUGEUNFqeOmWUE6gwMwp69pEMl7QLBDzEBeWpU0Y5gQoz5ydJbVBQBQ1FV9AT5QpaGkZBo+WpU0Y5gQqjoNHy1CmjnECFUdBoeeqUUU6gwsx5m6n/faR6FFRBQ9Ev/yxeQd8jd3b0axV0eOqi90Hzc2dHv1pBX1/dg75H7uzoVyxoGxRUQUPRSwR9uu0O8JXPYFRQBQ1FLxB0XD5udeYRyuF2ZwIe4oLy1CmjnECFmVPQ/tE3PT5ZhOUEKsysF0mbb9z5dTuWE6gw7kGj5alTRjmBCuM5aLQ8dcooJ1BhvIqPlqdOGeUEKoz3QaPlqVNGOYEKo6DR8tQpo5xAhVHQaHnqlFFOoMIoaLQ8dcooJ1BhFDRanjpllBOoMIT7oHUoqIKGopd/klSHgipoKHrJjfrAZ5wvD2e+1KygChqKXvoI8NPfqN8+f3l97EHMCqqgoegpF0k7p6nHPrFXUAUNRU8RNPCIMQVV0FD0lEO8e9AWYVKjX7GgG05eKm2/6uQ5aHmY1OjXL+jpRRSm3ezR74wqqIKGopcL6jfqWU6gwhAELVrl4+2xD9GAh7igPHXKKCdQYQCCPt+7ThLKCVQYwlV83WqdCqqgoehJ90HPPsFJQRU0FD3n63YvD+dOUBVUQUPRk35pbmdNz7PtFHSG6NcsaOjXjtdnfitZQRU0FN0HN5woV9DSMPNexfvom/zc2dGvWFD3oO+ROzv6FQvqo2/eI3d29GsW1EffvEPu7OhXLWgLFFRBQ9EV9ES5gpaGmU1Ql+N+p9zZ0a9V0IEWvxmvoAoaiq6gJ8oVtDSMgkbLU6eMcgIVRkGj5alTRjmBCqOg0fLUKaOcQIVR0Gh56pQvzY1CQaPtFHQWFDTaTkFn4ToF9UZ9TW4U1yloMxR0bhQ03k5BZ0BB4+0UdAYUNN5OQWdAQePtFHQGFDTeTkFnQEHj7T6qoH/tc7Y7CgWNt1PQGVDQeDsFnQEFjbdT0BlQ0Hg7BZ0BBY23U9AZUNB4OwWdAQWNt1PQGVDQeDsFnQEFjbdT0BlQ0Hg7BZ0BBY23U9AZUNB4OwWdAQWNt1PQGVDQeDuOoHIEBVVQNAqqoGgUVEHRKKiColFQBUWjoAqKRkEVFI2CKigaBVVQNArKEPT3fZpW/1zftvriMJehoApaV62g0cJZ2rVCQWko6B4KSiNF0Of7fkX59anHhCuogobIE3T19ceJ9RYUVEFDpAm6UXPQtLLdO6KgNNIEfbodBF3vH+Tf1gi5oN07oqA03IPuoaA0kgTt95E3r9PlUmW7d0RBaWTdZuoc/fLYXcgf8VNBFTSG90H3UFAaCEETB5065Q8taGqYy+pPRVfQE+UKWhpGQaPlqVNGOYEKo6DR8tQpo5xAhVHQaHnqlFFOoMIoaLQ8dcooJ1BhFDRanjpllBOoMAoaLU+dMsoJVBgFjZanThnlBCqMgkbLU6eMcgIVRkGj5alTRjmBCqOg0fLUKaOcQIVR0Gh56pRRTqDCKGi0PHXKKCdQYRQ0Wp46ZZQTqDAKGi1PnTLKCVQYBY2Wp04Z5QQqjIJGy1OnjHICFUZBo+WpU0Y5gQqjoNHy1CmjnECFUdBoeeqUUU6gwihotDx1yignUGEUNFqeOmWUE6gwChotT50yyglUGAWNlqdOGeUEKoyCRstTp4xyAhVGQaPlqVNGOYEKo6DR8tQpo5xAhVHQaHnqlFFOoMIoaLQ8dcooJ1BhFDRanjpllBOoMAoaLU+dMsoJVBgFjZanThnlBCqMgkbLU6eMcgIVRkGj5alTRjmBCqOg0fLUKaOcQIVR0Gh56pRRTqDCKGi0PHXKKCdQYRQ0Wp46ZZQTqDAKGi1PnTLKCVQYBY2Wp04Z5QQqjIJGy1OnjHICFUZBo+WpU0Y5gQqjoNHy1CmjnECFUdBoeeqUUU6gwihotDx1yignUGEUNFqeOmWUE6gwChotT50yyglUGAWNlqdOGeUEKoyCRstTp4xyAhVGQaPlqVNGOYEKo6DR8tQpo5xAhVHQaHnqlFFOoMLgBX15WAz89nekXeK2TZ0yyglUGLqgq8Xd+MN6+uFku8RtmzpllBOoMHBBXx62Wq6+/jjfLnHbpk4Z5QQqDFzQ5/vv04/r/YP8Yks04CEuKE+dMsoJVBi4oO5BW4RJjf65Be3OQTe7UM9By8OkRv/kgnYH+fFAfmT/qaDtnUCFwQt6WbvEbZs6ZZQTqDAKGi1PnTLKCVQYBY2Wp04Z5QQqjIJGy1OnjHICFebKBBU5hoIKGgUVNAoqaGYTVCTETIK2o2kwbDNsMMy7VNBZm2GDYd6lgs7aDBsM8y4VdNZm2GCYd6mgszbDBsO8SwWdtRk2GOZdKuiszbDBMO9SQWdthg2GeZcKOmszbDDMu8QKKtKjoIJGQQWNggoaBRU0CipoFFTQKKigUVBBo6CCRkEFjYIKGgUVNDhBx0eQ3rz2T8ldfHmsafX05/Cc8m2fqoZjswbphpVS7hoF2zZrstlWvwQqbzb1qg2GE/Tpj82bWHfvZl1j6PP98CD9bZ+qhptm9eleHrpXrfqJNQj21qzFZlt1b3E/UHmzba/aYDhBp+UZxgfiL2/KG43LOW37VDXcNGuQ7um2f4x6N78WwbbNWmy25/u7/vU3LTbZtld1MJygq81beNv2ZawXd8O22fapaTg1a5fuy2OTYFOzZsF6qVolGwStDYYTdPmP8axqPDSsy8e2efG2T2XD8YWt0i138lS/065Zs2CrTvZWyfpe1cFogj7f9ws0LO82pytVJ6HD1tj2qWw4NGuVrl8lpVWwoVmjYOvBpTbJxl7VwWiCjnQ2IAVtlG49XSM1CbbYntc12GwvD19/tErW96oOxhS0O2FhHuKbpBtXmWoUbHfJqhabrT87bnXysdWxIhhU0D8eqy8dJkEbnfHvClqXbrMkb5tgq90l1Vpstt6lVpdv4+vrgtEEHd/HeucuTDnrdreZ9myvSzct19ck2NSsRbBfe9TeTFtPjlcEowk6voXlXYMb9ZudXpsb9dNVfHW6p9tpl9cg2FuzFptt2Z0yDh41SLbtVRsMJ+jrcrEYdwur2o86N0flbZ+qhptm1elW4wOG+9fWB9tp1mKz/dqjvNm2V2UwnqAiOyiooFFQQaOggkZBBY2CChoFFTQKKmgUVNAoqKBRUEGjoIJGQQWNggoaBRU0CipoFFTQKKigUVBBo6CCRkEFjYIKGgUVNAoqaBRU0CiooFFQQaOg5SzHJyN9P1u42jxseFwo5LbmiX2fDgUtZzk8QPi8cMOSF6/Ts2arHnn6+VDQckZBzz9T8Pl+s5PtVzuYbJUYClrORtBhtZXpKYPD4zCnpVfWwwIXT7ebRZaGx3mOO9DVtNrc5mXP3/61cM96CAUtZyPo8O9ezH7Zlf4xoi8P4x5z3an3fH/ztgftdqH/HXagw2Ivt5vHu/b/MS6GIb+ioOVMgnY7xedvj+Nzr3sZN6v/jQ+97k4A3gTtdqb9a8bD/HrvZR74D6Og5ewI2v9rPR3jV+Pfj49n7/58E3TzTPnxrHWzxMDwsp0S2UNBy9k9xHcnlb/9pzeu2y8ux73hKGCn3o59m9WCFtMNqullCnoMBS1n5yJpkHH44/nbv7+NV/WH9qA/LWe1fZmCHkNBy9m5zTQuatcfv18e/rHZsR44B92ouf2L7csU9BgKWs50o/5u2guON+K3S2v9ehU/7TvHZVbHFY+HlynoMRS0nN2POoc1Vpa9d5tr+J7xPugBQYf7oP3ec3qZgh5DQVvz9E/vaDZEQVuz8o5mSxS0LU+3fiTUFAUVNAoqaBRU0CiooFFQQaOggkZBBY2CChoFFTQKKmgUVNAoqKBRUEGjoIJGQQWNggoaBRU0CipoFFTQKKigUVBB83/UXN7LbXHMRQAAAABJRU5ErkJggg==" alt="Annual activity window for the lizard Eulamprus quoyii with shade options ranging from 0% to 90%" />
+<p class="caption"><strong>Annual activity window for the lizard <em>Eulamprus quoyii</em> with shade options ranging from 0% to 90%</strong></p>
+</div>
+<p>In Figure 2 you can see the annual activity window, with dark blue representing the nighttime hours, light blue the basking hours and orange the foraging hours. Activity is possible for this lizard at this tropical location throughout they year.</p>
+<p>Explore what changing the thermal thresholds <code>CT_min</code>, <code>T_RB_min</code>, <code>T_B_min</code>, <code>T_F_min</code>, <code>T_F_max</code> and <code>CT_max</code> does to these plots, as well as variation in available shade <code>maxshades</code> and burrow depths <code>mindepth</code> and <code>maxdepth</code>. Here is an example of the effect of reducing maximum shade in all months from 90% to 10%:</p>
+<div class="figure">
+<img src="data:image/png;base64,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" alt="Body temperature, depth, shade and activity of for the lizard Eulamprus quoyii with shade options ranging from 0% to 10%" />
+<p class="caption"><strong>Body temperature, depth, shade and activity of for the lizard <em>Eulamprus quoyii</em> with shade options ranging from 0% to 10%</strong></p>
+</div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">forage&lt;-<span class="kw">subset</span>(environ,ACT<span class="op">==</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb6-2" title="2">bask&lt;-<span class="kw">subset</span>(environ,ACT<span class="op">==</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb6-3" title="3">night&lt;-<span class="kw">subset</span>(environ,Solar<span class="op">==</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb6-4" title="4">day&lt;-<span class="kw">subset</span>(environ,Solar<span class="op">==</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="kw">with</span>(night,<span class="kw">plot</span>(TIME <span class="op">~</span><span class="st"> </span>DOY,<span class="dt">ylab=</span><span class="st">&quot;Hour of Day&quot;</span>,<span class="dt">xlab=</span><span class="st">&quot;Day of Year&quot;</span>,<span class="dt">pch=</span><span class="dv">15</span>,<span class="dt">cex=</span><span class="dv">2</span>,<span class="dt">col=</span></a>
+<a class="sourceLine" id="cb6-6" title="6">    <span class="st">&#39;dark blue&#39;</span>))</a>
+<a class="sourceLine" id="cb6-7" title="7"><span class="co"># nighttime hours</span></a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="kw">with</span>(forage,<span class="kw">points</span>(TIME<span class="op">~</span>DOY,<span class="dt">pch=</span><span class="dv">15</span>,<span class="dt">cex=</span><span class="dv">2</span>,<span class="dt">col=</span><span class="st">&#39;orange&#39;</span>)) <span class="co"># foraging Tbs</span></a>
+<a class="sourceLine" id="cb6-9" title="9"><span class="kw">with</span>(bask,<span class="kw">points</span>(TIME<span class="op">~</span>DOY,<span class="dt">pch=</span><span class="dv">15</span>,<span class="dt">cex=</span><span class="dv">2</span>,<span class="dt">col=</span><span class="st">&#39;light blue&#39;</span>)) <span class="co"># basking Tbs</span></a></code></pre></div>
+<div class="figure">
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAMAAABNUi8GAAAAYFBMVEUAAAAAADoAAGYAAIsAOpAAZrY6AAA6ADo6AGY6Ojo6OpA6kNtmAABmADpmtv+QOgCQkGaQ27aQ2/+t2Oa2ZgC225C2/7a2///bkDrb////pQD/tmb/25D//7b//9v///+JEAueAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAR0UlEQVR4nO2dCXca2xEG8YvlLJKtRCF5OGj5//8yszAIbAM9995mCqvqnPcs+zTNB11nNtDc1ZsImNXSAUTOoaCCRkEFjYIKGgUVNAoqaBRU0CiooFFQQaOggkZBBY2CChoFFTQKKmgUVNAoqKBRUEGjoIJGQQWNggoaBRU0CipoFFTQKKigUVBBo6CCRkEFjYIKGgUVNAoqaBRU0CiooFFQQaOggkZBBY2CChoFFTQKKmgUVNAoqKBRUEGjoIJGQQWNggoaBRU0CipoFFTQKKigUVBBo6CCRkEFjYIKGgUVNAoqaBRU0CiooFFQQaOggkZBBY2CChoFFTQKKmgUVNAoqKBRUEGjoIJGQQWNggoaBRU0CipoFFTQKKigUVBBo6CCRkEFjYIKGgUVNI0FXYmEWErQtu3kd0VBBY2CChqEoH855uKDZ5RXdb5Un5g7O3pymHn156Ir6JlyBS0No6DR8tQpo5xAhVHQaHnqlFFOoMIoaLQ8dcooJ1BhFDRanjpllBOoMAoaLU+dMsoJVBgFjZanThnlBCqMgkbLU6eMcgIVRkGj5alTRjmBCqOg0fLUKaOcQIVR0Gh56pRRTqDCKGi0PHXKKCdQYRQ0Wp46ZZQTqDAKGi1PnTLKCVQYBY2Wp04Z5QQqjIJGy1OnjHICFUZBo+WpU0Y5gQqjoNHy1CmjnECFUdBoeeqUUU6gwihotDx1yignUGEUNFqeOmWUE6gwChotT50yyglUGAWNlqdOGeUEKoyCRstTp4xyAhVGQaPlqVNGOYEKo6DR8tQpo5xAhVHQaHnqlFFOoMIoaLQ8dcooJ1BhFDRanjpllBOoMAoaLU+dMsoJVBgFjZanThnlBCqMgkbLU6eMcgIVRkGj5alTRjmBCqOg0fLUKaOcQIVR0Gh56pRRTqDC4AV9fRwXufnjz0i7xPc2dcooJ1Bh6IJuVvfjD9vph7PtEt/b1CmjnECFgQv6+rjXcvP5++V2ie9t6pRRTqDCwAV9efg2/bg9sZNXUAUNRXcLeqZcQUvDwAXtjkF3m1CPQcvDpEb/4IJ2O/nxLP7E9lNB2zuBCoMXdF67xPc2dcooJ1BhblbQXy8Dnvjepk4Z5QQqDF7QTafgcBi68Sy+NExq9A8u6ObTU3cYevemoBVhUqN/bEHHy0yvj90pkoIWh0mN/rEFnS7Urz9/V9DiMKnRP7ag+wv16zsFLQ6TGv1jC7rfsb88nPo+k4IqaCh62ln8uJN/fYwIyuEDCXojIC7Uc1BQGgp6hILSUNAjFJSGgh6hoDQU9AgFpaGgRygoDQU9QkFpKOgRCkpDQY9QUBoIQf93zMUHzyif2VlBTzDzfZxXf27+CnqEgp5AQRW0rlpBo4UF7TiCygkUVEHRKKiColFQBUWjoAqKRkEVFI2CKigaBVVQNAqqoGgUVEHRKChD0HlJ5ub+9xFtq38ov1w/L7uCKmhdtYJGCwvaKWh9tYJGCwvaKWh9tYJGCwvaKWh9tYJGCwvaKWh9tYJGCwvaKWh9tYJGCwvaKWh9tYJGCwvaKWh9tYJGCwvaKWh9tYJGCwvaKWh9tYJGCwvaKWh9tYJGCwvaKWh9tYJGCwvaKWh9tYJGC6/Q7lYFTXUCFWZ2/UkU9Ey5gpaGUVAFRYdRUAVFh1FQBUWHUVAFRYdRUAVFh1FQBUWHUVAFRYeBC/ry0K8Xv12tTi3GraAKGiRP0M3n7/1P3+rb/YSC0sPcgKA7NQdNK9v9hILSw9yAoM9fBkG3J3by0HWSFJTGTW5B81BQGkmCdudHq7u36XSpst0VUVAaWZeZOkc/PXUn8if8VFAFjXGT10HzUFAaVxZ0tadJu+YoKA23oEcoKI35gnZHl3dXfN7roqA0Sragm24PferkZ2A8ix/xOuip+rbVCnr0twuOvj6e/BB+7vNeFwWlUXwMujn3VZDO0AuHAQqqoCHKBO2/qPSts/DEx0RDxYlvicx93uuioDQKBO2PMEczT33Q3vJ5yShoPiVn8Z+ervi8ZBQ0H6+DVqCg+RTu4s9cQGr8vGQUNJ8CQdefv2/upu97pj8vGQXNp+QY9P5t250knfqmZ+PnJaOg+ZQI+u3t+W9/Dv9d4XnJKGg+8wV9fbx/e/n6pKAKeg0KjkE33dnR+t5dvIJeg5LLTOu7/ky+6iReQRU0htdBK1DQfBS0AgXNp+gLy6vpw/grPC8ZBc1ntqDr8WtKm/NfWW73vGRuWtAbYa6g2+mbIn6SpKDXYKagB19EXlf9ZpKCKmiImYIe3Clk45dFFDSf2YLud+wV31ae87xkFDQfBa1AQfNR0AoUNB8FrUBB85kt6MVbMjR+XjIKmo8fdVagoPkoaAU3LeiN+KygFShoPgpagYLmo6AVKGg+8y8z9b+PdMXnJaOg+cz/LF5B9yhoPnN38Ruvg76joPkUfKPeLeiEgubjSVIFCppPiaDPX7odfOU9GBVUQUMUCDouH7e5cAvlVs9LRkHzKbv1TY93FlHQK1B287Aev26noFfALWgFCpqPx6AVKGg+nsVXoKD5eB20AgXNR0ErUNB8FLQCBc1HQStQ0HwUtAIFzaf8OuiVnpeMguZT/knSlZ6XjILmU3KhPvAZ5+vjhS81K6iChii9Bfj5b9Tv77+8PXUjZqig86asoPmknCQdHKae+sReQRU0RIqggVuMKaiChkjZxbsFjdS3rVbQH/5+9lRp/1Unj0FP17etVtAf/+HsIgrTZvbkd0YVVEFDlAv6W36jXkFplAtatMrH+20f5j/2GigojWJBXx5+x3WSFJRG+Vl83WqdCqqgIZKug168g5OCKmiInK/bvT5eOkBVUAUNkfRLcwdrelY+76+Y8d6mTvkDCbqYzlm/dry98FvJCqqgIW7yxg0KSg/Tjpu89Y2C0sO0wy3omXIFLQ3Tjpu89Y2C0sO04yZvfaOg9DDtuMlfO1ZQeph2KOiZcgUtDdOO2eskEZahUVB6mHaUbEFb/Ga8gipoCAU9U66gpWHagRA08b1V0EXCzKs/F11Bz5QraGkYBY2Wp04Z5QQqjIJGy1OnPDc3CgWNtlPQRVDQaDsFXYTfU9CcC/UKugC/p6DNUNClUdB4OwVdAAWNt1PQBVDQeDsFXQAFjbdT0AVQ0Hg7BV0ABY23u1VB/33Mxe4oFDTeTkEXQEHj7RR0ARQ03k5BF0BB4+0UdAEUNN5OQRdAQePtFHQBFDTeTkEXQEHj7RR0ARQ03k5BF0BB4+0UdAEUNN5OQRdAQePtFHQBFDTeTkEXQEHj7TiCygkUVEHRKKiColFQBUWjoAqKRkEVFI2CKigaBVVQNAqqoGgUVEHRKChD0L8c07T6x/q21bPDzENBFbSuWkGjhYu0a4WC0lDQIxSURoqgLw/9ivLbc7cJV1AFDZEn6Obz9zPrLSiogoZIE3Sn5qBpZbsroqA00gR9/jIIuj3eyb+vETKj3RVRUBpuQY9QUBpJgvbbyLu36XSpst0VUVAaWZeZOkc/PXUn8if8VFAFjeF10CMUlAZC0MRBp075pgVNDTOv/lx0BT1TrqClYRQ0Wp46ZZQTqDAKGi1PnTLKCVQYBY2Wp04Z5QQqjIJGy1OnjHICFUZBo+WpU0Y5gQqjoNHy1CmjnECFUdBoeeqUUU6gwihotDx1yignUGEUNFqeOmWUE6gwChotT50yyglUGAWNlqdOGeUEKoyCRstTp4xyAhVGQaPlqVNGOYEKo6DR8tQpo5xAhVHQaHnqlFFOoMIoaLQ8dcooJ1BhFDRanjpllBOoMAoaLU+dMsoJVBgFjZanThnlBCqMgkbLU6eMcgIVRkGj5alTRjmBCqOg0fLUKaOcQIVR0Gh56pRRTqDCKGi0PHXKKCdQYRQ0Wp46ZZQTqDAKGi1PnTLKCVQYBY2Wp04Z5QQqjIJGy1OnjHICFUZBo+WpU0Y5gQqjoNHy1CmjnECFUdBoeeqUUU6gwihotDx1yignUGEUNFqeOmWUE6gwChotT50yyglUGAWNlqdOGeUEKoyCRstTp4xyAhVGQaPlqVNGOYEKo6DR8tQpo5xAhVHQaHnqlFFOoMIoaLQ8dcooJ1BhFDRanjpllBOoMAoaLU+dMsoJVBgFjZanThnlBCqMgkbLU6eMcgIVRkGj5alTRjmBCqOg0fLUKaOcQIVR0Gh56pRRTqDCKGi0PHXKKCdQYRQ0Wp46ZZQTqDAKGi1PnTLKCVQYBY2Wp04Z5QQqDF7Q18fVwB9/RtolvrepU0Y5gQpDF3Szuh9/2E4/nG2X+N6mThnlBCoMXNDXx72Wm8/fL7dLfG9Tp4xyAhUGLujLw7fpx+3xTn61JxrwV8woT50yyglUGLigbkFbhEmN/rEF7Y5Bd5tQj0HLw6RG/+CCdjv5cUd+YvupoO2dQIXBCzqvXeJ7mzpllBOoMAoaLU+dMsoJVBgFjZanThnlBCqMgkbLU6eMcgIV5jcTVOQUCipoFFTQKKigWUxQkRALCdqOpsGwzbDBMK9SQRdthg2GeZUKumgzbDDMq1TQRZthg2FepYIu2gwbDPMqFXTRZthgmFepoIs2wwbDvEoFXbQZNhjmVSroos2wwTCvEiuoSI+CChoFFTQKKmgUVNAoqKBRUEGjoIJGQQWNggoaBRU0CipoFFTQ4AQdb0F699bfJXf16amm1fPfhvuU7/tUNRybNUg3rJRy3yjYvlmTt23zU6DyZlOv2mA4QZ//unsR2+7VbGsMfXkYbqS/71PVcNesPt3rY/eoTT+xBsHem7V42zbdSzwOVN5s36s2GE7QaXmG8Yb467vyRuNyTvs+VQ13zRqke/7S30a9m1+LYPtmLd62l4f7/vF3Ld6yfa/qYDhBN7uX8P7el7Fd3Q/vzb5PTcOpWbt0n56aBJuaNQvWS9Uq2SBobTCcoOu/j0dV465hWz623YP3fSobjg9slW59kKf6lXbNmgXbdLK3Stb3qg5GE/TloV+gYX2/O1ypOggd3o19n8qGQ7NW6fpVUloFG5o1CrYdXGqTbOxVHYwm6EhnA1LQRum20zlSk2Cr/XFdg7ft9fHz91bJ+l7VwZiCdgcszF18k3TjKlONgh0uWdXibeuPjlsdfOx1rAgGFfSvT9WnDpOgjY74DwWtS7dbkrdNsM3hkmot3rbepVanb+Pj64LRBB1fx/bgKkw523aXmY5sr0s3LdfXJNjUrEWwn3vUXkzbTo5XBKMJOr6E9X2DC/W7jV6bC/XTWXx1uucv0yavQbD3Zi3etnV3yDh41CDZvldtMJygb+vVatwsbGo/6tztlfd9qhrumlWn24w3GO4fWx/soFmLt+3nHuXN9r0qg/EEFTlAQQWNggoaBRU0CipoFFTQKKigUVBBo6CCRkEFjYIKGgUVNAoqaBRU0CiooFFQQaOggkZBBY2CChoFFTQKKmgUVNAoqKBRUEGjoIJGQQWNggoaBS1nPd4Z6dvFws3uZsPjQiFfau7Y9+FQ0HLWww2ELws3LHnxNt1rtuqWpx8PBS1nFPTyPQVfHnYb2X61g8lWiaGg5ewEHVZbme4yONwOc1p6ZTsscPH8ZbfI0nA7z3EDuplWm9s97OXrP1duWX+FgpazE3T4sxezX3alv43o6+O4xdx26r083L1vQbtN6H+HDeiw2MuX3e1d+7+Mi2HIzyhoOZOg3Ubx5evTeN/rXsbd6n/jTa+7A4B3QbuNaf+YcTe/PXqYO/5fo6DlHAja/7Gd9vGb8d/H27N3/38XdHdP+fGodbfEwPCwgxI5QkHLOdzFdweVf/ynN67bLq7HreEoYKfegX271YJW0wWq6WEKegoFLefgJGmQcfjfy9d/fR3P6n+1Bf1hOav9wxT0FApazsFlpnFRu37//fr4992G9RfHoDs19/+wf5iCnkJBy5ku1N9PW8HxQvx+aa2fz+Knbee4zOq44vHwMAU9hYKWc/hR57DGyrr3bncO3zNeB/2FoMN10H7rOT1MQU+hoK15/odXNBuioK3ZeEWzJQralucvfiTUFAUVNAoqaBRU0CiooFFQQaOggkZBBY2CChoFFTQKKmgUVNAoqKBRUEGjoIJGQQWNggoaBRU0CipoFFTQKKigUVBB838kcnf17iLJQgAAAABJRU5ErkJggg==" alt="Annual activity window for the lizard Eulamprus quoyii with shade options ranging from 0% to 10%" />
+<p class="caption"><strong>Annual activity window for the lizard <em>Eulamprus quoyii</em> with shade options ranging from 0% to 10%</strong></p>
+</div>
+</div>
+<div id="discussion" class="section level1">
+<h1>Discussion</h1>
+<p>The capacity to compute body temperature, metabolic rates, activity times and some aspects of the water budget under realistic microclimates allows many inferences to be made about the ability of different types of animals to live in different climates and habitats. In some cases such processes may be limiting factors of the distribution. For example, Kearney and Porter (2004) found that activity time was likely to be a limiting factor for a nocturnal lizard in southern Australia. More often, these constraints act to limit the overall energy and water budget in a more subtle manner.</p>
+<p>The preliminary computations made in this tutorial can provide the starting point for an energy and mass budget analysis that could ultimately allow you to predict reproductive success and survival rates, the ‘vital rates’ that link individuals to populations.</p>
+<p>One of the most powerful ways of achieving a full mass balance and life cycle trajectory is by using the Dynamic Energy Budget (DEB) theory and its associated models (Kooijman, 2010). DEB theory integrated into the NicheMapR package as described further in the vignette <a href="deb-model-tutorial.html">Introduction to Dynamic Energy Budget models in NicheMapR</a>.</p>
+<p>Below is an example of the sort of calculation that can be made with the integration of DEB theory and the ectotherm model - a simulation of the Australian Water Skink, <em>Eulamprus quoyii</em> growing at Townsville Australia (see Schwarzkopf et al. 2016). This example is explained further in the DEB vignette just mentioned.</p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<p>Andrews, R. M., and H. F. Pough. 1985. Metabolism of squamate reptiles: allometric and ecological relationships. Physiological Zoology 58:214-231.</p>
+<p>Kearney, M., and W. P. Porter. 2004. Mapping the fundamental niche: physiology, climate, and the distribution of a nocturnal lizard. Ecology 85:3119-3131.</p>
+<p>Kooijman, S. A. L. M. 2010. Dynamic Energy Budget Theory for Metabolic Organisation. Cambridge University Press, Great Britain.</p>
+<p>Schwarzkopf, L., M. J. Caley, and M. R. Kearney. 2016. One lump or two? Explaining a major latitudinal transition in reproductive allocation in a viviparous lizard. Functional Ecology. DOI: 10.1111/1365-2435.12622</p>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
