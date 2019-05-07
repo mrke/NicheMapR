@@ -2,11 +2,9 @@
 title: "endoR function examples"
 author: "Michael Kearney"
 date: "`r Sys.Date()`"
-output:
-  pdf_document:
-    toc: true
+output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{endoR example}
+  %\VignetteIndexEntry{endoR function examples}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 

@@ -2,16 +2,13 @@
 title: "endoR example"
 author: "Michael Kearney"
 date: "`r Sys.Date()`"
-output:
-  html_document:
-    df_print: paged
-    toc: yes
-  pdf_document:
-    toc: yes
-editor_options:
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{endoR example}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
   chunk_output_type: console
-vignette: |
-  %\VignetteIndexEntry{endoR example} %\VignetteEncoding{UTF-8} %\VignetteEngine{knitr::rmarkdown}
 ---
 
 ```{r, echo = FALSE}
