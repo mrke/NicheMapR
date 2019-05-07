@@ -21,9 +21,9 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-This document shows how to use the function `solve.endo.R` to compute endotherm heat and mass balances. This function collates all the different steps in `endoR example.R` into a single function that can be applied to vectors of data. The `solve.endo.R` function has one behavioural option at present - sweating to cool.
+This document shows how to use the function `solve.endo.R`, the main part of the 'endoR' collection of routines in NicheMapR, to compute endotherm heat and mass balances. This function collates all the different steps in [endoR example](endoR-example.html) into a single function that can be applied to vectors of data. The `solve.endo.R` function has one behavioural option at present - sweating to cool.
 
-## Single calc example
+## Single calculation example
 
 Here is how you run the calculation with all default values except specifying a local air temperature of 0 deg C.
 
@@ -54,11 +54,11 @@ endo.out <- do.call("rbind", lapply(endo.out, data.frame))
 
 QGEN <- endo.out$RESPGEN # metabolic rate (W)
 H2O <- endo.out$EVAP.G.H # g/h water evaporated
-TFA_D <- endo.out$TFA_D
-TFA_V <- endo.out$TFA_V
-TskinD <- endo.out$TSKIN_D
-TskinV <- endo.out$TSKIN_V
-TC <- endo.out$TC
+TFA_D <- endo.out$TFA_D # dorsal fur surface temperature
+TFA_V <- endo.out$TFA_V # ventral fur surface temperature
+TskinD <- endo.out$TSKIN_D # dorsal skin temperature
+TskinV <- endo.out$TSKIN_V # ventral skin temperature
+TC <- endo.out$TC # core temperature
 plot(QGEN ~ TAs, type = 'l', ylab = 'metabolic rate, W', xlab = 'air temperature, deg C')
 plot(H2O ~ TAs, type = 'l', ylab = 'water loss, g/h', xlab = 'air temperature, deg C')
 plot(TFA_D ~ TAs, type = 'l', col = 'grey', ylab = 'fur, skin and core temperature, deg C', xlab = 'air temperature, deg C')
@@ -73,7 +73,6 @@ points(TC ~ TAs, type = 'l', col = 'red')
 In this final example, the microclimate model is run and the then the relevant outputs are sent into the endotherm model along with the same animal parameters as above.
 
 ```{r, fig.width = 7, fig.height = 5}
-library(NicheMapR)
 micro <- micro_global(loc = c(145, -37), runshade = 0, Usrhyt = 0.01)
 
 metout <- as.data.frame(micro$metout)
@@ -81,7 +80,6 @@ soil <- as.data.frame(micro$soil)
 days<-rep(seq(1,12),24)
 days<-days[order(days)]
 dates<-days+metout$TIME/60/24-1 # dates for hourly output
-
 
 TAs <- metout$TALOC
 TAREFs <- metout$TAREF
@@ -91,7 +89,7 @@ VELs <- metout$VLOC
 RHs <- metout$RHLOC
 QSOLRs <- metout$SOLR
 Zs <- metout$ZEN
-ELEV <- micro$ALTT
+ELEV <- micro$elev
 ABSSB <- 1-micro$REFL
 
 
@@ -101,11 +99,11 @@ endo.out <- do.call("rbind", lapply(endo.out, data.frame))
 
 QGEN <- endo.out$RESPGEN # metabolic rate (W)
 H2O <- endo.out$GEVAP * 3600 # g/h water evaporated
-TFA_D <- endo.out$TFA_D
-TFA_V <- endo.out$TFA_V
-TskinD <- endo.out$TSKIN_D
-TskinV <- endo.out$TSKIN_V
-TC <- endo.out$TC
+TFA_D <- endo.out$TFA_D # dorsal fur surface temperature
+TFA_V <- endo.out$TFA_V # ventral fur surface temperature
+TskinD <- endo.out$TSKIN_D # dorsal skin temperature
+TskinV <- endo.out$TSKIN_V # ventral skin temperature
+TC <- endo.out$TC # core temperature
 
 plot(QGEN ~ dates, type = 'l', ylab = 'metabolic rate, W', xlab = 'time')
 plot(H2O ~ dates, type = 'l', ylab = 'water loss, g/h', xlab = 'time')
@@ -115,6 +113,3 @@ points(TskinD ~ dates, type = 'l', col = 'orange')
 points(TskinV ~ dates, type = 'l', col = 'orange', lty = 2)
 points(TC ~ dates, type = 'l', col = 'red')
 ```
-
-
-

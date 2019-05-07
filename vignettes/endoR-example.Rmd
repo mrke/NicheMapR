@@ -3,14 +3,15 @@ title: "endoR example"
 author: "Michael Kearney"
 date: "`r Sys.Date()`"
 output:
+  html_document:
+    df_print: paged
+    toc: yes
   pdf_document:
-    toc: true
-vignette: >
-  %\VignetteIndexEntry{endoR example}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
-editor_options: 
+    toc: yes
+editor_options:
   chunk_output_type: console
+vignette: |
+  %\VignetteIndexEntry{endoR example} %\VignetteEncoding{UTF-8} %\VignetteEngine{knitr::rmarkdown}
 ---
 
 ```{r, echo = FALSE}
@@ -21,7 +22,7 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-This document provides an overview of an R implementation of the NicheMapR endotherm model. This implementation modularises the original version such that many of the internal subroutines and functions can be called separately. The idea is that the user has more flexibility in setting the model up for the behavioural and physiological responses of a particular animal.
+This document provides an overview of an R implementation of the NicheMapR endotherm model, collectively 'endoR'. This implementation modularises the original version such that many of the internal subroutines and functions can be called separately. The idea is that the user has more flexibility in setting the model up for the behavioural and physiological responses of a particular animal.
 
 ```{r}
 library(knitr)
@@ -32,7 +33,7 @@ library(plotrix)
 
 ### IRPROP
 
-This subroutine computes the feasible hair spacing and the three parameters needed for computing conduction and infrared radition through the fur.
+This subroutine computes the feasible hair spacing and the three parameters needed for computing conduction and infrared radiation through the fur.
 
 ```{r}
 # environmental input
@@ -60,13 +61,13 @@ REFLV <- 0.301  # fur reflectivity ventral (dec %)
 IRPROP.out <- IRPROP(TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN)
 
 # output
-E4B1 <- IRPROP.out[1] # exponential integral, E4, of optical thickness, B1 (m), i.e. E4(B1), not sure this is used anymore
+E4B1 <- IRPROP.out[1] # exponential integral, E4, of optical thickness, B1 (m), i.e. E4(B1)
 KEFARA <- IRPROP.out[2:4] # effective thermal conductivity of fur array, mean, dorsal, ventral(W C-1 m-1)
-BETARA <- IRPROP.out[5:7] # term involved in computing optical thickess (?)
+BETARA <- IRPROP.out[5:7] # term involved in computing optical thickess
 B1ARA <- IRPROP.out[8:10] # optical thickness array, mean, dorsal, ventral (-)
 DHAR <- IRPROP.out[11:13] # fur diameter array, mean, dorsal, ventral (m)
 LHAR <- IRPROP.out[14:16] # fur length array, mean, dorsal, ventral (m)
-RHOAR <- IRPROP.out[17:19] # fur density array, mean, dorsal, ventral (1/m2)  
+RHOAR <- IRPROP.out[17:19] # fur density array, mean, dorsal, ventral (fibers/m2)  
 ZZFUR <- IRPROP.out[20:22] # fur depth array, mean, dorsal, ventral (m)  
 REFLFR <- IRPROP.out[23:25] # fur reflectivity array, mean, dorsal, ventral (dec %)
 FURTST <- IRPROP.out[26] # test of presence of fur (length x diamater x density x depth) (-)
@@ -97,10 +98,10 @@ for(i in 1:length(RHOs)){
 plot(KEFARAs ~ RHOs, type = 'p', pch = 16, ylab = 'effective fur conductivity, W C-1 m-1', xlab = 'hair density, 1/cm2')
 ```
 
-Example analysis of fur density on effective thermal conductivity of fur.
+Example analysis of fur depth on effective thermal conductivity of fur.
 
 ```{r}
-ZFURs <- seq(0, 50, 1) # hair densities (1/cm2)
+ZFURs <- seq(0, 50, 1) # hair depths (mm)
 KEFARAs <- NULL
 for(i in 1:length(ZFURs)){
   KEFARAs[i] <- IRPROP(TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURs[i] * 1E-03, ZFURs[i] * 1E-03, RHOD, RHOV, REFLD, REFLV, MAXPTVEN)[2]
@@ -110,7 +111,7 @@ plot(KEFARAs ~ ZFURs, type = 'p', pch = 16, ylab = 'effective fur conductivity, 
 
 ### GEOM
 
-This subroutine computes aspects of the animal's geometry. Note that GEOM requires outputs from IRPROP on fur properties. Note also that this routine is called 'allom' in past versions of Niche Mapper.
+This subroutine computes aspects of the animal's geometry. Note that GEOM requires outputs from IRPROP on fur properties. Note also that this routine is called 'allom' in past versions of 'Niche Mapper'.
 
 ```{r}
 # input
@@ -158,7 +159,7 @@ GEOM.lab <- c("R", "VOL", "D", "MASFAT", "VOLFAT", "ALENTH", "AWIDTH", "AHEIT", 
 kable(cbind(GEOM.lab, t(GEOM.out)))
 ```
 
-Plot of current animal configuration
+Plot of current animal configuration.
 
 ```{r}
 if(POSTUR == 4){ #ellipsoid
@@ -246,7 +247,7 @@ if(Z < 90){ # compute solar radiation on a surface normal to the direct rays of 
 SOLAR.out <- SOLAR(AREA, ABSAND, ABSANV, ABSSB, ASILN, PCTDIF, QNORM, SHADE, 
   AWING, QSOLR, FASKY, FATOBJ, FAVEG)
 
-QSOLAR <- SOLAR.out[1] # total (global) solar radiation (W) QSOLAR,QSDIR,QSOBJ,QSSKY,QSRSB,QSDIFF,QDORSL,QVENTR
+QSOLAR <- SOLAR.out[1] # total (global) solar radiation (W)
 QSDIR <- SOLAR.out[2] # direct solar radiaton (W)
 QSOBJ <- SOLAR.out[3] # lateral diffuse solar radiation (W)
 QSSKY <- SOLAR.out[4] # diffuse solar radiation from sky (W)
@@ -260,6 +261,8 @@ kable(cbind(SOLAR.lab, t(SOLAR.out)))
 ```
 
 ### CONV
+
+Compute convective heat exchange.
 
 ```{r}
 # input
@@ -298,6 +301,8 @@ kable(cbind(CONV.lab, t(CONV.out)))
 
 ### QSEVAP
 
+Compute evaporative heat exchange.
+
 ```{r}
 BP <- BP # barometric pressure, Pa (from CONV)
 TA <- 20 # air temperature (deg C)
@@ -326,7 +331,7 @@ kable(cbind(SEVAP.lab, t(SEVAP.out)))
 
 ### SIMULSOL
 
-Setup and the SIMULSOL algorithm to simultaneously solve for skin temperature $T_skin$ and the temperature of the fur/feather interface $T_fa$ given an environment, posture and skin wetness.
+Setup and the SIMULSOL algorithm to SIMULtaneously SOLve for skin temperature $T_skin$ and the temperature of the fur/feather interface $T_fa$ given an environment, posture and skin wetness. SIMULSOL is the core algorithm for computing the heat balance.
 
 ```{r}
 # environment
@@ -456,14 +461,11 @@ if(SUBQFAT == 1 & FATTHK > 0.0){
   VOL= FLSHVL
 }
 
-# Getting compressed fur thermal conductivity (outputs a variable called KFURCMPRS
+# Getting compressed fur thermal conductivity (outputs a variable called KFURCMPRS)
 AREACND <- ATOT * PTCOND
 # CALL COMPRSKEFF # to do
 KFURCMPRS <- 1
 ZFURCOMP <- 1
-# Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*((kfur/zfur)+(ksub/subdepth))
-# Nat comment - general coding issue (Jan 13): Not sure if should do conduction to surface or below surface temperature? Note that substrate conductivity is set in code.
-# Nat comment - for conduction to tree trunk, only have tree surface temperature - set this here.
 CD <- AREACND * ((KFURCMPRS / ZFURCOMP))
 
 # package up inputs
@@ -495,7 +497,7 @@ kable(tSIMULSOL.out)
 
 ### ZBRENT and RESPFUN
 
-Finally, find a value of QRESP to balance the heat budget by solving RESPFUN with ZBRENT.
+Finally, find a value of QRESP (heat lost by respiration) to balance the heat budget by solving RESPFUN with ZBRENT.
 
 ```{r}
 # define basal metabolic rate
