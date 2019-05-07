@@ -12,9 +12,9 @@ Usrhyt = 0.01, ...)
 \arguments{
 \item{loc}{Longitude and latitude (decimal degrees)}
 
-\item{dstart}{First day to run, date in format "d-m-Y" e.g. "01-01-2016"}
+\item{dstart}{First day to run, date in format "d/m/Y" e.g. "01-01-2016"}
 
-\item{dfinish}{Last day to run, date in format "d-m-Y" e.g. "31-12-2016"}
+\item{dfinish}{Last day to run, date in format "d/m/Y" e.g. "31-12-2016"}
 
 \item{REFL}{Soil solar reflectance, decimal \%}
 
@@ -84,7 +84,7 @@ An implementation of the NicheMapR microclimate model that uses the GRIDMET dail
 \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
 \code{warm}{ = 0, uniform warming, °C}\cr\cr
 \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
-\code{opendap}{ = 1, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
+\code{opendap}{ = 1, query met grids via opendap}\cr\cr
 \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
@@ -262,7 +262,7 @@ drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar)
 library(NicheMapR)
 dstart <- "01/01/2016"
 dfinish <- "31/12/2017"
-micro<-micro_usa() # run the model at the default location (Madison, Wisconsin) for 2016 to 2017 using opendap ((does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)
+micro<-micro_usa() # run the model at the default location (Madison, Wisconsin) for 2016 to 2017 using opendap
 
 metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade

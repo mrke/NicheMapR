@@ -1,0 +1,605 @@
+#' solve.endo
+#'
+#' Endotherm model of NicheMapR
+#' @encoding UTF-8
+#' @param AMASS = 1, # kg
+#' @param NGEOM = 4, # cylinder (ngeom = 1), sphere (ngeom = 2) and ellipsoid (ngeom = 4). If a truncated cone (5) or ellipsoidal cylinder (3), we will use the cylinder equations (ngeom=1).
+#' @param GMREF = 3, # initial ratio between long and short axis (-)
+#' @param FURTHRMK = 0, # user-specified fur thermal conductivity, not used if 0
+#' @param ZFURD = 2E-03, # fur depth, dorsal (m)
+#' @param ZFURV = 2E-03, # fur depth, ventral (m)
+#' @param TC = 37, # core temperature (°C)
+#' @param TCMAX = 45, # maximum core temperature (°C)
+#' @param TA = 20, air temperature at local height (°C)
+#' @param TGRD = TA, ground temperature (°C)
+#' @param TSKY = TA, sky temperature (°C)
+#' @param VEL = 0.1, wind speed (m/s)
+#' @param RH = 5, relative humidity (\%)
+#' @param QSOLR = 0, solar radiation, horizontal plane (W/m2)
+#' @param Z = 20, zenith angle of sun (degrees from overhead)
+#' @param SHADE = 0, shade level (\%)
+#' @usage solve.endo(AMASS = 1, NGEOM = 4, GMREF = 3, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-03, TC = 37, TCMAX = 45, TA = 20, TGRD = TA, TSKY = TA, VEL = 0.1, RH = 5, QSOLR = 0, Z = 20, SHADE = 0, NITESHAD = 0,...)
+#' @export
+#' @details
+#' \strong{ Parameters controlling how the model runs:}\cr\cr
+#' \code{DIFTOL}{ = 0.001, error tolerance for SIMULSOL (W)}\cr\cr
+#'
+#' \strong{ Environment:}\cr\cr
+#' \code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr
+#' \code{ELEV}{ = 0, elevation (m)}\cr\cr
+#' \code{ABSSB}{ = 0.8, solar absorptivity of substrate (dec \%)}\cr\cr
+#' \code{FLTYPE}{ = 0, FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - need's to be looked at - only invoked in main program when the dive table is set up}\cr\cr
+#' \code{TCONDSB}{ = TGRD, surface temperature for conduction (°C)}\cr\cr
+#' \code{TBUSH}{ = TA, bush temperature (°C)}\cr\cr
+#' \code{BP}{ = -1, Pa, negatve means elevation is used}\cr\cr
+#' \code{O2GAS}{ = 20.95, oxygen concentration of air (\%)}\cr\cr
+#' \code{N2GAS}{ = 79.02, nitrogen concetration of air (\%)}\cr\cr
+#' \code{CO2GAS}{ = 0.03, carbon dioxide concentration of air (\%)}\cr\cr
+#' \code{PCTDIF}{ = 0.15, proportion of solar radiation that is diffuse (dec \%)}\cr\cr
+#'
+#' \strong{ Behaviour:}\cr\cr
+#' \code{SHADE}{ = 0, shade level (\%)}\cr\cr
+#' \code{NITESHAD}{ = 0, flag for if animal is behaviourally seeking shade for warmth at night - remove?}\cr\cr
+#' \code{FLYHR}{ = 0, is flight occuring this hour? (imposes forced evaporative loss)}\cr\cr
+#' \code{UNCURL}{ = 0.1, allows the animal to uncurl to GMULTMAX, the value being the increment GMULT is increased per iteration}\cr\cr
+#' \code{RAISETC}{ = 0.1, turns on core temperature elevation, the value being the increment by which TC is increased per iteration}\cr\cr
+#' \code{SWEAT}{ = 0.1, turns on sweating, the value being the increment by which SKINW is increased per iteration (\%)}\cr\cr
+#' \code{MXWET}{ = 100, maximum surface area that can be wet (\%)}\cr\cr
+#' \code{AK1inc}{ = 0.05, turns on thermal conductivity increase, the value being the increment by which AK1 is increased per iteration (W/mC)}\cr\cr
+#' \code{AKMAX}{ = 2.8, maximum flesh conductivity (W/mC)}\cr\cr
+#' \code{EXTinc}{ = 0.1, turns on changes in O2 extraction efficiency to simulate panting, the value being the increment by which AK1 is increased per iteration}\cr\cr
+#'
+#' \strong{ General morphology:}\cr\cr
+#' \code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr
+#' \code{SUBQFAT}{ = 0, is subcutaneous fat present? (0 is no, 1 is yes)}\cr\cr
+#' \code{FATPCT}{ = 20, \% body fat}\cr\cr
+#' \code{GMULT}{ = GMREF, current ratio between long and short axis (-)}\cr\cr
+#' \code{GMULTMAX}{ = GMREF, max possible ratio between long and short axis (-)}\cr\cr
+#' \code{MAXPTVEN}{ = 0, maxium fraction of surface area that is ventral (dec \%)}\cr\cr
+#' \code{AWING}{ = 0, area of wing, to do}\cr\cr
+#' \code{PTCOND}{ = 0, \% of body area touching the substrate}\cr\cr
+#'
+#' \strong{ Fur properties:}\cr\cr
+#' \code{DHAIRD}{ = 30E-06, hair diameter, dorsal (m)}\cr\cr
+#' \code{DHAIRV}{ = 30E-06, hair diameter, ventral (m)}\cr\cr
+#' \code{LHAIRD}{ = 23.9E-03, hair length, dorsal (m)}\cr\cr
+#' \code{LHAIRV}{ = 23.9E-03, hair length, dorsal (m)}\cr\cr
+#' \code{RHOD}{ = 3000E+04, hair density, dorsal (1/m2)}\cr\cr
+#' \code{RHOV}{ = 3000E+04, hair density, ventral (1/m2)}\cr\cr
+#' \code{REFLD}{ = 0.2, fur reflectivity dorsal (dec \%)}\cr\cr
+#' \code{REFLV}{ = 0.2, fur reflectivity ventral (dec \%)}\cr\cr
+#'
+#' \strong{ Radiation exchange:}\cr\cr
+#' \code{EMISAN}{ = 0.99, animal emissivity (-)}\cr\cr
+#' \code{FATOBJ}{ = 0, configuration factor to nearby object}\cr\cr
+#' \code{FABUSH}{ = 0, this is for veg below/around animal (at TALOC)}\cr\cr
+#' \code{FGDREF}{ = 0.5, reference configuration factor to ground}\cr\cr
+#' \code{FSKREF}{ = 0.5, configuration factor to sky}\cr\cr
+#'
+#' \strong{ Nest properties:}\cr\cr
+#' \code{NESTYP}{ = 0, # for nest calculations, to do)}\cr\cr
+#' \code{RoNEST}{ = 0, # for nest calculations, to do}\cr\cr
+#' \code{R1}{ = 0, # for nest calculations, to do}\cr\cr
+#'
+#' \strong{ Physiology:}\cr\cr
+#' \code{AK1}{ = 0.9, # initial thermal conductivity of flesh (0.412 - 2.8 W/mC)}\cr\cr
+#' \code{AK2}{ = 0.230, # conductivity of fat (W/mC)}\cr\cr
+#' \code{QBASAL}{ = (70 \* AMASS ^ 0.75) \* (4.185 / (24 \* 3.6)), # basal heat generation (W)}\cr\cr
+#' \code{SKINW}{ = 0, # part of the skin surface that is wet (\%)}\cr\cr
+#' \code{BAREVAP}{ = 0, # is evaporation partly from bare skin? (0 = no, 1 = yes, \% defined with PCTSKINEVAP)}\cr\cr
+#' \code{PCTBAREVAP}{ = 2.8, maximum flesh conductivity (W/mC)}\cr\cr
+#' \code{PCTEYES}{ = 0, # surface area made up by the eye (\%) - make zero if sleeping}\cr\cr
+#' \code{DELTAR}{ = 0, # offset between air temperature and breath (°C)}\cr\cr
+#' \code{RELXIT}{ = 100, # relative humidity of exhaled air, \%}\cr\cr
+#' \code{TIMACT}{ = 1, # multiplier on metabolic rate for activity costs}\cr\cr
+#' \code{RQ}{ = 0.80, # respiratory quotient (dec \%)}\cr\cr
+#' \code{EXTREF}{ = 20, # O2 extraction efficiency (\%)}\cr\cr
+#' \code{EXTMIN}{ = 6, # minimum O2 extraction efficiency (\%) to impose panting}\cr\cr
+#' \code{Q10}{ = 2.5, # Q10 factor for adjusting BMR for TC}\cr\cr
+#'
+#' \strong{ Initial conditions:}\cr\cr
+#' \code{TS}{ = TC - 3, # initial skin temperature (°C)}\cr\cr
+#' \code{TFA}{ = TA, # initial fur/air interface temperature (°C)}\cr\cr
+#'
+#' \strong{Outputs:}
+#' \code{TC}{ }\cr\cr
+#' \code{TFA_D}{ }\cr\cr
+#' \code{TFA_V}{ }\cr\cr
+#' \code{TSKIN_D}{ }\cr\cr
+#' \code{TSKIN_V}{ }\cr\cr
+#' \code{QCONV_D}{ }\cr\cr
+#' \code{QCONV_V}{ }\cr\cr
+#' \code{QCOND_D}{ }\cr\cr
+#' \code{QCOND_V}{ }\cr\cr
+#' \code{QGENNET_D}{ }\cr\cr
+#' \code{QGENNET_V}{ }\cr\cr
+#' \code{QSEVAP_D}{ }\cr\cr
+#' \code{QSEVAP_V}{ }\cr\cr
+#' \code{QRAD_D}{ }\cr\cr
+#' \code{QRAD_V}{ }\cr\cr
+#' \code{QSLR_D}{ }\cr\cr
+#' \code{QSLR_V}{ }\cr\cr
+#' \code{QRSKY_D}{ }\cr\cr
+#' \code{QRSKY_V}{ }\cr\cr
+#' \code{QRBSH_D}{ }\cr\cr
+#' \code{QRBSH_V}{ }\cr\cr
+#' \code{QRVEG_D}{ }\cr\cr
+#' \code{QRVEG_V}{ }\cr\cr
+#' \code{QRGRD_D}{ }\cr\cr
+#' \code{QRGRD_V}{ }\cr\cr
+#' \code{NTRY_D}{ }\cr\cr
+#' \code{NTRY_V}{ }\cr\cr
+#' \code{SUCCESS_D}{ }\cr\cr
+#' \code{SUCCESS_V}{ }\cr\cr
+#' \code{RESPFN}{ }\cr\cr
+#' \code{QRESP}{ }\cr\cr
+#' \code{GEVAP}{ }\cr\cr
+#' \code{PCTO2}{ }\cr\cr
+#' \code{PCTN2}{ }\cr\cr
+#' \code{PCTCO2}{ }\cr\cr
+#' \code{RESPGEN}{ }\cr\cr
+#' \code{O2STP}{ }\cr\cr
+#' \code{O2MOL1}{ }\cr\cr
+#' \code{N2MOL1}{ }\cr\cr
+#' \code{AIRML1}{ }\cr\cr
+#' \code{O2MOL2}{ }\cr\cr
+#' \code{N2MOL2}{ }\cr\cr
+#' \code{AIRML2}{ }\cr\cr
+#' \code{AIRVOL}{ }\cr\cr
+#' \code{GMULT}{ }\cr\cr
+#' \code{SKINW}{ }\cr\cr
+#' \code{SWEAT.G.H}{ }\cr\cr
+#' \code{EVAP.G.H}{ }\cr\cr
+#' \code{EXTREF}{ }\cr\cr
+#' \code{AK}{ }\cr\cr
+#' \code{TA}{ }\cr\cr
+#' \code{TGRD}{ }\cr\cr
+#' \code{TCONDSB}{ }\cr\cr
+#' \code{TSKY}{ }\cr\cr
+#' \code{VEL}{ }\cr\cr
+#' \code{RH}{ }\cr\cr
+#' \code{QSOLR}{ }\cr\cr
+#' @examples
+#' library(NicheMapR)
+#' dstart <- "02/01/2017"
+#' dfinish <- "30/12/2017"
+solve.endo <- function(
+  TA = 20, # air temperature at local height (°C)
+  TAREF = TA, # air temeprature at reference height (°C)
+  TGRD = TA, # ground temperature (°C)
+  TSKY = TA, # sky temperature (°C)
+  VEL = 0.1, # wind speed (m/s)
+  RH = 5, # relative humidity (%)
+  QSOLR = 0, # solar radiation, horizontal plane (W/m2)
+  Z = 20, # zenith angle of sun (degrees from overhead)
+  ELEV = 0, # elevation (m)
+  ABSSB = 0.8, # solar absorptivity of substrate (dec %)
+
+  # other environmental variables
+  FLTYPE = 0, # FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - need's to be looked at - only invoked in main program when the dive table is set up
+  TCONDSB = TGRD, # surface temperature for conduction (°C)
+  TBUSH = TA, # bush temperature (°C)
+  BP = -1, # Pa, negatve means elevation is used
+  O2GAS = 20.95, # oxygen concentration of air (%)
+  N2GAS = 79.02, # nitrogen concetration of air (%)
+  CO2GAS = 0.03, # carbon dioxide concentration of air (%)
+  PCTDIF = 0.15, # proportion of solar radiation that is diffuse (dec %)
+
+  # BEHAVIOUR
+
+  SHADE = 0, # shade level (%)
+  NITESHAD = 0, # flag for if animal is behaviourally seeking shade for warmth at night - remove?
+  FLYHR = 0, # is flight occuring this hour? (imposes forced evaporative loss)
+  UNCURL = 0.1, # allows the animal to uncurl to GMULTMAX, the value being the increment GMULT is increased per iteration
+  RAISETC = 0.1, # turns on core temperature elevation, the value being the increment by which SKINW is increased per iteration
+  SWEAT = 0.1, # turns on sweating, the value being the increment by which SKINW is increased per iteration
+  MXWET = 100, # maximum surface area that can be wet (%)
+  AK1inc = 0.05, # turns on thermal conductivity increase, the value being the increment by which AK1 is increased per iteration
+  AKMAX = 2.8, # maximum flesh conductivity
+  EXTinc = 0.1, # turns on changes in O2 extraction efficiency to simulate panting, the value being the increment by which AK1 is increased per iteration
+
+  # MORPHOLOGY
+
+  # geometry
+  AMASS = 1, # kg
+  ANDENS = 1000, # kg/m3
+  SUBQFAT = 0, # is subcutaneous fat present? (0 is no, 1 is yes)
+  FATPCT = 20, # % body fat
+  NGEOM = 4, # cylinder (ngeom = 1), sphere (ngeom = 2) and ellipsoid (ngeom = 4). If a truncated cone (5) or ellipsoidal cylinder (3), we will use the cylinder equations (ngeom=1).
+  GMREF = 3, # initial ratio between long and short axis (-)
+  GMULT = GMREF, # current ratio between long and short axis (-)
+  GMULTMAX = GMREF, # max possible ratio between long and short axis (-)
+  MAXPTVEN = 0, # maxium fraction of surface area that is ventral (dec %)
+  AWING = 0, # area of wing, to do
+  PTCOND = 0, # % of body area touching the substrate
+
+  # fur properties
+  FURTHRMK = 0, # user-specified fur thermal conductivity, not used if 0
+  DHAIRD = 30E-06, # hair diameter, dorsal (m)
+  DHAIRV = 30E-06, # hair diameter, ventral (m)
+  LHAIRD = 23.9E-03, # hair length, dorsal (m)
+  LHAIRV = 23.9E-03, # hair length, ventral (m)
+  ZFURD = 2E-03, # fur depth, dorsal (m)
+  ZFURV = 2E-03, # fur depth, ventral (m)
+  RHOD = 3000E+04, # hair density, dorsal (1/m2)
+  RHOV = 3000E+04, # hair density, ventral (1/m2)
+  REFLD = 0.2,  # fur reflectivity dorsal (dec %)
+  REFLV = 0.2,  # fur reflectivity ventral (dec %)
+
+  # radiation exchange
+  EMISAN = 0.99, # animal emissivity (-)
+  FATOBJ = 0, # configuration factor to nearby object
+  FABUSH = 0, # this is for veg below/around animal (at TALOC)
+  FGDREF = 0.5, # reference configuration factor to ground
+  FSKREF = 0.5, # configuration factor to sky
+
+  # nest properties
+  NESTYP = 0, # for nest calculations, to do
+  RoNEST = 0, # for nest calculations, to do
+  R1 = 0, # for nest calculations, to do
+
+  # PHYSIOLOGY
+
+  # thermal
+  TC = 37, # core temperature (°C)
+  TCMAX = 45, # maximum core temperature (°C)
+  AK1 = 0.9, # initial thermal conductivity of flesh (0.412 - 2.8 W/mC)
+  AK2 = 0.230, # conductivity of fat (W/mC)
+
+  # evaporation
+  SKINW = 0, # part of the skin surface that is wet (%)
+  BAREVAP = 0, # is evaporation partly from bare skin? (0 = no, 1 = yes, % defined with PCTSKINEVAP)
+  PCTBAREVAP = 0, # surface area for evaporation that is skin, e.g. licking paws (%)
+  PCTEYES = 0, # surface area made up by the eye (%) - make zero if sleeping
+  DELTAR = 0, # offset between air temeprature and breath (°C)
+  RELXIT = 100, # relative humidity of exhaled air, %
+
+  # metabolism/respiration
+  QBASAL = (70 * AMASS ^ 0.75) * (4.185 / (24 * 3.6)), # basal heat generation (W)
+  TIMACT = 1, # multiplier on metabolic rate for activity costs
+  RQ = 0.80, # respiratory quotient (dec %)
+  EXTREF = 20, # O2 extraction efficiency (%)
+  EXTMIN = 6, # minimum O2 extraction efficiency (%) to impose panting
+  Q10 = 2.5, # Q10 factor for adjusting BMR for TC
+
+  # initial conditions
+  TS = TC - 3, # skin temperature (°C)
+  TFA = TA, # fur/air interface temperature (°C)
+
+  # other model settings
+  DIFTOL = 0.001 # tolerance for SIMULSOL
+){
+
+  QGEN <- 0
+  TCREF <- TC
+  QBASREF <- QBASAL
+  # check if heat stressed already
+  if(TA >= TC){
+    if(TA > TCMAX){
+      TC <- TCMAX
+      Q10mult <- Q10^((TC - TCREF)/10)
+      QBASAL = QBASREF * Q10mult
+    }
+    AK1 <- AKMAX
+    EXTREF <- EXTMIN
+    GMULT <- GMULTMAX
+  }
+
+  while(QGEN < QBASAL){
+
+    ### IRPROP
+
+    # call the subroutine
+    IRPROP.out <- IRPROP(TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN)
+
+    # output
+    E4B1 <- IRPROP.out[1] # exponential integral, E4, of optical thickness, B1 (m), i.e. E4(B1), not sure this is used anymore
+    KEFARA <- IRPROP.out[2:4] # effective thermal conductivity of fur array, mean, dorsal, ventral(W C-1 m-1)
+    BETARA <- IRPROP.out[5:7] # term involved in computing optical thickess (?)
+    B1ARA <- IRPROP.out[8:10] # optical thickness array, mean, dorsal, ventral (m)
+    DHAR <- IRPROP.out[11:13] # fur diameter array, mean, dorsal, ventral (m)
+    LHAR <- IRPROP.out[14:16] # fur length array, mean, dorsal, ventral (m)
+    RHOAR <- IRPROP.out[17:19] # fur density array, mean, dorsal, ventral (1/m2)
+    ZZFUR <- IRPROP.out[20:22] # fur depth array, mean, dorsal, ventral (m)
+    REFLFR <- IRPROP.out[23:25] # fur reflectivity array, mean, dorsal, ventral (dec %)
+    FURTST <- IRPROP.out[26] # test of presence of fur (length x diamater x density x depth) (-)
+
+    ### GEOM
+
+    # input
+    DHARA <- DHAR[1] # fur diameter, mean (m) (from IRPROP)
+    RHOARA <- RHOAR[1] # hair density, mean (1/m2) (from IRPROP)
+    ZFUR <- ZZFUR[1] # fur depth, mean (m) (from IRPROP)
+    POSTUR <- NGEOM # posture, 0 is plate, 1 is cylinder, 2 is sphere, 4 is ellipsoid
+
+    # call the subroutine
+    GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA, RHOARA, PTCOND)
+
+    # output
+    R <- GEOM.out[1] # radius as determined assumming the volume as a sphere, m
+    VOL <- GEOM.out[2] # volume, m3
+    D <- GEOM.out[3] # diameter as determined assumming the volume as a sphere, m
+    MASFAT <- GEOM.out[4] # mass body fat, kg
+    VOLFAT <- GEOM.out[5] # volume body fat, m3
+    ALENTH <- GEOM.out[6] # length, m
+    AWIDTH <- GEOM.out[7] # width, m
+    AHEIT <- GEOM.out[8] # height, m
+    ATOT <- GEOM.out[9] # total area, m2
+    ASILN <- GEOM.out[10] # silhouette area normal to sun, m2
+    ASILP <- GEOM.out[11] # silhouette area parallel to sun, m2
+    AL <- GEOM.out[12] # effective lenght for convection, m
+    GMASS <- GEOM.out[13] # mass, g
+    AREASKIN <- GEOM.out[14] # area of skin, m2
+    AREA <- GEOM.out[15] # total area at fur/feathers-air interface, m2
+    FLSHVL <- GEOM.out[16] # flesh volume, m3
+    FATTHK <- GEOM.out[17] # fat layer thickness, m
+    ASEMAJ <- GEOM.out[18] # semimajor axis length, m
+    BSEMIN <- GEOM.out[19] # b semiminor axis length, m
+    CSEMIN <- GEOM.out[20] # c semiminor axis length, m (currently only prolate spheroid)
+    CONVSK <- GEOM.out[21] # area of skin for evaporation (total skin area - hair area), m2
+    CONVAR <- GEOM.out[22] # area for convection (total area minus ventral area, as determined by PTCOND), m2
+    R1 <- GEOM.out[23] # shape-specific core-skin radius in shortest dimension, m
+
+    ### F_FACTOR
+    F_FACTOR.out <- F_FACTOR(SHADE, NITESHAD, QSOLR, FATOBJ, NESTYP, RoNEST, R1, FGDREF, FSKREF, AREASKIN, EMISAN)
+
+    FAVEG <- F_FACTOR.out[1] # configuration factor to vegetation
+    FASKY <- F_FACTOR.out[2] # configuration factor to sky
+    FAGRD <- F_FACTOR.out[3] # configuration factor to ground
+    FANEST <- F_FACTOR.out[4] # configuration factor to nest wall
+    # constants for infra-red exchange calculatiosn AREASKIN*CONFIG*EMISAN*SIG
+    C3 <- F_FACTOR.out[5] # sky
+    C4 <- F_FACTOR.out[6] # ground
+    C5 <- F_FACTOR.out[7] # object
+    C6 <- F_FACTOR.out[8] # vegetation (shade)
+    C7 <- F_FACTOR.out[9] # nest
+
+    ### SOLAR
+
+    # solar radiation normal to sun's rays
+    ZEN <- pi/180*Z # convert degrees to radians
+    if(Z < 90){ # compute solar radiation on a surface normal to the direct rays of the sun
+      CZ = cos(ZEN)
+      QNORM = QSOLR/CZ
+    }else{ # diffuse skylight only
+      QNORM = QSOLR
+    }
+
+    ABSAND <- 1 - REFLD # solar absorptivity of dorsal fur (dec %)
+    ABSANV <- 1 - REFLV # solar absorptivity of ventral fur (dec %)
+
+    SOLAR.out <- SOLAR(AREA, ABSAND, ABSANV, ABSSB, ASILN, PCTDIF, QNORM, SHADE,
+      AWING, QSOLR, FASKY, FATOBJ, FAVEG)
+
+    QSOLAR <- SOLAR.out[1] # total (global) solar radiation (W) QSOLAR,QSDIR,QSOBJ,QSSKY,QSRSB,QSDIFF,QDORSL,QVENTR
+    QSDIR <- SOLAR.out[2] # direct solar radiaton (W)
+    QSOBJ <- SOLAR.out[3] # lateral diffuse solar radiation (W)
+    QSSKY <- SOLAR.out[4] # diffuse solar radiation from sky (W)
+    QSRSB <- SOLAR.out[5] # diffuse solar radiation reflected from substrate (W)
+    QSDIFF <- SOLAR.out[6] # total diffuse solar radiation (W)
+    QDORSL <- SOLAR.out[7] # dorsal direct solar radiation (W)
+    QVENTR <- SOLAR.out[8] # ventral diffuse solar radiaton (W)
+
+    ### CONV
+
+    # input
+    SURFAR <- CONVAR # surface area for convection, m2 (from GEOM)
+    TENV <- TA # fluid temperature (°C)
+
+    # run subroutine
+    CONV.out <- CONV(TS, TENV, NGEOM, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV)
+
+    QCONV <- CONV.out[1] # convective heat loss (W)
+    HC <- CONV.out[2] # combined convection coefficient
+    HCFREE <- CONV.out[3] # free convection coefficient
+    HCFOR <- CONV.out[4] # forced convection coefficient
+    HD <- CONV.out[5] # mass transfer coefficient
+    HDFREE <- CONV.out[6] # free mass transfer coefficient
+    HDFORC <- CONV.out[7] # forced mass transfer coefficient
+    ANU <- CONV.out[8] # Nusselt number (-)
+    RE <- CONV.out[9] # Reynold's number (-)
+    GR <- CONV.out[10] # Grasshof number (-)
+    PR <- CONV.out[11] # Prandlt number (-)
+    RA <- CONV.out[12] # Rayleigh number (-)
+    SC <- CONV.out[13] # Schmidt number (-)
+    BP <- CONV.out[14] # barometric pressure (Pa)
+
+    ### SIMULSOL
+    SIMULSOL.out <- matrix(data = 0, nrow = 2, ncol = 14) # vector to hold the SIMULSOL results for dorsal and ventral side
+
+    # reference configuration factors
+    FABUSHREF <- FABUSH # nearby bush
+    FATOBJREF <- FATOBJ # nearby object
+    FASKYREF <- FASKY # sky
+    FAGRDREF <- FAGRD # ground
+    FAVEGREF <- FAVEG # vegetation
+
+    # repeat for each side, dorsal and ventral, of the animal
+    for(S in 1:2){
+
+      # set infrared environment
+      TVEG <- TAREF # assume vegetation casting shade is at 1.2 m (reference) air temperature (°C)
+      SKYIR <- C3 * (TSKY + 273.15) ^ 4 # sky infrared incoming (W)
+      VEGIR <- C6 * (TVEG + 273.15) ^ 4 # vegetation infrared incomming (W)
+
+      SKYRAD <- SKYIR + VEGIR
+      GRDIN <- C4 * (TGRD + 273.15) ^ 4 # note, MK put C4 here wherease before it was just SIG
+
+      SKYIN <- SKYRAD #(C3 + C6) * (TA + 273.15) ^ 4
+      #TLOCUP <- (((SKYIN) / (C3 + C6)) ^ 0.25) - 273.15
+      TLOWER <- TGRD
+
+      # Calculating solar intensity entering fur. This will depend on whether we are calculating the fur temperature for the dorsal side or the ventral side. The dorsal side will have solar inputs from the direct beam hitting the silhouette area as well as diffuse solar scattered from the sky and objects. The ventral side will have diffuse solar scattered off the substrate.
+
+      # Resetting config factors and solar depending on whether the dorsal side (S=1) or ventral side (S=2) is being estimated.
+      if(QSOLAR > 0.0){
+        if(S==1){
+          FASKY <- FASKYREF/(FASKYREF+FATOBJREF+FAVEGREF)
+          FATOBJ <- FATOBJREF/(FASKYREF+FATOBJREF+FAVEGREF)
+          FAVEG <- FAVEGREF/(FASKYREF+FATOBJREF+FAVEGREF)
+          FAGRD <- 0.0
+          FABUSH <- 0.0
+          if(FATOBJ == 0.0){
+            QSLR <- 2*QSDIR+((QSSKY/FASKYREF)*FASKY)
+          }else{
+            QSLR <- 2*QSDIR+((QSSKY/FASKYREF)*FASKY)+((QSOBJ/FATOBJREF)*FATOBJ)
+          }
+        }else{
+          FASKY <- 0.0
+          FATOBJ <- 0.0
+          FAVEG <- 0.0
+          FAGRD <- FAGRDREF/(1 - FAGRDREF - FATOBJREF - FABUSHREF)
+          FABUSH <- FABUSHREF/(1 - FAGRDREF - FATOBJREF - FABUSHREF)
+          QSLR <- QVENTR/(1 - FASKYREF - FATOBJREF - FAVEGREF)
+        }
+      }else{
+        QSLR <- 0.0
+        if(S==1){
+          FASKY <- FASKYREF/(FASKYREF+FATOBJREF+FAVEGREF)
+          FATOBJ <- FATOBJREF/(FASKYREF+FATOBJREF+FAVEGREF)
+          FAVEG <- FAVEGREF/(FASKYREF+FATOBJREF+FAVEGREF)
+          FAGRD <- 0.0
+          FABUSH <- 0.0
+        }else{
+          FASKY <- 0.0
+          FATOBJ <- 0.0
+          FAVEG <- 0.0
+          FAGRD <- FAGRDREF/(1 - FAGRDREF - FATOBJREF - FAVEGREF)
+          FABUSH <- FABUSHREF/(1 - FAGRDREF - FATOBJREF - FAVEGREF)
+        }
+      }
+
+      # set fur depth and conductivity
+      # index for KEFARA, the conductivity, is the average (1), front/dorsal (2), back/ventral(3) of the body part
+      if(QSOLR > 0 | ZFURD != ZFURV){
+        if(S == 1){
+          ZL <- ZFURD
+          KEFF <- KEFARA[2]
+        }else{
+          ZL <- ZFURV
+          KEFF <- KEFARA[3]
+        }
+      }else{
+        ZL <- ZFUR
+        KEFF <- KEFARA[1]
+      }
+
+      RDXDEP <- 1
+      XR <- RDXDEP
+      RSKIN <- R1
+      RFLESH <- R1-FATTHK
+      RFUR <- R1+ZL
+      D <- 2 * RFUR
+      X <- RDXDEP
+      RRAD <- RSKIN+(XR*(ZL))
+      LEN <- ALENTH
+
+      # Correcting volume to account for subcutaneous fat
+      if(SUBQFAT == 1 & FATTHK > 0.0){
+        VOL= FLSHVL
+      }
+
+      # Getting compressed fur thermal conductivity (outputs a variable called KFURCMPRS
+      AREACND <- ATOT * PTCOND
+      # CALL COMPRSKEFF # to do
+      KFURCMPRS <- 1
+      ZFURCOMP <- 1
+      # Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*((kfur/zfur)+(ksub/subdepth))
+      # Nat comment - general coding issue (Jan 13): Not sure if should do conduction to surface or below surface temperature? Note that substrate conductivity is set in code.
+      # Nat comment - for conduction to tree trunk, only have tree surface temperature - set this here.
+      CD <- AREACND * ((KFURCMPRS / ZFURCOMP))
+
+      # package up inputs
+      FURVARS <- c(LEN,ZFUR,FURTHRMK,KEFF,BETARA,FURTST,ZL)
+      GEOMVARS <- c(NGEOM,SUBQFAT,CONVAR,VOL,D,CONVAR,CONVSK,RFUR,RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD)
+      ENVVARS <- c(FLTYPE,TA,TS,TBUSH,TVEG,TLOWER,TSKY,TCONDSB,RH,VEL,BP,ELEV,FASKY,FABUSH,FAVEG,FAGRD,QSLR)
+      TRAITS <- c(TC,AK1,AK2,EMISAN,FATTHK,FLYHR,BAREVAP,PCTBAREVAP,PCTEYES)
+
+      # set IPT, the geometry assumed in SIMULSOL: 1 = cylinder, 2 = sphere, 3 = ellipsoid
+      if(NGEOM %in% c(1,3,5)){
+        IPT <- 1
+      }
+      if(NGEOM == 2){
+        IPT <- 2
+      }
+      if(NGEOM == 4){
+        IPT <- 3
+      }
+
+      # call SIMULSOL
+      SIMULSOL.out[S,] <- SIMULSOL(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA, SKINW, TS)
+    }
+
+    ### ZBRENT and RESPFUN
+
+    # Now compute a "mixed" for all the parts/components = (dorsal value *(FASKY+FAVEG+FATOBJ))+(ventral value*FAGRD)
+    GEND <- SIMULSOL.out[1, 5]
+    GENV <- SIMULSOL.out[2, 5]
+    DMULT = FASKYREF+FAVEGREF+FATOBJ
+    VMULT = 1 - DMULT # Assume that reflectivity of veg below = ref of soil so VMULT left as 1 - DMULT
+    X <- GEND*DMULT+GENV*VMULT # weighted estimate of metabolic heat generation
+
+    # reset configuration factors
+    FABUSH <- FABUSHREF # nearby bush
+    FATOBJ <- FATOBJREF # nearby object
+    FASKY <- FASKYREF # sky
+    FAGRD <- FAGRDREF # ground
+    FAVEG <- FAVEGREF # vegetation
+
+    # lung temperature and temperature of exhaled air
+    TLUNG <- (TC + (SIMULSOL.out[1, 2] + SIMULSOL.out[1, 2]) * 0.5) * 0.5 # average of skin and core
+    TAEXIT <- min(TA + DELTAR,TLUNG) # temperature of exhaled air, °C
+
+    QMIN <- QBASAL
+    QM1 <- X - (5*QMIN)
+    QM2 <- X + (10*QMIN)
+    QSUM <- X
+    TOL <- AMASS * 0.01
+
+    ZBRENT.in <- c(TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG, GMASS, EXTREF, RH,
+      RELXIT, TIMACT, TAEXIT, QSUM)
+
+    # call ZBRENT subroutine which calls RESPFUN
+    ZBRENT.out <- ZBRENT(QM1, QM2, TOL, ZBRENT.in)
+    colnames(ZBRENT.out) <- c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")
+
+    QGEN <- ZBRENT.out[7]
+    if(GMULT < GMULTMAX){
+      GMULT = GMULT + UNCURL
+    }else{
+      GMULT <- GMULTMAX
+      if(AK1 < AKMAX){
+        AK1 <- AK1 + AK1inc
+      }else{
+        AK1 <- AKMAX
+        if(TC < TCMAX){
+          TC <- TC + RAISETC
+          Q10mult <- Q10^((TC - TCREF)/10)
+          QBASAL = QBASREF * Q10mult
+        }else{
+          TC <- TCMAX
+          Q10mult <- Q10^((TC - TCREF)/10)
+          QBASAL = QBASREF * Q10mult
+          if(EXTREF >= EXTMIN){
+            EXTREF <- EXTREF - EXTinc
+          }else{
+            EXTREF <- EXTMIN
+            SKINW <- SKINW + SWEAT
+            if(SKINW > MXWET | SWEAT == 0){
+              SKINW <- MXWET
+                break
+            }
+          }
+        }
+      }
+    }
+  }
+
+  HTOVPR <- 2.5012E+06 - 2.3787E+03 * TA
+  SWEAT.G.H <- (SIMULSOL.out[12] + SIMULSOL.out[12]) * 0.5 / HTOVPR * 1000 * 3600
+  EVAP.G.H <- ZBRENT.out[3] * 3600 + SWEAT.G.H
+  endo.out <- as.matrix(cbind(TC, SIMULSOL.out[1,1], SIMULSOL.out[2,1], SIMULSOL.out[1,2], SIMULSOL.out[2,2], SIMULSOL.out[1,3], SIMULSOL.out[2,3], SIMULSOL.out[1,4], SIMULSOL.out[2,4], SIMULSOL.out[1,5], SIMULSOL.out[2,5], SIMULSOL.out[1,6], SIMULSOL.out[2,6], SIMULSOL.out[1,7], SIMULSOL.out[2,7], SIMULSOL.out[1,8], SIMULSOL.out[2,8], SIMULSOL.out[1,9], SIMULSOL.out[2,9], SIMULSOL.out[1,10], SIMULSOL.out[2,10], SIMULSOL.out[1,11], SIMULSOL.out[2,11], SIMULSOL.out[1,12], SIMULSOL.out[2,12], SIMULSOL.out[1,13], SIMULSOL.out[2,13], SIMULSOL.out[1,14], SIMULSOL.out[2,14], ZBRENT.out, GMULT, SKINW, SWEAT.G.H, EVAP.G.H, EXTREF, AK1, TA, TGRD, TCONDSB, TSKY, VEL, RH, QSOLR))
+  colnames(endo.out) <- c("TC", "TFA_D", "TFA_V", "TSKIN_D", "TSKIN_V", "QCONV_D", "QCONV_V", "QCOND_D", "QCOND_V", "QGENNET_D", "QGENNET_V", "QSEVAP_D", "QSEVAP_V", "QRAD_D", "QRAD_V", "QSLR_D", "QSLR_V", "QRSKY_D", "QRSKY_V", "QRBSH_D", "QRBSH_V", "QRVEG_D", "QRVEG_V", "QRGRD_D", "QRGRD_V", "NTRY_D", "NTRY_V", "SUCCESS_D", "SUCCESS_V", "RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL", "GMULT", "SKINW", "SWEAT.G.H", "EVAP.G.H", "EXTREF", "AK", "TA", "TGRD", "TCONDSB", "TSKY", "VEL", "RH", "QSOLR")
+
+  return(endo.out)
+}
