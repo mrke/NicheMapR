@@ -34,6 +34,7 @@ hourly <- 1 # run the model with hourly input data
 rainhourly <- 1 # run the model with hourly rainfall input data (irrelevant if hourly = 1)
 microdaily <- 1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day
 IR <- 0 # compute clear-sky longwave radiation using Campbell and Norman (1998) eq. 10.10 (includes humidity)
+solonly <- 0 # Only run SOLRAD to get solar radiation? 1=yes, 0=no
 message <- 0 # do not allow the Fortran integrator to output warnings
 fail <- 24*365 # how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)
 
@@ -73,7 +74,6 @@ slope <- 0 # slope (degrees, range 0-90)
 azmuth <- 180 # aspect (degrees, 0 = North, range 0-360)
 hori <- rep(0, 24) # enter the horizon angles (degrees) so that they go from 0 degrees azimuth (north) clockwise in 15 degree intervals
 VIEWF <- 1 - sum(sin(hori * pi / 180)) / length(hori) # convert horizon angles to radians and calc view factor(s)
-solonly <- 0 # Only run SOLRAD to get solar radiation? 1=yes, 0=no
 lamb <- 0 # Return wavelength-specific solar radiation output?
 IUV <- 0 # Use gamma function for scattered solar radiation? (computationally intensive)
 PCTWET <- 0 # percentage of surface area acting as a free water surface (%)
@@ -119,7 +119,7 @@ SOLRhr <- weather$SRADV.H <- na.approx(weather$SRADV.H)
 RAINhr <- weather$PRCP.H <- na.approx(weather$PRCP.H * 25.4) # convert rainfall from inches to mm
 WNhr <- weather$WSPDV.H <- na.approx(weather$WSPDV.H * 0.44704) # convert wind speed from miles/hour to m/s
 ZENhr <- TAIRhr * 0 - 1 # negative zenith angles to force model to compute them
-IRDhr <- TAIRhr * 0 - 1 # negative zenith angles to force model to compute them
+IRDhr <- TAIRhr * 0 - 1 # negative infrared values to force model to compute them
 
 ## ---- message=FALSE, warnings=FALSE--------------------------------------
 # run global microclimate model in clear sky mode to get clear sky radiation

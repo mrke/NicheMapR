@@ -1,31 +1,9 @@
----
-title: "Endotherm Model Tutorial"
-author: "Michael Kearney"
-date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Endotherm Model Tutorial}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
-editor_options: 
-  chunk_output_type: console
----
-
-```{r, echo = FALSE}
+## ---- echo = FALSE-------------------------------------------------------
 knitr::opts_chunk$set(
  eval = TRUE, tidy.opts=list(width.cutoff=60), tidy=TRUE  
 )
-```
 
-## Overview
-
-This document shows how to use the `endoR.R` function of NicheMapR to compute endotherm heat and mass balances. This function collates all the different steps in [Endotherm Components Tutorial](endotherm-components-tutorial.html) into a single function that can be applied to vectors of data. The `endoR.R` function has one behavioural option at present - sweating to cool.
-
-## Single calculation example
-
-Here is how you run the calculation with all default values except specifying a local air temperature of 0 deg C.
-
-```{r}
+## ------------------------------------------------------------------------
 library(NicheMapR)
 library(knitr)
 endo.out <- endoR(TA = 0)
@@ -35,13 +13,8 @@ kable(endo.out[, 20:29])
 kable(endo.out[, 30:39])
 kable(endo.out[, 40:49])
 kable(endo.out[, 50:57])
-```
 
-## Metabolic chamber example
-
-Now try a sequence of air temperatures for a specified core temperature, mass, fur depth and base skin wetness, with the option to sweat at 0.1 % increments to cool down if needed. Note that the default settings make the environment a blackbody one (all surface and air temperatures the same) with low (5%) relative humidity and low wind speed (0.1 m/s), as is often the case in metabolic chamber experiments.
-
-```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE}
+## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
 TAs <- seq(0,50) # air temperature (deg C)
 TC <- 37 # core temperature (deg C)
 AMASS <- 1 # mass (kg)
@@ -71,13 +44,8 @@ points(TFA_V ~ TAs, type = 'l', col = 'grey', lty = 2)
 points(TskinD ~ TAs, type = 'l', col = 'orange')
 points(TskinV ~ TAs, type = 'l', col = 'orange', lty = 2)
 points(TC ~ TAs, type = 'l', col = 'red')
-```
 
-## Microclimate model integration example
-
-In this final example, the microclimate model is run and the then the relevant outputs are sent into the endotherm model along with the same animal parameters as above.
-
-```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE}
+## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
 micro <- micro_global(loc = c(145, -37), runshade = 0, Usrhyt = 0.01)
 
 metout <- as.data.frame(micro$metout)
@@ -117,4 +85,4 @@ points(TFA_V ~ dates, type = 'l', col = 'grey', lty = 2)
 points(TskinD ~ dates, type = 'l', col = 'orange')
 points(TskinV ~ dates, type = 'l', col = 'orange', lty = 2)
 points(TC ~ dates, type = 'l', col = 'red')
-```
+

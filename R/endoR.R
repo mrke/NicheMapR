@@ -93,7 +93,7 @@
 #' \code{RELXIT}{ = 100, # relative humidity of exhaled air, \%}\cr\cr
 #' \code{TIMACT}{ = 1, # multiplier on metabolic rate for activity costs}\cr\cr
 #' \code{RQ}{ = 0.80, # respiratory quotient (fractional, 0-1)}\cr\cr
-#' \code{EXTREF}{ = 20, # O2 extraction efficiency (\%)}\cr\cr
+#' \code{EXTMAX}{ = 20, # maximum O2 extraction efficiency (\%)}\cr\cr
 #' \code{EXTMIN}{ = 6, # minimum O2 extraction efficiency (\%) to impose panting}\cr\cr
 #' \code{Q10}{ = 2.5, # Q10 factor for adjusting BMR for TC}\cr\cr
 #'
@@ -150,7 +150,7 @@
 #' \code{SKINW}{ }\cr\cr
 #' \code{SWEAT.G.H}{ }\cr\cr
 #' \code{EVAP.G.H}{ }\cr\cr
-#' \code{EXTREF}{ }\cr\cr
+#' \code{EXTMAX}{ }\cr\cr
 #' \code{AK}{ }\cr\cr
 #' \code{TA}{ }\cr\cr
 #' \code{TGRD}{ }\cr\cr
@@ -258,7 +258,7 @@ endoR <- function(
   QBASAL = (70 * AMASS ^ 0.75) * (4.185 / (24 * 3.6)), # basal heat generation (W)
   TIMACT = 1, # multiplier on metabolic rate for activity costs
   RQ = 0.80, # respiratory quotient (dec %)
-  EXTREF = 20, # O2 extraction efficiency (%)
+  EXTMAX = 20, # O2 extraction efficiency (%)
   EXTMIN = 6, # minimum O2 extraction efficiency (%) to impose panting
   Q10 = 2.5, # Q10 factor for adjusting BMR for TC
 
@@ -269,11 +269,12 @@ endoR <- function(
   # other model settings
   DIFTOL = 0.001 # tolerance for SIMULSOL
 ){
-  if(SWEAT == 0){
-    MXWET <- SKINW # can't sweat, so max maximum skin wetness equal to current value
-  }
+  EXTREF <- EXTMAX
   if(EXTdec == 0){
     EXTMIN <- EXTREF # can't pant, so min extraction efficiency set to current value
+  }
+  if(SWEAT == 0){
+    MXWET <- SKINW # can't sweat, so max maximum skin wetness equal to current value
   }
   if(RAISETC == 0){
     TCMAX <- TC # can't raise Tc, so max value set to current value
