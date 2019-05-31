@@ -428,7 +428,7 @@
 #'}
 #' @examples
 #'# run the microclimate model
-#'micro <- micro_global(loc=c(145.620, -16.821) #Kuranda, Queensland
+#'micro <- micro_global(loc = c(145.620, -16.821) #Kuranda, Queensland
 #'
 #'# retrieve output
 #'metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
@@ -468,8 +468,8 @@
 #'with(environ, points(SHADE / 10 ~ dates, type = "l", col = "green"))
 #'with(environ, points(DEP / 10 ~ dates, type = "l", col = "brown"))
 #'#with(metout, points(TAREF ~ dates, type = "l", col = "light blue"))
-#'abline(ecto$T_F_min, 0, lty = 2, col = 'red')
-#'abline(ecto$T_F_max, 0, lty = 2, col = 'blue')
+#'abline(ecto$T_F_min, 0, lty = 2, col = 'blue')
+#'abline(ecto$T_F_max, 0, lty = 2, col = 'red')
 #'
 #'# seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)
 #'forage <- subset(environ, ACT == 2)
@@ -478,8 +478,8 @@
 #'day <- subset(metout, ZEN != 90)
 #'with(night, plot(TIME / 60 ~ DOY, ylab = "Hour of Day", xlab = "Day of Year", pch = 15, cex = 2, col = 'dark blue'))
 #' # nighttime hours
-#'with(forage,points((TIME -1 ) ~ DOY, pch = 15, cex = 2, col = 'orange')) # foraging Tbs
-#'with(bask,points((TIME - 1) ~ DOY, pch = 15, cex = 2, col = 'light blue')) # basking Tbs
+#'with(forage, points(TIME ~ DOY, pch = 15, cex = 2, col = 'orange')) # foraging Tbs
+#'with(bask, points(TIME ~ DOY, pch = 15, cex = 2, col = 'light blue')) # basking Tbs
 #' @export
 ectotherm <- function(
   Ww_g=40,

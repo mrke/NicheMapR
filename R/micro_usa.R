@@ -28,7 +28,7 @@
 #' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
 #' @return sunsnow Hourly predictions of snow temperature under the minimum specified shade
 #' @return shadsnow Hourly predictions snow temperature under the maximum specified shade
-#' @usage micro_USA(loc = 'Death Valley, California', dstart = "01-01-2016", dfinish = "01-01-2016",
+#' @usage micro_USA(loc = c(-117.8919161, 36.582016), dstart = "01-01-2016", dfinish = "01-01-2016",
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export

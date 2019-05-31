@@ -42,11 +42,11 @@ GEOM <- function(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT,
     as.double(DHARA),
     as.double(RHOARA),
     as.double(PTCOND),
-    results=matrix(data = 0., nrow = 1, ncol = 23),
+    results=matrix(data = 0., nrow = 1, ncol = 24),
     PACKAGE = "GEOM")
   #dyn.unload("GEOM.dll")
 
-  results <- matrix(data = 0., nrow = 1, ncol = 23)
+  results <- matrix(data = 0., nrow = 1, ncol = 24)
 
   storage.mode(results)<-"double"
   results <- a$results

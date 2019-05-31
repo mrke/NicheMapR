@@ -5,17 +5,17 @@
 #' Michael Kearney, Raymond Huey and Warren Porter developed this R function and example in September 2017.
 #' @param t = seq(1,3600,60), time intervals (s) at which output is required
 #' @param Tc_init = 5, initial temperature (deg C)
-#' @param mass = 500, animal mass (g)
-#' @param rho = 932, animal density (kg/m3)
+#' @param Ww_g = 500, animal weight (g)
+#' @param rho_body = 932, animal density (kg/m3)
 #' @param q = 0, metabolic heat production rate W/m3
-#' @param cp = 3073, Specific heat of flesh J/(kg-K)
-#' @param kflesh = 0.5, Thermal conductivity of flesh (W/mK, range: 0.412-2.8)
+#' @param c_body = 3073, Specific heat of flesh J/(kg-K)
+#' @param k_flesh = 0.5, Thermal conductivity of flesh (W/mK, range: 0.412-2.8)
 #' @param emis = 0.95, Emissivity of animal (0-1)
 #' @param abs = 0.85, solar absorptivity, decimal percent
 #' @param geom = 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coefs')
 #' @param shape_b = 1/5, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid
 #' @param shape_c = 1/5, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid
-#' @param shape_coefs = c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom shape coefficients. Operates if geom=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun
+#' @param shape_coefs = c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom shape coefficients. Operates if geom=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*Ww_g^b, where AREA is in cm2 and Ww_g is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun
 #' @param posture = 'n' pointing normal 'n', parallel 'p' to the sun's rays, or 'b' in between?
 #' @param orient = 1, does the object orient toward the sun? (0,1)
 #' @param fatosk = 0.4, Configuration factor to sky (-) for infrared calculations
@@ -32,7 +32,7 @@
 #' @return Tcf Final (steady state) temperature (deg C), if conditions remained constant indefinately
 #' @return tau Time constant (s)
 #' @return dTc Rate of change of core temperature (deg C/s)
-#' @usage onelump(t, Tc_init, mass, geom, Tair, Trad, vel, Qsol, Zen, ...)
+#' @usage onelump(t, Tc_init, Ww_g, geom, Tair, Trad, vel, Qsol, Zen, ...)
 #' @examples
 #' library(NicheMapR)
 #'
@@ -42,7 +42,7 @@
 #' tmins <- t/60
 #'
 #' par(mfrow = c(1,2))
-#' mass <- 5 # body mass, g
+#' Ww_g <- 5 # body weight, g
 #' Tc_init <- 20 # initial body temperature, deg C
 #' geom <- 2 # shape (2 = ellipsoid)
 #' Tair <- 20 # air temperature, deg C
@@ -52,7 +52,7 @@
 #' Zen <- 20 # zenith angle of sun, degrees
 #' abs <- 0.85 # solar absorptivity, -
 #'
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
+#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, Ww_g = Ww_g,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 30), ylab = 'Temperature, deg C',xlab='time, min', las = 1)
 #' text(80, 27, "    500 g")
@@ -61,27 +61,27 @@
 #' text(90, 26, "   vel = 1.0 m/s")
 #' text(90, 23.5, "     vel = 1.0 m/s")"     vel = 1.0 m/s")
 #'
-#' mass <- 500 # body mass, g
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
+#' Ww_g <- 500 # body weight, g
+#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, Ww_g = Ww_g,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
 #' abline(Tair,0, lty = 1, col = 'blue')
 #' abline(h = Tair + .1, lty = 2, col = 'blue')
 #'
-#' mass <- 5 # body mass, g
+#' Ww_g <- 5 # body weight, g
 #' Tair <- 25 # air temperature, deg C
 #' vel <-0.5 # wind speed, m/s
 #'
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
+#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, Ww_g = Ww_g,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,30),ylab='Temperature, deg C',xlab='time, min', las = 1)
 #' abline(h = Tair, lty = 1, col = 'blue')
 #'
-#' mass <- 500 # body mass, g
+#' Ww_g <- 500 # body weight, g
 #' Tair <- 20 # air temperature, deg C
 #' vel <-1 # wind speed, m/s
 #'
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, mass = mass,
+#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, Ww_g = Ww_g,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
 #' abline(h = Tair, lty = 2, col = 'blue')
@@ -93,9 +93,9 @@
 #' text(80, 28.65, "vel = 0.5 m/s")
 #' text(93, 26, "vel = 1.0 m/s")
 #' @export
-onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
-  geom = 2, Tair = 30, Trad = 30, vel = 0.1, Qsol = 500, Zen = 20, kflesh = 0.5,
-  q = 0, cp = 3073, emis = 0.95, rho = 932, abs = 0.85,
+onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
+  geom = 2, Tair = 30, Trad = 30, vel = 0.1, Qsol = 500, Zen = 20, k_flesh = 0.5,
+  q = 0, c_body = 3073, emis = 0.95, rho_body = 932, abs = 0.85,
   shape_coefs = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
   shape_b = 1/5, shape_c = 1/5, posture = 'n', orient = 1, fatosk = 0.4, fatosb = 0.4,
   abs_sub = 0.8, pctdif = 0.1, press = 101325){
@@ -111,9 +111,9 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
   VISDYN <- (1.8325 * 10 ^ -5 * ((296.16 + 120) / ((Tair + 273.15) + 120))) * (((Tair + 273.15) / 296.16) ^ 1.5) # dynamic viscosity of air, kg/(m.s)
 
   # geometry section ############################################################
-  m <- mass / 1000 # convert mass to kg
-  C <- m * cp # thermal capacitance, J/K
-  V <- m / rho # volume, m3
+  m <- Ww_g / 1000 # convert weight to kg
+  C <- m * c_body # thermal capacitance, J/K
+  V <- m / rho_body # volume, m3
   Qgen <- q * V # total metabolic heat, J
   L <- V ^ (1 / 3) # characteristic dimension, m
 
@@ -162,23 +162,23 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
     ASILN <- max(pi * A1 * C1, pi * B1 * C1) # max silhouette area, m2
     ASILP <- min(pi * A1 * C1, pi * B1 * C1) # min silhouette area, m2
     S2 <- (A1 ^ 2 * B1 ^ 2 * C1 ^ 2) / (A1 ^ 2 * B1 ^ 2 + A1 ^ 2 * C1 ^ 2 + B1 ^ 2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
-    kflesh <- 0.5# + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
+    k_flesh <- 0.5# + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
   }
 
   # Lizard geometry - DESERT IGUANA (PORTER ET AL. 1973 OECOLOGIA)
   if (geom == 3) {
-    ATOT <- (10.4713 * mass ^ .688) / 10000. # total surface area, m2
-    AV <- (0.425 * mass ^ .85) / 10000. # ventral surface area, m2
+    ATOT <- (10.4713 * Ww_g ^ .688) / 10000. # total surface area, m2
+    AV <- (0.425 * Ww_g ^ .85) / 10000. # ventral surface area, m2
     # NORMAL AND POINTING @ SUN SILHOUETTE AREA: PORTER & TRACY 1984
-    ASILN <- (3.798 * mass ^ .683) / 10000. # Max. silhouette area (normal to the sun), m2
-    ASILP <- (0.694 * mass ^ .743) / 10000. # Min. silhouette area (pointing toward the sun), m2
+    ASILN <- (3.798 * Ww_g ^ .683) / 10000. # Max. silhouette area (normal to the sun), m2
+    ASILP <- (0.694 * Ww_g ^ .743) / 10000. # Min. silhouette area (pointing toward the sun), m2
     R <- L
   }
 
   # Frog geometry - LEOPARD FROG (C.R. TRACY 1976 ECOL. MONOG.)
   if (geom == 4) {
-    ATOT <- (12.79 * mass ^ 0.606) / 10000. # total surface area, m2
-    AV <- (0.425 * mass ^ 0.85) / 10000. # ventral surface area, m2
+    ATOT <- (12.79 * Ww_g ^ 0.606) / 10000. # total surface area, m2
+    AV <- (0.425 * Ww_g ^ 0.85) / 10000. # ventral surface area, m2
     # NORMAL AND POINTING @ SUN SILHOUETTE AREA: EQ'N 11 TRACY 1976
     ZEN <- 0
     PCTN <- 1.38171E-06 * ZEN ^ 4 - 1.93335E-04 * ZEN ^ 3 + 4.75761E-03 * ZEN ^ 2 - 0.167912 * ZEN + 45.8228
@@ -191,13 +191,13 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
 
   # user defined geometry
   if (geom == 5) {
-    ATOT <- (shape_coefs[1] * mass ^ shape_coefs[2]) / 10000. # total surface area, m2
-    AV <- (shape_coefs[3] * mass ^ shape_coefs[4]) / 10000 # ventral surface area, m2
+    ATOT <- (shape_coefs[1] * Ww_g ^ shape_coefs[2]) / 10000. # total surface area, m2
+    AV <- (shape_coefs[3] * Ww_g ^ shape_coefs[4]) / 10000 # ventral surface area, m2
     # NORMAL AND POINTING @ SUN SILHOUETTE AREA: PORTER & TRACY 1984
     # User must define Max. silhouette area (normal to the sun)
-    ASILN <- (shape_coefs[5] * mass ^ shape_coefs[6]) / 10000 # Max. silhouette area (normal to the sun), m2
+    ASILN <- (shape_coefs[5] * Ww_g ^ shape_coefs[6]) / 10000 # Max. silhouette area (normal to the sun), m2
     # User must define Min. silhouette area (pointing toward the sun)
-    ASILP <- (shape_coefs[7] * mass ^ shape_coefs[8]) / 10000 # Min. silhouette area (pointing toward the sun), m2
+    ASILP <- (shape_coefs[7] * Ww_g ^ shape_coefs[8]) / 10000 # Min. silhouette area (pointing toward the sun), m2
     R <- L
   }
   # end geometry section ############################################################
@@ -310,9 +310,9 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, mass = 500,
   hr <- 4 * emis * sigma * ((Tc + Trad) / 2 + 273.15) ^ 3 # radiation resistance, eq. 49 of Kearney, Huey and Porter 2017 Appendix 1
 
   if(geom == 2){ # ellipsoid
-    j <- (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * kflesh) + Tair) + hr * ATOT * ((q * S2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
+    j <- (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * k_flesh) + Tair) + hr * ATOT * ((q * S2) / (2 * k_flesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
   }else{ # assume cylinder
-    j <- (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * kflesh) + Tair) + hr * ATOT * ((q * R ^ 2) / (2 * kflesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
+    j <- (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * k_flesh) + Tair) + hr * ATOT * ((q * R ^ 2) / (2 * k_flesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
   }
   kTc <- ATOT * (Tc * hc + Tc * hr) / C # based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
   k <- ATOT * (hc + hr) / C # based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1

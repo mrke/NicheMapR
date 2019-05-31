@@ -90,14 +90,17 @@
 #' @return p_surv Survival probability, -
 #' @return fecundity Eggs produced at a given time point, #
 #' @return clutches Clutches produced at a given time point
-#' @return O2FLUX Oxygen flux, mol/time
-#' @return CO2FLUX Carbon dioxide flux, mol/time
-#' @return MLO2 Oxgen consumption rate, ml/hour
-#' @return GH2OMET Metabolic water flux, mol/time
+#' @return JMO2 Oxygen flux, mol/time
+#' @return JMCO2 Carbon dioxide flux, mol/time
+#' @return JMH2O metabolic water flux, mol/time
+#' @return JMNWASTE nitrogenous waste flux, mol/time
+#' @return O2ML Oxgen consumption rate, ml/hour
+#' @return CO2ML Carbon dioxide production rate, ml/time
+#' @return GH2OML Metabolic water production rate, ml/time
 #' @return DEBQMET Metabolic heat generation, J/time
-#' @return DRYFOOD Dry food intake, mol/time
-#' @return FAECES Faeces production, mol/time
-#' @return NWASTE Nitrogenous waste production, mol/time
+#' @return GDRYFOOD Dry food intake, g/time
+#' @return GFAECES Faeces production, g/time
+#' @return GNWASTE Nitrogenous waste production, g/time
 #' @return p_A Assimilation power, J/time
 #' @return p_C Catabolic power, J/time
 #' @return p_M Somatic maintenance power, J/time
@@ -117,8 +120,8 @@
 #' Tbs=seq(25, 35, 5) # sequence of body temperatures to use
 #'
 #' for(j in 1:length(Tbs)){
-#'   debout<-matrix(data = 0, nrow = n, ncol = 33)
-#'   deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "O2FLUX", "CO2FLUX", "MLO2", "GH2OMET", "DEBQMET", "DRYFOOD", "FAECES", "NWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
+#'   debout<-matrix(data = 0, nrow = n, ncol = 36)
+#'   deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "JMO2", "JMCO2", "JMH2O", "JMNWASTE", "O2ML", "CO2ML", "GH2OML", "DEBQMETW", "GDRYFOOD", "GFAECES", "GNWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
 #'   colnames(debout)<-deb.names
 #'
 #'   # initialise
