@@ -87,7 +87,7 @@ PANTING <- .1 # turns on panting, the value being the increment by which the pan
 PANTMAX <- 3# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
 
 ptm <- proc.time() # start timing
-endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], VEL = VEL, TC = TC, TCMAX = TCMAX, RH = hum[x], AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10s[x], QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)}) # run endoR across environments
+endo.out <- lapply(1:length(TAs), function(x){endoR_solvendo(TA = TAs[x], VEL = VEL, TC = TC, TCMAX = TCMAX, RH = hum[x], AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10s[x], QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)}) # run endoR across environments
 proc.time() - ptm # stop timing
 
 endo.out <- do.call("rbind", lapply(endo.out, data.frame)) # turn results into data frame
@@ -144,8 +144,8 @@ ABSSB <- 1-micro$REFL
 
 Q10 <- 1
 
-endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], TAREF = TAREFs[x], TSKY = TSKYs[x], 
-  TGRD = TGRDs[x], VEL = VELs[x], RH = RHs[x], QSOLR = QSOLRs[x], Z = Zs[x], ELEV = ELEV, ABSSB = ABSSB, TC = TC, TCMAX = TCMAX, AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, EXTMAX = EXTMAX, EXTMIN = EXTMIN, EXTdec = EXTdec)})
+endo.out <- lapply(1:length(TAs), function(x){endoR_solvendo(TA = TAs[x], TAREF = TAREFs[x], TSKY = TSKYs[x], 
+  TGRD = TGRDs[x], VEL = VELs[x], RH = RHs[x], QSOLR = QSOLRs[x], Z = Zs[x], ELEV = ELEV, ABSSB = ABSSB, TC = TC, TCMAX = TCMAX, AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)})
 proc.time() - ptm
 endo.out <- do.call("rbind", lapply(endo.out, data.frame))
 

@@ -5,7 +5,7 @@
 \alias{micro_usa}
 \title{USA implementation of the microclimate model.}
 \usage{
-micro_USA(loc = 'Death Valley, California', dstart = "01-01-2016", dfinish = "01-01-2016",
+micro_USA(loc = c(-117.8919161, 36.582016), dstart = "01-01-2016", dfinish = "01-01-2016",
 REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 Usrhyt = 0.01, ...)
 }

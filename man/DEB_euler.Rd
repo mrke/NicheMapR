@@ -198,21 +198,27 @@ fecundity Eggs produced at a given time point, #
 
 clutches Clutches produced at a given time point
 
-O2FLUX Oxygen flux, mol/time
+JMO2 Oxygen flux, mol/time
 
-CO2FLUX Carbon dioxide flux, mol/time
+JMCO2 Carbon dioxide flux, mol/time
 
-MLO2 Oxgen consumption rate, ml/hour
+JMH2O metabolic water flux, mol/time
 
-GH2OMET Metabolic water flux, mol/time
+JMNWASTE nitrogenous waste flux, mol/time
+
+O2ML Oxgen consumption rate, ml/hour
+
+CO2ML Carbon dioxide production rate, ml/time
+
+GH2OML Metabolic water production rate, ml/time
 
 DEBQMET Metabolic heat generation, J/time
 
-DRYFOOD Dry food intake, mol/time
+GDRYFOOD Dry food intake, g/time
 
-FAECES Faeces production, mol/time
+GFAECES Faeces production, g/time
 
-NWASTE Nitrogenous waste production, mol/time
+GNWASTE Nitrogenous waste production, g/time
 
 p_A Assimilation power, J/time
 
@@ -248,8 +254,8 @@ step <- 1 # step size (days)
 Tbs=seq(25, 35, 5) # sequence of body temperatures to use
 
 for(j in 1:length(Tbs)){
-  debout<-matrix(data = 0, nrow = n, ncol = 33)
-  deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "O2FLUX", "CO2FLUX", "MLO2", "GH2OMET", "DEBQMET", "DRYFOOD", "FAECES", "NWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
+  debout<-matrix(data = 0, nrow = n, ncol = 36)
+  deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "JMO2", "JMCO2", "JMH2O", "JMNWASTE", "O2ML", "CO2ML", "GH2OML", "DEBQMETW", "GDRYFOOD", "GFAECES", "GNWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
   colnames(debout)<-deb.names
 
   # initialise

@@ -412,6 +412,5 @@ endoR_solvendo <- function(
   endo.out <- SOLVENDO(SOLVENDO.input)
   colnames(endo.out) <- c("TC", "TLUNG", "TFA_D", "TFA_V", "TSKIN_D", "TSKIN_V", "QCONV_D", "QCONV_V", "QCOND_D", "QCOND_V", "QGENNET_D", "QGENNET_V", "QSEVAP_D", "QSEVAP_V", "QRAD_D", "QRAD_V", "QSLR_D", "QSLR_V", "QRSKY_D", "QRSKY_V", "QRBSH_D", "QRBSH_V", "QRVEG_D", "QRVEG_V", "QRGRD_D", "QRGRD_V", "NTRY_D", "NTRY_V", "SUCCESS_D", "SUCCESS_V", "RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL", "GMULT", "PANT", "SKINW", "SWEAT.G.H", "EVAP.G.H", "EXTREF", "AK", "TA", "TGRD", "TCONDSB", "TSKY", "VEL", "RH", "QSOLR")
   endo.out
-  dyn.unload('C:/Users/mrke/OneDrive - The University of Melbourne/Documents/R/win-library/3.5/NicheMapR/libs/win/x64/SOLVENDO.dll')
   return(endo.out)
 }

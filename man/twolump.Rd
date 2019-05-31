@@ -15,17 +15,17 @@ ode(y = c(Tc_init, Ts_init, To_init), times = time, func = twolump, parms = inda
 
 \item{To_init}{= 5.2, initial surface temperature (deg C)}
 
-\item{mass}{= 500, animal mass (g)}
+\item{Ww_g}{= 500, animal weight (g)}
 
-\item{rho}{= 932, animal density (kg/m3)}
+\item{rho_body}{= 932, animal density (kg/m3)}
 
 \item{x_shell}{= 0.001, shell thickness, m}
 
 \item{q}{= 0, metabolic heat production rate W/m3}
 
-\item{cp_inner}{= 3073, Specific heat of flesh J/(kg-K)}
+\item{c_body_inner}{= 3073, Specific heat of flesh J/(kg-K)}
 
-\item{cp_outer}{= 3073, Specific heat of outer shell J/(kg-K)}
+\item{c_body_outer}{= 3073, Specific heat of outer shell J/(kg-K)}
 
 \item{k_inner}{= 0.5, Thermal conductivity of inner shell (W/mK, range: 0.412-2.8)}
 
@@ -33,7 +33,7 @@ ode(y = c(Tc_init, Ts_init, To_init), times = time, func = twolump, parms = inda
 
 \item{emis}{= 0.95, Emissivity of animal (0-1)}
 
-\item{abs}{= 0.85, solar absorptivity, decimal percent}
+\item{alpha}{= 0.85, solar absorptivity, decimal percent}
 
 \item{geom}{= 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coefs')}
 
@@ -41,7 +41,7 @@ ode(y = c(Tc_init, Ts_init, To_init), times = time, func = twolump, parms = inda
 
 \item{shape_c}{= 1/5, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}
 
-\item{shape_coefs}{= c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom shape coefficients. Operates if geom=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}
+\item{shape_coefs}{= c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom shape coefficients. Operates if geom=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*Ww_g^b, where AREA is in cm2 and Ww_g is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}
 
 \item{posture}{= 'n', pointing normal 'n', parallel 'p' to the sun's rays, or 'b' in between?}
 
@@ -51,7 +51,7 @@ ode(y = c(Tc_init, Ts_init, To_init), times = time, func = twolump, parms = inda
 
 \item{fatosb}{= 0.4, Configuration factor to subsrate for infrared calculations}
 
-\item{abs_sub}{= 0.2, substrate solar reflectivity, decimal percent}
+\item{alpha_sub}{= 0.2, substrate solar reflectivity, decimal percent}
 
 \item{pctdif}{= 0.1, proportion of solar energy that is diffuse (rather than direct beam)}
 
@@ -106,10 +106,10 @@ microclimate <- cbind(metout[, 1:5], metout[, 8], soil[, 4], metout[, 13:15], me
 colnames(microclimate) <- c('dates', 'DOY', 'TIME', 'TALOC', 'TA1.2m', 'VLOC', 'TS', 'ZEN', 'SOLR', 'TSKYC', 'RHLOC')
 
 # define animal parameters - here simulating a 1000 g ellipsoid
-cp <- 3342 # specific heat of flesh, J/kg-C
-cp_inner <- cp
-cp_outer <- cp
-rho <- 1000 # animal density, kg/m3
+c_body <- 3342 # specific heat of flesh, J/kg-C
+c_body_inner <- c_body
+c_body_outer <- c_body
+rho_body <- 1000 # animal density, kg/m3
 q <- 0 # metabolic rate, W/m3
 k_inner <- 0.5 # thermal conductivity of core, W/mK
 k_outer <- 0.5 # thermal conductivity of shell, W/mK
@@ -122,10 +122,10 @@ shape_c <- 1/5 # shape coefficient b, -
 shape_coefs <- c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743)
 fatosk <- 0.4 # solar configuration factor to sky, -
 fatosb <- 0.4 # solar configuration factor to substrate, -
-abs <- 0.9 # animal solar absorptivity, -
+alpha <- 0.9 # animal solar absorptivity, -
 emis <- 0.95 # emissivity of skin, -
-mass <- 1000 # mass, g
-abs_sub <- 0.8 # substrate solar absorptivity, -
+Ww_g <- 1000 # weight, g
+alpha_sub <- 0.8 # substrate solar absorptivity, -
 press <- 101325 # air pressure, Pa
 pctdif <- 0.1 # proportion of solar energy that is diffuse, -
 
@@ -150,7 +150,7 @@ for (i in 1:length(DOYs)) {
   Zenf <- approxfun(time, c(microclim[, 8], 90), rule = 2)
 
   t = seq(1, 3600 * 24, 60) # sequence of times for predictions (1 min intervals)
-  indata <- list(mass = mass, x_shell = x_shell, geom = geom, k_inner = k_inner, k_outer = k_outer, q = q, cp_inner = cp_inner, cp_outer = cp_outer, emis = emis, rho = rho, abs = abs, shape_coefs = shape_coefs, shape_b = shape_b, shape_c = shape_c, posture = posture, orient = orient, fatosk = fatosk, fatosb = fatosb, abs_sub = abs_sub, pctdif = pctdif, press = press)
+  indata <- list(Ww_g = Ww_g, x_shell = x_shell, geom = geom, k_inner = k_inner, k_outer = k_outer, q = q, c_body_inner = c_body_inner, c_body_outer = c_body_outer, emis = emis, rho_body = rho_body, alpha = alpha, shape_coefs = shape_coefs, shape_b = shape_b, shape_c = shape_c, posture = posture, orient = orient, fatosk = fatosk, fatosb = fatosb, alpha_sub = alpha_sub, pctdif = pctdif, press = press)
 
   Tc_init<-Tairf(1) # set inital Tc as air temperature
   Ts_init <- Tc_init
@@ -160,7 +160,7 @@ for (i in 1:length(DOYs)) {
   colnames(Tbs_ode) = c("time", "Tc", "Ts", "To", "Tcf")
   Tbs_ode$time <- Tbs_ode$time / 3600 # convert to hours
 
-  with(Tbs_ode, plot(Tc ~ time, type = 'l', col = '1', ylim = c(-10, 80), xlim = c(0, 23), ylab='Temperature, deg C',xlab = 'hour of day', main = paste0(loc, ", ", mons[i], ", ", mass," g")))
+  with(Tbs_ode, plot(Tc ~ time, type = 'l', col = '1', ylim = c(-10, 80), xlim = c(0, 23), ylab='Temperature, deg C',xlab = 'hour of day', main = paste0(loc, ", ", mons[i], ", ", Ww_g," g")))
   with(Tbs_ode, points(To ~ time, lty = 2, type = 'l', col = '1'))
   with(Tbs_ode, points(Tcf ~ time, type = 'l', col = '2'))
   points(Tairf(time) ~ hours, type = 'l', col = 'blue', lty = 2)
