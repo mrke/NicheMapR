@@ -87,7 +87,7 @@ PANTING <- .1 # turns on panting, the value being the increment by which the pan
 PANTMAX <- 3# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
 
 ptm <- proc.time() # start timing
-endo.out <- lapply(1:length(TAs), function(x){endoR_solvendo(TA = TAs[x], VEL = VEL, TC = TC, TCMAX = TCMAX, RH = hum[x], AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10s[x], QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)}) # run endoR across environments
+endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], VEL = VEL, TC = TC, TCMAX = TCMAX, RH = hum[x], AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10s[x], QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)}) # run endoR across environments
 proc.time() - ptm # stop timing
 
 endo.out <- do.call("rbind", lapply(endo.out, data.frame)) # turn results into data frame
@@ -120,7 +120,7 @@ points(Weathers1976Fig5$breaths_min*(13.2*AMASS^1.08)*((Weathers1976Fig5$Tair+27
 
 ## Microclimate model integration example
 
-In this final example, the microclimate model is run and the then the relevant outputs are sent into the endotherm model along with the same animal parameters as above.
+In this final example, the microclimate model is run for a location in central Australia and the then the relevant outputs are sent into the endotherm model along with the same animal parameters as above.
 
 ```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE}
 micro <- micro_global(loc = c(131.05, -22.75), runshade = 0, Usrhyt = 0.01)
@@ -142,9 +142,41 @@ Zs <- metout$ZEN
 ELEV <- micro$elev
 ABSSB <- 1-micro$REFL
 
-Q10 <- 1
+# core temperature
+TC <- 38 # core temperature (deg C)
+TCMAX <- 43 # maximum core temperature (deg C)
+RAISETC <- 0.25 # increment by which TC is elevated (deg C)
 
-endo.out <- lapply(1:length(TAs), function(x){endoR_solvendo(TA = TAs[x], TAREF = TAREFs[x], TSKY = TSKYs[x], 
+# size and shape
+AMASS <- 0.0337 # mass (kg)
+GMREF <- 1.1 # start off near to a sphere (-)
+GMULTMAX <- 5 # maximum ratio of length to width/depth (high value to capture opening of wings)
+
+# feather properties
+DHAIRD = 30E-06 # hair diameter, dorsal (m)
+DHAIRV = 30E-06 # hair diameter, ventral (m)
+LHAIRD = 23.1E-03 # hair length, dorsal (m)
+LHAIRV = 22.7E-03 # hair length, ventral (m)
+ZFURD = 5.8E-03 # fur depth, dorsal (m)
+ZFURV = 5.6E-03 # fur depth, ventral (m)
+RHOD = 8000E+04 # hair density, dorsal (1/m2)
+RHOV = 8000E+04 # hair density, ventral (1/m2)
+REFLD = 0.248  # fur reflectivity dorsal (fractional, 0-1)
+REFLV = 0.351  # fur reflectivity ventral (fractional, 0-1)
+
+# physiological responses
+SKINW <- 0.1 # base skin wetness (%)
+MXWET <- 20 # maximum skin wetness (%)
+SWEAT <- 0.25 # intervals by which skin wetness is increased (%)
+Q10 <- 1 # Q10 effect of body temperature on metabolic rate (-)
+QBASAL <- 10 ^ (-1.461 + 0.669 * log10(AMASS * 1000)) # basal heat generation (W)
+DELTAR <- 5 # offset between air temeprature and breath (°C)
+EXTREF <- 15 # O2 extraction efficiency (%)
+PANTING <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANTMAX
+PANTMAX <- 1# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
+
+ptm <- proc.time() # start timing
+endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], TAREF = TAREFs[x], TSKY = TSKYs[x], 
   TGRD = TGRDs[x], VEL = VELs[x], RH = RHs[x], QSOLR = QSOLRs[x], Z = Zs[x], ELEV = ELEV, ABSSB = ABSSB, TC = TC, TCMAX = TCMAX, AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)})
 proc.time() - ptm
 endo.out <- do.call("rbind", lapply(endo.out, data.frame))
@@ -156,7 +188,13 @@ TFA_V <- endo.out$TFA_V # ventral fur surface temperature
 TskinD <- endo.out$TSKIN_D # dorsal skin temperature
 TskinV <- endo.out$TSKIN_V # ventral skin temperature
 TCs <- endo.out$TC # core temperature
+SkinW <- endo.out$SKINW # skin wetness (%)
+Pant <- endo.out$PANT # panting multiplier (-)
 
+par(mfrow = c(2, 2))
+par(oma = c(2, 1, 2, 2) + 0.1)
+par(mar = c(3, 3, 1.5, 1) + 0.1)
+par(mgp = c(2, 1, 0))
 plot(QGEN ~ dates, type = 'l', ylab = 'metabolic rate, W', xlab = 'time')
 plot(H2O ~ dates, type = 'l', ylab = 'water loss, g/h', xlab = 'time')
 plot(TFA_D ~ dates, type = 'l', col = 'grey', ylab = 'fur, skin and core temperature, deg C', xlab = 'time', ylim = c(0, 60))
@@ -164,4 +202,6 @@ points(TFA_V ~ dates, type = 'l', col = 'grey', lty = 2)
 points(TskinD ~ dates, type = 'l', col = 'orange')
 points(TskinV ~ dates, type = 'l', col = 'orange', lty = 2)
 points(TCs ~ dates, type = 'l', col = 'red')
+plot(SkinW ~ dates, type = 'l', col = 'black', ylab = 'skin wetness (%)/panting rate (-)', xlab = 'time', ylim = c(0, 20))
+points(Pant ~ dates, type = 'l', col = 'grey', lty = 2)
 ```

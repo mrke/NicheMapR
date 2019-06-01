@@ -1,6 +1,16 @@
-#' endoR
+#' endoR_devel - the development version of the endotherm model of NicheMapR
 #'
-#' Endotherm model of NicheMapR
+#' This model uses R code to implement postural and physiological
+#' thermoregulation under a given environmental scenario for an organism of
+#' a specified shape and no extra body parts. In this function the sequence of
+#' thermoregulatory events in the face of heat stress is to first uncurl,
+#' second change flesh conductivity, third raise core temprature, fourth
+#' pant and fifth sweat. This can be modified to be more specific to the
+#' species of interest, e.g. by changing the sequence of responses or having
+#' some happen in parallel. However it is very slow. endoR_solvendo implements
+#' the endoR sequence of thermoregulation within FORTRAN and is 100x faster.
+#' Thus it is best to use endoR as a basis for prototyping and refining and
+#' then to adjust the FORTRAN code of endoR_solvendo (SOLVENDO.f) accordingly.
 #' @encoding UTF-8
 #' @param AMASS = 1, # kg
 #' @param NGEOM = 4, # cylinder (ngeom = 1), sphere (ngeom = 2) and ellipsoid (ngeom = 4). If a truncated cone (5) or ellipsoidal cylinder (3), we will use the cylinder equations (ngeom=1).
@@ -103,68 +113,148 @@
 #' \code{TFA}{ = TA, # initial fur/air interface temperature (°C)}\cr\cr
 #'
 #' \strong{Outputs:}
-#' \code{TC}{ }\cr\cr
-#' \code{TFA_D}{ }\cr\cr
-#' \code{TFA_V}{ }\cr\cr
-#' \code{TSKIN_D}{ }\cr\cr
-#' \code{TSKIN_V}{ }\cr\cr
-#' \code{QCONV_D}{ }\cr\cr
-#' \code{QCONV_V}{ }\cr\cr
-#' \code{QCOND_D}{ }\cr\cr
-#' \code{QCOND_V}{ }\cr\cr
-#' \code{QGENNET_D}{ }\cr\cr
-#' \code{QGENNET_V}{ }\cr\cr
-#' \code{QSEVAP_D}{ }\cr\cr
-#' \code{QSEVAP_V}{ }\cr\cr
-#' \code{QRAD_D}{ }\cr\cr
-#' \code{QRAD_V}{ }\cr\cr
-#' \code{QSLR_D}{ }\cr\cr
-#' \code{QSLR_V}{ }\cr\cr
-#' \code{QRSKY_D}{ }\cr\cr
-#' \code{QRSKY_V}{ }\cr\cr
-#' \code{QRBSH_D}{ }\cr\cr
-#' \code{QRBSH_V}{ }\cr\cr
-#' \code{QRVEG_D}{ }\cr\cr
-#' \code{QRVEG_V}{ }\cr\cr
-#' \code{QRGRD_D}{ }\cr\cr
-#' \code{QRGRD_V}{ }\cr\cr
-#' \code{NTRY_D}{ }\cr\cr
-#' \code{NTRY_V}{ }\cr\cr
-#' \code{SUCCESS_D}{ }\cr\cr
-#' \code{SUCCESS_V}{ }\cr\cr
-#' \code{RESPFN}{ }\cr\cr
-#' \code{QRESP}{ }\cr\cr
-#' \code{GEVAP}{ }\cr\cr
-#' \code{PCTO2}{ }\cr\cr
-#' \code{PCTN2}{ }\cr\cr
-#' \code{PCTCO2}{ }\cr\cr
-#' \code{RESPGEN}{ }\cr\cr
-#' \code{O2STP}{ }\cr\cr
-#' \code{O2MOL1}{ }\cr\cr
-#' \code{N2MOL1}{ }\cr\cr
-#' \code{AIRML1}{ }\cr\cr
-#' \code{O2MOL2}{ }\cr\cr
-#' \code{N2MOL2}{ }\cr\cr
-#' \code{AIRML2}{ }\cr\cr
-#' \code{AIRVOL}{ }\cr\cr
-#' \code{GMULT}{ }\cr\cr
-#' \code{SKINW}{ }\cr\cr
-#' \code{SWEAT.G.H}{ }\cr\cr
-#' \code{EVAP.G.H}{ }\cr\cr
-#' \code{EXTREF}{ }\cr\cr
-#' \code{AK}{ }\cr\cr
-#' \code{TA}{ }\cr\cr
-#' \code{TGRD}{ }\cr\cr
-#' \code{TCONDSB}{ }\cr\cr
-#' \code{TSKY}{ }\cr\cr
-#' \code{VEL}{ }\cr\cr
-#' \code{RH}{ }\cr\cr
-#' \code{QSOLR}{ }\cr\cr
+#' \code{TC}{core temperature (°C)}\cr\cr
+#' \code{TFA_D}{dorsal fur-air interface temperature (°C)}\cr\cr
+#' \code{TFA_V}{ventral fur-air interface temperature (°C)}\cr\cr
+#' \code{TSKIN_D}{dorsal skin temperature (°C)}\cr\cr
+#' \code{TSKIN_V}{ventral skin temperature (°C)}\cr\cr
+#' \code{QCONV_D}{dorsal convection heat exchange (W)}\cr\cr
+#' \code{QCONV_V}{ventral convection heat exchange (W)}\cr\cr
+#' \code{QCOND_D}{dorsal conduction heat exchange (W)}\cr\cr
+#' \code{QCOND_V}{ventral conduction heat exchange (W)}\cr\cr
+#' \code{QGENNET_D}{dorsal net heat generation (W)}\cr\cr
+#' \code{QGENNET_V}{ventral net heat generation (W)}\cr\cr
+#' \code{QSEVAP_D}{dorsal evaporative heat exchange (W)}\cr\cr
+#' \code{QSEVAP_V}{ventral evaporative heat exchange (W)}\cr\cr
+#' \code{QRAD_D}{dorsal radiant heat loss (W)}\cr\cr
+#' \code{QRAD_V}{ventral radiant heat loss (W)}\cr\cr
+#' \code{QSLR_D}{dorsal solar heat gain (W)}\cr\cr
+#' \code{QSLR_V}{ventral solar heat gain (W)}\cr\cr
+#' \code{QRSKY_D}{dorsal radiant heat incomming from sky (W)}\cr\cr
+#' \code{QRSKY_V}{ventral radiant heat incomming from sky (W)}\cr\cr
+#' \code{QRBSH_D}{dorsal radiant heat incomming from nearby bush (W)}\cr\cr
+#' \code{QRBSH_V}{ventral radiant heat incomming from nearby bush (W)}\cr\cr
+#' \code{QRVEG_D}{dorsal radiant heat incomming from vegetation (W)}\cr\cr
+#' \code{QRVEG_V}{ventral radiant heat incomming from vegetation (W)}\cr\cr
+#' \code{QRGRD_D}{dorsal radiant heat incomming from ground (W)}\cr\cr
+#' \code{QRGRD_V}{ventral radiant heat incomming from ground (W)}\cr\cr
+#' \code{NTRY_D}{number of iterations need for convergence of dorsal heat budget}\cr\cr
+#' \code{NTRY_V}{number of iterations need for convergence of ventral heat budget}\cr\cr
+#' \code{SUCCESS_D}{test of success convergence for dorsal heat budget}\cr\cr
+#' \code{SUCCESS_V}{test of success convergence for ventral heat budget}\cr\cr
+#' \code{RESPFN}{energy balance test after call to RESPFUN (W)}\cr\cr
+#' \code{QRESP}{respiratory heat exchange (W)}\cr\cr
+#' \code{GEVAP}{respiratory water loss (g/s)}\cr\cr
+#' \code{PCTO2}{ambient oxygen gas concentration (%)}\cr\cr
+#' \code{PCTN2}{ambient nitgrogen gas concentration (%)}\cr\cr
+#' \code{PCTCO2}{ambient carbon dioxide gas concentration (%)}\cr\cr
+#' \code{RESPGEN}{total metabolic rate (W)}\cr\cr
+#' \code{O2STP}{oxygen consumption at standard temperature and pressure (L/s)}\cr\cr
+#' \code{O2MOL1}{oxygen entering lungs (moles/s)}\cr\cr
+#' \code{N2MOL1}{nitrogen entering lungs (moles/s)}\cr\cr
+#' \code{AIRML1}{air entering lungs (moles/s)}\cr\cr
+#' \code{O2MOL2}{oxygen leaving lungs (moles/s)}\cr\cr
+#' \code{N2MOL2}{nitrogen leaving lungs (moles/s)}\cr\cr
+#' \code{AIRML2}{air leaving lungs (moles/s)}\cr\cr
+#' \code{AIRVOL}{air entering lungs (L/s)}\cr\cr
+#' \code{GMULT}{shape multiplier for postural change (-)}\cr\cr
+#' \code{SKINW}{skin area that is wet (%)}\cr\cr
+#' \code{SWEAT.G.H}{sweating rate (g/h)}\cr\cr
+#' \code{EVAP.G.H}{evaporation rate (g/h)}\cr\cr
+#' \code{EXTREF}{oxygen extraction efficiency (%)}\cr\cr
+#' \code{AK}{skin thermal conductivity (W/m°C)}\cr\cr
+#' \code{TA}{air temperature (°C)}\cr\cr
+#' \code{TGRD}{ground temperature, driving longwave heat gain (°C)}\cr\cr
+#' \code{TCONDSB}{substrate temperature, driving conductive heat exchange (°C)}\cr\cr
+#' \code{TSKY}{sky temperature (°C)}\cr\cr
+#' \code{VEL}{wind speed (m/s)}\cr\cr
+#' \code{RH}{relative humidity (%)}\cr\cr
+#' \code{QSOLR}{solar radiation (W/m2)}\cr\cr
 #' @examples
 #' library(NicheMapR)
-#' dstart <- "02/01/2017"
-#' dfinish <- "30/12/2017"
-endoR <- function(
+#' # environment (central Australia)
+#' micro <- micro_global(loc = c(131.05, -22.75), runshade = 0, Usrhyt = 0.01)
+#'
+#' metout <- as.data.frame(micro$metout)
+#' soil <- as.data.frame(micro$soil)
+#' days<-rep(seq(1,12),24)
+#' days<-days[order(days)]
+#' dates<-days+metout$TIME/60/24-1 # dates for hourly output
+#'
+#' TAs <- metout$TALOC
+#' TAREFs <- metout$TAREF
+#' TSKYs <- metout$TSKYC
+#' TGRDs <- soil$D0cm
+#' VELs <- metout$VLOC
+#' RHs <- metout$RHLOC
+#' QSOLRs <- metout$SOLR
+#' Zs <- metout$ZEN
+#' ELEV <- micro$elev
+#' ABSSB <- 1-micro$REFL
+#'
+#' # core temperature
+#' TC <- 38 # core temperature (deg C)
+#' TCMAX <- 43 # maximum core temperature (°C)
+#' RAISETC <- 0.25 # increment by which TC is elevated (°C)
+#'
+#' # size and shape
+#' AMASS <- 0.0337 # mass (kg)
+#' GMREF <- 1.1 # start off near to a sphere (-)
+#' GMULTMAX <- 5 # maximum ratio of length to width/depth
+#'
+#' # fur/feather properties
+#' DHAIRD = 30E-06 # hair diameter, dorsal (m)
+#' DHAIRV = 30E-06 # hair diameter, ventral (m)
+#' LHAIRD = 23.1E-03 # hair length, dorsal (m)
+#' LHAIRV = 22.7E-03 # hair length, ventral (m)
+#' ZFURD = 5.8E-03 # fur depth, dorsal (m)
+#' ZFURV = 5.6E-03 # fur depth, ventral (m)
+#' RHOD = 8000E+04 # hair density, dorsal (1/m2)
+#' RHOV = 8000E+04 # hair density, ventral (1/m2)
+#' REFLD = 0.248  # fur reflectivity dorsal (fractional, 0-1)
+#' REFLV = 0.351  # fur reflectivity ventral (fractional, 0-1)
+#'
+#' # physiological responses
+#' SKINW <- 0.1 # base skin wetness (%)
+#' MXWET <- 20 # maximum skin wetness (%)
+#' SWEAT <- 0.25 # intervals by which skin wetness is increased (%)
+#' Q10 <- 2 # A10 effect of body temperature on metabolic rate
+#' QBASAL <- 10 ^ (-1.461 + 0.669 * log10(AMASS * 1000)) # basal heat generation (W) (bird formula from McKechnie and Wolf 2004 Phys. & Biochem. Zool. 77:502-521)
+#' DELTAR <- 5 # offset between air temeprature and breath (°C)
+#' EXTREF <- 15 # O2 extraction efficiency (%)
+#' PANTING <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANTMAX
+#' PANTMAX <- 3# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
+#'
+#' ptm <- proc.time() # start timing
+#' endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], TAREF = TAREFs[x], TSKY = TSKYs[x],
+#'                                                     TGRD = TGRDs[x], VEL = VELs[x], RH = RHs[x], QSOLR = QSOLRs[x], Z = Zs[x], ELEV = ELEV, ABSSB = ABSSB, TC = TC, TCMAX = TCMAX, AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)})
+#' proc.time() - ptm
+#' endo.out <- do.call("rbind", lapply(endo.out, data.frame))
+#'
+#' QGEN <- endo.out$RESPGEN # metabolic rate (W)
+#' H2O <- endo.out$GEVAP * 3600 # g/h water evaporated
+#' TFA_D <- endo.out$TFA_D # dorsal fur surface temperature
+#' TFA_V <- endo.out$TFA_V # ventral fur surface temperature
+#' TskinD <- endo.out$TSKIN_D # dorsal skin temperature
+#' TskinV <- endo.out$TSKIN_V # ventral skin temperature
+#' TCs <- endo.out$TC # core temperature
+#' SkinW <- endo.out$SKINW # skin wetness (%)
+#' Pant <- endo.out$PANT # panting multiplier (-)
+#'
+#' par(mfrow = c(2, 2))
+#' par(oma = c(2, 1, 2, 2) + 0.1)
+#' par(mar = c(3, 3, 1.5, 1) + 0.1)
+#' par(mgp = c(2, 1, 0))
+#' plot(QGEN ~ dates, type = 'l', ylab = 'metabolic rate, W', xlab = 'time')
+#' plot(H2O ~ dates, type = 'l', ylab = 'water loss, g/h', xlab = 'time')
+#' plot(TFA_D ~ dates, type = 'l', col = 'grey', ylab = 'fur, skin and core temperature, deg C', xlab = 'time', ylim = c(0, 60))
+#' points(TFA_V ~ dates, type = 'l', col = 'grey', lty = 2)
+#' points(TskinD ~ dates, type = 'l', col = 'orange')
+#' points(TskinV ~ dates, type = 'l', col = 'orange', lty = 2)
+#' points(TCs ~ dates, type = 'l', col = 'red')
+#' plot(SkinW ~ dates, type = 'l', col = 'black', ylab = 'skin wetness (%)/panting rate (-)', xlab = 'time', ylim = c(0, 20))
+#' points(Pant ~ dates, type = 'l', col = 'grey', lty = 2)
+endoR_devel <- function(
   TA = 20, # air temperature at local height (°C)
   TAREF = TA, # air temeprature at reference height (°C)
   TGRD = TA, # ground temperature (°C)
@@ -597,15 +687,9 @@ endoR <- function(
           Q10mult <- Q10^((TC - TCREF)/10)
           QBASAL = QBASREF * Q10mult
           if(PANT < PANTMAX){
-            #PANT <- PANT + PANTING
+            PANT <- PANT + PANTING
             PANTSTEP <- PANTSTEP + 1
-            PANT <- round(PANTMAX - (PANTMAX - 1) * exp(-0.02 / (PANTMAX / 10) * PANTSTEP), 1)
-            # if(PANT > PANTMAX / 10){
-            #   SKINW <- SKINW + SWEAT
-            #   if(SKINW > MXWET | SWEAT == 0){
-            #     SKINW <- MXWET
-            #   }
-            # }
+            #PANT <- round(PANTMAX - (PANTMAX - 1) * exp(-0.02 / (PANTMAX / 10) * PANTSTEP), 1)
           }else{
             PANT <- PANTMAX
             SKINW <- SKINW + SWEAT
