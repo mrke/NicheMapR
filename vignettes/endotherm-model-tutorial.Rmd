@@ -15,6 +15,10 @@ editor_options:
 knitr::opts_chunk$set(
  eval = TRUE, tidy.opts=list(width.cutoff=60), tidy=TRUE  
 )
+load('Weathers1976Fig1.Rdata')
+load('Weathers1976Fig2.Rdata')
+load('Weathers1976Fig3.Rdata')
+load('Weathers1976Fig5.Rdata')
 ```
 
 ## Overview
