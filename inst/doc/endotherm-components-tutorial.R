@@ -113,8 +113,26 @@ CSEMIN <- GEOM.out[20] # c semiminor axis length, m (currently only prolate sphe
 CONVSK <- GEOM.out[21] # area of skin for evaporation (total skin area - hair area), m2
 CONVAR <- GEOM.out[22] # area for convection (total area minus ventral area, as determined by PTCOND), m2
 R1 <- GEOM.out[23] # shape-specific core-skin radius in shortest dimension, m
+R2 <- GEOM.out[24] # shape-specific core-fur radius in shortest dimension, m
 
-GEOM.lab <- c("R", "VOL", "D", "MASFAT", "VOLFAT", "ALENTH", "AWIDTH", "AHEIT", "ATOT", "ASILN", "ASILP", "AL", "GMASS", "AREASKIN", "AREA", "FLSHVL", "FATTHK", "ASEMAJ", "BSEMIN", "CSEMIN", "CONVSK", "CONVAR", "R1")
+# nest properties
+NESTYP <- 3 # for nest calculations - 0 = none, 1 = flat, 2 = cup, 3 = cylinder, 4 = half cylinder, 5 = sphere, 6 = dome
+D_NEST <- 0.35 # Outer diameter(m)
+TKNEST <- 0.01 # Nest wall thickness (m) 
+RONEST <- D_NEST / 2
+RINEST <- RONEST - TKNEST
+if(RINEST < R2){
+ # NEST INNER DIAMETER GREATER THAN ANIMAL WITH OR WITHOUT FUR OUTER DIAMETER. ENLARGE NEST
+ RINEST <- R2
+ RONEST <- RINEST + TKNEST
+}
+DENEST <- 1 # Density nest material (kg/m3) 
+THCONW <- 0.071 # Nest wall (wood: 0.10-0.35;sheep wool:0.05) thermal conductivity (W/m-C) #!
+ABSHEL <- 0.71 # Nest solar absorptivity (decimal: 1.0 = 100%)
+EMISHEL <- 0.95 # NEest emissivity
+SHELEN <- 0.3 # Length(m) #!
+
+GEOM.lab <- c("R", "VOL", "D", "MASFAT", "VOLFAT", "ALENTH", "AWIDTH", "AHEIT", "ATOT", "ASILN", "ASILP", "AL", "GMASS", "AREASKIN", "AREA", "FLSHVL", "FATTHK", "ASEMAJ", "BSEMIN", "CSEMIN", "CONVSK", "CONVAR", "R1", "R2")
 kable(cbind(GEOM.lab, t(GEOM.out)))
 
 ## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
@@ -125,7 +143,7 @@ draw.ellipse(ASEMAJ+ZFUR, ASEMAJ+ZFUR, col="black", border = "black", a = ASEMAJ
 draw.ellipse(ASEMAJ+ZFUR, ASEMAJ+ZFUR, col="pink", border = "pink", a = ASEMAJ, b = BSEMIN)
 draw.ellipse(ASEMAJ+ZFUR, ASEMAJ+ZFUR, col="red", border = "red", a = ASEMAJ-FATTHK, b = BSEMIN-FATTHK)
 
-plot(c(0,ASEMAJ*2+ZFUR*2), c(0,ASEMAJ*2+ZFUR*2), type="n", main="ellipsoid, transverse section", ylab = 'minor axis, m', xlab = 'major axis, m', asp=1)
+plot(c(0,ASEMAJ*2+ZFUR*2), c(0,ASEMAJ*2+ZFUR*2), type="n", main="ellipsoid, transverse section", ylab = 'minor axis, m', xlab = 'minor axis, m', asp=1)
 draw.ellipse(ASEMAJ+ZFUR, ASEMAJ+ZFUR, col="black", border = "black", a = BSEMIN+ZFUR, b = CSEMIN+ZFUR)
 draw.ellipse(ASEMAJ+ZFUR, ASEMAJ+ZFUR, col="pink", border = "pink", a = BSEMIN, b = CSEMIN)
 draw.ellipse(ASEMAJ+ZFUR, ASEMAJ+ZFUR, col="red", border = "red", a = BSEMIN-FATTHK, b = CSEMIN-FATTHK)
@@ -140,14 +158,11 @@ QSOLR <- 1000 # solar radiation, horizontal plane (W/m2)
 
 # trait inputs
 EMISAN <- 0.99 # animal emissivity (-)
-NESTYP <- 0 # for nest calculations, to do
-RoNEST <- 0 # for nest calculations, to do
-Rnest <- 0 # for nest calculations, to do
 FATOBJ <- 0 # configuration factor to nearby object
 FGDREF <- 0.4 # reference configuration factor to ground
 FSKREF <- 0.4 # configuration factor to sky
 
-F_FACTOR.out <- F_FACTOR(SHADE, NITESHAD, QSOLR, FATOBJ, NESTYP, RoNEST, Rnest, FGDREF, FSKREF, AREASKIN, EMISAN)
+F_FACTOR.out <- F_FACTOR(SHADE, NITESHAD, QSOLR, FATOBJ, NESTYP, RONEST, R1, FGDREF, FSKREF, AREASKIN, EMISAN)
 
 FAVEG <- F_FACTOR.out[1] # configuration factor to vegetation
 FASKY <- F_FACTOR.out[2] # configuration factor to sky
@@ -160,7 +175,7 @@ C5 <- F_FACTOR.out[7] # object
 C6 <- F_FACTOR.out[8] # vegetation (shade)
 C7 <- F_FACTOR.out[9] # nest
 
-F_FACTOR.lab <- c("FAVEG", "FASKY", "FAGRD", "FANEST", "C3", "C4", "C5", "C6", "C6")
+F_FACTOR.lab <- c("FAVEG", "FASKY", "FAGRD", "FANEST", "C3", "C4", "C5", "C6", "C7")
 kable(cbind(F_FACTOR.lab, t(F_FACTOR.out)))
 
 ## ------------------------------------------------------------------------
@@ -436,6 +451,7 @@ RQ <- 0.80 # respiratory quotient (fractional, 0-1)
 EXTREF <- 20 # O2 extraction efficiency (%)
 RELXIT <- 100 # relative humidity of exhaled air, %
 TIMACT <- 1 # multiplier on metabolic rate for activity costs
+PANT <- 1 # multiplier on breathing rate (-)
 
 # Now compute a weighted mean heat generation for all the parts/components = (dorsal value *(FASKY+FAVEG+FATOBJ))+(ventral value*FAGRD)
 GEND <- SIMULSOL.out[1, 6]
@@ -455,7 +471,7 @@ QSUM <- X
 TOL <- AMASS * 0.01
 
 ZBRENT.in <- c(TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG, GMASS, EXTREF, RH, 
-  RELXIT, TIMACT, TAEXIT, QSUM)
+  RELXIT, TIMACT, TAEXIT, QSUM, PANT)
 
 # call ZBRENT subroutine which calls RESPFUN
 ZBRENT.out <- ZBRENT(QM1, QM2, TOL, ZBRENT.in)
