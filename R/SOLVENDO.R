@@ -21,11 +21,11 @@ SOLVENDO <- function(SOLVENDO.input){
   }
   a <- .Fortran("SOLVENDO",
                 as.double(SOLVENDO.input),
-                 results=matrix(data = 0., nrow = 1, ncol = 59),
+                 results=matrix(data = 0., nrow = 1, ncol = 58),
                 PACKAGE = "SOLVENDO")
   #dyn.unload("SOLVENDO.dll")
 
-  results <- matrix(data = 0., nrow = 1, ncol = 59)
+  results <- matrix(data = 0., nrow = 1, ncol = 58)
 
   storage.mode(results)<-"double"
   results <- a$results
