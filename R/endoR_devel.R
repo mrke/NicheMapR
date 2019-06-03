@@ -657,8 +657,13 @@ endoR_devel <- function(
     # now guess for metabolic rate that balances the heat budget while allowing metabolic rate
     # to remain at or above QBASAL, via 'shooting method' ZBRENT
     QMIN <- QBASAL
-    QM1 <- X - (5 * QMIN)
-    QM2 <- X + (10 * QMIN)
+    if(TA<TC){
+     QM1 <- QBASAL * 2 * -1
+     QM2 <- QBASAL * 50
+    }else{
+     QM1 <- QBASAL * 10* -1
+     QM2 <- QBASAL * 2
+    }
     QSUM <- X
     TOL <- AMASS * 0.01
 
