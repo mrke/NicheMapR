@@ -25,7 +25,7 @@
 #' @param shade_seek = 1, Shade seeking allowed?  1=yes, 0=no
 #' @param burrow = 1 Shelter in burrow allowed?  1=yes, 0=no
 #' @param climb = 0, Climbing to seek cooler habitats allowed?  1=yes, 0=no
-#' @param shdburrow = 0, Choose if the animal's retreat is in the shade (1) or in the open (0)
+#' @param shdburrow = 0, Choose if the animal's retreat is in the open (0), in the shade when above or below CTmin in sun (1) or in shade always (2)
 #' @param mindepth = 2, Minimum depth (soil node #) to which animal can retreat if burrowing
 #' @param maxdepth = 10, Maximum depth (soil node #) to which animal can retreat if burrowing
 #' @param aestdepth = 10, Depth (soil node #) to which animal retreats if burrowing and aestivating due to desiccation

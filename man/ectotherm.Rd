@@ -44,7 +44,7 @@ ectotherm(Ww_g, shape, alpha_max, alpha_min, T_F_min, T_F_max, T_B_min, T_RB_min
 
 \item{climb}{= 0, Climbing to seek cooler habitats allowed?  1=yes, 0=no}
 
-\item{shdburrow}{= 0, Choose if the animal's retreat is in the shade (1) or in the open (0)}
+\item{shdburrow}{= 0, Choose if the animal's retreat is in the open (0), in the shade when above or below CTmin in sun (1) or in shade always (2)}
 
 \item{mindepth}{= 2, Minimum depth (soil node #) to which animal can retreat if burrowing}
 

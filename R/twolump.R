@@ -271,13 +271,13 @@ twolump<-function(t,y,indata){
       Qnorm <- 1367 #making sure that low sun angles don't lead to solar values greater than the solar constant
     }
     if (posture == 'p') {
-      Qalpha <- (Qnorm * (1 - pctdif) * ASILP + Qsol * pctdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
+      Qabs <- (Qnorm * (1 - pctdif) * ASILP + Qsol * pctdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
     }
     if (posture == 'n') {
-      Qalpha <- (Qnorm * (1 - pctdif) * ASILN + Qsol * pctdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
+      Qabs <- (Qnorm * (1 - pctdif) * ASILN + Qsol * pctdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
     }
     if (posture == 'b') {
-      Qalpha <- (Qnorm * (1 - pctdif) * (ASILN + ASILP) / 2 + Qsol * pctdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
+      Qabs <- (Qnorm * (1 - pctdif) * (ASILN + ASILP) / 2 + Qsol * pctdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
     }
 
     Re <- DENSTY * vel * L / VISDYN # Reynolds number
