@@ -105,6 +105,40 @@
 #' \strong{ Initial conditions:}\cr\cr
 #' \code{TS}{ = TC - 3, # initial skin temperature (°C)}\cr\cr
 #' \code{TFA}{ = TA, # initial fur/air interface temperature (°C)}\cr\cr
+#'
+#' \strong{Outputs:}
+#' \code{TC}{core temperature (°C)}\cr\cr
+#' \code{TFA_D}{dorsal fur-air interface temperature (°C)}\cr\cr
+#' \code{TFA_V}{ventral fur-air interface temperature (°C)}\cr\cr
+#' \code{TSKIN_D}{dorsal skin temperature (°C)}\cr\cr
+#' \code{TSKIN_V}{ventral skin temperature (°C)}\cr\cr
+#' \code{QCONV_D}{dorsal convection heat exchange (W)}\cr\cr
+#' \code{QCONV_V}{ventral convection heat exchange (W)}\cr\cr
+#' \code{QCOND_D}{dorsal conduction heat exchange (W)}\cr\cr
+#' \code{QCOND_V}{ventral conduction heat exchange (W)}\cr\cr
+#' \code{QGENNET_D}{dorsal net heat generation (W)}\cr\cr
+#' \code{QGENNET_V}{ventral net heat generation (W)}\cr\cr
+#' \code{QSEVAP_D}{dorsal evaporative heat exchange (W)}\cr\cr
+#' \code{QSEVAP_V}{ventral evaporative heat exchange (W)}\cr\cr
+#' \code{QRAD_D}{dorsal radiant heat loss (W)}\cr\cr
+#' \code{QRAD_V}{ventral radiant heat loss (W)}\cr\cr
+#' \code{QSLR_D}{dorsal solar heat gain (W)}\cr\cr
+#' \code{QSLR_V}{ventral solar heat gain (W)}\cr\cr
+#' \code{QRSKY_D}{dorsal radiant heat incomming from sky (W)}\cr\cr
+#' \code{QRSKY_V}{ventral radiant heat incomming from sky (W)}\cr\cr
+#' \code{QRBSH_D}{dorsal radiant heat incomming from nearby bush (W)}\cr\cr
+#' \code{QRBSH_V}{ventral radiant heat incomming from nearby bush (W)}\cr\cr
+#' \code{QRVEG_D}{dorsal radiant heat incomming from vegetation (W)}\cr\cr
+#' \code{QRVEG_V}{ventral radiant heat incomming from vegetation (W)}\cr\cr
+#' \code{QRGRD_D}{dorsal radiant heat incomming from ground (W)}\cr\cr
+#' \code{QRGRD_V}{ventral radiant heat incomming from ground (W)}\cr\cr
+#' \code{NTRY_D}{number of iterations need for convergence of dorsal heat budget}\cr\cr
+#' \code{NTRY_V}{number of iterations need for convergence of ventral heat budget}\cr\cr
+#' \code{SUCCESS_D}{test of success convergence for dorsal heat budget}\cr\cr
+#' \code{SUCCESS_V}{test of success convergence for ventral heat budget}\cr\cr
+#' \code{RESPFN}{energy balance test after call to RESPFUN (W)}\cr\cr
+#' \code{QRESP}{respiratory heat exchange (W)}\cr\cr
+#' \code{GEVAP}{respiratory water loss (g/s)}\cr\cr
 #' \code{PCTO2}{ambient oxygen gas concentration (%)}\cr\cr
 #' \code{PCTN2}{ambient nitgrogen gas concentration (%)}\cr\cr
 #' \code{PCTCO2}{ambient carbon dioxide gas concentration (%)}\cr\cr
