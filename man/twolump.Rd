@@ -43,7 +43,7 @@ ode(y = c(Tc_init, Ts_init, To_init), times = time, func = twolump, parms = inda
 
 \item{shape_coefs}{= c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom shape coefficients. Operates if geom=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*Ww_g^b, where AREA is in cm2 and Ww_g is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}
 
-\item{posture}{= 'n', pointing normal 'n', parallel 'p' to the sun's rays, or 'b' in between?}
+\item{posture}{= 'n', pointing normal 'n', parallel 'p' to the sun's rays, or 'a' in between?}
 
 \item{orient}{= 1, does the object orient toward the sun? (0,1)}
 
@@ -115,7 +115,7 @@ k_inner <- 0.5 # thermal conductivity of core, W/mK
 k_outer <- 0.5 # thermal conductivity of shell, W/mK
 geom <- 2 # shape, -
 x_shell <- 0.005 # thickness of outer shell (m)
-posture <- 'n' # pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?
+posture <- 'n' # pointing normal 'n' or parallel 'p' to the sun's rays, or average 'a'?
 orient <- 1 # does the object orient toward the sun? (0,1)
 shape_b <- 1/5 # shape coefficient a, -
 shape_c <- 1/5 # shape coefficient b, -

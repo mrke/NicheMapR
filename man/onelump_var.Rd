@@ -33,7 +33,7 @@ ode(y = Tb_init, t = times, func = onelump_var, parms = indata)
 
 \item{shape_coefs}{= c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom surface area coefficients. Operates if posture = 5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*Ww_g^b, where AREA is in cm2 and Ww_g is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}
 
-\item{posture}{= 'n', pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?}
+\item{posture}{= 'n', pointing normal 'n' or parallel 'p' to the sun's rays, or average 'a'?}
 
 \item{orient}{= 1, does the object orient toward the sun? (0,1)}
 
@@ -101,7 +101,7 @@ rho_body <- 1000 # animal density, kg/m3
 q <- 0 # metabolic rate, W/m3
 k_flesh <- 0.5 # thermal conductivity of flesh, W/mK
 geom <- 2 # shape, -
-posture <- 'n' # pointing normal 'n' or parallel 'p' to the sun's rays, or average 'b'?
+posture <- 'n' # pointing normal 'n' or parallel 'p' to the sun's rays, or average 'a'?
 orient <- 1 # does the object orient toward the sun? (0,1)
 shape_b <- 1/5 # shape coefficient a, -
 shape_c <- 1/5 # shape coefficient b, -

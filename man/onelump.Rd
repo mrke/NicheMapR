@@ -43,7 +43,7 @@ onelump(t, Tc_init, Ww_g, geom, Tair, Trad, vel, Qsol, Zen, ...)
 
 \item{shape_c}{= 1/5, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}
 
-\item{posture}{= 'n' pointing normal 'n', parallel 'p' to the sun's rays, or 'b' in between?}
+\item{posture}{= 'n' pointing normal 'n', parallel 'p' to the sun's rays, or 'a' in between?}
 
 \item{orient}{= 1, does the object orient toward the sun? (0,1)}
 
