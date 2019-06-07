@@ -16,7 +16,7 @@
 #' @param shape_b = 1/5, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid
 #' @param shape_c = 1/5, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid
 #' @param shape_coefs = c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom shape coefficients. Operates if geom=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*Ww_g^b, where AREA is in cm2 and Ww_g is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun
-#' @param posture = 'n' pointing normal 'n', parallel 'p' to the sun's rays, or 'b' in between?
+#' @param posture = 'n' pointing normal 'n', parallel 'p' to the sun's rays, or 'a' in between?
 #' @param orient = 1, does the object orient toward the sun? (0,1)
 #' @param fatosk = 0.4, Configuration factor to sky (-) for infrared calculations
 #' @param fatosb = 0.4, Configuration factor to subsrate for infrared calculations
@@ -220,7 +220,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
   if (posture == 'n') {
     Qabs <- (Qnorm * (1 - pctdif) * ASILN + Qsol * pctdif * fatosk * ATOT + Qsol * (1 - abs_sub) * fatosb * ATOT) * abs
   }
-  if (posture == 'b') {
+  if (posture == 'a') {
     Qabs <- (Qnorm * (1 - pctdif) * (ASILN + ASILP) / 2 + Qsol * pctdif * fatosk * ATOT + Qsol * (1 - abs_sub) * fatosb * ATOT) * abs
   }
 
