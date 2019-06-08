@@ -122,42 +122,42 @@
 #' }
 #' @export
 trans_behav <- function(t = seq(1, 60),
-Tc_init = rep(20, 60),
-Ts_init = Tc_init + 0.1,
-To_init = Tc_init + 0.2,
-Ww_g = 500,
-T_F_min = 33,
-T_F_max = 38,
-T_B_min = 25,
-CT_max = 43,
-rho_body = 932,
-x_shell = 0.001,
-lump = 1,
-q =0,
-c_body = 3073,
-c_body_inner = c_body,
-c_body_outer = c_body,
-k_flesh = 0.5,
-k_inner = k_flesh,
-k_outer = k_flesh,
-emis = 0.95,
-alpha = 0.85,
-geom = 2,
-shape_b = 1/5,
-shape_c = 1/5,
-shape_coefs = c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743),
-posture = 'n',
-orient = 1,
-fatosk = 0.4,
-fatosb = 0.4,
-alpha_sub = 0.2,
-pctdif = 0.1,
-shade = 90,
-metout = metout,
-shadmet = shadmet,
-soil = soil,
-shadsoil = shadsoil,
-press = 101325) {
+                        Tc_init = rep(20, 60),
+                        Ts_init = Tc_init + 0.1,
+                        To_init = Tc_init + 0.2,
+                        Ww_g = 500,
+                        T_F_min = 33,
+                        T_F_max = 38,
+                        T_B_min = 25,
+                        CT_max = 43,
+                        rho_body = 932,
+                        x_shell = 0.001,
+                        lump = 1,
+                        q =0,
+                        c_body = 3073,
+                        c_body_inner = c_body,
+                        c_body_outer = c_body,
+                        k_flesh = 0.5,
+                        k_inner = k_flesh,
+                        k_outer = k_flesh,
+                        emis = 0.95,
+                        alpha = 0.85,
+                        geom = 2,
+                        shape_b = 1/5,
+                        shape_c = 1/5,
+                        shape_coefs = c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743),
+                        posture = 'n',
+                        orient = 1,
+                        fatosk = 0.4,
+                        fatosb = 0.4,
+                        alpha_sub = 0.2,
+                        pctdif = 0.1,
+                        shade = 90,
+                        metout = metout,
+                        shadmet = shadmet,
+                        soil = soil,
+                        shadsoil = shadsoil,
+                        press = 101325) {
 
   if (exists("day_results"))
   {
@@ -724,22 +724,16 @@ press = 101325) {
     afternoon.bout_shd <- 0
   }
   sum_activity_shd <- sum(active) # sum of all active hours (minutes)
-  active_shd <- active_shd
+  active_shd <- active
 
   # table of summary statistics
-  sum_stats <- as.data.frame(t(c(Ww_g, T_F_min, T_F_max, max_foraging_bout, max_foraging_bout_shd, sum_activity, sum_activity_shd, total.bouts, total.bouts_shd, morning.bask, morning.bout, morning.bout_shd,
-                               midday.bout1, midday.bout1_shd, mean.midday.bout, mean.midday.bout_shd, afternoon.bout, afternoon.bout_shd, mrate_sum, mrate_sum_inactive, mrate_sum_inactive_shd, mrate_sum_active, mrate_sum_active_shd, T_F_max_time_Te,
-                               CT_max_time_Te, T_F_max_time_Tb_open, CT_max_time_Tb_open, T_F_maxtime, CT_max_time, max_Tb_open, min_Tb_open, max_Te, min_Te,
-                               max_Tb, min_Tb)), stringsAsFactors = FALSE)
+  sum_stats <- as.data.frame(cbind(loc[1], loc[2], Ww_g, T_F_min, T_F_max, max_foraging_bout, max_foraging_bout_shd, sum_activity, sum_activity_shd, total.bouts, total.bouts_shd, morning.bask, morning.bout, morning.bout_shd, midday.bout1, midday.bout1_shd, mean.midday.bout, mean.midday.bout_shd, afternoon.bout, afternoon.bout_shd, mrate_sum, mrate_sum_inactive, mrate_sum_inactive_shd, mrate_sum_active, mrate_sum_active_shd, T_F_max_time_Te, CT_max_time_Te, T_F_max_time_Tb_open, CT_max_time_Tb_open, T_F_maxtime, CT_max_time, max_Tb_open, min_Tb_open, max_Te, min_Te, max_Tb, min_Tb))
 
-  # adding location and rounding values to summary statistics table
-  if (length(loc) == 2) {
-    loc = paste(loc[1], loc[2])
-  }
-  sum_stats = cbind(loc, sum_stats)
-  #sum_stats[11:27] = round(sum_stats[11:27], 1)
-  #sum_stats[4:5] = round(sum_stats[4:5], 1)
 
+  colnames(sum_stats) <- c("lon", "lat", "Ww_g", "T_F_min", "T_F_max", "max_bout_sun", "max_bout_shd", "sum_activity_sun", "sum_activity_shd", "bouts_sun", "bouts_shd", "morning_bask", "morning_forage_sun", "morning_forage_shd",
+                           "midday_bout1_sun", "midday_bout1_shd", "mean_midday_bout_sun", "mean_midday_bout_shd", "afternoon_forage_sun", "afternoon_forage_shd", "mrate_sum", "mrate_sum_inactive_sun", "mrate_sum_inactive_shd", "mrate_sum_active_sun", "mrate_sum_active_shd", "T_F_max_time_Te", "CT_max_time_Te",
+                           "T_F_max_time_Tb_open", "CT_max_time_Tb_open", "T_F_maxtime", "CT_max_time", "max_Tb_open", "min_Tb_open", "max_Te", "min_Te",
+                           "max_Tb", "min_Tb")
   # summarise maximum bout length per hour in sun
   for (i in 0:23) {
     run <- subset(day_results, Hour == i)
@@ -754,23 +748,24 @@ press = 101325) {
       runs <- c(runs, run)
     }
   }
-  runs_sun <- runs_sun
+  runs_sun <- runs
+  runs_shd <- runs
 
-  # summarise maximum bout length per hour in sun
-  for (i in 0:23) {
-    run <- subset(day_results, Hour == i)
-    y <- rle(run$state)
-    run <- max((y$lengths[y$values == 3]))/(interval/24) * 60 # get maximum bout length for the current hour
-    if (run == "-Inf") {
-      run <- 0
-    }
-    if (i == 0) {
-      runs <- run
-    } else {
-      runs <- c(runs, run)
-    }
-  }
-  runs_shd <- runs_shd
+  # # summarise maximum bout length per hour in sun
+  # for (i in 0:23) {
+  #   run <- subset(day_results, Hour == i)
+  #   y <- rle(run$state)
+  #   run <- max((y$lengths[y$values == 3]))/(interval/24) * 60 # get maximum bout length for the current hour
+  #   if (run == "-Inf") {
+  #     run <- 0
+  #   }
+  #   if (i == 0) {
+  #     runs <- run
+  #   } else {
+  #     runs <- c(runs, run)
+  #   }
+  # }
+  # runs_shd <- runs
 
 
   # activity window for plotting hourly activity and maximum bout length per day
@@ -781,10 +776,6 @@ press = 101325) {
   day_results <- day_results[, c(2, 1, 13, 3, 4, 11, 10, 5:9, 12)] # rearrange day_results
   colnames(day_results) <- c("time", "hour", "T_air_shd", "Tb", "Tb_final", "Tb_open", "Te_open", "time_constant", "dTb_dt", "posture", "active", "state", "mrate")
   colnames(act_window) <- c("time", "forage_sun", "max_bout_sun", "forage_shd", "max_bout_shd")
-  colnames(sum_stats) <- c("loc", "Ww_g", "T_F_min", "T_F_max", "max_bout_sun", "max_bout_shd", "sum_activity_sun", "sum_activity_shd", "bouts_sun", "bouts_shd", "morning_bask", "morning_forage_sun", "morning_forage_shd",
-                           "first_midday_bout_sun", "first_midday_bout_shd", "mean_midday_bout_sun", "mean_midday_bout_shd", "afternoon_forage_sun", "afternoon_forage_shd", "mrate_sum", "mrate_sum_inactive_sun", "mrate_sum_inactive_shd", "mrate_sum_active_sun", "mrate_sum_active_shd", "T_F_max_time_Te", "CT_max_time_Te",
-                           "T_F_max_time_Tb_open", "CT_max_time_Tb_open", "T_F_maxtime", "CT_max_time", "max_Tb_open", "min_Tb_open", "max_Te", "min_Te",
-                           "max_Tb", "min_Tb")
   day_results$mrate <- day_results$mrate * 1000 # convert mrate from kJ to J
 
   return(list(day_results = day_results, sum_stats = sum_stats, act_window = act_window))
