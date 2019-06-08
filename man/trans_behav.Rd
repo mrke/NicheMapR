@@ -3,7 +3,7 @@
 \encoding{UTF-8}
 \name{trans_behav}
 \alias{trans_behav}
-\title{trans_behav - thermoregulatory model using a transient heat budget}
+\title{Thermoregulatory model using a transient heat budget}
 \usage{
 trans_behav(t = seq(1, 60), Tc_init = rep(20, 60), Ts_init = Tc_init
   + 0.1, To_init = Tc_init + 0.2, Ww_g = 500, T_F_min = 33,
@@ -80,7 +80,7 @@ trans_behav(t = seq(1, 60), Tc_init = rep(20, 60), Ts_init = Tc_init
 
 \item{pctdif}{= 0.1, proportion of solar energy that is diffuse (rather than direct beam)}
 
-\item{shade}{= 90, maximum shade level (%)}
+\item{shade}{= 90, maximum shade level (\%)}
 
 \item{metout}{= metout, aboveground minimum shade microclimate output table from NicheMapR's microclimate model}
 
@@ -162,7 +162,7 @@ sum_stats variables:
 }
 \description{
 This model uses the transient heat budget models (i.e. accounting for heat storage and
-hence lag-effects of body size) to simulate thermoregulatory behaviour of a diurnally active
+hence lag-effects of body mass) to simulate thermoregulatory behaviour of a diurnally active
 ectotherm. It uses a set of events to break out of the ordinary differential
 equation solver of the transient heat budget (onelump_var or twolump functions) to simulate
 thermoregulation around setpoints, specifically the transition from sitting in the shade
@@ -183,7 +183,6 @@ library(NicheMapR)
 Ww_g <- 500 # wet weight (g)
 Usrhyt <- 0.05 # height of animal (mid-point) above ground (m)
 alpha <- 0.85 # solar absorptivity (-)
-T_F_min <- 33 # minimum foraging Tb (deg C)
 T_F_max <- 43 # maximum foraging Tb (deg C)
 T_B_min <- 18 # basking Tb, moving from shade to sun (deg C)
 CT_max <- 48 # critical thermal maximum (deg C)

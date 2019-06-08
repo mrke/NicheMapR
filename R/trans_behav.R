@@ -46,7 +46,7 @@
 #' @param fatosb = 0.4, solar configuration factor to substrate (-)
 #' @param alpha_sub = 0.2, substrate solar reflectivity, decimal percent
 #' @param pctdif = 0.1, proportion of solar energy that is diffuse (rather than direct beam)
-#' @param shade = 90, maximum shade level (%)
+#' @param shade = 90, maximum shade level (\%)
 #' @param metout = metout, aboveground minimum shade microclimate output table from NicheMapR's microclimate model
 #' @param shadmet = shadmet, metout, aboveground maximum shademicroclimate output table from NicheMapR's microclimate model
 #' @param soil = soil, minimum shade soil temperature output table from NicheMapR's microclimate model
@@ -120,6 +120,7 @@
 #' \item 35 max_Tb - maximum body temperature of thermoregulating animal (°C)
 #' \item 36 min_Tb - minimum body temperature of thermoregulating animal (°C)
 #' }
+#'
 #' @examples
 #' library(NicheMapR)
 #'
@@ -127,7 +128,6 @@
 #' Ww_g <- 500 # wet weight (g)
 #' Usrhyt <- 0.05 # height of animal (mid-point) above ground (m)
 #' alpha <- 0.85 # solar absorptivity (-)
-#' T_F_min <- 33 # minimum foraging Tb (deg C)
 #' T_F_max <- 43 # maximum foraging Tb (deg C)
 #' T_B_min <- 18 # basking Tb, moving from shade to sun (deg C)
 #' CT_max <- 48 # critical thermal maximum (deg C)
