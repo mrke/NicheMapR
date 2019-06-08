@@ -128,6 +128,7 @@
 #' Ww_g <- 500 # wet weight (g)
 #' Usrhyt <- 0.05 # height of animal (mid-point) above ground (m)
 #' alpha <- 0.85 # solar absorptivity (-)
+#' T_F_min <- 33 # minimum foraging Tb (deg C)
 #' T_F_max <- 43 # maximum foraging Tb (deg C)
 #' T_B_min <- 18 # basking Tb, moving from shade to sun (deg C)
 #' CT_max <- 48 # critical thermal maximum (deg C)
