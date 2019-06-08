@@ -176,3 +176,93 @@ in the open accounting for the effect of thermal mass. The function computes a s
 summary statistics about the length of basking and foraging bouts, activity time, time spent
 above high temperature thresholds (T_F_max and CT_max), and the extremes of body temperature.
 }
+\examples{
+library(NicheMapR)
+
+# define animal biophysical functional traits
+Ww_g <- 500 # wet weight (g)
+Usrhyt <- 0.05 # height of animal (mid-point) above ground (m)
+alpha <- 0.85 # solar absorptivity (-)
+T_F_min <- 33 # minimum foraging Tb (deg C)
+T_F_max <- 43 # maximum foraging Tb (deg C)
+T_B_min <- 18 # basking Tb, moving from shade to sun (deg C)
+CT_max <- 48 # critical thermal maximum (deg C)
+shape_b <- 1/5 # shape coefficient a, -
+shape_c <- 1/5 # shape coefficient b, -
+rho_body <- 1000 # animal density, kg/m3
+c_body <- 3073 # heat capacity (J/kg-C)
+q <- 0 # metabolic rate, W/m3
+k_flesh <- 0.5 # thermal conductivity of flesh, W/mK
+geom <- 2 # shape, -
+
+# get microclimate data
+loc <- c(130, -25)
+maxshade <- 90
+micro <- micro_global(loc = loc, maxshade = maxshade, Usrhyt = Usrhyt) # run the model with default location and settings
+metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
+soil <- as.data.frame(micro$soil) # soil temperatures, minimum shade
+shadmet <- as.data.frame(micro$shadmet) # above ground microclimatic conditions, min shade
+shadsoil <- as.data.frame(micro$shadsoil) # soil temperatures, minimum shade
+# get air pressure
+elevation <- micro$elev
+press <- 101325 * ((1 - (0.0065 * elevation / 288)) ^ (1 / 0.190284))
+
+mons <- c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+DOYs <- unique(metout$DOY)
+
+# loop through each month and run transient model with behaviour
+for(i in 1:12){
+
+  # subset current month
+  metout_in <- subset(metout, DOY == DOYs[i])
+  shadmet_in <- subset(shadmet, DOY == DOYs[i])
+  soil_in <- subset(soil, DOY == DOYs[i])
+  shadsoil_in <- subset(shadmet, DOY == DOYs[i])
+
+  # run transient behavioural simulation
+  trans <- trans_behav(t = time, Ww_g = Ww_g, alpha = alpha, T_F_min = T_F_min, T_F_max = T_F_max,
+                       CT_max = CT_max, T_B_min = T_B_min, geom = geom, shape_b = shape_b, shape_c = shape_c,
+                       rho_body = rho_body, k_flesh = k_flesh, q = q, lump = 1,
+                       metout = metout_in, shadmet = shadmet_in, soil = soil_in, shadsoil = shadsoil_in,
+                       press = press, alpha_sub = 1 - micro$REFL, shade = micro$maxshade)
+
+  results <- as.data.frame(trans$day_results)
+  sum_stats <- as.data.frame(trans$sum_stats)
+  act_window <- as.data.frame(trans$act_window)
+
+  # collate
+  if(i == 1){
+    all_act_window <- act_window
+  }else{
+    all_act_window <- rbind(all_act_window, act_window)
+  }
+
+  results$hours <- results$time / 3600
+
+  # plot hourly results for the current day
+  plot(results$Tb_open ~ results$hours, type = 'l', ylim = c(-10, 80), col = 'grey', xaxs = 'i', ylab = "temperature, deg C", xlab = "time",
+       main = paste0(if(length(loc) == 2){paste("lon", loc[1], "lat", loc[2])}else{loc}, ", ", mons[i], ", ", Ww_g," g"), xlim = c(0, 23))
+  grid(nx = 23, ny = 0, col = "lightgray", lty = "dotted", lwd = par("lwd"), equilogs = TRUE)
+  abline(T_F_max, 0, col = 'red', lty = 2)
+  abline(T_F_min, 0, col = 'light blue', lty = 2)
+  abline(CT_max, 0, col = 'red')
+  points(results$T_air_shd ~ results$hours, type = 'l', col = 'blue')
+  points(results$Tb ~ results$hours, type = 'l', col = 'orange', lty = 1, lwd = 2)
+  text(3, 60, paste0("bouts ", round(sum_stats$bouts_sun, 0)), cex = 1)
+  text(3, 65, paste0("maximum bout ", round(sum_stats$max_foraging_bout_sun / 60, 1), " hrs"), cex = 1)
+  text(3, 70, paste0("total activity ", round(sum_stats$sum_activity_sun / 60, 1), " hrs"), cex = 1)
+}
+
+# make seasonal activity plot
+all_act_window$ZEN <- metout$ZEN
+all_act_window$DOY <- metout$DOY
+foraging<-subset(all_act_window, forage_sun > 0)
+night<-subset(all_act_window, ZEN==90)
+with(night, plot(time ~ DOY, pch=15, cex = 2, xlim = c(1, 365), col = 'dark blue', xlab = 'day of year', ylab = 'hour of day', main = "Seasonal Activity Plot, Sun"))
+with(foraging, points(time ~ DOY, pch = 15, cex = forage_sun / 30, col = 'orange'))
+foraging<-subset(all_act_window, forage_shd > 0)
+with(night, plot(time ~ DOY, pch=15, cex = 2, xlim = c(1, 365), col = 'dark blue', xlab = 'day of year', ylab = 'hour of day', main = "Seasonal Activity Plot, Shade"))
+with(foraging, points(time ~ DOY, pch = 15, cex = forage_shd / 30, col = 'orange'))
+
+mtext(text =  paste0('Seasonal Activity Plot, ', if(length(loc) == 2){paste("lon", loc[1], "lat", loc[2])}else{loc}, " ", Ww_g," g"), outer = TRUE, side = 3, line = 0)
+}

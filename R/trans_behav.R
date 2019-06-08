@@ -1,7 +1,7 @@
-#' trans_behav - thermoregulatory model using a transient heat budget
+#' Thermoregulatory model using a transient heat budget
 #'
 #' This model uses the transient heat budget models (i.e. accounting for heat storage and
-#' hence lag-effects of body size) to simulate thermoregulatory behaviour of a diurnally active
+#' hence lag-effects of body mass) to simulate thermoregulatory behaviour of a diurnally active
 #' ectotherm. It uses a set of events to break out of the ordinary differential
 #' equation solver of the transient heat budget (onelump_var or twolump functions) to simulate
 #' thermoregulation around setpoints, specifically the transition from sitting in the shade
@@ -120,7 +120,7 @@
 #' \item 35 max_Tb - maximum body temperature of thermoregulating animal (°C)
 #' \item 36 min_Tb - minimum body temperature of thermoregulating animal (°C)
 #' }
-#' @example
+#' @examples
 #' library(NicheMapR)
 #'
 #' # define animal biophysical functional traits
