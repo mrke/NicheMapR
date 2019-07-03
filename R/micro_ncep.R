@@ -812,7 +812,7 @@ micro_ncep <- function(
       # tcad (delta temperature due to cold air drainage)
       elev <- tref$elev[1] # m
       ALTT <- elev
-      TAIRhr <- tref$tref + tref$telev + tref$tcad # reference Tair plus offsets due to lapse rate and cold air drainage
+      TAIRhr <- tref$telev + tref$tcad # reference Tair plus offsets due to lapse rate and cold air drainage
       SOLRhr <- hourlyradwind$swrad / 0.0036
       SOLRhr[SOLRhr < 0] <- 0
       SOLRhr <- zoo::na.approx(SOLRhr)
