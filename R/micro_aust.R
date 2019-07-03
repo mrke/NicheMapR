@@ -955,10 +955,10 @@ micro_aust <- function(
             nc <- RNetCDF::open.nc(paste0(baseurl, var,"/day/",year,"/bom-",var,"_day-",year,mstart,"-",year,mfinish))
             lon <- RNetCDF::var.get.nc(nc, "longitude")
             lat <- RNetCDF::var.get.nc(nc, "latitude")
-            flat=match(abs(lat-x[2])<1/44,1)
-            latindex=which(flat %in% 1)
-            flon=match(abs(lon-x[1])<1/44,1)
-            lonindex=which(flon %in% 1)
+            flat=match(abs(lat-x[2])<1/40,1)
+            latindex=which(flat %in% 1)[1]
+            flon=match(abs(lon-x[1])<1/40,1)
+            lonindex=which(flon %in% 1)[1]
             start <- c(lonindex, latindex, 1)
             count <- c(1, 1, NA)
             data_1 <- as.numeric(RNetCDF::var.get.nc(nc, variable = paste0(var, "_day"),
