@@ -911,9 +911,11 @@ micro_ncep <- function(
 
     if(warm != 0){
       # impose uniform temperature change
-      TMAXX<-TMAXX+warm
-      TMINN<-TMINN+warm
-      TAIRhr<-TAIRhr+warm
+      TMAXX <- TMAXX + warm
+      TMINN <- TMINN + warm
+      TAIRhr <- TAIRhr + warm
+      sigma <- 5.67e-8 #Stefan-Boltzman, W/(m.K)
+      IRDhr <- sigma * ((IRDhr / sigma) ^ (1 / 4) + warm) ^ 4 # adjust downward radiation for altered 'sky temperature'
     }
     RAINFALL<-RAINFALL+rainoff
     RAINhr<-RAINhr+rainoff
