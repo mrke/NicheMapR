@@ -533,16 +533,14 @@ C     EQUATION 2.20 DEB3
        IF((P_A.GT.P_C).AND.(ED(HOUR).EQ.E_M))THEN
         P_A=P_C
        ENDIF
-      ENDIF     
-      IF(METAB_MODE.EQ.0)THEN
-       P_R = (1.-KAP)*P_C-P_J
       ENDIF
-      IF(METAB_MODE.EQ.1)THEN
+      P_R = (1.-KAP)*P_C-P_J
+      IF(METAB_MODE.EQ.1)THEN ! ABP (E.G. HEMIMETABOLOUS INSECT)
        IF(E_H(HOUR).GT.E_HJ)THEN
-        P_R = P_C-P_M*V(HOUR)-P_J ! NO KAPPA-RULE UNDER ABP MODEL - REPRODUCTION GETS WHAT IS LEFT FROM THE MOBILISATION FLUX AFTER MAINTENANCE IS PAID
-        DVDT=0.
-       ELSE
+        P_C = ES(HOUR)*V(HOUR)*VDOT/V(HOUR)**(1./3.)
+        P_M = KAP * P_C
         P_R = (1.-KAP)*P_C-P_J
+        DVDT=0.
        ENDIF
       ENDIF     
 

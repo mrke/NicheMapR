@@ -29,8 +29,8 @@ C     AN INSECT (HEMIMETABOLOUS)
       DOUBLE PRECISION DES,DH,DHS,DQ,DR,DS,DV,E,E_HB,E_HJ,E_HP,E_M,E_SC
       DOUBLE PRECISION ES,ESM,F_M,F2,F,G,H,H_A,HS,JX,K,K_J,K_M,KAP
       DOUBLE PRECISION KAP_R,KAP_X,L,L_M,L_T,LAMBDA,M_V,MU_E,MU_V,P_A
-      DOUBLE PRECISION P_AM,P_B,P_C,P_J,P_M,P_R,PREGNANT,Q,R,RDOT,RDOT1
-      DOUBLE PRECISION RPAR,S,S_G,V,V_M,VDOT,W_V,WAITING,X,Y
+      DOUBLE PRECISION P_AM,P_B,P_C,P_J,P_M,P_R,PREGNANT,Q,R,RDOT
+      DOUBLE PRECISION RDOT1,RPAR,S,S_G,V,V_M,VDOT,W_V,WAITING,X,Y
 
 
       DIMENSION Y(N),DDEB(N),RPAR(34),IPAR(31)
@@ -85,15 +85,14 @@ C     AN INSECT (HEMIMETABOLOUS)
       L = V ** (1./3.) ! CM, STRUCTURAL LENGTH
       V_M = L_M ** 3.
       E_SC = E / E_M                ! -, SCALED RESERVE DENSITY
-      RDOT1 = VDOT * (E_SC / L - (1 + L_T / L) / L_M) / (E_SC + G)
+      RDOT = VDOT * (E_SC / L - (1 + L_T / L) / L_M) / (E_SC + G)
       IF((METAB_MODE.EQ.1).AND.(H.GT.E_HJ))THEN
-       RDOT = 0
+       RDOT = MIN(0., RDOT)
+       P_C = E * V * VDOT / L ! J / T, mobilisation rate (not that v is already corrected for s_M)
       ELSE
-       RDOT = RDOT1
+       P_C = E * (VDOT / L - RDOT) * V ! J / T, MOBILISATION RATE, EQUATION 2.12 DEB3
       ENDIF
       DV = V * RDOT
-      P_C = (E_M * (VDOT / L + K_M * (1. + L_T / L)) * (E_SC * G) /
-     & (E_SC + G)) * V ! J / T, MOBILISATION RATE, EQUATION 2.20 DEB3
      
       IF(ES > 0.)THEN
        F2=F
@@ -169,17 +168,9 @@ C     AN INSECT (HEMIMETABOLOUS)
        DQ = (Q * (V / V_M)*S_G + H_A)*E_SC* ((VDOT / L) - RDOT)-RDOT*Q
        DHS = Q - RDOT * HS
 
-        ! REPRODUCTION
-       if(METAB_MODE.eq.0)THEN
-        p_R = (1 - KAP) * P_C - P_J
-       ENDIF
-       if(METAB_MODE.EQ.1)THEN
-        IF(H.GT.E_Hj)THEN
-         p_R = p_C - p_M * V - p_J ! no kappa-rule - absolute reserve amount never reaches steady state so reproduction gets all of p_C minus maintenace
-        ELSE
-         p_R = (1 - kap) * p_C - p_J
-        ENDIF
-       ENDIF        
+       ! REPRODUCTION
+       p_R = (1 - KAP) * P_C - P_J
+        
        IF((R.LE.0.).AND.(B.LE.0).AND.(S.GT.0.).AND.(P_R.LT.S))THEN
         DV = -1. * ABS(P_R) * W_V / (MU_V * D_V)  ! SUBTRACT FROM STRUCTURE SINCE NOT ENOUGH FLOW TO REPRODUCTION TO PAY FOR SOMATIC MAINTENANCE
         P_R = 0.
@@ -192,9 +183,13 @@ C     AN INSECT (HEMIMETABOLOUS)
           BATCHPREP = (KAP_R / LAMBDA) * ((1. - KAP) * (E_M * (VDOT * 
      &    V ** (2. / 3.) + K_M * V) / (1. + (1. / G))) - P_J)
          ELSE
-          BATCHPREP = (KAP_R / LAMBDA) * ((E_M * (VDOT * 
-     &    V ** (2. / 3.) + K_M * V) / (1. + (1. / G)))
-     &    - p_M * V - P_J) ! no kappa-rule - absolute reserve amount never reaches steady state so reproduction gets all of p_C minus maintenace              
+          IF(METAB_MODE.eq.1)THEN
+           BATCHPREP = (KAP_R / LAMBDA) * (E_M * V * VDOT / L - 
+     &      KAP * P_C - P_J)
+          ELSE
+           BATCHPREP = (KAP_R / LAMBDA) * (E_M * (VDOT / L - RDOT) * V - 
+     &      KAP * P_C - P_J)
+          ENDIF
          ENDIF
          IF(BREEDING .LT. 1)THEN
           P_B = 0.

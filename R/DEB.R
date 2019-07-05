@@ -332,7 +332,6 @@ DEB<-function(
       if(metab_mode == 1 & H >= E_Hj){
         r <- min(0, r) # no growth in abp after puberty, but could still be negative because starving
         p_C <- E * V * v / L # J / t, mobilisation rate (not that v is already corrected for s_M
-        p_M2 <- kap * p_C # new absolute flow to maintenance
       }else{
         p_C <- E * (v / L - r) * V # J / t, mobilisation rate, equation 2.12 DEB3
       }
@@ -409,9 +408,9 @@ DEB<-function(
              batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * (v * V ^ (2 / 3) + k_M * V) / (1 + (1 / g))) - p_J)
             }else{
              if(metab_mode == 1){ # abp (hemimetabolous) model
-              batchprep <- (kap_R / lambda) * (E_m * L^3 * v / L - p_M2 - p_J)
+              batchprep <- (kap_R / lambda) * (E_m * L^3 * v / L - kap * p_C - p_J)
              }else{ # hex (holometabolous) model
-              batchprep <- (kap_R / lambda) * (E_m * (v / L - r) * V - p_M2 - p_J)
+              batchprep <- (kap_R / lambda) * (E_m * (v / L - r) * V - kap * p_C - p_J)
              }
             }
             if(breeding == 0){
@@ -481,15 +480,11 @@ DEB<-function(
   }
   p_C <- (E_m * (vT / V^(1/3) + k_M * (1 + L_T / V^(1/3))) * (e * g) / (e + g)) * V #equation 2.20 DEB3
 
-  if(metab_mode == 0){
-    p_R <- (1 - kap) * p_C - p_J
-  }
+  p_R <- (1 - kap) * p_C - p_J
   if(metab_mode == 1){
     if(E_H > E_Hj){
       p_C <- E * V * vT / V ^ (1 / 3)
       p_M2 <- kap * p_C
-      p_R <- (1 - kap) * p_C - p_J
-    }else{
       p_R <- (1 - kap) * p_C - p_J
     }
   }
