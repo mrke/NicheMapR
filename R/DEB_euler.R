@@ -235,14 +235,14 @@ DEB_euler<-function(
   #DEB mass balance-related calculations
   n_O <- cbind(n_X, n_V, n_E, n_P) # matrix of composition of organics, i.e. food, structure, reserve and faeces
   CHON <- c(12, 1, 16, 14)
-  wO <- CHON%*%n_O
+  wO <- CHON %*% n_O
   w_V <- wO[3]
   M_V <- d_V / w_V
   y_EX <- kap_X * mu_X / mu_E # yield of reserve on food
   y_XE <- 1 / y_EX # yield of food on reserve
   y_VE <- mu_E * M_V / E_G  # yield of structure on reserve
   y_PX <- kap_X_P * mu_X / mu_P # yield of faeces on food
-  y_PE <- y_PX / y_EX # yield of faeces on reserve  0.143382353
+  y_PE <- y_PX / y_EX # yield of faeces on reserve
   nM <- matrix(c(1, 0, 2, 0, 0, 2, 1, 0, 0, 0, 2, 0, n_M_nitro), nrow = 4)
   n_M_nitro_inv <- c(-1 * n_M_nitro[1] / n_M_nitro[4], (-1 * n_M_nitro[2]) / (2 * n_M_nitro[4]), (4 * n_M_nitro[1] + n_M_nitro[2] - 2 * n_M_nitro[3]) / (4 * n_M_nitro[4]), 1 / n_M_nitro[4])
   n_M_inv <- matrix(c(1, 0, -1, 0, 0, 1 / 2, -1 / 4, 0, 0, 0, 1 / 2, 0, n_M_nitro_inv), nrow = 4)
@@ -254,19 +254,21 @@ DEB_euler<-function(
   #Tcorr <- exp(T_A * (1 / T_REF -1 / (273.15 + Tb))) / (1 + exp(T_AL * (1 / (273.15 + Tb) - 1 / T_L)) + exp(T_AH * (1 / T_H - 1 / (273.15 + Tb))))
   Tcorr <- exp(T_A / T_REF - T_A / (273.15 + Tb)) * (1 + exp(T_AL / T_REF - T_AL / T_L) + exp(T_AH / T_H - T_AH / T_REF)) / (1 + exp(T_AL / (273.15 + Tb) - T_AL / T_L) + exp(T_AH / T_H - T_AH / (273.15 + Tb)))
 
+  # metabolic acceleration if present
   s_M <- 1 # -, multiplication factor for v and {p_Am} under metabolic acceleration
   if(E_Hj != E_Hb){
     if(E_H_pres < E_Hb){
       s_M <- 1
     }else{
       if(E_H_pres < E_Hj){
-        s_M <- V_pres^(1 / 3) / L_b#
+        s_M <- V_pres ^ (1 / 3) / L_b
       }else{
-        s_M <- L_j / L_b#
+        s_M <- L_j / L_b
       }
     }
   }
 
+  # temperature corrections and compound parameters
   M_V <- d_V / w_V
   p_MT <- p_M * Tcorr
   k_Mdot <- p_MT / E_G
@@ -275,11 +277,11 @@ DEB_euler<-function(
   vT <- v * Tcorr * s_M
   E_m <- p_AmT / vT
   F_mT <- F_m * Tcorr * s_M
-  g <- E_G / (kap * E_m)
-  e <- E_pres / E_m
-  V_m <- (kap * p_AmT / p_MT) ^ 3
+  g <- E_G / (kap * E_m) # energy investment ratio
+  e <- E_pres / E_m # scaled reserve density
+  V_m <- (kap * p_AmT / p_MT) ^ 3 # maximum structural volume
   h_aT <- h_a * Tcorr
-  L_T <- 0
+  L_T <- 0 # heating length - not used for now
   L_pres <- V_pres ^ (1 / 3)
   L_m <- V_m ^ (1 / 3)
   scaled_l <- L_pres / L_m
@@ -294,26 +296,28 @@ DEB_euler<-function(
   w_V <- wO[2]
   w_P <- wO[4]
 
+  r <- vT * (e / L_pres - (1 + L_T / L_pres) / L_m) / (e + g)
+  p_C <- E_pres * (vT / L_pres - r) * V_pres # J / t, mobilisation rate, equation 2.12 DEB3
+  p_M2 <- p_MT * V_pres
   # growth of structure
   if(E_H_pres <= E_Hb){
     #use embryo equation for length, from Kooijman 2009 eq. 2
     dLdt <- (vT * e - k_Mdot * g * V_pres ^ (1 / 3)) / (3 * (e + g))
     V_temp <- (V_pres ^ (1 / 3) + dLdt) ^ 3
     dVdt <- V_temp - V_pres
-    r <- vT * (e / L_pres - (1 + L_T / L_pres) / L_m) / (e + g)
   }else{
-    #equation 2.21 from DEB3
-    r1 <- vT * (e / L_pres - (1 + L_T / L_pres) / L_m) / (e + g)
     if(metab_mode == 1 & E_H_pres >= E_Hj){
-      r <- 0 # no growth in abp after puberty - not setting this to zero messes up aging calculation
+      r <- min(0, r) # no growth in abp after puberty, but could still be negative because starving
+      p_C <- E_pres * V_pres * vT / L_pres # J / t, mobilisation rate (not that v is already corrected for s_M
+      p_M2 <- kap * p_C # new absolute flow to maintenance
     }else{
-      r <- r1 # specific growth rate
+      p_C <- E_pres * (vT / L_pres - r) * V_pres # J / t, mobilisation rate, equation 2.12 DEB3
     }
     dVdt <- V_pres * r
-    if(V_pres * r1 < 0){
-      starve <- V_pres * r1 * -1 * mu_V * d_V / w_V
+    if(V_pres * r < 0){
+      starve <- V_pres * r * -1 * mu_V * d_V / w_V
       if(E_B < starve){
-        dVdt <- V_pres * r1
+        dVdt <- V_pres * r
         starve <- 0
       }
     }else{
@@ -330,7 +334,6 @@ DEB_euler<-function(
   }else{
     p_A <- 0
   }
-  p_C <- (E_m * (vT / L_pres + k_Mdot * (1 + L_T / L_pres)) * (e * g) / (e + g)) * V_pres #equation 2.20 DEB3
   if(metab_mode == 1){
     if(p_A > p_C & E_pres == E_m){
       p_A <- p_C
@@ -357,20 +360,10 @@ DEB_euler<-function(
   }
 
   # some powers
-  p_M2 <- p_MT * V_pres
   p_J <- k_JT * E_H_pres # adding starvation costs to P_J so maturation time (immature) or reproduction (mature) can be sacrificed to pay somatic maintenance
 
   p_X <- p_A / kap_X #J food eaten per hour
-  if(metab_mode == 0){
-    p_R <- (1 - kap) * p_C - p_J
-  }
-  if(metab_mode == 1){
-    if(E_H_pres > E_Hj){
-      p_R <- p_C - p_M2 - p_J # no kappa-rule - absolute reserve amount never reaches steady state so reproduction gets all of p_C minus maintenace
-    }else{
-      p_R <- (1 - kap) * p_C - p_J
-    }
-  }
+  p_R <- (1 - kap) * p_C - p_J
 
   #maturation
   if(E_H_pres < E_Hp){
@@ -388,7 +381,7 @@ DEB_euler<-function(
   E_H <- E_H_init + dE_Hdt
 
   # more powers
-  if(E_H_pres>=E_Hp){
+  if(E_H_pres >= E_Hp){
     p_D <- p_M2 + p_J + (1 - kap_R) * p_R
   }else{
     p_D <- p_M2 + p_J + p_R
@@ -401,9 +394,13 @@ DEB_euler<-function(
   }else{
     if(batch==1){
       if(metab_mode == 0){
-        batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * (v * V ^ (2 / 3) + k_Mdot * V) / (1 + (1 / g))) - p_J)
+        batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * (vT * V ^ (2 / 3) + k_Mdot * V) / (1 + (1 / g))) - p_J)
       }else{
-        batchprep <- (kap_R / lambda) * ((E_m * (v * V ^ (2 / 3) + k_Mdot * V) / (1 + (1 / g))) - p_M2 - p_J)
+        if(metab_mode == 1){ # abp (hemimetabolous) model
+          batchprep <- (kap_R / lambda) * (E_m * V * vT / V ^ (1 / 3) - p_M2 - p_J)
+        }else{ # hex (holometabolous) model
+          batchprep <- (kap_R / lambda) * (E_m * V * (vT / V ^ (1 / 3) - r) - p_M2 - p_J)
+        }
       }
       if(breeding == 0){
         p_B <- 0
@@ -649,6 +646,7 @@ DEB_euler<-function(
 
   dsurvdt <- -1 * p_surv * hs
   surviv <- p_surv + dsurvdt
+
   # new states
   E_pres <- E
   V_pres <- V

@@ -245,7 +245,7 @@ DEB<-function(
   y_PE <- y_PX / y_EX # yield of faeces on reserve
   nM <- matrix(c(1, 0, 2, 0, 0, 2, 1, 0, 0, 0, 2, 0, n_M_nitro), nrow = 4)
   n_M_nitro_inv <- c(-1 * n_M_nitro[1] / n_M_nitro[4], (-1 * n_M_nitro[2]) / (2 * n_M_nitro[4]), (4 * n_M_nitro[1] + n_M_nitro[2] - 2 * n_M_nitro[3]) / (4 * n_M_nitro[4]), 1 /n_M_nitro[4])
-  n_M_inv <- matrix(c(1, 0, -1, 0, 0, 1/2, -1/4, 0, 0, 0, 1/2, 0, n_M_nitro_inv), nrow=4)
+  n_M_inv <- matrix(c(1, 0, -1, 0, 0, 1 / 2, -1 / 4, 0, 0, 0, 1 / 2, 0, n_M_nitro_inv), nrow = 4)
   JM_JO <- -1 * n_M_inv %*% n_O
   etaO <- matrix(c(y_XE / mu_E * -1, 0, 1 / mu_E, y_PE / mu_E, 0, 0, -1 / mu_E, 0, 0, y_VE / mu_E, -1 / mu_E, 0), nrow = 4)
   w_N <- CHON %*% n_M_nitro
@@ -258,7 +258,7 @@ DEB<-function(
   s_M <- 1 # -, multiplication factor for v and {p_Am} under metabolic acceleration
   if(E_Hj != E_Hb){
     if(E_H_pres < E_Hb){
-      s_M <- 1 # -, multiplication factor for v and {p_Am}
+      s_M <- 1
     }else{
       if(E_H_pres < E_Hj){
         s_M <- V_pres ^ (1 / 3) / L_b
@@ -269,6 +269,7 @@ DEB<-function(
   }
 
   # temperature corrections and compound parameters
+  M_V <- d_V / w_V
   p_MT <- p_M * Tcorr
   k_M <- p_MT / E_G
   k_JT <- k_J * Tcorr
@@ -278,7 +279,7 @@ DEB<-function(
   F_mT <- F_m * Tcorr * s_M
   g <- E_G / (kap * E_m) # energy investment ratio
   e <- E_pres / E_m # scaled reserve density
-  V_m <- (kap * p_AmT / p_MT) ^ (3) # maximum structural volume
+  V_m <- (kap * p_AmT / p_MT) ^ 3 # maximum structural volume
   h_aT <- h_a * Tcorr
   L_T <- 0 # heating length - not used for now
   L_pres <- V_pres ^ (1 / 3)
@@ -326,14 +327,16 @@ DEB<-function(
       L <- V ^ (1/3) # cm, structural length
       V_m <- L_m ^ 3 # cm ^ 3, maximum structural volume
       e <- E / E_m  # -, scaled reserve density
-      r1 <- v * (e / L - (1 + L_T / L) / L_m) / (e + g) # specific growth rate
+      r <- v * (e / L - (1 + L_T / L) / L_m) / (e + g) # specific growth rate
+      p_M2 <- p_M * V # absolute flow to maintenance
       if(metab_mode == 1 & H >= E_Hj){
-        r <- 0 # no growth in abp after puberty - not setting this to zero messes up aging calculation
+        r <- min(0, r) # no growth in abp after puberty, but could still be negative because starving
+        p_C <- E * V * v / L # J / t, mobilisation rate (not that v is already corrected for s_M
+        p_M2 <- kap * p_C # new absolute flow to maintenance
       }else{
-        r <- r1 # specific growth rate
+        p_C <- E * (v / L - r) * V # J / t, mobilisation rate, equation 2.12 DEB3
       }
       dV <- V * r # cm^3 / t, change in structure
-      p_C <- (E_m * (v / L + k_M * (1 + L_T / L)) * (e * g) / (e + g)) * V # J / t, mobilisation rate, equation 2.20 DEB3
 
       if(H < E_Hb){ # embryo
         # structure
@@ -349,10 +352,10 @@ DEB<-function(
       }else{ # post-embryo
 
         # structure and starvation
-        if(V * r1 < 0){
-          dS <- V * r1 * -1 * mu_V * d_V / w_V # J / t, starvation energy to be subtracted from reproduction buffer if necessary
+        if(V * r < 0){
+          dS <- V * r * -1 * mu_V * d_V / w_V # J / t, starvation energy to be subtracted from reproduction buffer if necessary
           if(B < dS){ # batch buffer has run out so draw from structure
-            dV <- V * r1
+            dV <- V * r
             dS <- 0
           }
         }else{
@@ -388,7 +391,7 @@ DEB<-function(
           J_X <- F_m * ((X / K) / (1 + X / K)) * V ^ (2 / 3)
           dEs <- J_X * f - (p_Am / kap_X) * V ^ (2 / 3)
         }else{
-          dEs <- -1 * J_X * (p_Am / kap_X) * V ^(2 / 3)
+          dEs <- -1 * J_X * (p_Am / kap_X) * V ^ (2 / 3)
         }
 
         # ageing
@@ -396,24 +399,20 @@ DEB<-function(
         dhs <- q - r * hs # hazard
 
         # reproduction
-        if(metab_mode == 0){
-          p_R <- (1 - kap) * p_C - p_J
-        }
-        if(metab_mode == 1){
-          if(H > E_Hj){
-            p_R <- p_C - p_M * V - p_J # no kappa-rule under abp model - reproduction gets what is left from the mobilisation flux after maintenance is paid
-          }else{
-            p_R <- (1 - kap) * p_C - p_J
-          }
-        }
+        p_R <- (1 - kap) * p_C - p_J
+
         if(H <= E_Hp){
           p_B <- 0
         }else{
           if(batch == 1){
-            if(metab_mode == 0){
-              batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * (v * V ^ (2 / 3) + k_M * V) / (1 + (1 / g))) - p_J)
+            if(metab_mode == 0){ # std model
+             batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * (v * V ^ (2 / 3) + k_M * V) / (1 + (1 / g))) - p_J)
             }else{
-              batchprep <- (kap_R / lambda) * ((E_m * (v * V ^ (2 / 3) + k_M * V) / (1 + (1 / g))) - p_J - p_M)
+             if(metab_mode == 1){ # abp (hemimetabolous) model
+              batchprep <- (kap_R / lambda) * (E_m * L^3 * v / L - p_M2 - p_J)
+             }else{ # hex (holometabolous) model
+              batchprep <- (kap_R / lambda) * (E_m * (v / L - r) * V - p_M2 - p_J)
+             }
             }
             if(breeding == 0){
               p_B <- 0
@@ -441,7 +440,6 @@ DEB<-function(
           p_B <- p_B - dS
           dS <- 0
         }
-
         #accumulate energy/matter in reproduction and batch buffers
         if(H > E_Hp){
           dR <- p_R * kap_R - p_B
@@ -487,28 +485,28 @@ DEB<-function(
     p_R <- (1 - kap) * p_C - p_J
   }
   if(metab_mode == 1){
-    if(E_H_pres > E_Hj){
-      p_R <- p_C - p_J - p_M2
+    if(E_H > E_Hj){
+      p_C <- E * V * vT / V ^ (1 / 3)
+      p_M2 <- kap * p_C
+      p_R <- (1 - kap) * p_C - p_J
     }else{
       p_R <- (1 - kap) * p_C - p_J
     }
   }
 
   if(metab_mode == 1){
-    #if(E_H_pres > E_Hj){
-    if(p_A > p_C & E == E_m){
+   if(p_A > p_C & E == E_m){
       p_A <- p_C
     }
-    #}
   }
 
   p_X <- p_A / kap_X #J food eaten per hour
-  if(E_H_pres >= E_Hp){
-    p_D = p_M2 + p_J + (1 - kap_R) * p_R
+  if(E_H >= E_Hp){
+    p_D <- p_M2 + p_J + (1 - kap_R) * p_R
   }else{
-    p_D = p_M2 + p_J + p_R
+    p_D <- p_M2 + p_J + p_R
   }
-  p_G = p_C - p_M2 - p_J - p_R
+  p_G <- p_C - p_M2 - p_J - p_R
 
   testclutch <- floor((E_R + E_B) / E_0)
   # FOR VARIABLE CLUTCH SIZE FROM REPRO AND BATCH BUFFERS

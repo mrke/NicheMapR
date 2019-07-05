@@ -911,9 +911,9 @@ micro_ncep <- function(
 
     if(warm != 0){
       # impose uniform temperature change
-      TMAXX<-TMAXX+seq(0, ndays-1)/(ndays-1)*warm
-      TMINN<-TMINN+seq(0, ndays-1)/(ndays-1)*warm
-      TAIRhr<-TAIRhr+seq(0, ndays-1)/(ndays-1)*warm
+      TMAXX<-TMAXX+warm
+      TMINN<-TMINN+warm
+      TAIRhr<-TAIRhr+warm
     }
     RAINFALL<-RAINFALL+rainoff
     RAINhr<-RAINhr+rainoff
