@@ -522,15 +522,10 @@ C     TALLYING LIFETIME FOOD EATEN
         IF(METAB_MODE.eq.0)THEN
          BATCHPREP=(KAP_R/LAMBDA)*((1-KAP)*(E_M*(VDOT*V_PRES**(2./3.)+
      &    K_M*V_PRES)/(1+(1/G)))-P_J)
-        ELSE
-         IF(METAB_MODE.EQ.1)THEN ! HEMIMETABOLOUS
-          BATCHPREP=(KAP_R/LAMBDA)*(E_M*V_PRES*VDOT/V_PRES**(1./3.)- 
-     &    KAP*P_C-P_J)
-         ELSE ! HOLOMETABOLOUS
-          BATCHPREP=(KAP_R/LAMBDA)*(E_M*(VDOT/V_PRES**(1./3.)-
-     &     R)*V_PRES-KAP*P_C-P_J)
-         ENDIF
-        ENDIF       
+        ELSE ! hemi or holometabolus model - p_M takes remainder
+          BATCHPREP=(KAP_R/LAMBDA)*(E_M*V_PRES*(VDOT/V_PRES**(1./3.)-R)
+     &     -P_M-P_J)
+        ENDIF 
         IF(BREEDING.EQ.0)THEN
          P_B =0.
         ELSE
@@ -616,7 +611,7 @@ C    ENDIF
       ENDIF
       
       IF((METAB_MODE.EQ.1).AND.(E_H_PRES.GT.E_HJ))THEN
-       R=0. ! NO GROWTH IN ABP AFTER PUBERTY - NOT SETTING THIS TO ZERO MESSES UP AGING CALCULATION
+       R=0. ! NO GROWTH IN ABP AFTER PUBERTY - NOT SETTING THIS TO ZERO MESSES UP AGEING CALCULATION
       ENDIF
       DQDT = (Q_PRES*(V_PRES/V_M)*S_G+H_A)*(E_PRES/E_M)*
      & ((VDOT/L_PRES)-R)-R*Q_PRES

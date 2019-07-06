@@ -18,7 +18,7 @@ C     YOU SHOULD HAVE RECEIVED A COPY OF THE GNU GENERAL PUBLIC LICENSE
 C     ALONG WITH THIS PROGRAM. IF NOT, SEE HTTP://WWW.GNU.ORG/LICENSES/.
 
 C     EQUATIONS TO COMPUTE RATES OF CHANGE IN RESERVE, STRUCTURAL VOLUME, MATURITY, 
-C     STOMACH ENERGY, AGING, REPRODUCTION AND BATCH BUFFER FOR ABP DEB MODEL FOR
+C     STOMACH ENERGY, AGEING, REPRODUCTION AND BATCH BUFFER FOR ABP DEB MODEL FOR
 C     AN INSECT (HEMIMETABOLOUS)
 
       IMPLICIT NONE
@@ -88,10 +88,8 @@ C     AN INSECT (HEMIMETABOLOUS)
       RDOT = VDOT * (E_SC / L - (1 + L_T / L) / L_M) / (E_SC + G)
       IF((METAB_MODE.EQ.1).AND.(H.GT.E_HJ))THEN
        RDOT = MIN(0., RDOT)
-       P_C = E * V * VDOT / L ! J / T, mobilisation rate (not that v is already corrected for s_M)
-      ELSE
-       P_C = E * (VDOT / L - RDOT) * V ! J / T, MOBILISATION RATE, EQUATION 2.12 DEB3
       ENDIF
+      P_C = E * (VDOT / L - RDOT) * V ! J / T, MOBILISATION RATE, EQUATION 2.12 DEB3
       DV = V * RDOT
      
       IF(ES > 0.)THEN
@@ -109,7 +107,7 @@ C     AN INSECT (HEMIMETABOLOUS)
        dH = (1 - kap) * p_C - k_J * H ! J/d, change in maturity        
        P_J = K_J * H 
        DH = (1. - KAP) * P_C - P_J
-       ! NO AGING OR STOMACH IN EMBRYO
+       ! NO AGEING OR STOMACH IN EMBRYO
        DS = 0.
        DES = 0.
        DQ = 0.
@@ -161,7 +159,7 @@ C     AN INSECT (HEMIMETABOLOUS)
         DES = -1.* (P_AM / KAP_X) * V ** (2. / 3.)        
        ENDIF
        IF((METAB_MODE.EQ.1).AND.(H.GT.E_HJ))THEN
-        RDOT=0. ! no growth in abp after puberty - not setting this to zero messes up aging calculation
+        RDOT=0. ! no growth in abp after puberty - not setting this to zero messes up ageing calculation
        ENDIF
        
        ! AGEING
