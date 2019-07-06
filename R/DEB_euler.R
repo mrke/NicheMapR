@@ -80,7 +80,7 @@
 #' @return E_s Stomach energy content, J
 #' @return E_R Reproduction buffer energy, J
 #' @return E_B Reproduction batch energy, J
-#' @return q Aging acceleration
+#' @return q Ageing acceleration
 #' @return hs Hazard rate
 #' @return length Physical length, cm
 #' @return wetmass Total wet mass, g
@@ -302,16 +302,14 @@ DEB_euler<-function(
   # growth of structure
   if(E_H_pres <= E_Hb){
     #use embryo equation for length, from Kooijman 2009 eq. 2
-    dLdt <- (vT * e - k_Mdot * g * V_pres ^ (1 / 3)) / (3 * (e + g))
-    V_temp <- (V_pres ^ (1 / 3) + dLdt) ^ 3
+    dLdt <- (vT * e - k_Mdot * g * L_pres) / (3 * (e + g))
+    V_temp <- (L_pres + dLdt) ^ 3
     dVdt <- V_temp - V_pres
   }else{
     if(metab_mode == 1 & E_H_pres >= E_Hj){
       r <- min(0, r) # no growth in abp after puberty, but could still be negative because starving
-      p_C <- E_pres * V_pres * vT / L_pres # J / t, mobilisation rate (not that v is already corrected for s_M
-      p_M2 <- kap * p_C # new absolute flow to maintenance
-    }else{
-      p_C <- E_pres * (vT / L_pres - r) * V_pres # J / t, mobilisation rate, equation 2.12 DEB3
+      p_C <- E_pres * V_pres * (vT / L_pres - r) # J / t, mobilisation rate, equation 2.12 DEB3
+      p_M2 <- kap * p_C
     }
     dVdt <- V_pres * r
     if(V_pres * r < 0){
@@ -394,13 +392,9 @@ DEB_euler<-function(
   }else{
     if(batch==1){
       if(metab_mode == 0){
-        batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * (vT * V ^ (2 / 3) + k_Mdot * V) / (1 + (1 / g))) - p_J)
-      }else{
-        if(metab_mode == 1){ # abp (hemimetabolous) model
-          batchprep <- (kap_R / lambda) * (E_m * V * vT / V ^ (1 / 3) - p_M2 - p_J)
-        }else{ # hex (holometabolous) model
-          batchprep <- (kap_R / lambda) * (E_m * V * (vT / V ^ (1 / 3) - r) - p_M2 - p_J)
-        }
+       batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * (vT * V ^ (2 / 3) + k_Mdot * V) / (1 + (1 / g))) - p_J)
+      }else{# hemi or holometabolus model - p_M takes remainder
+       batchprep <- (kap_R / lambda) * (E_m * V * (vT / V ^ (1 / 3) - r) - p_M2 - p_J)
       }
       if(breeding == 0){
         p_B <- 0
@@ -577,11 +571,8 @@ DEB_euler<-function(
     Es <- E_sm * V
   }
 
-  #aging
-  if(metab_mode == 1 & E_H > E_Hj){
-    r <- 0
-  }
-  dqdt <- (q_pres * (V / V_m) * s_G + h_aT) * (E / E_m) * ((vT / V) - r) - r * q_pres
+  # ageing (equation 6.2 in Kooijman 2010 (DEB3)
+  dqdt <- (q_pres * (V / V_m) * s_G + h_aT) * (E / E_m) * ((vT / V ^ (1 / 3)) - r) - r * q_pres
   if(E_H > E_Hb){
     q <- q_init + dqdt
   }else{
@@ -593,6 +584,7 @@ DEB_euler<-function(
   }else{
     hs <- 0
   }
+
   #mass balance
   JOJx <- p_A * etaO[1,1] + p_D * etaO[1,2] + p_G * etaO[1,3]
   JOJv <- p_A * etaO[2,1] + p_D * etaO[2,2] + p_G * etaO[2,3]

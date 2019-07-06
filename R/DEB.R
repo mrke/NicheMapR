@@ -328,13 +328,10 @@ DEB<-function(
       V_m <- L_m ^ 3 # cm ^ 3, maximum structural volume
       e <- E / E_m  # -, scaled reserve density
       r <- v * (e / L - (1 + L_T / L) / L_m) / (e + g) # specific growth rate
-      p_M2 <- p_M * V # absolute flow to maintenance
       if(metab_mode == 1 & H >= E_Hj){
         r <- min(0, r) # no growth in abp after puberty, but could still be negative because starving
-        p_C <- E * V * v / L # J / t, mobilisation rate (not that v is already corrected for s_M
-      }else{
-        p_C <- E * (v / L - r) * V # J / t, mobilisation rate, equation 2.12 DEB3
       }
+      p_C <- E * V * (v / L - r) # J / t, mobilisation rate, equation 2.12 DEB3
       dV <- V * r # cm^3 / t, change in structure
 
       if(H < E_Hb){ # embryo
@@ -393,8 +390,8 @@ DEB<-function(
           dEs <- -1 * J_X * (p_Am / kap_X) * V ^ (2 / 3)
         }
 
-        # ageing
-        dq <- (q * (V / V_m) * s_G + h_a) * e * ((v / L) - r) - r * q # aging acceleration
+        # ageing (equation 6.2 in Kooijman 2010 (DEB3)
+        dq <- (q * (V / V_m) * s_G + h_a) * e * ((v / L) - r) - r * q # ageing acceleration
         dhs <- q - r * hs # hazard
 
         # reproduction
@@ -406,12 +403,8 @@ DEB<-function(
           if(batch == 1){
             if(metab_mode == 0){ # std model
              batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * (v * V ^ (2 / 3) + k_M * V) / (1 + (1 / g))) - p_J)
-            }else{
-             if(metab_mode == 1){ # abp (hemimetabolous) model
-              batchprep <- (kap_R / lambda) * (E_m * L^3 * v / L - kap * p_C - p_J)
-             }else{ # hex (holometabolous) model
-              batchprep <- (kap_R / lambda) * (E_m * (v / L - r) * V - kap * p_C - p_J)
-             }
+            }else{ # hemi or holometabolus model - p_M takes remainder
+             batchprep <- (kap_R / lambda) * (E_m * V * (v / L - r) - kap * p_C - p_J)
             }
             if(breeding == 0){
               p_B <- 0
@@ -478,12 +471,14 @@ DEB<-function(
   }else{
     p_A <- 0
   }
-  p_C <- (E_m * (vT / V^(1/3) + k_M * (1 + L_T / V^(1/3))) * (e * g) / (e + g)) * V #equation 2.20 DEB3
 
+  r <- vT * (e / V ^ (1 / 3) - (1 + L_T / V ^ (1 / 3)) / L_m) / (e + g)
+  p_C <- E * (vT / V ^ (1 / 3) - r) * V # J / t, mobilisation rate, equation 2.12 DEB3
   p_R <- (1 - kap) * p_C - p_J
   if(metab_mode == 1){
-    if(E_H > E_Hj){
-      p_C <- E * V * vT / V ^ (1 / 3)
+    if(E_H >= E_Hj){
+      r <- min(0, r)
+      p_C <- E * V * (vT / V ^ (1 / 3) - r) # J / t, mobilisation rate, equation 2.12 DEB3
       p_M2 <- kap * p_C
       p_R <- (1 - kap) * p_C - p_J
     }
