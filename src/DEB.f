@@ -539,7 +539,7 @@ C     EQUATION 2.20 DEB3
       IF(METAB_MODE.EQ.1)THEN ! ABP (E.G. HEMIMETABOLOUS INSECT)
        IF(E_H(HOUR).GT.E_HJ)THEN
         R=min(0.,R)
-        P_C = ED(HOUR) * (VDOT / V(HOUR)**(1./3.) - R) * V(HOUR)
+        P_C = ED(HOUR) * V(HOUR) * (VDOT / V(HOUR)**(1./3.) - R)
         P_M = KAP * P_C
         P_R = (1.-KAP)*P_C-P_J
         DVDT=0.
