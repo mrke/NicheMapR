@@ -74,21 +74,21 @@ ectorun <- function(ecto) {
                 as.double(ecto$minshades),
                 as.double(ecto$maxshades),
                 as.double(ecto$S_instar),
-                environ=matrix(data = 0., nrow = ndays*24, ncol = 27),
-                enbal=matrix(data = 0., nrow = ndays*24, ncol = 13),
-                masbal=matrix(data = 0., nrow = ndays*24, ncol = 19),
-                debout=matrix(data = 0., nrow = ndays*24, ncol = 21),
-                yearout=matrix(data = 0., nrow = 1, ncol = 20),
-                yearsout=matrix(data = 0., nrow = ceiling(ndays/365), ncol = 43),
+                environ=matrix(data = 0, nrow = ndays * 24, ncol = 27),
+                enbal=matrix(data = 0, nrow = ndays * 24, ncol = 13),
+                masbal=matrix(data = 0, nrow = ndays * 24, ncol = 19),
+                debout=matrix(data = 0, nrow = ndays * 24, ncol = 21),
+                yearout=matrix(data = 0, nrow = 1, ncol = 20),
+                yearsout=matrix(data = 0, nrow = ceiling(ndays / 365), ncol = 43),
                 PACKAGE = "NicheMapR"
   )
 
-  environ <- matrix(data = 0., nrow = 24*ndays, ncol = 27)
-  enbal <- matrix(data = 0., nrow = 24*ndays, ncol = 13)
-  masbal <- matrix(data = 0., nrow = 24*ndays, ncol = 19)
-  debout <- matrix(data = 0., nrow = 24*ndays, ncol = 21)
-  yearout <- matrix(data = 0., nrow = 1, ncol = 20)
-  yearsout <- matrix(data = 0., nrow = ceiling(ndays/365), ncol = 43)
+  environ <- matrix(data = 0, nrow = 24 * ndays, ncol = 27)
+  enbal <- matrix(data = 0, nrow = 24 * ndays, ncol = 13)
+  masbal <- matrix(data = 0, nrow = 24 * ndays, ncol = 19)
+  debout <- matrix(data = 0, nrow = 24 * ndays, ncol = 21)
+  yearout <- matrix(data = 0, nrow = 1, ncol = 20)
+  yearsout <- matrix(data = 0, nrow = ceiling(ndays / 365), ncol = 43)
 
   storage.mode(environ)<-"double"
   storage.mode(enbal)<-"double"

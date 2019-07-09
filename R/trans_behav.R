@@ -51,7 +51,7 @@
 #' @param shadmet = shadmet, metout, aboveground maximum shademicroclimate output table from NicheMapR's microclimate model
 #' @param soil = soil, minimum shade soil temperature output table from NicheMapR's microclimate model
 #' @param shadsoil = shadsoil, maximum shade soil temperature output table from NicheMapR's microclimate model
-#' @param press air pressure (Pa)
+#' @param press = 101325, air pressure (Pa)
 #'
 #' \strong{Outputs:}
 #'

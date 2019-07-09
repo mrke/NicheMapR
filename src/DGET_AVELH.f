@@ -50,7 +50,7 @@ C     EQUATIONS TO COMPUTE RATES OF CHANGE IN RESERVE, STRUCTURAL VOLUME, MATURI
       E_S = E/ L**3.D+00/ E_M                    ! -, SCALED RESERVE DENSITY
       R = V_J*(E_S / L - 1.D+00 / L_M)/ (E_S + G) ! 1/H, SPECIFIC GROWTH RATE
       P_C = E * (V_J / L - R)              ! J/H, MOBILISATION RATE
-      DE = -1.D+00 * DV * M_V * Y_EV * MU_E - P_C   ! J/H, CHANGE IN RESERVE
+      DE = -1.D+00 * DV * g * E_m * kap * Y_EV - P_C   ! J/H, CHANGE IN RESERVE
       DL = R * L/ 3.D+00                   ! CM/H, CHANGE IN LENGTH
       DH = (1.D+00 - KAP) * P_C - K_J * H     ! J/H, CHANGE IN MATURITY
 

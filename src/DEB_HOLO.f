@@ -168,7 +168,8 @@ C     IMPLEMENTATION OF LLANDRES ET AL. (2015) DEB MODEL FOR INSECTS - 26 DEC 20
 
 
 C     INITIALISE VARIABLES
-
+      PREVDEAD=0
+      DEAD=0
       E_RJ=0.
       P_R=0.
       P_A=0.
@@ -630,7 +631,7 @@ C ---  OUTPUT ROUTINE (AND DENSE OUTPUT) IS USED DURING INTEGRATION
        IOUT=0
 C ---  INITIAL VALUES AND ENDPOINT OF INTEGRATION
        RPAR(1)=DBLE(F)
-       RPAR(2)=DBLE(KT_EL)
+       RPAR(2)=DBLE(KT_E)
        RPAR(3)=DBLE(VTDOTJ)
        RPAR(4)=DBLE(E_M)
        RPAR(5)=DBLE(G)
@@ -639,7 +640,7 @@ C ---  INITIAL VALUES AND ENDPOINT OF INTEGRATION
        RPAR(8)=DBLE(Y_EV_L)
        RPAR(9)=DBLE(MU_E)
        RPAR(10)=DBLE(KT_J)
-       RPAR(11)=DBLE(L_M * L_J2/ L_B)
+       RPAR(11)=DBLE(L_M)
        X=0.0D0
        YY(1)=0.0D0
        YY(2)=DBLE(VOLD_PRES)
@@ -670,8 +671,8 @@ C ---  CALL OF THE SUBROUTINE DOPRI5
 
        VOLD_PRES=YY(2)
        VPUP_PRES=YY(4)**3.
-       E_H_PRES=YY(5)
        E_PRES=(YY(3)-CUMREPRO_INIT)/(VOLD_PRES+VPUP_PRES)
+       E_H_PRES=YY(5)
 
        VOLD(HOUR)=VOLD_PRES
        VPUP(HOUR)=VPUP_PRES
@@ -1393,6 +1394,10 @@ C ************* YEARLY OUTPUT *************************
       ENDIF
 
       STAGE_REC(HOUR)=STAGE
+      
+      if((daycount.eq.510).and.(HOUR.eq.22))then
+          daycount=DAYCOUNT
+      endif
 
       RETURN
       END
