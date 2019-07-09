@@ -1104,7 +1104,7 @@ C       CHANGE BELOW TO ACTIVE OR NOT ACTIVE RATHER THAN DEPTH-BASED, IN CASE OF
         IF(TESTCLUTCH.GT.CLUTCHSIZE)THEN
          CLUTCHSIZE=TESTCLUTCH
         ENDIF
-        CUMBATCH(HOUR) = CUMBATCH(HOUR)-CLUTCHENERGY
+        CUMBATCH(HOUR)=CUMBATCH(HOUR)-CLUTCHENERGY
         REPRO(HOUR)=1
         NEWCLUTCH=CLUTCHSIZE
         FEC(IYEAR)=FEC(IYEAR)+CLUTCHSIZE
@@ -1394,10 +1394,6 @@ C ************* YEARLY OUTPUT *************************
       ENDIF
 
       STAGE_REC(HOUR)=STAGE
-      
-      if((daycount.eq.510).and.(HOUR.eq.22))then
-          daycount=DAYCOUNT
-      endif
 
       RETURN
       END

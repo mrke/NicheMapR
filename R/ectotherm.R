@@ -190,10 +190,10 @@
 #' \strong{ Holometabolous insect DEB model parameters:}
 #' \itemize{
 #' \item{\code{stages}{ = 8, number of stages = number of instars plus 1 for egg + 1 for pupa + 1 for imago}\cr}
-#' \item{\code{y_EV_l}{ = 0.95, yield of imago reserve on larval structure (mol/mol)}\cr}
-#' \item{\code{S_instar}{ = rep(2.660, stages), stress at instar n: L_n^2/ L_n-1^2 (-)}\cr}
-#' \item{\code{s_j}{ = 0.999, Reprod buffer/structure ratio at pupation as fraction of max}\cr}
-#' \item{\code{L_b}{ = 0.06148, Structural length at birth (cm)}\cr}
+#' \item{\code{y_EV_l}{ = 0.6, yield of imago reserve on larval structure (mol/mol)}\cr}
+#' \item{\code{S_instar}{ = rep(2.049137, stages), stress at instar n: L_n^2/ L_n-1^2 (-)}\cr}
+#' \item{\code{s_j}{ = 0.9985855, Reprod buffer/structure ratio at pupation as fraction of max}\cr}
+#' \item{\code{L_b}{ = 0.0734, Structural length at birth (cm)}\cr}
 #'}
 #' \strong{ Inital conditions for DEB model:}
 #' \itemize{
