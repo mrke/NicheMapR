@@ -90,7 +90,6 @@
 #' \strong{ Nest properties:}\cr\cr
 #' \code{NESTYP}{ = 0, # for nest calculations, to do)}\cr\cr
 #' \code{RoNEST}{ = 0, # for nest calculations, to do}\cr\cr
-#' \code{R1}{ = 0, # for nest calculations, to do}\cr\cr
 #'
 #' \strong{ Physiology:}\cr\cr
 #' \code{AK1}{ = 0.9, # initial thermal conductivity of flesh (0.412 - 2.8 W/mK)}\cr\cr
@@ -328,7 +327,6 @@ endoR_devel <- function(
   # nest properties
   NESTYP = 0, # for nest calculations, to do
   RoNEST = 0, # for nest calculations, to do
-  R1 = 0, # for nest calculations, to do
 
   # PHYSIOLOGY
 
@@ -449,6 +447,8 @@ endoR_devel <- function(
     R1 <- GEOM.out[23] # shape-specific core-skin radius in shortest dimension, m
 
     ### F_FACTOR, radiation configuration factors
+    # at this stage make sure NESTYP = 0 to get correct configuration factors
+    NESTYP <- 0
     F_FACTOR.out <- F_FACTOR(SHADE, NITESHAD, QSOLR, FATOBJ, NESTYP, RoNEST, R1, FGDREF, FSKREF, AREASKIN, EMISAN)
 
     FAVEG <- F_FACTOR.out[1] # configuration factor to vegetation
