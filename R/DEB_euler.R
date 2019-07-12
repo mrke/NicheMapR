@@ -13,6 +13,7 @@
 #' @param v = 0.065*step, Energy conductance (cm/h)
 #' @param kap = 0.886, fraction of mobilised reserve allocated to soma
 #' @param p_M = 32*step, Volume-specific somatic maintenance (J/cm3/h)
+#' @param p_T = 0, (Structural-)Surface-area-specific heating cost (J/cm2/h)
 #' @param E_G = 7767, Cost of structure (J/cm3)
 #' @param kap_R = 0.95, Fraction of reproduction energy fixed in eggs
 #' @param k_J = 0.002*step, Maturity maintenance rate coefficient (1/h)
@@ -148,6 +149,7 @@ DEB_euler<-function(
   v=0.065*step,
   kap=0.886,
   p_M=32*step,
+  p_T=0,
   E_G=7767,
   kap_R=0.95,
   k_J=0.002*step,
@@ -281,7 +283,7 @@ DEB_euler<-function(
   e <- E_pres / E_m # scaled reserve density
   V_m <- (kap * p_AmT / p_MT) ^ 3 # maximum structural volume
   h_aT <- h_a * Tcorr
-  L_T <- 0 # heating length - not used for now
+  L_T <- p_T / p_MT # heating length
   L_pres <- V_pres ^ (1 / 3)
   L_m <- V_m ^ (1 / 3)
   scaled_l <- L_pres / L_m
@@ -298,7 +300,7 @@ DEB_euler<-function(
 
   r <- vT * (e / L_pres - (1 + L_T / L_pres) / L_m) / (e + g)
   p_C <- E_pres * (vT / L_pres - r) * V_pres # J / t, mobilisation rate, equation 2.12 DEB3
-  p_M2 <- p_MT * V_pres
+  p_M2 <- p_MT * V_pres + p_T * V_pres ^ (2 / 3)
   # growth of structure
   if(E_H_pres <= E_Hb){
     #use embryo equation for length, from Kooijman 2009 eq. 2
@@ -392,9 +394,9 @@ DEB_euler<-function(
   }else{
     if(batch==1){
       if(metab_mode == 0){
-       batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * (vT * V ^ (2 / 3) + k_Mdot * V) / (1 + (1 / g))) - p_J)
+        batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * (vT * V ^ (2 / 3) + k_Mdot * V) / (1 + (1 / g))) - p_J)
       }else{# hemi or holometabolus model - p_M takes remainder
-       batchprep <- (kap_R / lambda) * (E_m * V * (vT / V ^ (1 / 3) - r) - p_M2 - p_J)
+        batchprep <- (kap_R / lambda) * (E_m * V * (vT / V ^ (1 / 3) - r) - p_M2 - p_J)
       }
       if(breeding == 0){
         p_B <- 0

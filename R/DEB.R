@@ -14,6 +14,7 @@
 #' @param v = 0.065*step, Energy conductance (cm/h)
 #' @param kap = 0.886, fraction of mobilised reserve allocated to soma
 #' @param p_M = 32*step, Volume-specific somatic maintenance (J/cm3/h)
+#' @param p_T = 0, (Structural-)Surface-area-specific heating cost (J/cm2/h)
 #' @param E_G = 7767, Cost of structure (J/cm3)
 #' @param kap_R = 0.95, Fraction of reproduction energy fixed in eggs
 #' @param k_J = 0.002*step, Maturity maintenance rate coefficient (1/h)
@@ -148,6 +149,7 @@ DEB<-function(
   v=0.065*step,
   kap=0.886,
   p_M=32*step,
+  p_T=0,
   E_G=7767,
   kap_R=0.95,
   k_J=0.002*step,
@@ -281,7 +283,7 @@ DEB<-function(
   e <- E_pres / E_m # scaled reserve density
   V_m <- (kap * p_AmT / p_MT) ^ 3 # maximum structural volume
   h_aT <- h_a * Tcorr
-  L_T <- 0 # heating length - not used for now
+  L_T <- p_T / p_MT # heating length
   L_pres <- V_pres ^ (1 / 3)
   L_m <- V_m ^ (1 / 3)
   scaled_l <- L_pres / L_m
@@ -464,7 +466,7 @@ DEB<-function(
   }
 
   # some powers
-  p_M2 <- p_MT * V
+  p_M2 <- p_MT * V + p_T * V ^ (2 / 3)
   p_J <- k_JT * E_H - starve
   if(Es > 0){
     p_A <- V ^ (2 / 3) * p_AmT * f
