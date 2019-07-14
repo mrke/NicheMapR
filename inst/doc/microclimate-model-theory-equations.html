@@ -12,7 +12,7 @@
 
 <meta name="author" content="Michael Kearney &amp; Warren P. Porter" />
 
-<meta name="date" content="2019-06-02" />
+<meta name="date" content="2019-07-14" />
 
 <title>Underlying theory and equations of the NicheMapR microclimate model</title>
 
@@ -217,7 +217,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Underlying theory and equations of the NicheMapR microclimate model</h1>
 <h4 class="author">Michael Kearney &amp; Warren P. Porter</h4>
-<h4 class="date">2019-06-02</h4>
+<h4 class="date">2019-07-14</h4>
 
 
 
@@ -300,7 +300,7 @@ Seasonal, latitudinal and altitudinal correction factors for atmospheric ozone
 <p>where <span class="math inline">\(\phi\)</span> is the latitude and <span class="math inline">\(\delta\)</span> is the solar declination. The equivalent formula for the Northern Hemisphere is</p>
 <p><span class="math display">\[AZ_{SUN,N} = \arccos \left( \frac{ \sin(\delta) - \sin(\phi)  \sin \left( \frac{90 \pi}{180} - Z \right) }{ \cos(\phi) \cos\left( \frac{90 \pi}{180} - Z \right) } \right)\]</span></p>
 <p>This value ranges from 0-180<span class="math inline">\(^\circ\)</span> and is thus subtracted from 360<span class="math inline">\(^\circ\)</span> to obtain afternoon angles.</p>
-<p>Local terrain may also obscure direct and diffuse radiation by increasing the horizon angle and thus causing ‘hill-shade’ (Dozier et al. 1981). Horizon angles in 24 directions can be entered into NicheMapR and, when the altitude of the sun is less than the horizon angle in that direction, direct radiation is set to zero. The <a href="https://grass.osgeo.org/grass70/manuals/r.horizon.html">r.horizon function</a> of the GIS package GRASS (Neteler et al. 2012) can be used to compute horizon angles from a DEM.</p>
+<p>Local terrain may also obscure direct and diffuse radiation by increasing the horizon angle and thus causing ‘hill-shade’ (Dozier et al. 1981). Horizon angles in 24 directions can be entered into NicheMapR and, when the altitude of the sun is less than the horizon angle in that direction, direct radiation is set to zero. The <a href="https://grass.osgeo.org/grass70/manuals/r.horizon.html">r.horizon function</a> of the GIS package GRASS (Neteler et al. 2012) or the <a href="https://cran.r-project.org/web/packages/horizon/horizon.pdf">horizonSearch function</a> of the R package ‘horizon’ can be used to compute horizon angles from a DEM.</p>
 <div id="total-solar-radiation-reaching-a-surface" class="section level3">
 <h3>2.2.3 Total solar radiation reaching a surface</h3>
 <p>The total or ‘global’ solar radiation finally reaching the earth’s surface can now be summarised as</p>

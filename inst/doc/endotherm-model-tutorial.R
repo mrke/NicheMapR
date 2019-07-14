@@ -2,10 +2,6 @@
 knitr::opts_chunk$set(
  eval = TRUE, tidy.opts=list(width.cutoff=60), tidy=TRUE  
 )
-load('Weathers1976Fig1.Rdata')
-load('Weathers1976Fig2.Rdata')
-load('Weathers1976Fig3.Rdata')
-load('Weathers1976Fig5.Rdata')
 
 ## ------------------------------------------------------------------------
 library(NicheMapR)
@@ -19,8 +15,9 @@ kable(endo.out[, 40:49])
 kable(endo.out[, 50:57])
 
 ## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
+library(NicheMapR)
 # environment
-TAs <- seq(0, 50, 2) # air temperature (deg C)
+TAs <- seq(0, 50, 1) # air temperature (deg C)
 VEL <- 0.002 # wind speed (m/s)
 vd <- WETAIR(rh = 30, db = 40)$vd # Weather and Schoenbaechler had 16.7 mm Hg above 40 deg C = 30% RH at 40 deg C
 vd_sat <- WETAIR(rh = 100, db = TAs)$vd # Weather and Schoenbaechler had 16.7 mm Hg above 40 deg C = 30% RH at 40 deg C
@@ -38,6 +35,7 @@ RAISETC <- 0.25 # increment by which TC is elevated (deg C)
 AMASS <- 0.0337 # mass (kg)
 GMREF <- 1.1 # start off near to a sphere (-)
 GMULTMAX <- 5 # maximum ratio of length to width/depth (high value to capture opening of wings)
+UNCURL <- 0.1 # allows the animal to uncurl to GMULTMAX, the value being the increment GMULT is increased per iteration
 
 # feather properties
 DHAIRD = 30E-06 # hair diameter, dorsal (m)
@@ -55,16 +53,16 @@ REFLV = 0.351  # fur reflectivity ventral (fractional, 0-1)
 SKINW <- 0.1 # base skin wetness (%)
 MXWET <- 20 # maximum skin wetness (%)
 SWEAT <- 0.25 # intervals by which skin wetness is increased (%)
-Q10s <- c(rep(1, 21), rep(1.5, 5)) # assuming
-Q10s <- Q10s[1:length(TAs)] * 0 + 1
+Q10s <- rep(1, length(TAs))
+Q10s[TAs >= TCMAX] <- 2 # assuming
 QBASAL <- 10 ^ (-1.461 + 0.669 * log10(AMASS * 1000)) # basal heat generation (W)
-DELTAR <- 5 # offset between air temeprature and breath (°C)
+DELTAR <- 5 # offset between air temeprature and breath (Â°C)
 EXTREF <- 15 # O2 extraction efficiency (%)
 PANTING <- .1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANTMAX
-PANTMAX <- 3# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
+PANTMAX <- 10# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
 
 ptm <- proc.time() # start timing
-endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], VEL = VEL, TC = TC, TCMAX = TCMAX, RH = hum[x], AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10s[x], QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)}) # run endoR across environments
+endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], VEL = VEL, TC = TC, TCMAX = TCMAX, RH = hum[x], AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10s[x], QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF, UNCURL = UNCURL)}) # run endoR across environments
 proc.time() - ptm # stop timing
 
 endo.out <- do.call("rbind", lapply(endo.out, data.frame)) # turn results into data frame
@@ -142,14 +140,14 @@ MXWET <- 20 # maximum skin wetness (%)
 SWEAT <- 0.25 # intervals by which skin wetness is increased (%)
 Q10 <- 1 # Q10 effect of body temperature on metabolic rate (-)
 QBASAL <- 10 ^ (-1.461 + 0.669 * log10(AMASS * 1000)) # basal heat generation (W)
-DELTAR <- 5 # offset between air temeprature and breath (°C)
+DELTAR <- 5 # offset between air temeprature and breath (Â°C)
 EXTREF <- 15 # O2 extraction efficiency (%)
 PANTING <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANTMAX
 PANTMAX <- 1# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
 
 ptm <- proc.time() # start timing
 endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], TAREF = TAREFs[x], TSKY = TSKYs[x], 
-  TGRD = TGRDs[x], VEL = VELs[x], RH = RHs[x], QSOLR = QSOLRs[x], Z = Zs[x], ELEV = ELEV, ABSSB = ABSSB, TC = TC, TCMAX = TCMAX, AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)})
+  TGRD = TGRDs[x], VEL = VELs[x], RH = RHs[x], QSOLR = QSOLRs[x], Z = Zs[x], ELEV = ELEV, ABSSB = ABSSB, TC = TC, TCMAX = TCMAX, AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF, UNCURL = UNCURL)})
 proc.time() - ptm
 endo.out <- do.call("rbind", lapply(endo.out, data.frame))
 

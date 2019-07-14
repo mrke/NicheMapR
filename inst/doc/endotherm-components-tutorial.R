@@ -10,7 +10,7 @@ library(plotrix)
 
 ## ------------------------------------------------------------------------
 # environmental input
-TA <- 20 # air temperature, for calculation of conductivity of air (캜)
+TA <- 20 # air temperature, for calculation of conductivity of air (째C)
 
 # shape input
 GMULTMAX <- 2.7 # max possible ratio between long and short axis (-)
@@ -222,9 +222,9 @@ kable(cbind(SOLAR.lab, t(SOLAR.out)))
 
 ## ------------------------------------------------------------------------
 # input
-TS <- 33 # skin temperature (캜)
-TENV <- 20 # air temperature (캜)
-TFA <- 10 # fur/air interface temperature (캜)
+TS <- 33 # skin temperature (째C)
+TENV <- 20 # air temperature (째C)
+TFA <- 10 # fur/air interface temperature (째C)
 NGEOM <- 1 # cylinder (ngeom = 1), sphere (ngeom = 2) and ellipsoid (ngeom = 4). If a truncated cone (5) or ellipsoidal cylinder (3), we will use the cylinder equations (ngeom = 1).
 SURFAR <- CONVAR # surface area for convection, m2 (from GEOM)
 FLTYPE <- 0 # FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER
@@ -256,10 +256,10 @@ kable(cbind(CONV.lab, t(CONV.out)))
 
 ## ------------------------------------------------------------------------
 BP <- BP # barometric pressure, Pa (from CONV)
-TA <- 20 # air temperature (캜)
+TA <- 20 # air temperature (째C)
 RELHUM <- 20 # relative humidity (%)
-TC <- 37 # core temperature (캜)
-TSKIN <- 33 # skin temperature (캜)
+TC <- 37 # core temperature (째C)
+TSKIN <- 33 # skin temperature (째C)
 SKINW <- 11 # part of the skin surface that is wet (%)
 FLYHR <- 0 # is flight occuring this hour? (imposes forced evaporative loss)
 BAREVAP <- 0 # is evaporation partly from bare skin? (0 = no, 1 = yes, % defined with PCTSKINEVAP)
@@ -281,18 +281,25 @@ kable(cbind(SEVAP.lab, t(SEVAP.out)))
 
 ## ------------------------------------------------------------------------
 # environment
-TC <- 37 # core temperature (캜)
-TAREF <- TA # 1.2 m reference air temperature (캜)
-TGRD <- TA # ground temperature (캜)
-TSKY <- TA # sky temperature (캜)
-TCONDSB <- TA # surface temperature for conduction (캜)
-TBUSH <- TA # bush temperature (캜)
+FLTYPE <- 0 # FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - need's to be looked at - only invoked in main program when the dive table is set upTC <- 37 # core temperature (째C)
+TAREF <- TA # 1.2 m reference air temperature (째C)
+TGRD <- TA # ground temperature (째C)
+TSKY <- TA # sky temperature (째C)
+TCONDSB <- TA # surface temperature for conduction (째C)
+TBUSH <- TA # bush temperature (째C)
+TVEG <- TAREF # assume vegetation casting shade is at 1.2 m (reference) air temperature (째C)
+SKYIR <- C3 * (TSKY + 273.15) ^ 4 # sky infrared incoming (W)
+VEGIR <- C6 * (TVEG + 273.15) ^ 4 # vegetation infrared incomming (W)
+SKYRAD <- SKYIR + VEGIR 
+SKYIN <- SKYRAD 
+GRDIN <- C4 * (TGRD + 273.15) ^ 4 # note, MK put C4 here wherease before it was just SIG
+TLOWER <- TGRD
 RH <- 20 # relative humidity (%)
 VEL <- 1 # wind speed (m s-1)
 BP <- BP # Pa, negative means altitude is used (from CONV)
 ELEV <- 0 # m
 
-# physiology and morphology
+# physiology and morphology 
 SKINW <- 0 # part of the skin surface that is wet (%)
 AK1 <- 0.9 # initial thermal conductivity of flesh (0.412 - 2.8 W/mK)
 AK2 <- 0.230 # conductivity of fat (W/mK)
@@ -302,22 +309,12 @@ PCTEYES <- 0.03 # surface area made up by the eye (%) - make zero if sleeping
 # behaviour
 FLYHR <- 0 # is flight occuring this hour? (imposes forced evaporative loss)
 
+# configuration factors
 FATOBJ <- 0 # configuration factor to nearby object
 FAGRD <- 0.5 # configuration factor to ground
 FASKY <- 0.5 # configuration factor to sky
 FAVEG <- 0 # this is for overhead veg (at TAREF)
 FABUSH <- 0 # this is for veg below/around animal (at TALOC)
-
-FURTHRMK <- 0 # user-specified fur thermal conductivity (W/mK), not used if 0
-NGEOM <- 4 # cylinder (ngeom = 1), sphere (ngeom = 2) and ellipsoid (ngeom = 4). If a truncated cone (5) or ellipsoidal cylinder (3), we will use the cylinder equations (ngeom=1).
-FLTYPE <- 0 # FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - need's to be looked at - only invoked in main program when the dive table is set up
-
-# Initial values
-TS <- TC # CURRENT GUESS OF OBJECT SURFACE TEMPERATURE
-TFA <- TA # current guess of fur/air interface temperature
-
-DIFTOL <- 0.001 # tolerance for SIMULSOL
-SIMULSOL.out <- matrix(data = 0, nrow = 2, ncol = 14) # vector to hold the SIMULSOL results for dorsal and ventral side
 
 # reference configuration factors
 FABUSHREF <- FABUSH # nearby bush
@@ -326,17 +323,18 @@ FASKYREF <- FASKY # sky
 FAGRDREF <- FAGRD # ground
 FAVEGREF <- FAVEG # vegetation
 
+FURTHRMK <- 0 # user-specified fur thermal conductivity (W/mK), not used if 0
+NGEOM <- 4 # cylinder (ngeom = 1), sphere (ngeom = 2) and ellipsoid (ngeom = 4). If a truncated cone (5) or ellipsoidal cylinder (3), we will use the cylinder equations (ngeom=1).
+
+# Initial values
+TS <- TC # CURRENT GUESS OF OBJECT SURFACE TEMPERATURE
+TFA <- TA # current guess of fur/air interface temperature
+
+DIFTOL <- 0.001 # tolerance for SIMULSOL
+SIMULSOL.out <- matrix(data = 0, nrow = 2, ncol = 14) # vector to hold the SIMULSOL results for dorsal and ventral side
+
 # repeat for each side, dorsal and ventral, of the animal
 for(S in 1:2){ 
-
-# set infrared environment
-TVEG <- TAREF # assume vegetation casting shade is at 1.2 m (reference) air temperature (캜)
-SKYIR <- C3 * (TSKY + 273.15) ^ 4 # sky infrared incoming (W)
-VEGIR <- C6 * (TVEG + 273.15) ^ 4 # vegetation infrared incomming (W)
-SKYRAD <- SKYIR + VEGIR 
-SKYIN <- SKYRAD 
-GRDIN <- C4 * (TGRD + 273.15) ^ 4 # note, MK put C4 here wherease before it was just SIG
-TLOWER <- TGRD
 
 # Calculating solar intensity entering fur. This will depend on whether we are calculating the fur temperature for the dorsal side or the ventral side. The dorsal side will have solar inputs from the direct beam hitting the silhouette area as well as diffuse solar scattered from the sky and objects. The ventral side will have diffuse solar scattered off the substrate.
 
@@ -443,7 +441,7 @@ kable(tSIMULSOL.out)
 ## ------------------------------------------------------------------------
 # define basal metabolic rate
 QBASAL <- (70 * AMASS ^ 0.75) * (4.185 / (24 * 3.6)) # heat generation (W)
-DELTAR <- 0 # offset between air temeprature and breath (캜)
+DELTAR <- 0 # offset between air temeprature and breath (째C)
 O2GAS <- 20.95 # oxygen concentration of air (%)
 N2GAS <- 79.02 # nitrogen concetration of air (%)
 CO2GAS <- 0.03 # carbon dioxide concentration of air (%)
@@ -462,7 +460,7 @@ X <- GEND * DMULT + GENV * VMULT # weighted estimate of metabolic heat generatio
 
 # lung temperature and temperature of exhaled air
 TLUNG <- (TC + (SIMULSOL.out[1, 3] + SIMULSOL.out[1, 3]) * 0.5) * 0.5 # average of skin and core
-TAEXIT <- min(TA + DELTAR, TLUNG) # temperature of exhaled air, 캜
+TAEXIT <- min(TA + DELTAR, TLUNG) # temperature of exhaled air, 째C
 
 QMIN <- QBASAL
 QM1 <- X - (5 * QMIN) 

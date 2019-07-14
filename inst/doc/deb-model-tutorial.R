@@ -12,7 +12,7 @@ species <- "Eulamprus.quoyii" # must be in the AmP collection - see allDEB.speci
 species.name <- gsub(pattern = "[.]", " ", species)
 ndays <- 365*5 # number days to run the simulation for
 div <- 1 # time step divider (1 = days, 24 = hours, etc.) - keep small if using Euler method
-Tbs <- rep(25, ndays * div) # °C, body temperature
+Tbs <- rep(25, ndays * div) # Â°C, body temperature
 starvetime <- 0 # length of low food period when simulating starvation
 X <- 100 # J/cm2 base food density
 Xs <- c(rep(X, ndays * div / 2), rep(0.000005, starvetime), rep(X, ndays * div / 2 - starvetime + 1)) # food density (J/cm2 or J/cm3)
@@ -181,7 +181,7 @@ library(NicheMapR)
 species <- "Eulamprus.quoyii" # must be in the AmP collection - see allDEB.species list
 ndays <- 365*5 # number days to run the simulation for
 div <- 1 # time step divider (1 = days, 24 = hours, etc.) - keep small if using Euler method
-Tbs <- rep(25, ndays * div) # °C, body temperature
+Tbs <- rep(25, ndays * div) # Â°C, body temperature
 starvetime <- 0 # length of low food period when simulating starvation
 X <- 100 # J/cm2 base food density
 Xs <- c(rep(X, ndays * div / 2), rep(0.000005, starvetime), 

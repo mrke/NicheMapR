@@ -82,7 +82,7 @@ text(0.5, T_F_max + 2, "T_F_max", col = 'red')
 text(0.5, T_F_min - 2, "T_F_min", col = 'blue')
 text(0.3, T_pref + 2, "T_pref", col = 'orange')
 legend(x = 5, y = T_F_max + 17, 
-       legend = c("T_b (°C)", "depth (cm/10)", "activity, 0 5 or 10)", "shade (%/10)"), 
+       legend = c("T_b (Â°C)", "depth (cm/10)", "activity, 0 5 or 10)", "shade (%/10)"), 
        col = c("black", "brown", "orange", "dark green"), lty = rep(1, 4), bty = "n")
 
 ## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Annual activity window for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 90%**"----
@@ -130,7 +130,7 @@ text(0.5, T_F_max + 2, "T_F_max", col = 'red')
 text(0.5, T_F_min - 2, "T_F_min", col = 'blue')
 text(0.5, T_pref + 2, "T_pref", col = 'orange')
 legend(x = 5, y = T_F_max + 17, 
-       legend = c("T_b (°C)", "depth (cm/10)", "activity, 0 5 or 10)", "shade (%/10)"), 
+       legend = c("T_b (Â°C)", "depth (cm/10)", "activity, 0 5 or 10)", "shade (%/10)"), 
        col = c("black", "brown", "orange", "dark green"), lty = rep(1, 4), bty = "n")
 
 ## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Annual activity window for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"----

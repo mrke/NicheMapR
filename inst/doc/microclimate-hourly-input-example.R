@@ -157,17 +157,17 @@ CLDhr <- a # now we have hourly cloud cover
 # aggregate hourly data to daily min / max
 CCMAXX <- aggregate(CLDhr, by = list(weather$Date), FUN = max)[,2]#c(100, 100) # max cloud cover (%)
 CCMINN <- aggregate(CLDhr, by = list(weather$Date), FUN = min)[,2]#c(0, 15.62) # min cloud cover (%)
-TMAXX <- aggregate(TAIRhr, by = list(weather$Date), FUN = max)[,2]#c(40.1, 31.6) # maximum air temperatures (캜)
-TMINN <- aggregate(TAIRhr, by = list(weather$Date), FUN = min)[,2]#c(19.01, 19.57) # minimum air temperatures (캜)
-RAINFALL <- aggregate(RAINhr, by = list(weather$Date), FUN = sum)[,2]#c(19.01, 19.57) # minimum air temperatures (캜)
+TMAXX <- aggregate(TAIRhr, by = list(weather$Date), FUN = max)[,2]#c(40.1, 31.6) # maximum air temperatures (째C)
+TMINN <- aggregate(TAIRhr, by = list(weather$Date), FUN = min)[,2]#c(19.01, 19.57) # minimum air temperatures (째C)
+RAINFALL <- aggregate(RAINhr, by = list(weather$Date), FUN = sum)[,2]#c(19.01, 19.57) # minimum air temperatures (째C)
 RHMAXX <- aggregate(RHhr, by = list(weather$Date), FUN = max)[,2]#c(90.16, 80.92) # max relative humidity (%)
 RHMINN <- aggregate(RHhr, by = list(weather$Date), FUN = min)[,2]#c(11.05, 27.9) # min relative humidity (%)
 WNMAXX <- aggregate(WNhr, by = list(weather$Date), FUN = max)[,2]#c(1.35, 2.0) # max wind speed (m/s)
 WNMINN <- aggregate(WNhr, by = list(weather$Date), FUN = min)[,2]#c(0.485, 0.610) # min wind speed (m/s)
 
 ## ---- message=FALSE, warnings=FALSE--------------------------------------
-tannul <- mean(c(TMAXX, TMINN)) # annual mean temperature for getting monthly deep soil temperature (캜)
-tannulrun <- rep(tannul, doynum) # monthly deep soil temperature (2m) (캜)
+tannul <- mean(c(TMAXX, TMINN)) # annual mean temperature for getting monthly deep soil temperature (째C)
+tannulrun <- rep(tannul, doynum) # monthly deep soil temperature (2m) (째C)
 # creating the arrays of environmental variables that are assumed not to change with month for this simulation
 MAXSHADES <- rep(maxshade, doynum) # daily max shade (%)
 MINSHADES <- rep(minshade, doynum) # daily min shade (%)
@@ -237,7 +237,7 @@ intercept <- 0 # snow interception fraction for when there's shade (0-1)
 grasshade <- 0 # if 1, means shade is removed when snow is present, because shade is cast by grass/low veg
 
 ## ---- message=FALSE, warnings=FALSE--------------------------------------
-# intertidal simulation input vector (col 1 = tide in(1)/out(0), col 2 = sea water temperature in 캜, col 3 = % wet from wave splash)
+# intertidal simulation input vector (col 1 = tide in(1)/out(0), col 2 = sea water temperature in 째C, col 3 = % wet from wave splash)
 tides <- matrix(data = 0, nrow = 24 * doynum, ncol = 3) # matrix for tides
 
 ## ---- message=FALSE, warnings=FALSE--------------------------------------

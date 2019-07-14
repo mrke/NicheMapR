@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
  eval = TRUE
 )
 ```
-This vignette runs through the core inputs and outputs of the NicheMapR microclimate model, using monthly mean inputs for Madison Wisconsin, USA. It provides a basis for developing scripts and functions that are customised to particular databases of climate/weather, terrain, vegetation and soil properties. See also the [microclimate-hourly-input-example](microclimate-hourly-input-example.Rmd) vignette for an illustration of how to set the model to run from hourly input across all days of a year. It is Appendix 3 of the NicheMapR microclimate software note, Porter and Kearney (2016). NicheMapR - an R package for biophysical modelling: the microclimate model. Ecography x(x) p. x-x.
+This vignette runs through the core inputs and outputs of the NicheMapR microclimate model, using monthly mean inputs for Madison Wisconsin, USA. It provides a basis for developing scripts and functions that are customised to particular databases of climate/weather, terrain, vegetation and soil properties. See also the [microclimate-hourly-input-example](microclimate-hourly-input-example.Rmd) vignette for an illustration of how to set the model to run from hourly input across all days of a year. It is Appendix 3 of the NicheMapR microclimate software note, Porter and Kearney (2017). NicheMapR - an R package for biophysical modelling: the microclimate model. Ecography 40(5) p. 664-674 DOI 10.1111/ecog.02360.
 
 ### Model mode settings
 

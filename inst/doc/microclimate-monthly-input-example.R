@@ -69,8 +69,8 @@ ERR <- 1.5 # Integrator error for soil temperature calculations
 ## ------------------------------------------------------------------------
 TIMINS <- c(0, 0, 1, 1)   # time of minima for air temp, wind, humidity and cloud cover (h), air & wind mins relative to sunrise, humidity and cloud cover mins relative to solar noon
 TIMAXS <- c(1, 1, 0, 0)   # time of maxima for air temp, wind, humidity and cloud cover (h), air temp & wind maxs relative to solar noon, humidity and cloud cover maxs relative to sunrise
-TMINN <- c(-14.3, -12.1, -5.1, 1.2, 6.9, 12.3, 15.2, 13.6, 8.9, 3, -3.2, -10.6) # minimum air temperatures (캜)
-TMAXX <- c(-3.2, 0.1, 6.8, 14.6, 21.3, 26.4, 29, 27.7, 23.3, 16.6, 7.8, -0.4) # maximum air temperatures (캜)
+TMINN <- c(-14.3, -12.1, -5.1, 1.2, 6.9, 12.3, 15.2, 13.6, 8.9, 3, -3.2, -10.6) # minimum air temperatures (째C)
+TMAXX <- c(-3.2, 0.1, 6.8, 14.6, 21.3, 26.4, 29, 27.7, 23.3, 16.6, 7.8, -0.4) # maximum air temperatures (째C)
 RHMINN <- c(50.2, 48.4, 48.7, 40.8, 40, 42.1, 45.5, 47.3, 47.6, 45, 51.3, 52.8) # min relative humidity (%)
 RHMAXX <- c(100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100) # max relative humidity (%)
 WNMINN <- c(4.9, 4.8, 5.2, 5.3, 4.6, 4.3, 3.8, 3.7, 4, 4.6, 4.9, 4.8) # min wind speed (m/s)
@@ -78,15 +78,15 @@ WNMAXX <- c(4.9, 4.8, 5.2, 5.3, 4.6, 4.3, 3.8, 3.7, 4, 4.6, 4.9, 4.8) # max wind
 CCMINN <- c(50.3, 47, 48.2, 47.5, 40.9, 35.7, 34.1, 36.6, 42.6, 48.4, 61.1, 60.1) # min cloud cover (%)
 CCMAXX <- c(50.3, 47, 48.2, 47.5, 40.9, 35.7, 34.1, 36.6, 42.6, 48.4, 61.1, 60.1) # max cloud cover (%)
 RAINFALL <- c(28, 28.2, 54.6, 79.7, 81.3, 100.1, 101.3, 102.5, 89.7, 62.4, 54.9, 41.2) # monthly mean rainfall (mm)
-TAIRhr <- rep(0, 24*doynum) # hourly air temperatures (캜), not used unless 'hourly=1'
+TAIRhr <- rep(0, 24*doynum) # hourly air temperatures (째C), not used unless 'hourly=1'
 RHhr <- rep(0, 24*doynum) # hourly relative humidity (%), not used unless 'hourly=1'
 WNhr <- rep(0, 24*doynum) # hourly wind speed (m/s), not used unless 'hourly=1'
 CLDhr <- rep(0, 24*doynum) # hourly cloud cover (%), not used unless 'hourly=1'
 SOLRhr <- rep(0, 24*doynum) # hourly solar radiation (W/m2, not used unless 'hourly=1'
 RAINhr <- rep(0, 24*doynum) # hourly rainfall (mm), not used unless 'hourly=1'
 ZENhr <- rep(-1, 24*doynum) # hourly zenith angle (degrees), not used unless 'hourly=1'
-tannul <- mean(c(TMAXX, TMINN)) # annual mean temperature for getting monthly deep soil temperature (캜)
-tannulrun <- rep(tannul, doynum) # monthly deep soil temperature (2m) (캜)
+tannul <- mean(c(TMAXX, TMINN)) # annual mean temperature for getting monthly deep soil temperature (째C)
+tannulrun <- rep(tannul, doynum) # monthly deep soil temperature (2m) (째C)
 SoilMoist <- c(0.42, 0.42, 0.42, 0.43, 0.44, 0.44, 0.43, 0.42, 0.41, 0.42, 0.42, 0.43) # soil moisture (decimal %, 1 means saturated)
 # creating the arrays of environmental variables that are assumed not to change with month for this simulation
 MAXSHADES <- rep(maxshade, doynum) # daily max shade (%)
@@ -159,7 +159,7 @@ intercept <- 0 # snow interception fraction for when there's shade (0-1)
 grasshade <- 0 # if 1, means shade is removed when snow is present, because shade is cast by grass/low veg
 
 ## ------------------------------------------------------------------------
-# intertidal simulation input vector (col 1 = tide in(1)/out(0), col 2 = sea water temperature in 캜, col 3 = % wet from wave splash)
+# intertidal simulation input vector (col 1 = tide in(1)/out(0), col 2 = sea water temperature in 째C, col 3 = % wet from wave splash)
 tides <- matrix(data = 0, nrow = 24 * doynum, ncol = 3) # matrix for tides
 
 ## ------------------------------------------------------------------------
@@ -200,11 +200,11 @@ minshade <- micro$MINSHADES[1]
 maxshade <- micro$MAXSHADES[1]
 
 # plotting above-ground conditions in minimum shade
-with(plotmetout, {plot(TALOC ~ dates, xlab = "Date and Time", ylab = "Air Temperature (캜)", type = "l", main = paste("air temperature, ", minshade, "% shade", sep=""))})
-with(plotmetout, {points(TAREF ~ dates, xlab = "Date and Time", ylab = "Air Temperature (캜)", type = "l", lty = 2, col = 'blue')})
+with(plotmetout, {plot(TALOC ~ dates, xlab = "Date and Time", ylab = "Air Temperature (째C)", type = "l", main = paste("air temperature, ", minshade, "% shade", sep=""))})
+with(plotmetout, {points(TAREF ~ dates, xlab = "Date and Time", ylab = "Air Temperature (째C)", type = "l", lty = 2, col = 'blue')})
 with(plotmetout, {plot(RHLOC ~ dates, xlab = "Date and Time", ylab = "Relative Humidity (%)", type = "l", ylim = c(0, 100), main = paste("humidity, ", minshade, "% shade", sep = ""))})
 with(plotmetout, {points(RH ~ dates, xlab = "Date and Time", ylab = "Relative Humidity (%)", type = "l", col = 'blue', lty = 2, ylim = c(0, 100))})
-with(plotmetout, {plot(TSKYC ~ dates, xlab = "Date and Time", ylab = "Sky Temperature (캜)", type = "l", main = paste("sky temperature, ", minshade, "% shade", sep = ""))})
+with(plotmetout, {plot(TSKYC ~ dates, xlab = "Date and Time", ylab = "Sky Temperature (째C)", type = "l", main = paste("sky temperature, ", minshade, "% shade", sep = ""))})
 with(plotmetout, {plot(VREF ~ dates, xlab = "Date and Time", ylab = "Wind Speed (m/s)"
 , type = "l", main = "wind speed")})
 with(plotmetout, {points(VLOC ~ dates, xlab = "Date and Time", ylab = "Wind Speed (m/s)", type = "l", lty = 2, col = 'blue')})
@@ -214,26 +214,26 @@ with(plotmetout, {plot(SOLR ~ dates, xlab = "Date and Time", ylab = "Solar Radia
 # plotting soil temperature for minimum shade
 for(i in 1:10){
  if(i == 1){
-   plot(plotsoil[, i + 3] ~ plotsoil[, 1], xlab = "Date and Time", ylab = "Soil Temperature (캜)", col = i, type = "l", main = paste("soil temperature ", minshade, "% shade", sep=""))
+   plot(plotsoil[, i + 3] ~ plotsoil[, 1], xlab = "Date and Time", ylab = "Soil Temperature (째C)", col = i, type = "l", main = paste("soil temperature ", minshade, "% shade", sep=""))
  }else{
-   points(plotsoil[, i + 3] ~ plotsoil[, 1], xlab = "Date and Time", ylab = "Soil Temperature (캜)", col = i, type = "l")
+   points(plotsoil[, i + 3] ~ plotsoil[, 1], xlab = "Date and Time", ylab = "Soil Temperature (째C)", col = i, type = "l")
  }
 }
 
 # plotting above-ground conditions in maximum shade
-with(plotshadmet, {plot(TALOC ~ dates, xlab = "Date and Time", ylab = "Air Temperature (캜)", type = "l", main = paste("air temperature, ", maxshade, "% shade", sep = ""))})
-with(plotshadmet, {points(TAREF ~ dates, xlab = "Date and Time", ylab = "Air Temperature (캜)", type = "l", lty = 2, col = 'blue')})
+with(plotshadmet, {plot(TALOC ~ dates, xlab = "Date and Time", ylab = "Air Temperature (째C)", type = "l", main = paste("air temperature, ", maxshade, "% shade", sep = ""))})
+with(plotshadmet, {points(TAREF ~ dates, xlab = "Date and Time", ylab = "Air Temperature (째C)", type = "l", lty = 2, col = 'blue')})
 with(plotshadmet,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
 , type = "l",ylim=c(0,100),main=paste("humidity, ",maxshade,"% shade",sep=""))})
 with(plotshadmet, {points(RH ~ dates, xlab = "Date and Time", ylab = "Relative Humidity (%)", type = "l", col = 'blue', lty = 2, ylim = c(0, 100))})
-with(plotshadmet, {plot(TSKYC ~ dates, xlab = "Date and Time", ylab = "Sky Temperature (캜)", type = "l", main = paste("sky temperature, ", maxshade, "% shade", sep = ""))})
+with(plotshadmet, {plot(TSKYC ~ dates, xlab = "Date and Time", ylab = "Sky Temperature (째C)", type = "l", main = paste("sky temperature, ", maxshade, "% shade", sep = ""))})
 
 # plotting soil temperature for maximum shade
 for(i in 1:10){
  if(i == 1){
-   plot(plotshadsoil[, i + 3] ~ plotshadsoil[, 1], xlab = "Date and Time", ylab = "Soil Temperature (캜)", col = i, type = "l", main = paste("soil temperature ", maxshade, "% shade", sep = ""))
+   plot(plotshadsoil[, i + 3] ~ plotshadsoil[, 1], xlab = "Date and Time", ylab = "Soil Temperature (째C)", col = i, type = "l", main = paste("soil temperature ", maxshade, "% shade", sep = ""))
  }else{
-   points(plotshadsoil[, i + 3] ~ plotshadsoil[, 1], xlab = "Date and Time", ylab = "Soil Temperature (캜)", col = i, type = "l")
+   points(plotshadsoil[, i + 3] ~ plotshadsoil[, 1], xlab = "Date and Time", ylab = "Soil Temperature (째C)", col = i, type = "l")
  }
 }
 
