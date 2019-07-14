@@ -428,7 +428,7 @@
 #'}
 #' @examples
 #'# run the microclimate model
-#'micro <- micro_global(loc = c(145.620, -16.821) #Kuranda, Queensland
+#'micro <- micro_global(loc = c(145.620, -16.821)) #Kuranda, Queensland
 #'
 #'# retrieve output
 #'metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
