@@ -126,8 +126,7 @@
 #' \strong{ Intertidal mode parameters:}
 #'
 #' \code{shore}{ Include tide effects? If 1, the matrix}
-#' \code{tides}
-#' { is used to specify tide presence, sea water temperature and presence of wavesplash}\cr\cr
+#' \code{tides}{ is used to specify tide presence, sea water temperature and presence of wavesplash}\cr\cr
 #' \code{tides}{ = matrix(data = 0, nrow = length(seq(as.POSIXct(dstart, format = "%d/%m/%Y"), as.POSIXct(dfinish, format = "%d/%m/%Y"), by = "days")) * 24, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (°C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
 #' }
 #'
