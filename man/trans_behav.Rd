@@ -90,7 +90,7 @@ trans_behav(t = seq(1, 60), Tc_init = rep(20, 60), Ts_init = Tc_init
 
 \item{shadsoil}{= shadsoil, maximum shade soil temperature output table from NicheMapR's microclimate model}
 
-\item{press}{air pressure (Pa)
+\item{press}{= 101325, air pressure (Pa)
 
 \strong{Outputs:}
 

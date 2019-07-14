@@ -44,14 +44,14 @@ is based on equations from List, R. J. 1971. Smithsonian Meteorological Tables. 
 Institution Press. Washington, DC. WETAIR must be used in conjunction with function VAPPRS.
 }
 \details{
-Input variables are shown below. The user must supply known values for DB and BP (BP at one standard
+Input variables are shown below. The user must supply known values for db and bp (bp at one standard
 atmosphere is 101 325 pascals). Values for the remaining variables are determined by whether the user has
-either (1) psychrometric data (WB or RH), or (2) hygrometric data (DP)
+either (1) psychrometric data (wb or rh), or (2) hygrometric data (dp)
 
 (1) Psychrometric data:
-If WB is known but not RH, then set RH=-1 and DP=999
-If RH is known but not WB then set WB=0 and DP=999
+If wb is known but not rh, then set rh=-1 and dp=999
+If rh is known but not wb then set wb=0 and dp=999
 
 (2) Hygrometric data:
-If DP is known then set WB = 0 and RH = 0.
+If dp is known then set wb = 0 and rh = 0.
 }

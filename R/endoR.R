@@ -198,7 +198,7 @@
 #' SKINW <- 0.1 # base skin wetness (%)
 #' MXWET <- 20 # maximum skin wetness (%)
 #' SWEAT <- 0.25 # intervals by which skin wetness is increased (%)
-#' Q10 <- 2 # A10 effect of body temperature on metabolic rate
+#' Q10 <- 2 # Q10 effect of body temperature on metabolic rate
 #' QBASAL <- 10 ^ (-1.461 + 0.669 * log10(AMASS * 1000)) # basal heat generation (W) (bird formula from McKechnie and Wolf 2004 Phys. & Biochem. Zool. 77:502-521)
 #' DELTAR <- 5 # offset between air temeprature and breath (°C)
 #' EXTREF <- 15 # O2 extraction efficiency (%)
