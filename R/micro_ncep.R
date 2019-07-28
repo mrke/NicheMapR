@@ -670,9 +670,13 @@ micro_ncep <- function(
 
     if(save != 2){
       ncquery <- function(filename, var, start, count, year){
-        nc <- RNetCDF::open.nc(paste(spatial, "/",filename,year,".nc", sep = ""))
-        out <- as.numeric(RNetCDF::var.get.nc(nc, variable = var, start = start, count = count))
-        RNetCDF::close.nc(nc)
+        if (!require("ncdf4", quietly = TRUE)) {
+          stop("package 'ncdf4' is needed. Please install it.",
+               call. = FALSE)
+        }
+        nc <- ncdf4::nc_open(paste(spatial, "/",filename,year,".nc", sep = ""))
+        out <- as.numeric(ncdf4::ncvar_get(nc, varid = var, start = start, count = count))
+        ncdf4::nc_close(nc)
         out
       }
       if(is.na(spatial) == FALSE){
@@ -720,7 +724,7 @@ micro_ncep <- function(
         index2 <- which.min(dist2)
         lat3 <- lat2[index2]
         start <- c(index1, index2, 1, 1) # for chosen years
-        count <- c(1, 1, 1, NA) # for chosen years
+        count <- c(1, 1, 1, -1) # for chosen years
         start2 <- c(index1, index2, 1, 1460-3) # for year prior to chosen years (getting the last day)
         count2 <- c(1, 1, 1, 4) # for year prior/year after chosen years (getting the last four or first four values, i.e. hours 0, 6, 12, 18)
         RNetCDF::close.nc(nc)
