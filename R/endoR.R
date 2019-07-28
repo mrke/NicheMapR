@@ -60,7 +60,7 @@
 #' \code{FATPCT}{ = 20, \% body fat}\cr\cr
 #' \code{GMULT}{ = GMREF, current ratio between long and short axis (-)}\cr\cr
 #' \code{GMULTMAX}{ = GMREF, max possible ratio between long and short axis (-)}\cr\cr
-#' \code{MAXPTVEN}{ = 0, maxium fraction of surface area that is ventral (fractional, 0-1)}\cr\cr
+#' \code{MAXPTVEN}{ = 0.5, maxium fraction of surface area that is ventral (fractional, 0-1)}\cr\cr
 #' \code{AWING}{ = 0, area of wing, to do}\cr\cr
 #' \code{PTCOND}{ = 0, \% of body area touching the substrate}\cr\cr
 #'
@@ -278,9 +278,10 @@ endoR <- function(
   GMREF = 3, # initial ratio between long and short axis (-)
   GMULT = GMREF, # current ratio between long and short axis (-)
   GMULTMAX = GMREF, # max possible ratio between long and short axis (-)
-  MAXPTVEN = 0, # maxium fraction of surface area that is ventral (fractional, 0-1)
+  MAXPTVEN = 0.5, # maxium fraction of surface area that is ventral (fractional, 0-1)
   AWING = 0, # area of wing, to do
   PTCOND = 0, # % of body area touching the substrate
+  BIRD = 0, # if 1, uses bird skin surface area allometry from Walsberg, G. E., and J. E. King. 1978. The Relationship of the External Surface Area of Birds to Skin Surface Area and Body Mass. Journal of Experimental Biology 76:185–189.
 
   # fur properties
   FURTHRMK = 0, # user-specified fur thermal conductivity (W/mK), not used if 0
@@ -384,7 +385,7 @@ endoR <- function(
 #   GMREF = 3 # initial ratio between long and short axis (-)
 #   GMULT = GMREF # current ratio between long and short axis (-)
 #   GMULTMAX = GMREF # max possible ratio between long and short axis (-)
-#   MAXPTVEN = 0 # maxium fraction of surface area that is ventral (fractional, 0-1)
+#   MAXPTVEN = 0.5 # maxium fraction of surface area that is ventral (fractional, 0-1)
 #   AWING = 0 # area of wing, to do
 #   PTCOND = 0 # % of body area touching the substrate
 #
@@ -476,7 +477,7 @@ endoR <- function(
     GMULT <- GMULTMAX
   }
   TVEG <- TA
-  SOLVENDO.input <- c(QGEN, QBASAL,TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, NGEOM,EMISAN,FATOBJ,FSKREF,FGDREF,NESTYP,PCTDIF,ABSSB,AWING,FLTYPE,ELEV,BP,NITESHAD,SHADE,QSOLR,RoNEST,Z,VEL, TS,TFA,FABUSH,FURTHRMK,RH,TCONDSB,TBUSH,TC,PCTBAREVAP,FLYHR,BAREVAP,AK1,AK2,PCTEYES,DIFTOL,SKINW,TSKY,TVEG,TAREF,DELTAR,RQ, TIMACT, O2GAS, N2GAS, CO2GAS,RELXIT,PANT,EXTREF,UNCURL,AKMAX,AK1inc,TCMAX,RAISETC,TCREF,Q10,QBASREF,PANTMAX,MXWET, SWEAT,TGRD,AMASS,ANDENS,SUBQFAT,FATPCT,PTCOND,PANTING)
+  SOLVENDO.input <- c(QGEN, QBASAL,TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, NGEOM,EMISAN,FATOBJ,FSKREF,FGDREF,NESTYP,PCTDIF,ABSSB,AWING,FLTYPE,ELEV,BP,NITESHAD,SHADE,QSOLR,RoNEST,Z,VEL, TS,TFA,FABUSH,FURTHRMK,RH,TCONDSB,TBUSH,TC,PCTBAREVAP,FLYHR,BAREVAP,AK1,AK2,PCTEYES,DIFTOL,SKINW,TSKY,TVEG,TAREF,DELTAR,RQ, TIMACT, O2GAS, N2GAS, CO2GAS,RELXIT,PANT,EXTREF,UNCURL,AKMAX,AK1inc,TCMAX,RAISETC,TCREF,Q10,QBASREF,PANTMAX,MXWET, SWEAT,TGRD,AMASS,ANDENS,SUBQFAT,FATPCT,PTCOND,PANTING, BIRD)
   endo.out <- SOLVENDO(SOLVENDO.input)
   colnames(endo.out) <- c("TC", "TLUNG", "TFA_D", "TFA_V", "TSKIN_D", "TSKIN_V", "QCONV_D", "QCONV_V", "QCOND_D", "QCOND_V", "QGENNET_D", "QGENNET_V", "QSEVAP_D", "QSEVAP_V", "QRAD_D", "QRAD_V", "QSLR_D", "QSLR_V", "QRSKY_D", "QRSKY_V", "QRBSH_D", "QRBSH_V", "QRVEG_D", "QRVEG_V", "QRGRD_D", "QRGRD_V", "NTRY_D", "NTRY_V", "SUCCESS_D", "SUCCESS_V", "RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL", "GMULT", "PANT", "SKINW", "SWEAT.G.H", "EVAP.G.H", "AK", "TA", "TGRD", "TCONDSB", "TSKY", "VEL", "RH", "QSOLR")
   return(endo.out)

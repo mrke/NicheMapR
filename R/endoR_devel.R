@@ -66,7 +66,7 @@
 #' \code{FATPCT}{ = 20, \% body fat}\cr\cr
 #' \code{GMULT}{ = GMREF, current ratio between long and short axis (-)}\cr\cr
 #' \code{GMULTMAX}{ = GMREF, max possible ratio between long and short axis (-)}\cr\cr
-#' \code{MAXPTVEN}{ = 0, maxium fraction of surface area that is ventral (fractional, 0-1)}\cr\cr
+#' \code{MAXPTVEN}{ = 0.5, maxium fraction of surface area that is ventral (fractional, 0-1)}\cr\cr
 #' \code{AWING}{ = 0, area of wing, to do}\cr\cr
 #' \code{PTCOND}{ = 0, \% of body area touching the substrate}\cr\cr
 #'
@@ -300,9 +300,10 @@ endoR_devel <- function(
   GMREF = 3, # initial ratio between long and short axis (-)
   GMULT = GMREF, # current ratio between long and short axis (-)
   GMULTMAX = GMREF, # max possible ratio between long and short axis (-)
-  MAXPTVEN = 0, # maxium fraction of surface area that is ventral (fractional, 0-1)
+  MAXPTVEN = 0.5, # maxium fraction of surface area that is ventral (fractional, 0-1)
   AWING = 0, # area of wing, to do
   PTCOND = 0, # % of body area touching the substrate
+  BIRD = 0, # if 1, uses bird skin surface area allometry from Walsberg, G. E., and J. E. King. 1978. The Relationship of the External Surface Area of Birds to Skin Surface Area and Body Mass. Journal of Experimental Biology 76:185–189.
 
   # fur properties
   FURTHRMK = 0, # user-specified fur thermal conductivity (W/mK), not used if 0
@@ -419,7 +420,7 @@ endoR_devel <- function(
     POSTUR <- NGEOM # posture, 0 is plate, 1 is cylinder, 2 is sphere, 4 is ellipsoid
 
     # call the subroutine
-    GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA, RHOARA, PTCOND)
+    GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA, RHOARA, PTCOND, BIRD)
 
     # output
     R <- GEOM.out[1] # radius as determined assumming the volume as a sphere, m
@@ -633,7 +634,7 @@ endoR_devel <- function(
       # call SIMULSOL
       SIMULSOL.out[S,] <- SIMULSOL(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA, SKINW, TS)
     }
-
+    TSKINMAX <- max(SIMULSOLout[1,2], SIMULSOLout[2,2])
     ### ZBRENT and RESPFUN
 
     # Now compute a weighted mean heat generation for all the parts/components = (dorsal value *(FASKY+FAVEG+FATOBJ))+(ventral value*FAGRD)
@@ -657,7 +658,7 @@ endoR_devel <- function(
     # now guess for metabolic rate that balances the heat budget while allowing metabolic rate
     # to remain at or above QBASAL, via 'shooting method' ZBRENT
     QMIN <- QBASAL
-    if(TA<TC){
+    if(TA < TC & TSKINMAX < TC){
      QM1 <- QBASAL * 2 * -1
      QM2 <- QBASAL * 50
     }else{
