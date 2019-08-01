@@ -74,7 +74,7 @@ ectorun <- function(ecto) {
                 as.double(ecto$minshades),
                 as.double(ecto$maxshades),
                 as.double(ecto$S_instar),
-                environ=matrix(data = 0, nrow = ndays * 24, ncol = 27),
+                environ=matrix(data = 0, nrow = ndays * 24, ncol = 28),
                 enbal=matrix(data = 0, nrow = ndays * 24, ncol = 13),
                 masbal=matrix(data = 0, nrow = ndays * 24, ncol = 19),
                 debout=matrix(data = 0, nrow = ndays * 24, ncol = 21),
@@ -83,7 +83,7 @@ ectorun <- function(ecto) {
                 PACKAGE = "NicheMapR"
   )
 
-  environ <- matrix(data = 0, nrow = 24 * ndays, ncol = 27)
+  environ <- matrix(data = 0, nrow = 24 * ndays, ncol = 28)
   enbal <- matrix(data = 0, nrow = 24 * ndays, ncol = 13)
   masbal <- matrix(data = 0, nrow = 24 * ndays, ncol = 19)
   debout <- matrix(data = 0, nrow = 24 * ndays, ncol = 21)
@@ -106,7 +106,7 @@ ectorun <- function(ecto) {
   debout[,4] <- debout[,4] - 1 # make first hour midnight
   yearout<-a$yearout
   yearsout<-a$yearsout
-  environ.names<-c("DOY","YEAR","DAY","TIME","TC","SHADE","SOLAR","DEP","ACT","TA","TSUB","TSKY","VEL","RELHUM","ZEN","CONDEP","WATERTEMP","DAYLENGTH","WINGANGLE","WINGTEMP","FLYING","FLYTIME","PO2WATER","SALWATER","ABSAN","PTCOND","POSTURE")
+  environ.names<-c("DOY","YEAR","DAY","TIME","TC","SHADE","SOLAR","DEP","ACT","TA","TSUB","TSKY","VEL","RELHUM","ZEN","CONDEP","WATERTEMP","DAYLENGTH","WINGANGLE","WINGTEMP","FLYING","FLYTIME","PO2WATER","SALWATER","ABSAN","PTCOND","POSTURE","PANT")
   enbal.names<-c("DOY","YEAR","DAY","TIME","QSOL","QIRIN","QMET","QEVAP","QIROUT","QCONV","QCOND","ENB","NTRY")
   masbal.names<-c("DOY","YEAR","DAY","TIME","O2_ml","CO2_ml","NWASTE_g","H2OFree_g","H2OMet_g","DryFood_g","WetFood_g","DryFaeces_g","WetFaeces_G","Urine_g","H2OResp_g","H2OCut_g","H2OEye_g","H2OBal_g","H2OCumBal_g")
   debout.names<-c("DOY","YEAR","DAY","TIME","STAGE","V","E","E_H","L_W","WETMASS","WETGONAD","WETGUT","PCT_DESIC","E_R","E_B","BREEDING","PREGNANT","V_BABY","E_BABY","H_S","P_SURV")

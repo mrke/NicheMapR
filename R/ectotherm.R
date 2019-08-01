@@ -34,6 +34,8 @@
 #' @param M_3 = 0.038, Metabolic rate parameter 3
 #' @param pct_wet = 0.2, \% of surface area acting as a free-water exchanger, for computing cutaneous water loss
 #' @param pct_eyes = 0.03, \% of surface area taken up by open eyes, for computing ocular water loss (only when active)
+#' @param pct_mouth = 5, \% of surface area taken up by open mouth, for computing panting water loss
+#' @param pantmax = 5, maximum multiplier on breathing rate, for respiratory water loss via panting
 #' @param F_O2 = 20, \% oxygen extraction efficiency, for respiratory water loss
 #' @param delta_air = 0.1, Temperature difference (°C) between expired and inspired air, for computing respiratory water loss
 #' @usage ectotherm(Ww_g, shape, alpha_max, alpha_min, T_F_min, T_F_max, T_B_min, T_RB_min, CT_max, CT_min,
@@ -509,6 +511,8 @@ ectotherm <- function(
   M_3=0.038,
   pct_wet=0.1,
   pct_eyes=0.03,
+  pct_mouth=5,
+  pantmax=1,
   F_O2=20,
   delta_air=0.1,
   nyears=micro$nyears,
@@ -809,7 +813,7 @@ ectotherm <- function(
   tannul <- as.numeric(mean(soil[, 12])) # annual mean temperature, deg C
   tester <- 0 # unused
   microyear <- 1 # extraneous
-  ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PCTDIF, EMISSK, EMISSB, ABSSB, shade, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, SPARE1, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, SPARE2, F_O2, T_pref, pct_cond/100, skint, gas, transient, soilnode, o2max, SPARE4, tannul, nodnum, postur, maxshd, minshd, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, SPARE1, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, F_m, k_sub, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod))
+  ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PCTDIF, EMISSK, EMISSB, ABSSB, shade, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond/100, skint, gas, transient, soilnode, o2max, SPARE4, tannul, nodnum, postur, maxshd, minshd, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, SPARE1, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, F_m, k_sub, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod))
   debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, FoodWater1, f, s_G, K, X[1], metab_mode, stages, y_EV_l, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He)
   deblast <- c(iyear, countday, V_init, E_init, ES_init, cumrepro_init, q_init, hs_init, cumbatch_init, V_baby_init, E_baby_init, E_H_init, stage)
 

@@ -60,6 +60,10 @@ ectotherm(Ww_g, shape, alpha_max, alpha_min, T_F_min, T_F_max, T_B_min, T_RB_min
 
 \item{pct_eyes}{= 0.03, \% of surface area taken up by open eyes, for computing ocular water loss (only when active)}
 
+\item{pct_mouth}{= 5, \% of surface area taken up by open mouth, for computing panting water loss}
+
+\item{pantmax}{= 5, maximum multiplier on breathing rate, for respiratory water loss via panting}
+
 \item{F_O2}{= 20, \% oxygen extraction efficiency, for respiratory water loss}
 
 \item{delta_air}{= 0.1, Temperature difference (°C) between expired and inspired air, for computing respiratory water loss}
