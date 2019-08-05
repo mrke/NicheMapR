@@ -15,6 +15,7 @@
 #' @param maxshade Maximum shade level to us (\%)
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
 #' @param coastal Compute coastal effects with microclima? T (TRUE) or F (FALSE) (can take a while and may have high memory requirements depending on DEM size)
+#' @param hourlydata user input of the hourlydata matrix
 #' @param ... Additional arguments, see Details
 #' @return metout The above ground micrometeorological conditions under the minimum specified shade
 #' @return shadmet The above ground micrometeorological conditions under the maximum specified shade
@@ -730,7 +731,7 @@ micro_ncep <- function(
         count2 <- c(1, 1, 1, 4) # for year prior/year after chosen years (getting the last four or first four values, i.e. hours 0, 6, 12, 18)
         RNetCDF::close.nc(nc)
         if(lon3 > 180){lon3 <- lon3 - 180} # ensure longitude is -180 to 180
-        if(!is.na(hourlydata)){
+        if(is.na(hourlydata)){
           for (j in 1:(nyears+2)) {
             if (j == 1) {
               Tkmin <- ncquery("tmin.2m.gauss.", "tmin", start2, count2, years[j]-1)
@@ -791,7 +792,7 @@ micro_ncep <- function(
         dailyrain <- dailyrain[1:(length(dailyrain) - 4)] # remove extra 5 values from end
         dailyrain <- aggregate(dailyrain, by = list(format(hourlydata$obs_time[seq(1, nrow(hourlydata), 6)], "%Y-%m-%d")), sum)$x
       }else{
-        if(!is.na(hourlydata)){
+        if(is.na(hourlydata)){
           cat("downloading weather data with package RNCEP via package microclima \n")
           hourlydata <- microclima::hourlyNCEP(ncepdata = NA, lat, long, tme, reanalysis) # interpolated to hourly
         }
