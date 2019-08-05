@@ -368,7 +368,8 @@ micro_ncep <- function(
   snowcond = 0,
   intercept = 0 / 100 * 0.3,
   grasshade = 0,
-  coastal = F){ # end function parameters
+  coastal = F,
+  hourlydata = NA){ # end function parameters
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
@@ -729,65 +730,71 @@ micro_ncep <- function(
         count2 <- c(1, 1, 1, 4) # for year prior/year after chosen years (getting the last four or first four values, i.e. hours 0, 6, 12, 18)
         RNetCDF::close.nc(nc)
         if(lon3 > 180){lon3 <- lon3 - 180} # ensure longitude is -180 to 180
-
-        for (j in 1:(nyears+2)) {
-          if (j == 1) {
-            Tkmin <- ncquery("tmin.2m.gauss.", "tmin", start2, count2, years[j]-1)
-            Tkmax <- ncquery("tmax.2m.gauss.", "tmax", start2, count2, years[j]-1)
-            Tk <- ncquery("air.2m.gauss.", "air", start2, count2, years[j]-1)
-            sh <- ncquery("shum.2m.gauss.", "shum", start2, count2, years[j]-1)
-            pr <- ncquery("pres.sfc.gauss.", "pres", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1) # only three dimensions, hence c(1,2,4)
-            tcdc <- ncquery("tcdc.eatm.gauss.", "tcdc", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
-            dsw <- ncquery("dswrf.sfc.gauss.", "dswrf", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
-            dlw <- ncquery("dlwrf.sfc.gauss.", "dlwrf", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
-            ulw <- ncquery("ulwrf.sfc.gauss.", "ulwrf", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
-            wu <- ncquery("uwnd.10m.gauss.", "uwnd", start2, count2, years[j]-1)
-            wv <- ncquery("vwnd.10m.gauss.", "vwnd", start2, count2, years[j]-1)
-            prate <- ncquery("prate.sfc.gauss.", "prate", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
-          }else{
-            if(j <= nyears+1){
-              cat(paste("reading weather input for ", years[j-1]," \n", sep = ""))
-              Tkmin <- c(Tkmin, ncquery("tmin.2m.gauss.", "tmin", start, count, years[j-1]))
-              Tkmax <- c(Tkmax, ncquery("tmax.2m.gauss.", "tmax", start, count, years[j-1]))
-              Tk <- c(Tk, ncquery("air.2m.gauss.", "air", start, count, years[j-1]))
-              sh <- c(sh, ncquery("shum.2m.gauss.", "shum", start, count, years[j-1]))
-              pr <- c(pr, ncquery("pres.sfc.gauss.", "pres", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
-              tcdc <- c(tcdc, ncquery("tcdc.eatm.gauss.", "tcdc", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
-              dsw <- c(dsw, ncquery("dswrf.sfc.gauss.", "dswrf", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
-              dlw <- c(dlw, ncquery("dlwrf.sfc.gauss.", "dlwrf", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
-              ulw <- c(ulw, ncquery("ulwrf.sfc.gauss.", "ulwrf", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
-              wu <- c(wu, ncquery("uwnd.10m.gauss.", "uwnd", start, count, years[j-1]))
-              wv <- c(wv, ncquery("vwnd.10m.gauss.", "vwnd", start, count, years[j-1]))
-              prate <- c(prate, ncquery("prate.sfc.gauss.", "prate", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
-            } else {
-              Tkmin <- c(Tkmin, ncquery("tmin.2m.gauss.", "tmin", start, count2, years[j-2]+1))
-              Tkmax <- c(Tkmax, ncquery("tmax.2m.gauss.", "tmax", start, count2, years[j-2]+1))
-              Tk <- c(Tk, ncquery("air.2m.gauss.", "air", start, count2, years[j-2]+1))
-              sh <- c(sh, ncquery("shum.2m.gauss.", "shum", start, count2, years[j-2]+1))
-              pr <- c(pr, ncquery("pres.sfc.gauss.", "pres", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
-              tcdc <- c(tcdc, ncquery("tcdc.eatm.gauss.", "tcdc", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
-              dsw <- c(dsw, ncquery("dswrf.sfc.gauss.", "dswrf", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
-              dlw <- c(dlw, ncquery("dlwrf.sfc.gauss.", "dlwrf", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
-              ulw <- c(ulw, ncquery("ulwrf.sfc.gauss.", "ulwrf", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
-              wu <- c(wu, ncquery("uwnd.10m.gauss.", "uwnd", start, count2, years[j-2]+1))
-              wv <- c(wv, ncquery("vwnd.10m.gauss.", "vwnd", start, count2, years[j-2]+1))
-              prate <- c(prate, ncquery("prate.sfc.gauss.", "prate", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
+        if(!is.na(hourlydata)){
+          for (j in 1:(nyears+2)) {
+            if (j == 1) {
+              Tkmin <- ncquery("tmin.2m.gauss.", "tmin", start2, count2, years[j]-1)
+              Tkmax <- ncquery("tmax.2m.gauss.", "tmax", start2, count2, years[j]-1)
+              Tk <- ncquery("air.2m.gauss.", "air", start2, count2, years[j]-1)
+              sh <- ncquery("shum.2m.gauss.", "shum", start2, count2, years[j]-1)
+              pr <- ncquery("pres.sfc.gauss.", "pres", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1) # only three dimensions, hence c(1,2,4)
+              tcdc <- ncquery("tcdc.eatm.gauss.", "tcdc", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
+              dsw <- ncquery("dswrf.sfc.gauss.", "dswrf", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
+              dlw <- ncquery("dlwrf.sfc.gauss.", "dlwrf", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
+              ulw <- ncquery("ulwrf.sfc.gauss.", "ulwrf", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
+              wu <- ncquery("uwnd.10m.gauss.", "uwnd", start2, count2, years[j]-1)
+              wv <- ncquery("vwnd.10m.gauss.", "vwnd", start2, count2, years[j]-1)
+              prate <- ncquery("prate.sfc.gauss.", "prate", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
+            }else{
+              if(j <= nyears+1){
+                cat(paste("reading weather input for ", years[j-1]," \n", sep = ""))
+                Tkmin <- c(Tkmin, ncquery("tmin.2m.gauss.", "tmin", start, count, years[j-1]))
+                Tkmax <- c(Tkmax, ncquery("tmax.2m.gauss.", "tmax", start, count, years[j-1]))
+                Tk <- c(Tk, ncquery("air.2m.gauss.", "air", start, count, years[j-1]))
+                sh <- c(sh, ncquery("shum.2m.gauss.", "shum", start, count, years[j-1]))
+                pr <- c(pr, ncquery("pres.sfc.gauss.", "pres", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
+                tcdc <- c(tcdc, ncquery("tcdc.eatm.gauss.", "tcdc", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
+                dsw <- c(dsw, ncquery("dswrf.sfc.gauss.", "dswrf", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
+                dlw <- c(dlw, ncquery("dlwrf.sfc.gauss.", "dlwrf", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
+                ulw <- c(ulw, ncquery("ulwrf.sfc.gauss.", "ulwrf", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
+                wu <- c(wu, ncquery("uwnd.10m.gauss.", "uwnd", start, count, years[j-1]))
+                wv <- c(wv, ncquery("vwnd.10m.gauss.", "vwnd", start, count, years[j-1]))
+                prate <- c(prate, ncquery("prate.sfc.gauss.", "prate", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
+              } else {
+                Tkmin <- c(Tkmin, ncquery("tmin.2m.gauss.", "tmin", start, count2, years[j-2]+1))
+                Tkmax <- c(Tkmax, ncquery("tmax.2m.gauss.", "tmax", start, count2, years[j-2]+1))
+                Tk <- c(Tk, ncquery("air.2m.gauss.", "air", start, count2, years[j-2]+1))
+                sh <- c(sh, ncquery("shum.2m.gauss.", "shum", start, count2, years[j-2]+1))
+                pr <- c(pr, ncquery("pres.sfc.gauss.", "pres", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
+                tcdc <- c(tcdc, ncquery("tcdc.eatm.gauss.", "tcdc", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
+                dsw <- c(dsw, ncquery("dswrf.sfc.gauss.", "dswrf", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
+                dlw <- c(dlw, ncquery("dlwrf.sfc.gauss.", "dlwrf", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
+                ulw <- c(ulw, ncquery("ulwrf.sfc.gauss.", "ulwrf", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
+                wu <- c(wu, ncquery("uwnd.10m.gauss.", "uwnd", start, count2, years[j-2]+1))
+                wv <- c(wv, ncquery("vwnd.10m.gauss.", "vwnd", start, count2, years[j-2]+1))
+                prate <- c(prate, ncquery("prate.sfc.gauss.", "prate", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
+              }
             }
           }
+          dsw[dsw < 0] <- 0
+          prate[prate < 0] <- 0
+          prate <- prate * 3600 * 6 # mm in 6 hrs
+          ncepdata <- data.frame(obs_time = tme2[sel], Tk, Tkmin, Tkmax, sh, pr, wu, wv, dlw, ulw, dsw, tcdc) # 6-hourly ncep for chosen period plus a day added either side for interpolation
+          hourlydata <- hourlyNCEP(ncepdata = ncepdata, lat, long, tme, reanalysis) # interpolated to hourly
+          cat("computing radiation and elevation effects with package microclima \n")
+          microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
+        }else{
+          cat("computing radiation and elevation effects with package microclima \n")
+          microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = NA, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
         }
-        dsw[dsw<0] <- 0
-        prate[prate<0] <- 0
-        prate <- prate * 3600 * 6 # mm in 6 hrs
-        ncepdata <- data.frame(obs_time = tme2[sel], Tk, Tkmin, Tkmax, sh, pr, wu, wv, dlw, ulw, dsw, tcdc) # 6-hourly ncep for chosen period plus a day added either side for interpolation
-        hourlydata <- hourlyNCEP(ncepdata = ncepdata, lat, long, tme, reanalysis) # interpolated to hourly
-        cat("computing radiation and elevation effects with package microclima \n")
-        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
         dailyrain <- microclima.out$dailyprecip[-c(1:4)] # remove extra 4 values from start
-        dailyrain <- dailyrain[1:(length(dailyrain)-4)] # remove extra 5 values from end
+        dailyrain <- dailyrain[1:(length(dailyrain) - 4)] # remove extra 5 values from end
         dailyrain <- aggregate(dailyrain, by = list(format(hourlydata$obs_time[seq(1, nrow(hourlydata), 6)], "%Y-%m-%d")), sum)$x
       }else{
-        cat("downloading weather data with package RNCEP via package microclima \n")
-        hourlydata <- microclima::hourlyNCEP(ncepdata = NA, lat, long, tme, reanalysis) # interpolated to hourly
+        if(!is.na(hourlydata)){
+          cat("downloading weather data with package RNCEP via package microclima \n")
+          hourlydata <- microclima::hourlyNCEP(ncepdata = NA, lat, long, tme, reanalysis) # interpolated to hourly
+        }
         cat("computing radiation and elevation effects with package microclima \n")
         microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = NA, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
         dailyrain <- microclima.out$dailyprecip
@@ -811,11 +818,11 @@ micro_ncep <- function(
         save(tref, file = 'tref.Rda')
       }
       # tref (original hourly NCEP)
-      # telev (delta temperature due to elev)
+      # telev (elevation-corrected temperature)
       # tcad (delta temperature due to cold air drainage)
       elev <- tref$elev[1] # m
       ALTT <- elev
-      TAIRhr <- tref$telev + tref$tcad # reference Tair plus offsets due to lapse rate and cold air drainage
+      TAIRhr <- tref$telev + tref$tcad # reference Tair corrected for lapse rate and cold air drainage
       SOLRhr <- hourlyradwind$swrad / 0.0036
       SOLRhr[SOLRhr < 0] <- 0
       SOLRhr <- zoo::na.approx(SOLRhr)
@@ -827,7 +834,7 @@ micro_ncep <- function(
       RHhr <- suppressWarnings(humidityconvert(h = hourlydata$humidity, intype = 'specific', p = hourlydata$pressure, tc = TAIRhr)$relative)
       RHhr[RHhr > 100] <- 100
       RHhr[RHhr < 0] <- 0
-      WNhr <- hourlyradwind$windspeed#*(1/10)^0.15 # adjust from 10m to 2m
+      WNhr <- hourlyradwind$windspeed
       WNhr[is.na(WNhr)] <- 0.1
       RAINhr <- WNhr * 0 # using daily rain for now
       PRESShr <- hourlydata$pressure
@@ -1056,8 +1063,8 @@ micro_ncep <- function(
     moists1[1:10,1:ndays]<-moists
     if(length(LAI)<ndays){
       LAI<-rep(LAI[1],ndays)
-      LAI1 <- LAI
     }
+    LAI1 <- LAI
     if(shore==0){
       tides<-matrix(data = 0, nrow = 24*ndays, ncol = 3) # make an empty matrix
     }
@@ -1178,4 +1185,4 @@ micro_ncep <- function(
       }
     }
   } # end error trapping
-  } # end of micro_ncep function
+} # end of micro_ncep function

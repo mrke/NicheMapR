@@ -98,6 +98,10 @@ rundeb <- function(
   }
   if(exists("E.Hj")==FALSE){E.Hj <- E.Hb} # if no acceleration, give E.Hj the value at birth
   if(exists("L.j")==FALSE){L.j <- L.b} # if no acceleration, give L.j the value at birth
+  if(exists("del.M")==FALSE){ # if no del.M, assume 0.2 and warn
+    del.M <- 0.2
+    cat("NOTE: No length data in parameter estimation, assuming del.M of 0.2, predictions of physical lengths are suspect.", '\n')
+  }
   metab_mode <- 0 # default (standard model or abj)
   if(abs(E.Hj - E.Hp) < .001){ # check if abp mode
     metab_mode <- 1
