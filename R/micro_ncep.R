@@ -16,6 +16,7 @@
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
 #' @param coastal Compute coastal effects with microclima? T (TRUE) or F (FALSE) (can take a while and may have high memory requirements depending on DEM size)
 #' @param hourlydata user input of the hourlydata matrix
+#' @param dailyprecip user input of daily rainfall
 #' @param ... Additional arguments, see Details
 #' @return metout The above ground micrometeorological conditions under the minimum specified shade
 #' @return shadmet The above ground micrometeorological conditions under the maximum specified shade
@@ -370,7 +371,8 @@ micro_ncep <- function(
   intercept = 0 / 100 * 0.3,
   grasshade = 0,
   coastal = F,
-  hourlydata = NA){ # end function parameters
+  hourlydata = NA,
+  dailyprecip = NA){ # end function parameters
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
@@ -788,16 +790,18 @@ micro_ncep <- function(
           cat("computing radiation and elevation effects with package microclima \n")
           microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = NA, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
         }
-        dailyrain <- microclima.out$dailyprecip[-c(1:4)] # remove extra 4 values from start
-        dailyrain <- dailyrain[1:(length(dailyrain) - 4)] # remove extra 5 values from end
-        dailyrain <- aggregate(dailyrain, by = list(format(hourlydata$obs_time[seq(1, nrow(hourlydata), 6)], "%Y-%m-%d")), sum)$x
+        if(is.na(dailyrain)){
+          dailyrain <- microclima.out$dailyprecip[-c(1:4)] # remove extra 4 values from start
+          dailyrain <- dailyrain[1:(length(dailyrain) - 4)] # remove extra 5 values from end
+          dailyrain <- aggregate(dailyrain, by = list(format(hourlydata$obs_time[seq(1, nrow(hourlydata), 6)], "%Y-%m-%d")), sum)$x
+        }
       }else{
         if(is.na(hourlydata)){
           cat("downloading weather data with package RNCEP via package microclima \n")
           hourlydata <- microclima::hourlyNCEP(ncepdata = NA, lat, long, tme, reanalysis) # interpolated to hourly
         }
         cat("computing radiation and elevation effects with package microclima \n")
-        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = NA, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
+        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = dailyprecip, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
         dailyrain <- microclima.out$dailyprecip
       }
       hourlyradwind <- microclima.out$hourlyradwind
