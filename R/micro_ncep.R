@@ -733,7 +733,7 @@ micro_ncep <- function(
         count2 <- c(1, 1, 1, 4) # for year prior/year after chosen years (getting the last four or first four values, i.e. hours 0, 6, 12, 18)
         RNetCDF::close.nc(nc)
         if(lon3 > 180){lon3 <- lon3 - 180} # ensure longitude is -180 to 180
-        if(is.na(hourlydata)){
+        if(class(hourlydata) == "logical"){
           for (j in 1:(nyears+2)) {
             if (j == 1) {
               Tkmin <- ncquery("tmin.2m.gauss.", "tmin", start2, count2, years[j]-1)
@@ -790,13 +790,13 @@ micro_ncep <- function(
           cat("computing radiation and elevation effects with package microclima \n")
           microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = NA, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
         }
-        if(is.na(dailyrain)){
+        if(class(dailyrain) == "logical"){
           dailyrain <- microclima.out$dailyprecip[-c(1:4)] # remove extra 4 values from start
           dailyrain <- dailyrain[1:(length(dailyrain) - 4)] # remove extra 5 values from end
           dailyrain <- aggregate(dailyrain, by = list(format(hourlydata$obs_time[seq(1, nrow(hourlydata), 6)], "%Y-%m-%d")), sum)$x
         }
       }else{
-        if(is.na(hourlydata)){
+        if(class(hourlydata) == "logical"){
           cat("downloading weather data with package RNCEP via package microclima \n")
           hourlydata <- microclima::hourlyNCEP(ncepdata = NA, lat, long, tme, reanalysis) # interpolated to hourly
         }

@@ -9,14 +9,13 @@
 #' @param PCTDIF A
 #' @param QNORM A
 #' @param SHADE A
-#' @param AWING A
 #' @param QSOLR A
 #' @param FASKY A
 #' @param FATOBJ A
 #' @param FAVEG A
 #' @export
 SOLAR <- function(AREATOTL, ABSAND, ABSANV, ABSSB, ASILN, PCTDIF, QNORM, SHADE,
-  AWING, QSOLR, FASKY, FATOBJ, FAVEG){
+  QSOLR, FASKY, FATOBJ, FAVEG){
   os = Sys.info()['sysname']
   if (os == "Windows") {
     if (R.Version()$arch=="x86_64") {
@@ -41,7 +40,6 @@ SOLAR <- function(AREATOTL, ABSAND, ABSANV, ABSSB, ASILN, PCTDIF, QNORM, SHADE,
     as.double(PCTDIF),
     as.double(QNORM),
     as.double(SHADE),
-    as.double(AWING),
     as.double(QSOLR),
     as.double(FASKY),
     as.double(FATOBJ),

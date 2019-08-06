@@ -135,7 +135,7 @@ There are a number of other columns in this output but they are of value zero be
 
 $V_{O_2} = M_1 M^{M_2} 10^{M_3 T_b}$
 
-where $M$ is the mass in grams, $T_b$ is the body temperature, and $M_1$, $M_2$ and $M_3$ are constants which can be user-defined. From this, in conjunction with the oxygen extraction efficiency `F_O2` and the difference in temperature between expired and inspired air `delta_air` (0.1 &deg;C by default), the respiratory water loss **H2OResp_g** can be computed. Note that it is negative in the burrow, i.e. a tiny amount of water is gained from breathing, due to the water being highly saturated. 
+where $M$ is the mass in grams, $T_b$ is the body temperature, and $M_1$, $M_2$ and $M_3$ are constants which can be user-defined. From this, in conjunction with the oxygen extraction efficiency `F_O2` and the difference in temperature between expired and inspired air `delta_air` (0.1 &deg;C by default), the respiratory water loss **H2OResp_g** can be computed. Note that it is negative in the burrow, i.e. a tiny amount of water is gained from breathing, due to the air being highly saturated. 
 
 From the percentage of the skin that is 'wet' `pct_wet` one can estimate the cutaneous water loss **H2O_cut**. The `pct_wet` parameter represents the \% surface area that would act as free water surface if all the little pores letting water through the skin were collected together in one place.
 
@@ -145,7 +145,7 @@ If you are interested in the other quantities available in the **masbal** output
 
 # Plotting some output
 
-Now let's take broader look at the simulation outcome, by plotting the results. We will this time be explicit about the parameter values as follows:
+Now let's take broader look at the simulation outcome, by plotting the results. We will this time be explicit about the parameter values as follows (see the help for the ectotherm model by typing ?ectotherm in the R console to get more details on the options for these and other parameters):
 
 ```{r, warning=FALSE, message=FALSE}
 Ww_g <- 40        # wet weight of animal (g)
@@ -175,7 +175,7 @@ maxshades <- micro$MAXSHADES # max available shade?
 Run the ectotherm model, retrieve the output and create some mock dates.
 
 ```{r, warning=FALSE, message=FALSE}
-ecto <- ectotherm(Ww_g = Ww_g, alpha_max = alpha_max, alpha_min = alpha_min, pct_wet = pct_wet,
+ecto <- ectotherm(Ww_g = Ww_g, alpha_max = alpha_max, alpha_min = alpha_min, shape = shape, pct_wet = pct_wet,
                   T_F_max = T_F_max, T_F_min = T_F_min, T_B_min = T_B_min, T_RB_min = T_RB_min,
                   CT_max = CT_max, CT_min = CT_min, T_pref = T_pref, mindepth = mindepth, 
                   maxdepth = maxdepth, shade_seek = shade_seek, burrow = burrow, climb = climb,

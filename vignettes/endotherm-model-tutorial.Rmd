@@ -61,7 +61,7 @@ RAISETC <- 0.25 # increment by which TC is elevated (deg C)
 # size and shape
 AMASS <- 0.0337 # mass (kg)
 GMREF <- 2.5 # start off near to a sphere (-)
-GMULTMAX <- 2.5 # maximum ratio of length to width/depth (high value to capture opening of wings)
+GMULTMAX <- 2.5 # maximum ratio of length to width/depth
 UNCURL <- 0.1 # allows the animal to uncurl to GMULTMAX, the value being the increment GMULT is increased per iteration
 BIRD <- 1 # use bird surface area relations
 
@@ -160,7 +160,7 @@ RAISETC <- 0.25 # increment by which TC is elevated (deg C)
 # size and shape
 AMASS <- 0.0337 # mass (kg)
 GMREF <- 1.1 # start off near to a sphere (-)
-GMULTMAX <- 5 # maximum ratio of length to width/depth (high value to capture opening of wings)
+GMULTMAX <- 5 # maximum ratio of length to width/depth
 UNCURL <- 0.1 # allows the animal to uncurl to GMULTMAX, the value being the increment GMULT is increased per iteration
 BIRD <- 1
 

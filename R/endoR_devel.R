@@ -67,7 +67,6 @@
 #' \code{GMULT}{ = GMREF, current ratio between long and short axis (-)}\cr\cr
 #' \code{GMULTMAX}{ = GMREF, max possible ratio between long and short axis (-)}\cr\cr
 #' \code{MAXPTVEN}{ = 0.5, maxium fraction of surface area that is ventral (fractional, 0-1)}\cr\cr
-#' \code{AWING}{ = 0, area of wing, to do}\cr\cr
 #' \code{PTCOND}{ = 0, \% of body area touching the substrate}\cr\cr
 #'
 #' \strong{ Fur properties:}\cr\cr
@@ -301,7 +300,6 @@ endoR_devel <- function(
   GMULT = GMREF, # current ratio between long and short axis (-)
   GMULTMAX = GMREF, # max possible ratio between long and short axis (-)
   MAXPTVEN = 0.5, # maxium fraction of surface area that is ventral (fractional, 0-1)
-  AWING = 0, # area of wing, to do
   PTCOND = 0, # % of body area touching the substrate
   BIRD = 0, # if 1, uses bird skin surface area allometry from Walsberg, G. E., and J. E. King. 1978. The Relationship of the External Surface Area of Birds to Skin Surface Area and Body Mass. Journal of Experimental Biology 76:185–189.
 
@@ -478,7 +476,7 @@ endoR_devel <- function(
     ABSANV <- 1 - REFLV # solar absorptivity of ventral fur (fractional, 0-1)
 
     SOLAR.out <- SOLAR(AREA, ABSAND, ABSANV, ABSSB, ASILN, PCTDIF, QNORM, SHADE,
-      AWING, QSOLR, FASKY, FATOBJ, FAVEG)
+      QSOLR, FASKY, FATOBJ, FAVEG)
 
     QSOLAR <- SOLAR.out[1] # total (global) solar radiation (W) QSOLAR,QSDIR,QSOBJ,QSSKY,QSRSB,QSDIFF,QDORSL,QVENTR
     QSDIR <- SOLAR.out[2] # direct solar radiaton (W)
@@ -578,16 +576,16 @@ endoR_devel <- function(
 
       # set fur depth and conductivity
       # index for KEFARA, the conductivity, is the average (1), front/dorsal (2), back/ventral(3) of the body part
-      if(QSOLR > 0 | ZFURD != ZFURV){
+      if(QSOLR > 0 | ZZFUR[2] != ZZFUR[3]){
         if(S == 1){
-          ZL <- ZFURD
+          ZL <- ZZFUR[2]
           KEFF <- KEFARA[2]
         }else{
-          ZL <- ZFURV
+          ZL <- ZZFUR[3]
           KEFF <- KEFARA[3]
         }
       }else{
-        ZL <- ZFUR
+        ZL <- ZZFUR[1]
         KEFF <- KEFARA[1]
       }
 
@@ -662,7 +660,7 @@ endoR_devel <- function(
      QM1 <- QBASAL * 2 * -1
      QM2 <- QBASAL * 50
     }else{
-     QM1 <- QBASAL * 10* -1
+     QM1 <- QBASAL * 50* -1
      QM2 <- QBASAL * 2
     }
     QSUM <- X
