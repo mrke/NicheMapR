@@ -464,14 +464,24 @@
 #'############### plot results ######################
 #'
 #'# Hourly Tb (black), activity (orange, 5 = bask, 10 = forage), depth (brown, m) and shade (green, %/10)
-#'with(environ, plot(TC ~ dates, ylab = "Tb, depth, activity and shade", xlab="month of year",
-#' ylim = c(-20, 70), type = "l"))
-#'with(environ, points(ACT * 5 ~ dates, type = "l", col = "orange"))
-#'with(environ, points(SHADE / 10 ~ dates, type = "l", col = "green"))
-#'with(environ, points(DEP / 10 ~ dates, type = "l", col = "brown"))
-#'#with(metout, points(TAREF ~ dates, type = "l", col = "light blue"))
+#'with(environ, plot(TC ~ dates, ylab = "", xlab="month of year", col = 'black', xlim = c(-0.25, 12), ylim = c(-20, 40), type = "l", yaxt = 'n'))
+#'with(environ, points(ACT * 2 + 7 ~ dates, type = "p", pch = 16, col = "orange"))
+#'with(environ, points(SHADE / 10 - 6 ~ dates, type = "l", col = "dark green"))
+#'with(environ, points(DEP - 10 ~ dates, type = "l", col = "brown"))
 #'abline(ecto$T_F_min, 0, lty = 2, col = 'blue')
 #'abline(ecto$T_F_max, 0, lty = 2, col = 'red')
+#'ytick<-seq(15, 40, by=5)
+#'axis(side=2, at=ytick, labels = TRUE)
+#'mtext(text = c('A', 'B', 'I'), side = 2, line = 1, at = c(11, 9, 7))
+#'ytick<-seq(-6, 4, by=2)
+#'axis(side=2, at=ytick, labels = FALSE)
+#'mtext(text = seq(0, 100, 20), side = 2, line = 1, at = seq(-6, 4, 2), las = 2)
+#'ytick<-seq(-20, -10, by=2)
+#'axis(side=2, at=ytick, labels = FALSE)
+#'mtext(text = rev(seq(0, 100, 20)), side = 2, line = 1, at = seq(-20, -10, 2), las = 2)
+#'abline(h = -10, lty = 2, col = 'grey')
+#'mtext(text = c('body temperature (°C)', 'activity', 'shade (%)', 'depth (cm)'), side = 2, line = 2.5, at = c(30, 9, 0, -15))
+#'text(-0.2, c(ecto$T_F_max + 1, ecto$T_F_min + 1), c('T_F_max', 'T_F_min'), col = c('red', 'blue'), cex = 0.75)
 #'
 #'# seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)
 #'forage <- subset(environ, ACT == 2)
@@ -551,7 +561,7 @@ ectotherm <- function(
   fatosk=0.4,
   fatosb=0.4,
   rinsul=0,
-  pct_cond=0.1,
+  pct_cond=10,
   c_body=3073,
   k_flesh=0.5,
   rho_body=1000,
