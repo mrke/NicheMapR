@@ -677,15 +677,15 @@ ectotherm <- function(
   GLMpHs=matrix(data = 7, nrow = 24 * ndays, ncol = 20),
   GLMfoods=matrix(data = 10, nrow = 24 * ndays, ncol = 20),
   thermal_stages=matrix(data = c(rep(CT_min,stages),rep(CT_max,stages),rep(T_F_min,stages),rep(T_F_max,stages),rep(T_B_min,stages),
-    rep(T_pref,stages)), nrow = stages, ncol = 6),
+                                 rep(T_pref,stages)), nrow = stages, ncol = 6),
   behav_stages=matrix(data = c(rep(diurn,stages),rep(nocturn,stages),rep(crepus,stages),rep(burrow,stages),
-    rep(shdburrow,stages),rep(mindepth,stages),rep(maxdepth,stages),rep(shade_seek,stages),rep(climb,stages),rep(fossorial,stages),
-    rep(rainact,stages),rep(actrainthresh,stages),rep(act_breed,stages),rep(flyer,stages),rep(aquabask,stages)), nrow = stages, ncol = 15),
+                               rep(shdburrow,stages),rep(mindepth,stages),rep(maxdepth,stages),rep(shade_seek,stages),rep(climb,stages),rep(fossorial,stages),
+                               rep(rainact,stages),rep(actrainthresh,stages),rep(act_breed,stages),rep(flyer,stages),rep(aquabask,stages)), nrow = stages, ncol = 15),
   water_stages=matrix(data = c(rep(pct_wet,stages),rep(F_O2,stages),rep(pct_H_P,stages),rep(pct_H_N,stages),
-    rep(pct_H_X[1],stages),rep(pct_H_R,stages),rep(raindrink,stages),rep(gutfill,stages)), nrow = stages, ncol = 8),
+                               rep(pct_H_X[1],stages),rep(pct_H_R,stages),rep(raindrink,stages),rep(gutfill,stages)), nrow = stages, ncol = 8),
   nutri_stages=matrix(data = c(rep(foodlim,stages)), nrow = stages, ncol = 1),
   arrhenius=matrix(data = matrix(data = c(rep(T_A,stages),rep(T_AL,stages),rep(T_AH,stages),rep(T_L,stages),rep(T_H,stages)),
-    nrow = stages, ncol = 5), nrow = stages, ncol = 5),
+                                 nrow = stages, ncol = 5), nrow = stages, ncol = 5),
   wings=0,
   rho1_3=0.2,
   trans1=0,
@@ -702,11 +702,428 @@ ectotherm <- function(
   write_csv=0,
   aestdepth=7){ # end function parameters
 
+  errors<-0
+
+  # error trapping
+  if(shape < 0 | shape > 5){
+    message("error: shape can only be from 0 to 5 \n")
+    errors<-1
+  }
+  if(alpha_max < 0 | alpha_max > 1){
+    message("error: alpha_max can only be from 0 to 1 \n")
+    errors<-1
+  }
+  if(alpha_min < 0 | alpha_min > 1){
+    message("error: alpha_min can only be from 0 to 1 \n")
+    errors<-1
+  }
+  if(T_F_min > T_F_max){
+    message("error: T_F_min must be less than T_F_max \n")
+    errors<-1
+  }
+  if(T_B_min > T_F_min){
+    message("error: T_B_min must be less than or equal to T_F_min \n")
+    errors<-1
+  }
+  if(T_RB_min > T_F_min){
+    message("error: T_RB_min must be less than or equal to T_F_min \n")
+    errors<-1
+  }
+  if(T_RB_min > T_B_min){
+    message("error: T_RB_min must be less than or equal to T_B_min \n")
+    errors<-1
+  }
+  if(!diurn %in% c(0,1)){
+    message("error: diurn must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!nocturn %in% c(0,1)){
+    message("error: nocturn must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!crepus %in% c(0,1)){
+    message("error: crepus must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!shade_seek %in% c(0,1)){
+    message("error: shade_seek must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!burrow %in% c(0,1)){
+    message("error: burrow must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!postur %in% c(0,1,2)){
+    message("error: burrow must be 0, 1 or 2 \n")
+    errors<-1
+  }
+  if(!climb %in% c(0,1)){
+    message("error: burrow must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!shdburrow %in% c(0,1,2)){
+    message("error: shdburrow must be 0, 1 or 2 \n")
+    errors<-1
+  }
+  if(!mindepth %in% seq(1,10)){
+    message("error: mindepth must be an integer between 1 and 10 \n")
+    errors<-1
+  }
+  if(!maxdepth %in% seq(1,10)){
+    message("error: maxdepth must be an integer between 1 and 10 \n")
+    errors<-1
+  }
+  if(mindepth > maxdepth){
+    message("error: mindepth must be less than or equal to maxdepth \n")
+    errors<-1
+  }
+  if(!aquabask %in% c(0,1,2)){
+    message("error: aquabask must be 0, 1 or 2 \n")
+    errors<-1
+  }
+  if(pct_wet < 0 | pct_wet > 100){
+    message("error: pct_wet can only be from 0 to 100 \n")
+    errors<-1
+  }
+  if(pct_eyes < 0 | pct_eyes > 100){
+    message("error: pct_eyes can only be from 0 to 100 \n")
+    errors<-1
+  }
+  if(pct_mouth < 0 | pct_mouth > 100){
+    message("error: pct_mouth can only be from 0 to 100 \n")
+    errors<-1
+  }
+  if(pantmax < 1){
+    message("error: pantmax should be greater than or equal to 1 \n")
+    errors<-1
+  }
+  if(F_O2 < 0 | F_O2 > 100){
+    message("error: F_O2 can only be from 0 to 100 \n")
+    errors<-1
+  }
+  if(nyears < 1){
+    message("error: nyears must be greater than or equal to 1 \n")
+    errors<-1
+  }
+  if(enberr <= 0){
+    message("error: enberr must be greater than 0 \n")
+    errors<-1
+  }
+  if(!live %in% c(0,1)){
+    message("error: live must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!write_input %in% c(0,1,2)){
+    message("error: write_input must be 0, 1 or 2 \n")
+    errors<-1
+  }
+  if(!transient %in% c(0,1)){
+    message("error: transient must be 0 or 1 \n")
+    errors<-1
+  }
+  if(delta_shade <= 0){
+    message("error: delta_shade must be greater than 0 \n")
+    errors<-1
+  }
+  if(startday < 1){
+    message("error: startday must be greater than or equal to 1 \n")
+    errors<-1
+  }
+  if(minshade < 0 | minshade > 100){
+    message("error: minshade can only be from 0 to 100 \n")
+    errors<-1
+  }
+  if(min(minshades) < 0 | max(minshades) > 100){
+    message("error: minshades can only be from 0 to 100 \n")
+    errors<-1
+  }
+  if(min(maxshades) < 0 | max(maxshades) > 100){
+    message("error: maxshades can only be from 0 to 100 \n")
+    errors<-1
+  }
+  if(length(maxshades) != length(rainfall)){
+    message("error: maxshades must be a vector with a lenght equal to the number of days simulated \n")
+    errors<-1
+  }
+  if(length(minshades) != length(rainfall)){
+    message("error: minshades must be a vector with a lenght equal to the number of days simulated \n")
+    errors<-1
+  }
+  if(!fluid %in% c(0,1)){
+    message("error: fluid must be 0 or 1 \n")
+    errors<-1
+  }
+  if(k_sub < 0){
+    message("error: k_sub can't be negative \n")
+    errors<-1
+  }
+  if(alpha_sub < 0 | alpha_sub > 1){
+    message("error: alpha_sub can only be from 0 to 1 \n")
+    errors<-1
+  }
+  if(length(DEP) != 10){
+    message("error: DEP must be a vector of length 10 \n")
+    errors<-1
+  }
+  if(ncol(metout) < 19){
+    message("error: metout must have 19 columns \n")
+    errors<-1
+  }
+  if(ncol(shadmet) < 19){
+    message("error: shadmet must have 19 columns \n")
+    errors<-1
+  }
+  if(ncol(soil) < 12){
+    message("error: soil must have 12 columns \n")
+    errors<-1
+  }
+  if(ncol(shadsoil) < 12){
+    message("error: shadsoil must have 12 columns \n")
+    errors<-1
+  }
+  if(ncol(soilmoist) < 12){
+    message("error: soilmoist must have 12 columns \n")
+    errors<-1
+  }
+  if(ncol(shadmoist) < 12){
+    message("error: shadmoist must have 12 columns \n")
+    errors<-1
+  }
+  if(ncol(humid) < 12){
+    message("error: humid must have 12 columns \n")
+    errors<-1
+  }
+  if(ncol(shadhumid) < 12){
+    message("error: shadhumid must have 12 columns \n")
+    errors<-1
+  }
+  if(ncol(soilpot) < 12){
+    message("error: soilpot must have 12 columns \n")
+    errors<-1
+  }
+  if(ncol(shadpot) < 12){
+    message("error: shadpot must have 12 columns \n")
+    errors<-1
+  }
+  if(min(rainfall) < 0){
+    message("error: rainfall contains some negative values \n")
+    errors<-1
+  }
+  if(max(rainhr) > 0 & min(rainhr) < 0){
+    message("error: rainhr contains some negative values \n")
+    errors<-1
+  }
+  if(longitude < -180 | longitude > 180){
+    message("error: longitude must be between -180 and 180 \n")
+    errors<-1
+  }
+  if(latitude < -90 | longitude > 90){
+    message("error: longitude must be between -180 and 180 \n")
+    errors<-1
+  }
+  if(shape_a < 0){
+    message("error: shape_a can't be negative \n")
+    errors<-1
+  }
+  if(shape_b < 0){
+    message("error: shape_b can't be negative \n")
+    errors<-1
+  }
+  if(shape_c < 0){
+    message("error: shape_c can't be negative \n")
+    errors<-1
+  }
+  if(fatosk < 0 | fatosk > 1){
+    message("error: fatosk can only be from 0 to 1 \n")
+    errors<-1
+  }
+  if(fatosb < 0 | fatosb > 1){
+    message("error: fatosb can only be from 0 to 1 \n")
+    errors<-1
+  }
+  if(fatosk + fatosb > 1){
+    message("error: the sum of fatosb and fatosk can't exceed 1 \n")
+    errors<-1
+  }
+  if(rinsul < 0){
+    message("error: rinsul can't be negative \n")
+    errors<-1
+  }
+  if(pct_cond < 0 | pct_cond > 100){
+    message("error: pct_cond can only be from 0 to 100 \n")
+    errors<-1
+  }
+  if(c_body < 0){
+    message("error: c_body can't be negative \n")
+    errors<-1
+  }
+  if(k_flesh < 0){
+    message("error: k_flesh can't be negative \n")
+    errors<-1
+  }
+  if(rho_body < 0){
+    message("error: rho_body can't be negative \n")
+    errors<-1
+  }
+  if(epsilon < 0 | epsilon > 1){
+    message("error: epsilon can only be from 0 to 1 \n")
+    errors<-1
+  }
+  if(epsilon < 0.9){
+    message("warning: epsilon is rarely below 0.9 for living things \n")
+    errors<-1
+  }
+  if(!warmsig %in% c(0,1)){
+    message("error: warmsig must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!fossorial %in% c(0,1)){
+    message("error: warmsig must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!rainact %in% c(0,1)){
+    message("error: rainact must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!rainact %in% c(0,1)){
+    message("error: rainact must be 0 or 1 \n")
+    errors<-1
+  }
+  if(actrainthresh < 0){
+    message("error: actrainthresh can't be negative \n")
+    errors<-1
+  }
+  if(!soilnode %in% seq(1,10)){
+    message("error: soilnode must be an integer between 1 and 10 \n")
+    errors<-1
+  }
+  if(!eggshade %in% c(0,1)){
+    message("error: eggshade must be 0 or 1 \n")
+    errors<-1
+  }
+  if(pO2thresh < 0){
+    message("error: pO2thresh can't be negative \n")
+    errors<-1
+  }
+  if(!eggshade %in% c(0,1)){
+    message("error: eggshade must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!CT_kill %in% c(0,1)){
+    message("error: CT_kill must be 0 or 1 \n")
+    errors<-1
+  }
+  if(pct_H_P < 0 | pct_H_P > 100){
+    message("error: pct_H_P can only be from 0 to 100 \n")
+    errors<-1
+  }
+  if(pct_H_N < 0 | pct_H_N > 100){
+    message("error: pct_H_P can only be from 0 to 100 \n")
+    errors<-1
+  }
+  if(pct_H_X < 0 | pct_H_X > 100){
+    message("error: pct_H_P can only be from 0 to 100 \n")
+    errors<-1
+  }
+  if(pct_H_R < 0 | pct_H_R > 100){
+    message("error: pct_H_P can only be from 0 to 100 \n")
+    errors<-1
+  }
+  if(gutfill < 0 | gutfill > 100){
+    message("error: gutfill can only be from 0 to 100 \n")
+    errors<-1
+  }
+  if(!foodlim %in% c(0,1)){
+    message("error: foodlim must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!DEB %in% c(0,1)){
+    message("error: DEB must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!DEB %in% c(0,1)){
+    message("error: DEB must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!DEB %in% c(0,1)){
+    message("error: intmethod must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!metab_mode %in% c(0,1,2)){
+    message("error: metab_mode must be 0, 1 or 2 \n")
+    errors<-1
+  }
+  if(!aestivate %in% c(0,1)){
+    message("error: aestivate must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!viviparous %in% c(0,1)){
+    message("error: viviparous must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!batch %in% c(0,1)){
+    message("error: batch must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!photostart %in% seq(0,5)){
+    message("error: photostart must be an integer between 0 and 5 \n")
+    errors<-1
+  }
+  if(!photofinish %in% seq(0,5)){
+    message("error: photofinish must be an integer between 0 and 5 \n")
+    errors<-1
+  }
+  if(!photodirs %in% c(0,1)){
+    message("error: photodirs must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!amphibreed %in% c(0,1)){
+    message("error: amphibreed must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!amphistage %in% c(0,1)){
+    message("error: amphistage must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!wetmod %in% c(0,1)){
+    message("error: wetmod must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!contype %in% c(0,1)){
+    message("error: contype must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!conthole %in% c(0,1)){
+    message("error: conthole must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!container %in% c(0,1)){
+    message("error: container must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!contonly %in% c(0,1)){
+    message("error: contonly must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!contype %in% c(0,1)){
+    message("error: contype must be 0 or 1 \n")
+    errors<-1
+  }
+  if(rainmult < 1){
+    message("warning: rainfall is being reduced from original values because rainmult < 1")
+  }
+  if(contwet < 0 | contwet > 100){
+    message("error: contwet can only be from 0 to 100 \n")
+    errors<-1
+  }
+
+
   if(shape == 3){ # lizard proportions
     shape_a <- 1
     shape_b <- 1
     shape_c <- 4
   }
+
   if(shape == 4){ # frog proportions
     shape_a <- 1
     shape_b <- 1
@@ -720,200 +1137,200 @@ ectotherm <- function(
   if(amphibreed == 3){
     container <- 0
   }
+  if(errors == 0){
+    # container/pond initial conditons
+    contlast <- 0 # last container depth, cm
+    templast <- 7 # last container temperature, deg C
 
-  # container/pond initial conditons
-  contlast <- 0 # last container depth, cm
-  templast <- 7 # last container temperature, deg C
-
-  iyear <- 0 # initializing year counter
-  countday <- 1 # initializing day counter
-  ndays <- length(rainfall) # get number of days of simulation
+    iyear <- 0 # initializing year counter
+    countday <- 1 # initializing day counter
+    ndays <- length(rainfall) # get number of days of simulation
 
 
-  # habitat
-  ALT <- elev # altitude (m)
-  OBJDIS <- 1.0 # currently unused - distance (m) from nearby object of different temp to sky and ground (e.g. warm rock, fire)
-  OBJL <- 0.0001 # currently unused - diameter (m) of nearby object of different temp to sky and ground (e.g. warm rock, fire)
-  PCTDIF <- 0.1 # percent of sunlight that is diffuse (0-1), ultimately will make this as an optional vector from microclima
-  EMISSK <- 1.0 # emissivity of the sky (0-1)
-  EMISSB <- 1.0 # emissivity of the substrate (0-1)
-  ABSSB <- alpha_sub # solar absorbtivity of the substrate (0-1)
-  shade <- minshade # shade (%)
+    # habitat
+    ALT <- elev # altitude (m)
+    OBJDIS <- 1.0 # currently unused - distance (m) from nearby object of different temp to sky and ground (e.g. warm rock, fire)
+    OBJL <- 0.0001 # currently unused - diameter (m) of nearby object of different temp to sky and ground (e.g. warm rock, fire)
+    PCTDIF <- 0.1 # percent of sunlight that is diffuse (0-1), ultimately will make this as an optional vector from microclima
+    EMISSK <- 1.0 # emissivity of the sky (0-1)
+    EMISSB <- 1.0 # emissivity of the substrate (0-1)
+    ABSSB <- alpha_sub # solar absorbtivity of the substrate (0-1)
+    shade <- minshade # shade (%)
 
-  # animal properties
-  Ww_kg <- Ww_g / 1000 # animal wet weight (kg)
-  absan <- alpha_max # animal solar absorbtivity
-  RQ <- 0.8 # respiratory quotient
+    # animal properties
+    Ww_kg <- Ww_g / 1000 # animal wet weight (kg)
+    absan <- alpha_max # animal solar absorbtivity
+    RQ <- 0.8 # respiratory quotient
 
-  FATOBJ <- 0 # configuration factor to nearby object of different temp to sky and ground (e.g. warm rock, fire)
-  SPARE1 <- 1 # spare input
-  SKINW <- pct_wet # skin wetness %
-  skint <- 0 # fraction of surface area touching object e.g. of another individual
-  O2gas <- 20.95 # % O2 in air
-  CO2gas <- 0.03 # % CO2 in air
-  N2gas <- 79.02 # % nitrogen in air
-  gas <- c(O2gas, CO2gas, N2gas) # gas vector
-  SPARE1 <- 1 # spare input
-  tcinit <- metout[1, "TALOC"] # initial temperature for transient heat budget
-  nodnum <- 10 # depth at which foraging occurs in fossorial species, probably not working properly, may not need it
+    FATOBJ <- 0 # configuration factor to nearby object of different temp to sky and ground (e.g. warm rock, fire)
+    SPARE1 <- 1 # spare input
+    SKINW <- pct_wet # skin wetness %
+    skint <- 0 # fraction of surface area touching object e.g. of another individual
+    O2gas <- 20.95 # % O2 in air
+    CO2gas <- 0.03 # % CO2 in air
+    N2gas <- 79.02 # % nitrogen in air
+    gas <- c(O2gas, CO2gas, N2gas) # gas vector
+    SPARE1 <- 1 # spare input
+    tcinit <- metout[1, "TALOC"] # initial temperature for transient heat budget
+    nodnum <- 10 # depth at which foraging occurs in fossorial species, probably not working properly, may not need it
 
-  SPARE4 <- 1 # spare input
-  SPARE2 <- 1 # spare input
-  SPARE3 <- 0 # spare input
-  o2max <- F_O2 # O2 extraction efficiency
-  minshd <- minshades[1] # minimum shade available
-  maxshd <- maxshades[1] # maximum shade available
-  behav <- c(diurn, nocturn, crepus, rainact, burrow, shade_seek, climb, fossorial, SPARE3) # behaviour vector
-  DOY <- 1 # day of year at start
+    SPARE4 <- 1 # spare input
+    SPARE2 <- 1 # spare input
+    SPARE3 <- 0 # spare input
+    o2max <- F_O2 # O2 extraction efficiency
+    minshd <- minshades[1] # minimum shade available
+    maxshd <- maxshades[1] # maximum shade available
+    behav <- c(diurn, nocturn, crepus, rainact, burrow, shade_seek, climb, fossorial, SPARE3) # behaviour vector
+    DOY <- 1 # day of year at start
 
-  # conversions from percent to proportion
-  PTUREA1 <- pct_H_N / 100
-  PFEWAT1 <- pct_H_P / 100
-  pct_H_X <- pct_H_X / 100
-  water_stages[, 5] <- water_stages[, 5] / 100 # pct_H_X
-  FoodWater1 <- pct_H_X[1]
-  water_stages[,3] <- water_stages[, 3] / 100
-  water_stages[,4] <- water_stages[, 4] / 100
-  water_stages[,5] <- water_stages[, 5] / 100
+    # conversions from percent to proportion
+    PTUREA1 <- pct_H_N / 100
+    PFEWAT1 <- pct_H_P / 100
+    pct_H_X <- pct_H_X / 100
+    water_stages[, 5] <- water_stages[, 5] / 100 # pct_H_X
+    FoodWater1 <- pct_H_X[1]
+    water_stages[,3] <- water_stages[, 3] / 100
+    water_stages[,4] <- water_stages[, 4] / 100
+    water_stages[,5] <- water_stages[, 5] / 100
 
-  # DEB mass balance calculations
-  E_m <- (p_M * z / kap) / v # maximum reserve density, J/cm3
-  n_O <- cbind(n_X, n_V, n_E, n_P) # matrix of C-mole composition of organics, i.e. food, structure, reserve and faeces
-  CHON <- c(12, 1, 16, 14) # molar masses of carbon, hydrogen, oxygen and nitrogen, g/mol
-  wO <- CHON %*% n_O # molar weight of organics, g/mol
-  w_V <- wO[3] # molar weight of structure, g/mol
-  M_V <- d_V / w_V # molar mass of structure, mol/cm3
-  y_EX <- kap_X * mu_X / mu_E # yield of reserve on food, mol/mol
-  y_XE <- 1 / y_EX # yield of food on reserve, mol/mol
-  y_VE <- mu_E * M_V / E_G  # yield of structure on reserve, mol/mol
-  y_PX <- kap_X_P * mu_X / mu_P # yield of faeces on food, mol/mol
-  y_PE <- y_PX / y_EX # yield of faeces on reserve, mol/mol
-  nM <- matrix(c(1, 0, 2, 0, 0, 2, 1, 0, 0, 0, 2, 0, n_M_nitro), nrow = 4)
-  n_M_nitro_inv <- c(-1 * n_M_nitro[1] / n_M_nitro[4], (-1 * n_M_nitro[2]) / (2 * n_M_nitro[4]), (4 * n_M_nitro[1] + n_M_nitro[2] - 2 * n_M_nitro[3]) / (4 * n_M_nitro[4]), 1 / n_M_nitro[4])
-  n_M_inv <- matrix(c(1, 0, -1, 0, 0, 1 / 2, -1 / 4, 0, 0, 0, 1 / 2, 0, n_M_nitro_inv), nrow = 4)
-  JM_JO <- -1 * n_M_inv %*% n_O
-  eta_O <- matrix(c(y_XE / mu_E * -1, 0, 1 / mu_E, y_PE / mu_E, 0, 0, -1 / mu_E, 0, 0, y_VE / mu_E, -1 / mu_E, 0), nrow = 4)
-  w_N <- CHON %*% n_M_nitro
+    # DEB mass balance calculations
+    E_m <- (p_M * z / kap) / v # maximum reserve density, J/cm3
+    n_O <- cbind(n_X, n_V, n_E, n_P) # matrix of C-mole composition of organics, i.e. food, structure, reserve and faeces
+    CHON <- c(12, 1, 16, 14) # molar masses of carbon, hydrogen, oxygen and nitrogen, g/mol
+    wO <- CHON %*% n_O # molar weight of organics, g/mol
+    w_V <- wO[3] # molar weight of structure, g/mol
+    M_V <- d_V / w_V # molar mass of structure, mol/cm3
+    y_EX <- kap_X * mu_X / mu_E # yield of reserve on food, mol/mol
+    y_XE <- 1 / y_EX # yield of food on reserve, mol/mol
+    y_VE <- mu_E * M_V / E_G  # yield of structure on reserve, mol/mol
+    y_PX <- kap_X_P * mu_X / mu_P # yield of faeces on food, mol/mol
+    y_PE <- y_PX / y_EX # yield of faeces on reserve, mol/mol
+    nM <- matrix(c(1, 0, 2, 0, 0, 2, 1, 0, 0, 0, 2, 0, n_M_nitro), nrow = 4)
+    n_M_nitro_inv <- c(-1 * n_M_nitro[1] / n_M_nitro[4], (-1 * n_M_nitro[2]) / (2 * n_M_nitro[4]), (4 * n_M_nitro[1] + n_M_nitro[2] - 2 * n_M_nitro[3]) / (4 * n_M_nitro[4]), 1 / n_M_nitro[4])
+    n_M_inv <- matrix(c(1, 0, -1, 0, 0, 1 / 2, -1 / 4, 0, 0, 0, 1 / 2, 0, n_M_nitro_inv), nrow = 4)
+    JM_JO <- -1 * n_M_inv %*% n_O
+    eta_O <- matrix(c(y_XE / mu_E * -1, 0, 1 / mu_E, y_PE / mu_E, 0, 0, -1 / mu_E, 0, 0, y_VE / mu_E, -1 / mu_E, 0), nrow = 4)
+    w_N <- CHON %*% n_M_nitro
 
-  # DEB model initial conditions
-  V_init_baby <- 3e-9 # initial struture, cm3
-  E_init_baby <- E_0 / V_init_baby # initial reserve density, J/cm3
-  E_baby_init <- E_init_baby #
-  V_baby_init <- V_init_baby
-  ES_init <- 0 # intial stomach energy, J
-  cumrepro_init <- 0 # initial reproductive energy, J
-  cumbatch_init <- 0 #initial reproduction batch energy
-  q_init <- 0 # initial surivival probability
-  hs_init <- 0 # specific death probability, 1/t
-  pregnant <- 0 # initial pregnancy state
+    # DEB model initial conditions
+    V_init_baby <- 3e-9 # initial struture, cm3
+    E_init_baby <- E_0 / V_init_baby # initial reserve density, J/cm3
+    E_baby_init <- E_init_baby #
+    V_baby_init <- V_init_baby
+    ES_init <- 0 # intial stomach energy, J
+    cumrepro_init <- 0 # initial reproductive energy, J
+    cumbatch_init <- 0 #initial reproduction batch energy
+    q_init <- 0 # initial surivival probability
+    hs_init <- 0 # specific death probability, 1/t
+    pregnant <- 0 # initial pregnancy state
 
-  # food and food water levels
-  if(length(X) == 1){ # no day-specific food levels given
-    foodlevels <- rep(X, nrow(metout) / 24)
-  }else{
-    foodlevels <- X
-  }
-  if(length(pct_H_X) == 1){ # no day-specific food water levels given
-    foodwaters <- rep(pct_H_X, nrow(metout) / 24)
-  }else{
-    foodwaters <- pct_H_X
-  }
-  lat <- latitude # latitude
-  DOYstart <- metout[1, 2] # starting day of year
-  tannul <- as.numeric(mean(soil[, 12])) # annual mean temperature, deg C
-  tester <- 0 # unused
-  microyear <- 1 # extraneous
-  ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PCTDIF, EMISSK, EMISSB, ABSSB, shade, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond/100, skint, gas, transient, soilnode, o2max, SPARE4, tannul, nodnum, postur, maxshd, minshd, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, SPARE1, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, F_m, k_sub, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod))
-  debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, FoodWater1, f, s_G, K, X[1], metab_mode, stages, y_EV_l, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He)
-  deblast <- c(iyear, countday, V_init, E_init, ES_init, cumrepro_init, q_init, hs_init, cumbatch_init, V_baby_init, E_baby_init, E_H_init, stage)
+    # food and food water levels
+    if(length(X) == 1){ # no day-specific food levels given
+      foodlevels <- rep(X, nrow(metout) / 24)
+    }else{
+      foodlevels <- X
+    }
+    if(length(pct_H_X) == 1){ # no day-specific food water levels given
+      foodwaters <- rep(pct_H_X, nrow(metout) / 24)
+    }else{
+      foodwaters <- pct_H_X
+    }
+    lat <- latitude # latitude
+    DOYstart <- metout[1, 2] # starting day of year
+    tannul <- as.numeric(mean(soil[, 12])) # annual mean temperature, deg C
+    tester <- 0 # unused
+    microyear <- 1 # extraneous
+    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PCTDIF, EMISSK, EMISSB, ABSSB, shade, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond/100, skint, gas, transient, soilnode, o2max, SPARE4, tannul, nodnum, postur, maxshd, minshd, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, SPARE1, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, F_m, k_sub, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod))
+    debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, FoodWater1, f, s_G, K, X[1], metab_mode, stages, y_EV_l, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He)
+    deblast <- c(iyear, countday, V_init, E_init, ES_init, cumrepro_init, q_init, hs_init, cumbatch_init, V_baby_init, E_baby_init, E_H_init, stage)
 
-  # code to determine wet periods for activity in a pond
+    # code to determine wet periods for activity in a pond
 
-  if(wetmod==1){
-    wet_thresh <- 10 * 24 # threshold pond duration
-    wet_depth <- 100 # threshold pond depth (mm)
-    wet_temp <- 28 # threshold exit temp (°C)
-    b <- cbind(as.data.frame(wetlandDepths), as.data.frame(wetlandTemps))
-    colnames(b) <- c('depth', 'temp')
-    b$depth[b$temp > wet_temp] <- 0
-    b <- b$depth
-    b[b >= wet_depth] <- 1
-    b[b != 1] <- 0
-    bb <- rle(b)
-    bb$values[bb$lengths < wet_thresh] <- 0
-    c <- b * 0
-    values <- bb$values
-    lengths <- bb$lengths
-    for(k in 1:length(bb$values)){
-      d <- c(rep(values[k], lengths[k]))
-      if(k == 1){
-        e <- d
-      }else{
-        e <- c(e, d)
+    if(wetmod==1){
+      wet_thresh <- 10 * 24 # threshold pond duration
+      wet_depth <- 100 # threshold pond depth (mm)
+      wet_temp <- 28 # threshold exit temp (°C)
+      b <- cbind(as.data.frame(wetlandDepths), as.data.frame(wetlandTemps))
+      colnames(b) <- c('depth', 'temp')
+      b$depth[b$temp > wet_temp] <- 0
+      b <- b$depth
+      b[b >= wet_depth] <- 1
+      b[b != 1] <- 0
+      bb <- rle(b)
+      bb$values[bb$lengths < wet_thresh] <- 0
+      c <- b * 0
+      values <- bb$values
+      lengths <- bb$lengths
+      for(k in 1:length(bb$values)){
+        d <- c(rep(values[k], lengths[k]))
+        if(k == 1){
+          e <- d
+        }else{
+          e <- c(e, d)
+        }
       }
+      wetlandDepths <- wetlandDepths * e
     }
-    wetlandDepths <- wetlandDepths * e
-  }
 
-  if(write_input == 1){ # write out input as csv files for debugging
-    if(dir.exists("ecto csv input") == FALSE){
-      dir.create("ecto csv input")
+    if(write_input == 1){ # write out input as csv files for debugging
+      if(dir.exists("ecto csv input") == FALSE){
+        dir.create("ecto csv input")
+      }
+      message('writing input csv files \n')
+      write.csv(ectoinput, file = "ecto csv input/ectoinput.csv")
+      write.csv(debmod, file = "ecto csv input/debmod.csv")
+      write.csv(deblast, file = "ecto csv input/deblast.csv")
+      write.csv(rainfall, file = "ecto csv input/rainfall.csv")
+      write.csv(rainhr, file = "ecto csv input/rainhr.csv")
+      write.csv(DEP, file = "ecto csv input/dep.csv")
+      write.csv(foodwaters, file = "ecto csv input/foodwaters.csv")
+      write.csv(foodlevels, file = "ecto csv input/foodlevels.csv")
+      write.csv(wetlandTemps, file = "ecto csv input/wetlandTemps.csv")
+      write.csv(wetlandDepths, file = "ecto csv input/wetlandDepths.csv")
+      write.csv(GLMtemps, file = "ecto csv input/GLMtemps.csv", row.names = F)
+      write.csv(GLMO2s, file = "ecto csv input/GLMO2s.csv", row.names = F)
+      write.csv(GLMsalts, file = "ecto csv input/GLMsalts.csv", row.names = F)
+      write.csv(GLMpHs, file = "ecto csv input/GLMpHs.csv", row.names = F)
+      write.csv(GLMfoods, file = "ecto csv input/GLMfoods.csv", row.names = F)
+      write.csv(arrhenius, file = "ecto csv input/arrhenius.csv")
+      write.csv(thermal_stages, file = "ecto csv input/thermal_stages.csv")
+      write.csv(behav_stages, file = "ecto csv input/behav_stages.csv")
+      write.csv(water_stages, file = "ecto csv input/water_stages.csv")
+      write.csv(nutri_stages, file = "ecto csv input/nutri_stages.csv")
+      write.csv(minshades, file = "ecto csv input/Minshades.csv")
+      write.csv(maxshades, file = "ecto csv input/Maxshades.csv")
+      write.csv(S_instar, file = "ecto csv input/S_instar.csv")
+      write.table(metout[(seq(1, ndays * 24)), ], file = "ecto csv input/metout.csv", sep = ",", row.names = FALSE)
+      write.table(shadmet[(seq(1, ndays * 24)), ], file = "ecto csv input/shadmet.csv", sep = ",", row.names = FALSE)
+      write.table(soil[(seq(1, ndays * 24)), ], file = "ecto csv input/soil.csv", sep = ",", row.names = FALSE)
+      write.table(shadsoil[(seq(1, ndays * 24)), ], file = "ecto csv input/shadsoil.csv", sep = ",", row.names = FALSE)
+      write.table(soilmoist[(seq(1, ndays * 24)), ], file = "ecto csv input/soilmoist.csv", sep = ",", row.names = FALSE)
+      write.table(shadmoist[(seq(1, ndays * 24)), ], file = "ecto csv input/shadmoist.csv", sep = ",", row.names = FALSE)
+      write.table(soilpot[(seq(1, ndays * 24)), ], file = "ecto csv input/soilpot.csv", sep = ",", row.names = FALSE)
+      write.table(shadpot[(seq(1, ndays * 24)), ], file = "ecto csv input/shadpot.csv", sep = ",", row.names = FALSE)
+      write.table(humid[(seq(1, ndays * 24)), ], file = "ecto csv input/humid.csv", sep = ",", row.names = FALSE)
+      write.table(shadhumid[(seq(1, ndays * 24)), ], file = "ecto csv input/shadhumid.csv", sep = ",", row.names = FALSE)
     }
-    message('writing input csv files \n')
-    write.csv(ectoinput, file = "ecto csv input/ectoinput.csv")
-    write.csv(debmod, file = "ecto csv input/debmod.csv")
-    write.csv(deblast, file = "ecto csv input/deblast.csv")
-    write.csv(rainfall, file = "ecto csv input/rainfall.csv")
-    write.csv(rainhr, file = "ecto csv input/rainhr.csv")
-    write.csv(DEP, file = "ecto csv input/dep.csv")
-    write.csv(foodwaters, file = "ecto csv input/foodwaters.csv")
-    write.csv(foodlevels, file = "ecto csv input/foodlevels.csv")
-    write.csv(wetlandTemps, file = "ecto csv input/wetlandTemps.csv")
-    write.csv(wetlandDepths, file = "ecto csv input/wetlandDepths.csv")
-    write.csv(GLMtemps, file = "ecto csv input/GLMtemps.csv", row.names = F)
-    write.csv(GLMO2s, file = "ecto csv input/GLMO2s.csv", row.names = F)
-    write.csv(GLMsalts, file = "ecto csv input/GLMsalts.csv", row.names = F)
-    write.csv(GLMpHs, file = "ecto csv input/GLMpHs.csv", row.names = F)
-    write.csv(GLMfoods, file = "ecto csv input/GLMfoods.csv", row.names = F)
-    write.csv(arrhenius, file = "ecto csv input/arrhenius.csv")
-    write.csv(thermal_stages, file = "ecto csv input/thermal_stages.csv")
-    write.csv(behav_stages, file = "ecto csv input/behav_stages.csv")
-    write.csv(water_stages, file = "ecto csv input/water_stages.csv")
-    write.csv(nutri_stages, file = "ecto csv input/nutri_stages.csv")
-    write.csv(minshades, file = "ecto csv input/Minshades.csv")
-    write.csv(maxshades, file = "ecto csv input/Maxshades.csv")
-    write.csv(S_instar, file = "ecto csv input/S_instar.csv")
-    write.table(metout[(seq(1, ndays * 24)), ], file = "ecto csv input/metout.csv", sep = ",", row.names = FALSE)
-    write.table(shadmet[(seq(1, ndays * 24)), ], file = "ecto csv input/shadmet.csv", sep = ",", row.names = FALSE)
-    write.table(soil[(seq(1, ndays * 24)), ], file = "ecto csv input/soil.csv", sep = ",", row.names = FALSE)
-    write.table(shadsoil[(seq(1, ndays * 24)), ], file = "ecto csv input/shadsoil.csv", sep = ",", row.names = FALSE)
-    write.table(soilmoist[(seq(1, ndays * 24)), ], file = "ecto csv input/soilmoist.csv", sep = ",", row.names = FALSE)
-    write.table(shadmoist[(seq(1, ndays * 24)), ], file = "ecto csv input/shadmoist.csv", sep = ",", row.names = FALSE)
-    write.table(soilpot[(seq(1, ndays * 24)), ], file = "ecto csv input/soilpot.csv", sep = ",", row.names = FALSE)
-    write.table(shadpot[(seq(1, ndays * 24)), ], file = "ecto csv input/shadpot.csv", sep = ",", row.names = FALSE)
-    write.table(humid[(seq(1, ndays * 24)), ], file = "ecto csv input/humid.csv", sep = ",", row.names = FALSE)
-    write.table(shadhumid[(seq(1, ndays * 24)), ], file = "ecto csv input/shadhumid.csv", sep = ",", row.names = FALSE)
-  }
-  # final input list
-  ecto <- list(ndays = ndays, nstages = stages, ectoinput = ectoinput, metout = metout[, 1:18], shadmet = shadmet[, 1:18], soil = soil, shadsoil = shadsoil, soilmoist = soilmoist, shadmoist = shadmoist, soilpot = soilpot, shadpot = shadpot, humid = humid, shadhumid = shadhumid, DEP = DEP, rainfall = rainfall, rainhr = rainhr, iyear = iyear, countday = countday, debmod = debmod, deblast = deblast, foodwaters = foodwaters, foodlevels = foodlevels, wetlandTemps = wetlandTemps, wetlandDepths = wetlandDepths, GLMtemps = GLMtemps, GLMO2s = GLMO2s, GLMsalts = GLMsalts, GLMpHs = GLMpHs, GLMfoods = GLMfoods, arrhenius = arrhenius, thermal_stages = thermal_stages, behav_stages = behav_stages, water_stages = water_stages, nutri_stages = nutri_stages, minshades = minshades, maxshades = maxshades, S_instar = S_instar)
+    # final input list
+    ecto <- list(ndays = ndays, nstages = stages, ectoinput = ectoinput, metout = metout[, 1:18], shadmet = shadmet[, 1:18], soil = soil, shadsoil = shadsoil, soilmoist = soilmoist, shadmoist = shadmoist, soilpot = soilpot, shadpot = shadpot, humid = humid, shadhumid = shadhumid, DEP = DEP, rainfall = rainfall, rainhr = rainhr, iyear = iyear, countday = countday, debmod = debmod, deblast = deblast, foodwaters = foodwaters, foodlevels = foodlevels, wetlandTemps = wetlandTemps, wetlandDepths = wetlandDepths, GLMtemps = GLMtemps, GLMO2s = GLMO2s, GLMsalts = GLMsalts, GLMpHs = GLMpHs, GLMfoods = GLMfoods, arrhenius = arrhenius, thermal_stages = thermal_stages, behav_stages = behav_stages, water_stages = water_stages, nutri_stages = nutri_stages, minshades = minshades, maxshades = maxshades, S_instar = S_instar)
 
-  message('running ectotherm model ... \n')
+    message('running ectotherm model ... \n')
 
-  ptm <- proc.time() # Start timing
-  ectout <- ectorun(ecto) # call Fortran
-  message(paste0('runtime ', (proc.time() - ptm)[3], ' seconds')) # Stop the clock
+    ptm <- proc.time() # Start timing
+    ectout <- ectorun(ecto) # call Fortran
+    message(paste0('runtime ', (proc.time() - ptm)[3], ' seconds')) # Stop the clock
 
-  environ <- ectout$environ[1:(ndays * 24), ]
-  enbal <- ectout$enbal[1:(ndays * 24), ]
-  masbal <- ectout$masbal[1:(ndays * 24), ]
-  debout <- ectout$debout[1:(ndays * 24), ]
-  yearout <- ectout$yearout
-  yearsout <- ectout$yearsout[1:nyears, ]
+    environ <- ectout$environ[1:(ndays * 24), ]
+    enbal <- ectout$enbal[1:(ndays * 24), ]
+    masbal <- ectout$masbal[1:(ndays * 24), ]
+    debout <- ectout$debout[1:(ndays * 24), ]
+    yearout <- ectout$yearout
+    yearsout <- ectout$yearsout[1:nyears, ]
 
-  if(DEB==0){
-    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,rainfall=rainfall,rainhr=rainhr,enbal=enbal,environ=environ,masbal=masbal,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
-  }else{
-    return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,rainfall=rainfall,rainhr=rainhr,enbal=enbal,masbal=masbal,environ=environ,debout=debout,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
-  }
-
+    if(DEB==0){
+      return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,rainfall=rainfall,rainhr=rainhr,enbal=enbal,environ=environ,masbal=masbal,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
+    }else{
+      return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,rainfall=rainfall,rainhr=rainhr,enbal=enbal,masbal=masbal,environ=environ,debout=debout,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
+    }
+  } # end error check
 }

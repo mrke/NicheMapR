@@ -36,6 +36,10 @@ Usrhyt = 0.01, ...)
 
 \item{coastal}{Compute coastal effects with microclima? T (TRUE) or F (FALSE) (can take a while and may have high memory requirements depending on DEM size)}
 
+\item{hourlydata}{user input of the hourlydata matrix}
+
+\item{dailyprecip}{user input of daily rainfall}
+
 \item{...}{Additional arguments, see Details}
 }
 \value{
