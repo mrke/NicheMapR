@@ -647,6 +647,7 @@ micro_ncep <- function(
       save(BulkDensity, file = 'BulkDensity.Rda')
     }
     if(is.na(hori[1])){
+      hori<-rep(0, 24)
       VIEWF <- 1 # incorporated already by microclima
     }else{
       VIEWF <- 1-sum(sin(as.data.frame(hori)*pi/180))/length(hori) # convert horizon angles to radians and calc view factor(s)
