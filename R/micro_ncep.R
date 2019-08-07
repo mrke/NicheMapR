@@ -646,7 +646,6 @@ micro_ncep <- function(
       save(KS, file = 'KS.Rda')
       save(BulkDensity, file = 'BulkDensity.Rda')
     }
-    hori<-rep(0, 24)
     if(is.na(hori[1])){
       VIEWF <- 1 # incorporated already by microclima
     }else{
