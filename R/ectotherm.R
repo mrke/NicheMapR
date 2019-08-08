@@ -917,8 +917,8 @@ ectotherm <- function(
     message("error: longitude must be between -180 and 180 \n")
     errors<-1
   }
-  if(latitude < -90 | longitude > 90){
-    message("error: longitude must be between -180 and 180 \n")
+  if(latitude < -90 | latitude > 90){
+    message("error: longitude must be between -90 and 90 \n")
     errors<-1
   }
   if(shape_a < 0){
@@ -1116,7 +1116,42 @@ ectotherm <- function(
     message("error: contwet can only be from 0 to 100 \n")
     errors<-1
   }
-
+  if(!wings %in% c(0,1)){
+    message("error: wings must be 0 or 1 \n")
+    errors<-1
+  }
+  if(phi < 0 | phi > 180){
+    message("error: phi can only be from 0 to 180 \n")
+    errors<-1
+  }
+  if(phimax < 0 | phimax > 180){
+    message("error: phimax can only be from 0 to 180 \n")
+    errors<-1
+  }
+  if(phimin < 0 | phimin > 180){
+    message("error: phimin can only be from 0 to 180 \n")
+    errors<-1
+  }
+  if(phimin < phimax){
+    message("error: phimin must be less than or equal to phimax \n")
+    errors<-1
+  }
+  if(!flyer %in% c(0,1)){
+    message("error: flyer must be 0 or 1 \n")
+    errors<-1
+  }
+  if(!write_csv %in% c(0,1,2)){
+    message("error: flyer must be 0, 1 or 2 \n")
+    errors<-1
+  }
+  if(pct_H_death < 0 | pct_H_death > 100){
+    message("error: pct_H_death can only be from 0 to 100 \n")
+    errors<-1
+  }
+  if(!aestdepth %in% seq(1,10)){
+    message("error: aestdepth must be an integer between 1 and 10 \n")
+    errors<-1
+  }
 
   if(shape == 3){ # lizard proportions
     shape_a <- 1
