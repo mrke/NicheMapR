@@ -13,9 +13,11 @@
 #' @param RHOARA A
 #' @param PTCOND A
 #' @param BIRD A
+#' @param MAMMAL A
+#' @param ORIENT A
 #' @export
 GEOM <- function(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT,
-  GMREF, DHARA, RHOARA, PTCOND, BIRD){
+  GMREF, DHARA, RHOARA, PTCOND, BIRD, MAMMAL, ORIENT){
   os = Sys.info()['sysname']
   if (os == "Windows") {
     if (R.Version()$arch=="x86_64") {
@@ -44,6 +46,8 @@ GEOM <- function(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT,
     as.double(RHOARA),
     as.double(PTCOND),
     as.double(BIRD),
+    as.double(MAMMAL),
+    as.double(ORIENT),
     results=matrix(data = 0., nrow = 1, ncol = 24),
     PACKAGE = "GEOM")
   #dyn.unload("GEOM.dll")
