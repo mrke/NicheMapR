@@ -62,6 +62,8 @@
 #' \code{MAXPTVEN}{ = 0.5, maxium fraction of surface area that is ventral (fractional, 0-1)}\cr\cr
 #' \code{AWING}{ = 0, area of wing, to do}\cr\cr
 #' \code{PTCOND}{ = 0, \% of body area touching the substrate}\cr\cr
+#' \code{MAMMAL}{ = 0, if 1, uses mammal surface area scaling from Stahl W. R. (1967) Scaling of respiratory variables in mammals. Journal of Applied Physiology 22 , 453–460.}\cr\cr
+#' \code{ORIENT}{ = 0, if 0, long axis parallel to ground, if 1, long axis is perpendicular to the ground}\cr\cr
 #'
 #' \strong{ Fur properties:}\cr\cr
 #' \code{DHAIRD}{ = 30E-06, hair diameter, dorsal (m)}\cr\cr
@@ -282,6 +284,8 @@ endoR <- function(
   AWING = 0, # area of wing, to do
   PTCOND = 0, # % of body area touching the substrate
   BIRD = 0, # if 1, uses bird skin surface area allometry from Walsberg, G. E., and J. E. King. 1978. The Relationship of the External Surface Area of Birds to Skin Surface Area and Body Mass. Journal of Experimental Biology 76:185–189.
+  MAMMAL = 0, # if 1, uses mammal surface area from Stahl W. R. (1967) Scaling of respiratory variables in mammals. Journal of Applied Physiology 22 , 453–460.
+  ORIENT = 0, # if 0, long axis parallel to ground, if 1, long axis is perpendicular to the ground
 
   # fur properties
   FURTHRMK = 0, # user-specified fur thermal conductivity (W/mK), not used if 0
