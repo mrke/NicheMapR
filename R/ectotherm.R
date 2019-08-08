@@ -754,11 +754,11 @@ ectotherm <- function(
     errors<-1
   }
   if(!postur %in% c(0,1,2)){
-    message("error: burrow must be 0, 1 or 2 \n")
+    message("error: postur must be 0, 1 or 2 \n")
     errors<-1
   }
   if(!climb %in% c(0,1)){
-    message("error: burrow must be 0 or 1 \n")
+    message("error: climb must be 0 or 1 \n")
     errors<-1
   }
   if(!shdburrow %in% c(0,1,2)){
@@ -918,7 +918,7 @@ ectotherm <- function(
     errors<-1
   }
   if(latitude < -90 | latitude > 90){
-    message("error: longitude must be between -90 and 90 \n")
+    message("error: latitude must be between -90 and 90 \n")
     errors<-1
   }
   if(shape_a < 0){
@@ -978,19 +978,11 @@ ectotherm <- function(
     errors<-1
   }
   if(!fossorial %in% c(0,1)){
-    message("error: warmsig must be 0 or 1 \n")
+    message("error: fossorial must be 0 or 1 \n")
     errors<-1
   }
   if(!rainact %in% c(0,1)){
     message("error: rainact must be 0 or 1 \n")
-    errors<-1
-  }
-  if(!rainact %in% c(0,1)){
-    message("error: rainact must be 0 or 1 \n")
-    errors<-1
-  }
-  if(actrainthresh < 0){
-    message("error: actrainthresh can't be negative \n")
     errors<-1
   }
   if(!soilnode %in% seq(1,10)){
@@ -1018,15 +1010,15 @@ ectotherm <- function(
     errors<-1
   }
   if(pct_H_N < 0 | pct_H_N > 100){
-    message("error: pct_H_P can only be from 0 to 100 \n")
+    message("error: pct_H_N can only be from 0 to 100 \n")
     errors<-1
   }
   if(pct_H_X < 0 | pct_H_X > 100){
-    message("error: pct_H_P can only be from 0 to 100 \n")
+    message("error: pct_H_X can only be from 0 to 100 \n")
     errors<-1
   }
   if(pct_H_R < 0 | pct_H_R > 100){
-    message("error: pct_H_P can only be from 0 to 100 \n")
+    message("error: pct_H_R can only be from 0 to 100 \n")
     errors<-1
   }
   if(gutfill < 0 | gutfill > 100){
@@ -1039,14 +1031,6 @@ ectotherm <- function(
   }
   if(!DEB %in% c(0,1)){
     message("error: DEB must be 0 or 1 \n")
-    errors<-1
-  }
-  if(!DEB %in% c(0,1)){
-    message("error: DEB must be 0 or 1 \n")
-    errors<-1
-  }
-  if(!DEB %in% c(0,1)){
-    message("error: intmethod must be 0 or 1 \n")
     errors<-1
   }
   if(!metab_mode %in% c(0,1,2)){
@@ -1105,10 +1089,6 @@ ectotherm <- function(
     message("error: contonly must be 0 or 1 \n")
     errors<-1
   }
-  if(!contype %in% c(0,1)){
-    message("error: contype must be 0 or 1 \n")
-    errors<-1
-  }
   if(rainmult < 1){
     message("warning: rainfall is being reduced from original values because rainmult < 1")
   }
@@ -1141,7 +1121,7 @@ ectotherm <- function(
     errors<-1
   }
   if(!write_csv %in% c(0,1,2)){
-    message("error: flyer must be 0, 1 or 2 \n")
+    message("error: write_csv must be 0, 1 or 2 \n")
     errors<-1
   }
   if(pct_H_death < 0 | pct_H_death > 100){
