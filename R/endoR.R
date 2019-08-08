@@ -7,7 +7,7 @@
 #' core temprature, fourth pant and fifth sweat.
 #' @encoding UTF-8
 #' @param AMASS = 1, # kg
-#' @param NGEOM = 4, # cylinder (ngeom = 1), sphere (ngeom = 2) and ellipsoid (ngeom = 4). If a truncated cone (5) or ellipsoidal cylinder (3), we will use the cylinder equations (ngeom=1).
+#' @param NGEOM = 4, # cylinder (ngeom = 1), sphere (ngeom = 2), plate (ngeom = 3) and ellipsoid (ngeom = 4)
 #' @param GMREF = 3, # initial ratio between long and short axis (-)
 #' @param FURTHRMK = 0, # user-specified fur thermal conductivity (W/mK), not used if 0
 #' @param ZFURD = 2E-03, # fur depth, dorsal (m)
@@ -23,7 +23,6 @@
 #' @param Z = 20, zenith angle of sun (degrees from overhead)
 #' @param SHADE = 0, shade level (\%)
 #' @usage endoR(AMASS = 1, NGEOM = 4, GMREF = 3, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-03, TC = 37, TCMAX = 45, TA = 20, TGRD = TA, TSKY = TA, VEL = 0.1, RH = 5, QSOLR = 0, Z = 20, SHADE = 0, NITESHAD = 0,...)
-#' @export
 #' @details
 #' \strong{ Parameters controlling how the model runs:}\cr\cr
 #' \code{DIFTOL}{ = 0.001, error tolerance for SIMULSOL (°C)}\cr\cr
@@ -32,7 +31,7 @@
 #' \code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr
 #' \code{ELEV}{ = 0, elevation (m)}\cr\cr
 #' \code{ABSSB}{ = 0.8, solar absorptivity of substrate (fractional, 0-1)}\cr\cr
-#' \code{FLTYPE}{ = 0, FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - need's to be looked at - only invoked in main program when the dive table is set up}\cr\cr
+#' \code{FLTYPE}{ = 0, FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - needs to be looked at - only invoked in main program when the dive table is set up}\cr\cr
 #' \code{TCONDSB}{ = TGRD, surface temperature for conduction (°C)}\cr\cr
 #' \code{TBUSH}{ = TA, bush temperature (°C)}\cr\cr
 #' \code{BP}{ = -1, Pa, negatve means elevation is used}\cr\cr
@@ -139,9 +138,9 @@
 #' \code{RESPFN}{energy balance test after call to RESPFUN (W)}\cr\cr
 #' \code{QRESP}{respiratory heat exchange (W)}\cr\cr
 #' \code{GEVAP}{respiratory water loss (g/s)}\cr\cr
-#' \code{PCTO2}{ambient oxygen gas concentration (%)}\cr\cr
-#' \code{PCTN2}{ambient nitgrogen gas concentration (%)}\cr\cr
-#' \code{PCTCO2}{ambient carbon dioxide gas concentration (%)}\cr\cr
+#' \code{PCTO2}{ambient oxygen gas concentration (\%)}\cr\cr
+#' \code{PCTN2}{ambient nitgrogen gas concentration (\%)}\cr\cr
+#' \code{PCTCO2}{ambient carbon dioxide gas concentration (\%)}\cr\cr
 #' \code{RESPGEN}{total metabolic rate (W)}\cr\cr
 #' \code{O2STP}{oxygen consumption at standard temperature and pressure (L/s)}\cr\cr
 #' \code{O2MOL1}{oxygen entering lungs (moles/s)}\cr\cr
@@ -152,17 +151,17 @@
 #' \code{AIRML2}{air leaving lungs (moles/s)}\cr\cr
 #' \code{AIRVOL}{air entering lungs (L/s)}\cr\cr
 #' \code{GMULT}{shape multiplier for postural change (-)}\cr\cr
-#' \code{SKINW}{skin area that is wet (%)}\cr\cr
+#' \code{SKINW}{skin area that is wet (\%)}\cr\cr
 #' \code{SWEAT.G.H}{sweating rate (g/h)}\cr\cr
 #' \code{EVAP.G.H}{evaporation rate (g/h)}\cr\cr
-#' \code{EXTREF}{oxygen extraction efficiency (%)}\cr\cr
+#' \code{EXTREF}{oxygen extraction efficiency (\%)}\cr\cr
 #' \code{AK}{skin thermal conductivity (W/m°C)}\cr\cr
 #' \code{TA}{air temperature (°C)}\cr\cr
 #' \code{TGRD}{ground temperature, driving longwave heat gain (°C)}\cr\cr
 #' \code{TCONDSB}{substrate temperature, driving conductive heat exchange (°C)}\cr\cr
 #' \code{TSKY}{sky temperature (°C)}\cr\cr
 #' \code{VEL}{wind speed (m/s)}\cr\cr
-#' \code{RH}{relative humidity (%)}\cr\cr
+#' \code{RH}{relative humidity (\%)}\cr\cr
 #' \code{QSOLR}{solar radiation (W/m2)}\cr\cr
 #' @examples
 #' library(NicheMapR)
@@ -231,6 +230,7 @@
 #' points(TskinV ~ TAs, type = 'l', col = 'orange', lty = 2)
 #' points(TCs ~ TAs, type = 'l', col = 'red')
 #' plot(endo.out$AIRVOL * 1e6 / 60 ~ TAs, ylim=c(0,250),  lty = 1, xlim=c(-5,50), main = "minute volume", ylab = "ml / min", xlab=paste("air temperature (deg C)"), type = 'l')
+#' @export
 endoR <- function(
   TA = 20, # air temperature at local height (°C)
   TAREF = TA, # air temeprature at reference height (°C)
@@ -477,7 +477,7 @@ endoR <- function(
     GMULT <- GMULTMAX
   }
   TVEG <- TA
-  SOLVENDO.input <- c(QGEN, QBASAL,TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, NGEOM,EMISAN,FATOBJ,FSKREF,FGDREF,NESTYP,PCTDIF,ABSSB,AWING,FLTYPE,ELEV,BP,NITESHAD,SHADE,QSOLR,RoNEST,Z,VEL, TS,TFA,FABUSH,FURTHRMK,RH,TCONDSB,TBUSH,TC,PCTBAREVAP,FLYHR,BAREVAP,AK1,AK2,PCTEYES,DIFTOL,SKINW,TSKY,TVEG,TAREF,DELTAR,RQ, TIMACT, O2GAS, N2GAS, CO2GAS,RELXIT,PANT,EXTREF,UNCURL,AKMAX,AK1inc,TCMAX,RAISETC,TCREF,Q10,QBASREF,PANTMAX,MXWET, SWEAT,TGRD,AMASS,ANDENS,SUBQFAT,FATPCT,PTCOND,PANTING, BIRD)
+  SOLVENDO.input <- c(QGEN, QBASAL, TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, NGEOM, EMISAN, FATOBJ, FSKREF, FGDREF, NESTYP, PCTDIF, ABSSB, BIRD, FLTYPE, ELEV, BP, NITESHAD, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, BAREVAP, AK1, AK2, PCTEYES, DIFTOL, SKINW, TSKY, TVEG, TAREF, DELTAR, RQ, TIMACT, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AKMAX, AK1inc, TCMAX, RAISETC, TCREF, Q10, QBASREF, PANTMAX, MXWET, SWEAT,TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PTCOND, PANTING, MAMMAL, ORIENT)
   endo.out <- SOLVENDO(SOLVENDO.input)
   colnames(endo.out) <- c("TC", "TLUNG", "TFA_D", "TFA_V", "TSKIN_D", "TSKIN_V", "QCONV_D", "QCONV_V", "QCOND_D", "QCOND_V", "QGENNET_D", "QGENNET_V", "QSEVAP_D", "QSEVAP_V", "QRAD_D", "QRAD_V", "QSLR_D", "QSLR_V", "QRSKY_D", "QRSKY_V", "QRBSH_D", "QRBSH_V", "QRVEG_D", "QRVEG_V", "QRGRD_D", "QRGRD_V", "NTRY_D", "NTRY_V", "SUCCESS_D", "SUCCESS_V", "RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL", "GMULT", "PANT", "SKINW", "SWEAT.G.H", "EVAP.G.H", "AK", "TA", "TGRD", "TCONDSB", "TSKY", "VEL", "RH", "QSOLR")
   return(endo.out)

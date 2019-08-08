@@ -13,7 +13,7 @@
 #' then to adjust the FORTRAN code of endoR_solvendo (SOLVENDO.f) accordingly.
 #' @encoding UTF-8
 #' @param AMASS = 1, # kg
-#' @param NGEOM = 4, # cylinder (ngeom = 1), sphere (ngeom = 2) and ellipsoid (ngeom = 4). If a truncated cone (5) or ellipsoidal cylinder (3), we will use the cylinder equations (ngeom=1).
+#' @param NGEOM = 4, # cylinder (ngeom = 1), sphere (ngeom = 2), plate (ngeom = 3) and ellipsoid (ngeom = 4)
 #' @param GMREF = 3, # initial ratio between long and short axis (-)
 #' @param FURTHRMK = 0, # user-specified fur thermal conductivity (W/mK), not used if 0
 #' @param ZFURD = 2E-03, # fur depth, dorsal (m)
@@ -29,7 +29,6 @@
 #' @param Z = 20, zenith angle of sun (degrees from overhead)
 #' @param SHADE = 0, shade level (\%)
 #' @usage endoR(AMASS = 1, NGEOM = 4, GMREF = 3, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-03, TC = 37, TCMAX = 45, TA = 20, TGRD = TA, TSKY = TA, VEL = 0.1, RH = 5, QSOLR = 0, Z = 20, SHADE = 0, NITESHAD = 0,...)
-#' @export
 #' @details
 #' \strong{ Parameters controlling how the model runs:}\cr\cr
 #' \code{DIFTOL}{ = 0.001, error tolerance for SIMULSOL (°C)}\cr\cr
@@ -38,7 +37,7 @@
 #' \code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr
 #' \code{ELEV}{ = 0, elevation (m)}\cr\cr
 #' \code{ABSSB}{ = 0.8, solar absorptivity of substrate (fractional, 0-1)}\cr\cr
-#' \code{FLTYPE}{ = 0, FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - need's to be looked at - only invoked in main program when the dive table is set up}\cr\cr
+#' \code{FLTYPE}{ = 0, FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - needs to be looked at - only invoked in main program when the dive table is set up}\cr\cr
 #' \code{TCONDSB}{ = TGRD, surface temperature for conduction (°C)}\cr\cr
 #' \code{TBUSH}{ = TA, bush temperature (°C)}\cr\cr
 #' \code{BP}{ = -1, Pa, negatve means elevation is used}\cr\cr
@@ -68,6 +67,9 @@
 #' \code{GMULTMAX}{ = GMREF, max possible ratio between long and short axis (-)}\cr\cr
 #' \code{MAXPTVEN}{ = 0.5, maxium fraction of surface area that is ventral (fractional, 0-1)}\cr\cr
 #' \code{PTCOND}{ = 0, \% of body area touching the substrate}\cr\cr
+#' \code{BIRD}{ = 0, if 1, uses bird skin surface area scaling from Walsberg, G. E., and J. E. King. 1978. The Relationship of the External Surface Area of Birds to Skin Surface Area and Body Mass. Journal of Experimental Biology 76:185–189}\cr\cr
+#' \code{MAMMAL}{ = 0, if 1, uses mammal surface area scaling from Stahl W. R. (1967) Scaling of respiratory variables in mammals. Journal of Applied Physiology 22 , 453–460.}\cr\cr
+#' \code{ORIENT}{ = 0, if 0, long axis parallel to ground, if 1, long axis is perpendicular to the ground}\cr\cr
 #'
 #' \strong{ Fur properties:}\cr\cr
 #' \code{DHAIRD}{ = 30E-06, hair diameter, dorsal (m)}\cr\cr
@@ -143,9 +145,9 @@
 #' \code{RESPFN}{energy balance test after call to RESPFUN (W)}\cr\cr
 #' \code{QRESP}{respiratory heat exchange (W)}\cr\cr
 #' \code{GEVAP}{respiratory water loss (g/s)}\cr\cr
-#' \code{PCTO2}{ambient oxygen gas concentration (%)}\cr\cr
-#' \code{PCTN2}{ambient nitgrogen gas concentration (%)}\cr\cr
-#' \code{PCTCO2}{ambient carbon dioxide gas concentration (%)}\cr\cr
+#' \code{PCTO2}{ambient oxygen gas concentration (\%)}\cr\cr
+#' \code{PCTN2}{ambient nitgrogen gas concentration (\%)}\cr\cr
+#' \code{PCTCO2}{ambient carbon dioxide gas concentration (\%)}\cr\cr
 #' \code{RESPGEN}{total metabolic rate (W)}\cr\cr
 #' \code{O2STP}{oxygen consumption at standard temperature and pressure (L/s)}\cr\cr
 #' \code{O2MOL1}{oxygen entering lungs (moles/s)}\cr\cr
@@ -156,17 +158,17 @@
 #' \code{AIRML2}{air leaving lungs (moles/s)}\cr\cr
 #' \code{AIRVOL}{air entering lungs (L/s)}\cr\cr
 #' \code{GMULT}{shape multiplier for postural change (-)}\cr\cr
-#' \code{SKINW}{skin area that is wet (%)}\cr\cr
+#' \code{SKINW}{skin area that is wet (\%)}\cr\cr
 #' \code{SWEAT.G.H}{sweating rate (g/h)}\cr\cr
 #' \code{EVAP.G.H}{evaporation rate (g/h)}\cr\cr
-#' \code{EXTREF}{oxygen extraction efficiency (%)}\cr\cr
+#' \code{EXTREF}{oxygen extraction efficiency (\%)}\cr\cr
 #' \code{AK}{skin thermal conductivity (W/m°C)}\cr\cr
 #' \code{TA}{air temperature (°C)}\cr\cr
 #' \code{TGRD}{ground temperature, driving longwave heat gain (°C)}\cr\cr
 #' \code{TCONDSB}{substrate temperature, driving conductive heat exchange (°C)}\cr\cr
 #' \code{TSKY}{sky temperature (°C)}\cr\cr
 #' \code{VEL}{wind speed (m/s)}\cr\cr
-#' \code{RH}{relative humidity (%)}\cr\cr
+#' \code{RH}{relative humidity (\%)}\cr\cr
 #' \code{QSOLR}{solar radiation (W/m2)}\cr\cr
 #' @examples
 #' library(NicheMapR)
@@ -252,6 +254,7 @@
 #' points(TCs ~ dates, type = 'l', col = 'red')
 #' plot(SkinW ~ dates, type = 'l', col = 'black', ylab = 'skin wetness (%)/panting rate (-)', xlab = 'time', ylim = c(0, 20))
 #' points(Pant ~ dates, type = 'l', col = 'grey', lty = 2)
+#' @export
 endoR_devel <- function(
   TA = 20, # air temperature at local height (°C)
   TAREF = TA, # air temeprature at reference height (°C)
@@ -302,6 +305,8 @@ endoR_devel <- function(
   MAXPTVEN = 0.5, # maxium fraction of surface area that is ventral (fractional, 0-1)
   PTCOND = 0, # % of body area touching the substrate
   BIRD = 0, # if 1, uses bird skin surface area allometry from Walsberg, G. E., and J. E. King. 1978. The Relationship of the External Surface Area of Birds to Skin Surface Area and Body Mass. Journal of Experimental Biology 76:185–189.
+  MAMMAL = 0, # if 1, uses mammal surface area from Stahl W. R. (1967) Scaling of respiratory variables in mammals. Journal of Applied Physiology 22 , 453–460.
+  ORIENT = 0, # if 0, long axis parallel to ground, if 1, long axis is perpendicular to the ground
 
   # fur properties
   FURTHRMK = 0, # user-specified fur thermal conductivity (W/mK), not used if 0
@@ -418,7 +423,7 @@ endoR_devel <- function(
     POSTUR <- NGEOM # posture, 0 is plate, 1 is cylinder, 2 is sphere, 4 is ellipsoid
 
     # call the subroutine
-    GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA, RHOARA, PTCOND, BIRD)
+    GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA, RHOARA, PTCOND, BIRD, MAMMAL, ORIENT)
 
     # output
     R <- GEOM.out[1] # radius as determined assumming the volume as a sphere, m
@@ -472,8 +477,8 @@ endoR_devel <- function(
       QNORM = QSOLR
     }
 
-    ABSAND <- 1 - REFLD # solar absorptivity of dorsal fur (fractional, 0-1)
-    ABSANV <- 1 - REFLV # solar absorptivity of ventral fur (fractional, 0-1)
+    ABSAND <- 1 - REFLFR[2] # solar absorptivity of dorsal fur (fractional, 0-1)
+    ABSANV <- 1 - REFLFR[3] # solar absorptivity of ventral fur (fractional, 0-1)
 
     SOLAR.out <- SOLAR(AREA, ABSAND, ABSANV, ABSSB, ASILN, PCTDIF, QNORM, SHADE,
       QSOLR, FASKY, FATOBJ, FAVEG)

@@ -26,7 +26,7 @@ endoR(AMASS = 1, NGEOM = 4, GMREF = 3, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-0
 
 \item{AMASS}{= 1, # kg}
 
-\item{NGEOM}{= 4, # cylinder (ngeom = 1), sphere (ngeom = 2) and ellipsoid (ngeom = 4). If a truncated cone (5) or ellipsoidal cylinder (3), we will use the cylinder equations (ngeom=1).}
+\item{NGEOM}{= 4, # cylinder (ngeom = 1), sphere (ngeom = 2), plate (ngeom = 3) and ellipsoid (ngeom = 4)}
 
 \item{GMREF}{= 3, # initial ratio between long and short axis (-)}
 
@@ -46,6 +46,147 @@ environmental scenario for an organism of a specified shape and no extra body
 parts. In this function the sequence of thermoregulatory events in the face of
 heat stress is to first uncurl, second change flesh conductivity, third raise
 core temprature, fourth pant and fifth sweat.
+}
+\details{
+\strong{ Parameters controlling how the model runs:}\cr\cr
+\code{DIFTOL}{ = 0.001, error tolerance for SIMULSOL (°C)}\cr\cr
+
+\strong{ Environment:}\cr\cr
+\code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr
+\code{ELEV}{ = 0, elevation (m)}\cr\cr
+\code{ABSSB}{ = 0.8, solar absorptivity of substrate (fractional, 0-1)}\cr\cr
+\code{FLTYPE}{ = 0, FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - needs to be looked at - only invoked in main program when the dive table is set up}\cr\cr
+\code{TCONDSB}{ = TGRD, surface temperature for conduction (°C)}\cr\cr
+\code{TBUSH}{ = TA, bush temperature (°C)}\cr\cr
+\code{BP}{ = -1, Pa, negatve means elevation is used}\cr\cr
+\code{O2GAS}{ = 20.95, oxygen concentration of air (\%)}\cr\cr
+\code{N2GAS}{ = 79.02, nitrogen concetration of air (\%)}\cr\cr
+\code{CO2GAS}{ = 0.03, carbon dioxide concentration of air (\%)}\cr\cr
+\code{PCTDIF}{ = 0.15, proportion of solar radiation that is diffuse (fractional, 0-1)}\cr\cr
+
+\strong{ Behaviour:}\cr\cr
+\code{SHADE}{ = 0, shade level (\%)}\cr\cr
+\code{NITESHAD}{ = 0, flag for if animal is behaviourally seeking shade for warmth at night - remove?}\cr\cr
+\code{FLYHR}{ = 0, is flight occuring this hour? (imposes forced evaporative loss)}\cr\cr
+\code{UNCURL}{ = 1, allows the animal to uncurl to GMULTMAX, the value being the increment GMULT is increased per iteration}\cr\cr
+\code{RAISETC}{ = 1, turns on core temperature elevation, the value being the increment by which TC is increased per iteration}\cr\cr
+\code{SWEAT}{ = 0.25, turns on sweating, the value being the increment by which SKINW is increased per iteration (\%)}\cr\cr
+\code{MXWET}{ = 100, maximum surface area that can be wet (\%)}\cr\cr
+\code{AK1inc}{ = 0.5, turns on thermal conductivity increase (W/mK), the value being the increment by which AK1 is increased per iteration (W/mC)}\cr\cr
+\code{AKMAX}{ = 2.8, maximum flesh conductivity (W/mK)}\cr\cr
+\code{PANT}{ = 1, multiplier on breathing rate to simulate panting (-)}\cr\cr
+\code{PANTING}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
+
+\strong{ General morphology:}\cr\cr
+\code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr
+\code{SUBQFAT}{ = 0, is subcutaneous fat present? (0 is no, 1 is yes)}\cr\cr
+\code{FATPCT}{ = 20, \% body fat}\cr\cr
+\code{GMULT}{ = GMREF, current ratio between long and short axis (-)}\cr\cr
+\code{GMULTMAX}{ = GMREF, max possible ratio between long and short axis (-)}\cr\cr
+\code{MAXPTVEN}{ = 0.5, maxium fraction of surface area that is ventral (fractional, 0-1)}\cr\cr
+\code{AWING}{ = 0, area of wing, to do}\cr\cr
+\code{PTCOND}{ = 0, \% of body area touching the substrate}\cr\cr
+
+\strong{ Fur properties:}\cr\cr
+\code{DHAIRD}{ = 30E-06, hair diameter, dorsal (m)}\cr\cr
+\code{DHAIRV}{ = 30E-06, hair diameter, ventral (m)}\cr\cr
+\code{LHAIRD}{ = 23.9E-03, hair length, dorsal (m)}\cr\cr
+\code{LHAIRV}{ = 23.9E-03, hair length, dorsal (m)}\cr\cr
+\code{RHOD}{ = 3000E+04, hair density, dorsal (1/m2)}\cr\cr
+\code{RHOV}{ = 3000E+04, hair density, ventral (1/m2)}\cr\cr
+\code{REFLD}{ = 0.2, fur reflectivity dorsal (fractional, 0-1)}\cr\cr
+\code{REFLV}{ = 0.2, fur reflectivity ventral (fractional, 0-1)}\cr\cr
+
+\strong{ Radiation exchange:}\cr\cr
+\code{EMISAN}{ = 0.99, animal emissivity (-)}\cr\cr
+\code{FATOBJ}{ = 0, configuration factor to nearby object}\cr\cr
+\code{FABUSH}{ = 0, this is for veg below/around animal (at TALOC)}\cr\cr
+\code{FGDREF}{ = 0.5, reference configuration factor to ground}\cr\cr
+\code{FSKREF}{ = 0.5, configuration factor to sky}\cr\cr
+
+\strong{ Nest properties:}\cr\cr
+\code{NESTYP}{ = 0, # for nest calculations, to do)}\cr\cr
+\code{RoNEST}{ = 0, # for nest calculations, to do}\cr\cr
+\code{R1}{ = 0, # for nest calculations, to do}\cr\cr
+
+\strong{ Physiology:}\cr\cr
+\code{AK1}{ = 0.9, # initial thermal conductivity of flesh (0.412 - 2.8 W/mK)}\cr\cr
+\code{AK2}{ = 0.230, # conductivity of fat (W/mK)}\cr\cr
+\code{QBASAL}{ = (70 \* AMASS ^ 0.75) \* (4.185 / (24 \* 3.6)), # basal heat generation (W)}\cr\cr
+\code{SKINW}{ = 0, # part of the skin surface that is wet (\%)}\cr\cr
+\code{BAREVAP}{ = 0, # is evaporation partly from bare skin? (0 = no, 1 = yes, \% defined with PCTSKINEVAP)}\cr\cr
+\code{PCTBAREVAP}{ = 2.8, maximum flesh conductivity (W/mK)}\cr\cr
+\code{PCTEYES}{ = 0, # surface area made up by the eye (\%) - make zero if sleeping}\cr\cr
+\code{DELTAR}{ = 0, # offset between air temperature and breath (°C)}\cr\cr
+\code{RELXIT}{ = 100, # relative humidity of exhaled air, \%}\cr\cr
+\code{TIMACT}{ = 1, # multiplier on metabolic rate for activity costs}\cr\cr
+\code{RQ}{ = 0.80, # respiratory quotient (fractional, 0-1)}\cr\cr
+\code{EXTREF}{ = 20, # O2 extraction efficiency (\%)}\cr\cr
+\code{PANTMAX}{ = 10, # maximum breathing rate multiplier to simulate panting (-)}\cr\cr
+\code{Q10}{ = 1, # Q10 factor for adjusting BMR for TC}\cr\cr
+
+\strong{ Initial conditions:}\cr\cr
+\code{TS}{ = TC - 3, # initial skin temperature (°C)}\cr\cr
+\code{TFA}{ = TA, # initial fur/air interface temperature (°C)}\cr\cr
+
+\strong{Outputs:}
+\code{TC}{core temperature (°C)}\cr\cr
+\code{TFA_D}{dorsal fur-air interface temperature (°C)}\cr\cr
+\code{TFA_V}{ventral fur-air interface temperature (°C)}\cr\cr
+\code{TSKIN_D}{dorsal skin temperature (°C)}\cr\cr
+\code{TSKIN_V}{ventral skin temperature (°C)}\cr\cr
+\code{QCONV_D}{dorsal convection heat exchange (W)}\cr\cr
+\code{QCONV_V}{ventral convection heat exchange (W)}\cr\cr
+\code{QCOND_D}{dorsal conduction heat exchange (W)}\cr\cr
+\code{QCOND_V}{ventral conduction heat exchange (W)}\cr\cr
+\code{QGENNET_D}{dorsal net heat generation (W)}\cr\cr
+\code{QGENNET_V}{ventral net heat generation (W)}\cr\cr
+\code{QSEVAP_D}{dorsal evaporative heat exchange (W)}\cr\cr
+\code{QSEVAP_V}{ventral evaporative heat exchange (W)}\cr\cr
+\code{QRAD_D}{dorsal radiant heat loss (W)}\cr\cr
+\code{QRAD_V}{ventral radiant heat loss (W)}\cr\cr
+\code{QSLR_D}{dorsal solar heat gain (W)}\cr\cr
+\code{QSLR_V}{ventral solar heat gain (W)}\cr\cr
+\code{QRSKY_D}{dorsal radiant heat incomming from sky (W)}\cr\cr
+\code{QRSKY_V}{ventral radiant heat incomming from sky (W)}\cr\cr
+\code{QRBSH_D}{dorsal radiant heat incomming from nearby bush (W)}\cr\cr
+\code{QRBSH_V}{ventral radiant heat incomming from nearby bush (W)}\cr\cr
+\code{QRVEG_D}{dorsal radiant heat incomming from vegetation (W)}\cr\cr
+\code{QRVEG_V}{ventral radiant heat incomming from vegetation (W)}\cr\cr
+\code{QRGRD_D}{dorsal radiant heat incomming from ground (W)}\cr\cr
+\code{QRGRD_V}{ventral radiant heat incomming from ground (W)}\cr\cr
+\code{NTRY_D}{number of iterations need for convergence of dorsal heat budget}\cr\cr
+\code{NTRY_V}{number of iterations need for convergence of ventral heat budget}\cr\cr
+\code{SUCCESS_D}{test of success convergence for dorsal heat budget}\cr\cr
+\code{SUCCESS_V}{test of success convergence for ventral heat budget}\cr\cr
+\code{RESPFN}{energy balance test after call to RESPFUN (W)}\cr\cr
+\code{QRESP}{respiratory heat exchange (W)}\cr\cr
+\code{GEVAP}{respiratory water loss (g/s)}\cr\cr
+\code{PCTO2}{ambient oxygen gas concentration (\%)}\cr\cr
+\code{PCTN2}{ambient nitgrogen gas concentration (\%)}\cr\cr
+\code{PCTCO2}{ambient carbon dioxide gas concentration (\%)}\cr\cr
+\code{RESPGEN}{total metabolic rate (W)}\cr\cr
+\code{O2STP}{oxygen consumption at standard temperature and pressure (L/s)}\cr\cr
+\code{O2MOL1}{oxygen entering lungs (moles/s)}\cr\cr
+\code{N2MOL1}{nitrogen entering lungs (moles/s)}\cr\cr
+\code{AIRML1}{air entering lungs (moles/s)}\cr\cr
+\code{O2MOL2}{oxygen leaving lungs (moles/s)}\cr\cr
+\code{N2MOL2}{nitrogen leaving lungs (moles/s)}\cr\cr
+\code{AIRML2}{air leaving lungs (moles/s)}\cr\cr
+\code{AIRVOL}{air entering lungs (L/s)}\cr\cr
+\code{GMULT}{shape multiplier for postural change (-)}\cr\cr
+\code{SKINW}{skin area that is wet (\%)}\cr\cr
+\code{SWEAT.G.H}{sweating rate (g/h)}\cr\cr
+\code{EVAP.G.H}{evaporation rate (g/h)}\cr\cr
+\code{EXTREF}{oxygen extraction efficiency (\%)}\cr\cr
+\code{AK}{skin thermal conductivity (W/m°C)}\cr\cr
+\code{TA}{air temperature (°C)}\cr\cr
+\code{TGRD}{ground temperature, driving longwave heat gain (°C)}\cr\cr
+\code{TCONDSB}{substrate temperature, driving conductive heat exchange (°C)}\cr\cr
+\code{TSKY}{sky temperature (°C)}\cr\cr
+\code{VEL}{wind speed (m/s)}\cr\cr
+\code{RH}{relative humidity (\%)}\cr\cr
+\code{QSOLR}{solar radiation (W/m2)}\cr\cr
 }
 \examples{
 library(NicheMapR)
