@@ -14,7 +14,7 @@ trans_behav(t = seq(1, 60), Tc_init = rep(20, 60), Ts_init = Tc_init
   geom = 2, shape_b = 1/5, shape_c = 1/5, shape_coefs = c(10.4713,
   0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743), posture = "n",
   orient = 1, fatosk = 0.4, fatosb = 0.4, alpha_sub = 0.2,
-  pctdif = 0.1, shade = 90, metout = metout, shadmet = shadmet,
+  pdif = 0.1, shade = 90, metout = metout, shadmet = shadmet,
   soil = soil, shadsoil = shadsoil, press = 101325)
 }
 \arguments{
@@ -78,7 +78,7 @@ trans_behav(t = seq(1, 60), Tc_init = rep(20, 60), Ts_init = Tc_init
 
 \item{alpha_sub}{= 0.2, substrate solar reflectivity, decimal percent}
 
-\item{pctdif}{= 0.1, proportion of solar energy that is diffuse (rather than direct beam)}
+\item{pdif}{= 0.1, proportion of solar energy that is diffuse (rather than direct beam)}
 
 \item{shade}{= 90, maximum shade level (\%)}
 

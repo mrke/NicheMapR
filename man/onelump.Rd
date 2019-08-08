@@ -53,7 +53,7 @@ onelump(t, Tc_init, Ww_g, geom, Tair, Trad, vel, Qsol, Zen, ...)
 
 \item{abs_sub}{= 0.2, substrate solar reflectivity, decimal percent}
 
-\item{pctdif}{= 0.1, proportion of solar energy that is diffuse (rather than direct beam)}
+\item{pdif}{= 0.1, proportion of solar energy that is diffuse (rather than direct beam)}
 
 \item{press}{= 101325, air pressure (Pa)}
 }
