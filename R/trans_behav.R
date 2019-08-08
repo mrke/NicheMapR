@@ -45,7 +45,7 @@
 #' @param fatosk = 0.4, solar configuration factor to sky (-)
 #' @param fatosb = 0.4, solar configuration factor to substrate (-)
 #' @param alpha_sub = 0.2, substrate solar reflectivity, decimal percent
-#' @param pctdif = 0.1, proportion of solar energy that is diffuse (rather than direct beam)
+#' @param pdif = 0.1, proportion of solar energy that is diffuse (rather than direct beam)
 #' @param shade = 90, maximum shade level (\%)
 #' @param metout = metout, aboveground minimum shade microclimate output table from NicheMapR's microclimate model
 #' @param shadmet = shadmet, metout, aboveground maximum shademicroclimate output table from NicheMapR's microclimate model
@@ -241,7 +241,7 @@ trans_behav <- function(t = seq(1, 60),
                         fatosk = 0.4,
                         fatosb = 0.4,
                         alpha_sub = 0.2,
-                        pctdif = 0.1,
+                        pdif = 0.1,
                         shade = 90,
                         metout = metout,
                         shadmet = shadmet,
@@ -408,7 +408,7 @@ trans_behav <- function(t = seq(1, 60),
   if (lump == 1) {
     indata <- list(alpha = alpha, emis = emis, alpha_sub = alpha_sub, press = press, Ww_g = Ww_g, c_body = c_body, rho_body = rho_body,
                    q = q, k_flesh = k_flesh, geom = geom, posture = posture, orient = orient, shape_b = shape_b, shape_c = shape_c,
-                   shape_coefs = shape_coefs, pctdif = pctdif, fatosk = fatosk, fatosb = fatosb, Tairf = Tairf, velf = velf,
+                   shape_coefs = shape_coefs, pdif = pdif, fatosk = fatosk, fatosb = fatosb, Tairf = Tairf, velf = velf,
                    Qsolf = Qsolf, Tradf = Tradf, Zenf = Zenf)
     indata$c_body = 0.1  #specific heat of flesh, J/(kg.C)
   }
@@ -416,7 +416,7 @@ trans_behav <- function(t = seq(1, 60),
     indata <- list(Ww_g = Ww_g, x_shell = x_shell, geom = geom, k_inner = k_inner, k_outer = k_outer, q = q,
                    c_body_inner = c_body_inner, c_body_outer = c_body_outer, emis = emis, rho_body_body = rho_body_body, alpha = alpha, shape_coefs = shape_coefs,
                    shape_b = shape_b, shape_c = shape_c, posture = posture, orient = orient, fatosk = fatosk, fatosb = fatosb,
-                   alpha_sub = alpha_sub, pctdif = pctdif, press = press)
+                   alpha_sub = alpha_sub, pdif = pdif, press = press)
     indata$c_body_inner = 0.1  #specific heat of flesh, J/(kg.C)
     indata$c_body_outer = 0.1  #specific heat of flesh, J/(kg.C)
   }

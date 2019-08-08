@@ -21,7 +21,7 @@
 #' @param fatosk = 0.4, Configuration factor to sky (-) for infrared calculations
 #' @param fatosb = 0.4, Configuration factor to subsrate for infrared calculations
 #' @param abs_sub = 0.2, substrate solar reflectivity, decimal percent
-#' @param pctdif = 0.1, proportion of solar energy that is diffuse (rather than direct beam)
+#' @param pdif = 0.1, proportion of solar energy that is diffuse (rather than direct beam)
 #' @param Tair = 30, air temperature (deg C)
 #' @param Trad = 30, radiant temperature (deg C), averaging ground and sky
 #' @param vel = 0.1, wind speed (m/s)
@@ -98,7 +98,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
   q = 0, c_body = 3073, emis = 0.95, rho_body = 932, abs = 0.85,
   shape_coefs = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
   shape_b = 1/5, shape_c = 1/5, posture = 'n', orient = 1, fatosk = 0.4, fatosb = 0.4,
-  abs_sub = 0.8, pctdif = 0.1, press = 101325){
+  abs_sub = 0.8, pdif = 0.1, press = 101325){
 
   sigma <- 5.67e-8 #Stefan-Boltzman, W/(m.K)
   Zenith <- Zen * pi / 180 # zenith angle in radians
@@ -215,13 +215,13 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
     Qnorm <- 1367 #making sure that low sun angles don't lead to solar values greater than the solar constant
   }
   if (posture == 'p') {
-    Qabs <- (Qnorm * (1 - pctdif) * ASILP + Qsol * pctdif * fatosk * ATOT + Qsol * (1 - abs_sub) * fatosb * ATOT) * abs
+    Qabs <- (Qnorm * (1 - pdif) * ASILP + Qsol * pdif * fatosk * ATOT + Qsol * (1 - abs_sub) * fatosb * ATOT) * abs
   }
   if (posture == 'n') {
-    Qabs <- (Qnorm * (1 - pctdif) * ASILN + Qsol * pctdif * fatosk * ATOT + Qsol * (1 - abs_sub) * fatosb * ATOT) * abs
+    Qabs <- (Qnorm * (1 - pdif) * ASILN + Qsol * pdif * fatosk * ATOT + Qsol * (1 - abs_sub) * fatosb * ATOT) * abs
   }
   if (posture == 'a') {
-    Qabs <- (Qnorm * (1 - pctdif) * (ASILN + ASILP) / 2 + Qsol * pctdif * fatosk * ATOT + Qsol * (1 - abs_sub) * fatosb * ATOT) * abs
+    Qabs <- (Qnorm * (1 - pdif) * (ASILN + ASILP) / 2 + Qsol * pdif * fatosk * ATOT + Qsol * (1 - abs_sub) * fatosb * ATOT) * abs
   }
 
   Re <- DENSTY * vel * L / VISDYN # Reynolds number
