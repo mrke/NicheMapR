@@ -420,10 +420,9 @@ endoR_devel <- function(
     DHARA <- DHAR[1] # fur diameter, mean (m) (from IRPROP)
     RHOARA <- RHOAR[1] # hair density, mean (1/m2) (from IRPROP)
     ZFUR <- ZZFUR[1] # fur depth, mean (m) (from IRPROP)
-    POSTUR <- NGEOM # posture, 0 is plate, 1 is cylinder, 2 is sphere, 4 is ellipsoid
 
     # call the subroutine
-    GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA, RHOARA, PTCOND, BIRD, MAMMAL, ORIENT)
+    GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, NGEOM, ZFUR, SUBQFAT, GMULT, GMREF, DHARA, RHOARA, PTCOND, BIRD, MAMMAL, ORIENT)
 
     # output
     R <- GEOM.out[1] # radius as determined assumming the volume as a sphere, m

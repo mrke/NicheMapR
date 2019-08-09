@@ -117,7 +117,7 @@ AMASS <- 10 # kg
 ANDENS <- 1000 # kg/m3
 SUBQFAT <- 1 # is subcutaneous fat present? (0 is no, 1 is yes)
 FATPCT <- 20 # % body fat
-POSTUR <- 4 # posture, 0 is plate, 1 is cylinder, 4 is ellipsoid
+NGEOM <- 4 # shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid
 GMREF <- 2.7 # initial ratio between long and short axis (-)
 GMULT <- 2.7 # current ratio between long and short axis (-)
 DHARA <- DHAR[1] # fur diameter, mean (m) (from IRPROP)
@@ -129,7 +129,7 @@ MAMMAL <- 0 # if 1, uses mammal surface area scaling from Stahl W. R. (1967) Sca
 ORIENT <- 0 # if 0, long axis parallel to ground, if 1, long axis is perpendicular to the ground
 
 # call the subroutine
-GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA, RHOARA, PTCOND, BIRD, MAMMAL, ORIENT)
+GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, NGEOM, ZFUR, SUBQFAT, GMULT, GMREF, DHARA, RHOARA, PTCOND, BIRD, MAMMAL, ORIENT)
 
 # output
 R <- GEOM.out[1] # radius as determined assumming the volume as a sphere, m
@@ -181,7 +181,7 @@ kable(cbind(GEOM.lab, t(GEOM.out)))
 Plot of current animal configuration.
 
 ```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE}
-if(POSTUR == 4){ #ellipsoid
+if(NGEOM == 4){ #ellipsoid
 par(mfrow=c(1,2))
 plot(c(0,ASEMAJ*2+ZFUR*2), c(0,ASEMAJ*2+ZFUR*2), type="n", main="ellipsoid, sagittal section", ylab = 'minor axis, m', xlab = 'major axis, m', asp=1)
 draw.ellipse(ASEMAJ+ZFUR, ASEMAJ+ZFUR, col="black", border = "black", a = ASEMAJ+ZFUR, b = BSEMIN+ZFUR)
@@ -346,7 +346,7 @@ kable(cbind(SEVAP.lab, t(SEVAP.out)))
 
 ### SIMULSOL
 
-Setup and the SIMULSOL algorithm to SIMULtaneously SOLve for skin temperature $T_skin$ and the temperature of the fur/feather interface $T_fa$ given an environment, posture and skin wetness. SIMULSOL is the core algorithm for computing the heat balance.
+Setup and the SIMULSOL algorithm to SIMULtaneously SOLve for skin temperature $T_skin$ and the temperature of the fur/feather interface $T_fa$ given an environment, shape/posture and skin wetness. SIMULSOL is the core algorithm for computing the heat balance.
 
 ```{r}
 # environment

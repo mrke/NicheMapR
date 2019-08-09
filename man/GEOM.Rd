@@ -5,7 +5,7 @@
 \title{GEOM}
 \usage{
 GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA,
-  RHOARA, PTCOND, BIRD)
+  RHOARA, PTCOND, BIRD, MAMMAL, ORIENT)
 }
 \arguments{
 \item{AMASS}{A}
@@ -31,6 +31,10 @@ GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA,
 \item{PTCOND}{A}
 
 \item{BIRD}{A}
+
+\item{MAMMAL}{A}
+
+\item{ORIENT}{A}
 }
 \description{
 R wrapper for Fortran binary of GEOM (endotherm model)
