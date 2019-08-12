@@ -716,8 +716,8 @@ micro_ncep <- function(
         nyears <- length(years)
         # now getting starting point and count for reading netcdf files
         nc <- RNetCDF::open.nc(paste(spatial, "/air.2m.gauss.", years[1], ".nc", sep = ""))
-        lon2 <- matrix(RNetCDF::var.get.nc(nc, "lon"))
-        lat2 <- matrix(RNetCDF::var.get.nc(nc, "lat"))
+        lon2 <- matrix(RNetCDF::var.get.nc(nc, "lon", unpack = TRUE))
+        lat2 <- matrix(RNetCDF::var.get.nc(nc, "lat", unpack = TRUE))
         lon_1 <- long
         if(lon_1 < 0){lon_1 <- 180 - (long*-1) + 180}
         lat_1 <- lat

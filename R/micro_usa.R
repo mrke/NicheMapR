@@ -234,53 +234,52 @@
 #' soilmoist<-as.data.frame(micro$soilmoist) # soil temperatures, minimum shade
 #'
 #' # append dates
-#' tzone<-paste("Etc/GMT+",0,sep="")
-#' dates<-seq(as.POSIXct(dstart, format="%d/%m/%Y",tz=tzone)-3600*12, as.POSIXct(dfinish, format="%d/%m/%Y",tz=tzone)+3600*11, by="hours")
+#' dates <- micro$dates
 #'
-#' metout <- cbind(dates,metout)
-#' soil <- cbind(dates,soil)
+#' metout <- cbind(dates, metout)
+#' soil <- cbind(dates, soil)
 #' soilmoist <- cbind(dates, soilmoist)
 #' minshade<-micro$minshade
 #'
 #' # plotting above-ground conditions in minimum shade
-#' with(metout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
-#' , type = "l",main=paste("air and sky temperature, ",minshade,"% shade",sep=""), ylim = c(-20, 60))})
-#' with(metout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
-#' , type = "l",lty=2,col='blue')})
-#' with(metout,{points(TSKYC ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
-#' ,  type = "l",col='light blue',main=paste("sky temperature, ",minshade,"% shade",sep=""))})
-#' with(metout,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
-#' , type = "l",ylim=c(0,100),main=paste("humidity, ",minshade,"% shade",sep=""))})
-#' with(metout,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
-#' , type = "l",col='blue',lty=2,ylim=c(0,100))})
-#' with(metout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-#' ,  type = "l",main="wind speed",ylim = c(0, 15))})
-#' with(metout,{points(VLOC ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-#' ,  type = "l",lty=2,col='blue')})
-#' with(metout,{plot(SOLR ~ dates,xlab = "Date and Time", ylab = "Solar Radiation (W/m2)"
-#' ,  type = "l",main="solar radiation")})
-#' with(metout,{plot(SNOWDEP ~ dates,xlab = "Date and Time", ylab = "Snow Depth (cm)"
-#' ,  type = "l",main="snow depth")})
+#' with(metout, {plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
+#' , type = "l", main = paste("air and sky temperature, ", minshade, "% shade", sep = ""), ylim = c(-20, 60))})
+#' with(metout, {points(TAREF ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
+#' , type = "l", lty = 2,col = 'blue')})
+#' with(metout, {points(TSKYC ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
+#' ,  type = "l", col = 'light blue', main = paste("sky temperature, ", minshade, "% shade", sep = ""))})
+#' with(metout, {plot(RHLOC ~ dates, xlab = "Date and Time", ylab = "Relative Humidity (%)"
+#' , type = "l", ylim = c(0, 100), main = paste("humidity, ", minshade, "% shade", sep = ""))})
+#' with(metout, {points(RH ~ dates, xlab = "Date and Time", ylab = "Relative Humidity (%)"
+#' , type = "l", col = 'blue', lty = 2, ylim = c(0, 100))})
+#' with(metout, {plot(VREF ~ dates, xlab = "Date and Time", ylab = "Wind Speed (m/s)"
+#' ,  type = "l", main = "wind speed", ylim = c(0, 15))})
+#' with(metout, {points(VLOC ~ dates, xlab = "Date and Time", ylab = "Wind Speed (m/s)"
+#' ,  type = "l", lty = 2, col = 'blue')})
+#' with(metout, {plot(SOLR ~ dates, xlab = "Date and Time", ylab = "Solar Radiation (W/m2)"
+#' ,  type = "l", main = "solar radiation")})
+#' with(metout, {plot(SNOWDEP ~ dates, xlab = "Date and Time", ylab = "Snow Depth (cm)"
+#' ,  type = "l", main = "snow depth")})
 #'
 #' # plotting soil temperature
 #' for(i in 1:10){
 #'  if(i==1){
-#'    plot(soil[,i+3]~soil[,1],xlab = "Date and Time", ylab = "Soil Temperature (°C)"
-#'    ,col=i,type = "l",main=paste("soil temperature ",minshade,"% shade",sep=""))
+#'    plot(soil[,i+3] ~ soil[,1], xlab = "Date and Time", ylab = "Soil Temperature (°C)"
+#'    ,col = i,type = "l", main = paste("soil temperature ", minshade, "% shade", sep = ""))
 #'  }else{
-#'    points(soil[,i+3]~soil[,1],xlab = "Date and Time", ylab = "Soil Temperature
-#'     (°C)",col=i,type = "l")
+#'    points(soil[, i + 3] ~ soil[, 1], xlab = "Date and Time", ylab = "Soil Temperature
+#'     (°C)", col = i, type = "l")
 #'  }
 #' }
 #'
 #' # plotting soil moisture
 #' for(i in 1:10){
 #'  if(i==1){
-#'    plot(soilmoist[,i+3]*100~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture (% volumetric)"
-#'    ,col=i,type = "l",main=paste("soil moisture ",minshade,"% shade",sep=""))
+#'    plot(soilmoist[,i+3] * 100 ~ soilmoist[, 1], xlab = "Date and Time", ylab = "Soil Moisture (% volumetric)"
+#'    ,col = i,type = "l", main = paste("soil moisture ", minshade, "% shade", sep = ""))
 #'  }else{
-#'    points(soilmoist[,i+3]*100~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture
-#'     (%)",col=i,type = "l")
+#'    points(soilmoist[,i+3] * 100 ~ soilmoist[, 1], xlab = "Date and Time", ylab = "Soil Moisture
+#'     (%)", col = i, type = "l")
 #'  }
 #' }
 micro_usa <- function(
@@ -613,8 +612,8 @@ micro_usa <- function(
         cat("extracting elevation via opendaps \n")
         baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/MET/"
         nc <- RNetCDF::open.nc(paste0(baseurl, "/elev/metdata_elevationdata.nc"))
-        lon <- RNetCDF::var.get.nc(nc, "lon")
-        lat <- RNetCDF::var.get.nc(nc, "lat")
+        lon <- RNetCDF::var.get.nc(nc, "lon", unpack = TRUE)
+        lat <- RNetCDF::var.get.nc(nc, "lat", unpack = TRUE)
         flat=match(abs(lat-x[2])<1/48,1)
         latindex=which(flat %in% 1)
         flon=match(abs(lon-x[1])<1/48,1)
@@ -622,7 +621,7 @@ micro_usa <- function(
         start <- c(lonindex, latindex, 1)
         count <- c(1, 1, NA)
         USADEM <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "elevation",
-          start = start, count = count)))
+          start = start, count = count, unpack = TRUE)))
         RNetCDF::close.nc(nc)
       }else{
         USADEM <- extract(raster::raster(paste0(spatial,"/metdata_elevationdata.nc")), x) # metres above sea level
@@ -718,47 +717,47 @@ micro_usa <- function(
         cat(paste0("reading weather input for ", dstart, " to ", dfinish, " \n"))
         cat(paste0("tmin weather input \n"))
         nc <- RNetCDF::open.nc(paste0(baseurl, "tmmn_1979_CurrentYear_CONUS.nc"))
-        day <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "day")))
-        lon <- RNetCDF::var.get.nc(nc, "lon")
-        lat <- RNetCDF::var.get.nc(nc, "lat")
+        day <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "day", unpack = TRUE)))
+        lon <- RNetCDF::var.get.nc(nc, "lon", unpack = TRUE)
+        lat <- RNetCDF::var.get.nc(nc, "lat", unpack = TRUE)
         flat <- match(abs(lat-x[2])<1/48,1)
         latindex <- which(flat %in% 1)
         flon <- match(abs(lon-x[1])<1/48,1)
         lonindex <- which(flon %in% 1)
         start <- c(lonindex, latindex, which(day == startday) - 1)
         count <- c(1, 1, countday)
-        Tmin <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_minimum_temperature", start = start, count = count))) - 273.15
+        Tmin <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_minimum_temperature", start = start, count = count, unpack = TRUE))) - 273.15
         RNetCDF::close.nc(nc)
         cat(paste0("tmax weather input \n"))
         nc <- RNetCDF::open.nc(paste0(baseurl, "tmmx_1979_CurrentYear_CONUS.nc"))
-        Tmax <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_maximum_temperature", start = start, count = count))) - 273.15
+        Tmax <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_maximum_temperature", start = start, count = count, unpack = TRUE))) - 273.15
         RNetCDF::close.nc(nc)
         cat(paste0("rhmin weather input \n"))
         nc <- RNetCDF::open.nc(paste0(baseurl, "rmin_1979_CurrentYear_CONUS.nc"))
-        rhmin <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_minimum_relative_humidity", start = start, count = count)))
+        rhmin <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_minimum_relative_humidity", start = start, count = count, unpack = TRUE)))
         RNetCDF::close.nc(nc)
         cat(paste0("rhmax weather input \n"))
         nc <- RNetCDF::open.nc(paste0(baseurl, "rmax_1979_CurrentYear_CONUS.nc"))
-        rhmax <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_maximum_relative_humidity", start = start, count = count)))
+        rhmax <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_maximum_relative_humidity", start = start, count = count, unpack = TRUE)))
         RNetCDF::close.nc(nc)
         cat(paste0("rain weather input \n"))
         nc <- RNetCDF::open.nc(paste0(baseurl, "pr_1979_CurrentYear_CONUS.nc"))
-        Rain <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "precipitation_amount", start = start, count = count)))
+        Rain <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "precipitation_amount", start = start, count = count, unpack = TRUE)))
         RNetCDF::close.nc(nc)
         cat(paste0("solar weather input \n"))
         nc <- RNetCDF::open.nc(paste0(baseurl, "srad_1979_CurrentYear_CONUS.nc"))
-        solar <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_mean_shortwave_radiation_at_surface", start = start, count = count)))
+        solar <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_mean_shortwave_radiation_at_surface", start = start, count = count, unpack = TRUE)))
         RNetCDF::close.nc(nc)
         cat(paste0("wind weather input \n"))
         nc <- RNetCDF::open.nc(paste0(baseurl, "vs_1979_CurrentYear_CONUS.nc"))
-        Wind <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_mean_wind_speed", start = start, count = count)))
+        Wind <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_mean_wind_speed", start = start, count = count, unpack = TRUE)))
         RNetCDF::close.nc(nc)
       }else{
         cat("extracting weather data \n")
         nc <- RNetCDF::open.nc(paste(spatial, "/tmmx_", yearlist[1], ".nc",
           sep = ""))
-        lon <- matrix(RNetCDF::var.get.nc(nc, "lon"))
-        lat <- matrix(RNetCDF::var.get.nc(nc, "lat"))
+        lon <- matrix(RNetCDF::var.get.nc(nc, "lon", unpack = TRUE))
+        lat <- matrix(RNetCDF::var.get.nc(nc, "lat", unpack = TRUE))
         lon_1 <- as.numeric(longlat[1])
         lat_1 <- as.numeric(longlat[2])
         dist1 <- abs(lon - lon_1)
@@ -774,37 +773,37 @@ micro_usa <- function(
             nc <- RNetCDF::open.nc(paste(spatial, "/tmmn_", yearlist[j],
               ".nc", sep = ""))
             tmin <- as.numeric(RNetCDF::var.get.nc(nc, variable = "air_temperature",
-              start = start, count = count))
+              start = start, count = count, unpack = TRUE))
             RNetCDF::close.nc(nc)
             nc <- RNetCDF::open.nc(paste(spatial, "/tmmx_", yearlist[j],
               ".nc", sep = ""))
             tmax <- as.numeric(RNetCDF::var.get.nc(nc, variable = "air_temperature",
-              start = start, count = count))
+              start = start, count = count, unpack = TRUE))
             RNetCDF::close.nc(nc)
             nc <- RNetCDF::open.nc(paste(spatial, "/rmin_", yearlist[j],
               ".nc", sep = ""))
             rhmin <- as.numeric(RNetCDF::var.get.nc(nc, variable = "relative_humidity",
-              start = start, count = count))
+              start = start, count = count, unpack = TRUE))
             RNetCDF::close.nc(nc)
             nc <- RNetCDF::open.nc(paste(spatial, "/rmax_", yearlist[j],
               ".nc", sep = ""))
             rhmax <- as.numeric(RNetCDF::var.get.nc(nc, variable = "relative_humidity",
-              start = start, count = count))
+              start = start, count = count, unpack = TRUE))
             RNetCDF::close.nc(nc)
             nc <- RNetCDF::open.nc(paste(spatial, "/pr_", yearlist[j],
               ".nc", sep = ""))
             Rain <- as.numeric(RNetCDF::var.get.nc(nc, variable = "precipitation_amount",
-              start = start, count = count))
+              start = start, count = count, unpack = TRUE))
             RNetCDF::close.nc(nc)
             nc <- RNetCDF::open.nc(paste(spatial, "/srad_", yearlist[j],
               ".nc", sep = ""))
             solar <- as.numeric(RNetCDF::var.get.nc(nc, variable = "surface_downwelling_shortwave_flux_in_air",
-              start = start, count = count))
+              start = start, count = count, unpack = TRUE))
             RNetCDF::close.nc(nc)
             nc <- RNetCDF::open.nc(paste(spatial, "/vs_", yearlist[j],
               ".nc", sep = ""))
             Wind <- as.numeric(RNetCDF::var.get.nc(nc, variable = "wind_speed",
-              start = start, count = count))
+              start = start, count = count, unpack = TRUE))
             RNetCDF::close.nc(nc)
             Tmax <- tmax - 273.15
             Tmin <- tmin - 273.15
@@ -814,37 +813,37 @@ micro_usa <- function(
             nc <- RNetCDF::open.nc(paste(spatial, "/tmmn_", yearlist[j],
               ".nc", sep = ""))
             tmin <- as.numeric(RNetCDF::var.get.nc(nc, variable = "air_temperature",
-              start = start, count = count))
+              start = start, count = count, unpack = TRUE))
             RNetCDF::close.nc(nc)
             nc <- RNetCDF::open.nc(paste(spatial, "/tmmx_", yearlist[j],
               ".nc", sep = ""))
             tmax <- as.numeric(RNetCDF::var.get.nc(nc, variable = "air_temperature",
-              start = start, count = count))
+              start = start, count = count, unpack = TRUE))
             RNetCDF::close.nc(nc)
             nc <- RNetCDF::open.nc(paste(spatial, "/rmin_", yearlist[j],
               ".nc", sep = ""))
             rhmin <- c(rhmin, as.numeric(RNetCDF::var.get.nc(nc, variable = "relative_humidity",
-              start = start, count = count)))
+              start = start, count = count, unpack = TRUE)))
             RNetCDF::close.nc(nc)
             nc <- RNetCDF::open.nc(paste(spatial, "/rmax_", yearlist[j],
               ".nc", sep = ""))
             rhmax <- c(rhmax, as.numeric(RNetCDF::var.get.nc(nc, variable = "relative_humidity",
-              start = start, count = count)))
+              start = start, count = count, unpack = TRUE)))
             RNetCDF::close.nc(nc)
             nc <- RNetCDF::open.nc(paste(spatial, "/pr_", yearlist[j],
               ".nc", sep = ""))
             Rain <- c(Rain, as.numeric(RNetCDF::var.get.nc(nc, variable = "precipitation_amount",
-              start = start, count = count)))
+              start = start, count = count, unpack = TRUE)))
             RNetCDF::close.nc(nc)
             nc <- RNetCDF::open.nc(paste(spatial, "/srad_", yearlist[j],
               ".nc", sep = ""))
             solar <- c(solar, as.numeric(RNetCDF::var.get.nc(nc, variable = "surface_downwelling_shortwave_flux_in_air",
-              start = start, count = count)))
+              start = start, count = count, unpack = TRUE)))
             RNetCDF::close.nc(nc)
             nc <- RNetCDF::open.nc(paste(spatial, "/vs_", yearlist[j],
               ".nc", sep = ""))
             Wind <- c(Wind, as.numeric(RNetCDF::var.get.nc(nc, variable = "wind_speed",
-              start = start, count = count)))
+              start = start, count = count, unpack = TRUE)))
             RNetCDF::close.nc(nc)
             Tmax <- c(Tmax, tmax - 273.15)
             Tmin <- c(Tmin, tmin - 273.15)
@@ -1260,8 +1259,8 @@ micro_usa <- function(
       if(max(metout[,1] == 0)){
         cat("ERROR: the model crashed - try a different error tolerance (ERR) or a different spacing in DEP", '\n')
       }
-      dates <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), as.POSIXct(paste0("31/12/",yfinish), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), by = 'hours')
-      dates2 <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), as.POSIXct(paste0("31/12/",yfinish), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), by = 'days')
+      dates <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), as.POSIXct(paste0("01/01/",yfinish+1), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), by = 'hours')[1:(length(TMAXX) * 24)]
+      dates2 <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), as.POSIXct(paste0("01/01/",yfinish+1), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), by = 'days')[1:(length(TMAXX))]
       if(lamb == 1){
         drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
         drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance

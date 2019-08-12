@@ -953,8 +953,8 @@ micro_aust <- function(
               mfinish <- monfinish[mm]
             }
             nc <- RNetCDF::open.nc(paste0(baseurl, var,"/day/",year,"/bom-",var,"_day-",year,mstart,"-",year,mfinish))
-            lon <- RNetCDF::var.get.nc(nc, "longitude")
-            lat <- RNetCDF::var.get.nc(nc, "latitude")
+            lon <- RNetCDF::var.get.nc(nc, "longitude", unpack = TRUE)
+            lat <- RNetCDF::var.get.nc(nc, "latitude", unpack = TRUE)
             flat=match(abs(lat-x[2])<1/40,1)
             latindex=which(flat %in% 1)[1]
             flon=match(abs(lon-x[1])<1/40,1)
@@ -962,7 +962,7 @@ micro_aust <- function(
             start <- c(lonindex, latindex, 1)
             count <- c(1, 1, NA)
             data_1 <- as.numeric(RNetCDF::var.get.nc(nc, variable = paste0(var, "_day"),
-                                           start = start, count))
+                                           start = start, count, unpack = TRUE))
             if(mm == 1 & i == 1){
               data <- data_1
             }else{
@@ -1251,7 +1251,7 @@ micro_aust <- function(
             # add columns with days, months and years
             RAIN_current<-as.data.frame(RAINFALL)
             dates<-seq(ISOdate(ystart,1,1,tz=paste("Etc/GMT-",10,sep=""))-3600*12, ISOdate((ystart+nyears),1,1,tz=paste("Etc/GMT-",10,sep=""))-3600*13, by="days")
-            dates=subset(dates, format(dates, "%m/%d")!= "02/29") # remove leap years
+            dates<-subset(dates, format(dates, "%m/%d")!= "02/29") # remove leap years
             RAINFALL_sum<-aggregate(RAIN_current, by=list(format(dates,"%m-%Y")),FUN=sum)
             dates2<-RAINFALL_sum$Group.1
             RAINFALL_sum<-RAINFALL_sum[order(as.Date(paste("01-",RAINFALL_sum$Group.1,sep=""),"%m-%Y")),2]
@@ -1975,8 +1975,8 @@ micro_aust <- function(
         if(max(metout[,1] == 0)){
           cat("ERROR: the model crashed - try a different error tolerance (ERR) or a different spacing in DEP", '\n')
         }
-        dates <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("31/12/",yfinish), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), by = 'hours')
-        dates2 <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("31/12/",yfinish), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), by = 'days')
+        dates <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/",yfinish+1), format = "%d/%m/%Y ", tz = 'Etc/GMT+10'), by = 'hours')[1:(length(TMAXX)*24)]
+        dates2 <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/",yfinish+1), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), by = 'days')[1:length(TMAXX)]
         if(lamb == 1){
           drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
           drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
