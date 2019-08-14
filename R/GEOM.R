@@ -48,11 +48,11 @@ GEOM <- function(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT,
     as.double(BIRD),
     as.double(MAMMAL),
     as.double(ORIENT),
-    results=matrix(data = 0., nrow = 1, ncol = 24),
+    results=matrix(data = 0., nrow = 1, ncol = 25),
     PACKAGE = "GEOM")
   #dyn.unload("GEOM.dll")
 
-  results <- matrix(data = 0., nrow = 1, ncol = 24)
+  results <- matrix(data = 0., nrow = 1, ncol = 25)
 
   storage.mode(results)<-"double"
   results <- a$results
