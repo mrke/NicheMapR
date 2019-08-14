@@ -204,20 +204,24 @@ enbal <- cbind(dates,enbal)
 Plot the body temperature, shade, activity and depth selected through time.
 
 ```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 90%**"}
-with(environ, plot(TC ~ dates, ylab = "T_b, depth, activity and shade", 
-                   xlab = "month of year", ylim = c(0, 50), type = "l"))
-with(environ, points(ACT * 5 ~ dates, type = "l", col = "orange"))
-with(environ, points(SHADE / 10 ~ dates, type = "h", col = "dark green"))
-with(environ, points(DEP / 10 ~ dates, type = "l",col = "brown"))
-abline(T_F_max, 0, lty = 2,col = 'red')
-abline(T_F_min, 0, lty = 2,col = 'blue')
-abline(T_pref, 0, lty = 2,col = 'orange')
-text(0.5, T_F_max + 2, "T_F_max", col = 'red')
-text(0.5, T_F_min - 2, "T_F_min", col = 'blue')
-text(0.3, T_pref + 2, "T_pref", col = 'orange')
-legend(x = 5, y = T_F_max + 17, 
-       legend = c("T_b (°C)", "depth (cm/10)", "activity, 0 5 or 10)", "shade (%/10)"), 
-       col = c("black", "brown", "orange", "dark green"), lty = rep(1, 4), bty = "n")
+with(environ, plot(TC ~ dates, ylab = "", xlab="month of year", col = 'black', xlim = c(-0.25, 12), ylim = c(-20, 40), type = "l", yaxt = 'n'))
+with(environ, points(ACT * 2 + 7 ~ dates, type = "p", pch = 16, col = "orange"))
+with(environ, points(SHADE / 10 - 6 ~ dates, type = "l", col = "dark green"))
+with(environ, points(DEP - 10 ~ dates, type = "l", col = "brown"))
+abline(ecto$T_F_min, 0, lty = 2, col = 'blue')
+abline(ecto$T_F_max, 0, lty = 2, col = 'red')
+ytick<-seq(15, 40, by=5)
+axis(side=2, at=ytick, labels = TRUE)
+mtext(text = c('A', 'B', 'I'), side = 2, line = 1, at = c(11, 9, 7))
+ytick<-seq(-6, 4, by=2)
+axis(side=2, at=ytick, labels = FALSE)
+mtext(text = seq(0, 100, 20), side = 2, line = 1, at = seq(-6, 4, 2), las = 2)
+ytick<-seq(-20, -10, by=2)
+axis(side=2, at=ytick, labels = FALSE)
+mtext(text = rev(seq(0, 100, 20)), side = 2, line = 1, at = seq(-20, -10, 2), las = 2)
+abline(h = -10, lty = 2, col = 'grey')
+mtext(text = c('body temperature (Â°C)', 'activity', 'shade (%)', 'depth (cm)'), side = 2, line = 2.5, at = c(30, 9, 0, -15))
+text(-0.2, c(ecto$T_F_max + 1, ecto$T_F_min + 1), c('T_F_max', 'T_F_min'), col = c('red', 'blue'), cex = 0.75)
 ```
 
 In Figure 1 you can see the daily cycles, for each month, of the body temperature (black), % shade selected (green, divided by 10 for plotting), activity level in orange (multiplied by 5 for plotting, so 5 = basking, 10 = active) and depth in brown (m). Also superimposed are the foraging thresholds `T_F_min` (blue dashed line) and `T_F_max` (red dashed line), and the preferred or target temperature `T_pref` (orange dashed line). 
@@ -263,19 +267,24 @@ environ <- cbind(dates,environ)
 masbal <- cbind(dates,masbal)
 enbal <- cbind(dates,enbal)
 
-with(environ, plot(TC ~ dates, ylab = "T_b, depth, activity and shade", xlab = "month of year", ylim = c(0, 50), type = "l"))
-with(environ, points(ACT * 5 ~ dates, type = "l", col = "orange"))
-with(environ, points(SHADE / 10 ~ dates, type = "h", col = "dark green"))
-with(environ, points(DEP / 10 ~ dates, type = "l",col = "brown"))
-abline(T_F_max, 0, lty = 2,col = 'red')
-abline(T_F_min, 0, lty = 2,col = 'blue')
-abline(T_pref, 0, lty = 2,col = 'orange')
-text(0.5, T_F_max + 2, "T_F_max", col = 'red')
-text(0.5, T_F_min - 2, "T_F_min", col = 'blue')
-text(0.5, T_pref + 2, "T_pref", col = 'orange')
-legend(x = 5, y = T_F_max + 17, 
-       legend = c("T_b (°C)", "depth (cm/10)", "activity, 0 5 or 10)", "shade (%/10)"), 
-       col = c("black", "brown", "orange", "dark green"), lty = rep(1, 4), bty = "n")
+with(environ, plot(TC ~ dates, ylab = "", xlab="month of year", col = 'black', xlim = c(-0.25, 12), ylim = c(-20, 40), type = "l", yaxt = 'n'))
+with(environ, points(ACT * 2 + 7 ~ dates, type = "p", pch = 16, col = "orange"))
+with(environ, points(SHADE / 10 - 6 ~ dates, type = "l", col = "dark green"))
+with(environ, points(DEP - 10 ~ dates, type = "l", col = "brown"))
+abline(ecto$T_F_min, 0, lty = 2, col = 'blue')
+abline(ecto$T_F_max, 0, lty = 2, col = 'red')
+ytick<-seq(15, 40, by=5)
+axis(side=2, at=ytick, labels = TRUE)
+mtext(text = c('A', 'B', 'I'), side = 2, line = 1, at = c(11, 9, 7))
+ytick<-seq(-6, 4, by=2)
+axis(side=2, at=ytick, labels = FALSE)
+mtext(text = seq(0, 100, 20), side = 2, line = 1, at = seq(-6, 4, 2), las = 2)
+ytick<-seq(-20, -10, by=2)
+axis(side=2, at=ytick, labels = FALSE)
+mtext(text = rev(seq(0, 100, 20)), side = 2, line = 1, at = seq(-20, -10, 2), las = 2)
+abline(h = -10, lty = 2, col = 'grey')
+mtext(text = c('body temperature (Â°C)', 'activity', 'shade (%)', 'depth (cm)'), side = 2, line = 2.5, at = c(30, 9, 0, -15))
+text(-0.2, c(ecto$T_F_max + 1, ecto$T_F_min + 1), c('T_F_max', 'T_F_min'), col = c('red', 'blue'), cex = 0.75)
 ```
 
 ```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Annual activity window for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"}
@@ -420,7 +429,6 @@ ecto<-ectotherm(DEB=1,
                 mindepth=mindepth,
                 maxdepth=maxdepth,
                 minshade=minshade,
-                maxshade=maxshade,
                 pct_wet=pct_wet,
                 z=z*z.mult,
                 del_M=del.M,

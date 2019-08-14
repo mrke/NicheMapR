@@ -700,6 +700,7 @@ ectotherm <- function(
   aestdepth=7){ # end function parameters
 
   errors<-0
+  ndays <- length(rainfall) # get number of days of simulation
 
   # error trapping
   if(shape < 0 | shape > 5){
@@ -838,12 +839,12 @@ ectotherm <- function(
     message("error: maxshades can only be from 0 to 100 \n")
     errors<-1
   }
-  if(length(maxshades) != length(rainfall)){
+  if(length(maxshades) != ndays){
     message("error: maxshades must be a vector with a length equal to the number of days simulated \n")
     errors<-1
   }
-  if(length(minshades) != length(rainfall)){
-    message("error: minshades must be a vector with a lenght equal to the number of days simulated \n")
+  if(length(minshades) != ndays){
+    message("error: minshades must be a vector with a length equal to the number of days simulated \n")
     errors<-1
   }
   if(!fluid %in% c(0,1)){
@@ -1156,8 +1157,6 @@ ectotherm <- function(
 
     iyear <- 0 # initializing year counter
     countday <- 1 # initializing day counter
-    ndays <- length(rainfall) # get number of days of simulation
-
 
     # habitat
     ALT <- elev # altitude (m)
