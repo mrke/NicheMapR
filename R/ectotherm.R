@@ -839,7 +839,7 @@ ectotherm <- function(
     errors<-1
   }
   if(length(maxshades) != length(rainfall)){
-    message("error: maxshades must be a vector with a lenght equal to the number of days simulated \n")
+    message("error: maxshades must be a vector with a length equal to the number of days simulated \n")
     errors<-1
   }
   if(length(minshades) != length(rainfall)){
