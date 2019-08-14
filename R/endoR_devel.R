@@ -636,7 +636,7 @@ endoR_devel <- function(
       # call SIMULSOL
       SIMULSOL.out[S,] <- SIMULSOL(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA, SKINW, TS)
     }
-    TSKINMAX <- max(SIMULSOLout[1,2], SIMULSOLout[2,2])
+    TSKINMAX <- max(SIMULSOL.out[1,2], SIMULSOL.out[2,2])
     ### ZBRENT and RESPFUN
 
     # Now compute a weighted mean heat generation for all the parts/components = (dorsal value *(FASKY+FAVEG+FATOBJ))+(ventral value*FAGRD)
