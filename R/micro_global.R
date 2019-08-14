@@ -252,10 +252,10 @@
 #'# plotting soil temperature for minimum shade
 #'for(i in 1:10){
 #'  if(i==1){
-#'    plot(soil[,i + 3] ~ soil[, 1], xlab = "Date and Time", ylab = "Soil Temperature (°C)"
+#'    plot(soil[,i + 2] ~ micro$dates, xlab = "Date and Time", ylab = "Soil Temperature (°C)"
 #'    ,col = i, type = "l", main = paste("soil temperature ", minshade, "% shade", sep=""))
 #'  }else{
-#'    points(soil[,i + 3] ~ soil[, 1], xlab = "Date and Time", ylab = "Soil Temperature
+#'    points(soil[,i + 2] ~ micro$dates, xlab = "Date and Time", ylab = "Soil Temperature
 #'     (°C)", col = i, type = "l")
 #'  }
 #'}
@@ -275,10 +275,10 @@
 #'# plotting soil temperature for maximum shade
 #'for(i in 1:10){
 #'  if(i==1){
-#'    plot(shadsoil[,i + 3] ~ shadsoil[, 1], xlab = "Date and Time", ylab = "Soil Temperature
+#'    plot(shadsoil[,i + 2] ~ micro$dates, xlab = "Date and Time", ylab = "Soil Temperature
 #'     (°C)", col = i, type = "l", main = paste("soil temperature ", maxshade, "% shade", sep=""))
 #'  }else{
-#'    points(shadsoil[,i + 3] ~ shadsoil[, 1], xlab = "Date and Time", ylab = "Soil Temperature
+#'    points(shadsoil[,i + 2] ~ micro$dates, xlab = "Date and Time", ylab = "Soil Temperature
 #'     (°C)", col = i, type = "l")
 #'  }
 #'}
