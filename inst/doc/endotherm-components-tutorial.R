@@ -78,16 +78,19 @@ AMASS <- 10 # kg
 ANDENS <- 1000 # kg/m3
 SUBQFAT <- 1 # is subcutaneous fat present? (0 is no, 1 is yes)
 FATPCT <- 20 # % body fat
-POSTUR <- 4 # posture, 0 is plate, 1 is cylinder, 4 is ellipsoid
+NGEOM <- 4 # shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid
 GMREF <- 2.7 # initial ratio between long and short axis (-)
 GMULT <- 2.7 # current ratio between long and short axis (-)
 DHARA <- DHAR[1] # fur diameter, mean (m) (from IRPROP)
 RHOARA <- RHOAR[1] # hair density, mean (1/m2) (from IRPROP)
 ZFUR <- ZZFUR[1] # fur depth, mean (m) (from IRPROP)
 PTCOND <- 0.1 # fraction of body in contact with substrate (fractional, 0-1)
+BIRD <- 0 # if 1, uses bird skin surface area scaling from Walsberg, G. E., and J. E. King. 1978. The Relationship of the External Surface Area of Birds to Skin Surface Area and Body Mass. Journal of Experimental Biology 76:185–189.
+MAMMAL <- 0 # if 1, uses mammal surface area scaling from Stahl W. R. (1967) Scaling of respiratory variables in mammals. Journal of Applied Physiology 22 , 453–460.
+ORIENT <- 0 # if 1, largest surface area normal to sun's ray's, if 2, largest surface parallel to sun's rays, if 0, average of normal/parallel posture, 
 
 # call the subroutine
-GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA, RHOARA, PTCOND)
+GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, NGEOM, ZFUR, SUBQFAT, GMULT, GMREF, DHARA, RHOARA, PTCOND, BIRD, MAMMAL, ORIENT)
 
 # output
 R <- GEOM.out[1] # radius as determined assumming the volume as a sphere, m
@@ -99,21 +102,22 @@ ALENTH <- GEOM.out[6] # length, m
 AWIDTH <- GEOM.out[7] # width, m
 AHEIT <- GEOM.out[8] # height, m
 ATOT <- GEOM.out[9] # total area, m2
-ASILN <- GEOM.out[10] # silhouette area normal to sun, m2
-ASILP <- GEOM.out[11] # silhouette area parallel to sun, m2
-AL <- GEOM.out[12] # effective lenght for convection, m
-GMASS <- GEOM.out[13] # mass, g
-AREASKIN <- GEOM.out[14] # area of skin, m2
-AREA <- GEOM.out[15] # total area at fur/feathers-air interface, m2
-FLSHVL <- GEOM.out[16] # flesh volume, m3
-FATTHK <- GEOM.out[17] # fat layer thickness, m
-ASEMAJ <- GEOM.out[18] # semimajor axis length, m
-BSEMIN <- GEOM.out[19] # b semiminor axis length, m
-CSEMIN <- GEOM.out[20] # c semiminor axis length, m (currently only prolate spheroid)
-CONVSK <- GEOM.out[21] # area of skin for evaporation (total skin area - hair area), m2
-CONVAR <- GEOM.out[22] # area for convection (total area minus ventral area, as determined by PTCOND), m2
-R1 <- GEOM.out[23] # shape-specific core-skin radius in shortest dimension, m
-R2 <- GEOM.out[24] # shape-specific core-fur radius in shortest dimension, m
+ASIL <- GEOM.out[10] # silhouette area, m2
+ASILN <- GEOM.out[11] # silhouette area normal to sun, m2
+ASILP <- GEOM.out[12] # silhouette area parallel to sun, m2
+AL <- GEOM.out[13] # effective length for convection, m
+GMASS <- GEOM.out[14] # mass, g
+AREASKIN <- GEOM.out[15] # area of skin, m2
+AREA <- GEOM.out[16] # total area at fur/feathers-air interface, m2
+FLSHVL <- GEOM.out[17] # flesh volume, m3
+FATTHK <- GEOM.out[18] # fat layer thickness, m
+ASEMAJ <- GEOM.out[19] # semimajor axis length, m
+BSEMIN <- GEOM.out[20] # b semiminor axis length, m
+CSEMIN <- GEOM.out[21] # c semiminor axis length, m (currently only prolate spheroid)
+CONVSK <- GEOM.out[22] # area of skin for evaporation (total skin area - hair area), m2
+CONVAR <- GEOM.out[23] # area for convection (total area minus ventral area, as determined by PTCOND), m2
+R1 <- GEOM.out[24] # shape-specific core-skin radius in shortest dimension, m
+R2 <- GEOM.out[25] # shape-specific core-fur radius in shortest dimension, m
 
 # nest properties
 NESTYP <- 3 # for nest calculations - 0 = none, 1 = flat, 2 = cup, 3 = cylinder, 4 = half cylinder, 5 = sphere, 6 = dome
@@ -132,11 +136,11 @@ ABSHEL <- 0.71 # Nest solar absorptivity (decimal: 1.0 = 100%)
 EMISHEL <- 0.95 # NEest emissivity
 SHELEN <- 0.3 # Length(m) #!
 
-GEOM.lab <- c("R", "VOL", "D", "MASFAT", "VOLFAT", "ALENTH", "AWIDTH", "AHEIT", "ATOT", "ASILN", "ASILP", "AL", "GMASS", "AREASKIN", "AREA", "FLSHVL", "FATTHK", "ASEMAJ", "BSEMIN", "CSEMIN", "CONVSK", "CONVAR", "R1", "R2")
+GEOM.lab <- c("R", "VOL", "D", "MASFAT", "VOLFAT", "ALENTH", "AWIDTH", "AHEIT", "ATOT", "ASIL", "ASILN", "ASILP", "AL", "GMASS", "AREASKIN", "AREA", "FLSHVL", "FATTHK", "ASEMAJ", "BSEMIN", "CSEMIN", "CONVSK", "CONVAR", "R1", "R2")
 kable(cbind(GEOM.lab, t(GEOM.out)))
 
 ## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
-if(POSTUR == 4){ #ellipsoid
+if(NGEOM == 4){ #ellipsoid
 par(mfrow=c(1,2))
 plot(c(0,ASEMAJ*2+ZFUR*2), c(0,ASEMAJ*2+ZFUR*2), type="n", main="ellipsoid, sagittal section", ylab = 'minor axis, m', xlab = 'major axis, m', asp=1)
 draw.ellipse(ASEMAJ+ZFUR, ASEMAJ+ZFUR, col="black", border = "black", a = ASEMAJ+ZFUR, b = BSEMIN+ZFUR)
@@ -189,9 +193,8 @@ ABSSB <- 0.8 # solar absorptivity of substrate (fractional, 0-1)
 AREA <- AREA # surface area for solar exchange, m2 (from GEOM)
 ABSAND <- 0.8 # solar absorptivity of dorsal fur (fractional, 0-1)
 ABSANV <- 0.8 # solar absorptivity of ventral fur (fractional, 0-1)
-ASILN <- ASILN # silhouette area normal to sun, m2 (from GEOM)
+ASIL <- ASIL # silhouette area normal to sun, m2 (from GEOM)
 PCTDIF <- 0.15 # proportion of solar radiation that is diffuse (fractional, 0-1)
-AWING <- 0 # area of wing, to do
 FASKY <- FASKY # configuration factor to sky (-) (from F_FACTOR)
 FATOBJ <- FATOBJ # configuration factor to object (-) (from F_FACTOR)
 FAVEG <- FAVEG # configuration factor to vegetation (-) (from F_FACTOR)
@@ -205,8 +208,8 @@ if(Z < 90){ # compute solar radiation on a surface normal to the direct rays of 
   QNORM = QSOLR
 }
 
-SOLAR.out <- SOLAR(AREA, ABSAND, ABSANV, ABSSB, ASILN, PCTDIF, QNORM, SHADE, 
-  AWING, QSOLR, FASKY, FATOBJ, FAVEG)
+SOLAR.out <- SOLAR(AREA, ABSAND, ABSANV, ABSSB, ASIL, PCTDIF, QNORM, SHADE, 
+  QSOLR, FASKY, FATOBJ, FAVEG)
 
 QSOLAR <- SOLAR.out[1] # total (global) solar radiation (W)
 QSDIR <- SOLAR.out[2] # direct solar radiaton (W)
@@ -413,10 +416,10 @@ ZFURCOMP <- 1
 CD <- AREACND * ((KFURCMPRS / ZFURCOMP))
 
 # package up inputs
-FURVARS <- c(LEN,ZFUR,FURTHRMK,KEFF,BETARA,FURTST,ZL)
-GEOMVARS <- c(NGEOM,SUBQFAT,CONVAR,VOL,D,CONVAR,CONVSK,RFUR,RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD)
-ENVVARS <- c(FLTYPE,TA,TS,TBUSH,TVEG,TLOWER,TSKY,TCONDSB,RH,VEL,BP,ELEV,FASKY,FABUSH,FAVEG,FAGRD,QSLR)
-TRAITS <- c(TC,AK1,AK2,EMISAN,FATTHK,FLYHR,BAREVAP,PCTBAREVAP,PCTEYES)
+FURVARS <- c(LEN, ZFUR, FURTHRMK, KEFF, BETARA, FURTST, ZL)
+GEOMVARS <- c(NGEOM, SUBQFAT, CONVAR, VOL, D, CONVAR, CONVSK, RFUR, RFLESH, RSKIN, XR, RRAD, ASEMAJ, BSEMIN, CSEMIN, CD)
+ENVVARS <- c(FLTYPE, TA, TS, TBUSH, TVEG, TLOWER, TSKY, TCONDSB, RH, VEL, BP, ELEV, FASKY, FABUSH, FAVEG, FAGRD, QSLR)
+TRAITS <- c(TC, AK1, AK2, EMISAN, FATTHK, FLYHR, BAREVAP, PCTBAREVAP, PCTEYES)
 
 # set IPT, the geometry assumed in SIMULSOL: 1 = cylinder, 2 = sphere, 3 = ellipsoid
 if(NGEOM %in% c(1,3,5)){
@@ -445,9 +448,9 @@ DELTAR <- 0 # offset between air temeprature and breath (°C)
 O2GAS <- 20.95 # oxygen concentration of air (%)
 N2GAS <- 79.02 # nitrogen concetration of air (%)
 CO2GAS <- 0.03 # carbon dioxide concentration of air (%)
-RQ <- 0.80 # respiratory quotient (fractional, 0-1)
+RQ <- 0.80 # respiratory quotient (fractional, typically 0.7 (fats) to 1 (carbs), with 0.8 typical for protein)
 EXTREF <- 20 # O2 extraction efficiency (%)
-RELXIT <- 100 # relative humidity of exhaled air, %
+RELXIT <- 100 # relative humidity of exhaled air (%)
 TIMACT <- 1 # multiplier on metabolic rate for activity costs
 PANT <- 1 # multiplier on breathing rate (-)
 

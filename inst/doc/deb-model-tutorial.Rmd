@@ -391,7 +391,6 @@ shade_seek <- 1   # shade seeking?
 burrow <- 1       # can it burrow?
 climb <- 0        # can it climb to thermoregulate?
 minshade <- 0     # min available shade?
-maxshade <- 90    # min available shade?
 nocturn <- 0      # nocturnal activity
 crepus <- 0       # crepuscular activity
 diurn <- 1        # diurnal activity
@@ -460,7 +459,6 @@ ecto<-ectotherm(DEB=1,
                 mindepth=mindepth,
                 maxdepth=maxdepth,
                 minshade=minshade,
-                maxshade=maxshade,
                 pct_wet=pct_wet,
                 z=z*z.mult,
                 del_M=del.M,
