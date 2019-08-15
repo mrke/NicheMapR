@@ -4,16 +4,16 @@
 \alias{twolump}
 \title{Two-lump Transient Heat Budget (for use with deSolve package)}
 \usage{
-ode(y = c(Tc_init, Ts_init, To_init), times = time, func = twolump, parms = indata)
+ode(y = c(Tc_init, Tsk_init, Ts_init), times = time, func = twolump, parms = indata)
 }
 \arguments{
 \item{t}{time intervals (s) at which output is required}
 
 \item{Tc_init}{= 5, initial core temperature (deg C)}
 
-\item{Ts_init}{= 5.1, initial shell temperature (deg C)}
+\item{Tsk_init}{= 5.1, initial shell (skin) temperature (deg C)}
 
-\item{To_init}{= 5.2, initial surface temperature (deg C)}
+\item{Ts_init}{= 5.2, initial surface temperature (deg C)}
 
 \item{Ww_g}{= 500, animal weight (g)}
 
@@ -70,9 +70,9 @@ ode(y = c(Tc_init, Ts_init, To_init), times = time, func = twolump, parms = inda
 \value{
 Tc Core temperature (deg C)
 
-Ts 'Skin' / shell temperature (deg C)
+Tsk 'Skin' / shell temperature (deg C)
 
-To Outer temperature (deg C)
+Ts Outer surface temperature (deg C)
 
 Tcf Final (steady state) temperature (deg C), if conditions remained constant indefinately
 }
@@ -153,17 +153,17 @@ for (i in 1:length(DOYs)) {
   indata <- list(Ww_g = Ww_g, x_shell = x_shell, geom = geom, k_inner = k_inner, k_outer = k_outer, q = q, c_body_inner = c_body_inner, c_body_outer = c_body_outer, emis = emis, rho_body = rho_body, alpha = alpha, shape_coefs = shape_coefs, shape_b = shape_b, shape_c = shape_c, posture = posture, orient = orient, fatosk = fatosk, fatosb = fatosb, alpha_sub = alpha_sub, pdif = pdif, press = press)
 
   Tc_init<-Tairf(1) # set inital Tc as air temperature
+  Tsk_init <- Tc_init
   Ts_init <- Tc_init
-  To_init <- Tc_init
 
-  Tbs_ode <- as.data.frame(ode(y = c(Tc_init, Ts_init, To_init), times = time, func = twolump, parms = indata))
-  colnames(Tbs_ode) = c("time", "Tc", "Ts", "To", "Tcf")
+  Tbs_ode <- as.data.frame(ode(y = c(Tc_init, Tsk_init, Ts_init), times = time, func = twolump, parms = indata))
+  colnames(Tbs_ode) = c("time", "Tc", "Tsk", "Ts", "Tcf")
   Tbs_ode$time <- Tbs_ode$time / 3600 # convert to hours
 
   with(Tbs_ode, plot(Tc ~ time, type = 'l', col = '1', ylim = c(-10, 80), xlim = c(0, 23), ylab='Temperature, deg C',xlab = 'hour of day', main = paste0(loc, ", ", mons[i], ", ", Ww_g," g")))
-  with(Tbs_ode, points(To ~ time, lty = 2, type = 'l', col = '1'))
+  with(Tbs_ode, points(Ts ~ time, lty = 2, type = 'l', col = '1'))
   with(Tbs_ode, points(Tcf ~ time, type = 'l', col = '2'))
   points(Tairf(time) ~ hours, type = 'l', col = 'blue', lty = 2)
-  legend(0,70, c("Tc", "To", "Tcf", "Tair"), lty = c(1, 2, 1, 2), lwd = c(2.5, 2.5, 2.5, 2.5), col = c("black", "black", "red", "blue"))
+  legend(0,70, c("Tc", "Ts", "Tcf", "Tair"), lty = c(1, 2, 1, 2), lwd = c(2.5, 2.5, 2.5, 2.5), col = c("black", "black", "red", "blue"))
 }
 }
