@@ -1,4 +1,5 @@
 output: rmarkdown::html_vignette
+author: "Warren Porter & Michael Kearney"
 vignette: >
   %\VignetteIndexEntry{Transient Equation Derivations}
   %\VignetteEncoding{UTF-8}
