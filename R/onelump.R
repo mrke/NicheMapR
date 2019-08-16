@@ -20,7 +20,7 @@
 #' @param orient = 1, does the object orient toward the sun? (0,1)
 #' @param fatosk = 0.4, Configuration factor to sky (-) for infrared calculations
 #' @param fatosb = 0.4, Configuration factor to subsrate for infrared calculations
-#' @param abs_sub = 0.2, substrate solar reflectivity, decimal percent
+#' @param alpha_sub = 0.2, substrate solar reflectivity, decimal percent
 #' @param pdif = 0.1, proportion of solar energy that is diffuse (rather than direct beam)
 #' @param Tair = 30, air temperature (deg C)
 #' @param Trad = 30, radiant temperature (deg C), averaging ground and sky
@@ -50,9 +50,9 @@
 #' vel <- 1 # wind speed, m/s
 #' Qsol <- 500 # horizontal plane solar radiation, W/m2
 #' Zen <- 20 # zenith angle of sun, degrees
-#' abs <- 0.85 # solar absorptivity, -
+#' alpha <- 0.85 # solar absorptivity, -
 #'
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, Ww_g = Ww_g,
+#' Tbs<-onelump(t=t, alpha = alpha, Tc_init = Tc_init, Ww_g = Ww_g,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 30), ylab = 'Temperature, deg C',xlab='time, min', las = 1)
 #' text(80, 27, "    500 g")
@@ -62,7 +62,7 @@
 #' text(90, 23.5, "     vel = 1.0 m/s")"     vel = 1.0 m/s")
 #'
 #' Ww_g <- 500 # body weight, g
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, Ww_g = Ww_g,
+#' Tbs<-onelump(t=t, alpha = alpha, Tc_init = Tc_init, Ww_g = Ww_g,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
 #' abline(Tair,0, lty = 1, col = 'blue')
@@ -72,7 +72,7 @@
 #' Tair <- 25 # air temperature, deg C
 #' vel <-0.5 # wind speed, m/s
 #'
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, Ww_g = Ww_g,
+#' Tbs<-onelump(t=t, alpha = alpha, Tc_init = Tc_init, Ww_g = Ww_g,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,30),ylab='Temperature, deg C',xlab='time, min', las = 1)
 #' abline(h = Tair, lty = 1, col = 'blue')
@@ -81,7 +81,7 @@
 #' Tair <- 20 # air temperature, deg C
 #' vel <-1 # wind speed, m/s
 #'
-#' Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, Ww_g = Ww_g,
+#' Tbs<-onelump(t=t, alpha = alpha, Tc_init = Tc_init, Ww_g = Ww_g,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 #' points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
 #' abline(h = Tair, lty = 2, col = 'blue')
@@ -95,10 +95,10 @@
 #' @export
 onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
   geom = 2, Tair = 30, Trad = 30, vel = 0.1, Qsol = 500, Zen = 20, k_flesh = 0.5,
-  q = 0, c_body = 3073, emis = 0.95, rho_body = 932, abs = 0.85,
+  q = 0, c_body = 3073, emis = 0.95, rho_body = 932, alpha = 0.85,
   shape_coefs = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
   shape_b = 1/5, shape_c = 1/5, posture = 'n', orient = 1, fatosk = 0.4, fatosb = 0.4,
-  abs_sub = 0.8, pdif = 0.1, press = 101325){
+  alpha_sub = 0.8, pdif = 0.1, press = 101325){
 
   sigma <- 5.67e-8 #Stefan-Boltzman, W/(m.K)
   Zenith <- Zen * pi / 180 # zenith angle in radians
@@ -114,7 +114,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
   m <- Ww_g / 1000 # convert weight to kg
   C <- m * c_body # thermal capacitance, J/K
   V <- m / rho_body # volume, m3
-  Qgen <- q * V # total metabolic heat, J
+  Q_gen <- q * V # total metabolic heat, J
   L <- V ^ (1 / 3) # characteristic dimension, m
 
   # FLAT PLATE geometry
@@ -203,25 +203,25 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
   # end geometry section ############################################################
 
   if (max(Zen) >= 89) {
-    Qnorm <- 0
+    Q_norm <- 0
   } else{
     if(orient == 1){
-      Qnorm <- (Qsol / cos(Zenith))
+      Q_norm <- (Qsol / cos(Zenith))
     }else{
-      Qnorm <- Qsol
+      Q_norm <- Qsol
     }
   }
-  if (Qnorm > 1367) {
-    Qnorm <- 1367 #making sure that low sun angles don't lead to solar values greater than the solar constant
+  if (Q_norm > 1367) {
+    Q_norm <- 1367 #making sure that low sun angles don't lead to solar values greater than the solar constant
   }
   if (posture == 'p') {
-    Qabs <- (Qnorm * (1 - pdif) * ASILP + Qsol * pdif * fatosk * ATOT + Qsol * (1 - abs_sub) * fatosb * ATOT) * abs
+    Q_abs <- (Q_norm * (1 - pdif) * ASILP + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
   }
   if (posture == 'n') {
-    Qabs <- (Qnorm * (1 - pdif) * ASILN + Qsol * pdif * fatosk * ATOT + Qsol * (1 - abs_sub) * fatosb * ATOT) * abs
+    Q_abs <- (Q_norm * (1 - pdif) * ASILN + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
   }
   if (posture == 'a') {
-    Qabs <- (Qnorm * (1 - pdif) * (ASILN + ASILP) / 2 + Qsol * pdif * fatosk * ATOT + Qsol * (1 - abs_sub) * fatosb * ATOT) * abs
+    Q_abs <- (Q_norm * (1 - pdif) * (ASILN + ASILP) / 2 + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
   }
 
   Re <- DENSTY * vel * L / VISDYN # Reynolds number
@@ -261,7 +261,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
   if (geom == 2 | geom == 4) {
     NUfor <- 0.35 * Re ^ (0.6) # Nusselt number, forced convection
   }
-  hc_forced <- NUfor * THCOND / L # convection coefficent, forced
+  h_conv_forced <- NUfor * THCOND / L # convection coefficent, forced
 
   GR <- abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Tskin - Tair) / VISDYN ^ 2) # Grashof number
   Raylei <- GR * PR # Rayleigh number
@@ -302,24 +302,23 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
     Raylei = (GR ^ 0.25) * (PR ^ 0.333)
     NUfre = 2 + 0.60 * Raylei
   }
-  hc_free <- NUfre * THCOND / L # convection coefficent, forced
-  hc <- hc_free + hc_forced # combined convection coefficient
-  Nu <- hc * L / THCOND # Nu combined
-  Rconv <- 1 / (hc * ATOT) # convective resistance, eq. 5 of Kearney, Huey and Porter 2017 Appendix 1
-
-  hr <- 4 * emis * sigma * ((Tc + Trad) / 2 + 273.15) ^ 3 # radiation resistance, eq. 49 of Kearney, Huey and Porter 2017 Appendix 1
+  h_conv_free <- NUfre * THCOND / L # convection coefficent, forced
+  h_conv <- h_conv_free + h_conv_forced # combined convection coefficient
+  Nu <- h_conv * L / THCOND # Nu combined
+  #R_conv <- 1 / (h_conv * ATOT) # convective resistance, eq. 3 of Transient Equations Derivation vignette
+  h_rad <- 4 * emis * sigma * ((Tc + Trad) / 2 + 273.15) ^ 3 # radiation heat transfer coefficient, eq. 46 of Transient Equations Derivation vignette
 
   if(geom == 2){ # ellipsoid
-    j <- (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * k_flesh) + Tair) + hr * ATOT * ((q * S2) / (2 * k_flesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
+    j <- (Q_abs + Q_gen + h_conv * ATOT * ((q * S2) / (2 * k_flesh) + Tair) + h_rad * ATOT * ((q * S2) / (2 * k_flesh) + Trad)) / C #based on eq. 48 of Transient Equations Derivation vignette
   }else{ # assume cylinder
-    j <- (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * k_flesh) + Tair) + hr * ATOT * ((q * R ^ 2) / (2 * k_flesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
+    j <- (Q_abs + Q_gen + h_conv * ATOT * ((q * R ^ 2) / (4 * k_flesh) + Tair) + h_rad * ATOT * ((q * R ^ 2) / (2 * k_flesh) + Trad)) / C #based on eq. 48 of Transient Equations Derivation vignette
   }
-  kTc <- ATOT * (Tc * hc + Tc * hr) / C # based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
-  k <- ATOT * (hc + hr) / C # based on eq. 52 of Kearney, Huey and Porter 2017 Appendix 1
-  Tcf <- j / k # final Tc = j/k
+  theta_Tc <- ATOT * (Tc * h_conv + Tc * h_rad) / C #based on eq. 48 of Transient Equations Derivation vignette
+  theta <- ATOT * (h_conv + h_rad) / C #based on eq. 48 of Transient Equations Derivation vignette
+  Tcf <- j / theta # final Tc = j/theta, based on eq. 23 of Transient Equations Derivation vignette
   Tci <- Tc # initial temperature
-  Tc <- (Tci - Tcf) * exp(-1 * k * t) + Tcf # Tc at time t, Eq. 1 of Kearney, Huey and Porter 2017 Appendix 1
-  tau <- 1/k # time constant
-  dTc <- j - kTc # rate of temperature change (deg C/sec)
+  Tc <- (Tci - Tcf) * exp(-1 * theta * t) + Tcf # Tc at time t, based on eq. 33 of Transient Equations Derivation vignette
+  tau <- 1 / theta # time constant
+  dTc <- j - theta_Tc # rate of temperature change (deg C/sec)
   return(list(Tc = Tc, Tcf = Tcf, tau = tau, dTc = dTc))
 }

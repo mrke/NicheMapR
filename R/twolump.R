@@ -146,12 +146,12 @@ twolump<-function(t,y,indata){
     m <- Ww_g / 1000 # convert weight to kg  C<-m*c_body # thermal capacitance, J/K
     C <- m * c_body_inner # thermal capacitance, J/K
     V <- m / rho_body # volume, m3
-    Qgen <- q * V # total metabolic heat, J
+    Q_gen <- q * V # total metabolic heat, J
     L <- V ^ (1 / 3) # characteristic dimension, m
     V_inner <- (L - x_shell) ^ 3
     V_shell <- V - V_inner
-    Cs <- V_shell * rho_body * c_body_outer
-    Cc <- V_inner * rho_body * c_body_inner
+    C_sk <- V_shell * rho_body * c_body_outer
+    C_c <- V_inner * rho_body * c_body_inner
 
     # FLAT PLATE geometry
     if (geom == 0) {
@@ -160,8 +160,8 @@ twolump<-function(t,y,indata){
       ALENTH <- AHEIT * shape_c # height, m
       V_inner <- (AWIDTH - x_shell) * (ALENTH - x_shell) * (AHEIT - x_shell)
       V_shell <- V - V_inner
-      Cs <- V_shell * rho_body * c_body_outer
-      Cc <- V_inner * rho_body * c_body_inner
+      C_sk <- V_shell * rho_body * c_body_outer
+      C_c <- V_inner * rho_body * c_body_inner
       ATOT <- ALENTH * AWIDTH * 2 + ALENTH * AHEIT * 2 + AWIDTH * AHEIT * 2 # total area, m2
       ATOT_inner <- (ATOT / V) * V_shell
       ASILN <- ALENTH * AWIDTH # max silhouette area, m2
@@ -181,8 +181,8 @@ twolump<-function(t,y,indata){
       ALENTH <- 2 * R1 * shape_b # length, m
       V_inner <- pi * (R1 - x_shell) ^ 2 * (ALENTH - x_shell)
       V_shell <- V - V_inner
-      Cs <- V_shell * rho_body * c_body_outer
-      Cc <- V_inner * rho_body * c_body_inner
+      C_sk <- V_shell * rho_body * c_body_outer
+      C_c <- V_inner * rho_body * c_body_inner
       ATOT<- 2 * pi * R1 ^ 2 + 2 * pi * R1 * ALENTH # total surface area, m2
       ATOT_inner <- 2 * pi * (R1 - x_shell) ^ 2 + 2 * pi * (R1 - x_shell) * (ALENTH - x_shell)#(ATOT / V) * V_shell
       AWIDTH <- 2 * R1 # width, m
@@ -207,8 +207,8 @@ twolump<-function(t,y,indata){
       C2 <- C1 - x_shell
       V_inner <- (4 / 3) * pi * (A1 - x_shell) * (B1 - x_shell) * (C1 - x_shell)
       V_shell <- V - V_inner
-      Cs <- V_shell * rho_body * c_body_outer
-      Cc <- V_inner * rho_body * c_body_inner
+      C_sk <- V_shell * rho_body * c_body_outer
+      C_c <- V_inner * rho_body * c_body_inner
       P1 <- 1.6075 # a constant
       ATOT <- (4 * pi * (((A1 ^ P1 * B1 ^ P1 + A1 ^ P1 * C1 ^ P1 + B1 ^ P1 * C1 ^ P1)) / 3) ^ (1 / P1)) # total surface area, m2
       ATOT_inner <- (4 * pi * (((A2 ^ P1 * B2 ^ P1 + A2 ^ P1 * C2 ^ P1 + B2 ^ P1 * C2 ^ P1)) / 3) ^ (1 / P1)) # total surface area, m2
@@ -259,25 +259,25 @@ twolump<-function(t,y,indata){
     # end geometry section ############################################################
 
     if (max(Zen) >= 89) {
-      Qnorm <- 0
+      Q_norm <- 0
     } else{
       if(orient == 1){
-        Qnorm <- (Qsol / cos(Zenith))
+        Q_norm <- (Qsol / cos(Zenith))
       }else{
-        Qnorm <- Qsol
+        Q_norm <- Qsol
       }
     }
-    if (Qnorm > 1367) {
-      Qnorm <- 1367 #making sure that low sun angles don't lead to solar values greater than the solar constant
+    if (Q_norm > 1367) {
+      Q_norm <- 1367 #making sure that low sun angles don't lead to solar values greater than the solar constant
     }
     if (posture == 'p') {
-      Qabs <- (Qnorm * (1 - pdif) * ASILP + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
+      Qabs <- (Q_norm * (1 - pdif) * ASILP + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
     }
     if (posture == 'n') {
-      Qabs <- (Qnorm * (1 - pdif) * ASILN + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
+      Qabs <- (Q_norm * (1 - pdif) * ASILN + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
     }
     if (posture == 'a') {
-      Qabs <- (Qnorm * (1 - pdif) * (ASILN + ASILP) / 2 + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
+      Qabs <- (Q_norm * (1 - pdif) * (ASILN + ASILP) / 2 + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
     }
 
     Re <- DENSTY * vel * L / VISDYN # Reynolds number
@@ -317,7 +317,7 @@ twolump<-function(t,y,indata){
     if (geom == 2 | geom == 4) {
       NUfor <- 0.35 * Re ^ (0.6) # Nusselt number, forced convection
     }
-    hc_forced <- NUfor * THCOND / L # convection coefficent, forced
+    h_conv_forced <- NUfor * THCOND / L # convection coefficent, forced
 
     GR <- abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Ts - Tair) / VISDYN ^ 2) # Grashof number
     Raylei <- GR * PR # Rayleigh number
@@ -358,46 +358,40 @@ twolump<-function(t,y,indata){
       Raylei = (GR ^ 0.25) * (PR ^ 0.333)
       NUfre = 2 + 0.60 * Raylei
     }
-    hc_free <- NUfre * THCOND / L # convection coefficent, forced
-    hc <- hc_free + hc_forced # combined convection coefficient
-    Nu <- hc * L / THCOND # Nu combined
-    Rconv <- 1 / (hc * ATOT) # convective resistance, eq. 5 of Kearney, Huey and Porter 2017 Appendix 1
-
-    hr <- 4 * emis * sigma * ((Ts + Trad) / 2 + 273.15) ^ 3 # radiation resistance, eq. 49 of Kearney, Huey and Porter 2017 Appendix 1
-
-    Rrad <- 1 / (hr * ATOT)
-
-    Qresp <- 0
-    m_bl <- 0.012 / 1000 / 60 / 1e-6 # blood flow rate kg/s/m3
-    V_bl <- ATOT * x_shell # blood volume
-    #Rrad <- (Ts-Trad)/(emis * 0.8 * sigma * ATOT * (Ts^4-Trad^4))
-    Rconv <- 1 / (hc * ATOT)
-    Rs <- (x_shell / 2) / (k_outer * ATOT) # resistance of skin
-    Rbl <- 1 / (m_bl * c_body_inner * V_bl) # blood resistance
-    Rb <- (V_inner ^ (1 / 3)) / (k_inner * ATOT_inner)
+    h_conv_free <- NUfre * THCOND / L # convection coefficent, forced
+    h_conv <- h_conv_free + h_conv_forced # combined convection coefficient
+    Nu <- h_conv * L / THCOND # Nu combined
+    R_conv <- 1 / (h_conv * ATOT) # convective resistance, eq. 3 of Transient Equations Derivation vignette
+    #R_rad <- (Ts-Trad)/(emis * 0.8 * sigma * ATOT * (Ts^4-Trad^4)) # radiative resistance, eq. 4 of Transient Equations Derivation vignette
+    h_rad <- 4 * emis * sigma * ((Ts + Trad) / 2 + 273.15) ^ 3 # radiation heat transfer coefficient, eq. 46 of Transient Equations Derivation vignette
+    R_rad <- 1 / (h_rad * ATOT) # radiative resistance
+    Q_resp <- 0 # respiratory heat loss
+    #m_dot_bl <- 3.5 * (Ww_g / 100) / 1000 / 60 # blood flow g/(min-100g) to kg/s for lizard of weight Ww_g
+    #R_bl <- 1 / (m_dot_bl * c_body_inner) # blood resistance
+    R_sk <- (x_shell / 2) / (k_outer * ATOT) # resistance of skin
+    R_b <- (V_inner ^ (1 / 3)) / (k_inner * ATOT_inner)
     if(geom == 1){
-      Rb <- (R - x_shell) / (k_inner * ATOT_inner)
+      R_b <- (R - x_shell) / (k_inner * ATOT_inner)
     }
     if(geom == 2){
-      Rb <- min(A2, B2, C2) / (k_inner * ATOT_inner)
+      R_b <- min(A2, B2, C2) / (k_inner * ATOT_inner)
     }
-    F <- 1 / (Cc * Rb) # from eq 110 and 111
-    H <- (Qgen - Qresp) / Cc # from eq 110 and 111
-    #Tsk <- (Qabs + Trad / Rrad + Tair / Rconv + 2 * Ts / Rs) / (1 / Rrad + 1 / Rconv + 2 / Rs) # eq 106
-    A <- (1 / Cs) * (1 / Rb + 2 / Rs - (2 / Rs) / (Rs / (2 * Rrad) + Rs / (2 * Rconv) + 1)) #eq 109 part 2
-    B <- 1 / (Rb * Cs) # eq 109 part 3
-    P1 <- (-1 * (F + A) + ((F + A) ^ 2 - 4 * F * A + 4 * F * B) ^ (1 / 2)) / 2 # eq 123
-    P2 <- (-1 * (F + A) - ((F + A) ^ 2 - 4 * F * A + 4 * F * B) ^ (1 / 2)) / 2 # eq 123
-    D <- (Qabs + Trad / Rrad + Tair / Rconv) / ((Rs / (2 * Rrad) + Rs / (2 * Rconv) + 1) * Cs) #eq 109 part 4
-    alpha <- (Tc + (A + D) / (B - A)) # from eq 132
-    beta <- F * Ts + (H * B - F * D) / (B - A) # from eq 133
-    C1 <- (alpha * (P2 + F) - beta) / (P2 - P1) # from eq 134
-    C2 <- (beta - alpha * (P1 + F)) / (P2 - P1) # from eq 135
-    Tcf <- -1 * (F * D + A * H) / (F * (B - A)) # from eq 128
-    #Tc <- C1 * exp(P1 * t) + C2 * exp(P2 * t) + Tcf # from eq 128
-    dTc <- (Qgen - Qresp - (Tc - Ts) / Rb) / Cc # from eq 103
-    dTsk <- ((Tc - Ts) / Rb - (Tsk - Ts) / (Rs/2)) / Cs
-    Ts <- (Qabs + Trad / Rrad + Tair / Rconv + 2 * Tsk / Rs) / (1 / Rrad + 1 / Rconv + 2 / Rs) #-A * Ts + B * Tc + D#((Tc - Tsk) / Rb - (Ts - Tsk) / (Rs / 2)) / Cs # from eq 104
+    F <- 1 / (C_c * R_b) # from eq 70 and 71 of Transient Equations Derivation vignette
+    H <- (Q_gen - Q_resp) / C_c # from eq 70 and 71 of Transient Equations Derivation vignette
+    A <- (1 / C_sk) * (1 / R_b + 2 / R_sk - (2 / R_sk) / (R_sk / (2 * R_rad) + R_sk / (2 * R_conv) + 1)) # from eq 67 of Transient Equations Derivation vignette
+    B <- 1 / (R_b * C_sk) # from eq 68 of Transient Equations Derivation vignette
+    D <- (Qabs + Trad / R_rad + Tair / R_conv) / ((R_sk / (2 * R_rad) + R_sk / (2 * R_conv) + 1) * C_sk) # from eq 69 of Transient Equations Derivation vignette
+    P1 <- (-1 * (F + A) + ((F + A) ^ 2 - 4 * F * A + 4 * F * B) ^ (1 / 2)) / 2 # from eq 85 of Transient Equations Derivation vignette
+    P2 <- (-1 * (F + A) - ((F + A) ^ 2 - 4 * F * A + 4 * F * B) ^ (1 / 2)) / 2 # from eq 85 of Transient Equations Derivation vignette
+    alpha <- (Tc + (A + D) / (B - A)) # from eq 91 of Transient Equations Derivation vignette
+    beta <- F * Ts + (H * B - F * D) / (B - A) # from eq 92 of Transient Equations Derivation vignette
+    C1 <- (alpha * (P2 + F) - beta) / (P2 - P1) # from eq 93 of Transient Equations Derivation vignette
+    C2 <- (beta - alpha * (P1 + F)) / (P2 - P1) # from eq 94 of Transient Equations Derivation vignette
+    Tcf <- -1 * (F * D + A * H) / (F * (B - A)) # from eq 77 of Transient Equations Derivation vignette
+    #Tc <- C1 * exp(P1 * t) + C2 * exp(P2 * t) + Tcf # from eq 86 of Transient Equations Derivation vignette
+    dTc <- (Q_gen - Q_resp - (Tc - Tsk) / R_b) / C_c # from eq 61 of Transient Equations Derivation vignette
+    dTsk <- ((Tc - Tsk) / R_b - (Tsk - Ts) / (R_sk/2)) / C_sk # from eq 62 of Transient Equations Derivation vignette
+    Ts <- (Qabs + Trad / R_rad + Tair / R_conv + 2 * Tsk / R_sk) / (1 / R_rad + 1 / R_conv + 2 / R_sk) # from eq 64 of Transient Equations Derivation vignette
     dTs <- Ts - y[3]
     list(y = c(dTc[1], dTsk[1], dTs[1]), x = Tcf[1])
   })

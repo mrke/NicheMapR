@@ -133,7 +133,7 @@ onelump_var <- function(t, y, indata) {
     m <- Ww_g / 1000 # convert weight to kg
     C <- m * c_body # thermal capacitance, J/K
     V <- m / rho_body # volume, m3
-    Qgen <- q * V # total metabolic heat, J
+    Q_gen <- q * V # total metabolic heat, J
     L <- V ^ (1 / 3) # characteristic dimension, m
     # FLAT PLATE geometry
     if (geom == 0) {
@@ -239,36 +239,36 @@ onelump_var <- function(t, y, indata) {
     # end geometry section ############################################################
 
     if (max(Zen) >= 90) {
-      Qnorm <- 0
+      Q_norm <- 0
     } else{
       if(orient == 1){
-        Qnorm <- (Qsol / cos(Zenith))
+        Q_norm <- (Qsol / cos(Zenith))
       }else{
-        Qnorm <- Qsol
+        Q_norm <- Qsol
       }
     }
-    if (Qnorm > 1367) {
-      Qnorm <-
+    if (Q_norm > 1367) {
+      Q_norm <-
         1367 #making sure that low sun angles don't lead to solar values greater than the solar constant
     }
     if (posture == 'p') {
       Qabs <-
         (
-          Qnorm * (1 - pdif) * ASILP + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) *
+          Q_norm * (1 - pdif) * ASILP + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) *
             fatosb * ATOT
         ) * alpha
     }
     if (posture == 'n') {
       Qabs <-
         (
-          Qnorm * (1 - pdif) * ASILN + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) *
+          Q_norm * (1 - pdif) * ASILN + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) *
             fatosb * ATOT
         ) * alpha
     }
     if (posture == 'a') {
       Qabs <-
         (
-          Qnorm * (1 - pdif) * (ASILN + ASILP) / 2 + Qsol * pdif * fatosk * ATOT +
+          Q_norm * (1 - pdif) * (ASILN + ASILP) / 2 + Qsol * pdif * fatosk * ATOT +
             Qsol * (1 - alpha_sub) * fatosb * ATOT
         ) * alpha
     }
@@ -310,7 +310,7 @@ onelump_var <- function(t, y, indata) {
     if (geom == 2 | geom == 4) {
       NUfor <- 0.35 * Re ^ (0.6) # Nusselt number, forced convection
     }
-    hc_forced <- NUfor * THCOND / L # convection coefficent, forced
+    h_conv_forced <- NUfor * THCOND / L # convection coefficent, forced
 
     GR <-
       abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Tskin - Tair) /
@@ -353,27 +353,24 @@ onelump_var <- function(t, y, indata) {
       Raylei = (GR ^ 0.25) * (PR ^ 0.333)
       NUfre = 2 + 0.60 * Raylei
     }
-    hc_free <- NUfre * THCOND / L # convection coefficent, forced
-
-    hc <- hc_free + hc_forced # combined convection coefficient
-    Nu <- hc * L / THCOND # Nu combined
-    Rconv <- 1 / (hc * ATOT) # convective resistance, eq. 3 of Kearney, Huey and Porter in prep. Appendix 1
-
-    hr <- 4 * emis * sigma * ((Tc + Trad) / 2 + 273.15) ^ 3 # radiation resistance, eq. 47 of Kearney, Huey and Porter in prep. Appendix 1
+    h_conv_free <- NUfre * THCOND / L # convection coefficent, forced
+    h_conv <- h_conv_free + h_conv_forced # combined convection coefficient
+    Nu <- h_conv * L / THCOND # Nu combined
+    #R_conv <- 1 / (h_conv * ATOT) # convective resistance, eq. 3 of Kearney, Huey and Porter in prep. Appendix 1
+    h_rad <- 4 * emis * sigma * ((Tc + Trad) / 2 + 273.15) ^ 3 # radiation heat transfer coefficient, eq. 46 of Transient Equations Derivation vignette
 
     if(geom == 2){ # ellipsoid
-      j <- (Qabs + Qgen + hc * ATOT * ((q * S2) / (2 * k_flesh) + Tair) + hr * ATOT * ((q * S2) / (2 * k_flesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter in prep. Appendix 1
+      j <- (Qabs + Q_gen + h_conv * ATOT * ((q * S2) / (2 * k_flesh) + Tair) + h_rad * ATOT * ((q * S2) / (2 * k_flesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter in prep. Appendix 1
     }else{ # assume cylinder
-      j <- (Qabs + Qgen + hc * ATOT * ((q * R ^ 2) / (4 * k_flesh) + Tair) + hr * ATOT * ((q * R ^ 2) / (2 * k_flesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter in prep. Appendix 1
+      j <- (Qabs + Q_gen + h_conv * ATOT * ((q * R ^ 2) / (4 * k_flesh) + Tair) + h_rad * ATOT * ((q * R ^ 2) / (2 * k_flesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter in prep. Appendix 1
     }
-    kTc <- ATOT * (Tc * hc + Tc * hr) / C #based on eq. 52 of Kearney, Huey and Porter in prep. Appendix 1
-    k <- ATOT * (hc + hr) / C #based on eq. 52 of Kearney, Huey and Porter in prep. Appendix 1
-    Tcf <- j / k # final Tc = j/k
+    theta_Tc <- ATOT * (Tc * h_conv + Tc * h_rad) / C #based on eq. 48 of Transient Equations Derivation vignette
+    theta <- ATOT * (h_conv + h_rad) / C #based on eq. 48 of Transient Equations Derivation vignette
+    Tcf <- j / theta # final Tc = j/theta, based on eq. 23 of Transient Equations Derivation vignette
     Tci <- Tc # initial temperature
-    Tc <- (Tci - Tcf) * exp(-1 * k * t) + Tcf # Tc at time t, Eq. 1 of Kearney, Huey and Porter in prep. Appendix 1
-    tau <- 1/k # time constant
-    dTc <- j - kTc # rate of temperature change (deg C/sec)
-
+    Tc <- (Tci - Tcf) * exp(-1 * theta * t) + Tcf # Tc at time t, based on eq. 33 of Transient Equations Derivation vignette
+    tau <- 1 / theta # time constant
+    dTc <- j - theta_Tc # rate of temperature change (deg C/sec)
     list(y = dTc, x = Tcf, z = tau, zz = dTc)
   })
 }
