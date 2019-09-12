@@ -16,10 +16,12 @@
 #' @param PCTBAREVAP A
 #' @param PCTEYES A
 #' @param ZFUR A
-#' @param BAREVAP A
+#' @param FURWET A
+#' @param TFA A
+#' @param CONVAR A
 #' @export
 SEVAP <- function(BP, TA, RELHUM, VEL, TC, TSURF, ALT, SKINW, FLYHR,
-  CONVSK, HD, HDFREE, PCTBAREVAP, PCTEYES, ZFUR, BAREVAP){
+  CONVSK, HD, HDFREE, PCTBAREVAP, PCTEYES, ZFUR, FURWET, TFA, CONVAR){
   os = Sys.info()['sysname']
   if (os == "Windows") {
     if (R.Version()$arch=="x86_64") {
@@ -51,12 +53,14 @@ SEVAP <- function(BP, TA, RELHUM, VEL, TC, TSURF, ALT, SKINW, FLYHR,
     as.double(PCTBAREVAP),
     as.double(PCTEYES),
     as.double(ZFUR),
-    as.double(BAREVAP),
-    results=matrix(data = 0., nrow = 1, ncol = 5),
+    as.double(FURWET),
+    as.double(TFA),
+    as.double(CONVAR),
+    results=matrix(data = 0., nrow = 1, ncol = 7),
     PACKAGE = "SEVAP")
   #dyn.unload("SEVAP.dll")
 
-  results <- matrix(data = 0., nrow = 1, ncol = 5)
+  results <- matrix(data = 0., nrow = 1, ncol = 7)
 
   storage.mode(results)<-"double"
   results <- a$results

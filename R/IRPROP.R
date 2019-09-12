@@ -16,9 +16,10 @@
 #' @param REFLD A
 #' @param REFLV A
 #' @param MAXPTVEN A
+#' @param ZFURCOMP A
 #' @export
 IRPROP <- function(TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV,
-  ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN){
+  ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, ZFURCOMP){
   os = Sys.info()['sysname']
   if (os == "Windows") {
     if (R.Version()$arch=="x86_64") {
@@ -50,11 +51,12 @@ IRPROP <- function(TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV,
                 as.double(REFLD),
                 as.double(REFLV),
                 as.double(MAXPTVEN),
-                results=matrix(data = 0., nrow = 1, ncol = 26),
+                as.double(ZFURCOMP),
+                results=matrix(data = 0., nrow = 1, ncol = 27),
                 PACKAGE = "IRPROP")
   #dyn.unload("IRPROP.dll")
 
-  results <- matrix(data = 0., nrow = 1, ncol = 26)
+  results <- matrix(data = 0., nrow = 1, ncol = 27)
 
   storage.mode(results)<-"double"
   results <- a$results
