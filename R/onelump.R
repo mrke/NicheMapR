@@ -4,7 +4,7 @@
 #' under a constant environment
 #' Michael Kearney, Raymond Huey and Warren Porter developed this R function and example in September 2017.
 #' @param t = seq(1,3600,60), time intervals (s) at which output is required
-#' @param Tc_init = 5, initial temperature (deg C)
+#' @param Tc_init = 5, initial temperature (°C)
 #' @param Ww_g = 500, animal weight (g)
 #' @param rho_body = 932, animal density (kg/m3)
 #' @param q = 0, metabolic heat production rate W/m3
@@ -22,16 +22,16 @@
 #' @param fatosb = 0.4, Configuration factor to subsrate for infrared calculations
 #' @param alpha_sub = 0.2, substrate solar reflectivity, decimal percent
 #' @param pdif = 0.1, proportion of solar energy that is diffuse (rather than direct beam)
-#' @param Tair = 30, air temperature (deg C)
-#' @param Trad = 30, radiant temperature (deg C), averaging ground and sky
+#' @param Tair = 30, air temperature (°C)
+#' @param Trad = 30, radiant temperature (°C), averaging ground and sky
 #' @param vel = 0.1, wind speed (m/s)
 #' @param Qsol = 500, solar radiation (W/m2)
 #' @param Zen = 20, zenith angle of sun (90 is below horizon), degrees
 #' @param press = 101325, air pressure (Pa)
-#' @return Tc Core temperature (deg C)
-#' @return Tcf Final (steady state) temperature (deg C), if conditions remained constant indefinately
+#' @return Tc Core temperature (°C)
+#' @return Tcf Final (steady state) temperature (°C), if conditions remained constant indefinately
 #' @return tau Time constant (s)
-#' @return dTc Rate of change of core temperature (deg C/s)
+#' @return dTc Rate of change of core temperature (°C/s)
 #' @usage onelump(t, Tc_init, Ww_g, geom, Tair, Trad, vel, Qsol, Zen, ...)
 #' @examples
 #' library(NicheMapR)
@@ -43,10 +43,10 @@
 #'
 #' par(mfrow = c(1,2))
 #' Ww_g <- 5 # body weight, g
-#' Tc_init <- 20 # initial body temperature, deg C
+#' Tc_init <- 20 # initial body temperature, °C
 #' geom <- 2 # shape (2 = ellipsoid)
-#' Tair <- 20 # air temperature, deg C
-#' Trad <- Tair # radiant temperature, deg C
+#' Tair <- 20 # air temperature, °C
+#' Trad <- Tair # radiant temperature, °C
 #' vel <- 1 # wind speed, m/s
 #' Qsol <- 500 # horizontal plane solar radiation, W/m2
 #' Zen <- 20 # zenith angle of sun, degrees
@@ -54,7 +54,7 @@
 #'
 #' Tbs<-onelump(t=t, alpha = alpha, Tc_init = Tc_init, Ww_g = Ww_g,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
-#' plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 30), ylab = 'Temperature, deg C',xlab='time, min', las = 1)
+#' plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 30), ylab = 'Temperature, °C',xlab='time, min', las = 1)
 #' text(80, 27, "    500 g")
 #' text(80, 24.5, "5 g")
 #' text(90, 20.5, "Tair for both sizes", col = "blue")
@@ -69,16 +69,16 @@
 #' abline(h = Tair + .1, lty = 2, col = 'blue')
 #'
 #' Ww_g <- 5 # body weight, g
-#' Tair <- 25 # air temperature, deg C
+#' Tair <- 25 # air temperature, °C
 #' vel <-0.5 # wind speed, m/s
 #'
 #' Tbs<-onelump(t=t, alpha = alpha, Tc_init = Tc_init, Ww_g = Ww_g,
 #'   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
-#' plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,30),ylab='Temperature, deg C',xlab='time, min', las = 1)
+#' plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,30),ylab='Temperature, °C',xlab='time, min', las = 1)
 #' abline(h = Tair, lty = 1, col = 'blue')
 #'
 #' Ww_g <- 500 # body weight, g
-#' Tair <- 20 # air temperature, deg C
+#' Tair <- 20 # air temperature, °C
 #' vel <-1 # wind speed, m/s
 #'
 #' Tbs<-onelump(t=t, alpha = alpha, Tc_init = Tc_init, Ww_g = Ww_g,
@@ -319,6 +319,6 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
   Tci <- Tc # initial temperature
   Tc <- (Tci - Tcf) * exp(-1 * theta * t) + Tcf # Tc at time t, based on eq. 33 of Transient Equations Derivation vignette
   tau <- 1 / theta # time constant
-  dTc <- j - theta_Tc # rate of temperature change (deg C/sec)
+  dTc <- j - theta_Tc # rate of temperature change (°C/sec)
   return(list(Tc = Tc, Tcf = Tcf, tau = tau, dTc = dTc))
 }
