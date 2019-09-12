@@ -16,7 +16,7 @@
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
 #' @param coastal Compute coastal effects with microclima? T (TRUE) or F (FALSE) (can take a while and may have high memory requirements depending on DEM size)
 #' @param hourlydata user input of the hourlydata matrix
-#' @param dailyprecip user input of daily rainfall
+#' @param dailyrain user input of daily rainfall
 #' @param ... Additional arguments, see Details
 #' @return metout The above ground micrometeorological conditions under the minimum specified shade
 #' @return shadmet The above ground micrometeorological conditions under the maximum specified shade
@@ -372,7 +372,7 @@ micro_ncep <- function(
   grasshade = 0,
   coastal = F,
   hourlydata = NA,
-  dailyprecip = NA){ # end function parameters
+  dailyrain = NA){ # end function parameters
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
