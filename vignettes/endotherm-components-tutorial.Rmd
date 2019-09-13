@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-This document provides an overview of an R implementation of the NicheMapR endotherm model, via the sub-functions of 'endoR'. This implementation modularises the original version such that many of the internal subroutines and functions can be called separately. The idea is that the user has more flexibility in setting the model up for the behavioural and physiological responses of a particular animal. There is also a tutorial for using 'endoR' itself is [Endotherm Model Tutorial](endotherm-model-tutorial.html).
+This document provides an overview of an R implementation of the NicheMapR endotherm model, via the sub-functions of 'endoR'. This implementation modularises the original version such that many of the internal subroutines and functions can be called separately. The idea is that the user has more flexibility in setting the model up for the behavioural and physiological responses of a particular animal. There is also a tutorial for using 'endoR' itself [Endotherm Model Tutorial](endotherm-model-tutorial.html).
 
 ```{r}
 library(NicheMapR)
