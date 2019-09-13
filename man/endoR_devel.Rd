@@ -26,7 +26,7 @@ endoR(AMASS = 1, NGEOM = 4, GMREF = 3, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-0
 
 \item{AMASS}{= 1, # kg}
 
-\item{NGEOM}{= 4, # cylinder (ngeom = 1), sphere (ngeom = 2), plate (ngeom = 3) and ellipsoid (ngeom = 4)}
+\item{NGEOM}{= 4, # cylinder (ngeom = 1), sphere (ngeom = 2) and ellipsoid (ngeom = 4). If a truncated cone (5) or ellipsoidal cylinder (3), we will use the cylinder equations (ngeom=1).}
 
 \item{GMREF}{= 3, # initial ratio between long and short axis (-)}
 
@@ -61,7 +61,7 @@ then to adjust the FORTRAN code of endoR_solvendo (SOLVENDO.f) accordingly.
 \code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr
 \code{ELEV}{ = 0, elevation (m)}\cr\cr
 \code{ABSSB}{ = 0.8, solar absorptivity of substrate (fractional, 0-1)}\cr\cr
-\code{FLTYPE}{ = 0, FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - needs to be looked at - only invoked in main program when the dive table is set up}\cr\cr
+\code{FLTYPE}{ = 0, FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - need's to be looked at - only invoked in main program when the dive table is set up}\cr\cr
 \code{TCONDSB}{ = TGRD, surface temperature for conduction (°C)}\cr\cr
 \code{TBUSH}{ = TA, bush temperature (°C)}\cr\cr
 \code{BP}{ = -1, Pa, negatve means elevation is used}\cr\cr
@@ -90,7 +90,8 @@ then to adjust the FORTRAN code of endoR_solvendo (SOLVENDO.f) accordingly.
 \code{GMULT}{ = GMREF, current ratio between long and short axis (-)}\cr\cr
 \code{GMULTMAX}{ = GMREF, max possible ratio between long and short axis (-)}\cr\cr
 \code{MAXPTVEN}{ = 0.5, maxium fraction of surface area that is ventral (fractional, 0-1)}\cr\cr
-\code{PTCOND}{ = 0, \% of body area touching the substrate}\cr\cr
+\code{PTCOND}{ = 0, fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
+\code{MAXPTCOND}{ = 0, maximum fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
 \code{BIRD}{ = 0, if 1, uses bird skin surface area scaling from Walsberg, G. E., and J. E. King. 1978. The Relationship of the External Surface Area of Birds to Skin Surface Area and Body Mass. Journal of Experimental Biology 76:185–189}\cr\cr
 \code{MAMMAL}{ = 0, if 1, uses mammal surface area scaling from Stahl W. R. (1967) Scaling of respiratory variables in mammals. Journal of Applied Physiology 22 , 453–460.}\cr\cr
 \code{ORIENT}{ = 0, if 0, long axis parallel to ground, if 1, long axis is perpendicular to the ground}\cr\cr
@@ -104,6 +105,7 @@ then to adjust the FORTRAN code of endoR_solvendo (SOLVENDO.f) accordingly.
 \code{RHOV}{ = 3000E+04, hair density, ventral (1/m2)}\cr\cr
 \code{REFLD}{ = 0.2, fur reflectivity dorsal (fractional, 0-1)}\cr\cr
 \code{REFLV}{ = 0.2, fur reflectivity ventral (fractional, 0-1)}\cr\cr
+\code{ZFURCOMP}{ = ZFURV, depth of compressed fur (for conduction) (m)}\cr\cr
 
 \strong{ Radiation exchange:}\cr\cr
 \code{EMISAN}{ = 0.99, animal emissivity (-)}\cr\cr
@@ -121,7 +123,7 @@ then to adjust the FORTRAN code of endoR_solvendo (SOLVENDO.f) accordingly.
 \code{AK2}{ = 0.230, # conductivity of fat (W/mK)}\cr\cr
 \code{QBASAL}{ = (70 \* AMASS ^ 0.75) \* (4.185 / (24 \* 3.6)), # basal heat generation (W)}\cr\cr
 \code{SKINW}{ = 0, # part of the skin surface that is wet (\%)}\cr\cr
-\code{BAREVAP}{ = 0, # is evaporation partly from bare skin? (0 = no, 1 = yes, \% defined with PCTSKINEVAP)}\cr\cr
+\code{FURWET}{ = 0, # Area of fur/feathers that is wet after rain (\%)}\cr\cr
 \code{PCTBAREVAP}{ = 2.8, maximum flesh conductivity (W/mK)}\cr\cr
 \code{PCTEYES}{ = 0, # surface area made up by the eye (\%) - make zero if sleeping}\cr\cr
 \code{DELTAR}{ = 0, # offset between air temperature and breath (°C)}\cr\cr
@@ -162,6 +164,8 @@ then to adjust the FORTRAN code of endoR_solvendo (SOLVENDO.f) accordingly.
 \code{QRVEG_V}{ventral radiant heat incomming from vegetation (W)}\cr\cr
 \code{QRGRD_D}{dorsal radiant heat incomming from ground (W)}\cr\cr
 \code{QRGRD_V}{ventral radiant heat incomming from ground (W)}\cr\cr
+\code{QFSEVAP_D}{dorsal evaporative heat exchange from wet fur (W)}\cr\cr
+\code{QFSEVAP_V}{ventral evaporative heat exchange from wet fur (W)}\cr\cr
 \code{NTRY_D}{number of iterations need for convergence of dorsal heat budget}\cr\cr
 \code{NTRY_V}{number of iterations need for convergence of ventral heat budget}\cr\cr
 \code{SUCCESS_D}{test of success convergence for dorsal heat budget}\cr\cr

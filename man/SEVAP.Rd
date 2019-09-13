@@ -5,7 +5,7 @@
 \title{SEVAP}
 \usage{
 SEVAP(BP, TA, RELHUM, VEL, TC, TSURF, ALT, SKINW, FLYHR, CONVSK, HD,
-  HDFREE, PCTBAREVAP, PCTEYES, ZFUR, BAREVAP)
+  HDFREE, PCTBAREVAP, PCTEYES, ZFUR, FURWET, TFA, CONVAR)
 }
 \arguments{
 \item{BP}{A}
@@ -38,7 +38,11 @@ SEVAP(BP, TA, RELHUM, VEL, TC, TSURF, ALT, SKINW, FLYHR, CONVSK, HD,
 
 \item{ZFUR}{A}
 
-\item{BAREVAP}{A}
+\item{FURWET}{A}
+
+\item{TFA}{A}
+
+\item{CONVAR}{A}
 }
 \description{
 R wrapper for Fortran binary of SEVAP (endotherm model)

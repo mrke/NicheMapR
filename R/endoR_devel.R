@@ -150,9 +150,9 @@
 #' \code{RESPFN}{energy balance test after call to RESPFUN (W)}\cr\cr
 #' \code{QRESP}{respiratory heat exchange (W)}\cr\cr
 #' \code{GEVAP}{respiratory water loss (g/s)}\cr\cr
-#' \code{PCTO2}{ambient oxygen gas concentration (%)}\cr\cr
-#' \code{PCTN2}{ambient nitgrogen gas concentration (%)}\cr\cr
-#' \code{PCTCO2}{ambient carbon dioxide gas concentration (%)}\cr\cr
+#' \code{PCTO2}{ambient oxygen gas concentration (\%)}\cr\cr
+#' \code{PCTN2}{ambient nitgrogen gas concentration (\%)}\cr\cr
+#' \code{PCTCO2}{ambient carbon dioxide gas concentration (\%)}\cr\cr
 #' \code{RESPGEN}{total metabolic rate (W)}\cr\cr
 #' \code{O2STP}{oxygen consumption at standard temperature and pressure (L/s)}\cr\cr
 #' \code{O2MOL1}{oxygen entering lungs (moles/s)}\cr\cr
@@ -163,17 +163,17 @@
 #' \code{AIRML2}{air leaving lungs (moles/s)}\cr\cr
 #' \code{AIRVOL}{air entering lungs (L/s)}\cr\cr
 #' \code{GMULT}{shape multiplier for postural change (-)}\cr\cr
-#' \code{SKINW}{skin area that is wet (%)}\cr\cr
+#' \code{SKINW}{skin area that is wet (\%)}\cr\cr
 #' \code{SWEAT.G.H}{sweating rate (g/h)}\cr\cr
 #' \code{EVAP.G.H}{evaporation rate (g/h)}\cr\cr
-#' \code{EXTREF}{oxygen extraction efficiency (%)}\cr\cr
+#' \code{EXTREF}{oxygen extraction efficiency (\%)}\cr\cr
 #' \code{AK}{skin thermal conductivity (W/m°C)}\cr\cr
 #' \code{TA}{air temperature (°C)}\cr\cr
 #' \code{TGRD}{ground temperature, driving longwave heat gain (°C)}\cr\cr
 #' \code{TCONDSB}{substrate temperature, driving conductive heat exchange (°C)}\cr\cr
 #' \code{TSKY}{sky temperature (°C)}\cr\cr
 #' \code{VEL}{wind speed (m/s)}\cr\cr
-#' \code{RH}{relative humidity (%)}\cr\cr
+#' \code{RH}{relative humidity (\%)}\cr\cr
 #' \code{QSOLR}{solar radiation (W/m2)}\cr\cr
 #' @examples
 #' library(NicheMapR)
@@ -312,7 +312,7 @@ endoR_devel <- function(
   BIRD = 0, # if 1, uses bird skin surface area allometry from Walsberg, G. E., and J. E. King. 1978. The Relationship of the External Surface Area of Birds to Skin Surface Area and Body Mass. Journal of Experimental Biology 76:185–189.
   MAMMAL = 0, # if 1, uses mammal surface area from Stahl W. R. (1967) Scaling of respiratory variables in mammals. Journal of Applied Physiology 22 , 453–460.
   ORIENT = 0, # if 1 = normal to sun's rays (heat maximising), if 2 = parallel to sun's rays (heat minimising), or 0 = average
-  
+
   # fur properties
   FURTHRMK = 0, # user-specified fur thermal conductivity (W/mK), not used if 0
   DHAIRD = 30E-06, # hair diameter, dorsal (m)
@@ -384,7 +384,7 @@ endoR_devel <- function(
   if(UNCURL == 0){
     GMULTMAX <- GMULT # can't change posture, so max multiplier of dimension set to current value
   }
- 
+
   PANTSTEP <- 0
   QGEN <- 0
   TCREF <- TC
@@ -421,7 +421,7 @@ endoR_devel <- function(
     REFLFR <- IRPROP.out[23:25] # fur reflectivity array, mean, dorsal, ventral (fractional, 0-1)
     FURTST <- IRPROP.out[26] # test of presence of fur (length x diamater x density x depth) (-)
     KFURCMPRS <- IRPROP.out[27] # effictive thermal conductivity of compressed ventral fur (W/mK)
-    
+
     ### GEOM, geometry
 
     # input
@@ -431,7 +431,7 @@ endoR_devel <- function(
     POSTUR <- NGEOM # posture, 0 is plate, 1 is cylinder, 2 is sphere, 4 is ellipsoid
 
     # call the subroutine
-    GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA, RHOARA, 
+    GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA, RHOARA,
                      PTCOND, BIRD, MAMMAL, ORIENT)
 
     # output
@@ -570,7 +570,7 @@ endoR_devel <- function(
           FAVEG <- 0.0
           FAGRD <- FAGRDREF/(1 - FAGRDREF - FATOBJREF - FABUSHREF)
           FABUSH <- FABUSHREF/(1 - FAGRDREF - FATOBJREF - FABUSHREF)
-          QSLR <- (QVENTR/(1 - FASKYREF - FATOBJREF - 
+          QSLR <- (QVENTR/(1 - FASKYREF - FATOBJREF -
                              FAVEGREF))*(1-(2*PTCOND))
         }
       }else{
@@ -625,11 +625,11 @@ endoR_devel <- function(
         AREACND <- ATOT * (PTCOND *2)
         CD <- AREACND * ((KFURCMPRS/ZFURCOMP))
         CONVAR<-CONVAR - AREACND #NB edit - Adjust area used for convection to account for PTCOND. This is sent in to simulsol & then conv (unpacked as SURFAR)
-      } else{ #doing dorsal side, no conduction. No need to adjust areas used for convection. 
+      } else{ #doing dorsal side, no conduction. No need to adjust areas used for convection.
         AREACND = 0
         CD <- AREACND * ((KFURCMPRS/ZFURCOMP))
       }
-      
+
 
       # package up inputs
       FURVARS <- c(LEN,ZFUR,FURTHRMK,KEFF,BETARA,FURTST,ZL)

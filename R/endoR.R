@@ -78,7 +78,7 @@
 #' \code{REFLD}{ = 0.2, fur reflectivity dorsal (fractional, 0-1)}\cr\cr
 #' \code{REFLV}{ = 0.2, fur reflectivity ventral (fractional, 0-1)}\cr\cr
 #' \code{ZFURCOMP}{ = ZFURV, # depth of compressed fur (for conduction) (m)}\cr\cr
-#' 
+#'
 #'
 #' \strong{ Radiation exchange:}\cr\cr
 #' \code{EMISAN}{ = 0.99, animal emissivity (-)}\cr\cr
@@ -147,9 +147,9 @@
 #' \code{RESPFN}{energy balance test after call to RESPFUN (W)}\cr\cr
 #' \code{QRESP}{respiratory heat exchange (W)}\cr\cr
 #' \code{GEVAP}{respiratory water loss (g/s)}\cr\cr
-#' \code{PCTO2}{ambient oxygen gas concentration (%)}\cr\cr
-#' \code{PCTN2}{ambient nitgrogen gas concentration (%)}\cr\cr
-#' \code{PCTCO2}{ambient carbon dioxide gas concentration (%)}\cr\cr
+#' \code{PCTO2}{ambient oxygen gas concentration (\%)}\cr\cr
+#' \code{PCTN2}{ambient nitgrogen gas concentration (\%)}\cr\cr
+#' \code{PCTCO2}{ambient carbon dioxide gas concentration (\%)}\cr\cr
 #' \code{RESPGEN}{total metabolic rate (W)}\cr\cr
 #' \code{O2STP}{oxygen consumption at standard temperature and pressure (L/s)}\cr\cr
 #' \code{O2MOL1}{oxygen entering lungs (moles/s)}\cr\cr
@@ -160,17 +160,17 @@
 #' \code{AIRML2}{air leaving lungs (moles/s)}\cr\cr
 #' \code{AIRVOL}{air entering lungs (L/s)}\cr\cr
 #' \code{GMULT}{shape multiplier for postural change (-)}\cr\cr
-#' \code{SKINW}{skin area that is wet (%)}\cr\cr
+#' \code{SKINW}{skin area that is wet (\%)}\cr\cr
 #' \code{SWEAT.G.H}{sweating rate (g/h)}\cr\cr
 #' \code{EVAP.G.H}{evaporation rate (g/h)}\cr\cr
-#' \code{EXTREF}{oxygen extraction efficiency (%)}\cr\cr
+#' \code{EXTREF}{oxygen extraction efficiency (\%)}\cr\cr
 #' \code{AK}{skin thermal conductivity (W/m°C)}\cr\cr
 #' \code{TA}{air temperature (°C)}\cr\cr
 #' \code{TGRD}{ground temperature, driving longwave heat gain (°C)}\cr\cr
 #' \code{TCONDSB}{substrate temperature, driving conductive heat exchange (°C)}\cr\cr
 #' \code{TSKY}{sky temperature (°C)}\cr\cr
 #' \code{VEL}{wind speed (m/s)}\cr\cr
-#' \code{RH}{relative humidity (%)}\cr\cr
+#' \code{RH}{relative humidity (\%)}\cr\cr
 #' \code{QSOLR}{solar radiation (W/m2)}\cr\cr
 #' @examples
 #' library(NicheMapR)
@@ -293,7 +293,7 @@ endoR <- function(
   BIRD = 0, # if 1, uses bird skin surface area allometry from Walsberg, G. E., and J. E. King. 1978. The Relationship of the External Surface Area of Birds to Skin Surface Area and Body Mass. Journal of Experimental Biology 76:185–189.
   MAMMAL = 0, # if 1, uses mammal surface area from Stahl W. R. (1967) Scaling of respiratory variables in mammals. Journal of Applied Physiology 22 , 453–460.
   ORIENT = 0, # if 1 = normal to sun's rays (heat maximising), if 2 = parallel to sun's rays (heat minimising), or 0 = average
-  
+
   # fur properties
   FURTHRMK = 0, # user-specified fur thermal conductivity (W/mK), not used if 0
   DHAIRD = 30E-06, # hair diameter, dorsal (m)

@@ -9,15 +9,15 @@ onelump(t, Tc_init, Ww_g, geom, Tair, Trad, vel, Qsol, Zen, ...)
 \arguments{
 \item{t}{= seq(1,3600,60), time intervals (s) at which output is required}
 
-\item{Tc_init}{= 5, initial temperature (deg C)}
+\item{Tc_init}{= 5, initial temperature (°C)}
 
 \item{Ww_g}{= 500, animal weight (g)}
 
 \item{geom}{= 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coefs')}
 
-\item{Tair}{= 30, air temperature (deg C)}
+\item{Tair}{= 30, air temperature (°C)}
 
-\item{Trad}{= 30, radiant temperature (deg C), averaging ground and sky}
+\item{Trad}{= 30, radiant temperature (°C), averaging ground and sky}
 
 \item{vel}{= 0.1, wind speed (m/s)}
 
@@ -35,8 +35,6 @@ onelump(t, Tc_init, Ww_g, geom, Tair, Trad, vel, Qsol, Zen, ...)
 
 \item{rho_body}{= 932, animal density (kg/m3)}
 
-\item{abs}{= 0.85, solar absorptivity, decimal percent}
-
 \item{shape_coefs}{= c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom shape coefficients. Operates if geom=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*Ww_g^b, where AREA is in cm2 and Ww_g is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}
 
 \item{shape_b}{= 1/5, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid}
@@ -51,20 +49,22 @@ onelump(t, Tc_init, Ww_g, geom, Tair, Trad, vel, Qsol, Zen, ...)
 
 \item{fatosb}{= 0.4, Configuration factor to subsrate for infrared calculations}
 
-\item{abs_sub}{= 0.2, substrate solar reflectivity, decimal percent}
+\item{alpha_sub}{= 0.2, substrate solar reflectivity, decimal percent}
 
 \item{pdif}{= 0.1, proportion of solar energy that is diffuse (rather than direct beam)}
 
 \item{press}{= 101325, air pressure (Pa)}
+
+\item{abs}{= 0.85, solar absorptivity, decimal percent}
 }
 \value{
-Tc Core temperature (deg C)
+Tc Core temperature (°C)
 
-Tcf Final (steady state) temperature (deg C), if conditions remained constant indefinately
+Tcf Final (steady state) temperature (°C), if conditions remained constant indefinately
 
 tau Time constant (s)
 
-dTc Rate of change of core temperature (deg C/s)
+dTc Rate of change of core temperature (°C/s)
 }
 \description{
 Transient, 'one-lump', heat budget for computing rate of change of temperature
@@ -81,18 +81,18 @@ tmins <- t/60
 
 par(mfrow = c(1,2))
 Ww_g <- 5 # body weight, g
-Tc_init <- 20 # initial body temperature, deg C
+Tc_init <- 20 # initial body temperature, °C
 geom <- 2 # shape (2 = ellipsoid)
-Tair <- 20 # air temperature, deg C
-Trad <- Tair # radiant temperature, deg C
+Tair <- 20 # air temperature, °C
+Trad <- Tair # radiant temperature, °C
 vel <- 1 # wind speed, m/s
 Qsol <- 500 # horizontal plane solar radiation, W/m2
 Zen <- 20 # zenith angle of sun, degrees
-abs <- 0.85 # solar absorptivity, -
+alpha <- 0.85 # solar absorptivity, -
 
-Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, Ww_g = Ww_g,
+Tbs<-onelump(t=t, alpha = alpha, Tc_init = Tc_init, Ww_g = Ww_g,
   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
-plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 30), ylab = 'Temperature, deg C',xlab='time, min', las = 1)
+plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 30), ylab = 'Temperature, °C',xlab='time, min', las = 1)
 text(80, 27, "    500 g")
 text(80, 24.5, "5 g")
 text(90, 20.5, "Tair for both sizes", col = "blue")
@@ -100,26 +100,26 @@ text(90, 26, "   vel = 1.0 m/s")
 text(90, 23.5, "     vel = 1.0 m/s")"     vel = 1.0 m/s")
 
 Ww_g <- 500 # body weight, g
-Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, Ww_g = Ww_g,
+Tbs<-onelump(t=t, alpha = alpha, Tc_init = Tc_init, Ww_g = Ww_g,
   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
 abline(Tair,0, lty = 1, col = 'blue')
 abline(h = Tair + .1, lty = 2, col = 'blue')
 
 Ww_g <- 5 # body weight, g
-Tair <- 25 # air temperature, deg C
+Tair <- 25 # air temperature, °C
 vel <-0.5 # wind speed, m/s
 
-Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, Ww_g = Ww_g,
+Tbs<-onelump(t=t, alpha = alpha, Tc_init = Tc_init, Ww_g = Ww_g,
   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
-plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,30),ylab='Temperature, deg C',xlab='time, min', las = 1)
+plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,30),ylab='Temperature, °C',xlab='time, min', las = 1)
 abline(h = Tair, lty = 1, col = 'blue')
 
 Ww_g <- 500 # body weight, g
-Tair <- 20 # air temperature, deg C
+Tair <- 20 # air temperature, °C
 vel <-1 # wind speed, m/s
 
-Tbs<-onelump(t=t, abs = abs, Tc_init = Tc_init, Ww_g = Ww_g,
+Tbs<-onelump(t=t, alpha = alpha, Tc_init = Tc_init, Ww_g = Ww_g,
   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
 points(Tbs$Tc~tmins,type='l',lty = 2, col=1)
 abline(h = Tair, lty = 2, col = 'blue')

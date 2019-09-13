@@ -38,7 +38,7 @@ Usrhyt = 0.01, ...)
 
 \item{hourlydata}{user input of the hourlydata matrix}
 
-\item{dailyprecip}{user input of daily rainfall}
+\item{dailyrain}{user input of daily rainfall}
 
 \item{...}{Additional arguments, see Details}
 }

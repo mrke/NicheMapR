@@ -5,7 +5,7 @@
 \title{IRPROP}
 \usage{
 IRPROP(TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD,
-  ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN)
+  ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, ZFURCOMP)
 }
 \arguments{
 \item{TA}{A}
@@ -37,6 +37,8 @@ IRPROP(TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD,
 \item{REFLV}{A}
 
 \item{MAXPTVEN}{A}
+
+\item{ZFURCOMP}{A}
 }
 \description{
 R wrapper for Fortran binary of IRPROP (endotherm model)
