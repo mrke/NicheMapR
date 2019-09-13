@@ -25,13 +25,14 @@ LHAIRD <- 23.9E-03 # hair length, dorsal (m)
 LHAIRV <- 23.9E-03 # hair length, ventral (m)  
 ZFURD <- 9E-03 # fur depth, dorsal (m)
 ZFURV <- 9E-03 # fur depth, ventral (m)
+ZFURCOMP <- ZFURV # depth of compressed fur (for conduction) (m)
 RHOD <- 3968E+04 # hair density, dorsal (1/m2) 
 RHOV <- 2781E+04 # hair density, ventral (1/m2)
 REFLD <- 0.301  # fur reflectivity dorsal (fractional, 0-1) 
 REFLV <- 0.301  # fur reflectivity ventral (fractional, 0-1)
 
 # call the subroutine
-IRPROP.out <- IRPROP(TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN)
+IRPROP.out <- IRPROP(TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, ZFURCOMP)
 
 # output
 E4B1 <- IRPROP.out[1] # exponential integral, E4, of optical thickness, B1 (m), i.e. E4(B1)
@@ -44,15 +45,16 @@ RHOAR <- IRPROP.out[17:19] # fur density array, mean, dorsal, ventral (fibers/m2
 ZZFUR <- IRPROP.out[20:22] # fur depth array, mean, dorsal, ventral (m)  
 REFLFR <- IRPROP.out[23:25] # fur reflectivity array, mean, dorsal, ventral (fractional, 0-1)
 FURTST <- IRPROP.out[26] # test of presence of fur (length x diamater x density x depth) (-)
+KFURCMPRS <- IRPROP.out[27] # effictive thermal conductivity of compressed ventral fur (W/mK)
 
-IRPROP.lab <- c("E4B1", "KEFARA mean", "KEFARA dorsal", "KEFARA ventral", "BETARA mean", "BETARA dorsal", "BETARA ventral", "B1ARA mean", "B1ARA dorsal", "B1ARA ventral", "DHAR mean", "DHAR dorsal", "DHAR ventral", "LHAR mean", "LHAR dorsal", "LHAR ventral", "RHOAR mean", "RHOAR dorsal", "RHOAR ventral", "ZZFUR mean", "ZZFUR dorsal", "ZZFUR ventral", "REFLFR mean", "REFLFR dorsal", "REFLFR ventral", "FURTST")
-kable(cbind(IRPROP.lab, IRPROP.out[1:26]))
+IRPROP.lab <- c("E4B1", "KEFARA mean", "KEFARA dorsal", "KEFARA ventral", "BETARA mean", "BETARA dorsal", "BETARA ventral", "B1ARA mean", "B1ARA dorsal", "B1ARA ventral", "DHAR mean", "DHAR dorsal", "DHAR ventral", "LHAR mean", "LHAR dorsal", "LHAR ventral", "RHOAR mean", "RHOAR dorsal", "RHOAR ventral", "ZZFUR mean", "ZZFUR dorsal", "ZZFUR ventral", "REFLFR mean", "REFLFR dorsal", "REFLFR ventral", "FURTST", "KFURCMPRS")
+kable(cbind(IRPROP.lab, IRPROP.out[1:27]))
 
 ## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
 DHAIRs <- seq(0, 150, 2) # hair diameters (micrometers)
 KEFARAs <- NULL
 for(i in 1:length(DHAIRs)){
-  KEFARAs[i] <- IRPROP(TA, GMULTMAX, GMREF, GMULT, DHAIRs[i] * 1E-06, DHAIRs[i] * 1E-06, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN)[2]
+  KEFARAs[i] <- IRPROP(TA, GMULTMAX, GMREF, GMULT, DHAIRs[i] * 1E-06, DHAIRs[i] * 1E-06, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, ZFURCOMP)[2]
 }
 plot(KEFARAs ~ DHAIRs, type = 'p', pch = 16, ylab = 'effective fur conductivity, W K-1 m-1', xlab = 'hair diameter, um')
 
@@ -60,7 +62,7 @@ plot(KEFARAs ~ DHAIRs, type = 'p', pch = 16, ylab = 'effective fur conductivity,
 RHOs <- seq(0, 50000, 500) # hair densities (1/cm2)
 KEFARAs <- NULL
 for(i in 1:length(RHOs)){
-  KEFARAs[i] <- IRPROP(TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOs[i] * 1E+04, RHOs[i] * 1E+04, REFLD, REFLV, MAXPTVEN)[2]
+  KEFARAs[i] <- IRPROP(TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOs[i] * 1E+04, RHOs[i] * 1E+04, REFLD, REFLV, MAXPTVEN, ZFURCOMP)[2]
 }
 plot(KEFARAs ~ RHOs, type = 'p', pch = 16, ylab = 'effective fur conductivity, W K-1 m-1', xlab = 'hair density, 1/cm2')
 
@@ -68,7 +70,7 @@ plot(KEFARAs ~ RHOs, type = 'p', pch = 16, ylab = 'effective fur conductivity, W
 ZFURs <- seq(0, 50, 1) # hair depths (mm)
 KEFARAs <- NULL
 for(i in 1:length(ZFURs)){
-  KEFARAs[i] <- IRPROP(TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURs[i] * 1E-03, ZFURs[i] * 1E-03, RHOD, RHOV, REFLD, REFLV, MAXPTVEN)[2]
+  KEFARAs[i] <- IRPROP(TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURs[i] * 1E-03, ZFURs[i] * 1E-03, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, ZFURCOMP)[2]
 }
 plot(KEFARAs ~ ZFURs, type = 'p', pch = 16, ylab = 'effective fur conductivity, W K-1 m-1', xlab = 'fur depth, mm')
 
@@ -269,17 +271,20 @@ BAREVAP <- 0 # is evaporation partly from bare skin? (0 = no, 1 = yes, % defined
 PCTBAREVAP <- 0 # surface area for evaporation that is skin, e.g. licking paws (%)
 PCTEYES <- 0.03 # surface area made up by the eye (%) - make zero if sleeping
 ZFUR <- ZFUR # fur depth, m
+FURWET <- 0 # part of the fur surface that is wet (%)
 
 SEVAP.out <- SEVAP(BP, TA, RELHUM, VEL, TC, TSKIN, ELEV, SKINW, FLYHR,  
-  CONVSK, HD, HDFREE, PCTBAREVAP, PCTEYES, ZFUR, BAREVAP)
+  CONVSK, HD, HDFREE, PCTBAREVAP, PCTEYES, ZFUR, FURWET, TFA, CONVAR)
 
-QSEVAP <- SEVAP.out[1] # evaporative heat loss (W)
+QSEVAP <- SEVAP.out[1] # skin evaporative heat loss (W)
 WEYES <- SEVAP.out[2] # ocular evaporation (kg/s)
 WCUTHF <- SEVAP.out[3] # forced cutaneous evaporation (kg/s)
 WCUTF <- SEVAP.out[4] # free cutaneous evaporation (kg/s)
 WCUT <- SEVAP.out[5] # total cutaneous evaporation (kg/s)
+WTFUR <- SEVAP.out[5] # total fur evaporation (kg/s)
+QFSEVAP <- SEVAP.out[5] # fur evaporative heat loss (W))
 
-SEVAP.lab <- c("QSEVAP", "WEYES", "WCUTHF", "WCUTF", "WCUT")
+SEVAP.lab <- c("QSEVAP", "WEYES", "WCUTHF", "WCUTF", "WCUT", "WTFUR", "QFSEVAP")
 kable(cbind(SEVAP.lab, t(SEVAP.out)))
 
 ## ------------------------------------------------------------------------
@@ -334,7 +339,7 @@ TS <- TC # CURRENT GUESS OF OBJECT SURFACE TEMPERATURE
 TFA <- TA # current guess of fur/air interface temperature
 
 DIFTOL <- 0.001 # tolerance for SIMULSOL
-SIMULSOL.out <- matrix(data = 0, nrow = 2, ncol = 14) # vector to hold the SIMULSOL results for dorsal and ventral side
+SIMULSOL.out <- matrix(data = 0, nrow = 2, ncol = 15) # vector to hold the SIMULSOL results for dorsal and ventral side
 
 # repeat for each side, dorsal and ventral, of the animal
 for(S in 1:2){ 
@@ -410,16 +415,16 @@ if(SUBQFAT == 1 & FATTHK > 0.0){
 
 # Getting compressed fur thermal conductivity (outputs a variable called KFURCMPRS)
 AREACND <- ATOT * PTCOND
-# CALL COMPRSKEFF # to do
+# CALL COMPRSKEFF
 KFURCMPRS <- 1
-ZFURCOMP <- 1
+
 CD <- AREACND * ((KFURCMPRS / ZFURCOMP))
 
 # package up inputs
 FURVARS <- c(LEN, ZFUR, FURTHRMK, KEFF, BETARA, FURTST, ZL)
 GEOMVARS <- c(NGEOM, SUBQFAT, CONVAR, VOL, D, CONVAR, CONVSK, RFUR, RFLESH, RSKIN, XR, RRAD, ASEMAJ, BSEMIN, CSEMIN, CD)
 ENVVARS <- c(FLTYPE, TA, TS, TBUSH, TVEG, TLOWER, TSKY, TCONDSB, RH, VEL, BP, ELEV, FASKY, FABUSH, FAVEG, FAGRD, QSLR)
-TRAITS <- c(TC, AK1, AK2, EMISAN, FATTHK, FLYHR, BAREVAP, PCTBAREVAP, PCTEYES)
+TRAITS <- c(TC, AK1, AK2, EMISAN, FATTHK, FLYHR, FURWET, PCTBAREVAP, PCTEYES)
 
 # set IPT, the geometry assumed in SIMULSOL: 1 = cylinder, 2 = sphere, 3 = ellipsoid
 if(NGEOM %in% c(1,3,5)){
@@ -435,8 +440,9 @@ if(NGEOM == 4){
 # call SIMULSOL
 SIMULSOL.out[S,] <- SIMULSOL(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA, SKINW, TS)
 }
+
 SIMULSOL.out <- cbind(c(1,2), SIMULSOL.out)
-colnames(SIMULSOL.out) <- c("SIDE", "TFA", "TSKIN", "QCONV", "QCOND", "QGENNET", "QSEVAP", "QRAD", "QSLR", "QRSKY", "QRBSH", "QRVEG", "QRGRD", "NTRY", "SUCCESS")
+colnames(SIMULSOL.out) <- c("SIDE", "TFA", "TSKIN", "QCONV", "QCOND", "QGENNET", "QSEVAP", "QRAD", "QSLR", "QRSKY", "QRBSH", "QRVEG", "QRGRD", "QFSEVAP", "NTRY", "SUCCESS")
 tSIMULSOL.out <- t(SIMULSOL.out)
 colnames(tSIMULSOL.out) <- c("DORSAL", "VENTRAL")
 kable(tSIMULSOL.out)

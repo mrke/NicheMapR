@@ -12,7 +12,7 @@ kable(endo.out[, 10:19])
 kable(endo.out[, 20:29])
 kable(endo.out[, 30:39])
 kable(endo.out[, 40:49])
-kable(endo.out[, 50:57])
+kable(endo.out[, 50:60])
 
 ## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
 library(NicheMapR)
@@ -39,16 +39,16 @@ UNCURL <- 0.1 # allows the animal to uncurl to GMULTMAX, the value being the inc
 BIRD <- 1 # use bird surface area relations
 
 # feather properties
-DHAIRD = 30E-06 # hair diameter, dorsal (m)
-DHAIRV = 30E-06 # hair diameter, ventral (m)
-LHAIRD = 23.1E-03 # hair length, dorsal (m)
-LHAIRV = 22.7E-03 # hair length, ventral (m)
-ZFURD = 5.8E-03 # fur depth, dorsal (m)
-ZFURV = 5.6E-03 # fur depth, ventral (m)
-RHOD = 8000E+04 # hair density, dorsal (1/m2)
-RHOV = 8000E+04 # hair density, ventral (1/m2)
-REFLD = 0.248  # fur reflectivity dorsal (fractional, 0-1)
-REFLV = 0.351  # fur reflectivity ventral (fractional, 0-1)
+DHAIRD <- 30E-06 # hair diameter, dorsal (m)
+DHAIRV <- 30E-06 # hair diameter, ventral (m)
+LHAIRD <- 23.1E-03 # hair length, dorsal (m)
+LHAIRV <- 22.7E-03 # hair length, ventral (m)
+ZFURD <- 5.8E-03 # fur depth, dorsal (m)
+ZFURV <- 5.6E-03 # fur depth, ventral (m)
+RHOD <- 8000E+04 # hair density, dorsal (1/m2)
+RHOV <- 8000E+04 # hair density, ventral (1/m2)
+REFLD <- 0.248  # fur reflectivity dorsal (fractional, 0-1)
+REFLV <- 0.351  # fur reflectivity ventral (fractional, 0-1)
 
 # physiological responses
 SKINW <- 0.1 # base skin wetness (%)
