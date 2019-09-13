@@ -23,7 +23,7 @@ c     along with this program. If not, see http://www.gnu.org/licenses/.
       double precision A,ALAT,ALONC,ALTT,AMOL,AMULT,ARAD,AZMUTH
       double precision B,BEGP,BP,C,CC,CLEAR,CLOD,CLOUD,CLR,CMH2O,CP,CRAD
      & ,CS,CZ,CZSL
-      double precision D,DAS,DENAIR,DENDAY,DEPP,DEP,DP,DTAU,DTDT
+      double precision D,D0,DAS,DENAIR,DENDAY,DEPP,DEP,DP,DTAU,DTDT
       double precision ERRP,E,END,ERR1,ESAT,F,F1,F2,FIN,GRDIN
       double precision H,HC,HD,HEMIS,HGTP,HTRN
       double precision MASS,MAXSHD,MON,OUT
@@ -40,7 +40,7 @@ c     along with this program. If not, see http://www.gnu.org/licenses/.
       double precision VD,VELR,VV,WB,WC,WTRPOT,X,XXX
       double precision ZENR,ZSLR,ZZ,Z01,Z02,ZH1,ZH2,HRAD,QRADHL,VIEWF,TT
       double precision sle,err,soilprop,moist,Thconduct,Density,Spheat
-     & ,snowage,grasshade
+     & ,snowage,grasshade,ZH
       double precision rainfall,minsnow,inrad,refrad,snowcond,intercept
      & ,prevden
       double precision condep,rainmult,surflux,ep,maxpool,tide
@@ -65,6 +65,7 @@ c     along with this program. If not, see http://www.gnu.org/licenses/.
 
       COMMON/AIRRAY/ZZ(10),VV(10)
       COMMON/DMYCRO/Z01,Z02,ZH1,ZH2
+      COMMON/CMYCRO/ZH,D0
       COMMON/WDSUB/TSKY,ARAD,CRAD,CLOUD,CLR,SOLR
       COMMON/PAR/SIGP,RCSP,SOK,SAB,HGTP,RUFP,BEGP,MON,PRTP,ERRP,END,
      1 SLEP,DAS,NONP,SUN,PLT,FIN,STP
@@ -453,8 +454,8 @@ c     to substrate based on water temp
 C     COMPUTE VELOCITY AND TEMPERATURE PROFILES
       IF((ZH1.LE.0.000).AND.(ZH2.LE.0.000))THEN
 C      NO SEGMENTED VELOCITY PROFILE (SINGLE LOG PROFILE)
-        CALL MICRO(HGTP,RUFP,TAIR,T(1),VELR,QCONV,AMOL,NAIR,ZZ,VV,T,
-     &  ZENR)
+        CALL MICRO(HGTP,RUFP,ZH,D0,TAIR,T(1),VELR,QCONV,AMOL,NAIR,ZZ,VV,
+     &  T,ZENR)
        ELSE
 C      SEGMENTED VELOCITY PROFILE (VEGETATION OR OTHER OBJECTS MODIFYING VELOCITY PROFILE)
         CALL MICROSEGMT(HGTP,RUFP,TAIR,T(1),VELR,QCONV,AMOL,NAIR,ZZ,

@@ -87,7 +87,7 @@ c     OSUB outputs the microclimate calculations.
      &microinput1,soilprop1,PE1,KS1,BB1,BD1,L1,soilinit1,DD1
 
       double precision C,DEP,DTAU,ERR1,H,OUT,PAR,PTWET,SABNEW,soildp,
-     & airdp
+     & airdp,ZH,D0
       double precision T,TD,TI,TIME,TIMEF,WORK,shayd,altt,MAXSHD,WC
      & ,viewf
       double precision itair,icld,iwind,irelhum,rainfall,surflux,PE,KS
@@ -124,7 +124,7 @@ c     OSUB outputs the microclimate calculations.
       CHARACTER(12) FNAME
 
       DIMENSION snownode(10),snode(10),qphase(10)
-      DIMENSION microinput1(60)
+      DIMENSION microinput1(62)
       DIMENSION soilprop(10,5),soilprop1(10,5),moist(10)
       DIMENSION DEPS(21),curmoist2(18)
       DIMENSION TIMINS(4),TIMAXS(4)
@@ -172,6 +172,7 @@ c    Variable soil properties data from Iomet1
       COMMON/WIOMT2/RUF
       Common/Hyte/Usrhyt
       COMMON/DMYCRO/Z01,Z02,ZH1,ZH2
+      COMMON/CMYCRO/ZH,D0
       COMMON/NICHEMAPRIO/SLE,ERR,soilprop,surflux
       common/moistcom/moist,ep
       COMMON/ENDS/JULSTND
@@ -322,6 +323,9 @@ c    Unpacking user input from R
 
       tides=tides1
       solonly=int(microinput1(60))
+      ZH=microinput1(61)
+      D0=microinput1(62)
+      
 c    do 901 i=1,2
 c    julstnd(i)=julstnd1(i)
 c901    continue

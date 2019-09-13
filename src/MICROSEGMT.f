@@ -33,8 +33,8 @@ C     This subroutine computes a 3 segment velocity and temperature profile
      & ,I94,I95,I96,I97,I98,I99,I100,I101
 C
 C**** 3 SEGMENT VELOCITY PROFILE - W. PORTER
-C**** VELOCITY PROFILE - BUSSINGER
-C**** SUBLAYER MODEL - GARRATT AND HICKS
+C**** VELOCITY PROFILE - Businger, J. A., Wyngaard, J. C., Izumi, Y., & Bradley, E. F. (1971). Flux-Profile Relationships in the Atmospheric Surface Layer. Journal of the Atmospheric Sciences, 28(2), 181–189. doi:10.1175/1520-0469(1971)028<0181:FPRITA>2.0.CO;2
+C**** SUBLAYER MODEL - Garratt, J. R., & Hicks, B. B. (1973). Momentum, heat and water vapour transfer to and from natural and artificial surfaces. Quarterly Journal of the Royal Meteorological Society, 99(422), 680–687. doi:10.1002/qj.49709942209
 C     Z=REFERENCE HEIGHT
 C     Z0=ROUGHNESS HEIGHT
 C     T1=TEMPERATURE AT REFERENCE HEIGHT

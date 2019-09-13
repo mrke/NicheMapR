@@ -1,4 +1,4 @@
-      SUBROUTINE MICRO(Z,Z0,T1,T3,V,QC,AMOL,NAIR,ZZ,VV,T,ZEN)
+      SUBROUTINE MICRO(Z,Z0,ZH,D0,T1,T3,V,QC,AMOL,NAIR,ZZ,VV,T,ZEN)
       IMPLICIT NONE
 
 C     NicheMapR: software for biophysical mechanistic niche modelling
@@ -20,11 +20,11 @@ c     along with this program. If not, see http://www.gnu.org/licenses/.
 
 C    This subroutine computes a single unsegmented velocity and temperature profile
 
-      double precision ADUM,AMOL,AMOLN,DEL,DIFFT,DUM,GAM,PHI,PSI1
+      double precision A,ADUM,AMOL,AMOLN,D0,DEL,DIFFT,DUM,GAM,PHI,PSI1
       double precision PSI2,QC,RCP,RCPTKG,RHOCP,STB,STO,STS,T,T1,T3,TAVE
-     & ,TZO,USTAR
+     & ,T0,TZO,USTAR
       double precision V,VEL,VV,X,X1,Y,Y1,YY,YY2,Z,Z0,Z01
-      double precision Z02,ZEN,ZH1,ZH2,ZRATIO,ZZ
+      double precision Z02,ZEN,ZH,ZH1,ZH2,ZRATIO,ZZ
 
       INTEGER I,ITER,NAIR,I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92
      & ,I93,I94,I95,I96,I97,I98,I99,I100,I101
@@ -32,10 +32,11 @@ C    This subroutine computes a single unsegmented velocity and temperature prof
       COMMON/DMYCRO/Z01,Z02,ZH1,ZH2
       COMMON/WMAIN/I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92,I93
      & ,I94,I95,I96,I97,I98,I99,I100,I101
+
 C
 C**** 1 SEGMENT VELOCITY PROFILE - W. PORTER
-C**** VELOCITY PROFILE - BUSSINGER
-C**** SUBLAYER MODEL - GARRATT AND HICKS
+C**** VELOCITY PROFILE - Businger, J. A., Wyngaard, J. C., Izumi, Y., & Bradley, E. F. (1971). Flux-Profile Relationships in the Atmospheric Surface Layer. Journal of the Atmospheric Sciences, 28(2), 181–189. doi:10.1175/1520-0469(1971)028<0181:FPRITA>2.0.CO;2
+C**** SUBLAYER MODEL - Garratt, J. R., & Hicks, B. B. (1973). Momentum, heat and water vapour transfer to and from natural and artificial surfaces. Quarterly Journal of the Royal Meteorological Society, 99(422), 680–687. doi:10.1002/qj.49709942209
 C     Z=REFERENCE HEIGHT
 C     Z0=ROUGHNESS HEIGHT
 C     T1=TEMPERATURE AT REFERENCE HEIGHT
@@ -89,6 +90,10 @@ C     COMPUTING VEL. PROFILE PARAMETERS FROM 200 CM REFERENCE VELOCITY
       RCP=RHOCP(TAVE)
       AMOL=-30.0 ! initial Monin-Obukhov length
       ITER=0 ! initialise counter
+
+C	  Paul edit 9/12/19: adding alternative Campbell and Norman 1990 vertical air temperature profile calculation option
+      IF(ZH.GT.0)GO TO 1500
+
 
 C     CHECK FOR FREE CONVECTION (LAPSE) CONDITIONS
       IF(T1.GE.T3)GO TO 1000
@@ -149,6 +154,18 @@ C      COMPUTING FICTITIOUS TEMP. AT TOP OF SUBLAYER
        TZO=(T1*STB+T3*STS)/(STB+STS)
        T(I+20)=TZO+(T1-TZO)*dLOG(ZZ(I)/Z0+1)/DUM
     4 CONTINUE
+      RETURN
+    
+1500  CONTINUE
+C	  Use vertical temperature profile from Campbell and Norman 1998
+      IF(NAIR.LE.0) RETURN
+      DO 5 I=1,NAIR
+C      FILL OUT VEL. AND TEMP. PROFILES
+       VV(I)=2.5*USTAR*dLOG(ZZ(I)/Z0+1)
+       A = (T1-T3)/(1-dLOG((Z-D0)/ZH))
+       T0 = T1+A*dLOG((Z-D0)/ZH)
+       T(I+20)=T0-A*dLOG((ZZ(I)-D0)/ZH)
+    5 CONTINUE
       RETURN
 
  2000 continue

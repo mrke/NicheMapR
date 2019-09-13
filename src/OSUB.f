@@ -25,7 +25,7 @@ C     IN COMMON STATEMENTS.
 C     VERSION 2 SEPT. 2000
       IMPLICIT NONE
 
-      DOUBLE PRECISION ALTT
+      DOUBLE PRECISION ALTT,ZH,D0
       DOUBLE PRECISION C,CP,DENAIR,DEP,DEPP,DP,DTAU,E,ERR1,ESAT
       DOUBLE PRECISION FIN,H,PI
       DOUBLE PRECISION LASTIME,MAXSHD,OUT,lastsurf,prevsnow
@@ -122,6 +122,7 @@ C     PERCENT GROUND SHADE & ELEVATION (M) TO METOUT
       COMMON/DAILY/microdaily
       COMMON/NICHEMAPRIO/SLE,ERR,soilprop,surflux
       common/moistcom/moist,ep
+      COMMON/CMYCRO/ZH,D0
       COMMON/DMYCRO/Z01,Z02,ZH1,ZH2
       COMMON/AIRRAY/ZZ(10),VV(10)
       common/campbell/PE,KS,BB,BD,L,LAI,DD
@@ -841,7 +842,7 @@ c      choosing between even rainfall through the day or one event at midnight
         if(int(rainhourly).eq.0)then
          if(evenrain.eq.0)then
           if((time.gt.1e-8).or.(cursnow.gt.0))then
-           rainfallb=0
+           rainfallb=0.
           endif
           condep=condep+rainfallb*rainmult+melted
          else
@@ -862,8 +863,8 @@ c       now compute potential evaporation, EP
 C       COMPUTE VELOCITY AND TEMPERATURE PROFILES
         IF((ZH1.LE.0.000).AND.(ZH2.LE.0.000))THEN
 C        NO SEGMENTED VELOCITY PROFILE (SINGLE LOG PROFILE)
-         CALL MICRO(HGTP,RUFP,TAIR,soiltemp(1),VELR,QCONV,AMOL,NAIR,ZZ
-     &,VV,T,ZENR)
+         CALL MICRO(HGTP,RUFP,ZH,D0,TAIR,soiltemp(1),VELR,QCONV,AMOL,
+     &NAIR,ZZ,VV,T,ZENR)
         ELSE
 C        SEGMENTED VELOCITY PROFILE (VEGETATION OR OTHER OBJECTS MODIFYING VELOCITY PROFILE)
          CALL MICROSEGMT(HGTP,RUFP,TAIR,soiltemp(1),VELR,QCONV,AMOL,NAIR
