@@ -91,7 +91,7 @@ C     COMPUTING VEL. PROFILE PARAMETERS FROM 200 CM REFERENCE VELOCITY
       AMOL=-30.0 ! initial Monin-Obukhov length
       ITER=0 ! initialise counter
 
-C	  Paul edit 9/12/19: adding alternative Campbell and Norman 1990 vertical air temperature profile calculation option
+C	  Paul edit 9/12/19: adding alternative Campbell and Norman 1998 vertical air temperature profile calculation option
       IF(ZH.GT.0)GO TO 1500
 
 
@@ -157,13 +157,24 @@ C      COMPUTING FICTITIOUS TEMP. AT TOP OF SUBLAYER
       RETURN
     
 1500  CONTINUE
+      STS=.62/(Z0*USTAR/12.)**.45 !SUBLAYER STANTON NO.
+      STB=.64/DUM ! BULK STANTON NO.
+
+      QC=RCP*DIFFT*USTAR*STB/(1+STB/STS) ! convective heat transfer at the surface
 C	  Use vertical temperature profile from Campbell and Norman 1998
       IF(NAIR.LE.0) RETURN
       DO 5 I=1,NAIR
 C      FILL OUT VEL. AND TEMP. PROFILES
-       VV(I)=2.5*USTAR*dLOG(ZZ(I)/Z0+1)
-       A = (T1-T3)/(1-dLOG((Z-D0)/ZH))
-       T0 = T1+A*dLOG((Z-D0)/ZH)
+       IF((T1.GE.T3).or.(T3.LE.81.).or.(ZEN .GE. 81.))THEN
+        VV(I)=2.5*USTAR*dLOG(ZZ(I)/Z0+1)
+       ELSE
+        X1=PHI(ZZ(I))
+        Y1=PSI1(X1)
+        ADUM=ZZ(I)/Z0-Y1
+        VV(I)=2.5*USTAR*dLOG(ADUM)
+       ENDIF
+       A=(T1-T3)/(1-dLOG((Z-D0)/ZH))
+       T0=T1+A*dLOG((Z-D0)/ZH)
        T(I+20)=T0-A*dLOG((ZZ(I)-D0)/ZH)
     5 CONTINUE
       RETURN

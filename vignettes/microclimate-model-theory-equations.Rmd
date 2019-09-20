@@ -219,7 +219,7 @@ $$T_{z_0} = \frac{ T_{ref} S_{t_b} + T_{sub} S_{t_s}}{S_{t_b} + S_{t_s}},$$
 
 with the sublayer Stanton number $S_{t_s} = 0.62/\left(\frac{z_0 u^*}{12} \right)^{0.45}$ and the bulk Stanton number $S_{t_b} = 0.64 / \ln(\frac{z}{z_0}+1)$. Then the air temperature at a new local height $T_{loc}$ can then be computed as 
 
-$$T_{loc} = T_{z_0} + (T_{ref}-T_{z_0}) \ln ( \frac{ z_{loc}}{z_0}+1).$$
+$$T_{loc} = T_{z_0} + (T_{ref}-T_{z_0}) \frac {\ln ( \frac{ z_{loc}}{z_0}+1)} {\ln(\frac{z}{z_o+1})}.$$
 
 If experimental data are specified for the three segment velocity profile, i.e. $z_1$, $z_2$, $z_{0,1}$ and $z_{0,2}$ are non-zero, then MICROSEGMT is called instead of MICRO. The computations are similar except that now 
 $$u_1^* = 0.4 u_1/ \ln (\frac{ z_1}{z_{0,1}}+1),$$

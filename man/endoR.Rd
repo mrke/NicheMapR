@@ -136,65 +136,65 @@ core temprature, fourth pant and fifth sweat.
 \code{TFA}{ = TA, # initial fur/air interface temperature (°C)}\cr\cr
 
 \strong{Outputs:}
-\code{TC}{core temperature (°C)}\cr\cr
-\code{TFA_D}{dorsal fur-air interface temperature (°C)}\cr\cr
-\code{TFA_V}{ventral fur-air interface temperature (°C)}\cr\cr
-\code{TSKIN_D}{dorsal skin temperature (°C)}\cr\cr
-\code{TSKIN_V}{ventral skin temperature (°C)}\cr\cr
-\code{QCONV_D}{dorsal convection heat exchange (W)}\cr\cr
-\code{QCONV_V}{ventral convection heat exchange (W)}\cr\cr
-\code{QCOND_D}{dorsal conduction heat exchange (W)}\cr\cr
-\code{QCOND_V}{ventral conduction heat exchange (W)}\cr\cr
-\code{QGENNET_D}{dorsal net heat generation (W)}\cr\cr
-\code{QGENNET_V}{ventral net heat generation (W)}\cr\cr
-\code{QSEVAP_D}{dorsal evaporative heat exchange (W)}\cr\cr
-\code{QSEVAP_V}{ventral evaporative heat exchange (W)}\cr\cr
-\code{QRAD_D}{dorsal radiant heat loss (W)}\cr\cr
-\code{QRAD_V}{ventral radiant heat loss (W)}\cr\cr
-\code{QSLR_D}{dorsal solar heat gain (W)}\cr\cr
-\code{QSLR_V}{ventral solar heat gain (W)}\cr\cr
-\code{QRSKY_D}{dorsal radiant heat incomming from sky (W)}\cr\cr
-\code{QRSKY_V}{ventral radiant heat incomming from sky (W)}\cr\cr
-\code{QRBSH_D}{dorsal radiant heat incomming from nearby bush (W)}\cr\cr
-\code{QRBSH_V}{ventral radiant heat incomming from nearby bush (W)}\cr\cr
-\code{QRVEG_D}{dorsal radiant heat incomming from vegetation (W)}\cr\cr
-\code{QRVEG_V}{ventral radiant heat incomming from vegetation (W)}\cr\cr
-\code{QRGRD_D}{dorsal radiant heat incomming from ground (W)}\cr\cr
-\code{QRGRD_V}{ventral radiant heat incomming from ground (W)}\cr\cr
-\code{QFSEVAP_D}{dorsal evaporative heat exchange from wet fur (W)}\cr\cr
-\code{QFSEVAP_V}{ventral evaporative heat exchange from wet fur (W)}\cr\cr
-\code{NTRY_D}{number of iterations need for convergence of dorsal heat budget}\cr\cr
-\code{NTRY_V}{number of iterations need for convergence of ventral heat budget}\cr\cr
-\code{SUCCESS_D}{test of success convergence for dorsal heat budget}\cr\cr
-\code{SUCCESS_V}{test of success convergence for ventral heat budget}\cr\cr
-\code{RESPFN}{energy balance test after call to RESPFUN (W)}\cr\cr
-\code{QRESP}{respiratory heat exchange (W)}\cr\cr
-\code{GEVAP}{respiratory water loss (g/s)}\cr\cr
-\code{PCTO2}{ambient oxygen gas concentration (\%)}\cr\cr
-\code{PCTN2}{ambient nitgrogen gas concentration (\%)}\cr\cr
-\code{PCTCO2}{ambient carbon dioxide gas concentration (\%)}\cr\cr
-\code{RESPGEN}{total metabolic rate (W)}\cr\cr
-\code{O2STP}{oxygen consumption at standard temperature and pressure (L/s)}\cr\cr
-\code{O2MOL1}{oxygen entering lungs (moles/s)}\cr\cr
-\code{N2MOL1}{nitrogen entering lungs (moles/s)}\cr\cr
-\code{AIRML1}{air entering lungs (moles/s)}\cr\cr
-\code{O2MOL2}{oxygen leaving lungs (moles/s)}\cr\cr
-\code{N2MOL2}{nitrogen leaving lungs (moles/s)}\cr\cr
-\code{AIRML2}{air leaving lungs (moles/s)}\cr\cr
-\code{AIRVOL}{air entering lungs (L/s)}\cr\cr
-\code{GMULT}{shape multiplier for postural change (-)}\cr\cr
-\code{SKINW}{skin area that is wet (\%)}\cr\cr
-\code{SWEAT.G.H}{sweating rate (g/h)}\cr\cr
-\code{EVAP.G.H}{evaporation rate (g/h)}\cr\cr
-\code{EXTREF}{oxygen extraction efficiency (\%)}\cr\cr
-\code{AK}{skin thermal conductivity (W/m°C)}\cr\cr
-\code{TA}{air temperature (°C)}\cr\cr
-\code{TGRD}{ground temperature, driving longwave heat gain (°C)}\cr\cr
-\code{TCONDSB}{substrate temperature, driving conductive heat exchange (°C)}\cr\cr
-\code{TSKY}{sky temperature (°C)}\cr\cr
-\code{VEL}{wind speed (m/s)}\cr\cr
-\code{RH}{relative humidity (\%)}\cr\cr
-\code{QSOLR}{solar radiation (W/m2)}\cr\cr
+\code{TC}{ core temperature (°C)}\cr\cr
+\code{TFA_D}{ dorsal fur-air interface temperature (°C)}\cr\cr
+\code{TFA_V}{ ventral fur-air interface temperature (°C)}\cr\cr
+\code{TSKIN_D}{ dorsal skin temperature (°C)}\cr\cr
+\code{TSKIN_V}{ ventral skin temperature (°C)}\cr\cr
+\code{QCONV_D}{ dorsal convection heat exchange (W)}\cr\cr
+\code{QCONV_V}{ ventral convection heat exchange (W)}\cr\cr
+\code{QCOND_D}{ dorsal conduction heat exchange (W)}\cr\cr
+\code{QCOND_V}{ ventral conduction heat exchange (W)}\cr\cr
+\code{QGENNET_D}{ dorsal net heat generation (W)}\cr\cr
+\code{QGENNET_V}{ ventral net heat generation (W)}\cr\cr
+\code{QSEVAP_D}{ dorsal evaporative heat exchange (W)}\cr\cr
+\code{QSEVAP_V}{ ventral evaporative heat exchange (W)}\cr\cr
+\code{QRAD_D}{ dorsal radiant heat loss (W)}\cr\cr
+\code{QRAD_V}{ ventral radiant heat loss (W)}\cr\cr
+\code{QSLR_D}{ dorsal solar heat gain (W)}\cr\cr
+\code{QSLR_V}{ ventral solar heat gain (W)}\cr\cr
+\code{QRSKY_D}{ dorsal radiant heat incomming from sky (W)}\cr\cr
+\code{QRSKY_V}{ ventral radiant heat incomming from sky (W)}\cr\cr
+\code{QRBSH_D}{ dorsal radiant heat incomming from nearby bush (W)}\cr\cr
+\code{QRBSH_V}{ ventral radiant heat incomming from nearby bush (W)}\cr\cr
+\code{QRVEG_D}{ dorsal radiant heat incomming from vegetation (W)}\cr\cr
+\code{QRVEG_V}{ ventral radiant heat incomming from vegetation (W)}\cr\cr
+\code{QRGRD_D}{ dorsal radiant heat incomming from ground (W)}\cr\cr
+\code{QRGRD_V}{ ventral radiant heat incomming from ground (W)}\cr\cr
+\code{QFSEVAP_D}{ dorsal evaporative heat exchange from wet fur (W)}\cr\cr
+\code{QFSEVAP_V}{ ventral evaporative heat exchange from wet fur (W)}\cr\cr
+\code{NTRY_D}{ number of iterations need for convergence of dorsal heat budget}\cr\cr
+\code{NTRY_V}{ number of iterations need for convergence of ventral heat budget}\cr\cr
+\code{SUCCESS_D}{ test of success convergence for dorsal heat budget}\cr\cr
+\code{SUCCESS_V}{ test of success convergence for ventral heat budget}\cr\cr
+\code{RESPFN}{ energy balance test after call to RESPFUN (W)}\cr\cr
+\code{QRESP}{ respiratory heat exchange (W)}\cr\cr
+\code{GEVAP}{ respiratory water loss (g/s)}\cr\cr
+\code{PCTO2}{ ambient oxygen gas concentration (\%)}\cr\cr
+\code{PCTN2}{ ambient nitgrogen gas concentration (\%)}\cr\cr
+\code{PCTCO2}{ ambient carbon dioxide gas concentration (\%)}\cr\cr
+\code{RESPGEN}{ total metabolic rate (W)}\cr\cr
+\code{O2STP}{ oxygen consumption at standard temperature and pressure (L/s)}\cr\cr
+\code{O2MOL1}{ oxygen entering lungs (moles/s)}\cr\cr
+\code{N2MOL1}{ nitrogen entering lungs (moles/s)}\cr\cr
+\code{AIRML1}{ air entering lungs (moles/s)}\cr\cr
+\code{O2MOL2}{ oxygen leaving lungs (moles/s)}\cr\cr
+\code{N2MOL2}{ nitrogen leaving lungs (moles/s)}\cr\cr
+\code{AIRML2}{ air leaving lungs (moles/s)}\cr\cr
+\code{AIRVOL}{ air entering lungs (L/s)}\cr\cr
+\code{GMULT}{ shape multiplier for postural change (-)}\cr\cr
+\code{SKINW}{ skin area that is wet (\%)}\cr\cr
+\code{SWEAT.G.H}{ sweating rate (g/h)}\cr\cr
+\code{EVAP.G.H}{ evaporation rate (g/h)}\cr\cr
+\code{EXTREF}{ oxygen extraction efficiency (\%)}\cr\cr
+\code{AK}{ skin thermal conductivity (W/m°C)}\cr\cr
+\code{TA}{ air temperature (°C)}\cr\cr
+\code{TGRD}{ ground temperature, driving longwave heat gain (°C)}\cr\cr
+\code{TCONDSB}{ substrate temperature, driving conductive heat exchange (°C)}\cr\cr
+\code{TSKY}{ sky temperature (°C)}\cr\cr
+\code{VEL}{ wind speed (m/s)}\cr\cr
+\code{RH}{ relative humidity (\%)}\cr\cr
+\code{QSOLR}{ solar radiation (W/m2)}\cr\cr
 }
 \examples{
 library(NicheMapR)

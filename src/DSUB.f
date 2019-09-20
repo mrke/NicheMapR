@@ -342,7 +342,7 @@ c      TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
       else
 C      CLEAR SKY RADIANT TEMPERATURE
        if(IRmode.eq.0)then
-c       Campbell and Norman eq. 10.10 to get emissivity of sky
+c       Campbell and Norman 1998 eq. 10.10 to get emissivity of sky
         RH = TAB('REL',TIME)
         if(RH.gt.100.)then
          RH= 100.
@@ -361,7 +361,7 @@ C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
 c     Below is the Gates formula (7.1)
 c        ARAD=(1.22*0.00000005673*(TAIR+273.)**4-171)
        else
-c       Swinbank, Eq. 10.11 in Campbell and Norman
+c       Swinbank, Eq. 10.11 in Campbell and Norman 1998
         ARAD=(0.0000092*(TAIR+273.16)**2)*0.0000000567*(TAIR+273.16)**4
      &  *60./(4.185*10000.)
        endif
@@ -454,12 +454,12 @@ c     to substrate based on water temp
 C     COMPUTE VELOCITY AND TEMPERATURE PROFILES
       IF((ZH1.LE.0.000).AND.(ZH2.LE.0.000))THEN
 C      NO SEGMENTED VELOCITY PROFILE (SINGLE LOG PROFILE)
-        CALL MICRO(HGTP,RUFP,ZH,D0,TAIR,T(1),VELR,QCONV,AMOL,NAIR,ZZ,VV,
-     &  T,ZENR)
+        CALL MICRO(HGTP,RUFP,ZH,D0,TAIR,T(1),VELR,QCONV
+     &  ,AMOL,NAIR,ZZ,VV,T,ZENR)
        ELSE
 C      SEGMENTED VELOCITY PROFILE (VEGETATION OR OTHER OBJECTS MODIFYING VELOCITY PROFILE)
-        CALL MICROSEGMT(HGTP,RUFP,TAIR,T(1),VELR,QCONV,AMOL,NAIR,ZZ,
-     &  VV,T,ZENR)
+        CALL MICROSEGMT(HGTP,RUFP,TAIR,T(1),VELR,QCONV,AMOL,NAIR,
+     &  ZZ,VV,T,ZENR)
 c      QCOND=C(1)*(T(2)-T(1))
       ENDIF
 

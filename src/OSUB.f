@@ -373,7 +373,7 @@ C      CLEAR SKY RADIANT TEMPERATURE
        CLR=1.- (CLOUD/100.)
 C      CLEAR SKY RADIANT TEMPERATURE
        if(int(IRmode).eq.0)then
-c       Campbell and Norman eq. 10.10 to get emissivity of sky
+c       Campbell and Norman 1998 eq. 10.10 to get emissivity of sky
         RH = TAB('REL',TIME)
         if(RH.gt.100.)then
          RH= 100.
@@ -392,7 +392,7 @@ C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
 c       Below is the Gates formula (7.1)
 c       ARAD=(1.22*0.00000005673*(TAIR+273.)**4-171)
        else
-c       Swinbank, Eq. 10.11 in Campbell and Norman
+c       Swinbank, Eq. 10.11 in Campbell and Norman 1998
         ARAD=(0.0000092*(TAIR+273.16)**2)*0.0000000567*(TAIR+273.16)**4
      & *60./(4.185*10000.)
        endif

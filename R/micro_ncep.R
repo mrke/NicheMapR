@@ -380,9 +380,6 @@ micro_ncep <- function(
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
-  if(as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900") > Sys.time() | as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900") > Sys.time()){
-    cat("sorry, no NCEP data for these times - please choose a different date range \n")
-  }
   if(DEP[2]-DEP[1]>3 | DEP[3]-DEP[2]>3){
     cat("warning, nodes might be too far apart near the surface, try a different spacing if the program is crashing \n")
   }

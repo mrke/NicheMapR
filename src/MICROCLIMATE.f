@@ -323,13 +323,13 @@ c    Unpacking user input from R
 
       tides=tides1
       solonly=int(microinput1(60))
-      ZH=microinput1(61)
-      D0=microinput1(62)
+      ZH=microinput1(61)*100. ! Converting to cm
+      D0=microinput1(62)*100. ! Converting to cm
       
 c    do 901 i=1,2
 c    julstnd(i)=julstnd1(i)
 c901    continue
-      RUF=microinput1(2)
+      RUF=microinput1(2)*100. ! Converting to cm
       SLES=SLES1
       soilprop=soilprop1
       SLE=SLES(1)
@@ -424,10 +424,10 @@ c    WRITE(I2,*)i,' ',j,' ',Thconds(i,j),' ',Thconds1(i,j)
       Nodes(i,j)=int(Nodes1(i,j))
 906    continue
 905   continue
-      Z01=microinput1(7)
-      Z02=microinput1(8)
-      ZH1=microinput1(9)
-      ZH2=microinput1(10)
+      Z01=microinput1(7)*100.
+      Z02=microinput1(8)*100.
+      ZH1=microinput1(9)*100.
+      ZH2=microinput1(10)*100.
 
 
       IDAYST=int(microinput1(11))
@@ -690,18 +690,10 @@ c    Kearney changed this for daily simulations
            ND = 3
       endif
 
-C     Converting RUF (m) to cm for Microclimate calculations
-      RUF = RUF * 100.
       par(6) = RUF
       PAR(12) = SLE
       PAR(10) = ERR
       PAR(5) = microinput1(5)*100.
-
-C    Convert to cm, since program Micr2007 computes in cm, min, cal
-      Z01 = Z01*100.
-      Z02 = Z02*100.
-      ZH1 = ZH1*100.
-      ZH2 = ZH2*100.
 
 C     SET UP SOIL NODES, DEPTHS, AIR NODES, HEIGHTS FOR MICROMET
 C    SETTING DEFAULT SOIL (NON) AND AIR NODES (NAN) HEIGHTS & DEPTHS
