@@ -167,7 +167,7 @@ for (i in 1:10) {
         points(soil[, i + 3] ~ soil[, 1], col = i, type = "l")
     }
 }
-plot(metout$SNOWDEP ~ metout$dates, xlab = "Time of Day (min)", ylab = "snow depth, cm / snow fall, mm", type = "h", main = paste("snow depth (cm) and snow fall (mm) ", minshade, "% shade", sep = ""), col = "light blue", ylim = c(0, 50))
+plot(metout$SNOWDEP ~ metout$dates, xlab = "Time of Day (min)", ylab = "snow depth, cm / snow fall, mm", type = "h", main = paste("snow depth (cm) and snow fall (mm) ", minshade, "% shade", sep = ""), col = "light blue")
 points(metout$SNOWFALL ~ metout$dates, xlab = "Time of Day (min)", type = "h", col = "blue")
 
 ## ---- message=FALSE, warnings=FALSE, fig.width=7, fig.height=6-----------
