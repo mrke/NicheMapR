@@ -177,8 +177,7 @@ The default values are typical for soil minerals as described in Campbell and No
 For simulating rock, ```BulkDensity``` should be set the same as ```Density``` and this can be easily set in ```micro_global``` by setting ```soiltype``` to value 0 (which also sets cap = 0):
 
 ```{r, message=FALSE, warnings=FALSE, fig.width=7, fig.height=6}
-micro<-micro_global(loc = longlat, runshade = 0, minshade = 0, soiltype = 0)
-
+micro<-micro_global(runshade = 0, minshade = 0, soiltype = 0)
 soil<-as.data.frame(micro$soil) # get the soil data
 minshade<-micro$minshade # get the value for minimum shade
 with(subset(soil,DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm

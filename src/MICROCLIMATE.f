@@ -278,6 +278,10 @@ c    INITIALIZING DATAKY COUNTER
       shadhumid1(:,:)=0.
       soilpot1(:,:)=0.
       shadpot1(:,:)=0.
+      sunsnow1(:,:)=0.
+      shdsnow1(:,:)=0.
+      plant1(:,:)=0.
+      shadplant1(:,:)=0.
       metout(:,:)=0.
       shadmet(:,:)=0.
       soil(:,:)=0.
@@ -995,6 +999,7 @@ C    LOOPING FOR THE SECOND DAY WITH MAX SHADE
         if(writecsv.eq.1)then
          close (i3)
          close (i10)
+         close (i7)         
          if(lamb.eq.1)then
           close (i97)
           close (i98)
@@ -1008,6 +1013,7 @@ C    LOOPING FOR THE SECOND DAY WITH MAX SHADE
           close (i101)
          endif
          if(runshade.eq.1)then
+          close (i8)
           close (i11)
           close (i12)
           if(runmoist.eq.1)then
@@ -1029,35 +1035,63 @@ C    LOOPING FOR THE SECOND DAY WITH MAX SHADE
        ENDIF
       ENDIF
 
-C    CHECK FOR THE END OF A YEAR, MONTH COUNTER INCREMENTED IN OUTPUT SUBROUTINE OSUB
+C    CHECK FOR THE END OF A YEAR, DAY COUNTER INCREMENTED IN OUTPUT SUBROUTINE OSUB
       ENDMON = JULNUM + 1
       IF (DOY.EQ.ENDMON)THEN
-        NUMRUN = 2
-        DOY = 1
-        GO TO 200
-      ENDIF
-
-      DO 3002 I=1,N
- 3002 T(I)=WORK(I+520)
-
-C    DO ANOTHER DAY
-      GO TO 200
-
-      if(writecsv.eq.1)then
-       close (i3)
-       close (i10)
-       close (i91)
-       close (i92)
-       close (i7)
-       if(runshade.eq.1)then
-        close (i11)
-        close (i12)
-        close (i93)
-        close (i94)
-        close (i8)
-       endif
-      endif
-      DEALLOCATE(SLES,RAIN,TIDES,metout
+       if(runshade.eq.0)then
+        do 9101 j=1,19
+         do 9091 i=1,24*julnum
+          metout1(i,j)=metout(i,j)
+9091     continue
+         i=1
+9101    continue
+        do 9121 j=1,12
+         do 9111 i=1,24*julnum
+          soil1(i,j)=soil(i,j)
+          soilmoist1(i,j)=soilmoist(i,j)
+          humid1(i,j)=humid(i,j)
+          soilpot1(i,j)=soilpot(i,j)
+9111     continue
+         i=1
+9121    continue
+        do 9161 j=1,11
+         do 9151 i=1,24*julnum
+          sunsnow1(i,j)=sunsnow(i,j)
+9151     continue
+         i=1
+9161    continue
+        do 9201 j=1,14
+         do 9171 i=1,24*julnum
+          plant1(i,j)=plant(i,j)
+9171     continue
+         i=1
+9201    continue
+        do 9131 j=1,113
+         do 9141 i=1,24*julnum
+          DRLAMBDA1(i,j)=DRLAMBDA(i,j)
+          DRRLAMBDA1(i,j)=DRRLAMBDA(i,j)
+          SRLAMBDA1(i,j)=SRLAMBDA(i,j)
+9141     continue
+         i=1
+9131    continue
+        if(writecsv.eq.1)then
+         close (i3)
+         close (i10)
+         close (i7)         
+         if(lamb.eq.1)then
+          close (i97)
+          close (i98)
+          close (i99)
+         endif
+         if(runmoist.eq.1)then
+          close (i91)
+          close (i92)
+          close (i95)
+          close (i100)
+          close (i101)
+         endif
+        endif
+        DEALLOCATE(SLES,RAIN,TIDES,metout
      &,shadmet,soil,shadsoil,soilmoist,shadmoist
      &,soilpot,shadpot,humid,shadhumid,plant,shadplant,
      &maxshades,minshades,CCMAXX,CCMINN,RHMAXX,RHMINN
@@ -1065,5 +1099,19 @@ C    DO ANOTHER DAY
      &,REFLS,moists,intrvls,snowhr,nodes,TDSS,
      &TINS,TARS,RELS,CLDS,VELS,SOLS,ZENS,ZSLS,LAIs,
      &PCTWET,julday,rainhr,DRLAMBDA,DRRLAMBDA,SRLAMBDA)
+        RETURN
+      else
+       NUMRUN = 2
+       DOY = 1
+       errcount=0
+       GO TO 200
+       endif
+      ENDIF
+
+      DO 3002 I=1,N
+ 3002 T(I)=WORK(I+520)
+      errcount=0
+C    DO ANOTHER DAY
+      GO TO 200
       RETURN
       END

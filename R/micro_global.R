@@ -937,36 +937,36 @@ micro_global <- function(
     ZH2 <- 0 # 2nd segment, height above surface(m)
 
     # hourly option set to 0, so make empty vectors
-    hourly=0
-    rainhourly=0
-    TAIRhr=rep(0,24*ndays)
-    RHhr=rep(0,24*ndays)
-    WNhr=rep(0,24*ndays)
-    CLDhr=rep(0,24*ndays)
-    SOLRhr=rep(0,24*ndays)
-    RAINhr=rep(0,24*ndays)
-    ZENhr=rep(-1,24*ndays)
-    IRDhr=rep(-1,24*ndays)
+    hourly<-0
+    rainhourly<-0
+    TAIRhr<-rep(0,24*ndays)
+    RHhr<-rep(0,24*ndays)
+    WNhr<-rep(0,24*ndays)
+    CLDhr<-rep(0,24*ndays)
+    SOLRhr<-rep(0,24*ndays)
+    RAINhr<-rep(0,24*ndays)
+    ZENhr<-rep(-1,24*ndays)
+    IRDhr<-rep(-1,24*ndays)
     # microclimate input parameters list
     microinput<-c(ndays,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade,solonly,ZH,D0)
 
-    doy1=matrix(data = 0., nrow = ndays, ncol = 1)
-    SLES1=matrix(data = 0., nrow = ndays, ncol = 1)
-    MAXSHADES1=matrix(data = 0., nrow = ndays, ncol = 1)
-    MINSHADES1=matrix(data = 0., nrow = ndays, ncol = 1)
-    TMAXX1=matrix(data = 0., nrow = ndays, ncol = 1)
-    TMINN1=matrix(data = 0., nrow = ndays, ncol = 1)
-    CCMAXX1=matrix(data = 0., nrow = ndays, ncol = 1)
-    CCMINN1=matrix(data = 0., nrow = ndays, ncol = 1)
-    RHMAXX1=matrix(data = 0., nrow = ndays, ncol = 1)
-    RHMINN1=matrix(data = 0., nrow = ndays, ncol = 1)
-    WNMAXX1=matrix(data = 0., nrow = ndays, ncol = 1)
-    WNMINN1=matrix(data = 0., nrow = ndays, ncol = 1)
-    REFLS1=matrix(data = 0., nrow = ndays, ncol = 1)
-    PCTWET1=matrix(data = 0., nrow = ndays, ncol = 1)
-    RAINFALL1=matrix(data = 0, nrow = ndays, ncol = 1)
-    tannul1=matrix(data = 0, nrow = ndays, ncol = 1)
-    moists1=matrix(data = 0., nrow = 10, ncol = ndays)
+    doy1<-matrix(data <- 0., nrow = ndays, ncol = 1)
+    SLES1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    MAXSHADES1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    MINSHADES1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    TMAXX1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    TMINN1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    CCMAXX1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    CCMINN1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    RHMAXX1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    RHMINN1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    WNMAXX1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    WNMINN1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    REFLS1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    PCTWET1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    RAINFALL1<-matrix(data = 0, nrow = ndays, ncol = 1)
+    tannul1<-matrix(data = 0, nrow = ndays, ncol = 1)
+    moists1<-matrix(data = 0., nrow = 10, ncol = ndays)
     doy1[1:ndays]<-doy
     SLES1[1:ndays]<-SLES
     MAXSHADES1[1:ndays]<-MAXSHADES
