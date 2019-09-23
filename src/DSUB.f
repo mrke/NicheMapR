@@ -116,8 +116,8 @@ C     Nodes(max node depth,subst type) are real numbers. The number to the left 
       j=1
       if(runsnow.eq.1)then
        if(cursnow.lt.minsnow)then
-        maxsnode1=0.
-        DEPP(9)=0.
+        maxsnode1=0.D0
+        DEPP(9)=0.D0
        endif
        do 555 i=1,8
         if(snode(i).lt.1e-8)then
@@ -156,7 +156,7 @@ C     HEIGHTS IN ZZ ARE FROM THE GROUND UP, SO ARE VELOCITIES, VV,
 C     BUT DO NOT INCLUDE THE SURFACE
 c    1 CONTINUE
       DO 2 I=1,10
-       VV(I)=0.
+       VV(I)=0.D0
        ZZ(I)=0
     2 CONTINUE
       NAIR=0
@@ -254,7 +254,7 @@ C       mass*specific heat product (per unit area)
          WC(1)=RCSP*DEPP(2)/2.
          SOK=TKDAY(1)
          if(DEPP(2).lt.1e-8)then
-          C(1)=0.
+          C(1)=0.D0
          else
           C(1)=SOK/DEPP(2)
          endif
@@ -272,7 +272,7 @@ C         mass*specific heat product (per unit area)
          else
 C         mass*specific heat product (per unit area)
 c         RCSP = DENDAY(I)*SPDAY(I)
-          WC(I)=0.
+          WC(I)=0.D0
           SOK =TKDAY(1)
           if(maxsnode2.eq.0)then
            C(I)=SOK/DEPP(10)
@@ -469,7 +469,7 @@ C     THIS SURFACE NODE EQUATION IS A HEAT BALANCE ON THE SOIL SURFACE NODE:
 C     QIN = QOUT + QSTORED  REARRANGED TO GET THE RATE OF CHANGE OF TEMPERATURE TERM IN QSTORED, m*c*dT/dt
       if(tide.gt.0)then
         DTDT(1)=(QCOND+QCONV)/WC(1)
-        QEVAP=0.
+        QEVAP=0.D0
       else
        IF(PTWET.lt.1e-8)THEN
 C       DRY SURFACE
@@ -478,7 +478,7 @@ C       DRY SURFACE
          else
           DTDT(1)=(QSOLAR+QRAD+QCOND+QCONV)/WC(1)
          endif
-         QEVAP=0.
+         QEVAP=0.D0
         ELSE
 C       SNOW or WET SURFACE
 C       GETTING THE RELATIVE HUMIDITY FOR THIS POINT IN TIME
@@ -486,7 +486,7 @@ C       GETTING THE RELATIVE HUMIDITY FOR THIS POINT IN TIME
          if(RH.gt.100.)then
           RH = 100.
          endif
-         WB = 0.
+         WB = 0.D0
          DP = 999.
 C        BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
 C        EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)

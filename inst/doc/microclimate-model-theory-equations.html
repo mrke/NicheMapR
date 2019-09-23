@@ -12,7 +12,7 @@
 
 <meta name="author" content="Michael Kearney &amp; Warren P. Porter" />
 
-<meta name="date" content="2019-09-13" />
+<meta name="date" content="2019-09-23" />
 
 <title>Underlying theory and equations of the NicheMapR microclimate model</title>
 
@@ -217,7 +217,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Underlying theory and equations of the NicheMapR microclimate model</h1>
 <h4 class="author">Michael Kearney &amp; Warren P. Porter</h4>
-<h4 class="date">2019-09-13</h4>
+<h4 class="date">2019-09-23</h4>
 
 
 
@@ -350,7 +350,7 @@ Seasonal, latitudinal and altitudinal correction factors for atmospheric ozone
 <p>Given the reference air temperature <span class="math inline">\(T_{ref}\)</span> and the current estimate of the substrate surface temperature <span class="math inline">\(T_{sub}\)</span>, the fictitious temperature at the roughness height</p>
 <p><span class="math display">\[T_{z_0} = \frac{ T_{ref} S_{t_b} + T_{sub} S_{t_s}}{S_{t_b} + S_{t_s}},\]</span></p>
 <p>with the sublayer Stanton number <span class="math inline">\(S_{t_s} = 0.62/\left(\frac{z_0 u^*}{12} \right)^{0.45}\)</span> and the bulk Stanton number <span class="math inline">\(S_{t_b} = 0.64 / \ln(\frac{z}{z_0}+1)\)</span>. Then the air temperature at a new local height <span class="math inline">\(T_{loc}\)</span> can then be computed as</p>
-<p><span class="math display">\[T_{loc} = T_{z_0} + (T_{ref}-T_{z_0}) \ln ( \frac{ z_{loc}}{z_0}+1).\]</span></p>
+<p><span class="math display">\[T_{loc} = T_{z_0} + (T_{ref}-T_{z_0}) \frac {\ln ( \frac{ z_{loc}}{z_0}+1)} {\ln(\frac{z}{z_o+1})}.\]</span></p>
 <p>If experimental data are specified for the three segment velocity profile, i.e. <span class="math inline">\(z_1\)</span>, <span class="math inline">\(z_2\)</span>, <span class="math inline">\(z_{0,1}\)</span> and <span class="math inline">\(z_{0,2}\)</span> are non-zero, then MICROSEGMT is called instead of MICRO. The computations are similar except that now <span class="math display">\[u_1^* = 0.4 u_1/ \ln (\frac{ z_1}{z_{0,1}}+1),\]</span> <span class="math display">\[u_2^* = 0.4 u_2/ \ln (\frac{z_2}{z_0}+1),\]</span> with <span class="math display">\[u_1 = \frac{u_2^*}{0.4} ln (\frac{z_1}{z_{0,1}}+1)\]</span> and <span class="math display">\[u_2 = \frac{u}{0.4} ln (\frac{z_2}{z_{0,2}}+1).\]</span> Then <span class="math display">\[S_{t_s} = 0.62 / \left(\frac{z_0 u_2^*}{12} \right) ^{0.45}\]</span> and <span class="math display">\[S_{t_b} = 0.64 / ln(\frac{z_2}{z_0}+1).\]</span></p>
 <p>The wind speed at height <span class="math inline">\(i\)</span> is now <span class="math inline">\(u(i) = 2.5 u_s^* \ln (\frac{z_i}{z_{0,s}}+1)\)</span>, where if <span class="math inline">\(z_1 \leq z_i\)</span>, <span class="math inline">\(u_s^* = u^*\)</span> and <span class="math inline">\(z_{0,s} = z_{0,1}\)</span> whereas if, <span class="math inline">\(z1 &gt; zi\)</span> then if <span class="math inline">\(z_2 \leq z_i\)</span>, <span class="math inline">\(u_s^* = u_1^*\)</span> and <span class="math inline">\(z_{0,s} = z_{0,2}\)</span> but if <span class="math inline">\(z_2 &gt; z_i\)</span>, <span class="math inline">\(u_s^* = u_2^*\)</span> and <span class="math inline">\(z_{0,s} = z_0\)</span>. The air temperature profile is as specified above for subroutine MICRO, but with the modified values of the Stanton numbers <span class="math inline">\(S_{t_s}\)</span> and <span class="math inline">\(S_{t_b}\)</span>.</p>
 <p>Finally, convective heat transfer at the surface is computed as <span class="math display">\[Q_{conv} = \frac{0.08472}{T_{ave}} (T_{ref} - T_{sub}) u^* \frac{ S_{t_b}}{(1 + \frac{ S_{t_b}}{S_{t_{bs}}})}\]</span></p>

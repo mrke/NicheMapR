@@ -259,14 +259,14 @@ C     1 kg/m3 * 1000g/1 kg * 1 m3/1000000.
      &    (((snode(i).lt.1e-8).and.(snode(min(8,i+1)).gt.0))))then
           Density(i)=snowdens
          else
-          Density(i)=0.
+          Density(i)=0.D0
          endif
 4       continue
        else
         do 5 i=1,8 ! no snow, give all snow nodes (top 8) the value of the soil layer for conductivity and specific heat and zero for density
          Thconduct(i)=Thconduct(9)
          Spheat(i)=Spheat(9)
-         Density(i)=0
+         Density(i)=0.D0
 5       continue
        endif
       endif

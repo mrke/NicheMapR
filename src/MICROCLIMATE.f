@@ -252,53 +252,53 @@ C    INITIALIZING MONTH OF YEAR COUNTER
 c    INITIALIZING DATAKY COUNTER
       CNT=1      
       minsnow=2.
-      QFREZE=0.
-      xtrain=0.
+      QFREZE=0.D0
+      xtrain=0.D0
       M=0
-      qphase(:)=0.
-      sumphase=0.
-      sumphase2(:)=0.
-      depp(:)=0.
-      dep(:)=0.
-      curmoist2(:)=0.
-      TI(:)=0.
-      TD(:)=0.
-      out(:)=0.
-      density(:)=0.
-      spheat(:)=0.
-      thconduct(:)=0.
-      snowhr(:)=0.
-      metout1(:,:)=0.
-      shadmet1(:,:)=0.
-      soil1(:,:)=0.
-      shadsoil1(:,:)=0.
-      soilmoist1(:,:)=0.
-      shadmoist1(:,:)=0.
-      humid1(:,:)=0.
-      shadhumid1(:,:)=0.
-      soilpot1(:,:)=0.
-      shadpot1(:,:)=0.
-      sunsnow1(:,:)=0.
-      shdsnow1(:,:)=0.
-      plant1(:,:)=0.
-      shadplant1(:,:)=0.
-      metout(:,:)=0.
-      shadmet(:,:)=0.
-      soil(:,:)=0.
-      shadsoil(:,:)=0.
-      soilmoist(:,:)=0.
-      shadmoist(:,:)=0.
-      humid(:,:)=0.
-      shadhumid(:,:)=0.
-      soilpot(:,:)=0.
-      shadpot(:,:)=0.
-      sunsnow(:,:)=0.
-      shdsnow(:,:)=0.
-      plant(:,:)=0.
-      shadplant(:,:)=0.
-      DRLAMBDA(:,:)=0.
-      DRRLAMBDA(:,:)=0.
-      SRLAMBDA(:,:)=0.
+      qphase(:)=0.D0
+      sumphase=0.D0
+      sumphase2(:)=0.D0
+      depp(:)=0.D0
+      dep(:)=0.D0
+      curmoist2(:)=0.D0
+      TI(:)=0.D0
+      TD(:)=0.D0
+      out(:)=0.D0
+      density(:)=0.D0
+      spheat(:)=0.D0
+      thconduct(:)=0.D0
+      snowhr(:)=0.D0
+      metout1(:,:)=0.D0
+      shadmet1(:,:)=0.D0
+      soil1(:,:)=0.D0
+      shadsoil1(:,:)=0.D0
+      soilmoist1(:,:)=0.D0
+      shadmoist1(:,:)=0.D0
+      humid1(:,:)=0.D0
+      shadhumid1(:,:)=0.D0
+      soilpot1(:,:)=0.D0
+      shadpot1(:,:)=0.D0
+      sunsnow1(:,:)=0.D0
+      shdsnow1(:,:)=0.D0
+      plant1(:,:)=0.D0
+      shadplant1(:,:)=0.D0
+      metout(:,:)=0.D0
+      shadmet(:,:)=0.D0
+      soil(:,:)=0.D0
+      shadsoil(:,:)=0.D0
+      soilmoist(:,:)=0.D0
+      shadmoist(:,:)=0.D0
+      humid(:,:)=0.D0
+      shadhumid(:,:)=0.D0
+      soilpot(:,:)=0.D0
+      shadpot(:,:)=0.D0
+      sunsnow(:,:)=0.D0
+      shdsnow(:,:)=0.D0
+      plant(:,:)=0.D0
+      shadplant(:,:)=0.D0
+      DRLAMBDA(:,:)=0.D0
+      DRRLAMBDA(:,:)=0.D0
+      SRLAMBDA(:,:)=0.D0
 c    Unpacking user input from R
       julnum=int(microinput1(1))
 
@@ -313,8 +313,8 @@ c    Unpacking user input from R
        snownode(7)=200
        snownode(8)=300
        lastday=1
-       daysincesnow=0.
-       snowage=0.
+       daysincesnow=0.D0
+       snowage=0.D0
       endif
       do 1920 i=1,10
        soilinit1(i)=soilinit1(1)
@@ -342,7 +342,7 @@ c901    continue
       rain=rain1
       tannulrun=tannulrun1
       do 9191 i=1,25*nn2
-       snowhr(i)=0.
+       snowhr(i)=0.D0
 9191  continue
       moists=max(moists1,0.01D+0)
       moist(1:10)=max(moists1(1:10,1),0.01D+0)
@@ -366,7 +366,7 @@ c901    continue
       snowdens=microinput1(28)
       snowmelt=microinput1(29)
       undercatch=microinput1(30)
-      condep=0.
+      condep=0.D0
       rainmult=microinput1(31)
       runshade=int(microinput1(32))
       PE=PE1
@@ -755,7 +755,7 @@ C       INSERTING DEFAULT OUTPUT VARIABLES TO BE PRINTED
       NDEP=10
 C     ZEROING WORK, DEPTH AND OUTPUT ARRAYS
       DO 24 I=1,560
- 24   WORK(I)=0.
+ 24   WORK(I)=0.D0
       DO 25 I = 1,100
    25   OUT(I) = 0.0
       IPRINT=1
@@ -763,10 +763,11 @@ C     ZEROING WORK, DEPTH AND OUTPUT ARRAYS
 C    ***********************************************************
       errcount=0
 200   CONTINUE
+      rain=rain1
       LAI=LAIs(DOY)
       TD(10)=TDSS(DOY)
       TD(11)=TDSS(DOY)
-      TI(10)=0.
+      TI(10)=0.D0
       TI(11)=1440.
       if(int(HOURLY).eq.1)then
        DOYS=(DOY)*24-23
@@ -900,7 +901,7 @@ C        MAX. SHADE BOUNDING CONDITION
               SHAYD=MAXSHADES(DOY)-0.1
           ENDIF
           MAXSHD = MAXSHADES(DOY)
-          maxsnode1=0. ! reset snow settings
+          maxsnode1=0.D0 ! reset snow settings
           do 2202 i=1,8
            snode(i)=0
 2202      continue
@@ -926,8 +927,8 @@ C      NEED SOME RESET OF NUMRUN VALUE TO EITHER DO REPEAT DAY WITH NEW SHADE VA
 C    CALL THE PREDICTOR-CORRECTOR NUMBERICAL INTEGRATOR TO DO EACH DAY FOR SET VALUES
       CALL SFODE
       if(microdaily.eq.1)then
-         ND=1
-      do 101 i=1,ii
+       ND=1
+       do 101 i=1,ii
         soilinit1(i)=work(520+i)
 101    continue
       endif
@@ -1100,17 +1101,19 @@ C    CHECK FOR THE END OF A YEAR, DAY COUNTER INCREMENTED IN OUTPUT SUBROUTINE O
      &TINS,TARS,RELS,CLDS,VELS,SOLS,ZENS,ZSLS,LAIs,
      &PCTWET,julday,rainhr,DRLAMBDA,DRRLAMBDA,SRLAMBDA)
         RETURN
-      else
-       NUMRUN = 2
-       DOY = 1
-       errcount=0
-       GO TO 200
+       else
+        NUMRUN = 2
+        DOY = 1
+        errcount=0
+        rain=rain1! reset rain in case set to zero in osub to escape an instability
+        GO TO 200
        endif
       ENDIF
 
       DO 3002 I=1,N
  3002 T(I)=WORK(I+520)
       errcount=0
+      rain=rain1! reset rain in case set to zero in osub to escape an instability
 C    DO ANOTHER DAY
       GO TO 200
       RETURN

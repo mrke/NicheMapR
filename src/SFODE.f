@@ -70,13 +70,13 @@ c     zeroing terms for catching slippage of integrator
       slipped=0
       trouble=0
       do 33 i=1,71
-       temp(i)=0.
+       temp(i)=0.D0
 33    continue
 C     SAVE THE STARTING VALUES
     2 XN=0
       X0=X
       DO 4 I=1,N
-       G(I)=0.
+       G(I)=0.D0
     4  YI(I)=Y(I)
 C     INITIALIZE
       NC=1
@@ -89,7 +89,7 @@ C     INITIALIZE
       L=1
       L1=0
       HO24=H/24.0
-      ERT=0.0
+      ERT=0.D0
       if(solonly.eq.1)then ! option for only running solar calcs
       do 51 J=1,25
       CALL OSUB(X,Y)
@@ -213,7 +213,7 @@ C     ERROR CONTROL TEST
 C     IF ERR LESS THAN ZERO, A RELATIVE ERROR IS MINIMIZED.
 C     IF ERR GREATER THAN ZERO, LOCAL ERROR IS MINIMIZED.
 C     IF ERR EQUAL ZERO, NO ERROR TEST IS PERFORMED
-  300 ERH=0.
+  300 ERH=0.D0
       S=0
       IF(ERR.lt.1e-8) GO TO 600
       DO 308 I=1,N
@@ -271,8 +271,8 @@ c      WRITE(I2,490) X,ERR,H
        DOY=julnum
        RETURN
       ENDIF
-      xtrain=0.
-      QFREZE=0.
+      xtrain=0.D0
+      QFREZE=0.D0
       DO 486 I=1,N
   486  Y(I)=YC(I)
 C     AUTOMATIC RESTART IF L.GT.4

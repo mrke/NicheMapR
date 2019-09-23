@@ -161,7 +161,7 @@ c     initialize root water uptake variables
         BZ(I)=(1-M)*LOG(PI*R1*R1*L(I))/(2*PI*L(I)*(Z(I+1)-Z(I-1)))
        else
         RR(I)=1E+20 ! root resistance
-        BZ(I)=0.
+        BZ(I)=0.D0
        endif
 98    continue
 
@@ -173,9 +173,9 @@ c     evapotranspiration
       TP=ET-EP ! now get potenital transpiration
 
 c     plant water uptake
-      PB=0. ! weighted mean soil water potential, J/kg
-      RB=0. ! weighted mean root soil root resistance, m4 /(s kg)
-      PL=0. ! leaf water potential, J/kg
+      PB=0.D0 ! weighted mean soil water potential, J/kg
+      RB=0.D0 ! weighted mean root soil root resistance, m4 /(s kg)
+      PL=0.D0 ! leaf water potential, J/kg
       do 99 i=2,M
        RS(I)=BZ(I)/K(I) ! soil resistance
        PB=PB+P(I)/(RR(I)+RS(I))
@@ -238,7 +238,7 @@ c     # Thomas algorithm (Gauss elimination)
       do 5 I=2,(M-1)
        C(I)=C(I)/B(I)
        if(C(I).lt.1e-8)then
-        C(I)=0.
+        C(I)=0.D0
        endif
        F(I)=F(I)/B(I)
        B(I+1)=B(I+1)-A(I+1)*C(I)

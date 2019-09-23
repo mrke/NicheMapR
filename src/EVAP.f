@@ -39,7 +39,7 @@ C     CHECK FOR TOO LOW A SURFACE TEMPERATURE
       ENDIF
 
 C     SETTING 3 PARAMETERS FOR WETAIR, SINCE RH IS KNOWN (SEE WETAIR LISTING)  
-      WB=0.
+      WB=0.D0
       DP=999.  
 C     BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
 C     EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
@@ -85,7 +85,7 @@ C     KG/S TO G/S
       GWSURF  = WATER * 1000. 
 c     don't lose water if heat is just going into melting snow
       if(TSURF.le.0)then
-       gwsurf=0.
+       gwsurf=0.D0
       endif
       
       RETURN
