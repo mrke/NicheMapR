@@ -12,7 +12,7 @@
 
 <meta name="author" content="Michael Kearney" />
 
-<meta name="date" content="2019-09-24" />
+<meta name="date" content="2019-09-26" />
 
 <title>Endotherm Model Tutorial</title>
 
@@ -303,7 +303,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Endotherm Model Tutorial</h1>
 <h4 class="author">Michael Kearney</h4>
-<h4 class="date">2019-09-24</h4>
+<h4 class="date">2019-09-26</h4>
 
 
 
@@ -687,7 +687,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb7-58" title="58">})  <span class="co"># run endoR across environments</span></a>
 <a class="sourceLine" id="cb7-59" title="59"><span class="kw">proc.time</span>() <span class="op">-</span><span class="st"> </span>ptm  <span class="co"># stop timing</span></a></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.00    0.00    0.38</code></pre>
+##    0.08    0.08    0.34</code></pre>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">endo.out &lt;-<span class="st"> </span><span class="kw">do.call</span>(<span class="st">&quot;rbind&quot;</span>, <span class="kw">lapply</span>(endo.out, data.frame))  <span class="co"># turn results into data frame</span></a>
 <a class="sourceLine" id="cb9-2" title="2"></a>
 <a class="sourceLine" id="cb9-3" title="3">QGEN &lt;-<span class="st"> </span>endo.out<span class="op">$</span>RESPGEN  <span class="co"># metabolic rate (W)</span></a>
@@ -803,7 +803,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb10-73" title="73">})</a>
 <a class="sourceLine" id="cb10-74" title="74"><span class="kw">proc.time</span>() <span class="op">-</span><span class="st"> </span>ptm</a></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.33    0.14    2.15</code></pre>
+##    0.27    0.27    2.27</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">endo.out &lt;-<span class="st"> </span><span class="kw">do.call</span>(<span class="st">&quot;rbind&quot;</span>, <span class="kw">lapply</span>(endo.out, data.frame))</a>
 <a class="sourceLine" id="cb12-2" title="2"></a>
 <a class="sourceLine" id="cb12-3" title="3">QGEN &lt;-<span class="st"> </span>endo.out<span class="op">$</span>RESPGEN  <span class="co"># metabolic rate (W)</span></a>

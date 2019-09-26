@@ -12,7 +12,7 @@
 
 <meta name="author" content="Michael Kearney" />
 
-<meta name="date" content="2019-09-24" />
+<meta name="date" content="2019-09-26" />
 
 <title>Introduction to Dynamic Energy Budget models in NicheMapR</title>
 
@@ -303,7 +303,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Introduction to Dynamic Energy Budget models in NicheMapR</h1>
 <h4 class="author">Michael Kearney</h4>
-<h4 class="date">2019-09-24</h4>
+<h4 class="date">2019-09-26</h4>
 
 
 
@@ -314,7 +314,7 @@ p.caption {
 </style>
 <div id="overview" class="section level1">
 <h1>Overview</h1>
-<p>This vignette demonstrates the Dynamic Energy Budget (DEB) model functions of the NicheMapR package. The package includes stand-alone R functions for simulating DEB models as well as the integration of DEB models with the NicheMapR ectotherm model (see <a href="ectotherm-model-tutorial.html">Introduction to the NicheMapR ectotherm model</a>).</p>
+<p>This vignette demonstrates the Dynamic Energy Budget (DEB) model functions of the NicheMapR package (Kearney and Porter, 2019). The package includes stand-alone R functions for simulating DEB models as well as the integration of DEB models with the NicheMapR ectotherm model (see <a href="ectotherm-model-tutorial.html">Introduction to the NicheMapR ectotherm model</a>).</p>
 <p>The document first provides a short overview of DEB theory in the context of mechanistic niche modelling, and describes the modelling scheme overall and the parameters required. It then shows how to bring existing DEB parameter estimates into R (there are now estimates for ~1,800 species) and how to run simulations from them using the DEB R functions within the package. Finally it demonstrates how to use the DEB model within the NicheMapR ectotherm function to predict the full life-cycle heat, water, energy and nutritional budget as a function of microclimate.</p>
 <p>DEB theory is a thermodynamically formalised framework for capturing the ‘macro-metabolic’ processes of feeding, assimilation, storage, mobilisation, maintenance, development, growth, reproduction and senescence of an organism across the whole life cycle. It was developed by Kooijman over ~30 years (Kooijman 1986a, 1986b, 1993, 2000, 2010). There is a family of models under DEB theory which capture qualitatively different metabolic schemes, including ‘von Bertalanffy growth’ and more complex patterns such as those of holometabolus insects (Llandres et al. 2015).</p>
 <p>Earlier versions of the ‘Niche Mapper’ biophysical modeling framework (e.g. Porter et al. 1973; Kearney and Porter 2004) incorporated ‘static energy budgets’, i.e. considering only one particular life stage a snapshot in time, using descriptive empirical functions of metabolic processes such as allometric functions for metabolic rate. DEB theory provides a more mechanistic basis for doing this dynamically through the ontogeny, thereby capturing the temporal dimension of the niche.</p>
@@ -2052,8 +2052,9 @@ Stoichiometric equations of the standard model of Dynamic Energy Budget theory, 
 <div id="references" class="section level1">
 <h1>References</h1>
 <p>Andrews, R. M., and H. F. Pough. 1985. Metabolism of squamate reptiles: allometric and ecological relationships. Physiological Zoology 58:214-231.</p>
-<p>Kearney, M., and W. P. Porter. 2004. Mapping the fundamental niche: physiology, climate, and the distribution of a nocturnal lizard. Ecology 85:3119-3131.</p>
 <p>Kearney, M. 2012. Metabolic theory, life history and the distribution of a terrestrial ectotherm. Functional Ecology 26:167-179.</p>
+<p>Kearney, M., and W. P. Porter. 2004. Mapping the fundamental niche: physiology, climate, and the distribution of a nocturnal lizard. Ecology 85:3119-3131.</p>
+<p>Kearney, M. R., &amp; Porter, W. P. (2019). NicheMapR - an R package for biophysical modelling: the ectotherm and Dynamic Energy Budget models. Ecography. <a href="doi:10.1111/ecog.04680" class="uri">doi:10.1111/ecog.04680</a></p>
 <p>Kooijman, S. A. L. M. 1986a. Energy budgets can explain body size relations. Journal of Theoretical Biology 121:269-282.</p>
 <p>Kooijman S. A. L. M. 1986b. What the hen can tell about her eggs: egg development on the basis of energy budgets. Journal of Mathematical Biology 23: 163-185.</p>
 <p>Kooijman, S. A. L. M. 1993. Dynamic Energy Budgets in Biological Systems - Theory and Applications in Ecotoxicology. Cambridge University Press, Cambridge.</p>
@@ -2063,7 +2064,7 @@ Stoichiometric equations of the standard model of Dynamic Energy Budget theory, 
 <p>Marques, G. M., S. Augustine, K. Lika, L. Pecquerie, T. Domingos, and S. A. L. M. Kooijman. 2018. The AmP project: Comparing species on the basis of dynamic energy budget parameters. PLOS Computational Biology 14:e1006100.</p>
 <p>Pecquerie, L., P. Petitgas, and S. A. L. M. Kooijman. 2009. Modeling fish growth and reproduction in the context of the Dynamic Energy Budget theory to predict environmental impact on anchovy spawning duration. Journal of Sea Research 62:93-105.</p>
 <p>Porter, W. P., J. W. Mitchell, W. A. Beckman, and C. B. DeWitt. 1973. Behavioral implications of mechanistic ecology - Thermal and behavioral modeling of desert ectotherms and their microenvironment. Oecologia 13:1-54.</p>
-<p>Pütter, A. 1920. Studien über physiologische Ähnlichkeit. VI. Wachstumsähnlichkeiten. Pflägers Archiv für die gesamte Physiologie des Menschen und der Tiere 180:298-340.</p>
+<p>Pütter, A. 1920. Studien über physiologische ähnlichkeit. VI. Wachstumsähnlichkeiten. Pflägers Archiv für die gesamte Physiologie des Menschen und der Tiere 180:298-340.</p>
 <p>Roels, J. A. 1983. Energetics and Kinetics in Biotechnology. Elsevier, Amsterdam.</p>
 <p>Schwarzkopf, L., M. J. Caley, and M. R. Kearney. 2016. One lump or two? Explaining a major latitudinal transition in reproductive allocation in a viviparous lizard. Functional Ecology. DOI: 10.1111/1365-2435.12622</p>
 </div>

@@ -221,6 +221,11 @@ with the sublayer Stanton number $S_{t_s} = 0.62/\left(\frac{z_0 u^*}{12} \right
 
 $$T_{loc} = T_{z_0} + (T_{ref}-T_{z_0}) \frac {\ln ( \frac{ z_{loc}}{z_0}+1)} {\ln(\frac{z}{z_o+1})}.$$
 
+An alternative approach to the air temperature profile adjustment, based on Campbell and Norman 1998, can be used which is based on the equation:
+
+$$T_{loc} = T_{0} - \frac{H}{0.4 \space \rho \space c_p u^*} \ln(\frac{z - d_0}{z_H}).$$
+where $T_0$ is the apparent aerodynamic surface temperature, $H$ is the sensible heat flux from the surface to the air, 0.4 is the von Karman constant, $\rho c_p$ is the volumetric specific heat of air, $u^*$ is again the friction velocity, $d_0$ is a correction factor called the zero plane displacement and $z_H$ is the roughness parameter for heat transfer. Setting the latter to greater than zero invokes this alternative routine in the model. In terms of estimating the $d_0$ and $z_H$ terms, Campbell and Norman suggest that for a uniformly vegetated surface, $z_H$ is approximately 0.02 times canopy height and $d_0$ is approximately 0.6 times canopy height.
+
 If experimental data are specified for the three segment velocity profile, i.e. $z_1$, $z_2$, $z_{0,1}$ and $z_{0,2}$ are non-zero, then MICROSEGMT is called instead of MICRO. The computations are similar except that now 
 $$u_1^* = 0.4 u_1/ \ln (\frac{ z_1}{z_{0,1}}+1),$$
 $$u_2^* = 0.4 u_2/ \ln (\frac{z_2}{z_0}+1),$$

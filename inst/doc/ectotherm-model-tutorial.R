@@ -69,7 +69,7 @@ environ <- cbind(dates,environ)
 masbal <- cbind(dates,masbal)
 enbal <- cbind(dates,enbal)
 
-## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 90%**"----
+## ---- fig.width=7, fig.height=7, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 90%**"----
 with(environ, plot(TC ~ dates, ylab = "", xlab="month of year", col = 'black', xlim = c(-0.25, 12), ylim = c(-20, 40), type = "l", yaxt = 'n'))
 with(environ, points(ACT * 2 + 7 ~ dates, type = "p", pch = 16, col = "orange"))
 with(environ, points(SHADE / 10 - 6 ~ dates, type = "l", col = "dark green"))
@@ -86,8 +86,8 @@ ytick<-seq(-20, -10, by=2)
 axis(side=2, at=ytick, labels = FALSE)
 mtext(text = rev(seq(0, 100, 20)), side = 2, line = 1, at = seq(-20, -10, 2), las = 2)
 abline(h = -10, lty = 2, col = 'grey')
-mtext(text = c('body temperature (Â°C)', 'activity', 'shade (%)', 'depth (cm)'), side = 2, line = 2.5, at = c(30, 9, 0, -15))
-text(-0.2, c(ecto$T_F_max + 1, ecto$T_F_min + 1), c('T_F_max', 'T_F_min'), col = c('red', 'blue'), cex = 0.75)
+mtext(text = c('body temperature (°C)', 'activity', 'shade (%)', 'depth (cm)'), side = 2, line = 2.5, at = c(30, 9, 0, -15))
+text(0.1, c(ecto$T_F_max + 1, ecto$T_F_min + 1), c('T_F_max', 'T_F_min'), col = c('red', 'blue'), cex = 0.75)
 
 ## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Annual activity window for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 90%**"----
 # seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)
@@ -99,7 +99,7 @@ with(night, plot(TIME ~ DOY, ylab = "Hour of Day", xlab = "Day of Year", pch = 1
 with(forage, points(TIME ~ DOY, pch = 15, cex = 2, col = 'orange')) # foraging Tbs
 with(bask, points(TIME ~ DOY, pch = 15, cex = 2, col = 'light blue')) # basking Tbs
 
-## ---- echo=FALSE, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"----
+## ---- echo=FALSE, fig.width=7, fig.height=7, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"----
 micro <- micro_global(loc = longlat, maxshade = 10)
 maxshades <- micro$MAXSHADES
 
@@ -139,8 +139,8 @@ ytick<-seq(-20, -10, by=2)
 axis(side=2, at=ytick, labels = FALSE)
 mtext(text = rev(seq(0, 100, 20)), side = 2, line = 1, at = seq(-20, -10, 2), las = 2)
 abline(h = -10, lty = 2, col = 'grey')
-mtext(text = c('body temperature (Â°C)', 'activity', 'shade (%)', 'depth (cm)'), side = 2, line = 2.5, at = c(30, 9, 0, -15))
-text(-0.2, c(ecto$T_F_max + 1, ecto$T_F_min + 1), c('T_F_max', 'T_F_min'), col = c('red', 'blue'), cex = 0.75)
+mtext(text = c('body temperature (°C)', 'activity', 'shade (%)', 'depth (cm)'), side = 2, line = 2.5, at = c(30, 9, 0, -15))
+text(0.1, c(ecto$T_F_max + 1, ecto$T_F_min + 1), c('T_F_max', 'T_F_min'), col = c('red', 'blue'), cex = 0.75)
 
 ## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Annual activity window for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"----
 forage<-subset(environ,ACT==2)

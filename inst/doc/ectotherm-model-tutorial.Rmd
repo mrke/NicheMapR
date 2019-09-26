@@ -19,9 +19,9 @@ knitr::opts_chunk$set(
 
 # Overview
 
-This vignette is a tutorial for the NicheMapR ectotherm model. It only considers the steady state heat and (partial) water budget model. For details on the implementation of the Dynamic Energy Budget model (for simulating growth, development and reproduction as well as full water budgets), see the vignette [Introduction to Dynamic Energy Budget models in NicheMapR](deb-model-tutorial.html).
+This vignette is a tutorial for the NicheMapR ectotherm model (Kearney and Porter, 2019). It only considers the steady state heat and (partial) water budget model. For details on the implementation of the Dynamic Energy Budget model (for simulating growth, development and reproduction as well as full water budgets), see the vignette [Introduction to Dynamic Energy Budget models in NicheMapR](deb-model-tutorial.html).
 
-The NicheMapR ectotherm model is run with the function `ectotherm`. It includes a range of morphological, physiological and behavioural options to capture how organisms exchange heat and water with their environments, and to compute the consequences of this for body temperature, activity constraints and different aspects of the mass budget. It is designed to take the output of the NicheMapR microclimate model as the driving environmental inputs, but you could construct custom versions of these if desired.
+The NicheMapR ectotherm model is run with the function `ectotherm`. It includes a range of morphological, physiological and behavioural options to capture how organisms exchange heat and water with their environments, and to compute the consequences of this for body temperature, activity constraints and different aspects of the mass budget. It is designed to take the output of the NicheMapR microclimate model (Kearney and Porter, 2017) as the driving environmental inputs, but you could construct custom versions of these if desired.
 
 # Basic operation
 
@@ -203,7 +203,7 @@ enbal <- cbind(dates,enbal)
 
 Plot the body temperature, shade, activity and depth selected through time.
 
-```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 90%**"}
+```{r, fig.width=7, fig.height=7, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 90%**"}
 with(environ, plot(TC ~ dates, ylab = "", xlab="month of year", col = 'black', xlim = c(-0.25, 12), ylim = c(-20, 40), type = "l", yaxt = 'n'))
 with(environ, points(ACT * 2 + 7 ~ dates, type = "p", pch = 16, col = "orange"))
 with(environ, points(SHADE / 10 - 6 ~ dates, type = "l", col = "dark green"))
@@ -220,8 +220,8 @@ ytick<-seq(-20, -10, by=2)
 axis(side=2, at=ytick, labels = FALSE)
 mtext(text = rev(seq(0, 100, 20)), side = 2, line = 1, at = seq(-20, -10, 2), las = 2)
 abline(h = -10, lty = 2, col = 'grey')
-mtext(text = c('body temperature (Â°C)', 'activity', 'shade (%)', 'depth (cm)'), side = 2, line = 2.5, at = c(30, 9, 0, -15))
-text(-0.2, c(ecto$T_F_max + 1, ecto$T_F_min + 1), c('T_F_max', 'T_F_min'), col = c('red', 'blue'), cex = 0.75)
+mtext(text = c('body temperature (°C)', 'activity', 'shade (%)', 'depth (cm)'), side = 2, line = 2.5, at = c(30, 9, 0, -15))
+text(0.1, c(ecto$T_F_max + 1, ecto$T_F_min + 1), c('T_F_max', 'T_F_min'), col = c('red', 'blue'), cex = 0.75)
 ```
 
 In Figure 1 you can see the daily cycles, for each month, of the body temperature (black), % shade selected (green, divided by 10 for plotting), activity level in orange (multiplied by 5 for plotting, so 5 = basking, 10 = active) and depth in brown (m). Also superimposed are the foraging thresholds `T_F_min` (blue dashed line) and `T_F_max` (red dashed line), and the preferred or target temperature `T_pref` (orange dashed line). 
@@ -243,7 +243,7 @@ In Figure 2 you can see the annual activity window, with dark blue representing 
 
 Explore what changing the thermal thresholds `CT_min`, `T_RB_min`, `T_B_min`, `T_F_min`, `T_F_max` and `CT_max` does to these plots, as well as variation in available shade `maxshades` and burrow depths `mindepth` and `maxdepth`. Here is an example of the effect of reducing maximum shade in all months from 90% to 10%:
 
-```{r, echo=FALSE, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"}
+```{r, echo=FALSE, fig.width=7, fig.height=7, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"}
 micro <- micro_global(loc = longlat, maxshade = 10)
 maxshades <- micro$MAXSHADES
 
@@ -283,8 +283,8 @@ ytick<-seq(-20, -10, by=2)
 axis(side=2, at=ytick, labels = FALSE)
 mtext(text = rev(seq(0, 100, 20)), side = 2, line = 1, at = seq(-20, -10, 2), las = 2)
 abline(h = -10, lty = 2, col = 'grey')
-mtext(text = c('body temperature (Â°C)', 'activity', 'shade (%)', 'depth (cm)'), side = 2, line = 2.5, at = c(30, 9, 0, -15))
-text(-0.2, c(ecto$T_F_max + 1, ecto$T_F_min + 1), c('T_F_max', 'T_F_min'), col = c('red', 'blue'), cex = 0.75)
+mtext(text = c('body temperature (°C)', 'activity', 'shade (%)', 'depth (cm)'), side = 2, line = 2.5, at = c(30, 9, 0, -15))
+text(0.1, c(ecto$T_F_max + 1, ecto$T_F_min + 1), c('T_F_max', 'T_F_min'), col = c('red', 'blue'), cex = 0.75)
 ```
 
 ```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Annual activity window for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"}
@@ -508,6 +508,10 @@ text(which(debout$E_H > E.Hp)[1] * 1.2 / 24, max(debout$WETMASS) * 1, labels = "
 Andrews, R. M., and H. F. Pough. 1985. Metabolism of squamate reptiles: allometric and ecological relationships. Physiological Zoology 58:214-231.
 
 Kearney, M., and W. P. Porter. 2004. Mapping the fundamental niche: physiology, climate, and the distribution of a nocturnal lizard. Ecology 85:3119-3131.
+
+Kearney, M. R., & Porter, W. P. (2017). NicheMapR - an R package for biophysical modelling: the microclimate model. Ecography, 40(5), 664–674. doi:10.1111/ecog.02360
+
+Kearney, M. R., & Porter, W. P. (2019). NicheMapR - an R package for biophysical modelling: the ectotherm and Dynamic Energy Budget models. Ecography. doi:10.1111/ecog.04680
 
 Kooijman, S. A. L. M. 2010. Dynamic Energy Budget Theory for Metabolic Organisation. Cambridge University Press, Great Britain.
 

@@ -44,6 +44,8 @@ tabl <- "
 RUF                       | m                 | 0.01-200          | roughness height
 Refhyt                    | m                 | 0.50-10           | reference height for air temp, wind speed and humidity input data
 Usrhyt                    | m                 | > 0.005, < Refhyt | local height at which to compute air temp, wind speed and humidity 
+ZH                       | m                 | > 0 (or else not used)   | heat transfer roughness height (m)
+D0                       | m                 | > 0                      | zero plane displacement correction factor (m) used with ZH
 Z01                       | m                 | 0 or (> Z02, < ZH2)   | 1st segment, roughness height$^1$
 Z02                       | m                 | 0 or (> RUF, < Z01)   | 2nd segment, roughness height$^1$
 ZH1                       | m                 | 0 or (> ZH2, < Refhyt)| 1st segment, height above surface$^1$
