@@ -5,7 +5,7 @@
 \alias{micro_ncep}
 \title{NCEP implementation of the microclimate model, with package microclima computing hourly forcing.}
 \usage{
-micro_clima(loc = 'Galapagos', dstart = "01/01/2017", dfinish = "31/12/2017",
+micro_ncep(loc = c(-91.415669, -0.287145), dstart = "01/01/2019", dfinish = "31/07/2019",
 REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 Usrhyt = 0.01, ...)
 }
@@ -268,7 +268,7 @@ drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar)
 library(NicheMapR)
 dstart <- "02/01/2017"
 dfinish <- "30/12/2017"
-loc <- c(-5.3, 50.13) # Galapagos
+loc <- c(-91.415669, -0.287145) # Isla Fernandina Galapagos
 micro<-micro_ncep(loc = loc, dstart = dstart, dfinish = dfinish)
 
 metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade

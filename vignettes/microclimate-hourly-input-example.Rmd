@@ -20,8 +20,7 @@ knitr::opts_chunk$set(
 
 ### Introduction
 
-This vignette provides an example of how to run the model using hourly input weather data from the Soil and Climate Network (SCAN) for the USA, working with data for Ford Dry Lake in California for 2015. This dataset is provided in the package as ```Scan_FordDryLake_2015``` and has been pre-processed to a small degree as described in the help for this dataset. You can take the R code in this vignette and adapt it to work with other datasets you might have collected yourself or have obtained from elsewhere. Note that there is also an experimental function, ```micro_SCAN```, to run the model from the SCAN data in a more automated fashion. This vignette is Appendix 4 of the NicheMapR microclimate software note, Porter and Kearney (2016). NicheMapR - an R package for biophysical modelling: the microclimate model. Ecography x(x) p. x-x.
-
+This vignette provides an example of how to run the model using hourly input weather data from the Soil and Climate Network (SCAN) for the USA, working with data for Ford Dry Lake in California for 2015. This dataset is provided in the package as ```Scan_FordDryLake_2015``` and has been pre-processed to a small degree as described in the help for this dataset. You can take the R code in this vignette and adapt it to work with other datasets you might have collected yourself or have obtained from elsewhere. Note that there is also an experimental function, ```micro_SCAN```, to run the model from the SCAN data in a more automated fashion. This vignette is Appendix 4 of the NicheMapR microclimate software note, Kearney, M. R., & Porter, W. P. (2017). NicheMapR - an R package for biophysical modelling: the microclimate model. Ecography, 40(5), 664–674. doi:10.1111/ecog.02360.
 
 ### Getting the site data
 

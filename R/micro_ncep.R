@@ -32,7 +32,7 @@
 #' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
 #' @return sunsnow Hourly predictions of snow temperature under the minimum specified shade
 #' @return shadsnow Hourly predictions snow temperature under the maximum specified shade
-#' @usage micro_clima(loc = 'Galapagos', dstart = "01/01/2017", dfinish = "31/12/2017",
+#' @usage micro_ncep(loc = c(-91.415669, -0.287145), dstart = "01/01/2019", dfinish = "31/07/2019",
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export
@@ -229,7 +229,7 @@
 #' library(NicheMapR)
 #' dstart <- "02/01/2017"
 #' dfinish <- "30/12/2017"
-#' loc <- c(-5.3, 50.13) # Galapagos
+#' loc <- c(-91.415669, -0.287145) # Isla Fernandina Galapagos
 #' micro<-micro_ncep(loc = loc, dstart = dstart, dfinish = dfinish)
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
@@ -524,7 +524,12 @@ micro_ncep <- function(
   # end error trapping
 
   if(errors==0){ # continue
-
+    max.date <- as.POSIXct(paste0("01/", format(Sys.time(), "%m/%Y")), format = "%d/%m/%Y", tz = "UTC") - 54 * 3600
+    if(as.Date(dfinish, format = "%d/%m/%Y") > max.date){
+      message(paste0("Cannot simulate past ", max.date, "; reducing timespan accordingly \n"))
+      dfinish <- as.character(as.Date(max.date, format = "%Y/%m/%d"))
+      dfinish <- paste(substr(dfinish, 9, 10), substr(dfinish, 6, 7), substr(dfinish, 1, 4), sep = "/")
+    }
     ystart <- as.numeric(substr(dstart, 7, 10))
     yfinish <- as.numeric(substr(dfinish, 7, 10))
     yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
