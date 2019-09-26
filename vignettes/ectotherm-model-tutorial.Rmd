@@ -19,9 +19,9 @@ knitr::opts_chunk$set(
 
 # Overview
 
-This vignette is a tutorial for the NicheMapR ectotherm model. It only considers the steady state heat and (partial) water budget model. For details on the implementation of the Dynamic Energy Budget model (for simulating growth, development and reproduction as well as full water budgets), see the vignette [Introduction to Dynamic Energy Budget models in NicheMapR](deb-model-tutorial.html).
+This vignette is a tutorial for the NicheMapR ectotherm model (Kearney and Porter, 2019). It only considers the steady state heat and (partial) water budget model. For details on the implementation of the Dynamic Energy Budget model (for simulating growth, development and reproduction as well as full water budgets), see the vignette [Introduction to Dynamic Energy Budget models in NicheMapR](deb-model-tutorial.html).
 
-The NicheMapR ectotherm model is run with the function `ectotherm`. It includes a range of morphological, physiological and behavioural options to capture how organisms exchange heat and water with their environments, and to compute the consequences of this for body temperature, activity constraints and different aspects of the mass budget. It is designed to take the output of the NicheMapR microclimate model as the driving environmental inputs, but you could construct custom versions of these if desired.
+The NicheMapR ectotherm model is run with the function `ectotherm`. It includes a range of morphological, physiological and behavioural options to capture how organisms exchange heat and water with their environments, and to compute the consequences of this for body temperature, activity constraints and different aspects of the mass budget. It is designed to take the output of the NicheMapR microclimate model (Kearney and Porter, 2017) as the driving environmental inputs, but you could construct custom versions of these if desired.
 
 # Basic operation
 
@@ -508,6 +508,10 @@ text(which(debout$E_H > E.Hp)[1] * 1.2 / 24, max(debout$WETMASS) * 1, labels = "
 Andrews, R. M., and H. F. Pough. 1985. Metabolism of squamate reptiles: allometric and ecological relationships. Physiological Zoology 58:214-231.
 
 Kearney, M., and W. P. Porter. 2004. Mapping the fundamental niche: physiology, climate, and the distribution of a nocturnal lizard. Ecology 85:3119-3131.
+
+Kearney, M. R., & Porter, W. P. (2017). NicheMapR - an R package for biophysical modelling: the microclimate model. Ecography, 40(5), 664–674. doi:10.1111/ecog.02360
+
+Kearney, M. R., & Porter, W. P. (2019). NicheMapR - an R package for biophysical modelling: the ectotherm and Dynamic Energy Budget models. Ecography. doi:10.1111/ecog.04680
 
 Kooijman, S. A. L. M. 2010. Dynamic Energy Budget Theory for Metabolic Organisation. Cambridge University Press, Great Britain.
 

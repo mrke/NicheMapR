@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 # Overview
 
-This vignette demonstrates the Dynamic Energy Budget (DEB) model functions of the NicheMapR package. The package includes stand-alone R functions for simulating DEB models as well as the integration of DEB models with the NicheMapR ectotherm model (see [Introduction to the NicheMapR ectotherm model](ectotherm-model-tutorial.html)).
+This vignette demonstrates the Dynamic Energy Budget (DEB) model functions of the NicheMapR package (Kearney and Porter, 2019). The package includes stand-alone R functions for simulating DEB models as well as the integration of DEB models with the NicheMapR ectotherm model (see [Introduction to the NicheMapR ectotherm model](ectotherm-model-tutorial.html)).
 
 The document first provides a short overview of DEB theory in the context of mechanistic niche modelling, and describes the modelling scheme overall and the parameters required. It then shows how to bring existing DEB parameter estimates into R (there are now estimates for ~1,800 species) and how to run simulations from them using the DEB R functions within the package. Finally it demonstrates how to use the DEB model within the NicheMapR ectotherm function to predict the full life-cycle heat, water, energy and nutritional budget as a function of microclimate. 
 
@@ -673,9 +673,11 @@ The survival probabilities are based on the combination of the DEB-based aging m
 
 Andrews, R. M., and H. F. Pough. 1985. Metabolism of squamate reptiles: allometric and ecological relationships. Physiological Zoology 58:214-231.
 
+Kearney, M. 2012. Metabolic theory, life history and the distribution of a terrestrial ectotherm. Functional Ecology 26:167-179.
+
 Kearney, M., and W. P. Porter. 2004. Mapping the fundamental niche: physiology, climate, and the distribution of a nocturnal lizard. Ecology 85:3119-3131.
 
-Kearney, M. 2012. Metabolic theory, life history and the distribution of a terrestrial ectotherm. Functional Ecology 26:167-179.
+Kearney, M. R., & Porter, W. P. (2019). NicheMapR - an R package for biophysical modelling: the ectotherm and Dynamic Energy Budget models. Ecography. doi:10.1111/ecog.04680
 
 Kooijman, S. A. L. M. 1986a. Energy budgets can explain body size relations. Journal of Theoretical Biology 121:269-282.
 
@@ -695,7 +697,7 @@ Pecquerie, L., P. Petitgas, and S. A. L. M. Kooijman. 2009. Modeling fish growth
 
 Porter, W. P., J. W. Mitchell, W. A. Beckman, and C. B. DeWitt. 1973. Behavioral implications of mechanistic ecology - Thermal and behavioral modeling of desert ectotherms and their microenvironment. Oecologia 13:1-54.
 
-P&uuml;tter, A. 1920. Studien &uuml;ber physiologische &Auml;hnlichkeit. VI. Wachstums&auml;hnlichkeiten. Pfl&auml;gers Archiv f&uuml;r die gesamte Physiologie des Menschen und der Tiere 180:298-340.
+Pütter, A. 1920. Studien über physiologische ähnlichkeit. VI. Wachstumsähnlichkeiten. Pflägers Archiv für die gesamte Physiologie des Menschen und der Tiere 180:298-340.
 
 Roels, J. A. 1983. Energetics and Kinetics in Biotechnology. Elsevier, Amsterdam.
 
