@@ -178,7 +178,7 @@
 #' TAs <- seq(0, 50, 2) # air temperatures (°C)
 #' VEL <- 0.002 # wind speed (m/s)
 #' RH <- 10 # relative humidity (%)
-#' SOL <- 100 # solar radiation (W/m2)
+#' QSOLR <- 100 # solar radiation (W/m2)
 #'
 #' # core temperature
 #' TC <- 38 # core temperature (deg C)
@@ -214,7 +214,7 @@
 #' PANTMAX <- 3# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
 #'
 #' ptm <- proc.time() # start timing
-#' endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], SOL = SOL, VEL = VEL, TC = TC, TCMAX = TCMAX, RH = RH, AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)}) # run endoR across environments
+#' endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], QSOLR = QSOLR, VEL = VEL, TC = TC, TCMAX = TCMAX, RH = RH, AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)}) # run endoR across environments
 #' proc.time() - ptm # stop timing
 #'
 #' endo.out <- do.call("rbind", lapply(endo.out, data.frame)) # turn results into data frame
@@ -238,7 +238,7 @@
 #' points(TskinD ~ TAs, type = 'l', col = 'orange')
 #' points(TskinV ~ TAs, type = 'l', col = 'orange', lty = 2)
 #' points(TCs ~ TAs, type = 'l', col = 'red')
-#' plot(endo.out$AIRVOL * 1e6 / 60 ~ TAs, ylim=c(0,250),  lty = 1, xlim=c(-5,50), main = "minute volume", ylab = "ml / min", xlab=paste("air temperature (deg C)"), type = 'l')
+#' plot(endo.out$AIRVOL * 1e6 / 60 ~ TAs, ylim=c(0,250),  lty = 1, xlim=c(-5,50), ylab = "ml / min", xlab=paste("air temperature (deg C)"), type = 'l')
 endoR <- function(
   TA = 20, # air temperature at local height (°C)
   TAREF = TA, # air temeprature at reference height (°C)
