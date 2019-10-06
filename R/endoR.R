@@ -7,7 +7,7 @@
 #' core temprature, fourth pant and fifth sweat.
 #' @encoding UTF-8
 #' @param AMASS = 1, # kg
-#' @param NGEOM = 4, # cylinder (ngeom = 1), sphere (ngeom = 2) and ellipsoid (ngeom = 4). If a truncated cone (5) or ellipsoidal cylinder (3), we will use the cylinder equations (ngeom=1).
+#' @param SHAPE = 4, # shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid
 #' @param GMREF = 3, # initial ratio between long and short axis (-)
 #' @param FURTHRMK = 0, # user-specified fur thermal conductivity (W/mK), not used if 0
 #' @param ZFURD = 2E-03, # fur depth, dorsal (m)
@@ -22,7 +22,7 @@
 #' @param QSOLR = 0, solar radiation, horizontal plane (W/m2)
 #' @param Z = 20, zenith angle of sun (degrees from overhead)
 #' @param SHADE = 0, shade level (\%)
-#' @usage endoR(AMASS = 1, NGEOM = 4, GMREF = 3, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-03, TC = 37, TCMAX = 45, TA = 20, TGRD = TA, TSKY = TA, VEL = 0.1, RH = 5, QSOLR = 0, Z = 20, SHADE = 0, NITESHAD = 0,...)
+#' @usage endoR(AMASS = 1, SHAPE = 4, GMREF = 3, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-03, TC = 37, TCMAX = 45, TA = 20, TGRD = TA, TSKY = TA, VEL = 0.1, RH = 5, QSOLR = 0, Z = 20, SHADE = 0, NITESHAD = 0,...)
 #' @export
 #' @details
 #' \strong{ Parameters controlling how the model runs:}\cr\cr
@@ -64,8 +64,7 @@
 #' \code{AWING}{ = 0, area of wing, to do}\cr\cr
 #' \code{PTCOND}{ = 0, fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
 #' \code{MAXPTCOND}{ = 0, maximum fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
-#' \code{BIRD}{ = 0, if 1, uses bird skin surface area scaling from Walsberg, G. E., and J. E. King. 1978. The Relationship of the External Surface Area of Birds to Skin Surface Area and Body Mass. Journal of Experimental Biology 76:185–189}\cr\cr
-#' \code{MAMMAL}{ = 0, if 1, uses mammal surface area scaling from Stahl W. R. (1967) Scaling of respiratory variables in mammals. Journal of Applied Physiology 22 , 453–460.}\cr\cr
+#' \code{SAMODE}{ = 0, if 0, uses surface area for SHAPE geometry, if 1, uses bird skin surface area allometry from Walsberg & King. 1978. JEB 76:185–189, if 2 uses mammal surface area from Stahl 1967.J. App. Physiol. 22, 453–460.}\cr\cr
 #' \code{ORIENT}{ = 0, if 0, long axis parallel to ground, if 1, long axis is perpendicular to the ground}\cr\cr
 #'
 #' \strong{ Fur properties:}\cr\cr
@@ -282,7 +281,7 @@ endoR <- function(
   ANDENS = 1000, # kg/m3
   SUBQFAT = 0, # is subcutaneous fat present? (0 is no, 1 is yes)
   FATPCT = 20, # % body fat
-  NGEOM = 4, # cylinder (ngeom = 1), sphere (ngeom = 2) and ellipsoid (ngeom = 4). If a truncated cone (5) or ellipsoidal cylinder (3), we will use the cylinder equations (ngeom=1).
+  SHAPE = 4, # shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid
   GMREF = 3, # initial ratio between long and short axis (-)
   GMULT = GMREF, # current ratio between long and short axis (-)
   GMULTMAX = GMREF, # max possible ratio between long and short axis (-)
@@ -290,8 +289,7 @@ endoR <- function(
   AWING = 0, # area of wing, to do
   PTCOND = 0, # fraction of surface area that is touching the substrate (fractional, 0-1)
   MAXPTCOND= 0, # maximum fraction of surface area that is touching the substrate (fractional, 0-1)
-  BIRD = 0, # if 1, uses bird skin surface area allometry from Walsberg, G. E., and J. E. King. 1978. The Relationship of the External Surface Area of Birds to Skin Surface Area and Body Mass. Journal of Experimental Biology 76:185–189.
-  MAMMAL = 0, # if 1, uses mammal surface area from Stahl W. R. (1967) Scaling of respiratory variables in mammals. Journal of Applied Physiology 22 , 453–460.
+  SAMODE = 0, # if 0, uses surface area for SHAPE geometry, if 1, uses bird skin surface area allometry from Walsberg & King. 1978. JEB 76:185–189, if 2 uses mammal surface area from Stahl 1967.J. App. Physiol. 22, 453–460.
   ORIENT = 0, # if 1 = normal to sun's rays (heat maximising), if 2 = parallel to sun's rays (heat minimising), or 0 = average
 
   # fur properties
@@ -393,7 +391,7 @@ endoR <- function(
 #   ANDENS = 1000 # kg/m3
 #   SUBQFAT = 0 # is subcutaneous fat present? (0 is no, 1 is yes)
 #   FATPCT = 20 # % body fat
-#   NGEOM = 4 # cylinder (ngeom = 1), sphere (ngeom = 2) and ellipsoid (ngeom = 4). If a truncated cone (5) or ellipsoidal cylinder (3), we will use the cylinder equations (ngeom=1).
+#   SHAPE = 4 # shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid
 #   GMREF = 3 # initial ratio between long and short axis (-)
 #   GMULT = GMREF # current ratio between long and short axis (-)
 #   GMULTMAX = GMREF # max possible ratio between long and short axis (-)
@@ -489,8 +487,7 @@ endoR <- function(
     GMULT <- GMULTMAX
   }
   TVEG <- TA
-  SOLVENDO.input <- c(QGEN, QBASAL,TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, NGEOM,EMISAN,FATOBJ,FSKREF,FGDREF,NESTYP,PCTDIF,ABSSB,AWING,FLTYPE,ELEV,BP,NITESHAD,SHADE,QSOLR,RoNEST,Z,VEL, TS,TFA,FABUSH,FURTHRMK,RH,TCONDSB,TBUSH,TC,PCTBAREVAP,FLYHR,FURWET,AK1,AK2,PCTEYES,DIFTOL,SKINW,TSKY,TVEG,TAREF,DELTAR,RQ, TIMACT, O2GAS, N2GAS, CO2GAS,RELXIT,PANT,EXTREF,UNCURL,AKMAX,AK1inc,TCMAX,RAISETC,TCREF,Q10,QBASREF,PANTMAX,MXWET, SWEAT,TGRD,AMASS,ANDENS,SUBQFAT,FATPCT,PTCOND,MAXPTCOND, ZFURCOMP, PANTING,BIRD,MAMMAL,ORIENT)
+  SOLVENDO.input <- c(QGEN, QBASAL, TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, SHAPE, EMISAN, FATOBJ, FSKREF, FGDREF, NESTYP, PCTDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, NITESHAD, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, SKINW, TSKY, TVEG, TAREF, DELTAR, RQ, TIMACT, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AKMAX, AK1inc, TCMAX, RAISETC, TCREF, Q10, QBASREF, PANTMAX, MXWET, SWEAT, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PTCOND, MAXPTCOND, ZFURCOMP, PANTING, ORIENT)
   endo.out <- SOLVENDO(SOLVENDO.input)
-  colnames(endo.out) <- c("TC", "TLUNG", "TFA_D", "TFA_V", "TSKIN_D", "TSKIN_V", "QCONV_D", "QCONV_V", "QCOND_D", "QCOND_V", "QGENNET_D", "QGENNET_V", "QSEVAP_D", "QSEVAP_V", "QRAD_D", "QRAD_V", "QSLR_D", "QSLR_V", "QRSKY_D", "QRSKY_V", "QRBSH_D", "QRBSH_V", "QRVEG_D", "QRVEG_V", "QRGRD_D", "QRGRD_V","QFSEVAP_D", "QFSEVAP_V", "NTRY_D", "NTRY_V", "SUCCESS_D", "SUCCESS_V", "RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL", "GMULT", "PANT", "SKINW", "SWEAT.G.H", "EVAP.G.H", "AK", "TA", "TGRD", "TCONDSB", "TSKY", "VEL", "RH", "QSOLR")
   return(endo.out)
 }

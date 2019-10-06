@@ -43,11 +43,11 @@ CONV <- function(TS, TENV, NGEOM, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP,
     as.double(ZFUR),
     as.double(BP),
     as.double(ELEV),
-    results=matrix(data = 0., nrow = 1, ncol = 14),
+    results=matrix(data = 0, nrow = 1, ncol = 14),
     PACKAGE = "CONV")
   #dyn.unload("CONV.dll")
 
-  results <- matrix(data = 0., nrow = 1, ncol = 14)
+  results <- matrix(data = 0, nrow = 1, ncol = 14)
 
   storage.mode(results)<-"double"
   results <- a$results

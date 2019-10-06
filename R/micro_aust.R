@@ -28,7 +28,7 @@
 #' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
 #' @return sunsnow Hourly predictions of snow temperature under the minimum specified shade
 #' @return shadsnow Hourly predictions snow temperature under the maximum specified shade
-#' @usage micro_aust(loc = "Melbourne, Australia", ystart = 1990, yfinish = 1990,
+#' @usage micro_aust(loc = c(130.5686, -22.6523), ystart = 1990, yfinish = 1990,
 #' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 #' Usrhyt = 0.01, ...)
 #' @export
@@ -51,7 +51,6 @@
 #' \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
 #' \code{warm}{ = 0, uniform warming, °C}\cr\cr
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
-#' \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
 #' \code{opendap}{ = 1, query met grids via opendap}\cr\cr
 
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
@@ -233,16 +232,15 @@
 #'ystart <- 2014
 #'yfinish <- 2015
 #'nyears <- yfinish - ystart + 1
-#'micro<-micro_aust(loc = 'Nyrripi, Northern Territory', ystart = ystart, yfinish = yfinish, opendap = 1, elev = 0, runshade = 0) # run the model for the middle of the desert in Australia, using opendap
+#'loc <- c(130.5686, -22.6523) # Nyrripi, Northern Territory, Australia
+#'micro <- micro_aust(loc = loc, ystart = ystart, yfinish = yfinish, opendap = 1, elev = 0, runshade = 0) # run the model for the middle of the desert in Australia, using opendap
 #'
-#' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
-#' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
-#' soilmoist<-as.data.frame(micro$soilmoist) # soil temperatures, minimum shade
+#' metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
+#' soil <- as.data.frame(micro$soil) # soil temperatures, minimum shade
+#' soilmoist <- as.data.frame(micro$soilmoist) # soil temperatures, minimum shade
 #'
 #' # append dates
-#' tzone<-paste("Etc/GMT+",0,sep="")
-#' dates<-seq(ISOdate(ystart,1,1,tz=tzone)-3600*12, ISOdate((ystart+nyears),1,1,tz=tzone)-3600*13, by="hours")
-#'
+#' dates <- micro$dates
 #' metout <- cbind(dates,metout)
 #' soil <- cbind(dates,soil)
 #' soilmoist <- cbind(dates, soilmoist)
@@ -290,7 +288,7 @@
 #'  }
 #' }
 micro_aust <- function(
-  loc= c(130.5686, -22.6523),
+  loc = c(130.5686, -22.6523),
   ystart = 1990,
   yfinish = 1990,
   nyears = 1,
@@ -325,7 +323,6 @@ micro_aust <- function(
   adiab_cor = 1,
   warm = 0,
   spatial = "W:/",
-  vlsci = 0,
   ERR = 1.5,
   RUF = 0.004,
   ZH = 0,
@@ -417,7 +414,7 @@ micro_aust <- function(
     return(alldata)
   }
 
-  if(vlsci==0 & opendap==0){
+  if(opendap==0){
     require(RODBC)
   }
   if(opendap == 1){
@@ -645,17 +642,10 @@ micro_aust <- function(
     dates<-Sys.time()-60*60*24
     curyear<-as.numeric(format(dates,"%Y"))
     # location and terrain
-    if(vlsci==0){
-      f1 <- paste(spatial,"ausclim_rowids.nc",sep="");
-      f2 <- paste(spatial,"ausdem_shift1.tif",sep="");
-      f3 <- paste(spatial,"agg_9secdem.nc",sep="");
-      f4 <- paste(spatial,"Aust9secDEM.tif",sep="");
-    }else{
-      f1 <- "/vlsci/VR0212/mrke/Spatial_Data/ausclim_rowids.nc";
-      f2 <- "/vlsci/VR0212/mrke/Spatial_Data/ausdem_shift1.tif";
-      f3 <- "/vlsci/VR0212/mrke/Spatial_Data/agg_9secdem.nc";
-      f4 <- "/vlsci/VR0212/mrke/Spatial_Data/Aust9secDEM.grd";
-    }
+    f1 <- paste(spatial,"ausclim_rowids.nc",sep="");
+    f2 <- paste(spatial,"ausdem_shift1.tif",sep="");
+    f3 <- paste(spatial,"agg_9secdem.nc",sep="");
+    f4 <- paste(spatial,"Aust9secDEM.tif",sep="");
 
     longlat <- loc
     x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
@@ -700,13 +690,8 @@ micro_aust <- function(
 
     if(soildata==1){
       cat('extracting soil emissivities \n')
-      if(vlsci==0){
-        static_soil<-paste(spatial,"static_soil.nc",sep="")
-        emissivities<-paste(spatial,"aus_emissivities.nc",sep="")
-      }else{
-        static_soil<-'/vlsci/VR0212/mrke/Spatial_Data/static_soil.nc'
-        emissivities<-'/vlsci/VR0212/mrke/Spatial_Data/aus_emissivities.nc'
-      }
+      static_soil<-paste(spatial,"static_soil.nc",sep="")
+      emissivities<-paste(spatial,"aus_emissivities.nc",sep="")
       # read data in from netcdf file
       static_soil_data<-raster::brick(static_soil)
       static_soil_vars <- raster::extract(static_soil_data,x)
@@ -717,21 +702,13 @@ micro_aust <- function(
 
       # read in other soil related files for working out lumped soil type and properties
       # such as clay % for getting water potential
-      if(vlsci==0){
-        filename<-paste(spatial,"ppfInterpAll.txt",sep="")
-        ppf<-as.data.frame(read.table(file = filename, sep = ",", header=TRUE))
-        filename<-paste(spatial,"Lumped soil types.txt",sep="")
-        lumped.soil<-as.data.frame(read.table(file = filename, sep = ","))
-        filename<-paste(spatial,"SoilTypeLUT_725_AWAP.csv",sep="")
-        soiltype<-as.data.frame(read.table(file = filename, sep = ","))
-      }else{
-        filename<-'/vlsci/VR0212/mrke/Spatial_Data/ppfInterpAll.txt'
-        ppf<-as.data.frame(read.table(file = filename, sep = ",", header=TRUE))
-        filename<-'/vlsci/VR0212/mrke/Spatial_Data/Lumped soil types.txt'
-        lumped.soil<-as.data.frame(read.table(file = filename, sep = ","))
-        filename<-'/vlsci/VR0212/mrke/Spatial_Data/SoilTypeLUT_725_AWAP.csv'
-        soiltype<-as.data.frame(read.table(file = filename, sep = ","))
-      }
+      filename<-paste(spatial,"ppfInterpAll.txt",sep="")
+      ppf<-as.data.frame(read.table(file = filename, sep = ",", header=TRUE))
+      filename<-paste(spatial,"Lumped soil types.txt",sep="")
+      lumped.soil<-as.data.frame(read.table(file = filename, sep = ","))
+      filename<-paste(spatial,"SoilTypeLUT_725_AWAP.csv",sep="")
+      soiltype<-as.data.frame(read.table(file = filename, sep = ","))
+
       soilcode<-subset(soiltype, soiltype[1]==static_soil_vars[18])
       lumped<-subset(lumped.soil, V4==as.character(soilcode[1,2]))
       soiltype<-lumped[1,6]
@@ -740,13 +717,8 @@ micro_aust <- function(
       SLES2 <- rep(SLE,ndays)
       if(manualshade==0){
         message("extracting shade data \n")
-        if(vlsci==0){
-          static_soil<-paste(spatial,"static_soil.nc",sep="")
-          emissivities<-paste(spatial,"aus_emissivities.nc",sep="")
-        }else{
-          static_soil<-'/vlsci/VR0212/mrke/Spatial_Data/static_soil.nc'
-          emissivities<-'/vlsci/VR0212/mrke/Spatial_Data/aus_emissivities.nc'
-        }
+        static_soil<-paste(spatial,"static_soil.nc",sep="")
+        emissivities<-paste(spatial,"aus_emissivities.nc",sep="")
         # read data in from netcdf file
         static_soil_data<-raster::brick(static_soil)
         static_soil_vars <- raster::extract(static_soil_data,x)
@@ -758,11 +730,7 @@ micro_aust <- function(
       message("extracting terrain data \n")
       e<-extent(x[1]-0.05,x[1]+0.05,x[2]-0.05,x[2]+0.05)
       for(i in 1:24){
-        if(vlsci==0){
-          horifile<-paste(spatial,'horizon',i,'.tif',sep="")
-        }else{
-          horifile<-paste('/vlsci/VR0212/mrke/Spatial_Data/','horizon',i,'.tif',sep="")
-        }
+        horifile<-paste(spatial,'horizon',i,'.tif',sep="")
         horiz<-raster::crop(raster::raster(horifile),e)
         if(i==1){
           horizons_data<-horiz
@@ -771,17 +739,10 @@ micro_aust <- function(
         }
       }
       HORIZONS <- t(raster::extract(horizons_data,x))
-      if(vlsci==0){
-        elev1<-crop(raster::raster(paste(spatial,'elev.tif',sep="")),e)
-        slope1<-crop(raster::raster(paste(spatial,'slope.tif',sep="")),e)
-        aspect1<-crop(raster::raster(paste(spatial,'aspect.tif',sep="")),e)
-        elevslpasp<-raster::stack(elev1,slope1,aspect1)
-      }else{
-        elev1<-raster::crop(raster(paste('/vlsci/VR0212/mrke/Spatial_Data/','elev.tif',sep="")),e)
-        slope1<-raster::crop(raster(paste('/vlsci/VR0212/mrke/Spatial_Data/','slope.tif',sep="")),e)
-        aspect1<-raster::crop(raster(paste('/vlsci/VR0212/mrke/Spatial_Data/','aspect.tif',sep="")),e)
-        elevslpasp<-raster::stack(elev1,slope1,aspect1)
-      }
+      elev1<-crop(raster::raster(paste(spatial,'elev.tif',sep="")),e)
+      slope1<-crop(raster::raster(paste(spatial,'slope.tif',sep="")),e)
+      aspect1<-crop(raster::raster(paste(spatial,'aspect.tif',sep="")),e)
+      elevslpasp<-raster::stack(elev1,slope1,aspect1)
       ELEVSLPASP <- raster::extract(elevslpasp,x)
       ELEVSLPASP<-as.matrix((ifelse(is.na(ELEVSLPASP),0,ELEVSLPASP)))
       ALTITUDES <- ELEVSLPASP[,1]
@@ -966,7 +927,7 @@ micro_aust <- function(
             start <- c(lonindex, latindex, 1)
             count <- c(1, 1, NA)
             data_1 <- as.numeric(RNetCDF::var.get.nc(nc, variable = paste0(var, "_day"),
-                                           start = start, count, unpack = TRUE))
+                                                     start = start, count, unpack = TRUE))
             if(mm == 1 & i == 1){
               data <- data_1
             }else{
@@ -1016,7 +977,7 @@ micro_aust <- function(
     }
 
     # connect to server
-    if(vlsci==0 & opendap == 0){
+    if(opendap == 0){
       channel2 <- RODBC::odbcConnect("ausclim_predecol", uid = uid, pwd = pwd)
       channel <- RODBC::odbcConnect("AWAPDaily", uid = uid, pwd = pwd)
       # preliminary test for incomplete year, if simulation includes the present year
@@ -1045,7 +1006,7 @@ micro_aust <- function(
           results<-rbind(results,output)
         }
       }
-    } #end vlsci check
+    }
     if(is.na(MAXSHADES[1])){
       maxshades=rep(maxshade,ndays)
     }
@@ -1107,7 +1068,7 @@ micro_aust <- function(
           TAI<-c(0.0670358341290886,0.0662612704779235,0.065497075238002,0.0647431301168489,0.0639993178022531,0.0632655219571553,0.0625416272145492,0.0611230843885423,0.0597427855962549,0.0583998423063099,0.0570933810229656,0.0558225431259535,0.0545864847111214,0.0533843764318805,0.0522154033414562,0.0499736739981675,0.047855059159556,0.0458535417401334,0.0439633201842001,0.0421788036108921,0.0404946070106968,0.0389055464934382,0.0374066345877315,0.0359930755919066,0.0346602609764008,0.0334037648376212,0.0322193394032758,0.0311029105891739,0.0300505736074963,0.0290585886265337,0.0281233764818952,0.0272415144391857,0.0264097320081524,0.0256249068083005,0.0248840604859789,0.0241843546829336,0.0235230870563317,0.0228976873502544,0.0223057135186581,0.0217448478998064,0.0212128934421699,0.0207077699817964,0.0202275105711489,0.0197702578594144,0.0193342605242809,0.0189178697551836,0.0177713140039894,0.0174187914242432,0.0170790495503944,0.0167509836728154,0.0164335684174899,0.0161258546410128,0.0158269663770596,0.0155360978343254,0.0152525104459325,0.0149755299703076,0.0147045436435285,0.0144389973831391,0.0141783930434343,0.0134220329447663,0.0131772403830191,0.0129356456025128,0.0126970313213065,0.0124612184223418,0.0122280636204822,0.01199745718102,0.0115436048739351,0.0110993711778668,0.0108808815754663,0.0106648652077878,0.0104513876347606,0.0102405315676965,0.00982708969547694,0.00962473896278535,0.00903679230300494,0.00884767454432418,0.0083031278398166,0.00796072474935954,0.00755817587626185,0.00718610751850881,0.00704629977586921,0.00684663903049612,0.00654155580333479,0.00642947339729728,0.00627223096874308,0.00603955966866779,0.00580920937536261,0.00568506186880564,0.00563167068287251,0.00556222005081865,0.00550522989971023,0.00547395763028062,0.0054478983436216,0.00541823364504573,0.00539532163908382,0.00539239864119488,0.00541690124712384,0.00551525885358836,0.00564825853509463,0.00577220185074264,0.00584222986640171,0.00581645238345584,0.00566088137411449,0.00535516862329704,0.00489914757707667,0.00432017939770409,0.0036813032251836,0.00309019064543606,0.00270890436501562,0.00276446109239711,0.00356019862584603)
         } #end check if running gads
 
-        if(vlsci==0 & opendap==0){
+        if(opendap == 0){
           for(j in 1:nyears){ # start loop through years
             yeartodo<-yearlist[j]
             lat1<-x[2]-0.024
@@ -1183,159 +1144,192 @@ micro_aust <- function(
             }
             dwind<-dwind$wind/15.875
           }
-        }else{ #vlsci==1
-          if(vlsci == 1){
-            load(paste(barcoo,'TMAXX.bin',sep=''))
-            TMAXX <- as.numeric(as.matrix(data[which(data[,1]==simnum),2:ncol(data)]))
-            load(paste(barcoo,'TMINN.bin',sep=''))
-            TMINN <- as.numeric(as.matrix(data[which(data[,1]==simnum),2:ncol(data)]))
-            load(paste(barcoo,'RHMAXX.bin',sep=''))
-            RHMAXX <- as.numeric(as.matrix(data[which(data[,1]==simnum),2:ncol(data)]))
-            load(paste(barcoo,'RHMINN.bin',sep=''))
-            RHMINN <- as.numeric(as.matrix(data[which(data[,1]==simnum),2:ncol(data)]))
-            load(paste(barcoo,'CCMAXX.bin',sep=''))
-            CCMAXX <- as.numeric(as.matrix(data[which(data[,1]==simnum),2:ncol(data)]))
-            load(paste(barcoo,'CCMINN.bin',sep=''))
-            CCMINN <- as.numeric(as.matrix(data[which(data[,1]==simnum),2:ncol(data)]))
+        }
+        if(opendap == 0){
+          if(adiab_cor==1){
+            TMAXX.orig <- results$tmax
+            TMINN.orig <- results$tmin
+            TMAXX<-as.matrix(results$tmax+adiab_corr_max)
+            TMINN<-as.matrix(results$tmin+adiab_corr_min)
 
-            load(paste(barcoo,'RAINFALL.bin',sep=''))
-            RAINFALL <- as.numeric(as.matrix(data[which(data[,1]==simnum),2:ncol(data)]))
-            tzone<-paste("Etc/GMT+",10,sep="")
-            dates3<-seq(ISOdate(1990,1,1,tz=tzone)-3600*12, ISOdate(2018,1,1,tz=tzone)-3600*13, by="days")
-            dates4<-seq(ISOdate(ystart,1,1,tz=tzone)-3600*12, ISOdate((ystart+nyears),1,1,tz=tzone)-3600*13, by="days")
-            TMAXX<-t(as.data.frame(TMAXX[which(dates4 %in% dates3)]))
-            TMINN<-t(as.data.frame(TMINN[which(dates4 %in% dates3)]))
-            RHMAXX<-t(as.data.frame(RHMAXX[which(dates4 %in% dates3)]))
-            RHMINN<-t(as.data.frame(RHMINN[which(dates4 %in% dates3)]))
-            CCMAXX<-t(as.data.frame(CCMAXX[which(dates4 %in% dates3)]))
-            CCMINN<-t(as.data.frame(CCMINN[which(dates4 %in% dates3)]))
-            RAINFALL<-t(as.data.frame(RAINFALL[which(dates4 %in% dates3)]))
-            if(dailywind==1){
-              load(paste(barcoo,'dwind.bin',sep=''))
-              dwind<-as.numeric(as.matrix(data[which(data[,1]==simnum),2:ncol(data)]))
-              dwind<-t(as.data.frame(dwind[which(dates4 %in% dates3)]))
-            }
-            if(adiab_cor==1){
-              TMAXX.orig <- TMAXX
-              TMINN.orig <- TMINN
-              TMAXX<-TMAXX+adiab_corr_max
-              TMINN<-TMINN+adiab_corr_min
-            }
-          }
-        } #end vlsci check
-        if(vlsci==0){
-          if(opendap == 0){
-            if(adiab_cor==1){
-              TMAXX.orig <- results$tmax
-              TMINN.orig <- results$tmin
-              TMAXX<-as.matrix(results$tmax+adiab_corr_max)
-              TMINN<-as.matrix(results$tmin+adiab_corr_min)
-
-            }else{
-              TMAXX<-as.matrix(results$tmax)
-              TMINN<-as.matrix(results$tmin)
-            }
-            if(scenario!=""){
-              TMAXX=TMAXX+TMAXX_diff
-              TMINN=TMINN+TMINN_diff
-            }
-            RAINFALL<-results$rr
-            output_AWAPDaily<-results
           }else{
-            if(adiab_cor==1){
-              TMAXX.orig <- TMAXX
-              TMINN.orig <- TMINN
-              TMAXX<-as.matrix(TMAXX+adiab_corr_max)
-              TMINN<-as.matrix(TMINN+adiab_corr_min)
-            }
+            TMAXX<-as.matrix(results$tmax)
+            TMINN<-as.matrix(results$tmin)
           }
           if(scenario!=""){
-            # first work out for each site the new predicted rainfall amount for each month - use this to adjust for fact that will underestimate chcange
-            # using proportion becasue 0 x % is still 0
-            # add columns with days, months and years
-            RAIN_current<-as.data.frame(RAINFALL)
-            dates<-seq(ISOdate(ystart,1,1,tz=paste("Etc/GMT-",10,sep=""))-3600*12, ISOdate((ystart+nyears),1,1,tz=paste("Etc/GMT-",10,sep=""))-3600*13, by="days")
-            dates<-subset(dates, format(dates, "%m/%d")!= "02/29") # remove leap years
-            RAINFALL_sum<-aggregate(RAIN_current, by=list(format(dates,"%m-%Y")),FUN=sum)
-            dates2<-RAINFALL_sum$Group.1
-            RAINFALL_sum<-RAINFALL_sum[order(as.Date(paste("01-",RAINFALL_sum$Group.1,sep=""),"%m-%Y")),2]
-
-            load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","RAINst05_",scenario,"_",year,".Rda",sep=""))
-            diffs<-rep(extract(RAINst05,x),nyears)
-
-            if(is.na(diffs[1])==TRUE){
-              print("no data")
-              # find the nearest cell with data
-              NArem<-RAINst05[[1]] # don't need to re-do this within bioregion loop
-              NArem<-Which(!is.na(NArem), cells=TRUE)
-              dist<-distanceFromPoints(RAINst05[[1]],y)
-              distNA<-extract(dist,NArem)
-              cellsR<-cbind(distNA,NArem)
-              distmin<-which.min(distNA)
-              cellrep<-cellsR[distmin,2]
-              diffs<-rep(extract(RAINst05,cellrep),nyears)
-            }
-
-            rainfall_new<-(RAINFALL_sum*diffs)
-
-            rainfall_new[rainfall_new < 0 ]= 0 # get rid of any negative rainfall values
-
-            ## Now extract predicted change in mm
-            load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","RAINst05_mm_",scenario,"_",year,".Rda",sep=""))
-            rainfall_change_mm<-rep(extract(RAINst05_mm,x),nyears)
-
-            #########Now get predicted change in rainfall (could also get this from OzClim or ClimSim layer)#############
-            Diff_prop<-rainfall_new/RAINFALL_sum # proportion change
-            Diff_prop[Diff_prop=='NaN']= 0
-            Diff_prop[Diff_prop=='Inf']= 0 ## If was previously no rainfall and now is rainfall need to alter code so this is simply added
-
-            newRAINFALL=rep(NA,length(RAINFALL))
-            for (k in 1:length(RAINFALL)){ # loop through each sites applying monthly % changes
-              month<-which(dates2==format(dates[k],"%m-%Y"))
-              # Test if predicted rainfall matches up - use rainfall_change_mm layer
-              Rain_adj<-rainfall_change_mm[month]
-
-              # test for if proportional change is 0 (because current rainfall is 0)
-              #but rainfall predicted to increase
-              if(Diff_prop[month]==0 & Rain_adj > 1){ # couldn't get proportion as no current rain days but need to add rain
-                print('new rain days needed')
-                # previously no rain, randomly select a day and put all rain on it
-                listD<-seq(1,length(newRAINFALL),1)
-                altD<-sample(listD,1)
-                newRAINFALL[altD]<-Rain_adj/30
-              }else{
-                newRAINFALL[k]<-RAINFALL[k]*Diff_prop[month]
-              }
-            } # end of loop through each day
-            newRAINFALL[newRAINFALL<0.1]<-0
-            newRAINFALL[is.na(newRAINFALL)]<-0
-            RAINFALL=newRAINFALL
+            TMAXX=TMAXX+TMAXX_diff
+            TMINN=TMINN+TMINN_diff
           }
+          RAINFALL<-results$rr
+          output_AWAPDaily<-results
+        }else{
+          if(adiab_cor==1){
+            TMAXX.orig <- TMAXX
+            TMINN.orig <- TMINN
+            TMAXX<-as.matrix(TMAXX+adiab_corr_max)
+            TMINN<-as.matrix(TMINN+adiab_corr_min)
+          }
+        }
+        if(scenario!=""){
+          # first work out for each site the new predicted rainfall amount for each month - use this to adjust for fact that will underestimate chcange
+          # using proportion becasue 0 x % is still 0
+          # add columns with days, months and years
+          RAIN_current<-as.data.frame(RAINFALL)
+          dates<-seq(ISOdate(ystart,1,1,tz=paste("Etc/GMT-",10,sep=""))-3600*12, ISOdate((ystart+nyears),1,1,tz=paste("Etc/GMT-",10,sep=""))-3600*13, by="days")
+          dates<-subset(dates, format(dates, "%m/%d")!= "02/29") # remove leap years
+          RAINFALL_sum<-aggregate(RAIN_current, by=list(format(dates,"%m-%Y")),FUN=sum)
+          dates2<-RAINFALL_sum$Group.1
+          RAINFALL_sum<-RAINFALL_sum[order(as.Date(paste("01-",RAINFALL_sum$Group.1,sep=""),"%m-%Y")),2]
+
+          load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","RAINst05_",scenario,"_",year,".Rda",sep=""))
+          diffs<-rep(extract(RAINst05,x),nyears)
+
+          if(is.na(diffs[1])==TRUE){
+            print("no data")
+            # find the nearest cell with data
+            NArem<-RAINst05[[1]] # don't need to re-do this within bioregion loop
+            NArem<-Which(!is.na(NArem), cells=TRUE)
+            dist<-distanceFromPoints(RAINst05[[1]],y)
+            distNA<-extract(dist,NArem)
+            cellsR<-cbind(distNA,NArem)
+            distmin<-which.min(distNA)
+            cellrep<-cellsR[distmin,2]
+            diffs<-rep(extract(RAINst05,cellrep),nyears)
+          }
+
+          rainfall_new<-(RAINFALL_sum*diffs)
+
+          rainfall_new[rainfall_new < 0 ]= 0 # get rid of any negative rainfall values
+
+          ## Now extract predicted change in mm
+          load(file = paste("c:/Spatial_Data/Australia Climate Change/",scenario,"/","RAINst05_mm_",scenario,"_",year,".Rda",sep=""))
+          rainfall_change_mm<-rep(extract(RAINst05_mm,x),nyears)
+
+          #########Now get predicted change in rainfall (could also get this from OzClim or ClimSim layer)#############
+          Diff_prop<-rainfall_new/RAINFALL_sum # proportion change
+          Diff_prop[Diff_prop=='NaN']= 0
+          Diff_prop[Diff_prop=='Inf']= 0 ## If was previously no rainfall and now is rainfall need to alter code so this is simply added
+
+          newRAINFALL=rep(NA,length(RAINFALL))
+          for (k in 1:length(RAINFALL)){ # loop through each sites applying monthly % changes
+            month<-which(dates2==format(dates[k],"%m-%Y"))
+            # Test if predicted rainfall matches up - use rainfall_change_mm layer
+            Rain_adj<-rainfall_change_mm[month]
+
+            # test for if proportional change is 0 (because current rainfall is 0)
+            #but rainfall predicted to increase
+            if(Diff_prop[month]==0 & Rain_adj > 1){ # couldn't get proportion as no current rain days but need to add rain
+              print('new rain days needed')
+              # previously no rain, randomly select a day and put all rain on it
+              listD<-seq(1,length(newRAINFALL),1)
+              altD<-sample(listD,1)
+              newRAINFALL[altD]<-Rain_adj/30
+            }else{
+              newRAINFALL[k]<-RAINFALL[k]*Diff_prop[month]
+            }
+          } # end of loop through each day
+          newRAINFALL[newRAINFALL<0.1]<-0
+          newRAINFALL[is.na(newRAINFALL)]<-0
+          RAINFALL=newRAINFALL
         }
         # cloud cover
         if(opendap==0){
-          if(vlsci==0){
-            if(ystart>1989 & sum(results[,9],na.rm=TRUE)>0){ # solar radiation data available
-              allclearsky <- leapfix(clearskysum, yearlist)
-              allclearsky <- allclearsky[1:ndays]
-              # convert from W/d to MJ/d
-              allclearsky <- allclearsky * 3600 / 1e6
-              if(is.na(output_AWAPDaily[1,9])==TRUE){
-                output_AWAPDaily[1,9]=mean(output_AWAPDaily[,9],na.rm=TRUE)
+          if(ystart>1989 & sum(results[,9],na.rm=TRUE)>0){ # solar radiation data available
+            allclearsky <- leapfix(clearskysum, yearlist)
+            allclearsky <- allclearsky[1:ndays]
+            # convert from W/d to MJ/d
+            allclearsky <- allclearsky * 3600 / 1e6
+            if(is.na(output_AWAPDaily[1,9])==TRUE){
+              output_AWAPDaily[1,9]=mean(output_AWAPDaily[,9],na.rm=TRUE)
+            }
+            if(is.na(output_AWAPDaily[ndays,9])==TRUE){
+              output_AWAPDaily[nrow(output_AWAPDaily),9]=mean(output_AWAPDaily[,9],na.rm=TRUE)
+            }
+            solar<-zoo::na.approx(output_AWAPDaily[,9])
+            if(scenario!=""){
+              solar=solar*SOLAR_diff
+            }
+            cloud <- (1-solar/allclearsky) * 100
+            cloud[cloud<0]<-0
+            cloud[cloud>100]<-100
+            CCMAXX<-as.numeric(cloud)
+            CCMINN<-CCMAXX
+          }else{
+            datestart1<-"01/01/1990" # day, month, year
+            datefinish1<-"31/12/2014" # day, month, year
+            datestart1<-strptime(datestart1, "%d/%m/%Y") # convert to date format
+            datefinish1<-strptime(datefinish1, "%d/%m/%Y") # convert to date format
+            yearstart1<-as.numeric(format(datestart1, "%Y")) # yet year start
+            yearfinish1<-as.numeric(format(datefinish1, "%Y")) # yet year finish
+            years1<-seq(yearstart1,yearfinish1,1) # get sequence of years to d0
+            doystart<-datestart1$yday+1 # get day-of-year at start
+            doyfinish<-datefinish1$yday+1 # get day-of-year at finish
+            years1<-seq(yearstart1,yearfinish1,1) # get sequence of years to do
+
+            for(i in 1:length(years1)){ # start loop through years
+              # syntax for query
+              if(length(years1)==1){ # doing a period within a year
+                query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
+                    , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day between ",doystart," and ",doyfinish,")
+                  order by b.day")
+              }else{
+                if(i==1){ # doing first year, start at day requested
+                  query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
+                     , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day >= ",doystart,")
+                     order by b.day")
+                }else{
+                  if(i==length(years1)){ # doing last year, only go up to last day requested
+                    query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
+                       , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day <= ",doyfinish,")
+                       order by b.day")
+                  }else{ # doing in between years, so get all data for this year
+                    query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
+                       , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
+                      order by b.day")
+                  }}}
+              # exectue query and concatenate if necessary
+              if(i==1){
+                output1<- sqlQuery(channel,query)
+              }else{
+                output1<-rbind(output1,sqlQuery(channel,query))
               }
-              if(is.na(output_AWAPDaily[ndays,9])==TRUE){
-                output_AWAPDaily[nrow(output_AWAPDaily),9]=mean(output_AWAPDaily[,9],na.rm=TRUE)
-              }
-              solar<-zoo::na.approx(output_AWAPDaily[,9])
-              if(scenario!=""){
-                solar=solar*SOLAR_diff
-              }
-              cloud <- (1-solar/allclearsky) * 100
-              cloud[cloud<0]<-0
-              cloud[cloud>100]<-100
-              CCMAXX<-as.numeric(cloud)
-              CCMINN<-CCMAXX
-            }else{
+            } # end loop through years
+            output1$clearsky<-leapfix(clearskysum, seq(1990, 2014)) * 3600 / 1e6
+            glm_sol<-coefficients(with(output1,glm(sol~rr+tmax+tmin+day+clearsky)))
+            output_AWAPDaily$clearsky<-leapfix(clearskysum, yearlist) * 3600 / 1e6
+            output_AWAPDaily[,9]<-glm_sol[1]+glm_sol[2]*output_AWAPDaily$rr+glm_sol[3]*output_AWAPDaily$tmax+glm_sol[4]*output_AWAPDaily$tmin+glm_sol[5]*output_AWAPDaily$day+glm_sol[6]*output_AWAPDaily$clearsky
+            if(scenario!=""){
+              output_AWAPDaily[,9]=output_AWAPDaily[,9]*SOLAR_diff
+            }
+            cloud<-(1-as.data.frame(output_AWAPDaily$sol)/as.data.frame(output_AWAPDaily$clearsky))*100
+            cloud[cloud<0]<-0
+            cloud[cloud>100]<-100
+            cloud<-as.matrix(cbind(output_AWAPDaily[,4],cloud))
+            CCMAXX<-cloud[,2]
+            CCMINN<-CCMAXX
+          }# end check for year 1990 or later
+          if(ystart>1970){ #vapour pressure data available
+            if(is.na(output_AWAPDaily[1,8])==TRUE){
+              output_AWAPDaily[1,8]=mean(output_AWAPDaily[,8],na.rm=TRUE)
+            }
+            VAPRES<-zoo::na.approx(output_AWAPDaily[,8])
+            VAPRES<-VAPRES*100 # convert from hectopascals to pascals
+            es <- WETAIR(db = TMAXX, rh = 100)$esat
+            RHMINN <- (VAPRES / es) * 100
+            RHMINN[RHMINN>100]<-100
+            RHMINN[RHMINN<0]<-0.01
+            es <- WETAIR(db = TMINN, rh = 100)$esat
+            RHMAXX <- (VAPRES / es) * 100
+            RHMAXX[RHMAXX>100]<-100
+            RHMAXX[RHMAXX<0]<-0.01
+            if(scenario!=""){
+              RHMINN<-RHMINN+RH_diff
+            }
+            if(scenario!=""){
+              RHMAXX<-RHMAXX+RH_diff
+            }
+          }else{
+            if(exists("output1")==FALSE){
               datestart1<-"01/01/1990" # day, month, year
               datefinish1<-"31/12/2014" # day, month, year
               datestart1<-strptime(datestart1, "%d/%m/%Y") # convert to date format
@@ -1346,27 +1340,29 @@ micro_aust <- function(
               doystart<-datestart1$yday+1 # get day-of-year at start
               doyfinish<-datefinish1$yday+1 # get day-of-year at finish
               years1<-seq(yearstart1,yearfinish1,1) # get sequence of years to do
-
               for(i in 1:length(years1)){ # start loop through years
                 # syntax for query
                 if(length(years1)==1){ # doing a period within a year
                   query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                    , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day between ",doystart," and ",doyfinish,")
-                  order by b.day")
+                    , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",
+                                lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day between
+                    ",doystart," and ",doyfinish,") order by b.day")
                 }else{
                   if(i==1){ # doing first year, start at day requested
                     query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                     , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day >= ",doystart,")
-                     order by b.day")
+                       , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",
+                                  lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day >= ",
+                                  doystart,") order by b.day")
                   }else{
                     if(i==length(years1)){ # doing last year, only go up to last day requested
                       query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                       , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day <= ",doyfinish,")
-                       order by b.day")
+                        , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between "
+                                    ,lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day <= ",
+                                    doyfinish,") order by b.day")
                     }else{ # doing in between years, so get all data for this year
                       query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                       , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
-                      order by b.day")
+                        , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between
+                        ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") order by b.day")
                     }}}
                 # exectue query and concatenate if necessary
                 if(i==1){
@@ -1375,105 +1371,27 @@ micro_aust <- function(
                   output1<-rbind(output1,sqlQuery(channel,query))
                 }
               } # end loop through years
-              output1$clearsky<-leapfix(clearskysum, seq(1990, 2014)) * 3600 / 1e6
-              glm_sol<-coefficients(with(output1,glm(sol~rr+tmax+tmin+day+clearsky)))
-              output_AWAPDaily$clearsky<-leapfix(clearskysum, yearlist) * 3600 / 1e6
-              output_AWAPDaily[,9]<-glm_sol[1]+glm_sol[2]*output_AWAPDaily$rr+glm_sol[3]*output_AWAPDaily$tmax+glm_sol[4]*output_AWAPDaily$tmin+glm_sol[5]*output_AWAPDaily$day+glm_sol[6]*output_AWAPDaily$clearsky
-              if(scenario!=""){
-                output_AWAPDaily[,9]=output_AWAPDaily[,9]*SOLAR_diff
-              }
-              cloud<-(1-as.data.frame(output_AWAPDaily$sol)/as.data.frame(output_AWAPDaily$clearsky))*100
-              cloud[cloud<0]<-0
-              cloud[cloud>100]<-100
-              cloud<-as.matrix(cbind(output_AWAPDaily[,4],cloud))
-              CCMAXX<-cloud[,2]
-              CCMINN<-CCMAXX
-            }# end check for year 1990 or later
-            if(ystart>1970){ #vapour pressure data available
-              if(is.na(output_AWAPDaily[1,8])==TRUE){
-                output_AWAPDaily[1,8]=mean(output_AWAPDaily[,8],na.rm=TRUE)
-              }
-              VAPRES<-zoo::na.approx(output_AWAPDaily[,8])
-              VAPRES<-VAPRES*100 # convert from hectopascals to pascals
-              es <- WETAIR(db = TMAXX, rh = 100)$esat
-              RHMINN <- (VAPRES / es) * 100
-              RHMINN[RHMINN>100]<-100
-              RHMINN[RHMINN<0]<-0.01
-              es <- WETAIR(db = TMINN, rh = 100)$esat
-              RHMAXX <- (VAPRES / es) * 100
-              RHMAXX[RHMAXX>100]<-100
-              RHMAXX[RHMAXX<0]<-0.01
-              if(scenario!=""){
-                RHMINN<-RHMINN+RH_diff
-              }
-              if(scenario!=""){
-                RHMAXX<-RHMAXX+RH_diff
-              }
-            }else{
-              if(exists("output1")==FALSE){
-                datestart1<-"01/01/1990" # day, month, year
-                datefinish1<-"31/12/2014" # day, month, year
-                datestart1<-strptime(datestart1, "%d/%m/%Y") # convert to date format
-                datefinish1<-strptime(datefinish1, "%d/%m/%Y") # convert to date format
-                yearstart1<-as.numeric(format(datestart1, "%Y")) # yet year start
-                yearfinish1<-as.numeric(format(datefinish1, "%Y")) # yet year finish
-                years1<-seq(yearstart1,yearfinish1,1) # get sequence of years to d0
-                doystart<-datestart1$yday+1 # get day-of-year at start
-                doyfinish<-datefinish1$yday+1 # get day-of-year at finish
-                years1<-seq(yearstart1,yearfinish1,1) # get sequence of years to do
-                for(i in 1:length(years1)){ # start loop through years
-                  # syntax for query
-                  if(length(years1)==1){ # doing a period within a year
-                    query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                    , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",
-                                  lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day between
-                    ",doystart," and ",doyfinish,") order by b.day")
-                  }else{
-                    if(i==1){ # doing first year, start at day requested
-                      query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                       , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",
-                                    lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day >= ",
-                                    doystart,") order by b.day")
-                    }else{
-                      if(i==length(years1)){ # doing last year, only go up to last day requested
-                        query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                        , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between "
-                                      ,lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day <= ",
-                                      doyfinish,") order by b.day")
-                      }else{ # doing in between years, so get all data for this year
-                        query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                        , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between
-                        ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") order by b.day")
-                      }}}
-                  # exectue query and concatenate if necessary
-                  if(i==1){
-                    output1<- sqlQuery(channel,query)
-                  }else{
-                    output1<-rbind(output1,sqlQuery(channel,query))
-                  }
-                } # end loop through years
-              }
-              glm_vpr<-coefficients(with(output1,glm(vpr~rr+tmax+tmin+day)))
-              output_AWAPDaily[,8]<-glm_vpr[1]+glm_vpr[2]*output_AWAPDaily$rr+glm_vpr[3]*output_AWAPDaily$tmax+glm_vpr[4]*output_AWAPDaily$tmin+glm_vpr[5]*output_AWAPDaily$day
-              VAPRES<-zoo::na.approx(output_AWAPDaily[,8])
-              VAPRES<-VAPRES*100 # convert from hectopascals to pascals
-              # correct for potential change in RH with elevation-corrected Tair
-              es <- WETAIR(db = TMAXX, rh = 100)$esat
-              RHMINN <- (VAPRES / es) * 100
-              RHMINN[RHMINN>100]<-100
-              RHMINN[RHMINN<0]<-0.01
-              es <- WETAIR(db = TMINN, rh = 100)$esat
-              RHMAXX <- (VAPRES / es) * 100
-              RHMAXX[RHMAXX>100]<-100
-              RHMAXX[RHMAXX<0]<-0.01
-              if(scenario!=""){
-                RHMINN<-RHMINN+RH_diff
-              }
-              if(scenario!=""){
-                RHMAXX<-RHMAXX+RH_diff
-              }
-            }#end check for year is 1971 or later
-          } #end vlsci check
+            }
+            glm_vpr<-coefficients(with(output1,glm(vpr~rr+tmax+tmin+day)))
+            output_AWAPDaily[,8]<-glm_vpr[1]+glm_vpr[2]*output_AWAPDaily$rr+glm_vpr[3]*output_AWAPDaily$tmax+glm_vpr[4]*output_AWAPDaily$tmin+glm_vpr[5]*output_AWAPDaily$day
+            VAPRES<-zoo::na.approx(output_AWAPDaily[,8])
+            VAPRES<-VAPRES*100 # convert from hectopascals to pascals
+            # correct for potential change in RH with elevation-corrected Tair
+            es <- WETAIR(db = TMAXX, rh = 100)$esat
+            RHMINN <- (VAPRES / es) * 100
+            RHMINN[RHMINN>100]<-100
+            RHMINN[RHMINN<0]<-0.01
+            es <- WETAIR(db = TMINN, rh = 100)$esat
+            RHMAXX <- (VAPRES / es) * 100
+            RHMAXX[RHMAXX>100]<-100
+            RHMAXX[RHMAXX<0]<-0.01
+            if(scenario!=""){
+              RHMINN<-RHMINN+RH_diff
+            }
+            if(scenario!=""){
+              RHMAXX<-RHMAXX+RH_diff
+            }
+          }#end check for year is 1971 or later
         }
         if(adiab_cor==1){
           RHMAXX.orig <- RHMAXX
@@ -1501,7 +1419,7 @@ micro_aust <- function(
         ALLMINTEMPS<-TMINN
         ALLMAXTEMPS<-TMAXX
         ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
-        if(opendap == 0 & vlsci != 1){
+        if(opendap == 0){
           WNMAXX <- sqlQuery(channel2,maxwinds)
           WNMINN <- sqlQuery(channel2,minwinds)
           if(dailywind!=1 ){
@@ -1743,12 +1661,10 @@ micro_aust <- function(
             message('min wind * 0.5 \n')
             message('max wind * 2 \n')
           }
-          if(vlsci==0){
-            CCMINN<-CCMINN*0.5
-            CCMAXX<-CCMAXX*2
-            CCMINN[CCMINN>100]<-100
-            CCMAXX[CCMAXX>100]<-100
-          }
+          CCMINN<-CCMINN*0.5
+          CCMAXX<-CCMAXX*2
+          CCMINN[CCMINN>100]<-100
+          CCMAXX[CCMAXX>100]<-100
           if(clearsky==1){
             CCMINN=CCMINN*0
             CCMAXX=CCMAXX*0
@@ -1979,8 +1895,8 @@ micro_aust <- function(
         if(max(metout[,1] == 0)){
           cat("ERROR: the model crashed - try a different error tolerance (ERR) or a different spacing in DEP", '\n')
         }
-        dates <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/",yfinish+1), format = "%d/%m/%Y ", tz = 'Etc/GMT+10'), by = 'hours')[1:(length(TMAXX)*24)]
-        dates2 <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/",yfinish+1), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), by = 'days')[1:length(TMAXX)]
+        dates <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/",yfinish+1), format = "%d/%m/%Y ", tz = 'Etc/GMT+10'), by = 'hours')[1:(length(TMAXX1)*24)]
+        dates2 <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/",yfinish+1), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), by = 'days')[1:length(TMAXX1)]
         if(lamb == 1){
           drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
           drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance

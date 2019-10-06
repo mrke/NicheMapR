@@ -5,36 +5,34 @@
 \title{GEOM}
 \usage{
 GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA,
-  RHOARA, PTCOND, BIRD, MAMMAL, ORIENT)
+  RHOARA, PTCOND, SAMODE, ORIENT)
 }
 \arguments{
-\item{AMASS}{A}
+\item{AMASS}{mass, kg}
 
-\item{ANDENS}{A}
+\item{ANDENS}{volume, kg/m3}
 
-\item{FATPCT}{A}
+\item{FATPCT}{fat percentage, %}
 
-\item{POSTUR}{A}
+\item{POSTUR}{shape, -}
 
-\item{ZFUR}{A}
+\item{ZFUR}{fur depth, m}
 
-\item{SUBQFAT}{A}
+\item{SUBQFAT}{subcutaneous fat presence, -}
 
-\item{GMULT}{A}
+\item{GMULT}{multiplier on long axis for shape change, -}
 
-\item{GMREF}{A}
+\item{GMREF}{reference multiplier on long axis for shape change, -}
 
-\item{DHARA}{A}
+\item{DHARA}{hair diameter, m}
 
-\item{RHOARA}{A}
+\item{RHOARA}{hair density, 1/m2}
 
-\item{PTCOND}{A}
+\item{PTCOND}{percentage of surface area conducting to substrate, %}
 
-\item{BIRD}{A}
+\item{SAMODE}{surface area mode, -}
 
-\item{MAMMAL}{A}
-
-\item{ORIENT}{A}
+\item{ORIENT}{orientation to solar, -}
 }
 \description{
 R wrapper for Fortran binary of GEOM (endotherm model)

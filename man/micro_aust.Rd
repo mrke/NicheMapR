@@ -5,7 +5,7 @@
 \alias{micro_aust}
 \title{Australian implementation of the microclimate model.}
 \usage{
-micro_aust(loc = "Melbourne, Australia", ystart = 1990, yfinish = 1990,
+micro_aust(loc = c(130.5686, -22.6523), ystart = 1990, yfinish = 1990,
 REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 Usrhyt = 0.01, ...)
 }
@@ -85,7 +85,6 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
 \code{warm}{ = 0, uniform warming, °C}\cr\cr
 \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
-\code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
 \code{opendap}{ = 1, query met grids via opendap}\cr\cr
 \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
@@ -266,16 +265,15 @@ drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar)
 ystart <- 2014
 yfinish <- 2015
 nyears <- yfinish - ystart + 1
-micro<-micro_aust(loc = 'Nyrripi, Northern Territory', ystart = ystart, yfinish = yfinish, opendap = 1, elev = 0, runshade = 0) # run the model for the middle of the desert in Australia, using opendap
+loc <- c(130.5686, -22.6523) # Nyrripi, Northern Territory, Australia
+micro <- micro_aust(loc = loc, ystart = ystart, yfinish = yfinish, opendap = 1, elev = 0, runshade = 0) # run the model for the middle of the desert in Australia, using opendap
 
-metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
-soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
-soilmoist<-as.data.frame(micro$soilmoist) # soil temperatures, minimum shade
+metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
+soil <- as.data.frame(micro$soil) # soil temperatures, minimum shade
+soilmoist <- as.data.frame(micro$soilmoist) # soil temperatures, minimum shade
 
 # append dates
-tzone<-paste("Etc/GMT+",0,sep="")
-dates<-seq(ISOdate(ystart,1,1,tz=tzone)-3600*12, ISOdate((ystart+nyears),1,1,tz=tzone)-3600*13, by="hours")
-
+dates <- micro$dates
 metout <- cbind(dates,metout)
 soil <- cbind(dates,soil)
 soilmoist <- cbind(dates, soilmoist)
