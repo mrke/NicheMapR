@@ -1,19 +1,7 @@
 #' GEOM
 #'
 #' R wrapper for Fortran binary of GEOM (endotherm model)
-#' @param AMASS mass, kg
-#' @param ANDENS volume, kg/m3
-#' @param FATPCT fat percentage, %
-#' @param POSTUR shape, -
-#' @param ZFUR fur depth, m
-#' @param SUBQFAT subcutaneous fat presence, -
-#' @param GMULT multiplier on long axis for shape change, -
-#' @param GMREF reference multiplier on long axis for shape change, -
-#' @param DHARA hair diameter, m
-#' @param RHOARA hair density, 1/m2
-#' @param PTCOND percentage of surface area conducting to substrate, %
-#' @param SAMODE surface area mode, -
-#' @param ORIENT orientation to solar, -
+#' @param A
 #' @export
 GEOM <- function(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA, RHOARA, PTCOND, SAMODE, ORIENT){
   os = Sys.info()['sysname']
