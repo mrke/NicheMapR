@@ -12,7 +12,7 @@ GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA,
 
 \item{ANDENS}{volume, kg/m3}
 
-\item{FATPCT}{fat percentage, %}
+\item{FATPCT}{fat percentage, \%}
 
 \item{POSTUR}{shape, -}
 
@@ -28,7 +28,7 @@ GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA,
 
 \item{RHOARA}{hair density, 1/m2}
 
-\item{PTCOND}{percentage of surface area conducting to substrate, %}
+\item{PTCOND}{percentage of surface area conducting to substrate, \%}
 
 \item{SAMODE}{surface area mode, -}
 
