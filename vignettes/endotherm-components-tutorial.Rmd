@@ -126,13 +126,13 @@ SHAPE_C <- SHAPE_B # current ratio of length:height (plate)
 DHARA <- DHAR[1] # fur diameter, mean (m) (from IRPROP)
 RHOARA <- RHOAR[1] # hair density, mean (1/m2) (from IRPROP)
 ZFUR <- ZZFUR[1] # fur depth, mean (m) (from IRPROP)
-PTCOND <- 0.1 # fraction of body in contact with substrate (fractional, 0-1)
+PCOND <- 0.1 # fraction of body in contact with substrate (fractional, 0-1)
 BIRD <- 0 # 
 SAMODE <- 0 # if 1, uses bird skin surface area scaling from Walsberg and 1978. JEB Biology 76:185–189, if 2, uses mammal surface area scaling from Stahl (1967) J. of App. Physiology, 453–460.
 ORIENT <- 0 # if 1, largest surface area normal to sun's ray's, if 2, largest surface parallel to sun's rays, if 0, average of normal/parallel posture, 
 
 # call the subroutine
-GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_B_REF, SHAPE_C, DHARA, RHOARA, PTCOND, SAMODE, ORIENT)
+GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_B_REF, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT)
 
 # output
 VOL <- GEOM.out[1] # volume, m3
@@ -154,7 +154,7 @@ ASEMAJ <- GEOM.out[16] # semimajor axis length, m
 BSEMIN <- GEOM.out[17] # b semiminor axis length, m
 CSEMIN <- GEOM.out[18] # c semiminor axis length, m (currently only prolate spheroid)
 CONVSK <- GEOM.out[19] # area of skin for evaporation (total skin area - hair area), m2
-CONVAR <- GEOM.out[20] # area for convection (total area minus ventral area, as determined by PTCOND), m2
+CONVAR <- GEOM.out[20] # area for convection (total area minus ventral area, as determined by PCOND), m2
 R1 <- GEOM.out[21] # shape-specific core-skin radius in shortest dimension, m
 R2 <- GEOM.out[22] # shape-specific core-fur radius in shortest dimension, m
 
@@ -477,11 +477,8 @@ if(SUBQFAT == 1 & FATTHK > 0.0){
   VOL <- FLSHVL
 }
 
-# Getting compressed fur thermal conductivity (outputs a variable called KFURCMPRS)
-AREACND <- ATOT * PTCOND
-# CALL COMPRSKEFF
-KFURCMPRS <- 1
-
+# Getting compressed fur thermal conductivity
+AREACND <- ATOT * PCOND
 CD <- AREACND * ((KFURCMPRS / ZFURCOMP))
 
 # package up inputs

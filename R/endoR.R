@@ -64,8 +64,8 @@
 #' \code{SHAPE_C}{ = SHAPE_B, ratio between length and width for plate geometry (-)}\cr\cr
 #' \code{MAXPTVEN}{ = 0.5, maxium fraction of surface area that is ventral (fractional, 0-1)}\cr\cr
 #' \code{AWING}{ = 0, area of wing, to do}\cr\cr
-#' \code{PTCOND}{ = 0, fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
-#' \code{MAXPTCOND}{ = 0, maximum fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
+#' \code{PCOND}{ = 0, fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
+#' \code{MAXPCOND}{ = 0, maximum fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
 #' \code{SAMODE}{ = 0, if 0, uses surface area for SHAPE geometry, if 1, uses bird skin surface area allometry from Walsberg & King. 1978. JEB 76:185–189, if 2 uses mammal surface area from Stahl 1967.J. App. Physiol. 22, 453–460.}\cr\cr
 #' \code{ORIENT}{ = 0, if 0, long axis parallel to ground, if 1, long axis is perpendicular to the ground}\cr\cr
 #'
@@ -290,8 +290,8 @@ endoR <- function(
   SHAPE_C = SHAPE_B, # ratio between length and width for plate geometry (-)}\cr\cr
   MAXPTVEN = 0.5, # maxium fraction of surface area that is ventral (fractional, 0-1)
   AWING = 0, # area of wing, to do
-  PTCOND = 0, # fraction of surface area that is touching the substrate (fractional, 0-1)
-  MAXPTCOND= 0, # maximum fraction of surface area that is touching the substrate (fractional, 0-1)
+  PCOND = 0, # fraction of surface area that is touching the substrate (fractional, 0-1)
+  MAXPCOND= 0, # maximum fraction of surface area that is touching the substrate (fractional, 0-1)
   SAMODE = 0, # if 0, uses surface area for SHAPE geometry, if 1, uses bird skin surface area allometry from Walsberg & King. 1978. JEB 76:185–189, if 2 uses mammal surface area from Stahl 1967.J. App. Physiol. 22, 453–460.
   ORIENT = 0, # if 1 = normal to sun's rays (heat maximising), if 2 = parallel to sun's rays (heat minimising), or 0 = average
 
@@ -401,7 +401,7 @@ endoR <- function(
 #   SHAPE_B_MAX = SHAPE_B_REF # max possible ratio between long and short axis (-)
 #   MAXPTVEN = 0.5 # maxium fraction of surface area that is ventral (fractional, 0-1)
 #   AWING = 0 # area of wing, to do
-#   PTCOND = 0 # % of body area touching the substrate
+#   PCOND = 0 # % of body area touching the substrate
 #
 #   # fur properties
 #   FURTHRMK = 0 # user-specified fur thermal conductivity (W/mK), not used if 0
@@ -491,7 +491,7 @@ endoR <- function(
     SHAPE_B <- SHAPE_B_MAX
   }
   TVEG <- TA
-  SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, SHAPE_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, SHAPE, EMISAN, FATOBJ, FSKREF, FGDREF, NESTYP, PCTDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, NITESHAD, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, SKINW, TSKY, TVEG, TAREF, DELTAR, RQ, TIMACT, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AKMAX, AK1inc, TCMAX, RAISETC, TCREF, Q10, QBASREF, PANTMAX, MXWET, SWEAT, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PTCOND, MAXPTCOND, ZFURCOMP, PANTING, ORIENT, SHAPE_C)
+  SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, SHAPE_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, SHAPE, EMISAN, FATOBJ, FSKREF, FGDREF, NESTYP, PCTDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, NITESHAD, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, SKINW, TSKY, TVEG, TAREF, DELTAR, RQ, TIMACT, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AKMAX, AK1inc, TCMAX, RAISETC, TCREF, Q10, QBASREF, PANTMAX, MXWET, SWEAT, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, MAXPCOND, ZFURCOMP, PANTING, ORIENT, SHAPE_C)
   if(WRITE_INPUT == 1){
    write.csv(SOLVENDO.input, file = "SOLVENDO.input.csv")
   }

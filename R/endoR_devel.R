@@ -68,8 +68,8 @@
 #' \code{SHAPE_B_MAX}{ = SHAPE_B_REF, max possible ratio between long and short axis (-)}\cr\cr
 #' \code{SHAPE_C}{ = SHAPE_B, current ratio of length:height (plate)}\cr\cr
 #' \code{MAXPTVEN}{ = 0.5, maxium fraction of surface area that is ventral (fractional, 0-1)}\cr\cr
-#' \code{PTCOND}{ = 0, fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
-#' \code{MAXPTCOND}{ = 0, maximum fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
+#' \code{PCOND}{ = 0, fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
+#' \code{MAXPCOND}{ = 0, maximum fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
 #' \code{SAMODE}{ = 0, if 0, uses surface area for SHAPE geometry, if 1, uses bird skin surface area allometry from Walsberg & King. 1978. JEB 76:185–189, if 2 uses mammal surface area from Stahl 1967.J. App. Physiol. 22, 453–460.}\cr\cr
 #' \code{ORIENT}{ = 0, if 0, long axis parallel to ground, if 1, long axis is perpendicular to the ground}\cr\cr
 #'
@@ -308,8 +308,8 @@ endoR_devel <- function(
   SHAPE_B_MAX = SHAPE_B_REF, # max possible ratio between long and short axis (-)
   SHAPE_C = SHAPE_B, # current ratio of length:height (plate)
   MAXPTVEN = 0.5, # maxium fraction of surface area that is ventral (fractional, 0-1)
-  PTCOND = 0, # fraction of surface area that is touching the substrate (fractional, 0-1)
-  MAXPTCOND = 0, # maximum fraction of surface area that is touching the substrate (fractional, 0-1)
+  PCOND = 0, # fraction of surface area that is touching the substrate (fractional, 0-1)
+  MAXPCOND = 0, # maximum fraction of surface area that is touching the substrate (fractional, 0-1)
   SAMODE = 0, # if 0, uses surface area for SHAPE parameter geometry, if 1, uses bird skin surface area allometry from Walsberg & King. 1978. JEB 76:185–189, if 2 uses mammal surface area from Stahl 1967.J. App. Physiol. 22, 453–460.
   ORIENT = 0, # if 1 = normal to sun's rays (heat maximising), if 2 = parallel to sun's rays (heat minimising), or 0 = average
 
@@ -430,7 +430,7 @@ endoR_devel <- function(
     ZFUR <- ZZFUR[1] # fur depth, mean (m) (from IRPROP)
 
     # call the subroutine
-    GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_B_REF, SHAPE_C, DHARA, RHOARA, PTCOND, SAMODE, ORIENT)
+    GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_B_REF, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT)
 
     # output
     VOL <- GEOM.out[1] # volume, m3
@@ -452,7 +452,7 @@ endoR_devel <- function(
     BSEMIN <- GEOM.out[17] # b semiminor axis length, m
     CSEMIN <- GEOM.out[18] # c semiminor axis length, m (currently only prolate spheroid)
     CONVSK <- GEOM.out[19] # area of skin for evaporation (total skin area - hair area), m2
-    CONVAR <- GEOM.out[20] # area for convection (total area minus ventral area, as determined by PTCOND), m2
+    CONVAR <- GEOM.out[20] # area for convection (total area minus ventral area, as determined by PCOND), m2
     R1 <- GEOM.out[21] # shape-specific core-skin radius in shortest dimension, m
     R2 <- GEOM.out[22] # shape-specific core-fur radius in shortest dimension, m
 
@@ -560,14 +560,14 @@ endoR_devel <- function(
           }else{
             QSLR <- 2*QSDIR+((QSSKY/FASKYREF)*FASKY)+((QSOBJ/FATOBJREF)*FATOBJ)
           }
-        }else{  # doing ventral side. NB edit - adjust QSLR for PTCOND here.
+        }else{  # doing ventral side. NB edit - adjust QSLR for PCOND here.
           FASKY <- 0.0
           FATOBJ <- 0.0
           FAVEG <- 0.0
           FAGRD <- FAGRDREF/(1 - FAGRDREF - FATOBJREF - FABUSHREF)
           FABUSH <- FABUSHREF/(1 - FAGRDREF - FATOBJREF - FABUSHREF)
           QSLR <- (QVENTR/(1 - FASKYREF - FATOBJREF -
-                             FAVEGREF))*(1-(2*PTCOND))
+                             FAVEGREF))*(1-(2*PCOND))
         }
       }else{
         QSLR <- 0.0
@@ -618,9 +618,9 @@ endoR_devel <- function(
 
       # Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*((kfur/zfur)+(ksub/subdepth))
       if(S == 2){
-        AREACND <- ATOT * (PTCOND *2)
+        AREACND <- ATOT * (PCOND *2)
         CD <- AREACND * ((KFURCMPRS/ZFURCOMP))
-        CONVAR<-CONVAR - AREACND #NB edit - Adjust area used for convection to account for PTCOND. This is sent in to simulsol & then conv (unpacked as SURFAR)
+        CONVAR<-CONVAR - AREACND #NB edit - Adjust area used for convection to account for PCOND. This is sent in to simulsol & then conv (unpacked as SURFAR)
       } else{ #doing dorsal side, no conduction. No need to adjust areas used for convection.
         AREACND = 0
         CD <- AREACND * ((KFURCMPRS/ZFURCOMP))
