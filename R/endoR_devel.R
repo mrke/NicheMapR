@@ -688,7 +688,7 @@ endoR_devel <- function(
     colnames(ZBRENT.out) <- c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")
 
     QGEN <- ZBRENT.out[7]
-    GMULTLAST <- SHAPE_B
+    SHAPE_B_LAST <- SHAPE_B
     AK1LAST <- AK1
     TCLAST <- TC
     PANTLAST <- PANT
@@ -808,7 +808,7 @@ endoR_devel <- function(
 
   return(list(treg = treg, morph = morph, enbal = enbal, masbal = masbal))
 
-  #endo.out <- as.matrix(cbind(TCLAST, TLUNG, SIMULSOL.out[1, 1], SIMULSOL.out[2, 1], SIMULSOL.out[1,2], SIMULSOL.out[2,2], SIMULSOL.out[1,3], SIMULSOL.out[2,3], SIMULSOL.out[1,4], SIMULSOL.out[2,4], SIMULSOL.out[1,5], SIMULSOL.out[2,5], SIMULSOL.out[1,6], SIMULSOL.out[2,6], SIMULSOL.out[1,7], SIMULSOL.out[2,7], SIMULSOL.out[1,8], SIMULSOL.out[2,8], SIMULSOL.out[1,9], SIMULSOL.out[2,9], SIMULSOL.out[1,10], SIMULSOL.out[2,10], SIMULSOL.out[1,11], SIMULSOL.out[2,11], SIMULSOL.out[1,12], SIMULSOL.out[2,12], SIMULSOL.out[1,13], SIMULSOL.out[2,13], SIMULSOL.out[1,14], SIMULSOL.out[2,14],SIMULSOL.out[1,15], SIMULSOL.out[2,15], ZBRENT.out, GMULTLAST, PANTLAST, SKINWLAST, SWEAT.G.H, EVAP.G.H, AK1LAST, TA, TGRD, TCONDSB, TSKY, VEL, RH, QSOLR))
+  #endo.out <- as.matrix(cbind(TCLAST, TLUNG, SIMULSOL.out[1, 1], SIMULSOL.out[2, 1], SIMULSOL.out[1,2], SIMULSOL.out[2,2], SIMULSOL.out[1,3], SIMULSOL.out[2,3], SIMULSOL.out[1,4], SIMULSOL.out[2,4], SIMULSOL.out[1,5], SIMULSOL.out[2,5], SIMULSOL.out[1,6], SIMULSOL.out[2,6], SIMULSOL.out[1,7], SIMULSOL.out[2,7], SIMULSOL.out[1,8], SIMULSOL.out[2,8], SIMULSOL.out[1,9], SIMULSOL.out[2,9], SIMULSOL.out[1,10], SIMULSOL.out[2,10], SIMULSOL.out[1,11], SIMULSOL.out[2,11], SIMULSOL.out[1,12], SIMULSOL.out[2,12], SIMULSOL.out[1,13], SIMULSOL.out[2,13], SIMULSOL.out[1,14], SIMULSOL.out[2,14],SIMULSOL.out[1,15], SIMULSOL.out[2,15], ZBRENT.out, SHAPE_B_LAST, PANTLAST, SKINWLAST, SWEAT.G.H, EVAP.G.H, AK1LAST, TA, TGRD, TCONDSB, TSKY, VEL, RH, QSOLR))
   #colnames(endo.out) <- c("TC", "TLUNG", "TFA_D", "TFA_V", "TSKIN_D", "TSKIN_V", "QCONV_D", "QCONV_V", "QCOND_D", "QCOND_V", "QGENNET_D", "QGENNET_V", "QSEVAP_D", "QSEVAP_V", "QRAD_D", "QRAD_V", "QSLR_D", "QSLR_V", "QRSKY_D", "QRSKY_V", "QRBSH_D", "QRBSH_V", "QRVEG_D", "QRVEG_V", "QRGRD_D", "QRGRD_V", "QFSEVAP_D", "QFSEVAP_V","NTRY_D", "NTRY_V", "SUCCESS_D", "SUCCESS_V", "RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL", "SHAPE_B", "PANT", "SKINW", "SWEAT.G.H", "EVAP.G.H", "AK", "TA", "TGRD", "TCONDSB", "TSKY", "VEL", "RH", "QSOLR")
   #return(endo.out)
 }
