@@ -8,7 +8,7 @@
 #' @encoding UTF-8
 #' @param AMASS = 1, # kg
 #' @param SHAPE = 4, # shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid
-#' @param GMREF = 3, # initial ratio between long and short axis (-)
+#' @param SHAPE_B_REF = 3, # initial ratio between long and short axis (-)
 #' @param FURTHRMK = 0, # user-specified fur thermal conductivity (W/mK), not used if 0
 #' @param ZFURD = 2E-03, # fur depth, dorsal (m)
 #' @param ZFURV = 2E-03, # fur depth, ventral (m)
@@ -22,11 +22,12 @@
 #' @param QSOLR = 0, solar radiation, horizontal plane (W/m2)
 #' @param Z = 20, zenith angle of sun (degrees from overhead)
 #' @param SHADE = 0, shade level (\%)
-#' @usage endoR(AMASS = 1, SHAPE = 4, GMREF = 3, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-03, TC = 37, TCMAX = 45, TA = 20, TGRD = TA, TSKY = TA, VEL = 0.1, RH = 5, QSOLR = 0, Z = 20, SHADE = 0, NITESHAD = 0,...)
+#' @usage endoR(AMASS = 1, SHAPE = 4, SHAPE_B_REF = 3, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-03, TC = 37, TCMAX = 45, TA = 20, TGRD = TA, TSKY = TA, VEL = 0.1, RH = 5, QSOLR = 0, Z = 20, SHADE = 0, NITESHAD = 0,...)
 #' @export
 #' @details
 #' \strong{ Parameters controlling how the model runs:}\cr\cr
 #' \code{DIFTOL}{ = 0.001, error tolerance for SIMULSOL (°C)}\cr\cr
+#' \code{WRITE_INPUT}{ = 0, write input to csv (1 = yes)}\cr\cr
 #'
 #' \strong{ Environment:}\cr\cr
 #' \code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr
@@ -45,7 +46,7 @@
 #' \code{SHADE}{ = 0, shade level (\%)}\cr\cr
 #' \code{NITESHAD}{ = 0, flag for if animal is behaviourally seeking shade for warmth at night - remove?}\cr\cr
 #' \code{FLYHR}{ = 0, is flight occuring this hour? (imposes forced evaporative loss)}\cr\cr
-#' \code{UNCURL}{ = 1, allows the animal to uncurl to GMULTMAX, the value being the increment GMULT is increased per iteration}\cr\cr
+#' \code{UNCURL}{ = 1, allows the animal to uncurl to SHAPE_B_MAX, the value being the increment SHAPE_B is increased per iteration}\cr\cr
 #' \code{RAISETC}{ = 1, turns on core temperature elevation, the value being the increment by which TC is increased per iteration}\cr\cr
 #' \code{SWEAT}{ = 0.25, turns on sweating, the value being the increment by which SKINW is increased per iteration (\%)}\cr\cr
 #' \code{MXWET}{ = 100, maximum surface area that can be wet (\%)}\cr\cr
@@ -58,8 +59,9 @@
 #' \code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr
 #' \code{SUBQFAT}{ = 0, is subcutaneous fat present? (0 is no, 1 is yes)}\cr\cr
 #' \code{FATPCT}{ = 20, \% body fat}\cr\cr
-#' \code{GMULT}{ = GMREF, current ratio between long and short axis (-)}\cr\cr
-#' \code{GMULTMAX}{ = GMREF, max possible ratio between long and short axis (-)}\cr\cr
+#' \code{SHAPE_B}{ = SHAPE_B_REF, current ratio between long and short axis (-)}\cr\cr
+#' \code{SHAPE_B_MAX}{ = SHAPE_B_REF, max possible ratio between long and short axis (-)}\cr\cr
+#' \code{SHAPE_C}{ = SHAPE_B, ratio between length and width for plate geometry (-)}\cr\cr
 #' \code{MAXPTVEN}{ = 0.5, maxium fraction of surface area that is ventral (fractional, 0-1)}\cr\cr
 #' \code{AWING}{ = 0, area of wing, to do}\cr\cr
 #' \code{PTCOND}{ = 0, fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
@@ -158,7 +160,7 @@
 #' \code{N2MOL2}{ nitrogen leaving lungs (moles/s)}\cr\cr
 #' \code{AIRML2}{ air leaving lungs (moles/s)}\cr\cr
 #' \code{AIRVOL}{ air entering lungs (L/s)}\cr\cr
-#' \code{GMULT}{ shape multiplier for postural change (-)}\cr\cr
+#' \code{SHAPE_B}{ shape multiplier for postural change (-)}\cr\cr
 #' \code{SKINW}{ skin area that is wet (\%)}\cr\cr
 #' \code{SWEAT.G.H}{ sweating rate (g/h)}\cr\cr
 #' \code{EVAP.G.H}{ evaporation rate (g/h)}\cr\cr
@@ -186,8 +188,8 @@
 #'
 #' # size and shape
 #' AMASS <- 0.0337 # mass (kg)
-#' GMREF <- 1.1 # start off near to a sphere (-)
-#' GMULTMAX <- 5 # maximum ratio of length to width/depth
+#' SHAPE_B_REF <- 1.1 # start off near to a sphere (-)
+#' SHAPE_B_MAX <- 5 # maximum ratio of length to width/depth
 #'
 #' # fur/feather properties
 #' DHAIRD = 30E-06 # hair diameter, dorsal (m)
@@ -213,7 +215,7 @@
 #' PANTMAX <- 3# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
 #'
 #' ptm <- proc.time() # start timing
-#' endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], QSOLR = QSOLR, VEL = VEL, TC = TC, TCMAX = TCMAX, RH = RH, AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)}) # run endoR across environments
+#' endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], QSOLR = QSOLR, VEL = VEL, TC = TC, TCMAX = TCMAX, RH = RH, AMASS = AMASS, SHAPE_B_REF = SHAPE_B_REF, SHAPE_B_MAX = SHAPE_B_MAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)}) # run endoR across environments
 #' proc.time() - ptm # stop timing
 #'
 #' endo.out <- do.call("rbind", lapply(endo.out, data.frame)) # turn results into data frame
@@ -265,7 +267,7 @@ endoR <- function(
   SHADE = 0, # shade level (%)
   NITESHAD = 0, # flag for if animal is behaviourally seeking shade for warmth at night - remove?
   FLYHR = 0, # is flight occuring this hour? (imposes forced evaporative loss)
-  UNCURL = 1, # allows the animal to uncurl to GMULTMAX, the value being the increment GMULT is increased per iteration
+  UNCURL = 1, # allows the animal to uncurl to SHAPE_B_MAX, the value being the increment SHAPE_B is increased per iteration
   RAISETC = 1, # turns on core temperature elevation, the value being the increment by which TC is increased per iteration
   SWEAT = 0.25, # turns on sweating, the value being the increment by which SKINW is increased per iteration
   MXWET = 100, # maximum surface area that can be wet (%)
@@ -282,9 +284,10 @@ endoR <- function(
   SUBQFAT = 0, # is subcutaneous fat present? (0 is no, 1 is yes)
   FATPCT = 20, # % body fat
   SHAPE = 4, # shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid
-  GMREF = 3, # initial ratio between long and short axis (-)
-  GMULT = GMREF, # current ratio between long and short axis (-)
-  GMULTMAX = GMREF, # max possible ratio between long and short axis (-)
+  SHAPE_B_REF = 3, # initial ratio between long and short axis (-)
+  SHAPE_B = SHAPE_B_REF, # current ratio between long and short axis (-)
+  SHAPE_B_MAX = SHAPE_B_REF, # max possible ratio between long and short axis (-)
+  SHAPE_C = SHAPE_B, # ratio between length and width for plate geometry (-)}\cr\cr
   MAXPTVEN = 0.5, # maxium fraction of surface area that is ventral (fractional, 0-1)
   AWING = 0, # area of wing, to do
   PTCOND = 0, # fraction of surface area that is touching the substrate (fractional, 0-1)
@@ -346,7 +349,8 @@ endoR <- function(
   TFA = TA, # fur/air interface temperature (°C)
 
   # other model settings
-  DIFTOL = 0.001 # tolerance for SIMULSOL
+  DIFTOL = 0.001, # tolerance for SIMULSOL
+  WRITE_INPUT = 0
 ){
 #
 #   TA = 50 # air temperature at local height (°C)
@@ -375,7 +379,7 @@ endoR <- function(
 #   SHADE = 0 # shade level (%)
 #   NITESHAD = 0 # flag for if animal is behaviourally seeking shade for warmth at night - remove?
 #   FLYHR = 0 # is flight occuring this hour? (imposes forced evaporative loss)
-#   UNCURL = 1 # allows the animal to uncurl to GMULTMAX, the value being the increment GMULT is increased per iteration
+#   UNCURL = 1 # allows the animal to uncurl to SHAPE_B_MAX, the value being the increment SHAPE_B is increased per iteration
 #   RAISETC = 1 # turns on core temperature elevation, the value being the increment by which TC is increased per iteration
 #   SWEAT = 0.25 # turns on sweating, the value being the increment by which SKINW is increased per iteration
 #   MXWET = 100 # maximum surface area that can be wet (%)
@@ -392,9 +396,9 @@ endoR <- function(
 #   SUBQFAT = 0 # is subcutaneous fat present? (0 is no, 1 is yes)
 #   FATPCT = 20 # % body fat
 #   SHAPE = 4 # shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid
-#   GMREF = 3 # initial ratio between long and short axis (-)
-#   GMULT = GMREF # current ratio between long and short axis (-)
-#   GMULTMAX = GMREF # max possible ratio between long and short axis (-)
+#   SHAPE_B_REF = 3 # initial ratio between long and short axis (-)
+#   SHAPE_B = SHAPE_B_REF # current ratio between long and short axis (-)
+#   SHAPE_B_MAX = SHAPE_B_REF # max possible ratio between long and short axis (-)
 #   MAXPTVEN = 0.5 # maxium fraction of surface area that is ventral (fractional, 0-1)
 #   AWING = 0 # area of wing, to do
 #   PTCOND = 0 # % of body area touching the substrate
@@ -468,7 +472,7 @@ endoR <- function(
     AKMAX <- AK1 # can't change thermal conductivity, so max value set to current value
   }
   if(UNCURL == 0){
-    GMULTMAX <- GMULT # can't change posture, so max multiplier of dimension set to current value
+    SHAPE_B_MAX <- SHAPE_B # can't change posture, so max multiplier of dimension set to current value
   }
   QGEN <- 0
   TCREF <- TC
@@ -484,10 +488,13 @@ endoR <- function(
       QBASAL = QBASREF * Q10mult
     }
     AK1 <- AKMAX
-    GMULT <- GMULTMAX
+    SHAPE_B <- SHAPE_B_MAX
   }
   TVEG <- TA
-  SOLVENDO.input <- c(QGEN, QBASAL, TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, SHAPE, EMISAN, FATOBJ, FSKREF, FGDREF, NESTYP, PCTDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, NITESHAD, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, SKINW, TSKY, TVEG, TAREF, DELTAR, RQ, TIMACT, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AKMAX, AK1inc, TCMAX, RAISETC, TCREF, Q10, QBASREF, PANTMAX, MXWET, SWEAT, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PTCOND, MAXPTCOND, ZFURCOMP, PANTING, ORIENT)
+  SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, SHAPE_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, SHAPE, EMISAN, FATOBJ, FSKREF, FGDREF, NESTYP, PCTDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, NITESHAD, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, SKINW, TSKY, TVEG, TAREF, DELTAR, RQ, TIMACT, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AKMAX, AK1inc, TCMAX, RAISETC, TCREF, Q10, QBASREF, PANTMAX, MXWET, SWEAT, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PTCOND, MAXPTCOND, ZFURCOMP, PANTING, ORIENT, SHAPE_C)
+  if(WRITE_INPUT == 1){
+   write.csv(SOLVENDO.input, file = "SOLVENDO.input.csv")
+  }
   endo.out <- SOLVENDO(SOLVENDO.input)
   return(endo.out)
 }

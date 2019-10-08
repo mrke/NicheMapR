@@ -7,15 +7,16 @@
 #' @param POSTUR shape, -
 #' @param ZFUR fur depth, m
 #' @param SUBQFAT subcutaneous fat presence, -
-#' @param GMULT multiplier on long axis for shape change, -
-#' @param GMREF reference multiplier on long axis for shape change, -
+#' @param SHAPE_B multiplier on long axis for shape change, -
+#' @param SHAPE_B_REF reference multiplier on long axis for shape change, -
+#' @param SHAPE_C multiplier on width relative to height for plate shape change, -
 #' @param DHARA hair diameter, m
 #' @param RHOARA hair density, 1/m2
 #' @param PTCOND percentage of surface area conducting to substrate, \%
 #' @param SAMODE surface area mode, -
 #' @param ORIENT orientation to solar, -
 #' @export
-GEOM <- function(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA, RHOARA, PTCOND, SAMODE, ORIENT){
+GEOM <- function(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, SHAPE_B, SHAPE_B_REF, SHAPE_C, DHARA, RHOARA, PTCOND, SAMODE, ORIENT){
   os = Sys.info()['sysname']
   if (os == "Windows") {
     if (R.Version()$arch=="x86_64") {
@@ -38,8 +39,9 @@ GEOM <- function(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHA
     as.double(POSTUR),
     as.double(ZFUR),
     as.double(SUBQFAT),
-    as.double(GMULT),
-    as.double(GMREF),
+    as.double(SHAPE_B),
+    as.double(SHAPE_B_REF),
+    as.double(SHAPE_C),
     as.double(DHARA),
     as.double(RHOARA),
     as.double(PTCOND),
