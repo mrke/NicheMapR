@@ -32,7 +32,8 @@ Imports:
 VignetteBuilder: knitr
 Vignettes: properties-of-air,ectotherm-model-tutorial,microclimate-model-
     tutorial,microclimate-monthly-input-example,microclimate-inputs,microclimate-
-    model-theory-equations,microclimate-hourly-input-example,microclimate-IO,deb-model-tutorial
+    model-theory-equations,microclimate-hourly-input-example,microclimate-IO,
+    deb-model-tutorial,endotherm-model-tutorial,endotherm-components-tutorial
 Encoding: UTF-8
 URL: https://github.com/mrke/NicheMapR
 BugReports: https://github.com/mrke/NicheMapR/issues

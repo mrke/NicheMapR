@@ -6,13 +6,20 @@ knitr::opts_chunk$set(
 ## ------------------------------------------------------------------------
 library(NicheMapR)
 library(knitr)
+
 endo.out <- endoR(TA = 0)
-kable(endo.out[, 1:9])
-kable(endo.out[, 10:19])
-kable(endo.out[, 20:29])
-kable(endo.out[, 30:39])
-kable(endo.out[, 40:49])
-kable(endo.out[, 50:60])
+
+treg <- as.data.frame(endo.out$treg)
+morph <- as.data.frame(endo.out$morph)
+enbal <- as.data.frame(endo.out$enbal)
+masbal <- as.data.frame(endo.out$masbal)
+
+kable(treg[, 1:10])
+kable(treg[, 11:15])
+kable(morph[, 1:10])
+kable(morph[, 11:20])
+kable(enbal)
+kable(masbal)
 
 ## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
 library(NicheMapR)
@@ -33,10 +40,11 @@ RAISETC <- 0.25 # increment by which TC is elevated (deg C)
 
 # size and shape
 AMASS <- 0.0337 # mass (kg)
-GMREF <- 2.5 # start off near to a sphere (-)
-GMULTMAX <- 2.5 # maximum ratio of length to width/depth
-UNCURL <- 0.1 # allows the animal to uncurl to GMULTMAX, the value being the increment GMULT is increased per iteration
-BIRD <- 1 # use bird surface area relations
+SHAPE_B_REF <- 1.1 # start off near to a sphere (-)
+SHAPE_B_MAX <- 5 # maximum ratio of length to width/depth
+UNCURL <- 0.1 # allows the animal to uncurl to SHAPE_B_MAX, the value being the increment SHAPE_B is increased per iteration
+SHAPE <- 4 # use ellipsoid geometry
+SAMODE <- 1 # use bird surface area relations (2 is mammal, 0 is based on shape specified in GEOM)
 
 # feather properties
 DHAIRD <- 30E-06 # hair diameter, dorsal (m)
@@ -51,30 +59,38 @@ REFLD <- 0.248  # fur reflectivity dorsal (fractional, 0-1)
 REFLV <- 0.351  # fur reflectivity ventral (fractional, 0-1)
 
 # physiological responses
-SKINW <- 0.1 # base skin wetness (%)
-MXWET <- 0.1 # maximum skin wetness (%)
+SKINW <- 0.5 # base skin wetness (%)
+MXWET <- 5 # maximum skin wetness (%)
 SWEAT <- 0.25 # intervals by which skin wetness is increased (%)
 Q10s <- rep(1, length(TAs))
 Q10s[TAs >= TCMAX] <- 2 # assuming Q10 effect kicks in only after air temp rises above TCMAX
 QBASAL <- 10 ^ (-1.461 + 0.669 * log10(AMASS * 1000)) # basal heat generation (W)
 DELTAR <- 5 # offset between air temeprature and breath (°C)
-EXTREF <- 15 # O2 extraction efficiency (%)
+EXTREF <- 25 # O2 extraction efficiency (%)
 PANTING <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANTMAX
-PANTMAX <- 10# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
+PANTMAX <- 15# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
 
 ptm <- proc.time() # start timing
-endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], VEL = VEL, TC = TC, TCMAX = TCMAX, RH = hum[x], AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10s[x], QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF, UNCURL = UNCURL, BIRD = BIRD)}) # run endoR across environments
+endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], VEL = VEL, TC = TC, TCMAX = TCMAX, RH = hum[x], AMASS = AMASS, SHAPE = SHAPE, SHAPE_B_REF = SHAPE_B_REF, SHAPE_B_MAX = SHAPE_B_MAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10s[x], QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF, UNCURL = UNCURL, SAMODE = SAMODE)}) # run endoR across environments
 proc.time() - ptm # stop timing
 
-endo.out <- do.call("rbind", lapply(endo.out, data.frame)) # turn results into data frame
+endo.out1 <- do.call("rbind", lapply(endo.out, data.frame)) # turn results into data frame
+treg <- endo.out1[, grep(pattern = "treg", colnames(endo.out1))]
+colnames(treg) <- gsub(colnames(treg), pattern = "treg.", replacement = "")
+morph <- endo.out1[, grep(pattern = "morph", colnames(endo.out1))]
+colnames(morph) <- gsub(colnames(morph), pattern = "morph.", replacement = "")
+enbal <- endo.out1[, grep(pattern = "enbal", colnames(endo.out1))]
+colnames(enbal) <- gsub(colnames(enbal), pattern = "enbal.", replacement = "")
+masbal <- endo.out1[, grep(pattern = "masbal", colnames(endo.out1))]
+colnames(masbal) <- gsub(colnames(masbal), pattern = "masbal.", replacement = "")
 
-QGEN <- endo.out$RESPGEN # metabolic rate (W)
-H2O <- endo.out$EVAP.G.H # g/h water evaporated
-TFA_D <- endo.out$TFA_D # dorsal fur surface temperature
-TFA_V <- endo.out$TFA_V # ventral fur surface temperature
-TskinD <- endo.out$TSKIN_D # dorsal skin temperature
-TskinV <- endo.out$TSKIN_V # ventral skin temperature
-TCs <- endo.out$TC # core temperature
+QGEN <- enbal$QMET # metabolic rate (W)
+H2O <- masbal$H2OResp_g + masbal$H2OCut_g # g/h water evaporated
+TFA_D <- treg$TFA_D # dorsal fur surface temperature
+TFA_V <- treg$TFA_V # ventral fur surface temperature
+TskinD <- treg$TSKIN_D # dorsal skin temperature
+TskinV <- treg$TSKIN_V # ventral skin temperature
+TCs <- treg$TC # core temperature
 
 par(mfrow = c(2, 2))
 par(oma = c(2, 1, 2, 2) + 0.1)
@@ -90,7 +106,7 @@ points(TskinD ~ TAs, type = 'l', col = 'orange')
 points(TskinV ~ TAs, type = 'l', col = 'orange', lty = 2)
 points(TCs ~ TAs, type = 'l', col = 'red')
 points(Weathers1976Fig2$Tair, Weathers1976Fig2$Tb, pch = 16, col = 2)
-plot(endo.out$AIRVOL * 1e6 / 60 ~ TAs, ylim=c(0,250),  lty = 1, xlim=c(-5,50), main = "minute volume", ylab = "ml / min", xlab=paste("air temperature (deg C)"), type = 'l') 
+plot(masbal$AIR_L * 1000 / 60 ~ TAs, ylim=c(0,250),  lty = 1, xlim=c(-5,50), main = "minute volume", ylab = "ml / min", xlab=paste("air temperature (deg C)"), type = 'l') 
 points(Weathers1976Fig5$breaths_min * (13.2 * AMASS ^ 1.08) * ((Weathers1976Fig5$Tair + 273.15) / 273.15) ~ Weathers1976Fig5$Tair, col='red', pch = 16) # tidal volume allometry from Lasiewski, R. C., and W. A. Calder. 1971, correcting volume according to PV = nRT equation, where V_2 = T_2 * V_1 / T_2, and T_1 is at STP, so 0 deg C
 
 ## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
@@ -104,19 +120,16 @@ metout <- as.data.frame(micro$metout)
 soil <- as.data.frame(micro$soil)
 shadmet <- as.data.frame(micro$shadmet)
 shadsoil <- as.data.frame(micro$shadsoil)
-days<-rep(seq(1,12),24)
-days<-days[order(days)]
-dates<-days+metout$TIME/60/24-1 # dates for hourly output
+dates <- micro$dates
 
-warm <- 0
 TAs <- metout$TALOC
 TAREFs <- metout$TAREF
 TSKYs <- metout$TSKYC
 TGRDs <- soil$D0cm
-VELs <- shadmet$VLOC
+VELs <- metout$VLOC
 RHs <- metout$RHLOC
 QSOLRs <- metout$SOLR 
-Zs <- shadmet$ZEN
+Zs <- metout$ZEN
 ELEV <- micro$elev
 ABSSB <- 1-micro$REFL
 
@@ -127,10 +140,10 @@ RAISETC <- 0.25 # increment by which TC is elevated (deg C)
 
 # size and shape
 AMASS <- 0.0337 # mass (kg)
-GMREF <- 1.1 # start off near to a sphere (-)
-GMULTMAX <- 5 # maximum ratio of length to width/depth
-UNCURL <- 0.1 # allows the animal to uncurl to GMULTMAX, the value being the increment GMULT is increased per iteration
-BIRD <- 1
+SHAPE <- 4 # use ellipsoid geometry
+SHAPE_B_REF <- 1.1 # start off near to a sphere (-)
+SHAPE_B_MAX <- 5 # maximum ratio of length to width/depth
+UNCURL <- 0.1 # allows the animal to uncurl to SHAPE_B_MAX, the value being the increment SHAPE_B is increased per iteration
 
 # feather properties
 DHAIRD = 30E-06 # hair diameter, dorsal (m)
@@ -151,24 +164,33 @@ SWEAT <- 0.25 # intervals by which skin wetness is increased (%)
 Q10 <- 1 # Q10 effect of body temperature on metabolic rate (-)
 QBASAL <- 10 ^ (-1.461 + 0.669 * log10(AMASS * 1000)) # basal heat generation (W)
 DELTAR <- 5 # offset between air temeprature and breath (°C)
-EXTREF <- 15 # O2 extraction efficiency (%)
+EXTREF <- 25 # O2 extraction efficiency (%)
 PANTING <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANTMAX
-PANTMAX <- 10# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
+PANTMAX <- 15# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
 
 ptm <- proc.time() # start timing
-endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], TAREF = TAREFs[x], TSKY = TSKYs[x], TGRD = TGRDs[x], VEL = VELs[x], RH = RHs[x], QSOLR = QSOLRs[x], Z = Zs[x], ELEV = ELEV, ABSSB = ABSSB, TC = TC, TCMAX = TCMAX, AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF, UNCURL = UNCURL, BIRD = BIRD, SHADE = 0)})
+endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], TAREF = TAREFs[x], TSKY = TSKYs[x], TGRD = TGRDs[x], VEL = VELs[x], RH = RHs[x], QSOLR = QSOLRs[x], Z = Zs[x], ELEV = ELEV, ABSSB = ABSSB, TC = TC, TCMAX = TCMAX, AMASS = AMASS, SHAPE = SHAPE, SHAPE_B_REF = SHAPE_B_REF, SHAPE_B_MAX = SHAPE_B_MAX, SKINW = SKINW, SWEAT = SWEAT, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF, UNCURL = UNCURL, SAMODE = SAMODE, SHADE = 0)})
 proc.time() - ptm
-endo.out <- do.call("rbind", lapply(endo.out, data.frame))
+endo.out1 <- do.call("rbind", lapply(endo.out, data.frame))
 
-QGEN <- endo.out$RESPGEN # metabolic rate (W)
-H2O <- endo.out$EVAP.G.H # g/h water evaporated
-TFA_D <- endo.out$TFA_D # dorsal fur surface temperature
-TFA_V <- endo.out$TFA_V # ventral fur surface temperature
-TskinD <- endo.out$TSKIN_D # dorsal skin temperature
-TskinV <- endo.out$TSKIN_V # ventral skin temperature
-TCs <- endo.out$TC # core temperature
-SkinW <- endo.out$SKINW # skin wetness (%)
-Pant <- endo.out$PANT # panting multiplier (-)
+treg <- endo.out1[, grep(pattern = "treg", colnames(endo.out1))]
+colnames(treg) <- gsub(colnames(treg), pattern = "treg.", replacement = "")
+morph <- endo.out1[, grep(pattern = "morph", colnames(endo.out1))]
+colnames(morph) <- gsub(colnames(morph), pattern = "morph.", replacement = "")
+enbal <- endo.out1[, grep(pattern = "enbal", colnames(endo.out1))]
+colnames(enbal) <- gsub(colnames(enbal), pattern = "enbal.", replacement = "")
+masbal <- endo.out1[, grep(pattern = "masbal", colnames(endo.out1))]
+colnames(masbal) <- gsub(colnames(masbal), pattern = "masbal.", replacement = "")
+
+QGEN <- enbal$QMET # metabolic rate (W)
+H2O <- masbal$H2OResp_g + masbal$H2OCut_g # g/h water evaporated
+TFA_D <- treg$TFA_D # dorsal fur surface temperature
+TFA_V <- treg$TFA_V # ventral fur surface temperature
+TskinD <- treg$TSKIN_D # dorsal skin temperature
+TskinV <- treg$TSKIN_V # ventral skin temperature
+TCs <- treg$TC # core temperature
+SkinW <- treg$SKINWET # skin wetness (%)
+Pant <- treg$PANT # panting multiplier (-)
 
 par(mfrow = c(2, 2))
 par(oma = c(2, 1, 2, 2) + 0.1)
@@ -181,5 +203,5 @@ points(TFA_V ~ dates, type = 'l', col = 'grey', lty = 2)
 points(TskinD ~ dates, type = 'l', col = 'orange')
 points(TskinV ~ dates, type = 'l', col = 'orange', lty = 2)
 points(TCs ~ dates, type = 'l', col = 'red')
-plot((H2O / (AMASS * 1000)) * 1000 ~ dates, type = 'l', ylab = 'water loss, % body mass / h', xlab = 'time', ylim = c(0, 50))
+plot((H2O / (AMASS * 1000)) * 1000 ~ dates, type = 'l', ylab = 'H2O loss, % body mass / h', xlab = 'time', ylim = c(0, 50))
 
