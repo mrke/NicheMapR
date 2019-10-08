@@ -120,7 +120,7 @@ core temprature, fourth pant and fifth sweat.
 \code{AK1}{ = 0.9, # initial thermal conductivity of flesh (0.412 - 2.8 W/mK)}\cr\cr
 \code{AK2}{ = 0.230, # conductivity of fat (W/mK)}\cr\cr
 \code{QBASAL}{ = (70 \* AMASS ^ 0.75) \* (4.185 / (24 \* 3.6)), # basal heat generation (W)}\cr\cr
-\code{SKINW}{ = 0, # part of the skin surface that is wet (\%)}\cr\cr
+\code{SKINW}{ = 0.5, # part of the skin surface that is wet (\%)}\cr\cr
 \code{FURWET}{ = 0, # Area of fur/feathers that is wet after rain (\%)}\cr\cr
 \code{PCTBAREVAP}{ = 2.8, maximum flesh conductivity (W/mK)}\cr\cr
 \code{PCTEYES}{ = 0, # surface area made up by the eye (\%) - make zero if sleeping}\cr\cr
@@ -137,78 +137,87 @@ core temprature, fourth pant and fifth sweat.
 \code{TFA}{ = TA, # initial fur/air interface temperature (°C)}\cr\cr
 
 \strong{Outputs:}
-\code{TC}{ core temperature (°C)}\cr\cr
-\code{TFA_D}{ dorsal fur-air interface temperature (°C)}\cr\cr
-\code{TFA_V}{ ventral fur-air interface temperature (°C)}\cr\cr
-\code{TSKIN_D}{ dorsal skin temperature (°C)}\cr\cr
-\code{TSKIN_V}{ ventral skin temperature (°C)}\cr\cr
-\code{QCONV_D}{ dorsal convection heat exchange (W)}\cr\cr
-\code{QCONV_V}{ ventral convection heat exchange (W)}\cr\cr
-\code{QCOND_D}{ dorsal conduction heat exchange (W)}\cr\cr
-\code{QCOND_V}{ ventral conduction heat exchange (W)}\cr\cr
-\code{QGENNET_D}{ dorsal net heat generation (W)}\cr\cr
-\code{QGENNET_V}{ ventral net heat generation (W)}\cr\cr
-\code{QSEVAP_D}{ dorsal evaporative heat exchange (W)}\cr\cr
-\code{QSEVAP_V}{ ventral evaporative heat exchange (W)}\cr\cr
-\code{QRAD_D}{ dorsal radiant heat loss (W)}\cr\cr
-\code{QRAD_V}{ ventral radiant heat loss (W)}\cr\cr
-\code{QSLR_D}{ dorsal solar heat gain (W)}\cr\cr
-\code{QSLR_V}{ ventral solar heat gain (W)}\cr\cr
-\code{QRSKY_D}{ dorsal radiant heat incomming from sky (W)}\cr\cr
-\code{QRSKY_V}{ ventral radiant heat incomming from sky (W)}\cr\cr
-\code{QRBSH_D}{ dorsal radiant heat incomming from nearby bush (W)}\cr\cr
-\code{QRBSH_V}{ ventral radiant heat incomming from nearby bush (W)}\cr\cr
-\code{QRVEG_D}{ dorsal radiant heat incomming from vegetation (W)}\cr\cr
-\code{QRVEG_V}{ ventral radiant heat incomming from vegetation (W)}\cr\cr
-\code{QRGRD_D}{ dorsal radiant heat incomming from ground (W)}\cr\cr
-\code{QRGRD_V}{ ventral radiant heat incomming from ground (W)}\cr\cr
-\code{QFSEVAP_D}{ dorsal evaporative heat exchange from wet fur (W)}\cr\cr
-\code{QFSEVAP_V}{ ventral evaporative heat exchange from wet fur (W)}\cr\cr
-\code{NTRY_D}{ number of iterations need for convergence of dorsal heat budget}\cr\cr
-\code{NTRY_V}{ number of iterations need for convergence of ventral heat budget}\cr\cr
-\code{SUCCESS_D}{ test of success convergence for dorsal heat budget}\cr\cr
-\code{SUCCESS_V}{ test of success convergence for ventral heat budget}\cr\cr
-\code{RESPFN}{ energy balance test after call to RESPFUN (W)}\cr\cr
-\code{QRESP}{ respiratory heat exchange (W)}\cr\cr
-\code{GEVAP}{ respiratory water loss (g/s)}\cr\cr
-\code{PCTO2}{ ambient oxygen gas concentration (\%)}\cr\cr
-\code{PCTN2}{ ambient nitgrogen gas concentration (\%)}\cr\cr
-\code{PCTCO2}{ ambient carbon dioxide gas concentration (\%)}\cr\cr
-\code{RESPGEN}{ total metabolic rate (W)}\cr\cr
-\code{O2STP}{ oxygen consumption at standard temperature and pressure (L/s)}\cr\cr
-\code{O2MOL1}{ oxygen entering lungs (moles/s)}\cr\cr
-\code{N2MOL1}{ nitrogen entering lungs (moles/s)}\cr\cr
-\code{AIRML1}{ air entering lungs (moles/s)}\cr\cr
-\code{O2MOL2}{ oxygen leaving lungs (moles/s)}\cr\cr
-\code{N2MOL2}{ nitrogen leaving lungs (moles/s)}\cr\cr
-\code{AIRML2}{ air leaving lungs (moles/s)}\cr\cr
-\code{AIRVOL}{ air entering lungs (L/s)}\cr\cr
-\code{SHAPE_B}{ shape multiplier for postural change (-)}\cr\cr
-\code{SKINW}{ skin area that is wet (\%)}\cr\cr
-\code{SWEAT.G.H}{ sweating rate (g/h)}\cr\cr
-\code{EVAP.G.H}{ evaporation rate (g/h)}\cr\cr
-\code{EXTREF}{ oxygen extraction efficiency (\%)}\cr\cr
-\code{AK}{ skin thermal conductivity (W/m°C)}\cr\cr
-\code{TA}{ air temperature (°C)}\cr\cr
-\code{TGRD}{ ground temperature, driving longwave heat gain (°C)}\cr\cr
-\code{TCONDSB}{ substrate temperature, driving conductive heat exchange (°C)}\cr\cr
-\code{TSKY}{ sky temperature (°C)}\cr\cr
-\code{VEL}{ wind speed (m/s)}\cr\cr
-\code{RH}{ relative humidity (\%)}\cr\cr
-\code{QSOLR}{ solar radiation (W/m2)}\cr\cr
+
+treg variables (thermoregulatory response):
+\itemize{
+\item 1 TC - core temperature (°C)
+\item 2 TLUNG - lung temperature (°C)
+\item 3 TSKIN_D - dorsal skin temperature (°C)
+\item 4 TSKIN_V - ventral skin temperature (°C)
+\item 5 TFA_D - dorsal fur-air interface temperature (°C)
+\item 6 TFA_V - ventral fur-air interface temperature (°C)
+\item 7 SHAPE_B - current ratio between long and short axis due to postural change (-)
+\item 8 PANT - breathing rate multiplier (-)
+\item 9 SKINWET - part of the skin surface that is wet (\%)
+\item 10 K_FLESH - thermal conductivity of flesh (W/mC)
+\item 11 K_FUR - thermal conductivity of flesh (W/mC)
+\item 12 K_FUR_D - thermal conductivity of dorsal fur (W/mC)
+\item 13 K_FUR_V - thermal conductivity of ventral fur (W/mC)
+\item 14 K_COMPFUR - thermal conductivity of compressed fur (W/mC)
+\item 15 Q10 - Q10 multiplier on metabolic rate (-)
+}
+morph variables (morphological traits):
+\itemize{
+\item 1 AREA - total outer surface area (m2)
+\item 2 VOLUME - total volume (m3)
+\item 3 CHAR_DIM  - characteristic dimension for convection (m)
+\item 4 MASS_FAT - fat mass (kg)
+\item 5 FAT_THICK - thickness of fat layer (m)
+\item 6 FLESH_VOL - flesh volume (m3)
+\item 7 LENGTH - length (m)
+\item 8 WIDTH - width (m)
+\item 9 HEIGHT - height (m)
+\item 10 DIAM_FLESH - diameter, core to skin (m)
+\item 11 DIAM_FUR - diameter, core to fur (m)
+\item 12 AREA_SIL - silhouette area (m2)
+\item 13 AREA_SILN - silhouette area normal to sun's rays (m2)
+\item 14 AREA_ASILP - silhouette area parallel to sun's rays (m2)
+\item 15 AREA_SKIN - total skin area (m2)
+\item 16 AREA_SKIN_EVAP - skin area available for evaporation (m2)
+\item 17 AREA_CONV - area for convection (m2)
+\item 18 AREA_COND - area for conduction (m2)
+\item 19 F_SKY - configuration factor to sky (-)
+\item 20 F_GROUND - configuration factor to ground (-)
+}
+enbal variables (energy balance):
+\itemize{
+\item 1 QSOL - solar radiation absorbed (W)
+\item 2 QIRIN - longwave (infra-red) radiation absorbed (W)
+\item 3 QMET  - characteristic dimension for convection (W)
+\item 4 QEVAP - evaporation (W)
+\item 5 QIROUT - longwave (infra-red) radiation lost (W)
+\item 6 QCONV - convection (W)
+\item 7 QCOND - conduction (W)
+\item 8 ENB - energy balance (W)
+\item 9 NTRY - iterations required for a solution (-)
+\item 10 SUCCESS - was a solution found (0=no, 1=yes)
+}
+masbal variables (mass exchanges):
+\itemize{
+\item 1 AIR_L - breating rate (L/h)
+\item 2 O2_L - oxgyen consumption rate (L/h)
+\item 3 H2OResp_g - respiratory water loss (g/h)
+\item 4 H2OCut_g - cutaneous water loss (g/h)
+\item 5 O2_mol_in - oxygen inhaled (mol/h)
+\item 6 O2_mol_out - oxygen expelled (mol/h)
+\item 7 N2_mol_in - nitrogen inhaled (mol/h)
+\item 8 N2_mol_out - nitrogen expelled (mol/h)
+\item 9 AIR_mol_in - air inhaled (mol/h)
+\item 10 AIR_mol_out - air expelled (mol/h)
+}
 }
 \examples{
 library(NicheMapR)
 # environment
-TAs <- seq(0, 50, 2) # air temperatures (Â°C)
+TAs <- seq(0, 50, 2) # air temperatures (Ã‚Â°C)
 VEL <- 0.002 # wind speed (m/s)
 RH <- 10 # relative humidity (\%)
 QSOLR <- 100 # solar radiation (W/m2)
 
 # core temperature
 TC <- 38 # core temperature (deg C)
-TCMAX <- 43 # maximum core temperature (Â°C)
-RAISETC <- 0.25 # increment by which TC is elevated (Â°C)
+TCMAX <- 43 # maximum core temperature (Ã‚Â°C)
+RAISETC <- 0.25 # increment by which TC is elevated (Ã‚Â°C)
 
 # size and shape
 AMASS <- 0.0337 # mass (kg)
@@ -233,7 +242,7 @@ MXWET <- 20 # maximum skin wetness (\%)
 SWEAT <- 0.25 # intervals by which skin wetness is increased (\%)
 Q10 <- 2 # Q10 effect of body temperature on metabolic rate
 QBASAL <- 10 ^ (-1.461 + 0.669 * log10(AMASS * 1000)) # basal heat generation (W) (bird formula from McKechnie and Wolf 2004 Phys. & Biochem. Zool. 77:502-521)
-DELTAR <- 5 # offset between air temeprature and breath (Â°C)
+DELTAR <- 5 # offset between air temeprature and breath (Ã‚Â°C)
 EXTREF <- 15 # O2 extraction efficiency (\%)
 PANTING <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANTMAX
 PANTMAX <- 3# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
@@ -242,15 +251,23 @@ ptm <- proc.time() # start timing
 endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], QSOLR = QSOLR, VEL = VEL, TC = TC, TCMAX = TCMAX, RH = RH, AMASS = AMASS, SHAPE_B_REF = SHAPE_B_REF, SHAPE_B_MAX = SHAPE_B_MAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)}) # run endoR across environments
 proc.time() - ptm # stop timing
 
-endo.out <- do.call("rbind", lapply(endo.out, data.frame)) # turn results into data frame
+endo.out1 <- do.call("rbind", lapply(endo.out, data.frame)) # turn results into data frame
+treg <- endo.out1[, grep(pattern = "treg", colnames(endo.out1))]
+colnames(treg) <- gsub(colnames(treg), pattern = "treg.", replacement = "")
+morph <- endo.out1[, grep(pattern = "morph", colnames(endo.out1))]
+colnames(morph) <- gsub(colnames(morph), pattern = "morph.", replacement = "")
+enbal <- endo.out1[, grep(pattern = "enbal", colnames(endo.out1))]
+colnames(enbal) <- gsub(colnames(enbal), pattern = "enbal.", replacement = "")
+masbal <- endo.out1[, grep(pattern = "masbal", colnames(endo.out1))]
+colnames(masbal) <- gsub(colnames(masbal), pattern = "masbal.", replacement = "")
 
-QGEN <- endo.out$RESPGEN # metabolic rate (W)
-H2O <- endo.out$EVAP.G.H # g/h water evaporated
-TFA_D <- endo.out$TFA_D # dorsal fur surface temperature
-TFA_V <- endo.out$TFA_V # ventral fur surface temperature
-TskinD <- endo.out$TSKIN_D # dorsal skin temperature
-TskinV <- endo.out$TSKIN_V # ventral skin temperature
-TCs <- endo.out$TC # core temperature
+QGEN <- enbal$QMET # metabolic rate (W)
+H2O <- masbal$H2OResp_g + masbal$H2OCut_g # g/h water evaporated
+TFA_D <- treg$TFA_D # dorsal fur surface temperature
+TFA_V <- treg$TFA_V # ventral fur surface temperature
+TskinD <- treg$TSKIN_D # dorsal skin temperature
+TskinV <- treg$TSKIN_V # ventral skin temperature
+TCs <- treg$TC # core temperature
 
 par(mfrow = c(2, 2))
 par(oma = c(2, 1, 2, 2) + 0.1)
@@ -258,10 +275,14 @@ par(mar = c(3, 3, 1.5, 1) + 0.1)
 par(mgp = c(2, 1, 0))
 plot(QGEN ~ TAs, type = 'l', ylab = 'metabolic rate, W', xlab = 'air temperature, deg C', ylim = c(0.2, 1.2))
 plot(H2O ~ TAs, type = 'l', ylab = 'water loss, g/h', xlab = 'air temperature, deg C', ylim = c(0, 1.5))
-plot(TFA_D ~ TAs, type = 'l', col = 'grey', ylab = 'fur, skin and core temperature, deg C', xlab = 'air temperature, deg C', ylim = c(10, 50))
+points(masbal$H2OResp_g ~ TAs, type = 'l', lty = 2)
+points(masbal$H2OCut_g ~ TAs, type = 'l', lty = 2, col = 'blue')
+legend(x = 3, y = 1.5, legend = c("total", "respiratory", "cutaneous"), col = c("black", "black", "blue"), lty = c(1, 2, 2), bty = "n")
+plot(TFA_D ~ TAs, type = 'l', col = 'grey', ylab = 'temperature, deg C', xlab = 'air temperature, deg C', ylim = c(10, 50))
 points(TFA_V ~ TAs, type = 'l', col = 'grey', lty = 2)
 points(TskinD ~ TAs, type = 'l', col = 'orange')
 points(TskinV ~ TAs, type = 'l', col = 'orange', lty = 2)
 points(TCs ~ TAs, type = 'l', col = 'red')
-plot(endo.out$AIRVOL * 1e6 / 60 ~ TAs, ylim=c(0,250),  lty = 1, xlim=c(-5,50), ylab = "ml / min", xlab=paste("air temperature (deg C)"), type = 'l')
+legend(x = 30, y = 33, legend = c("core", "skin dorsal", "skin ventral", "feathers dorsal", "feathers ventral"), col = c("red", "orange", "orange", "grey", "grey"), lty = c(1, 1, 2, 1, 2), bty = "n")
+plot(masbal$AIR_L * 1000 / 60 ~ TAs, ylim=c(0,250),  lty = 1, xlim=c(-5,50), ylab = "ml / min", xlab=paste("air temperature (deg C)"), type = 'l')
 }
