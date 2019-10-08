@@ -5,7 +5,7 @@
 \alias{endoR}
 \title{endoR - the endotherm model of NicheMapR}
 \usage{
-endoR(AMASS = 1, SHAPE = 4, GMREF = 3, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-03, TC = 37, TCMAX = 45, TA = 20, TGRD = TA, TSKY = TA, VEL = 0.1, RH = 5, QSOLR = 0, Z = 20, SHADE = 0, NITESHAD = 0,...)
+endoR(AMASS = 1, SHAPE = 4, SHAPE_B_REF = 3, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-03, TC = 37, TCMAX = 45, TA = 20, TGRD = TA, TSKY = TA, VEL = 0.1, RH = 5, QSOLR = 0, Z = 20, SHADE = 0, NITESHAD = 0,...)
 }
 \arguments{
 \item{TA}{= 20, air temperature at local height (°C)}
@@ -28,7 +28,7 @@ endoR(AMASS = 1, SHAPE = 4, GMREF = 3, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-0
 
 \item{SHAPE}{= 4, # shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid}
 
-\item{GMREF}{= 3, # initial ratio between long and short axis (-)}
+\item{SHAPE_B_REF}{= 3, # initial ratio between long and short axis (-)}
 
 \item{FURTHRMK}{= 0, # user-specified fur thermal conductivity (W/mK), not used if 0}
 
@@ -50,6 +50,7 @@ core temprature, fourth pant and fifth sweat.
 \details{
 \strong{ Parameters controlling how the model runs:}\cr\cr
 \code{DIFTOL}{ = 0.001, error tolerance for SIMULSOL (°C)}\cr\cr
+\code{WRITE_INPUT}{ = 0, write input to csv (1 = yes)}\cr\cr
 
 \strong{ Environment:}\cr\cr
 \code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr
@@ -68,7 +69,7 @@ core temprature, fourth pant and fifth sweat.
 \code{SHADE}{ = 0, shade level (\%)}\cr\cr
 \code{NITESHAD}{ = 0, flag for if animal is behaviourally seeking shade for warmth at night - remove?}\cr\cr
 \code{FLYHR}{ = 0, is flight occuring this hour? (imposes forced evaporative loss)}\cr\cr
-\code{UNCURL}{ = 1, allows the animal to uncurl to GMULTMAX, the value being the increment GMULT is increased per iteration}\cr\cr
+\code{UNCURL}{ = 1, allows the animal to uncurl to SHAPE_B_MAX, the value being the increment SHAPE_B is increased per iteration}\cr\cr
 \code{RAISETC}{ = 1, turns on core temperature elevation, the value being the increment by which TC is increased per iteration}\cr\cr
 \code{SWEAT}{ = 0.25, turns on sweating, the value being the increment by which SKINW is increased per iteration (\%)}\cr\cr
 \code{MXWET}{ = 100, maximum surface area that can be wet (\%)}\cr\cr
@@ -81,12 +82,13 @@ core temprature, fourth pant and fifth sweat.
 \code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr
 \code{SUBQFAT}{ = 0, is subcutaneous fat present? (0 is no, 1 is yes)}\cr\cr
 \code{FATPCT}{ = 20, \% body fat}\cr\cr
-\code{GMULT}{ = GMREF, current ratio between long and short axis (-)}\cr\cr
-\code{GMULTMAX}{ = GMREF, max possible ratio between long and short axis (-)}\cr\cr
+\code{SHAPE_B}{ = SHAPE_B_REF, current ratio between long and short axis (-)}\cr\cr
+\code{SHAPE_B_MAX}{ = SHAPE_B_REF, max possible ratio between long and short axis (-)}\cr\cr
+\code{SHAPE_C}{ = SHAPE_B, ratio between length and width for plate geometry (-)}\cr\cr
 \code{MAXPTVEN}{ = 0.5, maxium fraction of surface area that is ventral (fractional, 0-1)}\cr\cr
 \code{AWING}{ = 0, area of wing, to do}\cr\cr
-\code{PTCOND}{ = 0, fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
-\code{MAXPTCOND}{ = 0, maximum fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
+\code{PCOND}{ = 0, fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
+\code{MAXPCOND}{ = 0, maximum fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
 \code{SAMODE}{ = 0, if 0, uses surface area for SHAPE geometry, if 1, uses bird skin surface area allometry from Walsberg & King. 1978. JEB 76:185–189, if 2 uses mammal surface area from Stahl 1967.J. App. Physiol. 22, 453–460.}\cr\cr
 \code{ORIENT}{ = 0, if 0, long axis parallel to ground, if 1, long axis is perpendicular to the ground}\cr\cr
 
@@ -181,7 +183,7 @@ core temprature, fourth pant and fifth sweat.
 \code{N2MOL2}{ nitrogen leaving lungs (moles/s)}\cr\cr
 \code{AIRML2}{ air leaving lungs (moles/s)}\cr\cr
 \code{AIRVOL}{ air entering lungs (L/s)}\cr\cr
-\code{GMULT}{ shape multiplier for postural change (-)}\cr\cr
+\code{SHAPE_B}{ shape multiplier for postural change (-)}\cr\cr
 \code{SKINW}{ skin area that is wet (\%)}\cr\cr
 \code{SWEAT.G.H}{ sweating rate (g/h)}\cr\cr
 \code{EVAP.G.H}{ evaporation rate (g/h)}\cr\cr
@@ -210,8 +212,8 @@ RAISETC <- 0.25 # increment by which TC is elevated (Â°C)
 
 # size and shape
 AMASS <- 0.0337 # mass (kg)
-GMREF <- 1.1 # start off near to a sphere (-)
-GMULTMAX <- 5 # maximum ratio of length to width/depth
+SHAPE_B_REF <- 1.1 # start off near to a sphere (-)
+SHAPE_B_MAX <- 5 # maximum ratio of length to width/depth
 
 # fur/feather properties
 DHAIRD = 30E-06 # hair diameter, dorsal (m)
@@ -237,7 +239,7 @@ PANTING <- 0.1 # turns on panting, the value being the increment by which the pa
 PANTMAX <- 3# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
 
 ptm <- proc.time() # start timing
-endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], QSOLR = QSOLR, VEL = VEL, TC = TC, TCMAX = TCMAX, RH = RH, AMASS = AMASS, GMREF = GMREF, GMULTMAX = GMULTMAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)}) # run endoR across environments
+endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], QSOLR = QSOLR, VEL = VEL, TC = TC, TCMAX = TCMAX, RH = RH, AMASS = AMASS, SHAPE_B_REF = SHAPE_B_REF, SHAPE_B_MAX = SHAPE_B_MAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)}) # run endoR across environments
 proc.time() - ptm # stop timing
 
 endo.out <- do.call("rbind", lapply(endo.out, data.frame)) # turn results into data frame

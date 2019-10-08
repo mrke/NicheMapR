@@ -4,8 +4,8 @@
 \alias{GEOM}
 \title{GEOM}
 \usage{
-GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA,
-  RHOARA, PTCOND, SAMODE, ORIENT)
+GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, SHAPE_B, SHAPE_B_REF,
+  SHAPE_C, DHARA, RHOARA, PTCOND, SAMODE, ORIENT)
 }
 \arguments{
 \item{AMASS}{mass, kg}
@@ -20,9 +20,11 @@ GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA,
 
 \item{SUBQFAT}{subcutaneous fat presence, -}
 
-\item{GMULT}{multiplier on long axis for shape change, -}
+\item{SHAPE_B}{multiplier on long axis for shape change, -}
 
-\item{GMREF}{reference multiplier on long axis for shape change, -}
+\item{SHAPE_B_REF}{reference multiplier on long axis for shape change, -}
+
+\item{SHAPE_C}{multiplier on width relative to height for plate shape change, -}
 
 \item{DHARA}{hair diameter, m}
 
