@@ -27,7 +27,7 @@ get_p_wet(cut.known = 1, E_tot = 0.344 / 60 / 1000, E_cut = 0.108 / 60 / 1000, T
 
 \item{E_eye}{= 0.199 / 60 / 1000, Observed ocular evaporative water loss rate, g/s}
 
-\item{mass.g}{= 26.7, Mass of animal, g}
+\item{mass.g}{= 26.7, Wet mass of animal, g}
 
 \item{A_tot}{= 0.00894, Total surface area, m2}
 
@@ -37,11 +37,11 @@ get_p_wet(cut.known = 1, E_tot = 0.344 / 60 / 1000, E_cut = 0.108 / 60 / 1000, T
 
 \item{eye_frac}{= 0.58, Fraction of time eye is open, dec\%}
 
-\item{T_b}{= 25, Core body temperature, deg C}
+\item{T_b}{= 25, Core body temperature, °C}
 
-\item{T_s}{= 24.99, Skin (surface) temperature, deg C}
+\item{T_s}{= 24.99, Skin (surface) temperature, °C}
 
-\item{T_a}{= 24.98, Air temperature, deg C}
+\item{T_a}{= 24.98, Air temperature, °C}
 
 \item{vel}{= 0.0021, wind speed, m / s}
 
@@ -61,13 +61,13 @@ get_p_wet(cut.known = 1, E_tot = 0.344 / 60 / 1000, E_cut = 0.108 / 60 / 1000, T
 
 \item{V_O2_STP}{= M_1 * mass.g ^ M_2 * 10 ^ (M_3 * T_b) / 3600 / 1000, Oxygen consumption rate corrected to STP, L O2 / s}
 
-\item{T_ref_O2}{= 25, Reference temperature for oxygen consumption rate correction (deg C)}
+\item{T_ref_O2}{= 25, Reference temperature for oxygen consumption rate correction (°C)}
 
 \item{V_air_STP}{= V_O2_STP / (0.2094 * E_O2 / 100), Ventilation rate at STP, L/s}
 
 \item{rho_flesh}{= 1000, Density of flesh (kg/m3)}
 
-\item{T_ref_vent}{= 25, Reference temperature for ventilation rate correction (deg C)}
+\item{T_ref_vent}{= 25, Reference temperature for ventilation rate correction (°C)}
 
 \item{T_A}{= 8817, Arhhenius temperature (K)}
 
@@ -84,27 +84,27 @@ get_p_wet(cut.known = 1, E_tot = 0.344 / 60 / 1000, E_cut = 0.108 / 60 / 1000, T
 \item{bp}{= 101325, Barometric pressure (pascal)}
 }
 \value{
-E_tot
+E_tot total evaporative water loss, g/s
 
-E_cut
+E_cut cutaneous evaporative water loss, g/s
 
-E_resp
+E_resp respiratory evaporative water loss, g/s
 
-E_eye
+E_eye ocular evaporative water loss, g/s
 
-R_a
+R_a boundary layer resitance, s/m
 
-R_s
+R_s skin resistance, s/m
 
-A_tot
+A_tot total surface area, m2
 
-A_eye
+A_eye ocular surface area, m2
 
-A_eff
+A_eff effective area for evaporation, m2
 
-A_wet
+A_wet area acting as a free water surface, m2
 
-p_wet
+p_wet proportion of surface area acting as a free water surface, m2
 }
 \description{
 A set of equations for computing the proportion of the total surface area of an organism that
@@ -112,9 +112,4 @@ is acting as a free water surface for evaporation, which is used in the ectother
 NicheMapR to compute cutaneous water loss rates. This function requires the WETAIR and DRYAIR
 functions of NicheMapR.
 Elia Pirtle and Michael Kearney developed this R function and example in November 2017.
-}
-\examples{
-library(NicheMapR)
-
-
 }
