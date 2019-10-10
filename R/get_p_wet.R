@@ -53,7 +53,7 @@
 #' @return A_eye ocular surface area, m2
 #' @return A_eff effective area for evaporation, m2
 #' @return A_wet area acting as a free water surface, m2
-#' @return p_wet proportion of surface area acting as a free water surface, m2
+#' @return p_wet proportion of surface area acting as a free water surface, dec\%
 #' @usage get_p_wet(cut.known = 1, E_tot = 0.344 / 60 / 1000, E_cut = 0.108 / 60 / 1000, T_b = 25, RHin = 30, vel = 0.0021)
 #' @export
 get_p_wet <- function(cut.known = 0,
