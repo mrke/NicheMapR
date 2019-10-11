@@ -104,7 +104,7 @@ A_eff effective area for evaporation, m2
 
 A_wet area acting as a free water surface, m2
 
-p_wet proportion of surface area acting as a free water surface, m2
+p_wet proportion of surface area acting as a free water surface, dec\%
 }
 \description{
 A set of equations for computing the proportion of the total surface area of an organism that
