@@ -72,7 +72,7 @@ sunsnow Hourly predictions of snow temperature under the minimum specified shade
 shadsnow Hourly predictions snow temperature under the maximum specified shade
 }
 \description{
-An implementation of the NicheMapR microclimate model that uses the RNCEP package daily weather database https://sites.google.com/site/michaelukemp/rncep, and specifically uses the following variables: air.2m, prate.sfc, shum.2m, pres.sfc, tcdc.eatm, uwnd.10m, vwnd.10m, dswrf.sfc. At the moment uses the same DEM from the CRU global climate data set.
+An implementation of the NicheMapR microclimate model that integrates the RNCEP 6-hourly weather data and the elevatr package for obtaining DEM using downscaling functions from the microclima package as described in more detail in Kearney, M. R., Gillingham, P. K., Bramer, I., Duffy, J. P., & Maclean, I. M. D. (2019). A method for computing hourly, historical, terrain-corrected microclimate anywhere on Earth. Methods in Ecology and Evolution.
 }
 \details{
 \strong{ Parameters controlling how the model runs:}\cr\cr

@@ -12,9 +12,9 @@ Usrhyt = 0.01, ...)
 \arguments{
 \item{loc}{Longitude and latitude (decimal degrees)}
 
-\item{dstart}{First day to run, date in format "d/m/Y" e.g. "01-01-2016"}
+\item{dstart}{First day to run, date in format "d/m/Y" e.g. "01/01/2016"}
 
-\item{dfinish}{Last day to run, date in format "d/m/Y" e.g. "31-12-2016"}
+\item{dfinish}{Last day to run, date in format "d/m/Y" e.g. "31/12/2016"}
 
 \item{REFL}{Soil solar reflectance, decimal \%}
 

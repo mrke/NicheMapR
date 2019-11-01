@@ -3,8 +3,8 @@
 #' An implementation of the NicheMapR microclimate model that uses the GRIDMET daily weather database http://www.climatologylab.org/gridmet.html, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "metdata_elevationdata.nc".
 #' @encoding UTF-8
 #' @param loc Longitude and latitude (decimal degrees)
-#' @param dstart First day to run, date in format "d/m/Y" e.g. "01-01-2016"
-#' @param dfinish Last day to run, date in format "d/m/Y" e.g. "31-12-2016"
+#' @param dstart First day to run, date in format "d/m/Y" e.g. "01/01/2016"
+#' @param dfinish Last day to run, date in format "d/m/Y" e.g. "31/12/2016"
 #' @param REFL Soil solar reflectance, decimal \%
 #' @param elev Elevation, if to be user specified (m)
 #' @param slope Slope in degrees
@@ -1263,8 +1263,8 @@ micro_usa <- function(
       if(max(metout[,1] == 0)){
         cat("ERROR: the model crashed - try a different error tolerance (ERR) or a different spacing in DEP", '\n')
       }
-      dates <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), as.POSIXct(paste0("01/01/",yfinish+1), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), by = 'hours')[1:(length(TMAXX) * 24)]
-      dates2 <- seq(as.POSIXct(paste0("01/01/",ystart), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), as.POSIXct(paste0("01/01/",yfinish+1), format = "%d/%m/%Y", tz = 'America/Los_Angeles'), by = 'days')[1:(length(TMAXX))]
+      dates <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", tz = 'America/Los_Angeles'), as.POSIXct(dfinish, format = "%d/%m/%Y", tz = 'America/Los_Angeles')+23*3600, by = 'hours')[1:(length(TMAXX) * 24)]
+      dates2 <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", tz = 'America/Los_Angeles'), as.POSIXct(dfinish, format = "%d/%m/%Y", tz = 'America/Los_Angeles'), by = 'days')[1:(length(TMAXX))]
       if(lamb == 1){
         drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
         drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
