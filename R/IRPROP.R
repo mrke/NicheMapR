@@ -2,9 +2,9 @@
 #'
 #' R wrapper for Fortran binary of IRPROP (endotherm model)
 #' @param TA A
-#' @param GMULTMAX A
-#' @param GMREF A
-#' @param GMULT A
+#' @param SHAPE_B_MAX A
+#' @param SHAP_B_REF A
+#' @param SHAPE_B A
 #' @param DHAIRD A
 #' @param DHAIRV A
 #' @param LHAIRD A
@@ -18,7 +18,7 @@
 #' @param MAXPTVEN A
 #' @param ZFURCOMP A
 #' @export
-IRPROP <- function(TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV,
+IRPROP <- function(TA, SHAPE_B_MAX, SHAP_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV,
   ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, ZFURCOMP){
   os = Sys.info()['sysname']
   if (os == "Windows") {
@@ -37,9 +37,9 @@ IRPROP <- function(TA, GMULTMAX, GMREF, GMULT, DHAIRD, DHAIRV, LHAIRD, LHAIRV,
   }
   a <- .Fortran("IRPROP",
                 as.double(TA),
-                as.double(GMULTMAX),
-                as.double(GMREF),
-                as.double(GMULT),
+                as.double(SHAPE_B_MAX),
+                as.double(SHAP_B_REF),
+                as.double(SHAPE_B),
                 as.double(DHAIRD),
                 as.double(DHAIRV),
                 as.double(LHAIRD),
