@@ -723,6 +723,9 @@ endoR_devel <- function(
             SKINW <- SKINW + SWEAT
             if(SKINW > MXWET | SWEAT == 0){
               SKINW <- MXWET
+              if(max(treg) == 0){
+                warning("A solution could not be found and panting/'sweating' options are exhausted; try allowing greater evaporation or allowing higher body maximum body temperature")
+              }
                 break
             }
           }
