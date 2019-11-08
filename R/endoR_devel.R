@@ -28,10 +28,11 @@
 #' @param QSOLR = 0, solar radiation, horizontal plane (W/m2)
 #' @param Z = 20, zenith angle of sun (degrees from overhead)
 #' @param SHADE = 0, shade level (\%)
-#' @usage endoR(AMASS = 1, SHAPE = 4, SHAPE_B_REF = 3, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-03, TC = 37, TCMAX = 45, TA = 20, TGRD = TA, TSKY = TA, VEL = 0.1, RH = 5, QSOLR = 0, Z = 20, SHADE = 0, NITESHAD = 0,...)
+#' @usage endoR_devel(AMASS = 1, SHAPE = 4, SHAPE_B_REF = 3, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-03, TC = 37, TCMAX = 45, TA = 20, TGRD = TA, TSKY = TA, VEL = 0.1, RH = 5, QSOLR = 0, Z = 20, SHADE = 0, NITESHAD = 0,...)
 #' @export
 #' @details
 #' \strong{ Parameters controlling how the model runs:}\cr\cr
+#' \code{THERMOREG}{ = 1, thermoregulate? (1 = yes, 0 = no)}\cr\cr
 #' \code{DIFTOL}{ = 0.001, error tolerance for SIMULSOL (°C)}\cr\cr
 #'
 #' \strong{ Environment:}\cr\cr
@@ -101,7 +102,7 @@
 #' \code{QBASAL}{ = (70 \* AMASS ^ 0.75) \* (4.185 / (24 \* 3.6)), # basal heat generation (W)}\cr\cr
 #' \code{SKINW}{ = 0.5, # part of the skin surface that is wet (\%)}\cr\cr
 #' \code{FURWET}{ = 0, # Area of fur/feathers that is wet after rain (\%)}\cr\cr
-#' \code{PCTBAREVAP}{ = 2.8, maximum flesh conductivity (W/mK)}\cr\cr
+#' \code{PCTBAREVAP}{ = 0, surface area for evaporation that is skin, e.g. licking paws (%)}\cr\cr
 #' \code{PCTEYES}{ = 0, # surface area made up by the eye (\%) - make zero if sleeping}\cr\cr
 #' \code{DELTAR}{ = 0, # offset between air temperature and breath (°C)}\cr\cr
 #' \code{RELXIT}{ = 100, # relative humidity of exhaled air, \%}\cr\cr
@@ -371,7 +372,8 @@ endoR_devel <- function(
   TFA = TA, # fur/air interface temperature (°C)
 
   # other model settings
-  DIFTOL = 0.001 # tolerance for SIMULSOL
+  DIFTOL = 0.001, # tolerance for SIMULSOL
+  THERMOREG = 1
 ){
   if(PANTING == 0){
     PANTMAX <- PANT # can't pant, so panting level set to current value
@@ -697,7 +699,7 @@ endoR_devel <- function(
     TCLAST <- TC
     PANTLAST <- PANT
     SKINWLAST <- SKINW
-
+    if(THERMOREG != 0){
     if(SHAPE_B < SHAPE_B_MAX){
       SHAPE_B <- SHAPE_B + UNCURL
     }else{
@@ -733,7 +735,7 @@ endoR_devel <- function(
       }
     }
   }
-
+  }
   # SIMULSOL output, dorsal
   TFA.D <- SIMULSOL.out[1, 1] # temperature of feathers/fur-air interface, deg C
   TSKCALCAV.D <- SIMULSOL.out[1, 2] # averagek skin temperature, deg C

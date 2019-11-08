@@ -17,7 +17,7 @@ get_p_wet(cut.known = 1, E_tot = 0.344 / 60 / 1000, E_cut = 0.108 / 60 / 1000, T
 
 \item{press.known}{= 0, Is barometric pressure known (1, uses altitude) or has it been provided as the 'bp' variable (0)}
 
-\item{A_tot.known}{= 0, Is total surface area known? 0 = no (uses allometric equation for Dipsosaurus dorsalis, the desert iguana), 1 = yes}
+\item{A_tot.known}{= 0, Is total surface area known? 0 = no (uses Meeh's formula A_tot = 10 x mass.g ^ (2/3) / 10000), 1 = yes}
 
 \item{E_tot}{= 0.344 / 60 / 1000, Observed total evaporative water loss rate, g/s}
 

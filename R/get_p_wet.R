@@ -10,7 +10,7 @@
 #' @param eye.known = 0, Is ocular water loss supplied? 0 = no (invokes estimation by ocular surface area paritioning), 1 = yes
 #' @param vent.known = 0, Is ventilation rate supplied? 0 = no (rely on estimate from V_O2), 1 = yes
 #' @param press.known = 0, Is barometric pressure known (1, uses altitude) or has it been provided as the 'bp' variable (0)
-#' @param A_tot.known = 0, Is total surface area known? 0 = no (uses allometric equation for Dipsosaurus dorsalis, the desert iguana), 1 = yes
+#' @param A_tot.known = 0, Is total surface area known? 0 = no (uses Meeh's formula A_tot = 10 x mass.g ^ (2/3) / 10000), 1 = yes
 #' @param E_tot = 0.344 / 60 / 1000, Observed total evaporative water loss rate, g/s
 #' @param E_cut = 0.108 / 60 / 1000, Observed cutaneous evaporative water loss rate, g/s
 #' @param E_resp = 0.0371 / 60 / 1000, Observed respiratory evaporative water loss rate, g/s
