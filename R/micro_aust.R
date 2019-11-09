@@ -432,9 +432,8 @@ micro_aust <- function(
   errors<-0
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
-  if(opendap == 1 & (ystart < 1990 | ystart > 2015)){
-    message("currently no data on the NCI for this time window \n")
-    errors<-1
+  if(opendap == 1 & (ystart < 1990 | ystart > 2017)){
+    message("might not be data on the NCI for this time window \n")
   }
   if(DEP[2]-DEP[1]>3 | DEP[3]-DEP[2]>3){
     message("warning, nodes might be too far apart near the surface, try a different spacing if the program is crashing \n")
