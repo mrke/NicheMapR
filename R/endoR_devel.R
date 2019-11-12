@@ -492,7 +492,7 @@ endoR_devel <- function(
     ABSAND <- 1 - REFLD # solar absorptivity of dorsal fur (fractional, 0-1)
     ABSANV <- 1 - REFLV # solar absorptivity of ventral fur (fractional, 0-1)
 
-    SOLAR.out <- SOLAR(ATOT, ABSAND, ABSANV, ABSSB, ASILN, PCTDIF, QNORM, SHADE,
+    SOLAR.out <- SOLAR(ATOT, ABSAND, ABSANV, ABSSB, ASIL, PCTDIF, QNORM, SHADE,
       QSOLR, FASKY, FATOBJ, FAVEG)
 
     QSOLAR <- SOLAR.out[1] # total (global) solar radiation (W) QSOLAR,QSDIR,QSOBJ,QSSKY,QSRSB,QSDIFF,QDORSL,QVENTR
