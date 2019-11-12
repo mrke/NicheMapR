@@ -84,13 +84,12 @@ core temprature, fourth pant and fifth sweat.
 \code{FATPCT}{ = 20, \% body fat}\cr\cr
 \code{SHAPE_B}{ = SHAPE_B_REF, current ratio between long and short axis (-)}\cr\cr
 \code{SHAPE_B_MAX}{ = SHAPE_B_REF, max possible ratio between long and short axis (-)}\cr\cr
-\code{SHAPE_C}{ = SHAPE_B, ratio between length and width for plate geometry (-)}\cr\cr
+\code{SHAPE_C}{ = SHAPE_B, current ratio of length:height (plate)}\cr\cr
 \code{MAXPTVEN}{ = 0.5, maxium fraction of surface area that is ventral (fractional, 0-1)}\cr\cr
-\code{AWING}{ = 0, area of wing, to do}\cr\cr
 \code{PCOND}{ = 0, fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
 \code{MAXPCOND}{ = 0, maximum fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
 \code{SAMODE}{ = 0, if 0, uses surface area for SHAPE geometry, if 1, uses bird skin surface area allometry from Walsberg & King. 1978. JEB 76:185–189, if 2 uses mammal surface area from Stahl 1967.J. App. Physiol. 22, 453–460.}\cr\cr
-\code{ORIENT}{ = 0, if 0, long axis parallel to ground, if 1, long axis is perpendicular to the ground}\cr\cr
+\code{ORIENT}{ = 0, if 1 = normal to rays of sun (heat maximising), if 2 = parallel to rays of sun (heat minimising), or 0 = average}\cr\cr
 
 \strong{ Fur properties:}\cr\cr
 \code{DHAIRD}{ = 30E-06, hair diameter, dorsal (m)}\cr\cr
@@ -101,8 +100,7 @@ core temprature, fourth pant and fifth sweat.
 \code{RHOV}{ = 3000E+04, hair density, ventral (1/m2)}\cr\cr
 \code{REFLD}{ = 0.2, fur reflectivity dorsal (fractional, 0-1)}\cr\cr
 \code{REFLV}{ = 0.2, fur reflectivity ventral (fractional, 0-1)}\cr\cr
-\code{ZFURCOMP}{ = ZFURV, # depth of compressed fur (for conduction) (m)}\cr\cr
-
+\code{ZFURCOMP}{ = ZFURV, depth of compressed fur (for conduction) (m)}\cr\cr
 
 \strong{ Radiation exchange:}\cr\cr
 \code{EMISAN}{ = 0.99, animal emissivity (-)}\cr\cr
@@ -114,7 +112,6 @@ core temprature, fourth pant and fifth sweat.
 \strong{ Nest properties:}\cr\cr
 \code{NESTYP}{ = 0, # for nest calculations, to do)}\cr\cr
 \code{RoNEST}{ = 0, # for nest calculations, to do}\cr\cr
-\code{R1}{ = 0, # for nest calculations, to do}\cr\cr
 
 \strong{ Physiology:}\cr\cr
 \code{AK1}{ = 0.9, # initial thermal conductivity of flesh (0.412 - 2.8 W/mK)}\cr\cr
@@ -122,7 +119,7 @@ core temprature, fourth pant and fifth sweat.
 \code{QBASAL}{ = (70 \* AMASS ^ 0.75) \* (4.185 / (24 \* 3.6)), # basal heat generation (W)}\cr\cr
 \code{SKINW}{ = 0.5, # part of the skin surface that is wet (\%)}\cr\cr
 \code{FURWET}{ = 0, # Area of fur/feathers that is wet after rain (\%)}\cr\cr
-\code{PCTBAREVAP}{ = 2.8, maximum flesh conductivity (W/mK)}\cr\cr
+\code{PCTBAREVAP}{ = 0, surface area for evaporation that is skin, e.g. licking paws (\%)}\cr\cr
 \code{PCTEYES}{ = 0, # surface area made up by the eye (\%) - make zero if sleeping}\cr\cr
 \code{DELTAR}{ = 0, # offset between air temperature and breath (°C)}\cr\cr
 \code{RELXIT}{ = 100, # relative humidity of exhaled air, \%}\cr\cr

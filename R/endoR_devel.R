@@ -72,7 +72,7 @@
 #' \code{PCOND}{ = 0, fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
 #' \code{MAXPCOND}{ = 0, maximum fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
 #' \code{SAMODE}{ = 0, if 0, uses surface area for SHAPE geometry, if 1, uses bird skin surface area allometry from Walsberg & King. 1978. JEB 76:185–189, if 2 uses mammal surface area from Stahl 1967.J. App. Physiol. 22, 453–460.}\cr\cr
-#' \code{ORIENT}{ = 0, if 0, long axis parallel to ground, if 1, long axis is perpendicular to the ground}\cr\cr
+#' \code{ORIENT}{ = 0, if 1 = normal to rays of sun (heat maximising), if 2 = parallel to rays of sun (heat minimising), or 0 = average}\cr\cr
 #'
 #' \strong{ Fur properties:}\cr\cr
 #' \code{DHAIRD}{ = 30E-06, hair diameter, dorsal (m)}\cr\cr
@@ -102,7 +102,7 @@
 #' \code{QBASAL}{ = (70 \* AMASS ^ 0.75) \* (4.185 / (24 \* 3.6)), # basal heat generation (W)}\cr\cr
 #' \code{SKINW}{ = 0.5, # part of the skin surface that is wet (\%)}\cr\cr
 #' \code{FURWET}{ = 0, # Area of fur/feathers that is wet after rain (\%)}\cr\cr
-#' \code{PCTBAREVAP}{ = 0, surface area for evaporation that is skin, e.g. licking paws (%)}\cr\cr
+#' \code{PCTBAREVAP}{ = 0, surface area for evaporation that is skin, e.g. licking paws (\%)}\cr\cr
 #' \code{PCTEYES}{ = 0, # surface area made up by the eye (\%) - make zero if sleeping}\cr\cr
 #' \code{DELTAR}{ = 0, # offset between air temperature and breath (°C)}\cr\cr
 #' \code{RELXIT}{ = 100, # relative humidity of exhaled air, \%}\cr\cr
