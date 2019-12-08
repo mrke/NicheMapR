@@ -570,10 +570,9 @@ endoR_devel <- function(
           FASKY <- 0.0
           FATOBJ <- 0.0
           FAVEG <- 0.0
-          FAGRD <- FAGRDREF/(1 - FAGRDREF - FATOBJREF - FABUSHREF)
-          FABUSH <- FABUSHREF/(1 - FAGRDREF - FATOBJREF - FABUSHREF)
-          QSLR <- (QVENTR/(1 - FASKYREF - FATOBJREF -
-                             FAVEGREF))*(1-(2*PCOND))
+          FAGRD <- FAGRDREF/(FAGRDREF+FABUSHREF)
+          FABUSH <- FABUSHREF/(FAGRDREF+FABUSHREF)
+          QSLR <- (QVENTR/(FAGRDREF+FABUSHREF))*(1-(2*PCOND))
         }
       }else{
         QSLR <- 0.0
@@ -587,8 +586,8 @@ endoR_devel <- function(
           FASKY <- 0.0
           FATOBJ <- 0.0
           FAVEG <- 0.0
-          FAGRD <- FAGRDREF/(1 - FAGRDREF - FATOBJREF - FAVEGREF)
-          FABUSH <- FABUSHREF/(1 - FAGRDREF - FATOBJREF - FAVEGREF)
+          FAGRD <- FAGRDREF/(FAGRDREF+FABUSHREF)
+          FABUSH <- FABUSHREF/(FAGRDREF+FABUSHREF)
         }
       }
 
