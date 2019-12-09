@@ -25,10 +25,10 @@
 #' @return rw Mixing ratio (kg kg-1)
 #' @return tvir Virtual temperature (K)
 #' @return tvinc Virtual temperature increment (K)
-#' @return denair Hourly predictions of the soil moisture under the maximum specified shade
+#' @return denair Density of the air (kg m-3)
 #' @return cp Specific heat of air at constant pressure (J kg-1 K-1)
 #' @return wtrpot Water potential (Pa)
-#' @return Relative humidity (\%)
+#' @return rh Relative humidity (\%)
 #' @export
 WETAIR <- function(db=db, wb=db, rh=0, dp=999, bp=101325){
 
