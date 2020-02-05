@@ -1141,7 +1141,7 @@ micro_aust <- function(
                 dwind<-rbind(dwind,output)
               }
             }
-            dwind<-dwind$wind/15.875
+            dwind<-dwind$wind/15.875 # conversion byte (i.e., an 8-bit unsigned integer ranging in value from 0 to 255) to m/s
           }
         }
         if(opendap == 0){
