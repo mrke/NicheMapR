@@ -26,13 +26,13 @@ tvir Virtual temperature (K)
 
 tvinc Virtual temperature increment (K)
 
-denair Hourly predictions of the soil moisture under the maximum specified shade
+denair Density of the air (kg m-3)
 
 cp Specific heat of air at constant pressure (J kg-1 K-1)
 
 wtrpot Water potential (Pa)
 
-Relative humidity (\%)
+rh Relative humidity (\%)
 }
 \description{
 Calculates several properties of humid air as output variables below. The program
