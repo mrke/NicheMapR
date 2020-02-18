@@ -52,11 +52,9 @@
 #' \code{warm}{ = 0, uniform warming, °C}\cr\cr
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 #' \code{opendap}{ = 1, query met grids via opendap}\cr\cr
-
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
-
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
@@ -241,50 +239,50 @@
 #'
 #' # append dates
 #' dates <- micro$dates
-#' metout <- cbind(dates,metout)
-#' soil <- cbind(dates,soil)
+#' metout <- cbind(dates, metout)
+#' soil <- cbind(dates, soil)
 #' soilmoist <- cbind(dates, soilmoist)
-#' minshade<-micro$minshade
+#' minshade <- micro$minshade
 #'
 #' # plotting above-ground conditions in minimum shade
-#' with(metout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
-#' , type = "l",main=paste("air and sky temperature, ",minshade,"% shade",sep=""), ylim = c(-20, 60))})
-#' with(metout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
-#' , type = "l",lty=2,col='blue')})
+#' with(metout, {plot(TALOC ~ dates, xlab = "Date and Time", ylab = "Temperature (°C)"
+#' , type = "l" ,main = paste("air and sky temperature, ", minshade, "% shade", sep = ""), ylim = c(-20, 60))})
+#' with(metout, {points(TAREF ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
+#' , type = "l", lty = 2, col = 'blue')})
 #' with(metout,{points(TSKYC ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
-#' ,  type = "l",col='light blue',main=paste("sky temperature, ",minshade,"% shade",sep=""))})
-#' with(metout,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
-#' , type = "l",ylim=c(0,100),main=paste("humidity, ",minshade,"% shade",sep=""))})
-#' with(metout,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
-#' , type = "l",col='blue',lty=2,ylim=c(0,100))})
-#' with(metout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-#' ,  type = "l",main="wind speed",ylim = c(0, 15))})
-#' with(metout,{points(VLOC ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-#' ,  type = "l",lty=2,col='blue')})
-#' with(metout,{plot(SOLR ~ dates,xlab = "Date and Time", ylab = "Solar Radiation (W/m2)"
-#' ,  type = "l",main="solar radiation")})
-#' with(metout,{plot(SNOWDEP ~ dates,xlab = "Date and Time", ylab = "Snow Depth (cm)"
-#' ,  type = "l",main="snow depth")})
+#' ,  type = "l", col = 'light blue', main = paste("sky temperature, ", minshade, "% shade", sep = ""))})
+#' with(metout, {plot(RHLOC ~ dates, xlab = "Date and Time", ylab = "Relative Humidity (%)"
+#' , type = "l", ylim = c(0, 100), main = paste("humidity, ", minshade, "% shade", sep = ""))})
+#' with(metout, {points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (%)"
+#' , type = "l", col = 'blue', lty = 2, ylim = c(0, 100))})
+#' with(metout, {plot(VREF ~ dates, xlab = "Date and Time", ylab = "Wind Speed (m/s)"
+#' ,  type = "l", main = "wind speed", ylim = c(0, 15))})
+#' with(metout, {points(VLOC ~ dates, xlab = "Date and Time", ylab = "Wind Speed (m/s)"
+#' ,  type = "l", lty = 2, col = 'blue')})
+#' with(metout, {plot(SOLR ~ dates, xlab = "Date and Time", ylab = "Solar Radiation (W/m2)"
+#' ,  type = "l", main="solar radiation")})
+#' with(metout, {plot(SNOWDEP ~ dates, xlab = "Date and Time", ylab = "Snow Depth (cm)"
+#' ,  type = "l", main = "snow depth")})
 #'
 #' # plotting soil temperature
 #' for(i in 1:10){
-#'  if(i==1){
-#'    plot(soil[,i+3]~soil[,1],xlab = "Date and Time", ylab = "Soil Temperature (°C)"
-#'    ,col=i,type = "l",main=paste("soil temperature ",minshade,"% shade",sep=""))
+#'  if(i == 1){
+#'    plot(soil[, i + 3] ~ soil[, 1], xlab = "Date and Time", ylab = "Soil Temperature (°C)"
+#'    , col = i, type = "l", main = paste("soil temperature ", minshade, "% shade",sep=""))
 #'  }else{
-#'    points(soil[,i+3]~soil[,1],xlab = "Date and Time", ylab = "Soil Temperature
-#'     (°C)",col=i,type = "l")
+#'    points(soil[, i + 3] ~ soil[, 1], xlab = "Date and Time", ylab = "Soil Temperature
+#'     (°C)", col = i, type = "l")
 #'  }
 #' }
 #'
 #' # plotting soil moisture
 #' for(i in 1:10){
-#'  if(i==1){
-#'    plot(soilmoist[,i+3]*100~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture (% volumetric)"
-#'    ,col=i,type = "l",main=paste("soil moisture ",minshade,"% shade",sep=""))
+#'  if(i == 1){
+#'    plot(soilmoist[, i + 3] * 100 ~ soilmoist[, 1], xlab = "Date and Time", ylab = "Soil Moisture (% volumetric)"
+#'    ,col = i, type = "l", main = paste("soil moisture ", minshade, "% shade", sep = ""))
 #'  }else{
-#'    points(soilmoist[,i+3]*100~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture
-#'     (%)",col=i,type = "l")
+#'    points(soilmoist[, i + 3] * 100 ~ soilmoist[, 1], xlab = "Date and Time", ylab = "Soil Moisture
+#'     (%)", col = i, type = "l")
 #'  }
 #' }
 micro_aust <- function(
@@ -373,12 +371,11 @@ micro_aust <- function(
   tides = 0,
   scenario = "",
   year = "",
-  barcoo = "",
-  quadrangle = 1,
   rainhourly = 0,
   rainhour = 0,
   uid = "",
   pwd = "",
+  host = "",
   lamb = 0,
   IUV = 0,
   microclima = 0,
@@ -415,7 +412,8 @@ micro_aust <- function(
   }
 
   if(opendap==0){
-    require(RODBC)
+    #require(RODBC)
+    require(RMySQL)
   }
   if(opendap == 1){
     if(is.na(elev)){
@@ -977,43 +975,50 @@ micro_aust <- function(
 
     # connect to server
     if(opendap == 0){
-      channel2 <- RODBC::odbcConnect("ausclim_predecol", uid = uid, pwd = pwd)
-      channel <- RODBC::odbcConnect("AWAPDaily", uid = uid, pwd = pwd)
+      #channel2 <- RODBC::odbcConnect("ausclim_predecol", uid = uid, pwd = pwd)
+      #channel <- RODBC::odbcConnect("AWAPDaily", uid = uid, pwd = pwd)
+      lat1 <- x[2] - 0.024
+      lat2 <- x[2] + 0.025
+      lon1 <- x[1] - 0.024
+      lon2 <- x[1] + 0.025
+      channel2 <- RMySQL::dbConnect(MySQL(), user = uid, password = pwd, host = host, dbname = "ausclim", port = 3306)
+      channel <- RMySQL::dbConnect(MySQL(), user = uid, password = pwd, host = host, dbname = "AWAPDaily", port = 3306)
       # preliminary test for incomplete year, if simulation includes the present year
       for(j in 1:nyears){ # start loop through years
-        yeartodo<-yearlist[j]
-        lat1<-x[2]-0.024
-        lat2<-x[2]+0.025
-        lon1<-x[1]-0.024
-        lon2<-x[1]+0.025
-        query<-paste("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                   , [AWAPDaily].[dbo].[",yeartodo,"] as b where (a.id = b.id) and
-                   (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
-                   order by b.day",sep="")
-        output<- sqlQuery(channel,query)
-        if(yearlist[j]<1971){
-          output$vpr<-output$tmin/output$tmin-1
+        yeartodo <- yearlist[j]
+        #query<-paste("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
+        #           , [AWAPDaily].[dbo].[",yeartodo,"] as b where (a.id = b.id) and
+        #           (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
+        #           order by b.day",sep="")
+        #output<- sqlQuery(channel,query)
+        query <- paste("SELECT a.latitude, a.longitude, b.* FROM AWAPDaily.latlon as a
+                       , AWAPDaily.", yeartodo," as b where (a.id = b.id) and
+                       (a.latitude between ", lat1, " and ",lat2,") and (a.longitude between ", lon1, " and ", lon2, ")
+                       order by b.day", sep = "")
+        output<- dbGetQuery(channel, query)
+        if(yearlist[j] < 1971){
+          output$vpr <- output$tmin/output$tmin-1
         }
-        if(yearlist[j]>1989){
-          output$sol<-as.numeric(as.character(output$sol))
+        if(yearlist[j] > 1989){
+          output$sol <- as.numeric(as.character(output$sol))
         }else{
-          output$sol<-output$tmin/output$tmin-1
+          output$sol <- output$tmin / output$tmin - 1
         }
-        if(j==1){
-          results<-output
+        if(j == 1){
+          results <- output
         }else{
-          results<-rbind(results,output)
+          results <- rbind(results, output)
         }
       }
     }
     if(is.na(MAXSHADES[1])){
-      maxshades=rep(maxshade,ndays)
+      maxshades <- rep(maxshade,ndays)
     }
     if(is.na(MINSHADES[1])){
-      minshades=rep(minshade,ndays)
+      minshades <- rep(minshade,ndays)
     }
-    doys<-seq(daystart,ndays,1)
-    leapyears<-seq(1900,2060,4)
+    doys<-seq(daystart, ndays, 1)
+    leapyears <- seq(1900, 2060, 4)
     for(mm in 1:nyears){
       if(mm == 1){
         currenty <- ystart
@@ -1021,9 +1026,9 @@ micro_aust <- function(
         currenty <- ystart + mm
       }
       if(currenty %in% leapyears){
-        dayoy <- seq(1,366)
+        dayoy <- seq(1, 366)
       }else{
-        dayoy <- seq(1,365)
+        dayoy <- seq(1, 365)
       }
       if(mm == 1){
         doy <- dayoy
@@ -1031,12 +1036,11 @@ micro_aust <- function(
         doy <- c(doy, dayoy)
       }
     }
-    doy<-leapfix(doy, yearlist)
-    doy<-doy[1:ndays]
-    ida<-ndays
+    doy <- leapfix(doy, yearlist)
+    doy <- doy[1:ndays]
+    ida <- ndays
     idayst <- 1 # start month
     # end preliminary test for incomplete year, if simulation includes the present year
-
 
     if((soildata==1 & nrow(soilprop)>0) | soildata == 0){
       if(soildata==1){
@@ -1074,74 +1078,94 @@ micro_aust <- function(
             lat2<-x[2]+0.025
             lon1<-x[1]-0.024
             lon2<-x[1]+0.025
+            # query<-paste("SELECT a.latitude, a.longitude, b.*
+            #            FROM [AWAPDaily].[dbo].[latlon] as a
+            #            , [AWAPDaily].[dbo].[",yeartodo,"] as b
+            #            where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
+            #            order by b.day",sep="")
+            # output<- sqlQuery(channel,query)
             query<-paste("SELECT a.latitude, a.longitude, b.*
-                       FROM [AWAPDaily].[dbo].[latlon] as a
-                       , [AWAPDaily].[dbo].[",yeartodo,"] as b
-                       where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
-                       order by b.day",sep="")
-            output<- sqlQuery(channel,query)
+                       FROM AWAPDaily.latlon as a
+                       , AWAPDaily.", yeartodo, " as b
+                       where (a.id = b.id) and (a.latitude between ", lat1, " and ", lat2, ") and (a.longitude between ",lon1," and ",lon2,")
+                       order by b.day", sep = "")
+            output<- dbGetQuery(channel, query)
             if(yearlist[j]<1971){
-              output$vpr<-output$tmin/output$tmin-1
+              output$vpr <- output$tmin / output$tmin - 1
             }
-            if(yearlist[j]>1989){
-              output$sol<-as.numeric(as.character(output$sol))
+            if(yearlist[j] > 1989){
+              output$sol <- as.numeric(as.character(output$sol))
             }else{
-              output$sol<-output$tmin/output$tmin-1
+              output$sol <- output$tmin / output$tmin - 1
             }
             if(j==1){
-              results<-output
+              results <- output
             }else{
-              results<-rbind(results,output)
+              results <- rbind(results, output)
             }
           }
-          if(dailywind==1){
-            channel <- RODBC::odbcConnect("dailywind", uid = uid, pwd = pwd)
-            if(min(yearlist)<1975){
+          if(dailywind == 1){
+            #channel <- RODBC::odbcConnect("dailywind", uid = uid, pwd = pwd)
+            #channel <- RODBC::odbcConnect("dailywind", uid = uid, pwd = pwd)
+            channel3 <- RMySQL::dbConnect(MySQL(), user = uid, password = pwd, host = host, dbname = "dailywind", port = 3306)
+            if(min(yearlist) < 1975){
               # get mean of 1975-1984
               for(j in 1:10){ # start loop through years
-                yeartodo<-1974+j
-                lat1<-x[2]-0.024
-                lat2<-x[2]+0.025
-                lon1<-x[1]-0.024
-                lon2<-x[1]+0.025
+                yeartodo <- 1974 + j
+                lat1 <- x[2] - 0.024
+                lat2 <- x[2] + 0.025
+                lon1 <- x[1] - 0.024
+                lon2 <- x[1] + 0.025
+                #query<-paste("SELECT a.latitude, a.longitude, b.*
+                #         FROM [dailywind].[dbo].[latlon] as a
+                #         , [dailywind].[dbo].[",yeartodo,"] as b
+                #         where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
+                #         order by b.day",sep="")
+                #output<- sqlQuery(channel,query)
                 query<-paste("SELECT a.latitude, a.longitude, b.*
-                         FROM [dailywind].[dbo].[latlon] as a
-                         , [dailywind].[dbo].[",yeartodo,"] as b
+                         FROM dailywind.latlon as a
+                         , dailywind.", yeartodo, " as b
                          where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
-                         order by b.day",sep="")
-                output<- sqlQuery(channel,query)
-                if(j==1){
-                  dwindmean<-output
+                         order by b.day", sep = "")
+                output <- dbGetQuery(channel3, query)
+                if(j == 1){
+                  dwindmean <- output
                 }else{
-                  dwindmean<-cbind(dwindmean,output[,5])
+                  dwindmean <- cbind(dwindmean, output[, 5])
                 }
               }
-              dwindmean<-cbind(dwindmean[,1:4],rowMeans(dwindmean[,5:14]))
-              colnames(dwindmean)[5]<-'wind'
+              dwindmean<-cbind(dwindmean[, 1:4], rowMeans(dwindmean[, 5:14]))
+              colnames(dwindmean)[5] <- 'wind'
             }
             for(j in 1:nyears){ # start loop through years
-              yeartodo<-yearlist[j]
-              if(yeartodo<1975){
-                output<-dwindmean
+              yeartodo <- yearlist[j]
+              if(yeartodo < 1975){
+                output <- dwindmean
               }else{
-                lat1<-x[2]-0.024
-                lat2<-x[2]+0.025
-                lon1<-x[1]-0.024
-                lon2<-x[1]+0.025
-                query<-paste("SELECT a.latitude, a.longitude, b.*
-                         FROM [dailywind].[dbo].[latlon] as a
-                         , [dailywind].[dbo].[",yeartodo,"] as b
-                         where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
-                         order by b.day",sep="")
-                output<- sqlQuery(channel,query)
-              }
-              if(j==1){
-                dwind<-output
+                lat1 <- x[2] - 0.024
+                lat2 <- x[2] + 0.025
+                lon1 <- x[1] - 0.024
+                lon2 <- x[1] + 0.025
+                # query<-paste("SELECT a.latitude, a.longitude, b.*
+                #          FROM [dailywind].[dbo].[latlon] as a
+                #          , [dailywind].[dbo].[",yeartodo,"] as b
+                #          where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
+                #          order by b.day",sep="")
+                # output<- sqlQuery(channel,query)
+                query <- paste("SELECT a.latitude, a.longitude, b.*
+                         FROM dailywind.latlon as a
+                             , dailywind.", yeartodo, " as b
+                             where (a.id = b.id) and (a.latitude between ", lat1, " and ", lat2, ") and (a.longitude between ", lon1, " and ", lon2, ")
+                             order by b.day", sep = "")
+                output <- dbGetQuery(channel3, query)
+                }
+              if(j == 1){
+                dwind <- output
               }else{
-                dwind<-rbind(dwind,output)
+                dwind <- rbind(dwind, output)
               }
             }
-            dwind<-dwind$wind/15.875 # conversion byte (i.e., an 8-bit unsigned integer ranging in value from 0 to 255) to m/s
+            dwind <- dwind$wind / 15.875 # conversion byte (i.e., an 8-bit unsigned integer ranging in value from 0 to 255) to m/s
           }
         }
         if(opendap == 0){
@@ -1267,128 +1291,172 @@ micro_aust <- function(
 
             for(i in 1:length(years1)){ # start loop through years
               # syntax for query
-              if(length(years1)==1){ # doing a period within a year
+              if(length(years1) == 1){ # doing a period within a year
+                # query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
+                #     , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day between ",doystart," and ",doyfinish,")
+                #   order by b.day")
                 query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                    , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day between ",doystart," and ",doyfinish,")
-                  order by b.day")
-              }else{
+                    , [AWAPDaily].[dbo].[", years1[i], " as b where (a.id = b.id) and (a.latitude between ", lat1, " and ",lat2, ") and (a.longitude between ", lon1, " and ",lon2, ") and (b.day between ",doystart, " and ",doyfinish, ")
+                              order by b.day")
+               }else{
                 if(i==1){ # doing first year, start at day requested
+                  # query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
+                  #    , [AWAPDaily].[dbo].[",years1[i]," as b where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day >= ",doystart,")
+                  #    order by b.day")
                   query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                     , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day >= ",doystart,")
+                     , [AWAPDaily].[dbo].[", years1[i], " as b where (a.id = b.id) and (a.latitude between ", lat1, " and ",lat2, ") and (a.longitude between ", lon1, " and ", lon2, ") and (b.day >= ", doystart,")
                      order by b.day")
-                }else{
+                 }else{
                   if(i==length(years1)){ # doing last year, only go up to last day requested
+                    # query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
+                    #    , [AWAPDaily].[dbo].[",years1[i]," as b where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day <= ",doyfinish,")
+                    #    order by b.day")
                     query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                       , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day <= ",doyfinish,")
+                       , [AWAPDaily].[dbo].[", years1[i], " as b where (a.id = b.id) and (a.latitude between ", lat1, " and ",lat2, ") and (a.longitude between ", lon1," and ", lon2, ") and (b.day <= ", doyfinish,")
                        order by b.day")
                   }else{ # doing in between years, so get all data for this year
+                    # query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
+                    #    , [AWAPDaily].[dbo].[",years1[i]," as b where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
+                    #   order by b.day")
                     query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                       , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,")
+                       , [AWAPDaily].[dbo].[", years1[i], " as b where (a.id = b.id) and (a.latitude between ", lat1, " and ", lat2, ") and (a.longitude between ", lon1," and ", lon2, ")
                       order by b.day")
                   }}}
               # exectue query and concatenate if necessary
+              # if(i==1){
+              #   output1<- sqlQuery(channel,query)
+              # }else{
+              #   output1<-rbind(output1,sqlQuery(channel,query))
+              # }
               if(i==1){
-                output1<- sqlQuery(channel,query)
+                output1 <- dbGetQuery(channel, query)
               }else{
-                output1<-rbind(output1,sqlQuery(channel,query))
+                output1 <- rbind(output1, dbGetQuery(channel, query))
               }
             } # end loop through years
-            output1$clearsky<-leapfix(clearskysum, seq(1990, 2014)) * 3600 / 1e6
-            glm_sol<-coefficients(with(output1,glm(sol~rr+tmax+tmin+day+clearsky)))
-            output_AWAPDaily$clearsky<-leapfix(clearskysum, yearlist) * 3600 / 1e6
-            output_AWAPDaily[,9]<-glm_sol[1]+glm_sol[2]*output_AWAPDaily$rr+glm_sol[3]*output_AWAPDaily$tmax+glm_sol[4]*output_AWAPDaily$tmin+glm_sol[5]*output_AWAPDaily$day+glm_sol[6]*output_AWAPDaily$clearsky
+            output1$clearsky <- leapfix(clearskysum, seq(1990, 2014)) * 3600 / 1e6
+            glm_sol <- coefficients(with(output1, glm(sol ~ rr + tmax + tmin + day + clearsky)))
+            output_AWAPDaily$clearsky <- leapfix(clearskysum, yearlist) * 3600 / 1e6
+            output_AWAPDaily[, 9] <- glm_sol[1] + glm_sol[2] * output_AWAPDaily$rr + glm_sol[3] * output_AWAPDaily$tmax+glm_sol[4]*output_AWAPDaily$tmin+glm_sol[5]*output_AWAPDaily$day+glm_sol[6]*output_AWAPDaily$clearsky
             if(scenario!=""){
-              output_AWAPDaily[,9]=output_AWAPDaily[,9]*SOLAR_diff
+              output_AWAPDaily[, 9] <- output_AWAPDaily[, 9] * SOLAR_diff
             }
-            cloud<-(1-as.data.frame(output_AWAPDaily$sol)/as.data.frame(output_AWAPDaily$clearsky))*100
-            cloud[cloud<0]<-0
-            cloud[cloud>100]<-100
-            cloud<-as.matrix(cbind(output_AWAPDaily[,4],cloud))
-            CCMAXX<-cloud[,2]
-            CCMINN<-CCMAXX
+            cloud <- (1 - as.data.frame(output_AWAPDaily$sol) / as.data.frame(output_AWAPDaily$clearsky)) * 100
+            cloud[cloud < 0] <- 0
+            cloud[cloud > 100] <- 100
+            cloud <- as.matrix(cbind(output_AWAPDaily[, 4], cloud))
+            CCMAXX <- cloud[, 2]
+            CCMINN <- CCMAXX
           }# end check for year 1990 or later
-          if(ystart>1970){ #vapour pressure data available
-            if(is.na(output_AWAPDaily[1,8])==TRUE){
-              output_AWAPDaily[1,8]=mean(output_AWAPDaily[,8],na.rm=TRUE)
+          if(ystart > 1970){ #vapour pressure data available
+            if(is.na(output_AWAPDaily[1, 8]) == TRUE){
+              output_AWAPDaily[1, 8] = mean(output_AWAPDaily[, 8], na.rm = TRUE)
             }
-            VAPRES<-zoo::na.approx(output_AWAPDaily[,8])
-            VAPRES<-VAPRES*100 # convert from hectopascals to pascals
+            VAPRES <- zoo::na.approx(output_AWAPDaily[, 8])
+            VAPRES <- VAPRES * 100 # convert from hectopascals to pascals
             es <- WETAIR(db = TMAXX, rh = 100)$esat
             RHMINN <- (VAPRES / es) * 100
-            RHMINN[RHMINN>100]<-100
-            RHMINN[RHMINN<0]<-0.01
+            RHMINN[RHMINN > 100] <- 100
+            RHMINN[RHMINN < 0] <- 0.01
             es <- WETAIR(db = TMINN, rh = 100)$esat
             RHMAXX <- (VAPRES / es) * 100
-            RHMAXX[RHMAXX>100]<-100
-            RHMAXX[RHMAXX<0]<-0.01
-            if(scenario!=""){
-              RHMINN<-RHMINN+RH_diff
+            RHMAXX[RHMAXX > 100] <- 100
+            RHMAXX[RHMAXX < 0] <- 0.01
+            if(scenario != "" ){
+              RHMINN <- RHMINN + RH_diff
             }
-            if(scenario!=""){
-              RHMAXX<-RHMAXX+RH_diff
+            if(scenario != ""){
+              RHMAXX <- RHMAXX + RH_diff
             }
           }else{
-            if(exists("output1")==FALSE){
-              datestart1<-"01/01/1990" # day, month, year
-              datefinish1<-"31/12/2014" # day, month, year
-              datestart1<-strptime(datestart1, "%d/%m/%Y") # convert to date format
-              datefinish1<-strptime(datefinish1, "%d/%m/%Y") # convert to date format
-              yearstart1<-as.numeric(format(datestart1, "%Y")) # yet year start
-              yearfinish1<-as.numeric(format(datefinish1, "%Y")) # yet year finish
-              years1<-seq(yearstart1,yearfinish1,1) # get sequence of years to d0
-              doystart<-datestart1$yday+1 # get day-of-year at start
-              doyfinish<-datefinish1$yday+1 # get day-of-year at finish
-              years1<-seq(yearstart1,yearfinish1,1) # get sequence of years to do
+            if(exists("output1") == FALSE){
+              datestart1 <- "01/01/1990" # day, month, year
+              datefinish1 <- "31/12/2014" # day, month, year
+              datestart1 <- strptime(datestart1, "%d/%m/%Y") # convert to date format
+              datefinish1 <- strptime(datefinish1, "%d/%m/%Y") # convert to date format
+              yearstart1 <- as.numeric(format(datestart1, "%Y")) # yet year start
+              yearfinish1 <- as.numeric(format(datefinish1, "%Y")) # yet year finish
+              years1 <- seq(yearstart1,yearfinish1, 1) # get sequence of years to d0
+              doystart <- datestart1$yday + 1 # get day-of-year at start
+              doyfinish <- datefinish1$yday + 1 # get day-of-year at finish
+              years1 <- seq(yearstart1, yearfinish1, 1) # get sequence of years to do
               for(i in 1:length(years1)){ # start loop through years
                 # syntax for query
-                if(length(years1)==1){ # doing a period within a year
-                  query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                    , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",
-                                lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day between
-                    ",doystart," and ",doyfinish,") order by b.day")
+                # if(length(years1)==1){ # doing a period within a year
+                #   query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
+                #     , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",
+                #                 lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day between
+                #     ",doystart," and ",doyfinish,") order by b.day")
+                # }else{
+                #   if(i==1){ # doing first year, start at day requested
+                #     query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
+                #        , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",
+                #                   lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day >= ",
+                #                   doystart,") order by b.day")
+                #   }else{
+                #     if(i==length(years1)){ # doing last year, only go up to last day requested
+                #       query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
+                #         , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between "
+                #                     ,lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day <= ",
+                #                     doyfinish,") order by b.day")
+                #     }else{ # doing in between years, so get all data for this year
+                #       query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
+                #         , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between
+                #         ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") order by b.day")
+                #     }}}
+                 if(length(years1) == 1){ # doing a period within a year
+                  query <- paste0("SELECT a.latitude, a.longitude, b.* FROM AWAPDaily.latlon as a
+                    , AWAPDaily.", years1[i], " as b where (a.id = b.id) and (a.latitude between ",
+                                lat1, " and ", lat2, ") and (a.longitude between ", lon1, " and ", lon2, ") and (b.day between
+                    ", doystart, " and ", doyfinish, ") order by b.day")
                 }else{
-                  if(i==1){ # doing first year, start at day requested
-                    query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                       , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between ",
-                                  lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day >= ",
-                                  doystart,") order by b.day")
+                  if(i == 1){ # doing first year, start at day requested
+                    query <- paste0("SELECT a.latitude, a.longitude, b.* FROM AWAPDaily.latlon as a
+                       , AWAPDaily.", years1[i]," as b where (a.id = b.id) and (a.latitude between ",
+                                  lat1, " and ", lat2, ") and (a.longitude between ", lon1, " and ", lon2, ") and (b.day >= ",
+                                  doystart, ") order by b.day")
                   }else{
-                    if(i==length(years1)){ # doing last year, only go up to last day requested
-                      query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                        , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between "
-                                    ,lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") and (b.day <= ",
-                                    doyfinish,") order by b.day")
+                    if(i == length(years1)){ # doing last year, only go up to last day requested
+                      query <- paste0("SELECT a.latitude, a.longitude, b.* FROM AWAPDaily.latlon as a
+                        , AWAPDaily.", years1[i]," as b where (a.id = b.id) and (a.latitude between "
+                                    , lat1, " and ", lat2, ") and (a.longitude between ", lon1, " and ", lon2, ") and (b.day <= ",
+                                    doyfinish, ") order by b.day")
                     }else{ # doing in between years, so get all data for this year
-                      query<-paste0("SELECT a.latitude, a.longitude, b.* FROM [AWAPDaily].[dbo].[latlon] as a
-                        , [AWAPDaily].[dbo].[",years1[i],"] as b where (a.id = b.id) and (a.latitude between
-                        ",lat1," and ",lat2,") and (a.longitude between ",lon1," and ",lon2,") order by b.day")
+                      query <- paste0("SELECT a.latitude, a.longitude, b.* FROM AWAPDaily.latlon as a
+                        , AWAPDaily.", years1[i], " as b where (a.id = b.id) and (a.latitude between
+                        ", lat1, " and ", lat2, ") and (a.longitude between ", lon1, " and ", lon2, ") order by b.day")
                     }}}
                 # exectue query and concatenate if necessary
+                # if(i==1){
+                #   output1<- sqlQuery(channel,query)
+                # }else{
+                #   output1<-rbind(output1,sqlQuery(channel,query))
+                # }
                 if(i==1){
-                  output1<- sqlQuery(channel,query)
+                  output1 <- dbGetQuery(channel, query)
                 }else{
-                  output1<-rbind(output1,sqlQuery(channel,query))
+                  output1 <- rbind(output1, dbGetQuery(channel, query))
                 }
               } # end loop through years
             }
-            glm_vpr<-coefficients(with(output1,glm(vpr~rr+tmax+tmin+day)))
-            output_AWAPDaily[,8]<-glm_vpr[1]+glm_vpr[2]*output_AWAPDaily$rr+glm_vpr[3]*output_AWAPDaily$tmax+glm_vpr[4]*output_AWAPDaily$tmin+glm_vpr[5]*output_AWAPDaily$day
-            VAPRES<-zoo::na.approx(output_AWAPDaily[,8])
-            VAPRES<-VAPRES*100 # convert from hectopascals to pascals
+            glm_vpr <- coefficients(with(output1, glm(vpr ~ rr + tmax + tmin + day)))
+            output_AWAPDaily[, 8]<- glm_vpr[1] + glm_vpr[2] * output_AWAPDaily$rr + glm_vpr[3] * output_AWAPDaily$tmax + glm_vpr[4] * output_AWAPDaily$tmin + glm_vpr[5] * output_AWAPDaily$day
+            VAPRES <- zoo::na.approx(output_AWAPDaily[, 8])
+            VAPRES<-VAPRES * 100 # convert from hectopascals to pascals
             # correct for potential change in RH with elevation-corrected Tair
             es <- WETAIR(db = TMAXX, rh = 100)$esat
             RHMINN <- (VAPRES / es) * 100
-            RHMINN[RHMINN>100]<-100
-            RHMINN[RHMINN<0]<-0.01
+            RHMINN[RHMINN > 100] <- 100
+            RHMINN[RHMINN < 0] <- 0.01
             es <- WETAIR(db = TMINN, rh = 100)$esat
             RHMAXX <- (VAPRES / es) * 100
-            RHMAXX[RHMAXX>100]<-100
-            RHMAXX[RHMAXX<0]<-0.01
-            if(scenario!=""){
-              RHMINN<-RHMINN+RH_diff
+            RHMAXX[RHMAXX > 100] <- 100
+            RHMAXX[RHMAXX < 0] <- 0.01
+            if(scenario != ""){
+              RHMINN <- RHMINN + RH_diff
             }
-            if(scenario!=""){
-              RHMAXX<-RHMAXX+RH_diff
+            if(scenario != ""){
+              RHMAXX <- RHMAXX + RH_diff
             }
           }#end check for year is 1971 or later
         }
@@ -1399,79 +1467,81 @@ micro_aust <- function(
           es <- WETAIR(db = TMAXX, rh = 100)$esat
           e <- WETAIR(db = TMAXX.orig, rh = RHMINN.orig)$e
           RHMINN <- (e / es) * 100
-          RHMINN[RHMINN>100]<-100
-          RHMINN[RHMINN<0]<-0.01
+          RHMINN[RHMINN > 100] <- 100
+          RHMINN[RHMINN < 0] <- 0.01
           es <- WETAIR(db = TMINN, rh = 100)$esat
           e <- WETAIR(db = TMINN.orig, rh = RHMAXX.orig)$e
           RHMAXX <- (e / es) * 100
-          RHMAXX[RHMAXX>100]<-100
-          RHMAXX[RHMAXX<0]<-0.01
+          RHMAXX[RHMAXX > 100] <- 100
+          RHMAXX[RHMAXX < 0] <- 0.01
         }
         # AUSCLIM query statements
-        clouds<-paste("select cloud1,cloud2,cloud3,cloud4,cloud5,cloud6,cloud7,cloud8,cloud9,cloud10,cloud11,cloud12 FROM cloudcover WHERE i = ",dbrow,sep="")
-        maxwinds<-paste("select maxwind1,maxwind2,maxwind3,maxwind4,maxwind5,maxwind6,maxwind7,maxwind8,maxwind9,maxwind10,maxwind11,maxwind12 FROM maxwind WHERE i = ",dbrow,sep="")
-        minwinds<-paste("select minwind1,minwind2,minwind3,minwind4,minwind5,minwind6,minwind7,minwind8,minwind9,minwind10,minwind11,minwind12 FROM minwind WHERE i = ",dbrow,sep="")
-        maxhumidities<-paste("select maxhum1,maxhum2,maxhum3,maxhum4,maxhum5,maxhum6,maxhum7,maxhum8,maxhum9,maxhum10,maxhum11,maxhum12 FROM maxhum WHERE i = ",dbrow,sep="")
-        minhumidities<-paste("select minhum1,minhum2,minhum3,minhum4,minhum5,minhum6,minhum7,minhum8,minhum9,minhum10,minhum11,minhum12 FROM minhum WHERE i = ",dbrow,sep="")
-        rainfall<-paste("select rainfall1,rainfall2,rainfall3,rainfall4,rainfall5,rainfall6,rainfall7,rainfall8,rainfall9,rainfall10,rainfall11,rainfall12 FROM rainfall WHERE i = ",dbrow,sep="")
-        rainydays<-paste("select rainy1,rainy2,rainy3,rainy4,rainy5,rainy6,rainy7,rainy8,rainy9,rainy10,rainy11,rainy12 FROM rainydays WHERE i = ",dbrow,sep="")
-        ALLMINTEMPS<-TMINN
-        ALLMAXTEMPS<-TMAXX
-        ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
+        clouds <- paste("select cloud1,cloud2,cloud3,cloud4,cloud5,cloud6,cloud7,cloud8,cloud9,cloud10,cloud11,cloud12 FROM cloudcover WHERE i = ",dbrow,sep="")
+        maxwinds <- paste("select maxwind1,maxwind2,maxwind3,maxwind4,maxwind5,maxwind6,maxwind7,maxwind8,maxwind9,maxwind10,maxwind11,maxwind12 FROM maxwind WHERE i = ",dbrow,sep="")
+        minwinds <- paste("select minwind1,minwind2,minwind3,minwind4,minwind5,minwind6,minwind7,minwind8,minwind9,minwind10,minwind11,minwind12 FROM minwind WHERE i = ",dbrow,sep="")
+        maxhumidities <- paste("select maxhum1,maxhum2,maxhum3,maxhum4,maxhum5,maxhum6,maxhum7,maxhum8,maxhum9,maxhum10,maxhum11,maxhum12 FROM maxhum WHERE i = ",dbrow,sep="")
+        minhumidities <- paste("select minhum1,minhum2,minhum3,minhum4,minhum5,minhum6,minhum7,minhum8,minhum9,minhum10,minhum11,minhum12 FROM minhum WHERE i = ",dbrow,sep="")
+        rainfall <- paste("select rainfall1,rainfall2,rainfall3,rainfall4,rainfall5,rainfall6,rainfall7,rainfall8,rainfall9,rainfall10,rainfall11,rainfall12 FROM rainfall WHERE i = ",dbrow,sep="")
+        rainydays <- paste("select rainy1,rainy2,rainy3,rainy4,rainy5,rainy6,rainy7,rainy8,rainy9,rainy10,rainy11,rainy12 FROM rainydays WHERE i = ",dbrow,sep="")
+        ALLMINTEMPS <- TMINN
+        ALLMAXTEMPS <- TMAXX
+        ALLTEMPS <- cbind(ALLMAXTEMPS, ALLMINTEMPS)
         if(opendap == 0){
-          WNMAXX <- sqlQuery(channel2,maxwinds)
-          WNMINN <- sqlQuery(channel2,minwinds)
-          if(dailywind!=1 ){
-            WNMAXX1 <-suppressWarnings(spline(doys12,WNMAXX,n=365,xmin=1,xmax=365,method="periodic"))
-            WNMAXX<-leapfix(WNMAXX1$y,yearlist)
-            WNMINN1 <-suppressWarnings(spline(doys12,WNMINN,n=365,xmin=1,xmax=365,method="periodic"))
-            WNMINN<-leapfix(WNMINN1$y,yearlist)
-            if(scenario!=""){
-              WNMAXX=WNMAXX*WIND_diff
-              WNMINN=WNMINN*WIND_diff
+          #WNMAXX <- sqlQuery(channel2, maxwinds)
+          #WNMINN <- sqlQuery(channel2, minwinds)
+          WNMAXX <- dbGetQuery(channel2, maxwinds)
+          WNMINN <- dbGetQuery(channel2, minwinds)
+          if(dailywind != 1 ){
+            WNMAXX1 <- suppressWarnings(spline(doys12, WNMAXX, n = 365, xmin = 1, xmax = 365, method = "periodic"))
+            WNMAXX <- leapfix(WNMAXX1$y, yearlist)
+            WNMINN1 <- suppressWarnings(spline(doys12, WNMINN, n = 365, xmin = 1, xmax = 365, method = "periodic"))
+            WNMINN <- leapfix(WNMINN1$y, yearlist)
+            if(scenario != ""){
+              WNMAXX <- WNMAXX * WIND_diff
+              WNMINN <- WNMINN * WIND_diff
             }
           }
         }
-        if(soildata==1){
-          SLES<-suppressWarnings(spline(doys12,SLES,n=365,xmin=1,xmax=365,method="periodic"))$y
+        if(soildata == 1){
+          SLES <- suppressWarnings(spline(doys12, SLES, n = 365, xmin = 1, xmax = 365, method = "periodic"))$y
           SLES <- leapfix(SLES, yearlist)
-          maxshades1 <-suppressWarnings(spline(doys12,shademax,n=365,xmin=1,xmax=365,method="periodic"))
-          MAXSHADES<-leapfix(maxshades1$y*100,yearlist)
-          MAXSHADES<-MAXSHADES[1:ndays]
-          if(manualshade==1){
+          maxshades1 <- suppressWarnings(spline(doys12, shademax, n = 365, xmin = 1, xmax = 365, method = "periodic"))
+          MAXSHADES <- leapfix(maxshades1$y*100,yearlist)
+          MAXSHADES <- MAXSHADES[1:ndays]
+          if(manualshade == 1){
             if(is.na(MAXSHADES)){
-              maxshades <- rep(maxshade,ndays)
-              MAXSHADES<-maxshades
+              maxshades <- rep(maxshade, ndays)
+              MAXSHADES <- maxshades
             }
             if(is.na(MINSHADES)){
-              minshades <- rep(minshade,ndays)
-              MINSHADES<-minshades
+              minshades <- rep(minshade, ndays)
+              MINSHADES <- minshades
             }
           }
         }else{
-          if(manualshade==0){
-            maxshades1 <-suppressWarnings(spline(doys12,shademax,n=365,xmin=1,xmax=365,method="periodic"))
-            MAXSHADES<-leapfix(maxshades1$y*100,yearlist)
-            minshades <- rep(minshade,ndays)
-            MINSHADES<-minshades
+          if(manualshade == 0){
+            maxshades1 <-suppressWarnings(spline(doys12, shademax, n = 365, xmin = 1, xmax = 365, method = "periodic"))
+            MAXSHADES <- leapfix(maxshades1$y * 100, yearlist)
+            minshades <- rep(minshade, ndays)
+            MINSHADES <- minshades
           }else{
-            MAXSHADES<-maxshades
-            MINSHADES<-minshades
+            MAXSHADES <- maxshades
+            MINSHADES <- minshades
           }
         }
         REFLS <- rep(REFL, ndays)
-        if((soildata==1)&(length(RAINFALL)>0)){
-          soilwet<-RAINFALL
-          soilwet[soilwet<=rainwet] = 0
-          soilwet[soilwet>0] = 90
-          PCTWET<-pmax(soilwet,PCTWET)
+        if((soildata == 1) & (length(RAINFALL) > 0)){
+          soilwet <- RAINFALL
+          soilwet[soilwet <= rainwet] <- 0
+          soilwet[soilwet > 0] <- 90
+          PCTWET <- pmax(soilwet, PCTWET)
         }else{
           REFLS <- rep(REFL, ndays)
           PCTWET <- rep(PCTWET, ndays)
-          soilwet<-RAINFALL
-          soilwet[soilwet<=rainwet] = 0
-          soilwet[soilwet>0] = 90
-          PCTWET<-pmax(soilwet,PCTWET)
+          soilwet <- RAINFALL
+          soilwet[soilwet <= rainwet] <- 0
+          soilwet[soilwet > 0] <- 90
+          PCTWET <- pmax(soilwet, PCTWET)
         }
         Numtyps <- 10 # number of substrate types
         Nodes <- matrix(data = 0, nrow = 10, ncol = ndays) # deepest nodes for each substrate type
@@ -1484,38 +1554,38 @@ micro_aust <- function(
         }else{
           ALREF <- abs(trunc(x[1]))
         }
-        HEMIS <- ifelse(x[2]<0,2.,1.)
+        HEMIS <- ifelse(x[2]<0, 2, 1)
         ALAT <- abs(trunc(x[2]))
-        AMINUT <- (abs(x[2])-ALAT)*60
+        AMINUT <- (abs(x[2]) - ALAT) * 60
         ALONG <- abs(trunc(x[1]))
-        ALMINT <- (abs(x[1])-ALONG)*60
-        ALTT<-ALTITUDES
-        SLOPE<-SLOPES
-        AZMUTH<-AZMUTHS
+        ALMINT <- (abs(x[1]) - ALONG) * 60
+        ALTT <- ALTITUDES
+        SLOPE <- SLOPES
+        AZMUTH <- AZMUTHS
 
-        avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
-        soilinit<-rep(avetemp,20)
-        tannul<-mean(unlist(ALLTEMPS))
+        avetemp <- (sum(TMAXX) + sum(TMINN)) / (length(TMAXX) * 2)
+        soilinit <- rep(avetemp, 20)
+        tannul <- mean(unlist(ALLTEMPS))
 
-        if(nyears==1){
-          avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
+        if(nyears == 1){
+          avetemp<-(sum(TMAXX)+sum(TMINN)) / (length(TMAXX) * 2)
           if(ystart %in% leapyears){
-            tannulrun<-rep(avetemp,366)
+            tannulrun <- rep(avetemp, 366)
           }else{
-            tannulrun<-rep(avetemp,365)
+            tannulrun <- rep(avetemp, 365)
           }
         }else{
-          if(nrow(TMAXX)==1){
-            avetemp<-rowMeans(t(rbind(TMAXX, TMINN)), na.rm=TRUE)
+          if(nrow(TMAXX) == 1){
+            avetemp <- rowMeans(t(rbind(TMAXX, TMINN)), na.rm = TRUE)
           }else{
-            avetemp<-rowMeans(cbind(TMAXX, TMINN), na.rm=TRUE)
+            avetemp <- rowMeans(cbind(TMAXX, TMINN), na.rm = TRUE)
           }
-          if(length(TMAXX)<365){
-            tannulrun<-rep((sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2),length(TMAXX))
+          if(length(TMAXX) < 365){
+            tannulrun <- rep((sum(TMAXX) + sum(TMINN)) / (length(TMAXX) * 2), length(TMAXX))
           }else{
-            tannulrun<-raster::movingFun(avetemp,n=365,fun=mean,type='to')
-            yearone<-rep((sum(TMAXX[1:365])+sum(TMINN[1:365]))/(365*2),365)
-            tannulrun[1:365]<-yearone
+            tannulrun <- raster::movingFun(avetemp, n = 365, fun = mean, type = 'to')
+            yearone <- rep((sum(TMAXX[1:365]) + sum(TMINN[1:365])) / (365 * 2), 365)
+            tannulrun[1:365] <- yearone
             # SST
           }
         }
@@ -1851,6 +1921,10 @@ micro_aust <- function(
         }else{
           location<-loc
         }
+
+          all_cons <- dbListConnections(MySQL())
+          for(con in all_cons) +  dbDisconnect(con)
+
         message(paste('running microclimate model for',ndays,'days from ',ystart, ' to ', yfinish, ' at site',location,'\n'))
         ptm <- proc.time() # Start timing
         microut<-microclimate(micro)
