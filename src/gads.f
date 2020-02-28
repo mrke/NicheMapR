@@ -251,7 +251,7 @@ ccccc -----------------------------------------------------------------c
 
 c      print*,' Anfang head4'
        if(iwel.eq.1)then
-        call head4 (iwel,ihum)
+        call head4 !(iwel,ihum)
        endif
 c      print*,' Ende head4'
 
