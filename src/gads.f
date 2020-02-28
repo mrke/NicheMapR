@@ -233,8 +233,8 @@ c         goto 908
 c      end if
 
 CCCCC -----------------------------------------------------------------C
-C     EINLESEN DER HOEHEN-PROFILE vom File TAPE9		       c
-C								       C
+C     EINLESEN DER HOEHEN-PROFILE vom File TAPE9                       c
+C     						                                           C 
 C     HM    : EFFEKTIVE SCHICHTDICKE (HOMOGENE VERTEILUNG)             C
 C     HFTA  : SCHICHTDICKE DES FREIEN TROP. AEROSOLS IN KM             C
 C     HSTRA : SCHICHTDICKE DES STRATOSPH. AEROSOLS IN KM               C
@@ -319,7 +319,7 @@ c       close (10)
 
       do 9998 i=1,25
        do 9997 j=1,2
-	    optdep1(i,j)=optdep(i,j)
+        optdep1(i,j)=optdep(i,j)
 9997   continue
 9998  continue
 
@@ -329,7 +329,7 @@ c       close (10)
 CCCCC *****************************************************************C
       SUBROUTINE PROF
 C     *****************************************************************C
-C								       C
+C                                                                      C
 C     -----------------------------------------------------------------C
 C     EINLESEN DER HOEHEN-PROFILE vom File profiles.dat und der        C
 C     Extinktionskoeffizienten der oberen Atmosph?re von extcof.dat    C
@@ -366,11 +366,11 @@ CCCCC -----------------------------------------------------------------C
 
 CCCCC -----------------------------------------------------------------C
 C     Einlesen der Extinktionskoeffizienten f?r die obere Atmosph?re:  C
-C								       C
+C                                                                      C
 C     EXTINCTION COEFFICIENT -	FREE TROPOSPHERIC AEROSOL  +	       C
-C     EXTINCTION COEFFICIENT -	  STRATOSPHERIC   AEROSOL	       C
-C								       C
-C     UEBERSPRINGEN DER ERSTEN BEIDEN ZEILEN von TAPE9		       C
+C     EXTINCTION COEFFICIENT -	  STRATOSPHERIC   AEROSOL	           C
+C                                                                      C
+C     UEBERSPRINGEN DER ERSTEN BEIDEN ZEILEN von TAPE9		           C
 CCCCC -----------------------------------------------------------------C
 
       open (9,file='extdata/extback.dat')
@@ -393,7 +393,7 @@ c        end do
       END
 
 ccccc *****************************************************************c
-      subroutine head4 (il,ih)
+      subroutine head4 !(il,ih)
 c     *****************************************************************c
 c                                                                      c
 c     -----------------------------------------------------------------c
@@ -1182,7 +1182,7 @@ c	       write (10,2020) latx,lonx,nl,alamb(ilamb),ahum(ihum),
 c     *			       (oparam(ip,l),ip=1,iop)
 c 2020	  FORMAT(2(1x,I4),i3,3x,f6.3,3x,f3.0,1p3e10.3,0p3e10.3,1pe10.3)
           optdep(ilamb,1)=alamb(ilamb)
-	      optdep(ilamb,2)=oparam(6,l)
+          optdep(ilamb,2)=oparam(6,l)
          else
 c	       write (10,3020)
 c     *			       (oparam(ip,l),ip=1,iop)
