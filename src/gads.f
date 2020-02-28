@@ -763,7 +763,7 @@ c            ntheta=96
 c            do it=1,ntheta
 c
 c               read (ntap,510,end=511)
-c     *               thet,(pha(il,ic,it),ila=1,ilamb)
+c     *               thet,(pha(il,ic,min(112,it)),ila=1,ilamb)
 c  510          format(1x,70e10.3)
 c
 c               print*,it,thet,pha(il,ic,it)
