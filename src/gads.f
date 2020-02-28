@@ -813,7 +813,7 @@ c  ENDE ALTER INPUT
 
 c ENDE NEUER INPUT
 
-            bac(il,ic)=pha(il,ic,ntheta)
+            bac(il,ic)=pha(il,ic,min(112,ntheta))
 
             extbuf(ibuf)=ext(il,ic)
             scabuf(ibuf)=sca(il,ic)
