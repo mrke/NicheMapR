@@ -324,7 +324,7 @@ C     THE ENERGY BALANCE EQUATION
       TSKIN = X
       TLUNG = (TSKIN+TC)/2.
       CALL SEVAP
-C     QSTORED (J/S) = KG/M^3* M^3* J/KG-C* C/(MIN*S/MIN)
+C	  QSTORED (J/S) = KG/M^3* M^3* J/KG-C* C/(MIN*S/MIN)
       QST = AMASS*SPHEAT*DDSUB(2)/((T - TPAST)*60.)
 
       TPAST = T

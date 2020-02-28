@@ -36,6 +36,8 @@ C     EPS IS MACHINE FLOATING POINT PRECISION
       DIAGNOS = 0.
       A=X1
       B=X2
+      E=0.
+      C=0.
       FA=FUN(A)
       FB=FUN(B)
       IF((FB*FA.GT.0.) .AND. (DIAGNOS.GT.0.0)) THEN

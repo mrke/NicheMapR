@@ -91,7 +91,7 @@ C     COMPUTING VEL. PROFILE PARAMETERS FROM 200 CM REFERENCE VELOCITY
       AMOL=-30.0 ! initial Monin-Obukhov length
       ITER=0 ! initialise counter
 
-C	  Paul edit 9/12/19: adding alternative Campbell and Norman 1998 vertical air temperature profile calculation option
+C     Paul edit 9/12/19: adding alternative Campbell and Norman 1998 vertical air temperature profile calculation option
       IF(ZH.GT.0)GO TO 1500
 
 
@@ -161,7 +161,7 @@ C      COMPUTING FICTITIOUS TEMP. AT TOP OF SUBLAYER
       STB=.64/DUM ! BULK STANTON NO.
 
       QC=RCP*DIFFT*USTAR*STB/(1+STB/STS) ! convective heat transfer at the surface
-C	  Use vertical temperature profile from Campbell and Norman 1998
+C     Use vertical temperature profile from Campbell and Norman 1998
       IF(NAIR.LE.0) RETURN
       DO 5 I=1,NAIR
 C      FILL OUT VEL. AND TEMP. PROFILES

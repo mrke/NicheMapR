@@ -30,7 +30,7 @@ C     AN INSECT (HEMIMETABOLOUS)
       DOUBLE PRECISION ES,ESM,F_M,F2,F,G,H,H_A,HS,JX,K,K_J,K_M,KAP
       DOUBLE PRECISION KAP_R,KAP_X,L,L_M,L_T,LAMBDA,M_V,MU_E,MU_V,P_A
       DOUBLE PRECISION P_AM,P_B,P_C,P_J,P_M,P_R,PREGNANT,Q,R,RDOT
-      DOUBLE PRECISION RDOT1,RPAR,S,S_G,V,V_M,VDOT,W_V,WAITING,X,Y
+      DOUBLE PRECISION RPAR,S,S_G,V,V_M,VDOT,W_V,WAITING,X,Y
 
 
       DIMENSION Y(N),DDEB(N),RPAR(34),IPAR(31)
@@ -95,7 +95,7 @@ C     AN INSECT (HEMIMETABOLOUS)
       IF(ES > 0.)THEN
        F2=F
       ELSE
-       F2=0
+       F2=0.
       ENDIF
       
       IF(H.LT.E_HB)THEN ! EMBRYO
@@ -117,10 +117,10 @@ C     AN INSECT (HEMIMETABOLOUS)
       ELSE ! POST-EMBRYO
       
        ! structure and starvation
-       IF(V * RDOT1 < 0.)THEN
-        DS = -1. * V * RDOT1 * MU_V * D_V / W_V ! J / T, STARVATION ENERGY TO BE SUBTRACTED FROM REPRODUCTION BUFFER IF NECESSARY
+       IF(V * RDOT < 0.)THEN
+        DS = -1. * V * RDOT * MU_V * D_V / W_V ! J / T, STARVATION ENERGY TO BE SUBTRACTED FROM REPRODUCTION BUFFER IF NECESSARY
         IF(V .LT. DS)THEN
-         DV = V * RDOT1
+         DV = V * RDOT
          DS = 0.
         ENDIF
        ELSE
@@ -128,7 +128,7 @@ C     AN INSECT (HEMIMETABOLOUS)
        ENDIF
        
        ! assimilation
-       P_A = P_Am * f * L ** 2
+       P_A = P_Am * f * L ** 2.
        IF(METAB_MODE.EQ.1)THEN
         IF((P_A.GT.P_C).AND.(E.EQ.E_M))THEN
          P_A = P_C
@@ -137,7 +137,7 @@ C     AN INSECT (HEMIMETABOLOUS)
        
        ! RESERVE
        IF(ES > 0.)THEN
-        DE = P_A / L**3 - (E * VDOT) / L
+        DE = P_A / L**3. - (E * VDOT) / L
        ELSE
         DE = (- E * VDOT) / L
        ENDIF
@@ -207,7 +207,7 @@ C     AN INSECT (HEMIMETABOLOUS)
        ENDIF!END CHECK FOR IMMATURE OR MATURE
 
         ! draw from reproduction and then batch buffers under starvation
-        if((dS.GT.0).AND.(p_R.GT.dS))THEN
+        if((dS.GT.0.).AND.(p_R.GT.dS))THEN
           p_R = p_R - dS
           dS = 0.
         ENDIF
@@ -220,8 +220,8 @@ C     AN INSECT (HEMIMETABOLOUS)
         DR = P_R * KAP_R - P_B
         DB = P_B
        ELSE
-        DR = 0
-        DB = 0
+        DR = 0.
+        DB = 0.
        ENDIF
       ENDIF
       
