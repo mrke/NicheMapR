@@ -179,6 +179,8 @@ C     IF METAB_MODE=1. USES EULER INTEGRATION
       SURVIV(HOUR)=1.
       ES(HOUR)=0.
       SC=0.
+      L_THRESH=0.
+      STARVE=0.
       KAP=KAPPA
 
       IF(HOUR.EQ.1)THEN

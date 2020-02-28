@@ -204,6 +204,7 @@ C     INITIALISE VARIABLES
       ES(HOUR)=0.
       P_B_PAST=0.
       REPRODENS=0.
+      P_M=0.
       PREVDEAD=DEAD
 
       IF((HOUR.EQ.1).AND.(DAYCOUNT.EQ.1))THEN
