@@ -243,7 +243,7 @@ A sophisticated and well-document scheme is now available for estimating DEB par
 
 # Getting DEB parameters into R
 
-DEB Parameters are now available for over 1800 species [Add-my-pet Portal](http://www.bio.vu.nl/thb/deb/deblab/add_my_pet/). The [AmPtool github repository](https://github.com/add-my-pet/AmPtool) houses the file 'allStat.mat', which includes parameters and implied properties for all species in the AmP collection (Marques et al. 2018). This file can be read into R with the 'R.matlab' package and saved as an R data object. The initial read of the .mat file takes a while (~5-10 minutes), but the '.Rda' file to which it is converted loads much faster (seconds).
+DEB Parameters are now available for over 1800 species [Add-my-pet Portal](http://www.bio.vu.nl/thb/deb/deblab/add_my_pet/). This site provides the file [allStat.mat](https://www.bio.vu.nl/thb/deb/deblab/add_my_pet/AmPdata/AmPdata.zip), which includes parameters and implied properties for all species in the AmP collection (Marques et al. 2018). This file can be read into R with the 'R.matlab' package and saved as an R data object. The initial read of the .mat file takes a while (~5-10 minutes), but the '.Rda' file to which it is converted loads much faster (seconds).
 
 Here is the code to read and convert the 'allStat.mat' file.
 
