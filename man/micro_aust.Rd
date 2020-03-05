@@ -80,7 +80,7 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{manualshade}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
 \code{soildata}{ = 0, Extract emissivities from gridded data? 1=yes, 0=no}\cr\cr
 \code{terrain}{ = 0, Use 250m resolution terrain data? 1=yes, 0=no}\cr\cr
-\code{dailywind}{ = 1, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
+\code{dailywind}{ = 1, use McVicar grids for wind speed (does not work for opendap = 1)? 1=yes, 0=no}\cr\cr
 \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
 \code{warm}{ = 0, uniform warming, °C}\cr\cr
@@ -274,50 +274,50 @@ soilmoist <- as.data.frame(micro$soilmoist) # soil temperatures, minimum shade
 
 # append dates
 dates <- micro$dates
-metout <- cbind(dates,metout)
-soil <- cbind(dates,soil)
+metout <- cbind(dates, metout)
+soil <- cbind(dates, soil)
 soilmoist <- cbind(dates, soilmoist)
-minshade<-micro$minshade
+minshade <- micro$minshade
 
 # plotting above-ground conditions in minimum shade
-with(metout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Temperature (Â°C)"
-, type = "l",main=paste("air and sky temperature, ",minshade,"\% shade",sep=""), ylim = c(-20, 60))})
-with(metout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Temperature (Â°C)"
-, type = "l",lty=2,col='blue')})
+with(metout, {plot(TALOC ~ dates, xlab = "Date and Time", ylab = "Temperature (Â°C)"
+, type = "l" ,main = paste("air and sky temperature, ", minshade, "\% shade", sep = ""), ylim = c(-20, 60))})
+with(metout, {points(TAREF ~ dates,xlab = "Date and Time", ylab = "Temperature (Â°C)"
+, type = "l", lty = 2, col = 'blue')})
 with(metout,{points(TSKYC ~ dates,xlab = "Date and Time", ylab = "Temperature (Â°C)"
-,  type = "l",col='light blue',main=paste("sky temperature, ",minshade,"\% shade",sep=""))})
-with(metout,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
-, type = "l",ylim=c(0,100),main=paste("humidity, ",minshade,"\% shade",sep=""))})
-with(metout,{points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
-, type = "l",col='blue',lty=2,ylim=c(0,100))})
-with(metout,{plot(VREF ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-,  type = "l",main="wind speed",ylim = c(0, 15))})
-with(metout,{points(VLOC ~ dates,xlab = "Date and Time", ylab = "Wind Speed (m/s)"
-,  type = "l",lty=2,col='blue')})
-with(metout,{plot(SOLR ~ dates,xlab = "Date and Time", ylab = "Solar Radiation (W/m2)"
-,  type = "l",main="solar radiation")})
-with(metout,{plot(SNOWDEP ~ dates,xlab = "Date and Time", ylab = "Snow Depth (cm)"
-,  type = "l",main="snow depth")})
+,  type = "l", col = 'light blue', main = paste("sky temperature, ", minshade, "\% shade", sep = ""))})
+with(metout, {plot(RHLOC ~ dates, xlab = "Date and Time", ylab = "Relative Humidity (\%)"
+, type = "l", ylim = c(0, 100), main = paste("humidity, ", minshade, "\% shade", sep = ""))})
+with(metout, {points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
+, type = "l", col = 'blue', lty = 2, ylim = c(0, 100))})
+with(metout, {plot(VREF ~ dates, xlab = "Date and Time", ylab = "Wind Speed (m/s)"
+,  type = "l", main = "wind speed", ylim = c(0, 15))})
+with(metout, {points(VLOC ~ dates, xlab = "Date and Time", ylab = "Wind Speed (m/s)"
+,  type = "l", lty = 2, col = 'blue')})
+with(metout, {plot(SOLR ~ dates, xlab = "Date and Time", ylab = "Solar Radiation (W/m2)"
+,  type = "l", main="solar radiation")})
+with(metout, {plot(SNOWDEP ~ dates, xlab = "Date and Time", ylab = "Snow Depth (cm)"
+,  type = "l", main = "snow depth")})
 
 # plotting soil temperature
 for(i in 1:10){
- if(i==1){
-   plot(soil[,i+3]~soil[,1],xlab = "Date and Time", ylab = "Soil Temperature (Â°C)"
-   ,col=i,type = "l",main=paste("soil temperature ",minshade,"\% shade",sep=""))
+ if(i == 1){
+   plot(soil[, i + 3] ~ soil[, 1], xlab = "Date and Time", ylab = "Soil Temperature (Â°C)"
+   , col = i, type = "l", main = paste("soil temperature ", minshade, "\% shade",sep=""))
  }else{
-   points(soil[,i+3]~soil[,1],xlab = "Date and Time", ylab = "Soil Temperature
-    (Â°C)",col=i,type = "l")
+   points(soil[, i + 3] ~ soil[, 1], xlab = "Date and Time", ylab = "Soil Temperature
+    (Â°C)", col = i, type = "l")
  }
 }
 
 # plotting soil moisture
 for(i in 1:10){
- if(i==1){
-   plot(soilmoist[,i+3]*100~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture (\% volumetric)"
-   ,col=i,type = "l",main=paste("soil moisture ",minshade,"\% shade",sep=""))
+ if(i == 1){
+   plot(soilmoist[, i + 3] * 100 ~ soilmoist[, 1], xlab = "Date and Time", ylab = "Soil Moisture (\% volumetric)"
+   ,col = i, type = "l", main = paste("soil moisture ", minshade, "\% shade", sep = ""))
  }else{
-   points(soilmoist[,i+3]*100~soilmoist[,1],xlab = "Date and Time", ylab = "Soil Moisture
-    (\%)",col=i,type = "l")
+   points(soilmoist[, i + 3] * 100 ~ soilmoist[, 1], xlab = "Date and Time", ylab = "Soil Moisture
+    (\%)", col = i, type = "l")
  }
 }
 }
