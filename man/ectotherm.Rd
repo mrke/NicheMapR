@@ -50,7 +50,7 @@ ectotherm(Ww_g, shape, alpha_max, alpha_min, T_F_min, T_F_max, T_B_min, T_RB_min
 
 \item{maxdepth}{= 10, Maximum depth (soil node #) to which animal can retreat if burrowing}
 
-\item{M_1}{= 0.013, Metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb), default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231}
+\item{M_1}{= 0.013, Metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb), in ml O2 / h, default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231}
 
 \item{M_2}{= 0.800, Metabolic rate parameter 2}
 
