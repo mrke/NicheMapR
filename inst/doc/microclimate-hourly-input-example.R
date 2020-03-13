@@ -41,8 +41,8 @@ fail <- 24*365 # how many restarts of the integrator before the Fortran program 
 ## ---- message=FALSE, warnings=FALSE--------------------------------------
 longlat <- c(Longitude, Latitude) # decimal degrees longitude and latitude from the SCAN site data table
 doynum <- floor(nrow(weather) / 24) # number of days to run, determined by counting the number of rows in the weather dataset and dividing by 24 to get days, but keeping it as a whole number
-idayst <- 1 # start month
-ida <- doynum # end month
+idayst <- 1 # start day
+ida <- doynum # end day
 HEMIS <- ifelse(longlat[2] < 0, 2, 1) # chose hemisphere based on latitude
 ALAT <- abs(trunc(longlat[2])) # degrees latitude
 AMINUT <- (abs(longlat[2]) - ALAT) * 60 # minutes latitude
@@ -52,7 +52,7 @@ ALREF <- ALONG # reference longitude for time zone
 
 ## ---- message=FALSE, warnings=FALSE--------------------------------------
 EC <- 0.0167238 # Eccenricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)
-RUF <- 0.004 # Roughness height (m), , e.g. sand is 0.05, grass may be 2.0, current allowed range: 0.001 (snow) - 2.0 cm.
+RUF <- 0.004 # Roughness height (m), , e.g. sand is 0.0005, grass may be 0.02, current allowed range: 0.00001 (snow) - 0.02 cm.
 ZH <- 0 # heat transfer roughness height (m) for Campbell and Norman air temperature/wind speed profile (invoked if greater than 1, 0.02 * canopy height in m if unknown)
 D0 <- 0 # zero plane displacement correction factor (m) for Campbell and Norman air temperature/wind speed profile (0.6 * canopy height in m if unknown)
 # Next four parameters are segmented velocity profiles due to bushes, rocks etc. on the surface
