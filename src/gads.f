@@ -29,11 +29,11 @@ ccccc ------------------------------------------------------------------c
 
 
 ccccc -----------------------------------------------------------------c
-c      Berechnung der optischen Aerosoldaten aus den mikrophysika-     c
-c      lischen Rohdaten.                                               c
+c      Calculation of the optical aerosol data from the microphysical  c
+c      raw data.                                                       c
 c                                                                      c
-c      ATLOPT ist eine modifizierte Version des Programms OPAC und     c
-c      steuert den Aufruf der Unterprogramme:                          c
+c      ATLOPT is a modified version of the OPAC and                    c
+c      controls the call of the subroutines:                           c
 c                                                                      c
 c      - HEAD4                                                         c
 c      - LOCATE                                                        c
@@ -42,12 +42,12 @@ c      - OPTCOM                                                        c
 c      - OPTPAR                                                        c
 c      - OUT4                                                          c
 c                                                                      c
-c      Diese Unterprogramme sind an ATLOPT angeh?ngt.                  c
+c      These subroutines are attached to ATLOPT.                       c
 c                                                                      c
-c      ab 14.12.92 anderes Format der neuen Mie-Rechnungen eingebaut   c
-c      ab 04.11.93 neue Parameter scattering, absorption, omega ratio  c
-c      ab 13.05.94 OPTCOM: Russ quillt nicht mehr                      c
-c      ab 27.07.94 opt. Dicke fuer alle Wellenlaengen berechnet        c
+c      ab 14.12.92 another format of the new built-in Mie-Rechnungen   c
+c      ab 04.11.93 new Parameter scattering, absorption, omega ratio   c
+c      ab 13.05.94 OPTCOM: Russ no longer swells                       c
+c      ab 27.07.94 opt. Thickness calculated for all wavelengths       c
 c                                                                      c
 c      18.11.97 GADS 2.1                                               c
 c                                                                      c
@@ -149,7 +149,7 @@ CCCCC -----------------------------------------------------------------C
       end do
 
 ccccc -----------------------------------------------------------------c
-c     Abfrage, was geplottet werden soll                               c
+c     Query what should be plotted                                     c
 ccccc -----------------------------------------------------------------c
 
  1001 continue
@@ -233,12 +233,12 @@ c         goto 908
 c      end if
 
 CCCCC -----------------------------------------------------------------C
-C     EINLESEN DER HOEHEN-PROFILE vom File TAPE9                       c
+C     READING THE HEIGHT PROFILES from the file TAPE9                  c
 C     						                                           C 
-C     HM    : EFFEKTIVE SCHICHTDICKE (HOMOGENE VERTEILUNG)             C
-C     HFTA  : SCHICHTDICKE DES FREIEN TROP. AEROSOLS IN KM             C
-C     HSTRA : SCHICHTDICKE DES STRATOSPH. AEROSOLS IN KM               C
-C     NIL   : ANZAHL DER SCHICHTEN                                     C
+C     HM    : EFFECTIVE LAYER THICKNESS (HOMOGENEOUS DISTRIBUTION)     C
+C     HFTA  : FREE TROP LAYER THICKNESS. AEROSOLS IN KM                C
+C     HSTRA : LAYER THICKNESS OF THE STRATOSPH. AEROSOLS IN KM         C
+C     NIL   : NUMBER OF LAYERS                                         C
 CCCCC -----------------------------------------------------------------C
 
 c      print*,' Anfang prof'
@@ -246,7 +246,7 @@ c      print*,' Anfang prof'
 c      print*,' Ende prof'
 
 ccccc -----------------------------------------------------------------c
-c      Beschriftung des Output-Files                                   c
+c      Labeling of the output files                                    c
 ccccc -----------------------------------------------------------------c
 
 c      print*,' Anfang head4'
@@ -256,20 +256,20 @@ c      print*,' Anfang head4'
 c      print*,' Ende head4'
 
 ccccc -----------------------------------------------------------------c
-c      Schleife ?ber alle verlangten Wellenl?ngen und Feuchteklassen   c
+c      Loop over all required wavelengths and moisture classes         c
 ccccc -----------------------------------------------------------------c
 
        do il=1,niw
         do ih=1,njh
 ccccc -----------------------------------------------------------------c
-c      Schleife ?ber alle verlangten geographischen Koordinaten        c
+c     Loop over all required geographic coordinates                    c
 ccccc -----------------------------------------------------------------c
          do ilat=lata,late,-lati
           do ilmal=1,nlmal
            do ilon=lona,lone,loni
 
 ccccc -----------------------------------------------------------------c
-c      Einlesen der Rohdaten von den Files TAPE201, TAPE207:	       c
+c      Reading the raw data from the files TAPE201, TAPE207:	       c
 c     ------------------------------------------------------	       c
 C     LAT       : LATITUDE                                             C
 C     LON       : LONGITUDE                                            C
@@ -291,7 +291,7 @@ c       print*,' Anfang d4raw'
 c       print*,' Ende d4raw'
 
 ccccc -----------------------------------------------------------------c
-c      Einlesen der optischen Rohdaten von den Files winter.dat and    c
+c      Reading of the optical raw data from the files winter.dat and   c
 c      summer.dat                                                      c
 ccccc -----------------------------------------------------------------c
 
@@ -300,12 +300,12 @@ c       print*,' Anfang optcom'
 c       print*,' ende optcom'
 
 ccccc -----------------------------------------------------------------c
-c      Berechnung der optischen Parameter am aktuellen Gitterpunkt     c
+c      Calculation of the optical parameters at the current grid point c
 ccccc -----------------------------------------------------------------c
 
-c       print*,' Anfang optpar',ilat,ilon
+c       print*,' Beginning optpar',ilat,ilon
             call optpar(iwel,ihum)
-c       print*,' Ende optpar',ilat,ilon
+c       print*,' End optpar',ilat,ilon
 
            end do
           end do
@@ -331,8 +331,8 @@ CCCCC *****************************************************************C
 C     *****************************************************************C
 C                                                                      C
 C     -----------------------------------------------------------------C
-C     EINLESEN DER HOEHEN-PROFILE vom File profiles.dat und der        C
-C     Extinktionskoeffizienten der oberen Atmosph?re von extcof.dat    C
+C     READING THE HEIGHT PROFILES from the file profiles.dat and the   C
+C     extinction coefficients of the upper atmosphere from extcof.dat  C
 CCCCC -----------------------------------------------------------------C
 
       common /wavel/  mlamb,alamb(61),niw
@@ -341,15 +341,15 @@ CCCCC -----------------------------------------------------------------C
       COMMON /FTASTR/ EXTFTA(61),EXTSTR(61)
 
 CCCCC -----------------------------------------------------------------C
-C     ES GIBT 7 PROFIL-TYPEN. Folgende Daten werden eingelesen:        C
+C     THERE ARE 7 PROFILE TYPES. The following data are imported:      C
 c                                                                      c
-c           iip: Nummer des Profiltyps                                 c
-c       nil(ip): Zahl der Schichten fuer Typ ip (wie in tape201 usw.)  c
-c      hfta(ip): Hoehe der Schicht fuer das freie troposph. Aerosol    c
-c     hstra(ip): Hoehe der Schicht des stratosphaerischen Aerosols     c
-c     h0(il,ip): Untergrenze der Schicht il                            c
-c     h1(il,ip): Obergrenze der Schicht                                c
-c     hm(il,ip): effektive Dicke der Schicht il fuer den Typ ip        c
+c           iip: Profile type number                                   c
+c       nil(ip): Number of layers for type ip (as in tape201 etc.)     c
+c      hfta(ip): Height of the layer for the free troposphere. Aerosol c
+c     hstra(ip): Height of the stratospheric aerosol layer             c
+c     h0(il,ip): Lower limit of layer il                               c
+c     h1(il,ip): Upper limit of the layer                              c
+c     hm(il,ip): effective thickness of the layer il for the type ip   c
 CCCCC -----------------------------------------------------------------C
 
       open (8,file='extdata/profiles.dat')
@@ -365,12 +365,12 @@ CCCCC -----------------------------------------------------------------C
       close (8)
 
 CCCCC -----------------------------------------------------------------C
-C     Einlesen der Extinktionskoeffizienten f?r die obere Atmosph?re:  C
+C     Reading in the extinction coefficients for the upper atmosphere: C
 C                                                                      C
 C     EXTINCTION COEFFICIENT -	FREE TROPOSPHERIC AEROSOL  +	       C
 C     EXTINCTION COEFFICIENT -	  STRATOSPHERIC   AEROSOL	           C
 C                                                                      C
-C     UEBERSPRINGEN DER ERSTEN BEIDEN ZEILEN von TAPE9		           C
+C     SKIP THE FIRST TWO ROWS from TAPE9            		           C
 CCCCC -----------------------------------------------------------------C
 
       open (9,file='extdata/extback.dat')
@@ -397,7 +397,7 @@ ccccc *****************************************************************c
 c     *****************************************************************c
 c                                                                      c
 c     -----------------------------------------------------------------c
-c     Beschriftung des Output-Files TAPE10			           c
+c     Labeling of the TAPE10 output file		        	           c
 ccccc -----------------------------------------------------------------c
 
       real mixrat,numden
@@ -420,7 +420,7 @@ ccccc -----------------------------------------------------------------c
       common /angle/  jnangle(112),angle(112),nia
 
 CCCCC -----------------------------------------------------------------C
-C     Kopf des output-files                                            C
+C     Output file header                                               C
 CCCCC -----------------------------------------------------------------C
 
 c      if (ih.eq.1.and.il.eq.1) then
@@ -436,7 +436,7 @@ c     *		'============================')
 c      end if
 
 CCCCC -----------------------------------------------------------------C
-C     Beschriftung f?r verschiedene Wellenlaengen und rel. Feuchten    c	       c
+C     Labeling for different wavelengths and rel. Damp                 c
 CCCCC -----------------------------------------------------------------C
 
 c      if (nih.ne.0) then
@@ -480,7 +480,7 @@ CCCCC *****************************************************************C
 C     *****************************************************************C
 C                                                                      C
 C     -----------------------------------------------------------------C
-C     EINLESEN DER DATEN VON DEN ROHDATEN-FILES TAPE201-TAPE212        C
+C     READING IN THE DATA FROM THE RAW DATA-FILES TAPE201-TAPE212        C
 CCCCC -----------------------------------------------------------------C
 
       IMPLICIT CHARACTER*3 (Z)
@@ -544,8 +544,8 @@ c      write(*,1025) ( ACNR(JC,1),ACMR(JC,1),JC=4,NJC(1))
 1001  format (2i4,3x,1pe10.3)
 
 CCCCC -----------------------------------------------------------------C
-C     BESTIMMUNG DER NUMMER DES AEROSOLTYPS UND DER FEUCHTEKLASSE      C
-C     !!! AEROSOLTYP IST SCHICHTABHAENGIG (NOCH NICHT BERUECKSICHTIGT) C
+C     DETERMINATION OF THE AEROSOL TYPE AND HUMIDITY CLASS             C
+C     !!! AEROSOL TYPE IS LAYER-DEPENDENT (NOT TAKEN INTO ACCOUNT)     C
 CCCCC -----------------------------------------------------------------C
 
 c     DO 50 IT=1,11
@@ -582,16 +582,15 @@ CCCCC *****************************************************************C
 C     *****************************************************************C
 C                                                                      C
 C     -----------------------------------------------------------------C
-C      Einlesen der optischen Rohdaten in einen Puffer f?r             C
-C      20 Komponenten                                                  C
+C      Reading the raw optical data into a buffer for                  C
+C      20 components                                                   C
 c                                                                      c
-c     Bei den urspruenglichen Mie-Rechnungen sind alle Koeffizienten   c
-c     und die Phasenfunktion in [1/cm] angegeben. Die neuen Rechnungen c
-c     geben die Ergebnisse in [1/m]. Daher muessen die neuen           c
-c     Ergebnisse in der ersten Zeile durch den Zusatz 'neu' gekenn-    c
-c     zeichnet werden: z.B. TAPE741, neu                               c
+c     In the original Mie calculations, all coefficients and the phase c
+c     function are given in [1/cm]. The new calculations give the      c
+c     results in [1/m]. Therefore, the new results must be marked in   c
+c     the first line with the addition 'new': z.B. TAPE741, neu        c
 c                                                                      c
-c     13.05.94 Quellung von Russ ausgeschlossen.                       c
+c     13.05.94 Swelling of soot excluded.                              c
 c     17.11.97 new file format in ../optdat/                           c
 c                                                                      c
 c     Stand: 17.11.97                                         M. Hess  c
@@ -626,7 +625,7 @@ CCCCC -----------------------------------------------------------------C
      *brebuf(20),bimbuf(20),mbuf
 
 ccccc -----------------------------------------------------------------c
-c      Schleife ?ber alle am Gitterpunkt vorkommenden Komponenten      c
+c      Loop over all components occurring at the grid point            c
 ccccc -----------------------------------------------------------------c
 
       do il=1,nl
@@ -641,13 +640,13 @@ ccccc -----------------------------------------------------------------c
       
        do ic=1,njc(il)
 
-c	  print*,'Anfang Komponenten schleife: ',ic,njc(il)
+c	  print*,'Start grinding components: ',ic,njc(il)
 
         jc=acnr(ic,il)
 
 ccccc -----------------------------------------------------------------c
-c     Ausschlu? der Quellung bei insoluble, Russ und den               c
-c     mineralischen Komponenten und bei den Wolken                     c                          c
+c     Exclusion? swelling at insoluble, soot and                       c
+c     mineral components and at clouds                                 c
 ccccc -----------------------------------------------------------------c
 
         if ( jc.eq.1.or.jc.eq.3.or.(jc.ge.6.and.jc.le.9).or.
@@ -661,8 +660,8 @@ c        iht=khum(ihum)
         end if
 
 ccccc -----------------------------------------------------------------c
-c     Bestimmung des Filenamens der gesuchten Komponente aus	       c
-c     Komponentennummer und Feuchteklasse                              c
+c     Determination of the file name of the sought component 	       c
+c     from component number and moisture class                              c
 ccccc -----------------------------------------------------------------c
 
         tap(1:15)='extdata/optdat/'
@@ -672,19 +671,20 @@ c     write(10,*) tap
         ntap=20
 
 ccccc -----------------------------------------------------------------c
-c     Bestimmung der Kennnummer f?r den Puffer ?ber die Wellenl?nge    c
+c     Determination of the identification number for the buffer over   c
+c     the wavelength                                                   c
 c                                                                      c
-c         nbuf: Kennummer der aktuellen Komponente fuer den Puffer     c
-c     kbuf(20): Kennummern der gespeicherten Komponenten               c
-c         mbuf: Position der aktuellen Komponente im Puffer            c
-c         ibuf: Position bis zu der der Puffer belegt ist              c
+c         nbuf: ID number of the current component for the buffer      c
+c     kbuf(20): ID numbers of the stored components                    c
+c         mbuf: Position of the current component in the buffer        c
+c         ibuf: Position up to which the buffer is occupied            c
 ccccc -----------------------------------------------------------------c
 
         nbuf=ilamb*1000+nta
 c 	  print*,'nbuf= ',nbuf
 
 ccccc -----------------------------------------------------------------c
-c      ?berpr?fung des Puffers auf ?bereinstimmung mit nbuf            c
+c      Check the buffer for compliance with nbuf                       c
 ccccc -----------------------------------------------------------------c
 
         exists=.false.
@@ -699,8 +699,8 @@ ccccc -----------------------------------------------------------------c
 c     print*,'mbuf= ',mbuf
 
 ccccc -----------------------------------------------------------------c
-c      Einlesen der Komponentendaten, falls sie nicht im Puffer        c
-c      stehen, sonst ?bernahme aus dem Puffer                          c
+c      Reading the component data if it is not in the buffer,          c
+c      otherwise transferring it from the buffer                       c
 ccccc -----------------------------------------------------------------c
 
 c     print*,exists
@@ -845,7 +845,7 @@ CCCCC *****************************************************************C
 C     *****************************************************************C
 C                                                                      c
 C     -----------------------------------------------------------------C
-C     Berechnung und Ausdruck der gew?nschten optischen Parameter      C
+C     Calculation and printout of the desired optical parameters       C
 CCCCC -----------------------------------------------------------------C
 
       integer prnr,acnr,rht
@@ -882,11 +882,11 @@ CCCCC -----------------------------------------------------------------C
       common /r/      lat5,lon5,relhum,season,optdep
 
 CCCCC ------------------------------------------------------------------C
-C     MISCHEN DES AEROSOL-TYPS                                          C
-C     SUMM(E,A,S) : SUMME EXTINCTION, ABSORPTION, SCATTERING            C
-C     SUPF18      : SUMME DES RUECKSTREUKOEFFIZIENTEN                   C
-C     SUMASF      : ZWISCHENSUMME DES ASYMMETRIEFAKTORS (ASF)           C
-C     SUMASF      : ZWISCHENSUMME DER SINGLE SCAT. ALB. (SSA)           C
+C     MIXING THE AEROSOL TYPE                                           C
+C     SUMM(E,A,S) : TOTAL EXTINCTION, ABSORPTION, SCATTERING            C
+C     SUPF18      : TOTAL REVERSE COEFFICIENT                           C
+C     SUMASF      : SUBTOTAL ASYMMETRY FACTOR (ASF)                     C
+C     SUMASF      : SUBTOTAL OF THE SINGLE SCAT. ALB. (SSA)             C
 CCCCC ------------------------------------------------------------------C
 
 
@@ -906,7 +906,7 @@ CCCCC ------------------------------------------------------------------C
 
        DO 20 JC=1,NJC(L)
 
-c      print*,' Berechnung der Summen'
+c      print*,' Calculation of the sums'
 
         SUMME = SUMME + ACMR(JC,L)*EXT(l,jc)
         SUMMA = SUMMA + ACMR(JC,L)*ABS(l,jc)
@@ -927,10 +927,10 @@ c      print*,jc,l,njc(l),summe,acmr(jc,l),ext(l,jc)
    20  CONTINUE
 
 CCCCC -----------------------------------------------------------------C
-C     Normierte  optische Parameter				       c
+C     Standardized optical parameters				       c
 CCCCC -----------------------------------------------------------------C
 
-c      print*,' Berechnung der normierten Werte'
+c      print*,' Calculation of the standardized values'
 
        EXTN(L) = SUMME
        ABSN(L) = SUMMA
@@ -946,10 +946,10 @@ c      print*,' Berechnung der normierten Werte'
        ASF(L) = SUMASF/SUMMS
 
 CCCCC -----------------------------------------------------------------C
-C     ABSOLUTE OPTISCHE PARAMETER                                      C
+C     ABSOLUTE OPTICAL PARAMETERS                                      C
 CCCCC -----------------------------------------------------------------C
 
-c      print*,' Berechnung der absoluten Werte'
+c      print*,' Calculation of the absolute values'
 
        EXTA(L)= EXTN(L) * N(L)
        ABSA(L)= ABSN(L) * N(L)
@@ -978,7 +978,7 @@ c      print*,' Berechnung der absoluten Werte'
        end if
 
        if (jnopar(11).eq.1) then
-        scar(l)=scaa(l)/smag(ihum)*1000.  ! Einheit m**2/g
+        scar(l)=scaa(l)/smag(ihum)*1000.  ! unit m**2/g
        end if
 
        if (jnopar(12).eq.1) then
@@ -998,7 +998,7 @@ c      print*,' Berechnung der absoluten Werte'
        end if
 
 CCCCC -----------------------------------------------------------------C
-C     AUSGABE DER DATEN						       C
+C     OUTPUT OF DATA                    						       C
 CCCCC -----------------------------------------------------------------C
 
        iop=0
@@ -1046,14 +1046,14 @@ CCCCC -----------------------------------------------------------------C
    10 CONTINUE
 
 CCCCC -----------------------------------------------------------------C
-C     OPTISCHE DICKE                                                   C
+C     OPTICAL THICKNESS                                                C
 CCCCC -----------------------------------------------------------------C
 
       if (jnopar(6).eq.1) then
 
 CCCCC -----------------------------------------------------------------C
-c     Bestimmung von HM, HFTA, HSTR, EXTFTA, EXTSTR aus den	       c
-c     eingelesenen Werten in /layer/ fuer RAWOPT		       c
+c     Determination of HM, HFTA, HSTR, EXTFTA, EXTSTR aus den	       c
+c     read values ??in / layer / for RAWOPT		                       c
 CCCCC -----------------------------------------------------------------C
 
        if (nprog.eq.2) then
@@ -1146,7 +1146,7 @@ ccccc *****************************************************************c
 c     *****************************************************************c
 c			                                                     c
 c     -----------------------------------------------------------------c
-c     AUSGABE DER DATEN	f?r atlopt				                 c
+c     OUTPUT OF DATA for atlopt          			                 c
 ccccc -----------------------------------------------------------------c
 
       integer prnr,acnr,njc,rht
