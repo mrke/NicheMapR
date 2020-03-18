@@ -1921,9 +1921,10 @@ micro_aust <- function(
         }else{
           location<-loc
         }
-
+         if(opendap == 0){
           all_cons <- dbListConnections(MySQL())
           for(con in all_cons) +  dbDisconnect(con)
+         }
 
         message(paste('running microclimate model for',ndays,'days from ',ystart, ' to ', yfinish, ' at site',location,'\n'))
         ptm <- proc.time() # Start timing
