@@ -99,7 +99,7 @@
 #'
 #' \itemize{
 #' \item{\code{postur}{ = 1, postural orientation to sun, 1 = perpendicular, 2 = parallel, 0 = half way between, relevant if live = 0}\cr}
-#' \item{\code{warmsig}{ = 0, Warming signal for emergence? 1=yes, 0=no (if in burrow deeper than node 2, 0.1 degree sensitivity)}\cr}
+#' \item{\code{warmsig}{ = 0, Warming signal for emergence? °C/h (if in burrow deeper than node 2, change in burrow temp must be exceed warmsig)}\cr}
 #' \item{\code{fossorial}{ = 0, Fossorial activity? 1=yes, 0=no (this option hasn't been properly implemented)}\cr}
 #' \item{\code{rainact}{ = 0, Activity is limited by rainfall? 1=yes, 0=no, threshold rainfall for activity set by \code{actrainthresh}}\cr}
 #' \item{\code{actrainthresh}{ = 0.1, Threshold (mm) of rain causing activity if \code{rainact}=1}\cr}
@@ -969,10 +969,6 @@ ectotherm <- function(
   }
   if(epsilon < 0.9){
     message("warning: epsilon is rarely below 0.9 for living things \n")
-    errors<-1
-  }
-  if(!warmsig %in% c(0,1)){
-    message("error: warmsig must be 0 or 1 \n")
     errors<-1
   }
   if(!fossorial %in% c(0,1)){
