@@ -43,7 +43,6 @@
 #' \code{PCTDIF}{ = 0.15, proportion of solar radiation that is diffuse (fractional, 0-1)}\cr\cr
 #'
 #' \strong{ Behaviour:}\cr\cr
-#' \code{SHADE}{ = 0, shade level (\%)}\cr\cr
 #' \code{NITESHAD}{ = 0, flag for if animal is behaviourally seeking shade for warmth at night - remove?}\cr\cr
 #' \code{FLYHR}{ = 0, is flight occuring this hour? (imposes forced evaporative loss)}\cr\cr
 #' \code{UNCURL}{ = 1, allows the animal to uncurl to SHAPE_B_MAX, the value being the increment SHAPE_B is increased per iteration}\cr\cr
@@ -72,7 +71,7 @@
 #' \code{DHAIRD}{ = 30E-06, hair diameter, dorsal (m)}\cr\cr
 #' \code{DHAIRV}{ = 30E-06, hair diameter, ventral (m)}\cr\cr
 #' \code{LHAIRD}{ = 23.9E-03, hair length, dorsal (m)}\cr\cr
-#' \code{LHAIRV}{ = 23.9E-03, hair length, dorsal (m)}\cr\cr
+#' \code{LHAIRV}{ = 23.9E-03, hair length, ventral (m)}\cr\cr
 #' \code{RHOD}{ = 3000E+04, hair density, dorsal (1/m2)}\cr\cr
 #' \code{RHOV}{ = 3000E+04, hair density, ventral (1/m2)}\cr\cr
 #' \code{REFLD}{ = 0.2, fur reflectivity dorsal (fractional, 0-1)}\cr\cr
@@ -157,7 +156,7 @@
 #' \itemize{
 #' \item 1 QSOL - solar radiation absorbed (W)
 #' \item 2 QIRIN - longwave (infra-red) radiation absorbed (W)
-#' \item 3 QMET  - characteristic dimension for convection (W)
+#' \item 3 QMET  - metabolic heat production (W)
 #' \item 4 QEVAP - evaporation (W)
 #' \item 5 QIROUT - longwave (infra-red) radiation lost (W)
 #' \item 6 QCONV - convection (W)
@@ -214,8 +213,8 @@
 #' MXWET <- 20 # maximum skin wetness (%)
 #' SWEAT <- 0.25 # intervals by which skin wetness is increased (%)
 #' Q10 <- 2 # Q10 effect of body temperature on metabolic rate
-#' QBASAL <- 10 ^ (-1.461 + 0.669 * log10(AMASS * 1000)) # basal heat generation (W) (bird formula from McKechnie and Wolf 2004 Phys. & Biochem. Zool. 77:502-521)
-#' DELTAR <- 5 # offset between air temeprature and breath (Â°C)
+#' QBASAL <- (70 \* AMASS ^ 0.75) \* (4.185 / (24 \* 3.6)) # basal heat generation (W) (bird formula from McKechnie and Wolf 2004 Phys. & Biochem. Zool. 77:502-521)
+#' DELTAR <- 5 # offset between air temeprature and breath (°C)
 #' EXTREF <- 15 # O2 extraction efficiency (%)
 #' PANTING <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANTMAX
 #' PANTMAX <- 3# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
