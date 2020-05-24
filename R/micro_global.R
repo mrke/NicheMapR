@@ -82,6 +82,7 @@
 #' \code{TIMINS}{ = c(0, 0, 1, 1), Time of Minimums for Air Wind RelHum Cloud (h), air & Wind min's relative to sunrise, humidity and cloud cover min's relative to solar noon}\cr\cr
 #' \code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr
 #' \code{TAI}{ = 0, Vector of 111 values, one per wavelenght bin, for solar attenuation - used to overide GADS}\cr\cr
+#' \code{warm}{ = , uniform warming, °C}\cr\cr
 #'
 #' \strong{ Soil moisture mode parameters:}
 #'
@@ -364,6 +365,7 @@ micro_global <- function(
   message = 0,
   fail = nyears * 24 * 365,
   TAI = 0,
+  warm = 0,
   snowcond = 0,
   intercept = maxshade / 100 * 0.4,
   grasshade = 0
@@ -750,7 +752,9 @@ micro_global <- function(
     # source http://www.engineeringtoolbox.com/wind-shear-d_1215.html
     WNMINN<-WNMINN*(1.2/10)^0.15
     WNMAXX<-WNMAXX*(1.2/10)^0.15
-
+    # impose uniform warming
+    TMAXX <- TMAXX + warm
+    TMINN <- TMINN + warm
     if(timeinterval!=12){ # spline from 12 days to chosen time interval
       TMAXX1 <-suppressWarnings(spline(doys12,TMAXX,n=timeinterval,xmin=1,xmax=365,method="periodic"))
       TMAXX<-rep(TMAXX1$y,nyears)

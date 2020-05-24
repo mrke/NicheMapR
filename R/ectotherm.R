@@ -1332,7 +1332,7 @@ ectotherm <- function(
     masbal <- ectout$masbal[1:(ndays * 24), ]
     debout <- ectout$debout[1:(ndays * 24), ]
     yearout <- ectout$yearout
-    yearsout <- ectout$yearsout[1:nyears, ]
+    yearsout <- ectout$yearsout
 
     if(DEB==0){
       return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,rainfall=rainfall,rainhr=rainhr,enbal=enbal,environ=environ,masbal=masbal,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
