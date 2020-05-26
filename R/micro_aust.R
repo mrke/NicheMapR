@@ -979,7 +979,6 @@ micro_aust <- function(
       lat2 <- x[2] + 0.025
       lon1 <- x[1] - 0.024
       lon2 <- x[1] + 0.025
-      channel2 <- RMySQL::dbConnect(MySQL(), user = uid, password = pwd, host = host, dbname = "ausclim", port = 3306)
       channel <- RMySQL::dbConnect(MySQL(), user = uid, password = pwd, host = host, dbname = "AWAPDaily", port = 3306)
       # preliminary test for incomplete year, if simulation includes the present year
       for(j in 1:nyears){ # start loop through years
@@ -1003,6 +1002,7 @@ micro_aust <- function(
           results <- rbind(results, output)
         }
       }
+      dbDisconnect(channel)
     }
     if(is.na(MAXSHADES[1])){
       maxshades <- rep(maxshade, ndays)
@@ -1113,6 +1113,7 @@ micro_aust <- function(
                   dwindmean <- cbind(dwindmean, output[, 5])
                 }
               }
+              dbDisconnect(channel3)
               dwindmean<-cbind(dwindmean[, 1:4], rowMeans(dwindmean[, 5:14]))
               colnames(dwindmean)[5] <- 'wind'
             }
@@ -1414,8 +1415,10 @@ micro_aust <- function(
         ALLMAXTEMPS <- TMAXX
         ALLTEMPS <- cbind(ALLMAXTEMPS, ALLMINTEMPS)
         if(opendap == 0){
+          channel2 <- RMySQL::dbConnect(MySQL(), user = uid, password = pwd, host = host, dbname = "ausclim", port = 3306)
           WNMAXX <- dbGetQuery(channel2, maxwinds)
           WNMINN <- dbGetQuery(channel2, minwinds)
+          dbDisconnect(channel2)
           if(dailywind != 1 ){
             WNMAXX1 <- suppressWarnings(spline(doys12, WNMAXX, n = 365, xmin = 1, xmax = 365, method = "periodic"))
             WNMAXX <- leapfix(WNMAXX1$y, yearlist)
