@@ -1077,7 +1077,6 @@ micro_aust <- function(
                        , AWAPDaily.", yeartodo, " as b
                        where (a.id = b.id) and (a.latitude between ", lat1, " and ", lat2, ") and (a.longitude between ",lon1," and ",lon2,")
                        order by b.day", sep = "")
-            output<- dbGetQuery(channel, query)
             if(yearlist[j] < 1971){
               output$vpr <- output$tmin / output$tmin - 1
             }
@@ -1264,7 +1263,7 @@ micro_aust <- function(
             doystart <- datestart1$yday + 1 # get day-of-year at start
             doyfinish <- datefinish1$yday + 1 # get day-of-year at finish
             years1 <- seq(yearstart1, yearfinish1, 1) # get sequence of years to do
-
+            channel <- RMySQL::dbConnect(MySQL(), user = uid, password = pwd, host = host, dbname = "AWAPDaily", port = 3306)
             for(i in 1:length(years1)){ # start loop through years
               # syntax for query
               if(length(years1) == 1){ # doing a period within a year
@@ -1292,6 +1291,7 @@ micro_aust <- function(
                 output1 <- rbind(output1, dbGetQuery(channel, query))
               }
             } # end loop through years
+            dbDisconnect(channel)
             output1$sol <- as.numeric(output1$sol)
             output1$clearsky <- leapfix(clearskysum, seq(1990, 2014)) * 3600 / 1e6
             glm_sol <- coefficients(with(output1, glm(sol ~ rr + tmax + tmin + day + clearsky)))
@@ -1339,6 +1339,7 @@ micro_aust <- function(
               doystart <- datestart1$yday + 1 # get day-of-year at start
               doyfinish <- datefinish1$yday + 1 # get day-of-year at finish
               years1 <- seq(yearstart1, yearfinish1, 1) # get sequence of years to do
+              channel <- RMySQL::dbConnect(MySQL(), user = uid, password = pwd, host = host, dbname = "AWAPDaily", port = 3306)
               for(i in 1:length(years1)){ # start loop through years
                  if(length(years1) == 1){ # doing a period within a year
                   query <- paste0("SELECT a.latitude, a.longitude, b.* FROM AWAPDaily.latlon as a
@@ -1368,6 +1369,7 @@ micro_aust <- function(
                   output1 <- rbind(output1, dbGetQuery(channel, query))
                 }
               } # end loop through years
+              dbDisconnect(channel)
             }
             glm_vpr <- coefficients(with(output1, glm(vpr ~ rr + tmax + tmin + day)))
             output_AWAPDaily[, 8]<- glm_vpr[1] + glm_vpr[2] * output_AWAPDaily$rr + glm_vpr[3] * output_AWAPDaily$tmax + glm_vpr[4] * output_AWAPDaily$tmin + glm_vpr[5] * output_AWAPDaily$day
