@@ -1065,6 +1065,7 @@ micro_aust <- function(
         } #end check if running gads
 
         if(opendap == 0){
+          channel <- RMySQL::dbConnect(MySQL(), user = uid, password = pwd, host = host, dbname = "AWAPDaily", port = 3306)
           for(j in 1:nyears){ # start loop through years
             yeartodo<-yearlist[j]
             lat1 <- x[2] - 0.024
@@ -1091,6 +1092,7 @@ micro_aust <- function(
               results <- rbind(results, output)
             }
           }
+          dbDisconnect(channel)
           if(dailywind == 1){
             channel3 <- RMySQL::dbConnect(MySQL(), user = uid, password = pwd, host = host, dbname = "dailywind", port = 3306)
             if(min(yearlist) < 1975){
@@ -1113,7 +1115,6 @@ micro_aust <- function(
                   dwindmean <- cbind(dwindmean, output[, 5])
                 }
               }
-              dbDisconnect(channel3)
               dwindmean<-cbind(dwindmean[, 1:4], rowMeans(dwindmean[, 5:14]))
               colnames(dwindmean)[5] <- 'wind'
             }
@@ -1140,6 +1141,7 @@ micro_aust <- function(
               }
             }
             dwind <- dwind$wind / 15.875 # conversion byte (i.e., an 8-bit unsigned integer ranging in value from 0 to 255) to m/s
+            dbDisconnect(channel3)
           }
         }
         if(opendap == 0){
