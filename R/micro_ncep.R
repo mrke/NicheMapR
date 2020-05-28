@@ -938,7 +938,9 @@ micro_ncep <- function(
       TMINN <- TMINN + warm
       TAIRhr <- TAIRhr + warm
       sigma <- 5.67e-8 #Stefan-Boltzman, W/(m.K)
-      IRDhr <- sigma * ((IRDhr / sigma) ^ (1 / 4) + warm) ^ 4 # adjust downward radiation for altered 'sky temperature'
+      if(IRDhr == 2){
+       IRDhr <- sigma * ((IRDhr / sigma) ^ (1 / 4) + warm) ^ 4 # adjust downward radiation for altered 'sky temperature'
+      }
     }
     RAINFALL <- RAINFALL + rainoff
     RAINhr <- RAINhr + rainoff

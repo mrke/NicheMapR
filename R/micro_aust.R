@@ -320,7 +320,7 @@ micro_aust <- function(
   windfac = 1,
   adiab_cor = 1,
   warm = 0,
-  spatial = "W:/",
+  spatial = "L:/",
   ERR = 1.5,
   RUF = 0.004,
   ZH = 0,
