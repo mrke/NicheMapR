@@ -359,7 +359,7 @@ micro_aust <- function(
   MAXCOUNT = 500,
   LAI = 0.1,
   microclima.LAI = 0,
-  LOR = 1,
+  microclima.LOR = 1,
   snowmodel = 0,
   snowtemp = 1.5,
   snowdens = 0.375,
@@ -1626,7 +1626,7 @@ micro_aust <- function(
           h_dif <- h_dp * afd * 4.87/0.0036
           h_dni[si == 0] <- 0
           h_dif[is.na(h_dif)] <- 0
-          radwind2 <- .shortwave.ts(h_dni * 0.0036, h_dif * 0.0036, jd, hour.microclima, lat, long, slope, aspect, ha = ha, svv = 1, x = LOR, l = mean(microclima.LAI), albr = 0, merid = long, dst = 0, difani = FALSE)
+          radwind2 <- .shortwave.ts(h_dni * 0.0036, h_dif * 0.0036, jd, hour.microclima, lat, long, slope, aspect, ha = ha, svv = 1, x = microclima.LOR, l = mean(microclima.LAI), albr = 0, merid = long, dst = 0, difani = FALSE)
           #microclima.out$hourlyradwind <- radwind2
           SOLRhr <- radwind2$swrad / 0.0036
           VIEWF <- 1 # accounted for already in microclima cals

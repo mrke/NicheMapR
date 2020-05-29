@@ -683,6 +683,7 @@ micro_global <- function(
     if(is.na(RAINFALL[1])){
       cat("no climate data for this site, using dummy data so solar is still produced \n")
       CLIMATE <- raster::extract(global_climate,cbind(140,-35))
+      CLIMATE[2:97] <- 0
       ALTT<-as.numeric(CLIMATE[,1])
       delta_elev <- 0
       if(is.na(elev) == FALSE){ # check if user-specified elevation
