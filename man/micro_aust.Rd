@@ -70,19 +70,19 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \strong{ Parameters controlling how the model runs:}\cr\cr
 \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
-\code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+\code{run.gads}{ = 1, Use the Global Aerosol Database? 1 = yes, 0 = no}\cr\cr
 \code{IR}{ = 0, Clear-sky longwave radiation computed using Campbell and Norman (1998) eq. 10.10 (includes humidity) (0) or Swinbank formula (1)}\cr\cr
-\code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
+\code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1 = yes, 0 = no}\cr\cr
 \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
-\code{microclima}{ = 0, Use microclima and elevatr package to adjust solar radiation for terrain? 1=yes, 0=no}\cr\cr
-\code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
-\code{manualshade}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
-\code{soildata}{ = 0, Extract emissivities from gridded data? 1=yes, 0=no}\cr\cr
-\code{terrain}{ = 0, Use 250m resolution terrain data? 1=yes, 0=no}\cr\cr
-\code{dailywind}{ = 1, use McVicar grids for wind speed (does not work for opendap = 1)? 1=yes, 0=no}\cr\cr
+\code{microclima}{ = 0, Use microclima and elevatr package to adjust solar radiation for terrain? 1 = yes, 0 = no}\cr\cr
+\code{writecsv}{ = 0, Make Fortran code write output as csv files? 1 = yes, 0 = no}\cr\cr
+\code{manualshade}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1 = yes, 0 = no}\cr\cr
+\code{soildata}{ = 0, Extract emissivities from gridded data? 1 = yes, 0 = no}\cr\cr
+\code{terrain}{ = 0, Use 250m resolution terrain data? 1 = yes, 0 = no}\cr\cr
+\code{dailywind}{ = 1, use McVicar grids for wind speed (does not work for opendap = 1)? 1 = yes, 0 = no}\cr\cr
 \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
-\code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
+\code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1 = yes, 0 = no}\cr\cr
 \code{warm}{ = 0, uniform warming, °C}\cr\cr
 \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 \code{opendap}{ = 1, query met grids via opendap}\cr\cr
@@ -110,36 +110,36 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{rainwet}{ = 1.5, mm of rainfall causing the ground to be 90\% wet for the day}\cr\cr
 \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
 \code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
-\code{hori}{ = rep(0,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
+\code{hori}{ = rep(0, 24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
 \code{lapse_min}{ = 0.0039 Lapse rate for minimum air temperature (degrees C/m)}\cr\cr
 \code{lapse_max}{ = 0.0077 Lapse rate for maximum air temperature (degrees C/m)}\cr\cr
 \code{TIMAXS}{ = c(1.0, 1.0, 0.0, 0.0), Time of Maximums for Air Wind RelHum Cloud (h), air & Wind max's relative to solar noon, humidity and cloud cover max's relative to sunrise}\cr\cr
 \code{TIMINS}{ = c(0, 0, 1, 1), Time of Minimums for Air Wind RelHum Cloud (h), air & Wind min's relative to sunrise, humidity and cloud cover min's relative to solar noon}\cr\cr
-\code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr
+\code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1 = yes, 0 = no}\cr\cr
 
 \strong{ Soil moisture mode parameters:}
 
-\code{runmoist}{ = 1, Run soil moisture model? 1=yes, 0=no  1=yes, 0=no (note that this may cause slower runs)}\cr\cr
-\code{PE}{ = rep(1.1,19), Air entry potential (J/kg) (19 values descending through soil for specified soil nodes in parameter}
+\code{runmoist}{ = 1, Run soil moisture model? 1 = yes, 0 = no  1 = yes, 0 = no (note that this may cause slower runs)}\cr\cr
+\code{PE}{ = rep(1.1, 19), Air entry potential (J/kg) (19 values descending through soil for specified soil nodes in parameter}
 \code{DEP}
 { and points half way between)}\cr\cr
-\code{KS}{ = rep(0.0037,19), Saturated conductivity, (kg s/m3) (19 values descending through soil for specified soil nodes in parameter}
+\code{KS}{ = rep(0.0037, 19), Saturated conductivity, (kg s/m3) (19 values descending through soil for specified soil nodes in parameter}
 \code{DEP}
 { and points half way between)}\cr\cr
-\code{BB}{ = rep(4.5,19), Campbell's soil 'b' parameter (-) (19 values descending through soil for specified soil nodes in parameter}
+\code{BB}{ = rep(4.5, 19), Campbell's soil 'b' parameter (-) (19 values descending through soil for specified soil nodes in parameter}
 \code{DEP}
 { and points half way between)}\cr\cr
-\code{BD}{ = rep(1.3,19), Soil bulk density (Mg/m3)  (19 values descending through soil for specified soil nodes in parameter}
+\code{BD}{ = rep(1.3, 19), Soil bulk density (Mg/m3)  (19 values descending through soil for specified soil nodes in parameter}
 \code{DEP}
 { and points half way between)}\cr\cr
-\code{DD}{ = rep(2.56,19), Soil density (Mg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
+\code{DD}{ = rep(2.56, 19), Soil density (Mg/m3)  (19 values descending through soil for specified soil nodes in parameter DEP and points half way between)}\cr\cr
 \code{DEP}
 { and points half way between)}\cr\cr
 \code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
 \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
 \code{evenrain}{ = 0, Spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)}\cr\cr
-\code{SoilMoist_Init}{ = c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3), initial soil water content at each soil node, m3/m3}\cr\cr
-\code{L}{ = c(0,0,8.2,8.0,7.8,7.4,7.1,6.4,5.8,4.8,4.0,1.8,0.9,0.6,0.8,0.4,0.4,0,0)*10000, root density (m/m3), (19 values descending through soil for specified soil nodes in parameter}\cr\cr
+\code{SoilMoist_Init}{ = c(0.1, 0.12, 0.15, 0.2, 0.25, 0.3, 0.3, 0.3, 0.3, 0.3), initial soil water content at each soil node, m3/m3}\cr\cr
+\code{L}{ = c(0, 0, 8.2, 8.0, 7.8, 7.4, 7.1, 6.4, 5.8, 4.8, 4.0, 1.8, 0.9, 0.6, 0.8, 0.4, 0.4, 0, 0)*10000, root density (m/m3), (19 values descending through soil for specified soil nodes in parameter}\cr\cr
 \code{R1}{ = 0.001, root radius, m}\cr\cr
 \code{RW}{ = 2.5e+10, resistance per unit length of root, m3 kg-1 s-1}\cr\cr
 \code{RL}{ = 2e+6, resistance per unit length of leaf, m3 kg-1 s-1}\cr\cr
@@ -153,10 +153,10 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 
 \strong{ Snow mode parameters:}
 
-\code{snowmodel}{ = 0, run the snow model 1=yes, 0=no (note that this may cause slower runs)}\cr\cr
+\code{snowmodel}{ = 0, run the snow model 1 = yes, 0 = no (note that this may cause slower runs)}\cr\cr
 \code{snowtemp}{ = 1.5, Temperature (°C) at which precipitation falls as snow}\cr\cr
 \code{snowdens}{ = 0.375, snow density (mg/m3), overridden by densfun}\cr\cr
-\code{densfun}{ = c(0,0,0,0), slope and intercept of model of snow density as a linear function of snowpack age if first two values are nonzero, and following the exponential function of Sturm et al. 2010 J. of Hydromet. 11:1380-1394 if all values are non-zero; if it is c(0,0,0,0) then fixed density used}\cr\cr
+\code{densfun}{ = c(0, 0, 0, 0), slope and intercept of model of snow density as a linear function of snowpack age if first two values are nonzero, and following the exponential function of Sturm et al. 2010 J. of Hydromet. 11:1380-1394 if all values are non-zero; if it is c(0, 0, 0, 0) then fixed density used}\cr\cr
 \code{snowmelt}{ = 1, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
 \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
 \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
@@ -169,7 +169,7 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{shore}{ Include tide effects? If 1, the matrix}
 \code{tides}
 { is used to specify tide presence, sea water temperature and presence of wavesplash}\cr\cr
-\code{tides}{ = matrix(data = 0., nrow = 24*365*nyears, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (°C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
+\code{tides}{ = matrix(data = 0, nrow = 24 \* 365 \* nyears, ncol = 3), matrix for each how of the simulation of 1. tide state (0 = out, 1 = in), 2. Water temperature (°C) and 3. Wave splash (0 = yes, 1 = no)}\cr\cr
 
 \strong{Outputs:}
 
@@ -282,13 +282,13 @@ minshade <- micro$minshade
 # plotting above-ground conditions in minimum shade
 with(metout, {plot(TALOC ~ dates, xlab = "Date and Time", ylab = "Temperature (Â°C)"
 , type = "l" ,main = paste("air and sky temperature, ", minshade, "\% shade", sep = ""), ylim = c(-20, 60))})
-with(metout, {points(TAREF ~ dates,xlab = "Date and Time", ylab = "Temperature (Â°C)"
+with(metout, {points(TAREF ~ dates, xlab = "Date and Time", ylab = "Temperature (Â°C)"
 , type = "l", lty = 2, col = 'blue')})
-with(metout,{points(TSKYC ~ dates,xlab = "Date and Time", ylab = "Temperature (Â°C)"
+with(metout,{points(TSKYC ~ dates, xlab = "Date and Time", ylab = "Temperature (Â°C)"
 ,  type = "l", col = 'light blue', main = paste("sky temperature, ", minshade, "\% shade", sep = ""))})
 with(metout, {plot(RHLOC ~ dates, xlab = "Date and Time", ylab = "Relative Humidity (\%)"
 , type = "l", ylim = c(0, 100), main = paste("humidity, ", minshade, "\% shade", sep = ""))})
-with(metout, {points(RH ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
+with(metout, {points(RH ~ dates, xlab = "Date and Time", ylab = "Relative Humidity (\%)"
 , type = "l", col = 'blue', lty = 2, ylim = c(0, 100))})
 with(metout, {plot(VREF ~ dates, xlab = "Date and Time", ylab = "Wind Speed (m/s)"
 ,  type = "l", main = "wind speed", ylim = c(0, 15))})

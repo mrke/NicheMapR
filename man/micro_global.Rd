@@ -118,6 +118,8 @@ by choosing the option 'run.gads<-1'
 \code{TIMINS}{ = c(0, 0, 1, 1), Time of Minimums for Air Wind RelHum Cloud (h), air & Wind min's relative to sunrise, humidity and cloud cover min's relative to solar noon}\cr\cr
 \code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr
 \code{TAI}{ = 0, Vector of 111 values, one per wavelenght bin, for solar attenuation - used to overide GADS}\cr\cr
+\code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
+\code{warm}{ = , uniform warming, °C}\cr\cr
 
 \strong{ Soil moisture mode parameters:}
 
