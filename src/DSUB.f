@@ -48,7 +48,7 @@ c     along with this program. If not, see http://www.gnu.org/licenses/.
      &undercatch,rainmeltf,snowalbedo,tt_past,densfun
       double precision rww,pc,rl,sp,r1,im
       double precision snowdens,snowmelt,snowtemp,cursnow,cummelted
-     & ,qfreze,xtrain,qphase,sumphase,sumphase2,NONP
+     & ,qfreze,xtrain,qphase,sumphase,sumphase2,NONP,MAXSURF
 
       INTEGER I,II,I1,I2,IALT,IDA,IDAYST,IEND,IEP,maxsnode2
       INTEGER IOUT,IPINT,IPRINT,ISTART,ITEST
@@ -100,6 +100,7 @@ c    Variable soil properties data from Iomet1
       COMMON/temps/TT,TT_past,cummelted
       COMMON/WOSUB/DEPP
       COMMON/melt/QFREZE,xtrain,qphase,sumphase,sumphase2
+      COMMON/MAXTEMP/MAXSURF
 
 C     NOTATION
 C     Key Variables
@@ -140,8 +141,8 @@ C     Nodes(max node depth,subst type) are real numbers. The number to the left 
       PI=3.14159
 C     CHECK FOR UNSTABLE CONDITIONS OF GROUND SURFACE TEMPERATURE, T(1)
       do 101 i=1,N
-       IF(T(i).GE. 81)THEN
-        T(i) = 81.
+       IF(T(i).GE. MAXSURF)THEN
+        T(i) = MAXSURF
        ELSE
         IF(T(i).LT.-81)THEN
          T(i) = -81

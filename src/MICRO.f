@@ -24,7 +24,7 @@ C    This subroutine computes a single unsegmented velocity and temperature prof
       double precision PSI2,QC,RCP,RCPTKG,RHOCP,STB,STO,STS,T,T1,T3,TAVE
      & ,T0,TZO,USTAR
       double precision V,VEL,VV,X,X1,Y,Y1,YY,YY2,Z,Z0,Z01
-      double precision Z02,ZEN,ZH,ZH1,ZH2,ZRATIO,ZZ
+      double precision Z02,ZEN,ZH,ZH1,ZH2,ZRATIO,ZZ,MAXSURF
 
       INTEGER I,ITER,NAIR,I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92
      & ,I93,I94,I95,I96,I97,I98,I99,I100,I101
@@ -32,6 +32,7 @@ C    This subroutine computes a single unsegmented velocity and temperature prof
       COMMON/DMYCRO/Z01,Z02,ZH1,ZH2
       COMMON/WMAIN/I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92,I93
      & ,I94,I95,I96,I97,I98,I99,I100,I101
+      COMMON/MAXTEMP/MAXSURF
 
 C
 C**** 1 SEGMENT VELOCITY PROFILE - W. PORTER
@@ -97,8 +98,8 @@ C     Paul edit 9/12/19: adding alternative Campbell and Norman 1998 vertical ai
 
 C     CHECK FOR FREE CONVECTION (LAPSE) CONDITIONS
       IF(T1.GE.T3)GO TO 1000
-      IF(T3.LE.81.)GO TO 1000
-      IF(ZEN .GE. 81.)GO TO 1000
+      IF(T3.LE.MAXSURF)GO TO 1000
+      IF(ZEN .GE.MAXSURF)GO TO 1000
 
 C     NEGLECTING FREE CONV. CORRECTION (4%)FOR SEGMENTED PROFILES.
 
@@ -165,7 +166,7 @@ C     Use vertical temperature profile from Campbell and Norman 1998
       IF(NAIR.LE.0) RETURN
       DO 5 I=1,NAIR
 C      FILL OUT VEL. AND TEMP. PROFILES
-       IF((T1.GE.T3).or.(T3.LE.81.).or.(ZEN .GE. 81.))THEN
+       IF((T1.GE.T3).or.(T3.LE.MAXSURF).or.(ZEN .GE. 81.))THEN
         VV(I)=2.5*USTAR*dLOG(ZZ(I)/Z0+1)
        ELSE
         X1=PHI(ZZ(I))

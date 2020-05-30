@@ -58,7 +58,7 @@ C     VERSION 2 SEPT. 2000
       double precision snowdens,snowmelt,snowtemp,cursnow,qphase,melt,
      & sumphase,sumphase2,snowage,prevden,qphase2,sumlayer,densrat,
      & cummelted,melted,snowfall,rainmelt,cpsnow,netsnow,hcap,meltheat,
-     & layermass,xtrain,QFREZE,grasshade
+     & layermass,xtrain,QFREZE,grasshade,MAXSURF
 
       integer maxsnode2,maxsnode3,maxcount,js,numrun,rainhourly,hourly
       INTEGER I,IEND,IFINAL,ILOCT,IOUT,IPRINT,ITEST,trouble
@@ -140,6 +140,7 @@ C     PERCENT GROUND SHADE & ELEVATION (M) TO METOUT
       COMMON/WIOCONS2/IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART,IEND
       common/errormsg/errout,maxerr,errcount
       COMMON/WICHDAY/NUMRUN
+      COMMON/MAXTEMP/MAXSURF
 
       DATA NAME/'TIME ','TAIR','TSKY','TSURF','VEL','SOL  ','TLIZ',
      1 'QSOLAR','QRAD','QCOND','QCONV','MOL ','STEP','T2','T3','T4'
@@ -1135,10 +1136,10 @@ c     end check for previous slippage
       endif
 
       IF (((DOY.eq.1).and.(time.lt.1e-8)).or.(int(TIME).NE.int(LASTIME))
-     & .and.(int(max(maxval(abs(out(14:22))),abs(out(4)))).ne.81).or.
-     & ((int(lastsurf).eq.81)).or.(int(abs(out(4))).eq.81).or.
-     &((int(TIME).eq.int(LASTIME)).and.(int(max(maxval(abs(out(14:22))),
-     &abs(out(4)))).ne.81))) THEN
+     & .and.(int(max(maxval(abs(out(14:22))),abs(out(4)))).ne.MAXSURF)
+     & .or.((int(lastsurf).eq.int(MAXSURF))).or.(int(abs(out(4)))
+     &.eq.int(MAXSURF)).or.((int(TIME).eq.int(LASTIME)).and.
+     &(int(max(maxval(abs(out(14:22))),abs(out(4)))).ne.MAXSURF))) THEN
        if(SIOUT(1).le.1380)then
         IF(SHAYD.LT.MAXSHD)THEN
          methour=0
@@ -1491,7 +1492,8 @@ c     end check for previous slippage
        endif
 c     check if duplicate time due to integrator slipping
       else
-       if(int(max(maxval(abs(out(14:22))),abs(out(4)))).ne.81)then
+       if(int(max(maxval(abs(out(14:22))),abs(out(4))))
+     &  .ne.INT(MAXSURF))then
         slipped=slipped+1
         errcount=errcount+1
         temp(31)=(int(SIOUT(1)/60)+1)+24*(DOY-1)

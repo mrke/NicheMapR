@@ -104,7 +104,7 @@ c     OSUB outputs the microclimate calculations.
       double precision snownode,maxsnode1,snode,daysincesnow,lastday,
      &undercatch,rainmeltf,depp,Thconduct,Density,Spheat,minsnow,densfun
       double precision DRLAM,DRRLAM,SRLAM,snowcond,intercept
-      double precision rww,pc,rl,sp,r1,im
+      double precision rww,pc,rl,sp,r1,im,maxsurf
       double precision snowdens,snowmelt,snowtemp,cursnow,qphase,
      & sumphase,sumphase2,snowage,prevden,QFREZE,xtrain,grasshade
 
@@ -199,12 +199,14 @@ c    Variable soil properties data from Iomet1
       COMMON/melt/QFREZE,xtrain,qphase,sumphase,sumphase2
       common/errormsg/errout,maxerr,errcount
       COMMON/onlysol/solonly
+      COMMON/MAXTEMP/MAXSURF
 
       DATA IBLK/'   '/
       DATA IFINAL/1/
 
       DATA MINUTES/0,60,120,180,240,300,360,420,480,540,600,660,720,780
      &    ,840,900,960,1020,1080,1140,1200,1260,1320,1380,1440/
+      MAXSURF = 95.
 C     SIG=.8126E-10     1
 C     RCS=.5            2
 C     STC=.05
