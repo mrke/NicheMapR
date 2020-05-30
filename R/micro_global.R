@@ -82,6 +82,7 @@
 #' \code{TIMINS}{ = c(0, 0, 1, 1), Time of Minimums for Air Wind RelHum Cloud (h), air & Wind min's relative to sunrise, humidity and cloud cover min's relative to solar noon}\cr\cr
 #' \code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr
 #' \code{TAI}{ = 0, Vector of 111 values, one per wavelenght bin, for solar attenuation - used to overide GADS}\cr\cr
+#' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 #' \code{warm}{ = , uniform warming, °C}\cr\cr
 #'
 #' \strong{ Soil moisture mode parameters:}
@@ -366,6 +367,7 @@ micro_global <- function(
   fail = nyears * 24 * 365,
   TAI = 0,
   warm = 0,
+  windfac = 1,
   snowcond = 0,
   intercept = maxshade / 100 * 0.4,
   grasshade = 0
@@ -669,9 +671,9 @@ micro_global <- function(
     }
 
     message('extracting climate data \n')
-    global_climate<-raster::brick(paste0(folder,"/global_climate.nc"))
-    CLIMATE <- raster::extract(global_climate,x)
-    ALTT<-as.numeric(CLIMATE[,1])
+    global_climate <- raster::brick(paste0(folder, "/global_climate.nc"))
+    CLIMATE <- raster::extract(global_climate, x)
+    ALTT <- as.numeric(CLIMATE[, 1])
     delta_elev <- 0
     if(is.na(elev) == FALSE){ # check if user-specified elevation
       delta_elev <- ALTT - elev # get delta for lapse rate correction
@@ -679,12 +681,12 @@ micro_global <- function(
     }
     adiab_corr_max <- delta_elev * lapse_max
     adiab_corr_min <- delta_elev * lapse_min
-    RAINFALL <- CLIMATE[,2:13]
+    RAINFALL <- CLIMATE[, 2:13]
     if(is.na(RAINFALL[1])){
       cat("no climate data for this site, using dummy data so solar is still produced \n")
-      CLIMATE <- raster::extract(global_climate,cbind(140,-35))
+      CLIMATE <- raster::extract(global_climate, cbind(140, -35))
       CLIMATE[2:97] <- 0
-      ALTT<-as.numeric(CLIMATE[,1])
+      ALTT<-as.numeric(CLIMATE[, 1])
       delta_elev <- 0
       if(is.na(elev) == FALSE){ # check if user-specified elevation
         delta_elev <- ALTT - elev # get delta for lapse rate correction
@@ -692,47 +694,46 @@ micro_global <- function(
       }
       adiab_corr_max <- delta_elev * lapse_max
       adiab_corr_min <- delta_elev * lapse_min
-      RAINFALL <- CLIMATE[,2:13]*0
+      RAINFALL <- CLIMATE[, 2:13] * 0
       #stop()
     }
-    RAINYDAYS <- CLIMATE[,14:25]/10
-    WNMAXX <- CLIMATE[,26:37]/10
-    WNMINN<-WNMAXX*0.1 # impose diurnal cycle
-    TMINN <- CLIMATE[,38:49]/10
-    TMAXX <- CLIMATE[,50:61]/10
-    TMAXX<-TMAXX+adiab_corr_max
-    TMINN<-TMINN+adiab_corr_min
-    ALLMINTEMPS<-TMINN
-    ALLMAXTEMPS<-TMAXX
+    RAINYDAYS <- CLIMATE[, 14:25] / 10
+    WNMAXX <- CLIMATE[, 26:37] / 10 * windfac
+    WNMINN<-WNMAXX * 0.1 # impose diurnal cycle
+    TMINN <- CLIMATE[, 38:49] / 10
+    TMAXX <- CLIMATE[, 50:61] / 10
+    TMAXX <- TMAXX + adiab_corr_max
+    TMINN <- TMINN + adiab_corr_min
+    ALLMINTEMPS <- TMINN
+    ALLMAXTEMPS <- TMAXX
     ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
-    RHMINN <- CLIMATE[,62:73]/10
-    RHMAXX <- CLIMATE[,74:85]/10
+    RHMINN <- CLIMATE[, 62:73] / 10
+    RHMAXX <- CLIMATE[, 74:85] / 10
     # correct for potential change in RH with elevation-corrected Tair
     es <- WETAIR(db = TMAXX, rh = 100)$esat
-    e <- WETAIR(db = CLIMATE[,50:61]/10, rh = CLIMATE[,62:73]/10)$e
+    e <- WETAIR(db = CLIMATE[, 50:61] / 10, rh = CLIMATE[, 62:73] / 10)$e
     RHMINN <- (e / es) * 100
     RHMINN[RHMINN>100]<-100
     RHMINN[RHMINN<0]<-0.01
     es <- WETAIR(db = TMINN, rh = 100)$esat
-    e <- WETAIR(db = CLIMATE[,38:49]/10, rh = CLIMATE[,74:85]/10)$e
+    e <- WETAIR(db = CLIMATE[, 38:49] / 10, rh = CLIMATE[, 74:85] / 10)$e
     RHMAXX <- (e / es) * 100
     RHMAXX[RHMAXX>100]<-100
     RHMAXX[RHMAXX<0]<-0.01
-    CCMINN <- CLIMATE[,86:97]/10
-    if(clearsky==1){
-      CCMINN=CCMINN*0
+    CCMINN <- CLIMATE[, 86:97] / 10
+    if(clearsky == 1){
+      CCMINN <- CCMINN * 0
     }
     CCMAXX <- CCMINN
-    if(runmoist==0){
+    if(runmoist == 0){
       # extract soil moisture
-      soilmoisture<-suppressWarnings(raster::brick(paste(folder,"/soilw.mon.ltm.v2.nc",sep="")))
+      soilmoisture<-suppressWarnings(raster::brick(paste(folder, "/soilw.mon.ltm.v2.nc", sep = "")))
       message("extracting soil moisture data")
-      SoilMoist<-raster::extract(soilmoisture,x)/1000 # this is originally in mm/m
+      SoilMoist<-raster::extract(soilmoisture, x) / 1000 # this is originally in mm/m
     }
-    if(is.na(max(SoilMoist, ALTT, CLIMATE))==TRUE){
+    if(is.na(max(SoilMoist, ALTT, CLIMATE)) == TRUE){
       message("Sorry, there is no environmental data for this location")
-      SoilMoist<-raster::extract(soilmoisture,cbind(140,-35))/1000 # this is originally in mm/m
-      #stop()
+      SoilMoist <- raster::extract(soilmoisture, cbind(140, -35)) / 1000 # this is originally in mm/m
     }
 
     # correct for fact that wind is measured at 10 m height
@@ -751,12 +752,12 @@ micro_global <- function(
     #Several buildings 	0.25
     #Hilly, mountainous terrain 	0.25
     # source http://www.engineeringtoolbox.com/wind-shear-d_1215.html
-    WNMINN<-WNMINN*(1.2/10)^0.15
-    WNMAXX<-WNMAXX*(1.2/10)^0.15
+    WNMINN <- WNMINN * (1.2 / 10) ^ 0.15
+    WNMAXX <- WNMAXX * (1.2 / 10) ^ 0.15
     # impose uniform warming
     TMAXX <- TMAXX + warm
     TMINN <- TMINN + warm
-    if(timeinterval!=12){ # spline from 12 days to chosen time interval
+    if(timeinterval != 12){ # spline from 12 days to chosen time interval
       TMAXX1 <-suppressWarnings(spline(doys12,TMAXX,n=timeinterval,xmin=1,xmax=365,method="periodic"))
       TMAXX<-rep(TMAXX1$y,nyears)
       TMINN1 <-suppressWarnings(spline(doys12,TMINN,n=timeinterval,xmin=1,xmax=365,method="periodic"))
@@ -798,13 +799,12 @@ micro_global <- function(
     tannul<-mean(unlist(ALLTEMPS))
     tannulrun<-rep(tannul,doynum)
 
-    daymon<-c(31.,28.,31.,30.,31.,30.,31.,31.,30.,31.,30.,31.) # days in each month
+    daymon<-c(31,28,31,30,31,30,31,31,30,31,30,31) # days in each month
 
     # if doing daily sims, spread rainfall evenly across days based on mean monthly rainfall and the number of rainy days per month
     if(timeinterval==365){
       RAINFALL1<-1:365
       sort<-matrix(data = 0,nrow = 365,ncol = 2)
-      daymon<-c(31.,28.,31.,30.,31.,30.,31.,31.,30.,31.,30.,31.) # days in each month
       m<-1
       b<-0
       for (i in 1:12){ #begin loop throught 12 months of year
@@ -815,15 +815,15 @@ micro_global <- function(
           sort[m,2]<-b
           if(k<=RAINYDAYS[i] & rainfrac>0){
             if(k==1){
-              RAINFALL1[m]=RAINFALL[i]*rainfrac*rainmult # if first day of month, make user-specified fraction of monthly rainfall fall on first day
+              RAINFALL1[m]<-RAINFALL[i]*rainfrac*rainmult # if first day of month, make user-specified fraction of monthly rainfall fall on first day
             }else{
-              RAINFALL1[m]=(RAINFALL[i]*(1-rainfrac)*rainmult)/RAINYDAYS[i] # make remaining rain fall evenly over the remaining number of rainy days for the month, starting at the beginning of the month
+              RAINFALL1[m]<-(RAINFALL[i]*(1-rainfrac)*rainmult)/RAINYDAYS[i] # make remaining rain fall evenly over the remaining number of rainy days for the month, starting at the beginning of the month
             }
           }else{
             if(rainfrac==0){
-              RAINFALL1[m]=(RAINFALL[i]*rainmult)/RAINYDAYS[i]
+              RAINFALL1[m]<-(RAINFALL[i]*rainmult)/RAINYDAYS[i]
             }else{
-              RAINFALL1[m]=0.
+              RAINFALL1[m]<-0
             }
           }
           m<-m+1
