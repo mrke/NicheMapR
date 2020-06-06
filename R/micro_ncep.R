@@ -683,7 +683,11 @@ micro_ncep <- function(
           stop("package 'ncdf4' is needed. Please install it.",
                call. = FALSE)
         }
-        nc <- ncdf4::nc_open(paste(spatial, "/",filename,year,".nc", sep = ""))
+        nc <- ncdf4::nc_open(paste(spatial, "/",filename,year,"_time.nc", sep = ""))
+        if(nc$ndims == 3){
+          start <- start[c(1,3:4)]
+          count <- count[c(1,3:4)]
+        }
         out <- as.numeric(ncdf4::ncvar_get(nc, varid = var, start = start, count = count))
         ncdf4::nc_close(nc)
         out
@@ -732,10 +736,10 @@ micro_ncep <- function(
         dist2 <- abs(lat2 - lat_1)
         index2 <- which.min(dist2)
         lat3 <- lat2[index2]
-        start <- c(index1, index2, 1, 1) # for chosen years
-        count <- c(1, 1, 1, -1) # for chosen years
-        start2 <- c(index1, index2, 1, 1460-3) # for year prior to chosen years (getting the last day)
-        count2 <- c(1, 1, 1, 4) # for year prior/year after chosen years (getting the last four or first four values, i.e. hours 0, 6, 12, 18)
+        start <- c(1, 1, index2, index1) # for chosen years
+        count <- c(-1, 1, 1, 1)# for chosen years
+        start2 <- c(1460-3, 1, index2, index1) # for year prior to chosen years (getting the last day)
+        count2 <- c(4, 1, 1, 1) # for year prior/year after chosen years (getting the last four or first four values, i.e. hours 0, 6, 12, 18)
         RNetCDF::close.nc(nc)
         if(lon3 > 180){lon3 <- lon3 - 180} # ensure longitude is -180 to 180
         if(class(hourlydata) == "logical"){
@@ -745,14 +749,14 @@ micro_ncep <- function(
               Tkmax <- ncquery("tmax.2m.gauss.", "tmax", start2, count2, years[j]-1)
               Tk <- ncquery("air.2m.gauss.", "air", start2, count2, years[j]-1)
               sh <- ncquery("shum.2m.gauss.", "shum", start2, count2, years[j]-1)
-              pr <- ncquery("pres.sfc.gauss.", "pres", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1) # only three dimensions, hence c(1,2,4)
-              tcdc <- ncquery("tcdc.eatm.gauss.", "tcdc", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
-              dsw <- ncquery("dswrf.sfc.gauss.", "dswrf", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
-              dlw <- ncquery("dlwrf.sfc.gauss.", "dlwrf", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
-              ulw <- ncquery("ulwrf.sfc.gauss.", "ulwrf", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
+              pr <- ncquery("pres.sfc.gauss.", "pres", start2, count2, years[j]-1) # only three dimensions, hence
+              tcdc <- ncquery("tcdc.eatm.gauss.", "tcdc", start2, count2, years[j]-1)
+              dsw <- ncquery("dswrf.sfc.gauss.", "dswrf", start2, count2, years[j]-1)
+              dlw <- ncquery("dlwrf.sfc.gauss.", "dlwrf", start2, count2, years[j]-1)
+              ulw <- ncquery("ulwrf.sfc.gauss.", "ulwrf", start2, count2, years[j]-1)
               wu <- ncquery("uwnd.10m.gauss.", "uwnd", start2, count2, years[j]-1)
               wv <- ncquery("vwnd.10m.gauss.", "vwnd", start2, count2, years[j]-1)
-              prate <- ncquery("prate.sfc.gauss.", "prate", start2[c(1,2,4)], count2[c(1,2,4)], years[j]-1)
+              prate <- ncquery("prate.sfc.gauss.", "prate", start2, count2, years[j]-1)
             }else{
               if(j <= nyears+1){
                 cat(paste("reading weather input for ", years[j-1]," \n", sep = ""))
@@ -760,27 +764,27 @@ micro_ncep <- function(
                 Tkmax <- c(Tkmax, ncquery("tmax.2m.gauss.", "tmax", start, count, years[j-1]))
                 Tk <- c(Tk, ncquery("air.2m.gauss.", "air", start, count, years[j-1]))
                 sh <- c(sh, ncquery("shum.2m.gauss.", "shum", start, count, years[j-1]))
-                pr <- c(pr, ncquery("pres.sfc.gauss.", "pres", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
-                tcdc <- c(tcdc, ncquery("tcdc.eatm.gauss.", "tcdc", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
-                dsw <- c(dsw, ncquery("dswrf.sfc.gauss.", "dswrf", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
-                dlw <- c(dlw, ncquery("dlwrf.sfc.gauss.", "dlwrf", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
-                ulw <- c(ulw, ncquery("ulwrf.sfc.gauss.", "ulwrf", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
+                pr <- c(pr, ncquery("pres.sfc.gauss.", "pres", start, count, years[j-1]))
+                tcdc <- c(tcdc, ncquery("tcdc.eatm.gauss.", "tcdc", start, count, years[j-1]))
+                dsw <- c(dsw, ncquery("dswrf.sfc.gauss.", "dswrf", start, count, years[j-1]))
+                dlw <- c(dlw, ncquery("dlwrf.sfc.gauss.", "dlwrf", start, count, years[j-1]))
+                ulw <- c(ulw, ncquery("ulwrf.sfc.gauss.", "ulwrf", start, count, years[j-1]))
                 wu <- c(wu, ncquery("uwnd.10m.gauss.", "uwnd", start, count, years[j-1]))
                 wv <- c(wv, ncquery("vwnd.10m.gauss.", "vwnd", start, count, years[j-1]))
-                prate <- c(prate, ncquery("prate.sfc.gauss.", "prate", start[c(1,2,4)], count[c(1,2,4)], years[j-1]))
+                prate <- c(prate, ncquery("prate.sfc.gauss.", "prate", start, count, years[j-1]))
               } else {
                 Tkmin <- c(Tkmin, ncquery("tmin.2m.gauss.", "tmin", start, count2, years[j-2]+1))
                 Tkmax <- c(Tkmax, ncquery("tmax.2m.gauss.", "tmax", start, count2, years[j-2]+1))
                 Tk <- c(Tk, ncquery("air.2m.gauss.", "air", start, count2, years[j-2]+1))
                 sh <- c(sh, ncquery("shum.2m.gauss.", "shum", start, count2, years[j-2]+1))
-                pr <- c(pr, ncquery("pres.sfc.gauss.", "pres", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
-                tcdc <- c(tcdc, ncquery("tcdc.eatm.gauss.", "tcdc", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
-                dsw <- c(dsw, ncquery("dswrf.sfc.gauss.", "dswrf", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
-                dlw <- c(dlw, ncquery("dlwrf.sfc.gauss.", "dlwrf", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
-                ulw <- c(ulw, ncquery("ulwrf.sfc.gauss.", "ulwrf", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
+                pr <- c(pr, ncquery("pres.sfc.gauss.", "pres", start, count2, years[j-2]+1))
+                tcdc <- c(tcdc, ncquery("tcdc.eatm.gauss.", "tcdc", start, count2, years[j-2]+1))
+                dsw <- c(dsw, ncquery("dswrf.sfc.gauss.", "dswrf", start, count2, years[j-2]+1))
+                dlw <- c(dlw, ncquery("dlwrf.sfc.gauss.", "dlwrf", start, count2, years[j-2]+1))
+                ulw <- c(ulw, ncquery("ulwrf.sfc.gauss.", "ulwrf", start, count2, years[j-2]+1))
                 wu <- c(wu, ncquery("uwnd.10m.gauss.", "uwnd", start, count2, years[j-2]+1))
                 wv <- c(wv, ncquery("vwnd.10m.gauss.", "vwnd", start, count2, years[j-2]+1))
-                prate <- c(prate, ncquery("prate.sfc.gauss.", "prate", start[c(1,2,4)], count2[c(1,2,4)], years[j-2]+1))
+                prate <- c(prate, ncquery("prate.sfc.gauss.", "prate", start, count2, years[j-2]+1))
               }
             }
           }
