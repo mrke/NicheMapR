@@ -16,9 +16,13 @@ Usrhyt = 0.01, ...)
 
 \item{dfinish}{Last day to run, date in format "d/m/Y" e.g. "31/12/2016"}
 
-\item{dem}{a digital elevation model used by microclima for micro-topographic effects, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)}
+\item{dem}{A digital elevation model used by microclima for micro-topographic effects, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)}
 
-\item{dem2}{a digital elevation model used by microclima for meso-climate calculations, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)}
+\item{dem2}{A digital elevation model used by microclima for meso-climate calculations, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)}
+
+\item{dem.res}{Requested resolution of the DEM from elevatr, m}
+
+\item{pixels}{Number of pixels along one edge of square requested of DEM requested from elevatr, #}
 
 \item{REFL}{Soil solar reflectance, decimal \%}
 

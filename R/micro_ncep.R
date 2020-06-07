@@ -5,8 +5,10 @@
 #' @param loc Longitude and latitude (decimal degrees)
 #' @param dstart First day to run, date in format "d/m/Y" e.g. "01/01/2016"
 #' @param dfinish Last day to run, date in format "d/m/Y" e.g. "31/12/2016"
-#' @param dem a digital elevation model used by microclima for micro-topographic effects, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
-#' @param dem2 a digital elevation model used by microclima for meso-climate calculations, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
+#' @param dem A digital elevation model used by microclima for micro-topographic effects, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
+#' @param dem2 A digital elevation model used by microclima for meso-climate calculations, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
+#' @param dem.res Requested resolution of the DEM from elevatr, m
+#' @param pixels Number of pixels along one edge of square requested of DEM requested from elevatr, #
 #' @param REFL Soil solar reflectance, decimal \%
 #' @param slope Slope in degrees (if NA, then derived from DEM with package microclima)
 #' @param aspect Aspect in degrees (0 = north) (if NA, then derived from DEM with microclima)
@@ -291,6 +293,8 @@ micro_ncep <- function(
   dfinish = "31/12/2017",
   dem = NA,
   dem2 = dem,
+  dem.res = 30,
+  pixels = 100,
   nyears = as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1,
   REFL = 0.15,
   slope = NA,
@@ -695,7 +699,7 @@ micro_ncep <- function(
     }
     if(save != 2 & class(dem)[1] != "RasterLayer"){
       cat('downloading DEM via package elevatr \n')
-      dem <- microclima::get_dem(lat = lat, long = long) # mercator equal area projection
+      dem <- microclima::get_dem(lat = lat, long = long, dem.res = dem.res, xdims = pixels, ydims = pixels) # mercator equal area projection
     }
     if(save == 1){
       save(dem, file = 'dem.Rda')
