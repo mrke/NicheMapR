@@ -795,7 +795,7 @@ micro_ncep <- function(
           dsw[dsw < 0] <- 0
           prate[prate < 0] <- 0
           prate <- prate * 3600 * 6 # mm in 6 hrs
-          ncepdata <- data.frame(obs_time = tme2[sel], Tk[sel], Tkmin[sel], Tkmax[sel], sh[sel], pr[sel], wu[sel], wv[sel], dlw[sel], ulw[sel], dsw[sel], tcdc[sel]) # 6-hourly ncep for chosen period plus a day added either side for interpolation
+          ncepdata <- data.frame(obs_time = tme2[sel], Tk, Tkmin, Tkmax, sh, pr, wu, wv, dlw, ulw, dsw, tcdc) # 6-hourly ncep for chosen period plus a day added either side for interpolation
           hourlydata <- microclima::hourlyNCEP(ncepdata = ncepdata, lat, long, tme, reanalysis) # interpolated to hourly
           cat("computing radiation and elevation effects with package microclima \n")
           microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
