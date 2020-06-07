@@ -635,7 +635,7 @@ micro_global <- function(
       require(jsonlite)
       ov <- fromJSON(paste0('https://rest.soilgrids.org/query?lon=',x[1],'&lat=',x[2],',&attributes=BLDFIE,SLTPPT,SNDPPT,CLYPPT'), flatten = TRUE)
       if(length(ov) > 3){
-        soilpro <- cbind(c(0,5,15,30,60,100,200), unlist(ov$properties$BLDFIE$M)/1000, unlist(ov$properties$SLTPPT$M), unlist(ov$properties$SNDPPT$M), unlist(ov$properties$CLYPPT$M) )
+        soilpro <- cbind(c(0,5,15,30,60,100,200), unlist(ov$properties$BLDFIE$M)/1000, unlist(ov$properties$CLYPPT$M), unlist(ov$properties$SLTPPT$M), unlist(ov$properties$SNDPPT$M) )
         colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
         #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
         soil.hydro<-pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
