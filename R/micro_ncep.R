@@ -699,7 +699,7 @@ micro_ncep <- function(
     }
     if(save != 2 & class(dem)[1] != "RasterLayer"){
       cat('downloading DEM via package elevatr \n')
-      dem <- microclima::get_dem(lat = lat, long = long, dem.res = dem.res, xdims = pixels, ydims = pixels) # mercator equal area projection
+      dem <- microclima::get_dem(lat = lat, long = long, resolution = dem.res, xdims = pixels, ydims = pixels) # mercator equal area projection
     }
     if(save == 1){
       save(dem, file = 'dem.Rda')
