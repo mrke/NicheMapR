@@ -687,6 +687,9 @@ micro_ncep <- function(
           stop("package 'ncdf4' is needed. Please install it.",
                call. = FALSE)
         }
+        if(!file.exists(paste(spatial, "/",filename,year,"_time.nc", sep = ""))){
+          stop("looks like you need to generate the reordered version of your locally-stored NCEP data, see instructions on the NicheMapR Google Group under the heading 'speeding up reading of NCEP data'")
+        }
         nc <- ncdf4::nc_open(paste(spatial, "/",filename,year,"_time.nc", sep = ""))
         if(nc$ndims == 3){
           start <- start[c(1,3:4)]
