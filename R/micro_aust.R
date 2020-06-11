@@ -538,7 +538,7 @@ micro_aust <- function(
     message("ERROR: You must enter 24 horizon angle values.", '\n')
     errors <- 1
   }
-  if(SLE < 0.5 | SLE > 1){
+  if(SLE < 0.05 | SLE > 1){
     message("ERROR: Emissivity (SLE) is out of bounds.
         Please enter a correct value (0.05 - 1.00).", '\n')
     errors <- 1
