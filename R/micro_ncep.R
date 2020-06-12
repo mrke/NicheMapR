@@ -703,7 +703,7 @@ micro_ncep <- function(
         # now getting starting point and count for reading netcdf files
         cat(paste0("extracting weather data locally from ", spatial, " \n"))
         years <- as.numeric(unique(format(tme, "%Y")))
-        nc <- RNetCDF::open.nc(paste(spatial, "/air.2m.gauss.", years[1], ".nc", sep = ""))
+        nc <- RNetCDF::open.nc(paste(spatial, "/air.2m.gauss.", years[1], "_time.nc", sep = ""))
         lon2 <- matrix(RNetCDF::var.get.nc(nc, "lon", unpack = TRUE))
         lat2 <- matrix(RNetCDF::var.get.nc(nc, "lat", unpack = TRUE))
         lon_1 <- long
