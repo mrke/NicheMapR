@@ -687,10 +687,15 @@ micro_ncep <- function(
           stop("package 'ncdf4' is needed. Please install it.",
                call. = FALSE)
         }
-        if(!file.exists(paste(spatial, "/",filename,year,"_time.nc", sep = ""))){
+        if(yearlist[j] < 1979){
+          spatial2 <- paste0(spatial, "reanalysis1/")
+        }else{
+          spatial2 <- spatial
+        }
+        if(!file.exists(paste(spatial2, "/",filename,year,"_time.nc", sep = ""))){
           stop("looks like you need to generate the reordered version of your locally-stored NCEP data, see instructions on the NicheMapR Google Group under the heading 'speeding up reading of NCEP data'")
         }
-        nc <- ncdf4::nc_open(paste(spatial, "/",filename,year,"_time.nc", sep = ""))
+        nc <- ncdf4::nc_open(paste(spatial2, "/",filename,year,"_time.nc", sep = ""))
         if(nc$ndims == 3){
           start <- start[c(1,3:4)]
           count <- count[c(1,3:4)]
@@ -703,7 +708,12 @@ micro_ncep <- function(
         # now getting starting point and count for reading netcdf files
         cat(paste0("extracting weather data locally from ", spatial, " \n"))
         years <- as.numeric(unique(format(tme, "%Y")))
-        nc <- RNetCDF::open.nc(paste(spatial, "/air.2m.gauss.", years[1], ".nc", sep = ""))
+        if(years[1] < 1979){
+          spatial2 <- paste0(spatial, "reanalysis1/")
+        }else{
+          spatial2 <- spatial
+        }
+        nc <- RNetCDF::open.nc(paste(spatial2, "/air.2m.gauss.", years[1], ".nc", sep = ""))
         lon2 <- matrix(RNetCDF::var.get.nc(nc, "lon", unpack = TRUE))
         lat2 <- matrix(RNetCDF::var.get.nc(nc, "lat", unpack = TRUE))
         lon_1 <- long
