@@ -1077,6 +1077,7 @@ micro_aust <- function(
                        , AWAPDaily.", yeartodo, " as b
                        where (a.id = b.id) and (a.latitude between ", lat1, " and ", lat2, ") and (a.longitude between ",lon1," and ",lon2,")
                        order by b.day", sep = "")
+            output<- dbGetQuery(channel, query)
             if(yearlist[j] < 1971){
               output$vpr <- output$tmin / output$tmin - 1
             }
