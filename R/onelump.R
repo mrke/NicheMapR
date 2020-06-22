@@ -11,7 +11,7 @@
 #' @param c_body = 3073, Specific heat of flesh J/(kg-K)
 #' @param k_flesh = 0.5, Thermal conductivity of flesh (W/mK, range: 0.412-2.8)
 #' @param emis = 0.95, Emissivity of animal (0-1)
-#' @param abs = 0.85, solar absorptivity, decimal percent
+#' @param alpha = 0.85, solar absorptivity, decimal percent
 #' @param geom = 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coefs')
 #' @param shape_b = 1/5, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid
 #' @param shape_c = 1/5, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid

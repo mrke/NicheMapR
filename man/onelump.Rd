@@ -35,6 +35,8 @@ onelump(t, Tc_init, Ww_g, geom, Tair, Trad, vel, Qsol, Zen, ...)
 
 \item{rho_body}{= 932, animal density (kg/m3)}
 
+\item{alpha}{= 0.85, solar absorptivity, decimal percent}
+
 \item{shape_coefs}{= c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom shape coefficients. Operates if geom=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*Ww_g^b, where AREA is in cm2 and Ww_g is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}
 
 \item{shape_b}{= 1/5, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid}
@@ -54,8 +56,6 @@ onelump(t, Tc_init, Ww_g, geom, Tair, Trad, vel, Qsol, Zen, ...)
 \item{pdif}{= 0.1, proportion of solar energy that is diffuse (rather than direct beam)}
 
 \item{press}{= 101325, air pressure (Pa)}
-
-\item{abs}{= 0.85, solar absorptivity, decimal percent}
 }
 \value{
 Tc Core temperature (°C)
