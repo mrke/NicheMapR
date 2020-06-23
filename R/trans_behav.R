@@ -15,7 +15,6 @@
 #' summary statistics about the length of basking and foraging bouts, activity time, time spent
 #' above high temperature thresholds (T_F_max and CT_max), and the extremes of body temperature.
 #' @encoding UTF-8
-#' @param t time intervals (s) at which output is required
 #' @param Tc_init = Tairf(1), initial temperature (°C) Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)
 #' @param Ts_init = Tc_init + 0.1, initial shell temperature (°C)
 #' @param To_init = Tc_init + 0.2, initial surface temperature (°C)
@@ -165,7 +164,7 @@
 #'   shadsoil_in <- subset(shadmet, DOY == DOYs[i])
 #'
 #'   # run transient behavioural simulation
-#'   trans <- trans_behav(t = time, Ww_g = Ww_g, alpha = alpha, T_F_min = T_F_min, T_F_max = T_F_max,
+#'   trans <- trans_behav(Ww_g = Ww_g, alpha = alpha, T_F_min = T_F_min, T_F_max = T_F_max,
 #'                        CT_max = CT_max, T_B_min = T_B_min, geom = geom, shape_b = shape_b, shape_c = shape_c,
 #'                        rho_body = rho_body, k_flesh = k_flesh, q = q, lump = 1,
 #'                        metout = metout_in, shadmet = shadmet_in, soil = soil_in, shadsoil = shadsoil_in,
@@ -211,8 +210,7 @@
 #'
 #' mtext(text =  paste0('Seasonal Activity Plot, ', if(length(loc) == 2){paste("lon", loc[1], "lat", loc[2])}else{loc}, " ", Ww_g," g"), outer = TRUE, side = 3, line = 0)
 #' @export
-trans_behav <- function(t = seq(1, 60),
-                        Tc_init = rep(20, 60),
+trans_behav <- function(Tc_init = rep(20, 60),
                         Ts_init = Tc_init + 0.1,
                         To_init = Tc_init + 0.2,
                         Ww_g = 500,

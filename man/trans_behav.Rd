@@ -5,21 +5,19 @@
 \alias{trans_behav}
 \title{Thermoregulatory model using a transient heat budget}
 \usage{
-trans_behav(t = seq(1, 60), Tc_init = rep(20, 60), Ts_init = Tc_init
-  + 0.1, To_init = Tc_init + 0.2, Ww_g = 500, T_F_min = 33,
-  T_F_max = 38, T_B_min = 25, CT_max = 43, rho_body = 932,
-  x_shell = 0.001, lump = 1, q = 0, c_body = 3073,
-  c_body_inner = c_body, c_body_outer = c_body, k_flesh = 0.5,
-  k_inner = k_flesh, k_outer = k_flesh, emis = 0.95, alpha = 0.85,
-  geom = 2, shape_b = 1/5, shape_c = 1/5, shape_coefs = c(10.4713,
-  0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743), posture = "n",
-  orient = 1, fatosk = 0.4, fatosb = 0.4, alpha_sub = 0.2,
-  pdif = 0.1, shade = 90, metout = metout, shadmet = shadmet,
-  soil = soil, shadsoil = shadsoil, press = 101325)
+trans_behav(Tc_init = rep(20, 60), Ts_init = Tc_init + 0.1,
+  To_init = Tc_init + 0.2, Ww_g = 500, T_F_min = 33, T_F_max = 38,
+  T_B_min = 25, CT_max = 43, rho_body = 932, x_shell = 0.001,
+  lump = 1, q = 0, c_body = 3073, c_body_inner = c_body,
+  c_body_outer = c_body, k_flesh = 0.5, k_inner = k_flesh,
+  k_outer = k_flesh, emis = 0.95, alpha = 0.85, geom = 2,
+  shape_b = 1/5, shape_c = 1/5, shape_coefs = c(10.4713, 0.688,
+  0.425, 0.85, 3.798, 0.683, 0.694, 0.743), posture = "n", orient = 1,
+  fatosk = 0.4, fatosb = 0.4, alpha_sub = 0.2, pdif = 0.1,
+  shade = 90, metout = metout, shadmet = shadmet, soil = soil,
+  shadsoil = shadsoil, press = 101325)
 }
 \arguments{
-\item{t}{time intervals (s) at which output is required}
-
 \item{Tc_init}{= Tairf(1), initial temperature (°C) Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)}
 
 \item{Ts_init}{= Tc_init + 0.1, initial shell temperature (°C)}
@@ -220,7 +218,7 @@ for(i in 1:12){
   shadsoil_in <- subset(shadmet, DOY == DOYs[i])
 
   # run transient behavioural simulation
-  trans <- trans_behav(t = time, Ww_g = Ww_g, alpha = alpha, T_F_min = T_F_min, T_F_max = T_F_max,
+  trans <- trans_behav(Ww_g = Ww_g, alpha = alpha, T_F_min = T_F_min, T_F_max = T_F_max,
                        CT_max = CT_max, T_B_min = T_B_min, geom = geom, shape_b = shape_b, shape_c = shape_c,
                        rho_body = rho_body, k_flesh = k_flesh, q = q, lump = 1,
                        metout = metout_in, shadmet = shadmet_in, soil = soil_in, shadsoil = shadsoil_in,
