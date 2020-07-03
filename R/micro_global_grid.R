@@ -133,7 +133,7 @@ micro_global_grid <- function(loc="Madison, Wisconsin USA",timeinterval=12,nyear
     cat("ERROR: You must enter 24 horizon angle values.", '\n')
     errors<-1
   }
-  if(SLE<0.5 | SLE > 1){
+  if(SLE<0.05 | SLE > 1){
     cat("ERROR: Emissivity (SLE) is out of bounds.
         Please enter a correct value (0.05 - 1.00).", '\n')
     errors<-1

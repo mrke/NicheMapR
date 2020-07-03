@@ -72,7 +72,7 @@
 #' \code{Density}{ = 2.56, Soil minerals density (Mg/m3)}\cr\cr
 #' \code{SpecHeat}{ = 870, Soil minerals specific heat (J/kg-K)}\cr\cr
 #' \code{BulkDensity}{ = 1.3, Soil bulk density (mg/m3)}\cr\cr
-#' \code{PCTWET}{ = 0, \% of ground surface area acting as a free water surface}\cr\cr
+#' \code{PCTWET}{ = 0, \% of ground surface area acting as a free water surface (overridden if soil moisture model is running)}\cr\cr
 #' \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
 #' \code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
 #' \code{hori}{ = rep(0,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
