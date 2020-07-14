@@ -391,7 +391,7 @@ endoR_devel <- function(
     SHAPE_B_MAX <- SHAPE_B # can't change posture, so max multiplier of dimension set to current value
   }
   Q10mult <- 1
-  PANTSTEP <- 0
+  #PANTSTEP <- 0
   QGEN <- 0
   TCREF <- TC
   QBASREF <- QBASAL
@@ -543,51 +543,51 @@ endoR_devel <- function(
 
       # set infrared environment
       TVEG <- TAREF # assume vegetation casting shade is at 1.2 m (reference) air temperature (°C)
-      SKYIR <- C3 * (TSKY + 273.15) ^ 4 # sky infrared incoming (W)
-      VEGIR <- C6 * (TVEG + 273.15) ^ 4 # vegetation infrared incomming (W)
-      SKYRAD <- SKYIR + VEGIR
-      #TLOCUP <- (((SKYIN) / (C3 + C6)) ^ 0.25) - 273.15
-      SKYIN <- SKYRAD
-      GRDIN <- C4 * (TGRD + 273.15) ^ 4 # note, MK put C4 here wherease before it was just SIG
+      # SKYIR <- C3 * (TSKY + 273.15) ^ 4 # sky infrared incoming (W)
+      # VEGIR <- C6 * (TVEG + 273.15) ^ 4 # vegetation infrared incomming (W)
+      # SKYRAD <- SKYIR + VEGIR
+      # #TLOCUP <- (((SKYIN) / (C3 + C6)) ^ 0.25) - 273.15
+      # SKYIN <- SKYRAD
+      # GRDIN <- C4 * (TGRD + 273.15) ^ 4 # note, MK put C4 here wherease before it was just SIG
       TLOWER <- TGRD
 
       # Calculating solar intensity entering fur. This will depend on whether we are calculating the fur temperature for the dorsal side or the ventral side. The dorsal side will have solar inputs from the direct beam hitting the silhouette area as well as diffuse solar scattered from the sky and objects. The ventral side will have diffuse solar scattered off the substrate.
 
       # Resetting config factors and solar depending on whether the dorsal side (S=1) or ventral side (S=2) is being estimated.
       if(QSOLAR > 0.0){
-        if(S==1){
-          FASKY <- FASKYREF/(FASKYREF+FATOBJREF+FAVEGREF)
-          FATOBJ <- FATOBJREF/(FASKYREF+FATOBJREF+FAVEGREF)
-          FAVEG <- FAVEGREF/(FASKYREF+FATOBJREF+FAVEGREF)
+        if(S == 1){
+          FASKY <- FASKYREF /(FASKYREF + FATOBJREF + FAVEGREF)
+          FATOBJ <- FATOBJREF /(FASKYREF + FATOBJREF + FAVEGREF)
+          FAVEG <- FAVEGREF / (FASKYREF + FATOBJREF + FAVEGREF)
           FAGRD <- 0.0
           FABUSH <- 0.0
           if(FATOBJ == 0.0){
-            QSLR <- 2*QSDIR+((QSSKY/FASKYREF)*FASKY)
+            QSLR <- 2 * QSDIR + ((QSSKY / FASKYREF) * FASKY)
           }else{
-            QSLR <- 2*QSDIR+((QSSKY/FASKYREF)*FASKY)+((QSOBJ/FATOBJREF)*FATOBJ)
+            QSLR <- 2 * QSDIR + ((QSSKY / FASKYREF) * FASKY) + ((QSOBJ / FATOBJREF) * FATOBJ)
           }
         }else{  # doing ventral side. NB edit - adjust QSLR for PCOND here.
           FASKY <- 0.0
           FATOBJ <- 0.0
           FAVEG <- 0.0
-          FAGRD <- FAGRDREF/(FAGRDREF+FABUSHREF)
-          FABUSH <- FABUSHREF/(FAGRDREF+FABUSHREF)
-          QSLR <- (QVENTR/(FAGRDREF+FABUSHREF))*(1-(2*PCOND))
+          FAGRD <- FAGRDREF / (FAGRDREF + FABUSHREF)
+          FABUSH <- FABUSHREF / (FAGRDREF + FABUSHREF)
+          QSLR <- (QVENTR / (1 - FASKYREF - FATOBJREF - FAVEGREF)) * (1 - (2 * PCOND))
         }
       }else{
         QSLR <- 0.0
         if(S==1){
-          FASKY <- FASKYREF/(FASKYREF+FATOBJREF+FAVEGREF)
-          FATOBJ <- FATOBJREF/(FASKYREF+FATOBJREF+FAVEGREF)
-          FAVEG <- FAVEGREF/(FASKYREF+FATOBJREF+FAVEGREF)
+          FASKY <- FASKYREF / (FASKYREF + FATOBJREF + FAVEGREF)
+          FATOBJ <- FATOBJREF / (FASKYREF + FATOBJREF + FAVEGREF)
+          FAVEG <- FAVEGREF / (FASKYREF + FATOBJREF + FAVEGREF)
           FAGRD <- 0.0
           FABUSH <- 0.0
         }else{
           FASKY <- 0.0
           FATOBJ <- 0.0
           FAVEG <- 0.0
-          FAGRD <- FAGRDREF/(FAGRDREF+FABUSHREF)
-          FABUSH <- FABUSHREF/(FAGRDREF+FABUSHREF)
+          FAGRD <- FAGRDREF / (FAGRDREF + FABUSHREF)
+          FABUSH <- FABUSHREF / (FAGRDREF + FABUSHREF)
         }
       }
 
@@ -623,12 +623,12 @@ endoR_devel <- function(
 
       # Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*((kfur/zfur)+(ksub/subdepth))
       if(S == 2){
-        AREACND <- ATOT * (PCOND *2)
-        CD <- AREACND * ((KFURCMPRS/ZFURCOMP))
+        AREACND <- ATOT * (PCOND * 2)
+        CD <- AREACND * ((KFURCMPRS / ZFURCOMP))
         CONVAR<-CONVAR - AREACND #NB edit - Adjust area used for convection to account for PCOND. This is sent in to simulsol & then conv (unpacked as SURFAR)
       } else{ #doing dorsal side, no conduction. No need to adjust areas used for convection.
-        AREACND = 0
-        CD <- AREACND * ((KFURCMPRS/ZFURCOMP))
+        AREACND <- 0
+        CD <- AREACND * ((KFURCMPRS / ZFURCOMP))
       }
 
 
@@ -639,7 +639,7 @@ endoR_devel <- function(
       TRAITS <- c(TC,AK1,AK2,EMISAN,FATTHK,FLYHR,FURWET,PCTBAREVAP,PCTEYES)
 
       # set IPT, the geometry assumed in SIMULSOL: 1 = cylinder, 2 = sphere, 3 = ellipsoid
-      if(SHAPE %in% c(1,3,5)){
+      if(SHAPE %in% c(1, 3, 5)){
         IPT <- 1
       }
       if(SHAPE == 2){
@@ -670,7 +670,7 @@ endoR_devel <- function(
     FAVEG <- FAVEGREF # vegetation
 
     # lung temperature and temperature of exhaled air
-    TLUNG <- (TC + (SIMULSOL.out[1, 2] + SIMULSOL.out[1, 2]) * 0.5) * 0.5 # average of skin and core
+    TLUNG <- (TC + (SIMULSOL.out[1, 2] + SIMULSOL.out[2, 2]) * 0.5) * 0.5 # average of skin and core
     TAEXIT <- min(TA + DELTAR, TLUNG) # temperature of exhaled air, °C
 
     # now guess for metabolic rate that balances the heat budget while allowing metabolic rate
@@ -717,7 +717,7 @@ endoR_devel <- function(
           QBASAL = QBASREF * Q10mult
           if(PANT < PANTMAX){
             PANT <- PANT + PANTING
-            PANTSTEP <- PANTSTEP + 1
+            #PANTSTEP <- PANTSTEP + 1
             #PANT <- round(PANTMAX - (PANTMAX - 1) * exp(-0.02 / (PANTMAX / 10) * PANTSTEP), 1)
           }else{
             PANT <- PANTMAX
