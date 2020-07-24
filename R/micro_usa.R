@@ -44,7 +44,6 @@
 #' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
-#' \code{terrain}{ = 0, Use 250m resolution terrain data? 1=yes, 0=no}\cr\cr
 #' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 #' \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
 #' \code{warm}{ = 0, uniform warming, °C}\cr\cr
@@ -309,7 +308,7 @@ micro_usa <- function(
   run.gads = 1,
   write_input = 0,
   writecsv = 0,
-  terrain = 0,
+  #terrain = 0,
   windfac = 1,
   adiab_cor = 1,
   warm = 0,
@@ -683,16 +682,16 @@ micro_usa <- function(
       save(BulkDensity, file = 'BulkDensity.Rda')
     }
     if(terrain==1){ # to do
-      cat("extracting terrain data \n")
-      # now extract terrain data from elevslpasphori.nc
-      # get UTM from dec degrees, NZTM
-      HORIZONS <- elevslpasphori[4:27]
-      SLOPES <- elevslpasphori[2]
-      AZMUTHS <- elevslpasphori[3]
-      # the horizons have been arranged so that they go from 0 degrees azimuth (north) clockwise - r.horizon starts
-      # in the east and goes counter clockwise!
-      HORIZONS <- (ifelse(is.na(HORIZONS),0,HORIZONS))/10 # get rid of na and get back to floating point
-      HORIZONS <- data.frame(HORIZONS)
+      # cat("extracting terrain data \n")
+      # # now extract terrain data from elevslpasphori.nc
+      # # get UTM from dec degrees, NZTM
+      # HORIZONS <- elevslpasphori[4:27]
+      # SLOPES <- elevslpasphori[2]
+      # AZMUTHS <- elevslpasphori[3]
+      # # the horizons have been arranged so that they go from 0 degrees azimuth (north) clockwise - r.horizon starts
+      # # in the east and goes counter clockwise!
+      # HORIZONS <- (ifelse(is.na(HORIZONS),0,HORIZONS))/10 # get rid of na and get back to floating point
+      # HORIZONS <- data.frame(HORIZONS)
     }else{
       HORIZONS <- hori
       HORIZONS <- data.frame(HORIZONS)
