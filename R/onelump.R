@@ -162,7 +162,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
     ASILN <- max(pi * A1 * C1, pi * B1 * C1) # max silhouette area, m2
     ASILP <- min(pi * A1 * C1, pi * B1 * C1) # min silhouette area, m2
     S2 <- (A1 ^ 2 * B1 ^ 2 * C1 ^ 2) / (A1 ^ 2 * B1 ^ 2 + A1 ^ 2 * C1 ^ 2 + B1 ^ 2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
-    k_flesh <- 0.5# + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
+    #k_flesh <- 0.5 + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
   }
 
   # Lizard geometry - DESERT IGUANA (PORTER ET AL. 1973 OECOLOGIA)

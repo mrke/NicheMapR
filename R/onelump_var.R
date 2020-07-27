@@ -185,8 +185,7 @@ onelump_var <- function(t, y, indata) {
       S2 <-
         (A1 ^ 2 * B1 ^ 2 * C1 ^ 2) / (A1 ^ 2 * B1 ^ 2 + A1 ^ 2 * C1 ^ 2 + B1 ^
                                         2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
-      k_flesh <-
-        0.5 + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
+      #k_flesh <- 0.5 + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
     }
 
     # Lizard geometry - DESERT IGUANA (PORTER ET AL. 1973 OECOLOGIA)
