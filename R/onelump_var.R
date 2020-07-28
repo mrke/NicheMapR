@@ -135,13 +135,13 @@ onelump_var <- function(t, y, indata) {
     V <- m / rho_body # volume, m3
     Q_gen <- q * V # total metabolic heat, J
     L <- V ^ (1 / 3) # characteristic dimension, m
+
     # FLAT PLATE geometry
     if (geom == 0) {
       AHEIT <- (V / (shape_b * shape_c)) ^ (1 / 3) # length, m
       AWIDTH <- AHEIT * shape_b # width, m
       ALENTH <- AHEIT * shape_c # height, m
-      ATOT <-
-        ALENTH * AWIDTH * 2 + ALENTH * AHEIT * 2 + AWIDTH * AHEIT * 2 # total area, m2
+      ATOT <- ALENTH * AWIDTH * 2 + ALENTH * AHEIT * 2 + AWIDTH * AHEIT * 2 # total area, m2
       ASILN <- ALENTH * AWIDTH # max silhouette area, m2
       ASILP <- AWIDTH * AHEIT # min silhouette area, m2
       L <- AHEIT # characteristic dimension, m
@@ -177,14 +177,10 @@ onelump_var <- function(t, y, indata) {
       B1 <- A1 * shape_b # axis B, m
       C1 <- A1 * shape_c # axis C, m
       P1 <- 1.6075 # a constant
-      ATOT <-
-        (4 * pi * (((A1 ^ P1 * B1 ^ P1 + A1 ^ P1 * C1 ^ P1 + B1 ^ P1 * C1 ^ P1)
-        ) / 3) ^ (1 / P1)) # total surface area, m2
+      ATOT <- (4 * pi * (((A1 ^ P1 * B1 ^ P1 + A1 ^ P1 * C1 ^ P1 + B1 ^ P1 * C1 ^ P1)) / 3) ^ (1 / P1)) # total surface area, m2
       ASILN <- max(pi * A1 * C1, pi * B1 * C1) # max silhouette area, m2
       ASILP <- min(pi * A1 * C1, pi * B1 * C1) # min silhouette area, m2
-      S2 <-
-        (A1 ^ 2 * B1 ^ 2 * C1 ^ 2) / (A1 ^ 2 * B1 ^ 2 + A1 ^ 2 * C1 ^ 2 + B1 ^
-                                        2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
+      S2 <- (A1 ^ 2 * B1 ^ 2 * C1 ^ 2) / (A1 ^ 2 * B1 ^ 2 + A1 ^ 2 * C1 ^ 2 + B1 ^ 2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
       #k_flesh <- 0.5 + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
     }
 
@@ -193,10 +189,8 @@ onelump_var <- function(t, y, indata) {
       ATOT <- (10.4713 * Ww_g ^ .688) / 10000. # total surface area, m2
       AV <- (0.425 * Ww_g ^ .85) / 10000. # ventral surface area, m2
       # NORMAL AND POINTING @ SUN SILHOUETTE AREA: PORTER & TRACY 1984
-      ASILN <-
-        (3.798 * Ww_g ^ .683) / 10000. # Max. silhouette area (normal to the sun), m2
-      ASILP <-
-        (0.694 * Ww_g ^ .743) / 10000. # Min. silhouette area (pointing toward the sun), m2
+      ASILN <- (3.798 * Ww_g ^ .683) / 10000. # Max. silhouette area (normal to the sun), m2
+      ASILP <- (0.694 * Ww_g ^ .743) / 10000. # Min. silhouette area (pointing toward the sun), m2
       R <- L
     }
 
@@ -206,40 +200,30 @@ onelump_var <- function(t, y, indata) {
       AV <- (0.425 * Ww_g ^ 0.85) / 10000. # ventral surface area, m2
       # NORMAL AND POINTING @ SUN SILHOUETTE AREA: EQ'N 11 TRACY 1976
       ZEN <- 0
-      PCTN <-
-        1.38171E-06 * ZEN ^ 4 - 1.93335E-04 * ZEN ^ 3 + 4.75761E-03 * ZEN ^ 2 -
-        0.167912 * ZEN + 45.8228
-      ASILN <-
-        PCTN * ATOT / 100 # Max. silhouette area (normal to the sun), m2
+      PCTN <- 1.38171E-06 * ZEN ^ 4 - 1.93335E-04 * ZEN ^ 3 + 4.75761E-03 * ZEN ^ 2 - 0.167912 * ZEN + 45.8228
+      ASILN <- PCTN * ATOT / 100 # Max. silhouette area (normal to the sun), m2
       ZEN <- 90
-      PCTP <-
-        1.38171E-06 * ZEN ^ 4 - 1.93335E-04 * ZEN ^ 3 + 4.75761E-03 * ZEN ^ 2 -
-        0.167912 * ZEN + 45.8228
-      ASILP <-
-        PCTP * ATOT / 100 # Min. silhouette area (pointing toward the sun), m2
+      PCTP <- 1.38171E-06 * ZEN ^ 4 - 1.93335E-04 * ZEN ^ 3 + 4.75761E-03 * ZEN ^ 2 - 0.167912 * ZEN + 45.8228
+      ASILP <- PCTP * ATOT / 100 # Min. silhouette area (pointing toward the sun), m2
       R <- L
     }
 
     # user defined geometry
     if (geom == 5) {
-      ATOT <-
-        (shape_coefs[1] * Ww_g ^ shape_coefs[2]) / 10000. # total surface area, m2
-      AV <-
-        (shape_coefs[3] * Ww_g ^ shape_coefs[4]) / 10000 # ventral surface area, m2
+      ATOT <- (shape_coefs[1] * Ww_g ^ shape_coefs[2]) / 10000. # total surface area, m2
+      AV <- (shape_coefs[3] * Ww_g ^ shape_coefs[4]) / 10000 # ventral surface area, m2
       # NORMAL AND POINTING @ SUN SILHOUETTE AREA: PORTER & TRACY 1984
       # User must define Max. silhouette area (normal to the sun)
-      ASILN <-
-        (shape_coefs[5] * Ww_g ^ shape_coefs[6]) / 10000 # Max. silhouette area (normal to the sun), m2
+      ASILN <- (shape_coefs[5] * Ww_g ^ shape_coefs[6]) / 10000 # Max. silhouette area (normal to the sun), m2
       # User must define Min. silhouette area (pointing toward the sun)
-      ASILP <-
-        (shape_coefs[7] * Ww_g ^ shape_coefs[8]) / 10000 # Min. silhouette area (pointing toward the sun), m2
+      ASILP <- (shape_coefs[7] * Ww_g ^ shape_coefs[8]) / 10000 # Min. silhouette area (pointing toward the sun), m2
       R <- L
     }
     # end geometry section ############################################################
 
     if (max(Zen) >= 90) {
       Q_norm <- 0
-    } else{
+    }else{
       if(orient == 1){
         Q_norm <- (Qsol / cos(Zenith))
       }else{
@@ -247,29 +231,16 @@ onelump_var <- function(t, y, indata) {
       }
     }
     if (Q_norm > 1367) {
-      Q_norm <-
-        1367 #making sure that low sun angles don't lead to solar values greater than the solar constant
+      Q_norm <- 1367 #making sure that low sun angles don't lead to solar values greater than the solar constant
     }
     if (posture == 'p') {
-      Qabs <-
-        (
-          Q_norm * (1 - pdif) * ASILP + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) *
-            fatosb * ATOT
-        ) * alpha
+      Qabs <- (Q_norm * (1 - pdif) * ASILP + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
     }
     if (posture == 'n') {
-      Qabs <-
-        (
-          Q_norm * (1 - pdif) * ASILN + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) *
-            fatosb * ATOT
-        ) * alpha
+      Qabs <- (Q_norm * (1 - pdif) * ASILN + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
     }
     if (posture == 'a') {
-      Qabs <-
-        (
-          Q_norm * (1 - pdif) * (ASILN + ASILP) / 2 + Qsol * pdif * fatosk * ATOT +
-            Qsol * (1 - alpha_sub) * fatosb * ATOT
-        ) * alpha
+      Qabs <- (Q_norm * (1 - pdif) * (ASILN + ASILP) / 2 + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
     }
 
     Re <- DENSTY * vel * L / VISDYN # Reynolds number
@@ -311,9 +282,7 @@ onelump_var <- function(t, y, indata) {
     }
     h_conv_forced <- NUfor * THCOND / L # convection coefficent, forced
 
-    GR <-
-      abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Tskin - Tair) /
-            VISDYN ^ 2) # Grashof number
+    GR <- abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Tskin - Tair) / VISDYN ^ 2) # Grashof number
     Raylei <- GR * PR # Rayleigh number
 
     # get Nusselt for Free Convect

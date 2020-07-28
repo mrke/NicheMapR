@@ -158,7 +158,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
     B1 <- A1 * shape_b # axis B, m
     C1 <- A1 * shape_c # axis C, m
     P1 <- 1.6075 # a constant
-    ATOT <- (4 * pi * (((A1 ^ P1 * B1 ^ P1 + A1 ^ P1 * C1 ^ P1 + B1 ^ P1 * C1 ^ P1)        ) / 3) ^ (1 / P1)) # total surface area, m2
+    ATOT <- (4 * pi * (((A1 ^ P1 * B1 ^ P1 + A1 ^ P1 * C1 ^ P1 + B1 ^ P1 * C1 ^ P1)) / 3) ^ (1 / P1)) # total surface area, m2
     ASILN <- max(pi * A1 * C1, pi * B1 * C1) # max silhouette area, m2
     ASILP <- min(pi * A1 * C1, pi * B1 * C1) # min silhouette area, m2
     S2 <- (A1 ^ 2 * B1 ^ 2 * C1 ^ 2) / (A1 ^ 2 * B1 ^ 2 + A1 ^ 2 * C1 ^ 2 + B1 ^ 2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
@@ -204,7 +204,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
 
   if (max(Zen) >= 89) {
     Q_norm <- 0
-  } else{
+  }else{
     if(orient == 1){
       Q_norm <- (Qsol / cos(Zenith))
     }else{
