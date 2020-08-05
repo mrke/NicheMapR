@@ -201,7 +201,7 @@
 #' \itemize{
 #' \item  1 DOY - day-of-year
 #' \item  2 TIME - time of day (mins)
-#' \item  3 TRANS - plant transpiration rate (kg/m2/s)
+#' \item  3 TRANS - plant transpiration rate (g/m2/h)
 #' \item  4 LEAFPOT - leaf water potential (J/kg)
 #' \item  5-14 RPOT0cm ... - root water potential (J/kg), at each of the 10 specified depths
 #' }

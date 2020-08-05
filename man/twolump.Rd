@@ -35,13 +35,11 @@ ode(y = c(Tc_init, Tsk_init, Ts_init), times = time, func = twolump, parms = ind
 
 \item{alpha}{= 0.85, solar absorptivity, decimal percent}
 
-\item{geom}{= 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coefs')}
+\item{geom}{= 2, Organism shape, 1-2, Determines surface area/volume relationships: 1=cyl, 2=ellips}
 
 \item{shape_b}{= 1/5, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid}
 
 \item{shape_c}{= 1/5, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}
-
-\item{shape_coefs}{= c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom shape coefficients. Operates if geom=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*Ww_g^b, where AREA is in cm2 and Ww_g is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}
 
 \item{posture}{= 'n', pointing normal 'n', parallel 'p' to the sun's rays, or 'a' in between?}
 
@@ -119,7 +117,6 @@ posture <- 'n' # pointing normal 'n' or parallel 'p' to the sun's rays, or avera
 orient <- 1 # does the object orient toward the sun? (0,1)
 shape_b <- 1/5 # shape coefficient a, -
 shape_c <- 1/5 # shape coefficient b, -
-shape_coefs <- c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743)
 fatosk <- 0.4 # solar configuration factor to sky, -
 fatosb <- 0.4 # solar configuration factor to substrate, -
 alpha <- 0.9 # animal solar absorptivity, -
@@ -150,7 +147,7 @@ for (i in 1:length(DOYs)) {
   Zenf <- approxfun(time, c(microclim[, 8], 90), rule = 2)
 
   t = seq(1, 3600 * 24, 60) # sequence of times for predictions (1 min intervals)
-  indata <- list(Ww_g = Ww_g, x_shell = x_shell, geom = geom, k_inner = k_inner, k_outer = k_outer, q = q, c_body_inner = c_body_inner, c_body_outer = c_body_outer, emis = emis, rho_body = rho_body, alpha = alpha, shape_coefs = shape_coefs, shape_b = shape_b, shape_c = shape_c, posture = posture, orient = orient, fatosk = fatosk, fatosb = fatosb, alpha_sub = alpha_sub, pdif = pdif, press = press)
+  indata <- list(Ww_g = Ww_g, x_shell = x_shell, geom = geom, k_inner = k_inner, k_outer = k_outer, q = q, c_body_inner = c_body_inner, c_body_outer = c_body_outer, emis = emis, rho_body = rho_body, alpha = alpha, shape_b = shape_b, shape_c = shape_c, posture = posture, orient = orient, fatosk = fatosk, fatosb = fatosb, alpha_sub = alpha_sub, pdif = pdif, press = press)
 
   Tc_init<-Tairf(1) # set inital Tc as air temperature
   Tsk_init <- Tc_init
