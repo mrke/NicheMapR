@@ -681,7 +681,7 @@ micro_usa <- function(
       save(KS, file = 'KS.Rda')
       save(BulkDensity, file = 'BulkDensity.Rda')
     }
-    if(terrain==1){ # to do
+    #if(terrain==1){ # to do
       # cat("extracting terrain data \n")
       # # now extract terrain data from elevslpasphori.nc
       # # get UTM from dec degrees, NZTM
@@ -692,13 +692,13 @@ micro_usa <- function(
       # # in the east and goes counter clockwise!
       # HORIZONS <- (ifelse(is.na(HORIZONS),0,HORIZONS))/10 # get rid of na and get back to floating point
       # HORIZONS <- data.frame(HORIZONS)
-    }else{
+    #}else{
       HORIZONS <- hori
       HORIZONS <- data.frame(HORIZONS)
       VIEWF_all <- 1-sum(sin(as.data.frame(hori)*pi/180))/length(hori) # convert horizon angles to radians and calc view factor(s)
       SLOPES<-rep(slope,length(x[,1]))
       AZMUTHS<-rep(aspect,length(x[,1]))
-    }
+    #}
     hori<-HORIZONS
     row.names(hori)<-NULL
     hori<-as.numeric(as.matrix(hori))
