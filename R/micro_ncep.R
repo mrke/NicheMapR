@@ -750,12 +750,12 @@ micro_ncep <- function(
                 start <- c(1, 1, index2, index1) # for chosen years
                 count <- c(-1, 1, 1, 1)# for chosen years
               }else{
-                strt <- which(tme3 == tme[1])
+                strt <- which(format(tme3, '%Y-%m-%d') == tme[1])[1]
                 start <- c(strt - 4, 1, index2, index1) # for chosen years
                 count <- c(-1, 1, 1, 1)# for chosen years
               }
               if(format(tme[length(tme)], "%d/%m") != "31/12" & length(years) == 1){
-                cnt <- which(tme3 == tme[length(tme)] + 1) - 1
+                cnt <- which(format(tme3, '%Y-%m-%d') == tme[length(tme)] + 1)[1] - 1
                 count <- c(cnt + 5 - start[1], 1, 1, 1)# for chosen years
               }
               cat(paste("reading weather input for ", years[j]," \n", sep = ""))
@@ -776,7 +776,7 @@ micro_ncep <- function(
               if(format(tme[length(tme)], "%d/%m") == "31/12" | j != length(years)){
                 count <- c(-1, 1, 1, 1)# for chosen years
               }else{
-                cnt <- which(tme3 == tme[length(tme)] + 1) - 1
+                cnt <- which(format(tme3, '%Y-%m-%d') == tme[length(tme)] + 1)[1] - 1
                 count <- c(cnt + 5 - start[1], 1, 1, 1)# for chosen years
               }
               cat(paste("reading weather input for ", years[j]," \n", sep = ""))
