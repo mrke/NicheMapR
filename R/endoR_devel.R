@@ -717,8 +717,6 @@ endoR_devel <- function(
           QBASAL = QBASREF * Q10mult
           if(PANT < PANTMAX){
             PANT <- PANT + PANTING
-            #PANTSTEP <- PANTSTEP + 1
-            #PANT <- round(PANTMAX - (PANTMAX - 1) * exp(-0.02 / (PANTMAX / 10) * PANTSTEP), 1)
           }else{
             PANT <- PANTMAX
             SKINW <- SKINW + SWEAT
