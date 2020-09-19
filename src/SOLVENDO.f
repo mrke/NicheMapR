@@ -18,9 +18,9 @@ C     USING endo_devel.R
       DOUBLE PRECISION FLYHR,FSKREF,FURTHRMK,FURTST,FURVARS,FURWET,GEND
       DOUBLE PRECISION GENV,GEOMout,GEOMVARS,GEVAP,GMASS,GR,HC,HCFOR,HD
       DOUBLE PRECISION HCFREE,HDFORC,HDFREE,HTOVPR,INPUT,IPT,IRPROPout
-      DOUBLE PRECISION KEFF,KFURCMPRS,KHAIR,LEN,LHAIRD,LHAIRV,MASBAL
-      DOUBLE PRECISION MASFAT,MAXPCOND,MAXPTVEN,MORPH,MXWET,N2GAS,N2MOL1
-      DOUBLE PRECISION N2MOL2,NESTYP,NTRYD,NTRYV,O2GAS,O2MOL1
+      DOUBLE PRECISION KEFF,KFURCMPRS,KHAIR,KSUB,LEN,LHAIRD,LHAIRV
+      DOUBLE PRECISION MASBAL,MASFAT,MAXPCOND,MAXPTVEN,MORPH,MXWET,N2GAS
+      DOUBLE PRECISION N2MOL1,N2MOL2,NESTYP,NTRYD,NTRYV,O2GAS,O2MOL1
       DOUBLE PRECISION O2MOL2,O2STP,ORIENT,PANT,PANTING,PANTLAST,PANTMAX
       DOUBLE PRECISION PANTCOST,PANTMULT,PCOND,PCTBAREVAP,PCTCO2,PCTDIF
       DOUBLE PRECISION PCTEYES,PCTN2,PCTO2,PI,PR,Q10,Q10mult,QBASAL
@@ -52,7 +52,7 @@ C     USING endo_devel.R
       DIMENSION IRPROPout(26),GEOMout(25),CONVOUT(14),
      & SOLARout(7),SIMULSOLout(2,15),SIMULOUT(15),FURVARS(9),
      & GEOMVARS(16),TRAITS(9),ENVVARS(17),ZBRENTin(17),ZBRENTout(15),
-     & INPUT(87),TREG(15),MORPH(20),ENBAL(10),MASBAL(10)
+     & INPUT(88),TREG(15),MORPH(20),ENBAL(10),MASBAL(10)
 
       PI = ACOS(-1.0d0)
       
@@ -143,6 +143,7 @@ C     USING endo_devel.R
       SHAPEC=input(85)
       XR=input(86)
       PANTMULT=input(87)
+      KSUB=input(88)
       
       TSKINMAX=TC ! initialise
       Q10mult=1. ! initialise
@@ -333,11 +334,11 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         !# Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*((kfur/zfur)+(ksub/subdepth))
         IF(S==2)THEN ! doing ventral side, add conduction
          AREACND = ATOT * (PCOND *2)
-         CD = AREACND * ((KFURCMPRS/ZFURCOMP))
+         CD = AREACND * ((KFURCMPRS/ZFURCOMP)+(KSUB/0.025)) !# assume conduction happens from 2.5 cm depth
          CONVAR = CONVAR - AREACND !# Adjust area used for convection to account for PCOND. This is sent in to simulsol & used for CONV, RAD
         ELSE  !# doing dorsal side, no conduction. No need to adjust areas used for convection. 
-         AREACND = 0
-         CD = AREACND * ((KFURCMPRS/ZFURCOMP))
+         AREACND = 0.
+         CD = 0.
         ENDIF
 
         !# package up inputs

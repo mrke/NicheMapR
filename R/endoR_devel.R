@@ -41,6 +41,7 @@
 #' \code{ABSSB}{ = 0.8, solar absorptivity of substrate (fractional, 0-1)}\cr\cr
 #' \code{FLTYPE}{ = 0, FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - need's to be looked at - only invoked in main program when the dive table is set up}\cr\cr
 #' \code{TCONDSB}{ = TGRD, surface temperature for conduction (°C)}\cr\cr
+#' \code{KSUB}{ = 2.79, substrate thermal conductivity (W/mC)}\cr
 #' \code{TBUSH}{ = TA, bush temperature (°C)}\cr\cr
 #' \code{BP}{ = -1, Pa, negatve means elevation is used}\cr\cr
 #' \code{O2GAS}{ = 20.95, oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
@@ -282,6 +283,7 @@ endoR_devel <- function(
   # other environmental variables
   FLTYPE = 0, # FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - need's to be looked at - only invoked in main program when the dive table is set up
   TCONDSB = TGRD, # surface temperature for conduction (°C)
+  KSUB = 2.79, # substrate thermal conductivity (W/mC)}\cr
   TBUSH = TA, # bush temperature (°C)
   BP = -1, # Pa, negatve means elevation is used
   O2GAS = 20.95, # oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
@@ -600,11 +602,11 @@ endoR_devel <- function(
       # Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*((kfur/zfur)+(ksub/subdepth))
       if(S == 2){
         AREACND <- ATOT * (PCOND * 2)
-        CD <- AREACND * ((KFURCMPRS / ZFURCOMP))
+        CD <- AREACND * ((KFURCMPRS / ZFURCOMP) + (KSUB / 0.025)) # assume conduction happens from 2.5 cm depth
         CONVAR <- CONVAR - AREACND #NB edit - Adjust area used for convection to account for PCOND. This is sent in to simulsol & then conv (unpacked as SURFAR)
       }else{ #doing dorsal side, no conduction. No need to adjust areas used for convection.
         AREACND <- 0
-        CD <- AREACND * ((KFURCMPRS / ZFURCOMP))
+        CD <- 0
       }
 
 

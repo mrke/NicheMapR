@@ -35,6 +35,7 @@
 #' \code{ABSSB}{ = 0.8, solar absorptivity of substrate (fractional, 0-1)}\cr\cr
 #' \code{FLTYPE}{ = 0, FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - need's to be looked at - only invoked in main program when the dive table is set up}\cr\cr
 #' \code{TCONDSB}{ = TGRD, surface temperature for conduction (°C)}\cr\cr
+#' \code{KSUB}{ = 2.79, substrate thermal conductivity (W/mC)}\cr
 #' \code{TBUSH}{ = TA, bush temperature (°C)}\cr\cr
 #' \code{BP}{ = -1, Pa, negatve means elevation is used}\cr\cr
 #' \code{O2GAS}{ = 20.95, oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
@@ -275,6 +276,7 @@ endoR <- function(
   # other environmental variables
   FLTYPE = 0, # FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - need's to be looked at - only invoked in main program when the dive table is set up
   TCONDSB = TGRD, # surface temperature for conduction (°C)
+  KSUB = 2.79, # Substrate thermal conductivity (W/m°C)
   TBUSH = TA, # bush temperature (°C)
   BP = -1, # Pa, negatve means elevation is used
   O2GAS = 20.95, # oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
@@ -410,7 +412,7 @@ endoR <- function(
     SHAPE_B <- SHAPE_B_MAX
   }
   TVEG <- TA
-  SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, SHAPE_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, SKINW, TSKY, TVEG, TAREF, DELTAR, RQ, TIMACT, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AKMAX, AK1inc, TCMAX, RAISETC, TCREF, Q10, QBASREF, PANTMAX, MXWET, SWEAT, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, MAXPCOND, ZFURCOMP, PANTING, ORIENT, SHAPE_C, XR, PANTMULT)
+  SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, SHAPE_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, SKINW, TSKY, TVEG, TAREF, DELTAR, RQ, TIMACT, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AKMAX, AK1inc, TCMAX, RAISETC, TCREF, Q10, QBASREF, PANTMAX, MXWET, SWEAT, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, MAXPCOND, ZFURCOMP, PANTING, ORIENT, SHAPE_C, XR, PANTMULT, KSUB)
   if(WRITE_INPUT == 1){
    write.csv(SOLVENDO.input, file = "SOLVENDO.input.csv")
   }
