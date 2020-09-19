@@ -1,6 +1,6 @@
-#' SOLAR
+#' SOLAR_ENDO
 #'
-#' R wrapper for Fortran binary of SOLAR (endotherm model)
+#' R wrapper for Fortran binary of SOLAR_ENDO (endotherm model)
 #' @param AREATOTL A
 #' @param ABSAND A
 #' @param ABSANV A
@@ -14,24 +14,9 @@
 #' @param FATOBJ A
 #' @param FAVEG A
 #' @export
-SOLAR <- function(AREATOTL, ABSAND, ABSANV, ABSSB, ASILN, PCTDIF, QNORM, SHADE,
-  QSOLR, FASKY, FATOBJ, FAVEG){
-  os = Sys.info()['sysname']
-  if (os == "Windows") {
-    if (R.Version()$arch=="x86_64") {
-      libpath='/NicheMapR/libs/win/x64/SOLAR.dll'
-    } else {
-      libpath='/NicheMapR/libs/win/i386/SOLAR.dll'
-    }
-  } else if (os == "Linux") {
-    libpath='/NicheMapR/libs/linux/SOLAR.so'
-  } else if (os == "Darwin") {
-    libpath='/NicheMapR/libs/mac/SOLAR.so'
-  }
-  if (!is.loaded('SOLAR')) {
-    dyn.load(paste0(lib.loc = .libPaths()[1],libpath))
-  }
-  a <- .Fortran("SOLAR",
+SOLAR_ENDO <- function(AREATOTL, ABSAND, ABSANV, ABSSB, ASILN, PCTDIF, QNORM, SHADE,
+  QSOLR, FASKY, FAVEG){
+  a <- .Fortran("SOLAR_ENDO",
     as.double(AREATOTL),
     as.double(ABSAND),
     as.double(ABSANV),
@@ -42,13 +27,11 @@ SOLAR <- function(AREATOTL, ABSAND, ABSANV, ABSSB, ASILN, PCTDIF, QNORM, SHADE,
     as.double(SHADE),
     as.double(QSOLR),
     as.double(FASKY),
-    as.double(FATOBJ),
     as.double(FAVEG),
-    results=matrix(data = 0., nrow = 1, ncol = 8),
-    PACKAGE = "SOLAR")
-  #dyn.unload("SOLAR.dll")
+    results=matrix(data = 0., nrow = 1, ncol = 7),
+    PACKAGE = "NicheMapR")
 
-  results <- matrix(data = 0., nrow = 1, ncol = 8)
+  results <- matrix(data = 0., nrow = 1, ncol = 7)
 
   storage.mode(results)<-"double"
   results <- a$results

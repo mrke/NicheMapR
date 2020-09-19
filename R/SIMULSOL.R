@@ -14,21 +14,6 @@
 #' @export
 SIMULSOL <- function(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA,
                      SKINW, TSKIN, results){
-  os = Sys.info()['sysname']
-  if (os == "Windows") {
-    if (R.Version()$arch=="x86_64") {
-      libpath='/NicheMapR/libs/win/x64/SIMULSOL.dll'
-    } else {
-      libpath='/NicheMapR/libs/win/i386/SIMULSOL.dll'
-    }
-  } else if (os == "Linux") {
-    libpath='/NicheMapR/libs/linux/SIMULSOL.so'
-  } else if (os == "Darwin") {
-    libpath='/NicheMapR/libs/mac/SIMULSOL.so'
-  }
-  if (!is.loaded('SIMULSOL')) {
-    dyn.load(paste0(lib.loc = .libPaths()[1],libpath))
-  }
   a <- .Fortran("SIMULSOL",
     as.double(DIFTOL),
     as.double(IPT),
@@ -40,8 +25,7 @@ SIMULSOL <- function(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA,
     as.double(SKINW),
     as.double(TSKIN),
     results=matrix(data = 0., nrow = 1, ncol = 15),
-    PACKAGE = "SIMULSOL")
-  #dyn.unload("SIMULSOL.dll")
+    PACKAGE = "NicheMapR")
 
   results <- matrix(data = 0., nrow = 1, ncol = 15)
 

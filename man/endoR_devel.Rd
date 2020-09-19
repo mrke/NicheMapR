@@ -66,10 +66,11 @@ then to adjust the FORTRAN code of endoR_solvendo (SOLVENDO.f) accordingly.
 \code{TCONDSB}{ = TGRD, surface temperature for conduction (°C)}\cr\cr
 \code{TBUSH}{ = TA, bush temperature (°C)}\cr\cr
 \code{BP}{ = -1, Pa, negatve means elevation is used}\cr\cr
-\code{O2GAS}{ = 20.95, oxygen concentration of air (\%)}\cr\cr
-\code{N2GAS}{ = 79.02, nitrogen concetration of air (\%)}\cr\cr
-\code{CO2GAS}{ = 0.03, carbon dioxide concentration of air (\%)}\cr\cr
-\code{PCTDIF}{ = 0.15, proportion of solar radiation that is diffuse (fractional, 0-1)}\cr\cr
+\code{O2GAS}{ = 20.95, oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+\code{N2GAS}{ = 79.02, nitrogen concetration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+\code{CO2GAS}{ = 0.0412, carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+\code{R_PCO2}{ = CO2GAS / 100, reference atmospheric dioxide concentration (proportion) of air, to allow for anthropogenic change (\%)}\cr\cr
+\code{PDIF}{ = 0.15, proportion of solar radiation that is diffuse (fractional, 0-1)}\cr\cr
 
 \strong{ Behaviour:}\cr\cr
 \code{SHADE}{ = 0, shade level (\%)}\cr\cr
@@ -83,6 +84,7 @@ then to adjust the FORTRAN code of endoR_solvendo (SOLVENDO.f) accordingly.
 \code{AKMAX}{ = 2.8, maximum flesh conductivity (W/mK)}\cr\cr
 \code{PANT}{ = 1, multiplier on breathing rate to simulate panting (-)}\cr\cr
 \code{PANTING}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
+\code{PANTMULT}{ = 0.5, proportional increase of basal metabolic rate at maximum panting level (-)}\cr\cr
 
 \strong{ General morphology:}\cr\cr
 \code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr
@@ -107,10 +109,11 @@ then to adjust the FORTRAN code of endoR_solvendo (SOLVENDO.f) accordingly.
 \code{REFLD}{ = 0.2, fur reflectivity dorsal (fractional, 0-1)}\cr\cr
 \code{REFLV}{ = 0.2, fur reflectivity ventral (fractional, 0-1)}\cr\cr
 \code{ZFURCOMP}{ = ZFURV, depth of compressed fur (for conduction) (m)}\cr\cr
+\code{KHAIR}{ = 0.209, hair thermal conductivity (W/mC)}\cr\cr
+\code{XR}{ = 1, fractional depth of fur at which longwave radiation is exchanged (0-1)}\cr\cr
 
 \strong{ Radiation exchange:}\cr\cr
 \code{EMISAN}{ = 0.99, animal emissivity (-)}\cr\cr
-\code{FATOBJ}{ = 0, configuration factor to nearby object}\cr\cr
 \code{FABUSH}{ = 0, this is for veg below/around animal (at TALOC)}\cr\cr
 \code{FGDREF}{ = 0.5, reference configuration factor to ground}\cr\cr
 \code{FSKREF}{ = 0.5, configuration factor to sky}\cr\cr

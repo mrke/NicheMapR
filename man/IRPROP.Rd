@@ -5,7 +5,8 @@
 \title{IRPROP}
 \usage{
 IRPROP(TA, SHAPE_B_MAX, SHAP_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD,
-  LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, ZFURCOMP)
+  LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, ZFURCOMP,
+  KHAIR)
 }
 \arguments{
 \item{TA}{A}
@@ -39,6 +40,8 @@ IRPROP(TA, SHAPE_B_MAX, SHAP_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD,
 \item{MAXPTVEN}{A}
 
 \item{ZFURCOMP}{A}
+
+\item{KHAIR}{A}
 }
 \description{
 R wrapper for Fortran binary of IRPROP (endotherm model)

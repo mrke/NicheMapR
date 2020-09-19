@@ -43,10 +43,11 @@
 #' \code{TCONDSB}{ = TGRD, surface temperature for conduction (°C)}\cr\cr
 #' \code{TBUSH}{ = TA, bush temperature (°C)}\cr\cr
 #' \code{BP}{ = -1, Pa, negatve means elevation is used}\cr\cr
-#' \code{O2GAS}{ = 20.95, oxygen concentration of air (\%)}\cr\cr
-#' \code{N2GAS}{ = 79.02, nitrogen concetration of air (\%)}\cr\cr
-#' \code{CO2GAS}{ = 0.03, carbon dioxide concentration of air (\%)}\cr\cr
-#' \code{PCTDIF}{ = 0.15, proportion of solar radiation that is diffuse (fractional, 0-1)}\cr\cr
+#' \code{O2GAS}{ = 20.95, oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+#' \code{N2GAS}{ = 79.02, nitrogen concetration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+#' \code{CO2GAS}{ = 0.0412, carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+#' \code{R_PCO2}{ = CO2GAS / 100, reference atmospheric dioxide concentration (proportion) of air, to allow for anthropogenic change (\%)}\cr\cr
+#' \code{PDIF}{ = 0.15, proportion of solar radiation that is diffuse (fractional, 0-1)}\cr\cr
 #'
 #' \strong{ Behaviour:}\cr\cr
 #' \code{SHADE}{ = 0, shade level (\%)}\cr\cr
@@ -60,6 +61,7 @@
 #' \code{AKMAX}{ = 2.8, maximum flesh conductivity (W/mK)}\cr\cr
 #' \code{PANT}{ = 1, multiplier on breathing rate to simulate panting (-)}\cr\cr
 #' \code{PANTING}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
+#' \code{PANTMULT}{ = 0.5, proportional increase of basal metabolic rate at maximum panting level (-)}\cr\cr
 #'
 #' \strong{ General morphology:}\cr\cr
 #' \code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr
@@ -84,10 +86,11 @@
 #' \code{REFLD}{ = 0.2, fur reflectivity dorsal (fractional, 0-1)}\cr\cr
 #' \code{REFLV}{ = 0.2, fur reflectivity ventral (fractional, 0-1)}\cr\cr
 #' \code{ZFURCOMP}{ = ZFURV, depth of compressed fur (for conduction) (m)}\cr\cr
+#' \code{KHAIR}{ = 0.209, hair thermal conductivity (W/mC)}\cr\cr
+#' \code{XR}{ = 1, fractional depth of fur at which longwave radiation is exchanged (0-1)}\cr\cr
 #'
 #' \strong{ Radiation exchange:}\cr\cr
 #' \code{EMISAN}{ = 0.99, animal emissivity (-)}\cr\cr
-#' \code{FATOBJ}{ = 0, configuration factor to nearby object}\cr\cr
 #' \code{FABUSH}{ = 0, this is for veg below/around animal (at TALOC)}\cr\cr
 #' \code{FGDREF}{ = 0.5, reference configuration factor to ground}\cr\cr
 #' \code{FSKREF}{ = 0.5, configuration factor to sky}\cr\cr
@@ -281,10 +284,11 @@ endoR_devel <- function(
   TCONDSB = TGRD, # surface temperature for conduction (°C)
   TBUSH = TA, # bush temperature (°C)
   BP = -1, # Pa, negatve means elevation is used
-  O2GAS = 20.95, # oxygen concentration of air (%)
-  N2GAS = 79.02, # nitrogen concetration of air (%)
-  CO2GAS = 0.03, # carbon dioxide concentration of air (%)
-  PCTDIF = 0.15, # proportion of solar radiation that is diffuse (fractional, 0-1)
+  O2GAS = 20.95, # oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+  N2GAS = 79.02, # nitrogen concetration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+  CO2GAS = 0.0412, # carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+  R_PCO2 = CO2GAS / 100, # reference atmospheric dioxide concentration of air (proportion), to allow for anthropogenic change (\%)}\cr\cr
+  PDIF = 0.15, # proportion of solar radiation that is diffuse (fractional, 0-1)
 
   # BEHAVIOUR
 
@@ -299,6 +303,7 @@ endoR_devel <- function(
   AKMAX = 2.8, # maximum flesh conductivity (W/mK)
   PANT = 1, # multiplier on breathing rate to simulate panting (-)
   PANTING = 0.1, # increment for multiplier on breathing rate to simulate panting (-)
+  PANTMULT = 0.5, # proportional increase of basal metabolic rate at maximum panting level (-)}\cr\cr
 
   # MORPHOLOGY
 
@@ -331,10 +336,11 @@ endoR_devel <- function(
   REFLD = 0.2,  # fur reflectivity dorsal (fractional, 0-1)
   REFLV = 0.2,  # fur reflectivity ventral (fractional, 0-1)
   ZFURCOMP = ZFURV, # depth of compressed fur (for conduction) (m)
+  KHAIR = 0.209, # hair thermal conductivity (W/mC)
+  XR = 1, # fractional depth of fur at which longwave radiation is exchanged (0-1)
 
   # radiation exchange
   EMISAN = 0.99, # animal emissivity (-)
-  FATOBJ = 0, # configuration factor to nearby object
   FABUSH = 0, # this is for veg below/around animal (at TALOC)
   FGDREF = 0.5, # reference configuration factor to ground
   FSKREF = 0.5, # configuration factor to sky
@@ -390,12 +396,14 @@ endoR_devel <- function(
   if(UNCURL == 0){
     SHAPE_B_MAX <- SHAPE_B # can't change posture, so max multiplier of dimension set to current value
   }
-  Q10mult <- 1
+  TSKINMAX <- TC # initialise
+  Q10mult <- 1 # initialise
+  PANTCOST <- 0 # initialise
   #PANTSTEP <- 0
+  # check if heat stressed already (to save computation)
   QGEN <- 0
   TCREF <- TC
   QBASREF <- QBASAL
-  # check if heat stressed already
   if(TA >= TC){
     # set core temperature, flesh thermal conductivity and shape to
     # extreme heat loss values, adjusting basal metabolic
@@ -414,19 +422,19 @@ endoR_devel <- function(
     ### IRPROP, infrared radiation properties of fur
 
     # call the IR properties subroutine
-    IRPROP.out <- IRPROP(TA, SHAPE_B_MAX, SHAPE_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, ZFURCOMP)
+    IRPROP.out <- IRPROP(TA, SHAPE_B_MAX, SHAPE_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, ZFURCOMP, KHAIR)
 
     # output
-    KEFARA <- IRPROP.out[2:4] # effective thermal conductivity of fur array, mean, dorsal, ventral (W/mK)
-    BETARA <- IRPROP.out[5:7] # term involved in computing optical thickess (1/mK2)
-    B1ARA <- IRPROP.out[8:10] # optical thickness array, mean, dorsal, ventral (m)
-    DHAR <- IRPROP.out[11:13] # fur diameter array, mean, dorsal, ventral (m)
-    LHAR <- IRPROP.out[14:16] # fur length array, mean, dorsal, ventral (m)
-    RHOAR <- IRPROP.out[17:19] # fur density array, mean, dorsal, ventral (1/m2)
-    ZZFUR <- IRPROP.out[20:22] # fur depth array, mean, dorsal, ventral (m)
-    REFLFR <- IRPROP.out[23:25] # fur reflectivity array, mean, dorsal, ventral (fractional, 0-1)
-    FURTST <- IRPROP.out[26] # test of presence of fur (length x diamater x density x depth) (-)
-    KFURCMPRS <- IRPROP.out[27] # effictive thermal conductivity of compressed ventral fur (W/mK)
+    KEFARA <- IRPROP.out[1:3] # effective thermal conductivity of fur array, mean, dorsal, ventral (W/mK)
+    BETARA <- IRPROP.out[4:6] # term involved in computing optical thickess (1/mK2)
+    B1ARA <- IRPROP.out[7:9] # optical thickness array, mean, dorsal, ventral (m)
+    DHAR <- IRPROP.out[10:12] # fur diameter array, mean, dorsal, ventral (m)
+    LHAR <- IRPROP.out[13:15] # fur length array, mean, dorsal, ventral (m)
+    RHOAR <- IRPROP.out[16:18] # fur density array, mean, dorsal, ventral (1/m2)
+    ZZFUR <- IRPROP.out[19:21] # fur depth array, mean, dorsal, ventral (m)
+    REFLFR <- IRPROP.out[22:24] # fur reflectivity array, mean, dorsal, ventral (fractional, 0-1)
+    FURTST <- IRPROP.out[25] # test of presence of fur (length x diamater x density x depth) (-)
+    KFURCMPRS <- IRPROP.out[26] # effictive thermal conductivity of compressed ventral fur (W/mK)
 
     ### GEOM, geometry
 
@@ -436,7 +444,7 @@ endoR_devel <- function(
     ZFUR <- ZZFUR[1] # fur depth, mean (m) (from IRPROP)
 
     # call the subroutine
-    GEOM.out <- GEOM(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_B_REF, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT)
+    GEOM.out <- GEOM_ENDO(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_B_REF, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT)
 
     # output
     VOL <- GEOM.out[1] # volume, m3
@@ -462,22 +470,6 @@ endoR_devel <- function(
     R1 <- GEOM.out[21] # shape-specific core-skin radius in shortest dimension, m
     R2 <- GEOM.out[22] # shape-specific core-fur radius in shortest dimension, m
 
-    ### F_FACTOR, radiation configuration factors
-    # at this stage make sure NESTYP = 0 to get correct configuration factors
-    NESTYP <- 0
-    F_FACTOR.out <- F_FACTOR(SHADE, NITESHAD, QSOLR, FATOBJ, NESTYP, RoNEST, R1, FGDREF, FSKREF, AREASKIN, EMISAN)
-
-    FAVEG <- F_FACTOR.out[1] # configuration factor to vegetation
-    FASKY <- F_FACTOR.out[2] # configuration factor to sky
-    FAGRD <- F_FACTOR.out[3] # configuration factor to ground
-    FANEST <- F_FACTOR.out[4] # configuration factor to nest wall
-    # constants for infra-red exchange calculatiosn AREASKIN*CONFIG*EMISAN*SIG
-    C3 <- F_FACTOR.out[5] # sky
-    C4 <- F_FACTOR.out[6] # ground
-    C5 <- F_FACTOR.out[7] # object
-    C6 <- F_FACTOR.out[8] # vegetation (shade)
-    C7 <- F_FACTOR.out[9] # nest
-
     ### SOLAR, solar radiation
 
     # solar radiation normal to sun's rays
@@ -489,20 +481,24 @@ endoR_devel <- function(
       QNORM = QSOLR
     }
 
-    ABSAND <- 1 - REFLD # solar absorptivity of dorsal fur (fractional, 0-1)
-    ABSANV <- 1 - REFLV # solar absorptivity of ventral fur (fractional, 0-1)
+    ABSAND <- 1 - REFLFR[2] # solar absorptivity of dorsal fur (fractional, 0-1)
+    ABSANV <- 1 - REFLFR[3] # solar absorptivity of ventral fur (fractional, 0-1)
 
-    SOLAR.out <- SOLAR(ATOT, ABSAND, ABSANV, ABSSB, ASIL, PCTDIF, QNORM, SHADE,
-      QSOLR, FASKY, FATOBJ, FAVEG)
+    # correct FASKY for % vegetation shade overhead
+    FAVEG <- FSKREF * (SHADE / 100)
+    FASKY <- FSKREF - FAVEG
+    FAGRD <- FGDREF
 
-    QSOLAR <- SOLAR.out[1] # total (global) solar radiation (W) QSOLAR,QSDIR,QSOBJ,QSSKY,QSRSB,QSDIFF,QDORSL,QVENTR
+    SOLAR.out <- SOLAR_ENDO(ATOT, ABSAND, ABSANV, ABSSB, ASIL, PDIF, QNORM, SHADE,
+                            QSOLR, FASKY, FAVEG)
+
+    QSOLAR <- SOLAR.out[1] # total (global) solar radiation (W) QSOLAR,QSDIR,QSSKY,QSRSB,QSDIFF,QDORSL,QVENTR
     QSDIR <- SOLAR.out[2] # direct solar radiaton (W)
-    QSOBJ <- SOLAR.out[3] # lateral diffuse solar radiation (W)
-    QSSKY <- SOLAR.out[4] # diffuse solar radiation from sky (W)
-    QSRSB <- SOLAR.out[5] # diffuse solar radiation reflected from substrate (W)
-    QSDIFF <- SOLAR.out[6] # total diffuse solar radiation (W)
-    QDORSL <- SOLAR.out[7] # total dorsal solar radiation (W)
-    QVENTR <- SOLAR.out[8] # total ventral solar radiaton (W)
+    QSSKY <- SOLAR.out[3] # diffuse solar radiation from sky (W)
+    QSRSB <- SOLAR.out[4] # diffuse solar radiation reflected from substrate (W)
+    QSDIFF <- SOLAR.out[5] # total diffuse solar radiation (W)
+    QDORSL <- SOLAR.out[6] # total dorsal solar radiation (W)
+    QVENTR <- SOLAR.out[7] # total ventral solar radiaton (W)
 
     ### CONV, convection
 
@@ -511,7 +507,7 @@ endoR_devel <- function(
     TENV <- TA # fluid temperature (°C)
 
     # run subroutine
-    CONV.out <- CONV(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV)
+    CONV.out <- CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV)
 
     QCONV <- CONV.out[1] # convective heat loss (W)
     HC <- CONV.out[2] # combined convection coefficient
@@ -528,63 +524,46 @@ endoR_devel <- function(
     SC <- CONV.out[13] # Schmidt number (-)
     BP <- CONV.out[14] # barometric pressure (Pa)
 
-    ### SIMULSOL, simultaneous solution of heat balance
-    SIMULSOL.out <- matrix(data = 0, nrow = 2, ncol = 15) # vector to hold the SIMULSOL results for dorsal and ventral side
-
     # reference configuration factors
     FABUSHREF <- FABUSH # nearby bush
-    FATOBJREF <- FATOBJ # nearby object
     FASKYREF <- FASKY # sky
     FAGRDREF <- FAGRD # ground
     FAVEGREF <- FAVEG # vegetation
+
+    ### SIMULSOL, simultaneous solution of heat balance
     # repeat for each side, dorsal and ventral, of the animal
+    SIMULSOL.out <- matrix(data = 0, nrow = 2, ncol = 15) # vector to hold the SIMULSOL results for dorsal and ventral side
 
     for(S in 1:2){
 
       # set infrared environment
       TVEG <- TAREF # assume vegetation casting shade is at 1.2 m (reference) air temperature (°C)
-      # SKYIR <- C3 * (TSKY + 273.15) ^ 4 # sky infrared incoming (W)
-      # VEGIR <- C6 * (TVEG + 273.15) ^ 4 # vegetation infrared incomming (W)
-      # SKYRAD <- SKYIR + VEGIR
-      # #TLOCUP <- (((SKYIN) / (C3 + C6)) ^ 0.25) - 273.15
-      # SKYIN <- SKYRAD
-      # GRDIN <- C4 * (TGRD + 273.15) ^ 4 # note, MK put C4 here wherease before it was just SIG
       TLOWER <- TGRD
-
-      # Calculating solar intensity entering fur. This will depend on whether we are calculating the fur temperature for the dorsal side or the ventral side. The dorsal side will have solar inputs from the direct beam hitting the silhouette area as well as diffuse solar scattered from the sky and objects. The ventral side will have diffuse solar scattered off the substrate.
-
+      # Calculating solar intensity entering fur. This will depend on whether we are calculating the fur temperature for the dorsal side or the ventral side. The dorsal side will have solar inputs from the direct beam hitting the silhouette area as well as diffuse solar scattered from the sky. The ventral side will have diffuse solar scattered off the substrate.
       # Resetting config factors and solar depending on whether the dorsal side (S=1) or ventral side (S=2) is being estimated.
       if(QSOLAR > 0.0){
         if(S == 1){
-          FASKY <- FASKYREF /(FASKYREF + FATOBJREF + FAVEGREF)
-          FATOBJ <- FATOBJREF /(FASKYREF + FATOBJREF + FAVEGREF)
-          FAVEG <- FAVEGREF / (FASKYREF + FATOBJREF + FAVEGREF)
+          FASKY <- FASKYREF /(FASKYREF + FAVEGREF) # proportion of upward view that is sky
+          FAVEG <- FAVEGREF / (FASKYREF + FAVEGREF) # proportion of upward view that is vegetation (shade)
           FAGRD <- 0.0
           FABUSH <- 0.0
-          if(FATOBJ == 0.0){
-            QSLR <- 2 * QSDIR + ((QSSKY / FASKYREF) * FASKY)
-          }else{
-            QSLR <- 2 * QSDIR + ((QSSKY / FASKYREF) * FASKY) + ((QSOBJ / FATOBJREF) * FATOBJ)
-          }
+          QSLR <- 2 * QSDIR + ((QSSKY / FASKYREF) * FASKY) # direct x 2 because assuming sun in both directions, and unadjusting QSSKY for config factor imposed in SOLAR_ENDO and back to new larger one in both directions
         }else{  # doing ventral side. NB edit - adjust QSLR for PCOND here.
           FASKY <- 0.0
-          FATOBJ <- 0.0
           FAVEG <- 0.0
           FAGRD <- FAGRDREF / (FAGRDREF + FABUSHREF)
           FABUSH <- FABUSHREF / (FAGRDREF + FABUSHREF)
-          QSLR <- (QVENTR / (1 - FASKYREF - FATOBJREF - FAVEGREF)) * (1 - (2 * PCOND))
+          QSLR <- (QVENTR / (1 - FASKYREF - FAVEGREF)) * (1 - (2 * PCOND)) # unadjust by config factor imposed in SOLAR_ENDO to have it coming in both directions, but also cutting down according to fractional area conducting to ground (in both directions)
         }
       }else{
         QSLR <- 0.0
         if(S==1){
-          FASKY <- FASKYREF / (FASKYREF + FATOBJREF + FAVEGREF)
-          FATOBJ <- FATOBJREF / (FASKYREF + FATOBJREF + FAVEGREF)
-          FAVEG <- FAVEGREF / (FASKYREF + FATOBJREF + FAVEGREF)
+          FASKY <- FASKYREF / (FASKYREF + FAVEGREF)
+          FAVEG <- FAVEGREF / (FASKYREF + FAVEGREF)
           FAGRD <- 0.0
           FABUSH <- 0.0
         }else{
           FASKY <- 0.0
-          FATOBJ <- 0.0
           FAVEG <- 0.0
           FAGRD <- FAGRDREF / (FAGRDREF + FABUSHREF)
           FABUSH <- FABUSHREF / (FAGRDREF + FABUSHREF)
@@ -606,9 +585,6 @@ endoR_devel <- function(
         KEFF <- KEFARA[1]
       }
 
-      RDXDEP <- 1 # not used yet - relates to radiation through fur
-      XR <- RDXDEP # not used yet - relates to radiation through fur
-      X <- RDXDEP # not used yet - relates to radiation through fur
       RSKIN <- R1 # body radius (including fat), m
       RFLESH <- R1 - FATTHK # body radius flesh only (no fat), m
       RFUR <- R1 + ZL # body radius including fur, m
@@ -625,8 +601,8 @@ endoR_devel <- function(
       if(S == 2){
         AREACND <- ATOT * (PCOND * 2)
         CD <- AREACND * ((KFURCMPRS / ZFURCOMP))
-        CONVAR<-CONVAR - AREACND #NB edit - Adjust area used for convection to account for PCOND. This is sent in to simulsol & then conv (unpacked as SURFAR)
-      } else{ #doing dorsal side, no conduction. No need to adjust areas used for convection.
+        CONVAR <- CONVAR - AREACND #NB edit - Adjust area used for convection to account for PCOND. This is sent in to simulsol & then conv (unpacked as SURFAR)
+      }else{ #doing dorsal side, no conduction. No need to adjust areas used for convection.
         AREACND <- 0
         CD <- AREACND * ((KFURCMPRS / ZFURCOMP))
       }
@@ -653,18 +629,18 @@ endoR_devel <- function(
       SIMULSOL.out[S,] <- SIMULSOL(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA, SKINW, TS)
     }
     TSKINMAX <- max(SIMULSOL.out[1,2], SIMULSOL.out[2,2])
+
     ### ZBRENT and RESPFUN
 
-    # Now compute a weighted mean heat generation for all the parts/components = (dorsal value *(FASKY+FAVEG+FATOBJ))+(ventral value*FAGRD)
+    # Now compute a weighted mean heat generation for all the parts/components = (dorsal value *(FASKY+FAVEG))+(ventral value*FAGRD)
     GEND <- SIMULSOL.out[1, 5]
     GENV <- SIMULSOL.out[2, 5]
-    DMULT <- FASKYREF + FAVEGREF + FATOBJ
+    DMULT <- FASKYREF + FAVEGREF
     VMULT <- 1 - DMULT # Assume that reflectivity of veg below = ref of soil so VMULT left as 1 - DMULT
     X <- GEND * DMULT + GENV * VMULT # weighted estimate of metabolic heat generation
 
     # reset configuration factors
     FABUSH <- FABUSHREF # nearby bush
-    FATOBJ <- FATOBJREF # nearby object
     FASKY <- FASKYREF # sky
     FAGRD <- FAGRDREF # ground
     FAVEG <- FAVEGREF # vegetation
@@ -677,61 +653,61 @@ endoR_devel <- function(
     # to remain at or above QBASAL, via 'shooting method' ZBRENT
     QMIN <- QBASAL
     if(TA < TC & TSKINMAX < TC){
-     QM1 <- QBASAL * 2 * -1
-     QM2 <- QBASAL * 50
+      QM1 <- QBASAL * 2 * -1
+      QM2 <- QBASAL * 50
     }else{
-     QM1 <- QBASAL * 50* -1
-     QM2 <- QBASAL * 2
+      QM1 <- QBASAL * 50* -1
+      QM2 <- QBASAL * 2
     }
     QSUM <- X
     TOL <- AMASS * 0.01
 
     ZBRENT.in <- c(TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG, GMASS, EXTREF, RH,
-      RELXIT, TIMACT, TAEXIT, QSUM, PANT)
+                   RELXIT, TIMACT, TAEXIT, QSUM, PANT, R_PCO2)
     # call ZBRENT subroutine which calls RESPFUN
-    ZBRENT.out <- ZBRENT(QM1, QM2, TOL, ZBRENT.in)
+    ZBRENT.out <- ZBRENT_ENDO(QM1, QM2, TOL, ZBRENT.in)
     colnames(ZBRENT.out) <- c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")
 
-    QGEN <- ZBRENT.out[7]
+    QGEN <- ZBRENT.out[7] # Q_GEN,NET
     SHAPE_B_LAST <- SHAPE_B
     AK1LAST <- AK1
     TCLAST <- TC
     PANTLAST <- PANT
     SKINWLAST <- SKINW
     if(THERMOREG != 0){
-    if(SHAPE_B < SHAPE_B_MAX){
-      SHAPE_B <- SHAPE_B + UNCURL
-    }else{
-      SHAPE_B <- SHAPE_B_MAX
-      if(AK1 < AKMAX){
-        AK1 <- AK1 + AK1inc
+      if(SHAPE_B < SHAPE_B_MAX){
+        SHAPE_B <- SHAPE_B + UNCURL
       }else{
-        AK1 <- AKMAX
-        if(TC < TCMAX){
-          TC <- TC + RAISETC
-          Q10mult <- Q10^((TC - TCREF)/10)
-          QBASAL = QBASREF * Q10mult
+        SHAPE_B <- SHAPE_B_MAX
+        if(AK1 < AKMAX){
+          AK1 <- AK1 + AK1inc
         }else{
-          TC <- TCMAX
-          Q10mult <- Q10^((TC - TCREF)/10)
-          QBASAL = QBASREF * Q10mult
-          if(PANT < PANTMAX){
-            PANT <- PANT + PANTING
+          AK1 <- AKMAX
+          if(TC < TCMAX){
+            TC <- TC + RAISETC
+            Q10mult <- Q10^((TC - TCREF)/10)
+            QBASAL = QBASREF * Q10mult
           }else{
-            PANT <- PANTMAX
-            SKINW <- SKINW + SWEAT
-            if(SKINW > MXWET | SWEAT == 0){
-              SKINW <- MXWET
-              if(max(treg) == 0){
-                warning("A solution could not be found and panting/'sweating' options are exhausted; try allowing greater evaporation or allowing higher body maximum body temperature")
-              }
+            TC <- TCMAX
+            Q10mult <- Q10^((TC - TCREF)/10)
+            if(PANT < PANTMAX){
+              PANT <- PANT + PANTING
+              PANTCOST <- ((PANT - 1) / (PANTMAX-1) * PANTMULT * QBASREF)
+              QBASAL <- QBASREF * Q10mult + PANTCOST
+            }else{
+              PANT <- PANTMAX
+              PANTCOST <- ((PANT - 1) / (PANTMAX-1) * PANTMULT * QBASREF)
+              QBASAL <- QBASREF * Q10mult + PANTCOST
+              SKINW <- SKINW + SWEAT
+              if(SKINW > MXWET | SWEAT == 0){
+                SKINW <- MXWET
                 break
+              }
             }
           }
         }
       }
     }
-  }
   }
   # SIMULSOL output, dorsal
   TFA.D <- SIMULSOL.out[1, 1] # temperature of feathers/fur-air interface, deg C
@@ -800,17 +776,29 @@ endoR_devel <- function(
   QCONV <- QCONV.D * DMULT + QCONV.V * VMULT # convection, W
   QCOND <- QCOND.D * DMULT + QCOND.V * VMULT # conduction, W
 
-  treg <- c(TC, TLUNG, TSKCALCAV.D, TSKCALCAV.V, TFA.D, TFA.V, SHAPE_B, PANT, SKINW, AK1, KEFARA[1], KEFARA[2], KEFARA[3], KFURCMPRS, Q10mult)
-  names(treg) <- c("TC", "TLUNG", "TSKIN_D", "TSKIN_V", "TFA_D", "TFA_V", "SHAPE_B", "PANT", "SKINWET", "K_FLESH", "K_FUR", "K_FUR_D", "K_FUR_V", "K_COMPFUR", "Q10")
+  treg1 <- c(TC, TLUNG, TSKCALCAV.D, TSKCALCAV.V, TFA.D, TFA.V, SHAPE_B, PANT, SKINW, AK1, KEFARA[1], KEFARA[2], KEFARA[3], KFURCMPRS, Q10mult)
+  morph1 <- c(ATOT, VOL, D, MASFAT, FATTHK, FLSHVL, ALENTH, AWIDTH, AHEIT, R1, R2, ASIL, ASILN, ASILP, AREASKIN, CONVSK, CONVAR, AREACND / 2, FASKY, FAGRD)
+  enbal1 <- c(QSOL, QIRIN, QMET, QEVAP, QIROUT, QCONV, QCOND, RESPFN, max(NTRY.D, NTRY.V), min(SUCCESS.D, SUCCESS.V))
+  masbal1 <- c(AIRVOL, O2STP, GEVAP, SWEAT.G.S, O2MOL1, O2MOL2, N2MOL1, N2MOL2, AIRML1, AIRML2) * 3600
 
-  morph <- c(ATOT, VOL, D, MASFAT, FATTHK, FLSHVL, ALENTH, AWIDTH, AHEIT, R1, R2, ASIL, ASILN, ASILP, AREASKIN, CONVSK, CONVAR, AREACND / 2, FASKY, FAGRD)
-  names(morph) <- c("AREA", "VOLUME", "CHAR_DIM", "MASS_FAT", "FAT_THICK", "FLESH_VOL", "LENGTH", "WIDTH", "HEIGHT", "DIAM_FLESH", "DIAM_FUR", "AREA_SIL", "AREA_SILN", "AREA_ASILP", "AREA_SKIN", "AREA_SKIN_EVAP", "AREA_CONV", "AREA_COND", "F_SKY", "F_GROUND")
+  treg <- matrix(data = treg1, nrow = 1, ncol = 15)
+  morph <- matrix(data = morph1, nrow = 1, ncol = 20)
+  masbal <- matrix(data = masbal1, nrow = 1, ncol = 10)
+  enbal <- matrix(data = enbal1, nrow = 1, ncol = 10)
 
-  enbal <- c(QSOL, QIRIN, QMET, QEVAP, QIROUT, QCONV, QCOND, RESPFN, max(NTRY.D, NTRY.V), min(SUCCESS.D, SUCCESS.V))
-  names(enbal) <- c("QSOL", "QIRIN", "QMET", "QEVAP", "QIROUT", "QCONV", "QCOND", "ENB", "NTRY", "SUCCESS")
+  treg.names<-c("TC", "TLUNG", "TSKIN_D", "TSKIN_V", "TFA_D", "TFA_V", "SHAPE_B", "PANT", "SKINWET", "K_FLESH", "K_FUR", "K_FUR_D", "K_FUR_V", "K_COMPFUR", "Q10")
+  morph.names<-c("AREA", "VOLUME", "CHAR_DIM", "MASS_FAT", "FAT_THICK", "FLESH_VOL", "LENGTH", "WIDTH", "HEIGHT", "DIAM_FLESH", "DIAM_FUR", "AREA_SIL", "AREA_SILN", "AREA_ASILP", "AREA_SKIN", "AREA_SKIN_EVAP", "AREA_CONV", "AREA_COND", "F_SKY", "F_GROUND")
+  enbal.names<-c("QSOL", "QIRIN", "QMET", "QEVAP", "QIROUT", "QCONV", "QCOND", "ENB", "NTRY", "SUCCESS")
+  masbal.names<-c("AIR_L", "O2_L", "H2OResp_g", "H2OCut_g", "O2_mol_in", "O2_mol_out", "N2_mol_in", "N2_mol_out", "AIR_mol_in", "AIR_mol_out")
 
-  masbal <- c(AIRVOL, O2STP, GEVAP, SWEAT.G.S, O2MOL1, O2MOL2, N2MOL1, N2MOL2, AIRML1, AIRML2) * 3600
-  names(masbal) <- c("AIR_L", "O2_L", "H2OResp_g", "H2OCut_g", "O2_mol_in", "O2_mol_out", "N2_mol_in", "N2_mol_out", "AIR_mol_in", "AIR_mol_out")
+  colnames(treg)<-treg.names
+  colnames(morph)<-morph.names
+  colnames(enbal)<-enbal.names
+  colnames(masbal)<-masbal.names
 
-  return(list(treg = treg, morph = morph, enbal = enbal, masbal = masbal))
+  if(max(treg) == 0){
+    warning("A solution could not be found and panting/'sweating' options are exhausted; try allowing greater evaporation or allowing higher body maximum body temperature")
+  }
+  endo.out <- list(treg = treg, morph = morph, enbal = enbal, masbal = masbal)
+  return(endo.out)
 }

@@ -60,10 +60,11 @@ core temprature, fourth pant and fifth sweat.
 \code{TCONDSB}{ = TGRD, surface temperature for conduction (°C)}\cr\cr
 \code{TBUSH}{ = TA, bush temperature (°C)}\cr\cr
 \code{BP}{ = -1, Pa, negatve means elevation is used}\cr\cr
-\code{O2GAS}{ = 20.95, oxygen concentration of air (\%)}\cr\cr
-\code{N2GAS}{ = 79.02, nitrogen concetration of air (\%)}\cr\cr
-\code{CO2GAS}{ = 0.03, carbon dioxide concentration of air (\%)}\cr\cr
-\code{PCTDIF}{ = 0.15, proportion of solar radiation that is diffuse (fractional, 0-1)}\cr\cr
+\code{O2GAS}{ = 20.95, oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+\code{N2GAS}{ = 79.02, nitrogen concetration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+\code{CO2GAS}{ = 0.0412, carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+\code{R_PCO2}{ = CO2GAS / 100, reference atmospheric dioxide concentration (proportion) of air, to allow for anthropogenic change (\%)}\cr\cr
+\code{PDIF}{ = 0.15, proportion of solar radiation that is diffuse (fractional, 0-1)}\cr\cr
 
 \strong{ Behaviour:}\cr\cr
 \code{NITESHAD}{ = 0, flag for if animal is behaviourally seeking shade for warmth at night - remove?}\cr\cr
@@ -76,6 +77,7 @@ core temprature, fourth pant and fifth sweat.
 \code{AKMAX}{ = 2.8, maximum flesh conductivity (W/mK)}\cr\cr
 \code{PANT}{ = 1, multiplier on breathing rate to simulate panting (-)}\cr\cr
 \code{PANTING}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
+\code{PANTMULT}{ = 0.5, proportional increase of basal metabolic rate at maximum panting level (-)}\cr\cr
 
 \strong{ General morphology:}\cr\cr
 \code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr
@@ -100,10 +102,11 @@ core temprature, fourth pant and fifth sweat.
 \code{REFLD}{ = 0.2, fur reflectivity dorsal (fractional, 0-1)}\cr\cr
 \code{REFLV}{ = 0.2, fur reflectivity ventral (fractional, 0-1)}\cr\cr
 \code{ZFURCOMP}{ = ZFURV, depth of compressed fur (for conduction) (m)}\cr\cr
+\code{KHAIR}{ = 0.209, hair thermal conductivity (W/mC)}\cr\cr
+\code{XR}{ = 1, fractional depth of fur at which longwave radiation is exchanged (0-1)}\cr\cr
 
 \strong{ Radiation exchange:}\cr\cr
 \code{EMISAN}{ = 0.99, animal emissivity (-)}\cr\cr
-\code{FATOBJ}{ = 0, configuration factor to nearby object}\cr\cr
 \code{FABUSH}{ = 0, this is for veg below/around animal (at TALOC)}\cr\cr
 \code{FGDREF}{ = 0.5, reference configuration factor to ground}\cr\cr
 \code{FSKREF}{ = 0.5, configuration factor to sky}\cr\cr
@@ -205,15 +208,15 @@ masbal variables (mass exchanges):
 \examples{
 library(NicheMapR)
 # environment
-TAs <- seq(0, 50, 2) # air temperatures (Ã‚Â°C)
+TAs <- seq(0, 50, 2) # air temperatures (Â°C)
 VEL <- 0.002 # wind speed (m/s)
 RH <- 10 # relative humidity (\%)
 QSOLR <- 100 # solar radiation (W/m2)
 
 # core temperature
 TC <- 38 # core temperature (deg C)
-TCMAX <- 43 # maximum core temperature (Ã‚Â°C)
-RAISETC <- 0.25 # increment by which TC is elevated (Ã‚Â°C)
+TCMAX <- 43 # maximum core temperature (Â°C)
+RAISETC <- 0.25 # increment by which TC is elevated (Â°C)
 
 # size and shape
 AMASS <- 0.0337 # mass (kg)
@@ -237,7 +240,7 @@ SKINW <- 0.1 # base skin wetness (\%)
 MXWET <- 20 # maximum skin wetness (\%)
 SWEAT <- 0.25 # intervals by which skin wetness is increased (\%)
 Q10 <- 2 # Q10 effect of body temperature on metabolic rate
-QBASAL <- (70 \\* AMASS ^ 0.75) \\* (4.185 / (24 \\* 3.6)) # basal heat generation (W) (bird formula from McKechnie and Wolf 2004 Phys. & Biochem. Zool. 77:502-521)
+QBASAL <- 10 ^ (-1.461 + 0.669 * log10(AMASS * 1000)) # basal heat generation (W) (bird formula from McKechnie and Wolf 2004 Phys. & Biochem. Zool. 77:502-521)
 DELTAR <- 5 # offset between air temeprature and breath (Â°C)
 EXTREF <- 15 # O2 extraction efficiency (\%)
 PANTING <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANTMAX

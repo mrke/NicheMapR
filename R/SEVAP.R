@@ -1,6 +1,6 @@
-#' SEVAP
+#' SEVAP_ENDO
 #'
-#' R wrapper for Fortran binary of SEVAP (endotherm model)
+#' R wrapper for Fortran binary of SEVAP_ENDO (endotherm model)
 #' @param BP A
 #' @param TA A
 #' @param RELHUM A
@@ -20,24 +20,9 @@
 #' @param TFA A
 #' @param CONVAR A
 #' @export
-SEVAP <- function(BP, TA, RELHUM, VEL, TC, TSURF, ALT, SKINW, FLYHR,
+SEVAP_ENDO <- function(BP, TA, RELHUM, VEL, TC, TSURF, ALT, SKINW, FLYHR,
   CONVSK, HD, HDFREE, PCTBAREVAP, PCTEYES, ZFUR, FURWET, TFA, CONVAR){
-  os = Sys.info()['sysname']
-  if (os == "Windows") {
-    if (R.Version()$arch=="x86_64") {
-      libpath='/NicheMapR/libs/win/x64/SEVAP.dll'
-    } else {
-      libpath='/NicheMapR/libs/win/i386/SEVAP.dll'
-    }
-  } else if (os == "Linux") {
-    libpath='/NicheMapR/libs/linux/SEVAP.so'
-  } else if (os == "Darwin") {
-    libpath='/NicheMapR/libs/mac/SEVAP.so'
-  }
-  if (!is.loaded('SEVAP')) {
-    dyn.load(paste0(lib.loc = .libPaths()[1],libpath))
-  }
-  a <- .Fortran("SEVAP",
+  a <- .Fortran("SEVAP_ENDO",
     as.double(BP),
     as.double(TA),
     as.double(RELHUM),
@@ -57,8 +42,7 @@ SEVAP <- function(BP, TA, RELHUM, VEL, TC, TSURF, ALT, SKINW, FLYHR,
     as.double(TFA),
     as.double(CONVAR),
     results=matrix(data = 0., nrow = 1, ncol = 7),
-    PACKAGE = "SEVAP")
-  #dyn.unload("SEVAP.dll")
+    PACKAGE = "NicheMapR")
 
   results <- matrix(data = 0., nrow = 1, ncol = 7)
 

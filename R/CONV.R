@@ -1,6 +1,6 @@
-#' CONV
+#' CONV_ENDO
 #'
-#' R wrapper for Fortran binary of CONV (endotherm model)
+#' R wrapper for Fortran binary of CONV_ENDO (endotherm model)
 #' @param TS A
 #' @param TENV A
 #' @param NGEOM A
@@ -14,23 +14,8 @@
 #' @param BP A
 #' @param ELEV A
 #' @export
-CONV <- function(TS, TENV, NGEOM, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV){
-  os = Sys.info()['sysname']
-  if (os == "Windows") {
-    if (R.Version()$arch=="x86_64") {
-      libpath='/NicheMapR/libs/win/x64/CONV.dll'
-    } else {
-      libpath='/NicheMapR/libs/win/i386/CONV.dll'
-    }
-  } else if (os == "Linux") {
-    libpath='/NicheMapR/libs/linux/CONV.so'
-  } else if (os == "Darwin") {
-    libpath='/NicheMapR/libs/mac/CONV.so'
-  }
-  if (!is.loaded('CONV')) {
-    dyn.load(paste0(lib.loc = .libPaths()[1],libpath))
-  }
-  a <- .Fortran("CONV",
+CONV_ENDO <- function(TS, TENV, NGEOM, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV){
+  a <- .Fortran("CONV_ENDO",
     as.double(TS),
     as.double(TENV),
     as.double(NGEOM),
@@ -44,8 +29,7 @@ CONV <- function(TS, TENV, NGEOM, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP,
     as.double(BP),
     as.double(ELEV),
     results=matrix(data = 0, nrow = 1, ncol = 14),
-    PACKAGE = "CONV")
-  #dyn.unload("CONV.dll")
+    PACKAGE = "NicheMapR")
 
   results <- matrix(data = 0, nrow = 1, ncol = 14)
 

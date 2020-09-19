@@ -37,10 +37,11 @@
 #' \code{TCONDSB}{ = TGRD, surface temperature for conduction (°C)}\cr\cr
 #' \code{TBUSH}{ = TA, bush temperature (°C)}\cr\cr
 #' \code{BP}{ = -1, Pa, negatve means elevation is used}\cr\cr
-#' \code{O2GAS}{ = 20.95, oxygen concentration of air (\%)}\cr\cr
-#' \code{N2GAS}{ = 79.02, nitrogen concetration of air (\%)}\cr\cr
-#' \code{CO2GAS}{ = 0.03, carbon dioxide concentration of air (\%)}\cr\cr
-#' \code{PCTDIF}{ = 0.15, proportion of solar radiation that is diffuse (fractional, 0-1)}\cr\cr
+#' \code{O2GAS}{ = 20.95, oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+#' \code{N2GAS}{ = 79.02, nitrogen concetration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+#' \code{CO2GAS}{ = 0.0412, carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+#' \code{R_PCO2}{ = CO2GAS / 100, reference atmospheric dioxide concentration (proportion) of air, to allow for anthropogenic change (\%)}\cr\cr
+#' \code{PDIF}{ = 0.15, proportion of solar radiation that is diffuse (fractional, 0-1)}\cr\cr
 #'
 #' \strong{ Behaviour:}\cr\cr
 #' \code{NITESHAD}{ = 0, flag for if animal is behaviourally seeking shade for warmth at night - remove?}\cr\cr
@@ -53,6 +54,7 @@
 #' \code{AKMAX}{ = 2.8, maximum flesh conductivity (W/mK)}\cr\cr
 #' \code{PANT}{ = 1, multiplier on breathing rate to simulate panting (-)}\cr\cr
 #' \code{PANTING}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
+#' \code{PANTMULT}{ = 0.5, proportional increase of basal metabolic rate at maximum panting level (-)}\cr\cr
 #'
 #' \strong{ General morphology:}\cr\cr
 #' \code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr
@@ -77,10 +79,11 @@
 #' \code{REFLD}{ = 0.2, fur reflectivity dorsal (fractional, 0-1)}\cr\cr
 #' \code{REFLV}{ = 0.2, fur reflectivity ventral (fractional, 0-1)}\cr\cr
 #' \code{ZFURCOMP}{ = ZFURV, depth of compressed fur (for conduction) (m)}\cr\cr
+#' \code{KHAIR}{ = 0.209, hair thermal conductivity (W/mC)}\cr\cr
+#' \code{XR}{ = 1, fractional depth of fur at which longwave radiation is exchanged (0-1)}\cr\cr
 #'
 #' \strong{ Radiation exchange:}\cr\cr
 #' \code{EMISAN}{ = 0.99, animal emissivity (-)}\cr\cr
-#' \code{FATOBJ}{ = 0, configuration factor to nearby object}\cr\cr
 #' \code{FABUSH}{ = 0, this is for veg below/around animal (at TALOC)}\cr\cr
 #' \code{FGDREF}{ = 0.5, reference configuration factor to ground}\cr\cr
 #' \code{FSKREF}{ = 0.5, configuration factor to sky}\cr\cr
@@ -181,15 +184,15 @@
 #' @examples
 #' library(NicheMapR)
 #' # environment
-#' TAs <- seq(0, 50, 2) # air temperatures (Â°C)
+#' TAs <- seq(0, 50, 2) # air temperatures (°C)
 #' VEL <- 0.002 # wind speed (m/s)
 #' RH <- 10 # relative humidity (%)
 #' QSOLR <- 100 # solar radiation (W/m2)
 #'
 #' # core temperature
 #' TC <- 38 # core temperature (deg C)
-#' TCMAX <- 43 # maximum core temperature (Â°C)
-#' RAISETC <- 0.25 # increment by which TC is elevated (Â°C)
+#' TCMAX <- 43 # maximum core temperature (°C)
+#' RAISETC <- 0.25 # increment by which TC is elevated (°C)
 #'
 #' # size and shape
 #' AMASS <- 0.0337 # mass (kg)
@@ -213,7 +216,7 @@
 #' MXWET <- 20 # maximum skin wetness (%)
 #' SWEAT <- 0.25 # intervals by which skin wetness is increased (%)
 #' Q10 <- 2 # Q10 effect of body temperature on metabolic rate
-#' QBASAL <- (70 \* AMASS ^ 0.75) \* (4.185 / (24 \* 3.6)) # basal heat generation (W) (bird formula from McKechnie and Wolf 2004 Phys. & Biochem. Zool. 77:502-521)
+#' QBASAL <- 10 ^ (-1.461 + 0.669 * log10(AMASS * 1000)) # basal heat generation (W) (bird formula from McKechnie and Wolf 2004 Phys. & Biochem. Zool. 77:502-521)
 #' DELTAR <- 5 # offset between air temeprature and breath (°C)
 #' EXTREF <- 15 # O2 extraction efficiency (%)
 #' PANTING <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANTMAX
@@ -274,10 +277,11 @@ endoR <- function(
   TCONDSB = TGRD, # surface temperature for conduction (°C)
   TBUSH = TA, # bush temperature (°C)
   BP = -1, # Pa, negatve means elevation is used
-  O2GAS = 20.95, # oxygen concentration of air (%)
-  N2GAS = 79.02, # nitrogen concetration of air (%)
-  CO2GAS = 0.03, # carbon dioxide concentration of air (%)
-  PCTDIF = 0.15, # proportion of solar radiation that is diffuse (fractional, 0-1)
+  O2GAS = 20.95, # oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+  N2GAS = 79.02, # nitrogen concetration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+  CO2GAS = 0.0412, # carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
+  R_PCO2 = CO2GAS / 100, # reference atmospheric dioxide concentration of air (proportion), to allow for anthropogenic change (\%)}\cr\cr
+  PDIF = 0.15, # proportion of solar radiation that is diffuse (fractional, 0-1)
 
   # BEHAVIOUR
 
@@ -292,6 +296,7 @@ endoR <- function(
   AKMAX = 2.8, # maximum flesh conductivity (W/mK)
   PANT = 1, # multiplier on breathing rate to simulate panting (-)
   PANTING = 0.1, # increment for multiplier on breathing rate to simulate panting (-)
+  PANTMULT = 0.5, # proportional increase of basal metabolic rate at maximum panting level (-)}\cr\cr
 
   # MORPHOLOGY
 
@@ -324,11 +329,12 @@ endoR <- function(
   RHOV = 3000E+04, # hair density, ventral (1/m2)
   REFLD = 0.2,  # fur reflectivity dorsal (fractional, 0-1)
   REFLV = 0.2,  # fur reflectivity ventral (fractional, 0-1)
-  ZFURCOMP = ZFURV, # # depth of compressed fur (for conduction) (m)
+  ZFURCOMP = ZFURV, # depth of compressed fur (for conduction) (m)
+  KHAIR = 0.209, # hair thermal conductivity (W/mC)
+  XR = 1, # fractional depth of fur at which longwave radiation is exchanged (0-1)
 
   # radiation exchange
   EMISAN = 0.99, # animal emissivity (-)
-  FATOBJ = 0, # configuration factor to nearby object
   FABUSH = 0, # this is for veg below/around animal (at TALOC)
   FGDREF = 0.5, # reference configuration factor to ground
   FSKREF = 0.5, # configuration factor to sky
@@ -369,111 +375,7 @@ endoR <- function(
   DIFTOL = 0.001, # tolerance for SIMULSOL
   WRITE_INPUT = 0
 ){
-#
-#   TA = 50 # air temperature at local height (°C)
-#   TAREF = TA # air temeprature at reference height (°C)
-#   TGRD = TA # ground temperature (°C)
-#   TSKY = TA # sky temperature (°C)
-#   VEL = 0.1 # wind speed (m/s)
-#   RH = 5 # relative humidity (%)
-#   QSOLR = 0 # solar radiation, horizontal plane (W/m2)
-#   Z = 20 # zenith angle of sun (degrees from overhead)
-#   ELEV = 0 # elevation (m)
-#   ABSSB = 0.8 # solar absorptivity of substrate (fractional, 0-1)
-#
-#   # other environmental variables
-#   FLTYPE = 0 # FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - need's to be looked at - only invoked in main program when the dive table is set up
-#   TCONDSB = TGRD # surface temperature for conduction (°C)
-#   TBUSH = TA # bush temperature (°C)
-#   BP = -1 # Pa, negatve means elevation is used
-#   O2GAS = 20.95 # oxygen concentration of air (%)
-#   N2GAS = 79.02 # nitrogen concetration of air (%)
-#   CO2GAS = 0.03 # carbon dioxide concentration of air (%)
-#   PCTDIF = 0.15 # proportion of solar radiation that is diffuse (fractional, 0-1)
-#
-#   # BEHAVIOUR
-#
-#   SHADE = 0 # shade level (%)
-#   NITESHAD = 0 # flag for if animal is behaviourally seeking shade for warmth at night - remove?
-#   FLYHR = 0 # is flight occuring this hour? (imposes forced evaporative loss)
-#   UNCURL = 1 # allows the animal to uncurl to SHAPE_B_MAX, the value being the increment SHAPE_B is increased per iteration
-#   RAISETC = 1 # turns on core temperature elevation, the value being the increment by which TC is increased per iteration
-#   SWEAT = 0.25 # turns on sweating, the value being the increment by which SKINW is increased per iteration
-#   MXWET = 100 # maximum surface area that can be wet (%)
-#   AK1inc = 0.5 # turns on thermal conductivity increase (W/mK), the value being the increment by which AK1 is increased per iteration
-#   AKMAX = 2.8 # maximum flesh conductivity (W/mK)
-#   PANT = 1 # multiplier on breathing rate to simulate panting (-)
-#   PANTING = 0.1 # increment for multiplier on breathing rate to simulate panting (-)
-#
-#   # MORPHOLOGY
-#
-#   # geometry
-#   AMASS = 1 # kg
-#   ANDENS = 1000 # kg/m3
-#   SUBQFAT = 0 # is subcutaneous fat present? (0 is no, 1 is yes)
-#   FATPCT = 20 # % body fat
-#   SHAPE = 4 # shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid
-#   SHAPE_B_REF = 3 # initial ratio between long and short axis (-)
-#   SHAPE_B = SHAPE_B_REF # current ratio between long and short axis (-)
-#   SHAPE_B_MAX = SHAPE_B_REF # max possible ratio between long and short axis (-)
-#   MAXPTVEN = 0.5 # maxium fraction of surface area that is ventral (fractional, 0-1)
-#   AWING = 0 # area of wing, to do
-#   PCOND = 0 # % of body area touching the substrate
-#
-#   # fur properties
-#   FURTHRMK = 0 # user-specified fur thermal conductivity (W/mK), not used if 0
-#   DHAIRD = 30E-06 # hair diameter, dorsal (m)
-#   DHAIRV = 30E-06 # hair diameter, ventral (m)
-#   LHAIRD = 23.9E-03 # hair length, dorsal (m)
-#   LHAIRV = 23.9E-03 # hair length, ventral (m)
-#   ZFURD = 2E-03 # fur depth, dorsal (m)
-#   ZFURV = 2E-03 # fur depth, ventral (m)
-#   RHOD = 3000E+04 # hair density, dorsal (1/m2)
-#   RHOV = 3000E+04 # hair density, ventral (1/m2)
-#   REFLD = 0.2  # fur reflectivity dorsal (fractional, 0-1)
-#   REFLV = 0.2  # fur reflectivity ventral (fractional, 0-1)
-#
-#   # radiation exchange
-#   EMISAN = 0.99 # animal emissivity (-)
-#   FATOBJ = 0 # configuration factor to nearby object
-#   FABUSH = 0 # this is for veg below/around animal (at TALOC)
-#   FGDREF = 0.5 # reference configuration factor to ground
-#   FSKREF = 0.5 # configuration factor to sky
-#
-#   # nest properties
-#   NESTYP = 0 # for nest calculations, to do
-#   RoNEST = 0 # for nest calculations, to do
-#
-#   # PHYSIOLOGY
-#
-#   # thermal
-#   TC = 37 # core temperature (°C)
-#   TCMAX = 45 # maximum core temperature (°C)
-#   AK1 = 0.9 # initial thermal conductivity of flesh (0.412 - 2.8 W/mC)
-#   AK2 = 0.230# conductivity of fat (W/mK)
-#
-#   # evaporation
-#   SKINW = 0.5 # part of the skin surface that is wet (%)
-#   FURWET = 0 # part of the fur/feathers that is wet after rain (%)
-#   PCTBAREVAP = 0 # surface area for evaporation that is skin, e.g. licking paws (%)
-#   PCTEYES = 0 # surface area made up by the eye (%) - make zero if sleeping
-#   DELTAR = 0 # offset between air temeprature and breath (°C)
-#   RELXIT = 100 # relative humidity of exhaled air, %
-#
-#   # metabolism/respiration
-#   QBASAL = (70 * AMASS ^ 0.75) * (4.185 / (24 * 3.6)) # basal heat generation (W)
-#   TIMACT = 1 # multiplier on metabolic rate for activity costs
-#   RQ = 0.80 # respiratory quotient (fractional, 0-1)
-#   EXTREF = 20 # O2 extraction efficiency (%)
-#   PANTMAX = 2 # maximum breathing rate multiplier to simulate panting (-)
-#   Q10 = 1 # Q10 factor for adjusting BMR for TC
-#
-#   # initial conditions
-#   TS = TC - 3 # skin temperature (°C)
-#   TFA = TA # fur/air interface temperature (°C)
-#
-#   # other model settings
-#   DIFTOL = 0.001 # tolerance for SIMULSOL
+
   # at this stage make sure NESTYP = 0 to get correct configuration factors
   NESTYP <- 0
   if(PANTING == 0){
@@ -494,7 +396,7 @@ endoR <- function(
   QGEN <- 0
   TCREF <- TC
   QBASREF <- QBASAL
-  # check if heat stressed already
+  # check if heat stressed already (to save computation)
   if(TA >= TC){
     # set core temperature, flesh thermal conductivity and shape to
     # extreme heat loss values, adjusting basal metabolic
@@ -502,13 +404,13 @@ endoR <- function(
     if(TA > TCMAX){
       TC <- TCMAX
       Q10mult <- Q10^((TC - TCREF)/10)
-      QBASAL = QBASREF * Q10mult
+      QBASAL <- QBASREF * Q10mult
     }
     AK1 <- AKMAX
     SHAPE_B <- SHAPE_B_MAX
   }
   TVEG <- TA
-  SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, SHAPE_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, SHAPE, EMISAN, FATOBJ, FSKREF, FGDREF, NESTYP, PCTDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, NITESHAD, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, SKINW, TSKY, TVEG, TAREF, DELTAR, RQ, TIMACT, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AKMAX, AK1inc, TCMAX, RAISETC, TCREF, Q10, QBASREF, PANTMAX, MXWET, SWEAT, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, MAXPCOND, ZFURCOMP, PANTING, ORIENT, SHAPE_C)
+  SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, SHAPE_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, SKINW, TSKY, TVEG, TAREF, DELTAR, RQ, TIMACT, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AKMAX, AK1inc, TCMAX, RAISETC, TCREF, Q10, QBASREF, PANTMAX, MXWET, SWEAT, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, MAXPCOND, ZFURCOMP, PANTING, ORIENT, SHAPE_C, XR, PANTMULT)
   if(WRITE_INPUT == 1){
    write.csv(SOLVENDO.input, file = "SOLVENDO.input.csv")
   }
