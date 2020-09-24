@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-This document provides an overview of an R implementation of the NicheMapR endotherm model, via the sub-functions of 'endoR'. This implementation modularises the original version such that many of the internal subroutines and functions can be called separately. The idea is that the user has more flexibility in setting the model up for the behavioural and physiological responses of a particular animal. There is also a tutorial for using 'endoR' itself [Endotherm Model Tutorial](endotherm-model-tutorial.html).
+This document provides an overview of an R implementation of the NicheMapR endotherm model, via the sub-functions of 'endoR' and 'endoR_devel'. This implementation modularises the original version such that many of the internal subroutines and functions can be called separately. The idea is that the user has more flexibility in setting the model up for the behavioural and physiological responses of a particular animal. There is also a tutorial for using 'endoR' (and 'endoR_devel') itself [Endotherm Model Tutorial](endotherm-model-tutorial.html).
 
 ```{r}
 library(NicheMapR)
@@ -31,17 +31,14 @@ library(plotrix)
 
 ### IRPROP
 
-This subroutine computes the feasible hair spacing and the three parameters needed for computing conduction and infrared radiation through the fur. It assumes a thermal conductivity of hair (keratin) of 0.209 W m{-1} K{-1} and that the thermal conductivity of air is 0.02425+(7.038e-5*TA).
+This subroutine computes the three parameters needed for computing conduction and infrared radiation through the fur.
 
 ```{r}
 # environmental input
 TA <- 20 # air temperature, for calculation of conductivity of air (°C)
 
 # shape input
-SHAPE_B_MAX <- 2.7 # max possible ratio between long and short axis (-)
-SHAPE_B_REF <- 2.7 # initial ratio between long and short axis (-)
-SHAPE_B <- 2.7 # current ratio between long and short axis (-)
-MAXPTVEN <- 0.3 # maxium fraction of surface area that is ventral (fractional, 0-1)
+PVEN <- 0.3 # maximum fraction of surface area that is ventral (fractional, 0-1)
 
 # fur properties
 DHAIRD <- 30E-06 # hair diameter, dorsal (m)
@@ -58,19 +55,19 @@ REFLV <- 0.301  # fur reflectivity ventral (fractional, 0-1)
 KHAIR <- 0.209  # hair thermal conductivity (W/mC)
 
 # call the subroutine
-IRPROP.out <- IRPROP(TA, SHAPE_B_MAX, SHAPE_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, ZFURCOMP, KHAIR)
+IRPROP.out <- IRPROP(TA, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, ZFURCOMP, PVEN, KHAIR)
 
 # output
 KEFARA <- IRPROP.out[1:3] # effective thermal conductivity of fur array, mean, dorsal, ventral (W/mK)
-BETARA <- IRPROP.out[4:6] # term involved in computing optical thickess
+BETARA <- IRPROP.out[4:6] # term involved in computing optical thickness (1/m)
 B1ARA <- IRPROP.out[7:9] # optical thickness array, mean, dorsal, ventral (-)
 DHAR <- IRPROP.out[10:12] # fur diameter array, mean, dorsal, ventral (m)
 LHAR <- IRPROP.out[13:15] # fur length array, mean, dorsal, ventral (m)
 RHOAR <- IRPROP.out[16:18] # fur density array, mean, dorsal, ventral (fibers/m2)  
 ZZFUR <- IRPROP.out[19:21] # fur depth array, mean, dorsal, ventral (m)  
 REFLFR <- IRPROP.out[22:24] # fur reflectivity array, mean, dorsal, ventral (fractional, 0-1)
-FURTST <- IRPROP.out[25] # test of presence of fur (length x diamater x density x depth) (-)
-KFURCMPRS <- IRPROP.out[26] # effictive thermal conductivity of compressed ventral fur (W/mK)
+FURTST <- IRPROP.out[25] # test of presence of fur (length x diameter x density x depth) (-)
+KFURCMPRS <- IRPROP.out[26] # effective thermal conductivity of compressed ventral fur (W/mK)
 
 IRPROP.lab <- c("KEFARA mean", "KEFARA dorsal", "KEFARA ventral", "BETARA mean", "BETARA dorsal", "BETARA ventral", "B1ARA mean", "B1ARA dorsal", "B1ARA ventral", "DHAR mean", "DHAR dorsal", "DHAR ventral", "LHAR mean", "LHAR dorsal", "LHAR ventral", "RHOAR mean", "RHOAR dorsal", "RHOAR ventral", "ZZFUR mean", "ZZFUR dorsal", "ZZFUR ventral", "REFLFR mean", "REFLFR dorsal", "REFLFR ventral", "FURTST", "KFURCMPRS")
 kable(cbind(IRPROP.lab, IRPROP.out[1:26]))
@@ -82,7 +79,7 @@ Example analysis of fur diameter on effective thermal conductivity of fur.
 DHAIRs <- seq(0, 150, 2) # hair diameters (micrometers)
 KEFARAs <- NULL
 for(i in 1:length(DHAIRs)){
-  KEFARAs[i] <- IRPROP(TA, SHAPE_B_MAX, SHAPE_B_REF, SHAPE_B, DHAIRs[i] * 1E-06, DHAIRs[i] * 1E-06, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, ZFURCOMP, KHAIR)[1]
+  KEFARAs[i] <- IRPROP(TA, DHAIRs[i] * 1E-06, DHAIRs[i] * 1E-06, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, ZFURCOMP, PVEN, KHAIR)[1]
 }
 plot(KEFARAs ~ DHAIRs, type = 'p', pch = 16, ylab = 'effective fur conductivity, W K-1 m-1', xlab = 'hair diameter, um')
 ```
@@ -93,7 +90,7 @@ Example analysis of fur density on effective thermal conductivity of fur.
 RHOs <- seq(0, 50000, 500) # hair densities (1/cm2)
 KEFARAs <- NULL
 for(i in 1:length(RHOs)){
-  KEFARAs[i] <- IRPROP(TA, SHAPE_B_MAX, SHAPE_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOs[i] * 1E+04, RHOs[i] * 1E+04, REFLD, REFLV, MAXPTVEN, ZFURCOMP, KHAIR)[1]
+  KEFARAs[i] <- IRPROP(TA, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOs[i] * 1E+04, RHOs[i] * 1E+04, REFLD, REFLV, ZFURCOMP, PVEN, KHAIR)[1]
 }
 plot(KEFARAs ~ RHOs, type = 'p', pch = 16, ylab = 'effective fur conductivity, W K-1 m-1', xlab = 'hair density, 1/cm2')
 ```
@@ -104,7 +101,7 @@ Example analysis of fur depth on effective thermal conductivity of fur.
 ZFURs <- seq(0, 50, 1) # hair depths (mm)
 KEFARAs <- NULL
 for(i in 1:length(ZFURs)){
-  KEFARAs[i] <- IRPROP(TA, SHAPE_B_MAX, SHAPE_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURs[i] * 1E-03, ZFURs[i] * 1E-03, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, ZFURCOMP, KHAIR)[1]
+  KEFARAs[i] <- IRPROP(TA, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURs[i] * 1E-03, ZFURs[i] * 1E-03, RHOD, RHOV, REFLD, REFLV, ZFURCOMP, PVEN, KHAIR)[1]
 }
 plot(KEFARAs ~ ZFURs, type = 'p', pch = 16, ylab = 'effective fur conductivity, W K-1 m-1', xlab = 'fur depth, mm')
 ```
@@ -115,14 +112,13 @@ This subroutine computes aspects of the animal's geometry. Note that GEOM requir
 
 ```{r}
 # input
-AMASS <- 10 # kg
-ANDENS <- 1000 # kg/m3
+AMASS <- 10 # animal mass (kg)
+ANDENS <- 1000 # animal density (kg/m3)
 SUBQFAT <- 1 # is subcutaneous fat present? (0 is no, 1 is yes)
-FATPCT <- 20 # % body fat
+FATPCT <- 20 # body fat (%)
 SHAPE <- 4 # shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid
-SHAPE_B_REF <- 2.7 # initial ratio between long and short axis (-)
 SHAPE_B <- 2.7 # current ratio between long and short axis (-)
-SHAPE_C <- SHAPE_B # current ratio of length:height (plate)
+SHAPE_C <- SHAPE_B # current ratio of length:height (for plate)
 DHARA <- DHAR[1] # fur diameter, mean (m) (from IRPROP)
 RHOARA <- RHOAR[1] # hair density, mean (1/m2) (from IRPROP)
 ZFUR <- ZZFUR[1] # fur depth, mean (m) (from IRPROP)
@@ -132,31 +128,31 @@ SAMODE <- 0 # if 1, uses bird skin surface area scaling from Walsberg and 1978. 
 ORIENT <- 0 # if 1, largest surface area normal to sun's ray's, if 2, largest surface parallel to sun's rays, if 0, average of normal/parallel posture, 
 
 # call the subroutine
-GEOM.out <- GEOM_ENDO(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_B_REF, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT)
+GEOM.out <- GEOM_ENDO(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT)
 
 # output
-VOL <- GEOM.out[1] # volume, m3
-D <- GEOM.out[2] # characteristic dimension for convection, m
-MASFAT <- GEOM.out[3] # mass body fat, kg
-VOLFAT <- GEOM.out[4] # volume body fat, m3
-ALENTH <- GEOM.out[5] # length, m
-AWIDTH <- GEOM.out[6] # width, m
-AHEIT <- GEOM.out[7] # height, m
-ATOT <- GEOM.out[8] # total area at fur/feathers-air interface, m2
-ASIL <- GEOM.out[9] # silhouette area to use in solar calcs, m2 may be normal, parallel or average set via ORIENT
-ASILN <- GEOM.out[10] # silhouette area normal to sun, m2
-ASILP <- GEOM.out[11] # silhouette area parallel to sun, m2
-GMASS <- GEOM.out[12] # mass, g
-AREASKIN <- GEOM.out[13] # area of skin, m2
-FLSHVL <- GEOM.out[14] # flesh volume, m3
-FATTHK <- GEOM.out[15] # fat layer thickness, m
-ASEMAJ <- GEOM.out[16] # semimajor axis length, m
-BSEMIN <- GEOM.out[17] # b semiminor axis length, m
-CSEMIN <- GEOM.out[18] # c semiminor axis length, m (currently only prolate spheroid)
-CONVSK <- GEOM.out[19] # area of skin for evaporation (total skin area - hair area), m2
+VOL <- GEOM.out[1] # volume (m3)
+D <- GEOM.out[2] # characteristic dimension for convection (m)
+MASFAT <- GEOM.out[3] # mass body fat (kg)
+VOLFAT <- GEOM.out[4] # volume body fat (m3)
+ALENTH <- GEOM.out[5] # length (m)
+AWIDTH <- GEOM.out[6] # width (m)
+AHEIT <- GEOM.out[7] # height (m)
+ATOT <- GEOM.out[8] # total area at fur/feathers-air interface (m2)
+ASIL <- GEOM.out[9] # silhouette area to use in solar calcs (m2) may be normal, parallel or average set via ORIENT
+ASILN <- GEOM.out[10] # silhouette area normal to sun (m2)
+ASILP <- GEOM.out[11] # silhouette area parallel to sun (m2)
+GMASS <- GEOM.out[12] # mass (g)
+AREASKIN <- GEOM.out[13] # area of skin (m2)
+FLSHVL <- GEOM.out[14] # flesh volume (m3)
+FATTHK <- GEOM.out[15] # fat layer thickness (m)
+ASEMAJ <- GEOM.out[16] # semimajor axis length (m)
+BSEMIN <- GEOM.out[17] # b semiminor axis length (m)
+CSEMIN <- GEOM.out[18] # c semiminor axis length (m) (currently only prolate spheroid)
+CONVSK <- GEOM.out[19] # area of skin for evaporation (total skin area - hair area) (m2)
 CONVAR <- GEOM.out[20] # area for convection (total area minus ventral area, as determined by PCOND), m2
-R1 <- GEOM.out[21] # shape-specific core-skin radius in shortest dimension, m
-R2 <- GEOM.out[22] # shape-specific core-fur radius in shortest dimension, m
+R1 <- GEOM.out[21] # shape-specific core-skin radius in shortest dimension (m)
+R2 <- GEOM.out[22] # shape-specific core-fur radius in shortest dimension (m)
 
 GEOM.lab <- c("VOL", "D", "MASFAT", "VOLFAT", "ALENTH", "AWIDTH", "AHEIT", "ATOT", "ASIL", "ASILN", "ASILP", "GMASS", "AREASKIN", "FLSHVL", "FATTHK", "ASEMAJ", "BSEMIN", "CSEMIN", "CONVSK", "CONVAR", "R1", "R2")
 kable(cbind(GEOM.lab, t(GEOM.out)))
@@ -180,7 +176,6 @@ par(mfrow=c(1,1))
 }
 ```
 
-
 ### SOLAR
 
 Compute the solar radiation absorbed by different parts of the organism and its environment.
@@ -196,7 +191,7 @@ ABSSB <- 0.8 # solar absorptivity of substrate (fractional, 0-1)
 AREA <- ATOT # surface area for solar exchange, m2 (from GEOM)
 ABSAND <- 0.8 # solar absorptivity of dorsal fur (fractional, 0-1)
 ABSANV <- 0.8 # solar absorptivity of ventral fur (fractional, 0-1)
-ASIL <- ASIL # silhouette area normal to sun, m2 (from GEOM)
+ASIL <- ASIL # silhouette area to sun, m2 (from GEOM)
 PDIF <- 0.15 # proportion of solar radiation that is diffuse (fractional, 0-1)
 FASKY <- 0.4 # configuration factor to sky (-)
 FAVEG <- 0 # configuration factor to vegetation (-)
@@ -213,12 +208,12 @@ if(Z < 90){ # compute solar radiation on a surface normal to the direct rays of 
 SOLAR.out <- SOLAR_ENDO(AREA, ABSAND, ABSANV, ABSSB, ASIL, PDIF, QNORM, SHADE, QSOLR, FASKY, FAVEG)
 
 QSOLAR <- SOLAR.out[1]  # total (global) solar radiation (W)
-QSDIR <- SOLAR.out[2]  # direct solar radiaton (W)
+QSDIR <- SOLAR.out[2]  # direct solar radiation (W)
 QSSKY <- SOLAR.out[3]  # diffuse solar radiation from sky (W)
 QSRSB <- SOLAR.out[4]  # diffuse solar radiation reflected from substrate (W)
 QSDIFF <- SOLAR.out[5]  # total diffuse solar radiation (W)
 QDORSL <- SOLAR.out[6]  # dorsal direct solar radiation (W)
-QVENTR <- SOLAR.out[7]  # ventral diffuse solar radiaton (W)
+QVENTR <- SOLAR.out[7]  # ventral diffuse solar radiation (W)
 
 SOLAR.lab <- c("QSOLAR", "QSDIR", "QSSKY", "QSRSB", "QSDIFF", "QDORSL", "QVENTR")
 kable(cbind(SOLAR.lab, t(SOLAR.out)))
@@ -238,19 +233,19 @@ SURFAR <- CONVAR # surface area for convection, m2 (from GEOM)
 FLTYPE <- 0 # FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER
 FURTST <- FURTST # test of fur presence (-) from IRPROP 
 VEL <- 1 # wind speed (m/s)
-ELEV <- 0 # altitude (m)
-BP <- -1 # Pa, negatve means altitude is used
+ELEV <- 0 # elevation (m)
+BP <- -1 # barometric pressure (Pa), negative means altitude is used
 
 # run subroutine
 CONV.out <- CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV)
 
 QCONV <- CONV.out[1] # convective heat loss (W)
-HC <- CONV.out[2] # combined convection coefficient
-HCFREE <- CONV.out[3] # free convection coefficient
-HCFOR <- CONV.out[4] # forced convection coefficient
-HD <- CONV.out[5] # mass transfer coefficient
-HDFREE <- CONV.out[6] # free mass transfer coefficient
-HDFORC <- CONV.out[7] # forced mass transfer coefficient
+HC <- CONV.out[2] # combined convection coefficient (W/m2 C)
+HCFREE <- CONV.out[3] # free convection coefficient (W/m2 C)
+HCFOR <- CONV.out[4] # forced convection coefficient (W/m2 C)
+HD <- CONV.out[5] # mass transfer coefficient (kg/m2 s)
+HDFREE <- CONV.out[6] # free mass transfer coefficient (kg/m2 s)
+HDFORC <- CONV.out[7] # forced mass transfer coefficient (kg/m2 s)
 ANU <- CONV.out[8] # Nusselt number (-)
 RE <- CONV.out[9] # Reynold's number (-)
 GR <- CONV.out[10] # Grasshof number (-)
@@ -268,21 +263,20 @@ kable(cbind(CONV.lab, t(CONV.out)))
 Compute evaporative heat exchange.
 
 ```{r}
-BP <- BP # barometric pressure, Pa (from CONV)
+BP <- BP # barometric pressure (Pa) (from CONV)
 TA <- 20 # air temperature (°C)
 RELHUM <- 20 # relative humidity (%)
 TC <- 37 # core temperature (°C)
 TSKIN <- 33 # skin temperature (°C)
 SKINW <- 11 # part of the skin surface that is wet (%)
-FLYHR <- 0 # is flight occuring this hour? (imposes forced evaporative loss)
+FLYHR <- 0 # is flight occurring this hour? (imposes forced evaporative loss)
 BAREVAP <- 0 # is evaporation partly from bare skin? (0 = no, 1 = yes, % defined with PCTSKINEVAP)
 PCTBAREVAP <- 0 # surface area for evaporation that is skin, e.g. licking paws (%)
 PCTEYES <- 0.03 # surface area made up by the eye (%) - make zero if sleeping
-ZFUR <- ZFUR # fur depth, m
+ZFUR <- ZFUR # fur depth (m)
 FURWET <- 0 # part of the fur surface that is wet (%)
 
-SEVAP.out <- SEVAP_ENDO(BP, TA, RELHUM, VEL, TC, TSKIN, ELEV, SKINW, FLYHR,  
-  CONVSK, HD, HDFREE, PCTBAREVAP, PCTEYES, ZFUR, FURWET, TFA, CONVAR)
+SEVAP.out <- SEVAP_ENDO(BP, TA, RELHUM, VEL, TC, TSKIN, ELEV, SKINW, FLYHR, CONVSK, HD, HDFREE, PCTBAREVAP, PCTEYES, ZFUR, FURWET, TFA, CONVAR)
 
 QSEVAP <- SEVAP.out[1] # skin evaporative heat loss (W)
 WEYES <- SEVAP.out[2] # ocular evaporation (kg/s)
@@ -298,21 +292,21 @@ kable(cbind(SEVAP.lab, t(SEVAP.out)))
 
 ### SIMULSOL
 
-Setup and the SIMULSOL algorithm to SIMULtaneously SOLve for skin temperature $T_skin$ and the temperature of the fur/feather interface $T_fa$ given an environment, shape/posture and skin wetness. SIMULSOL is the core algorithm for computing the heat balance.
+Setup and the SIMULSOL algorithm to SIMULtaneously SOLve for skin temperature $T_s$ and the temperature of the fur/feather interface $T_fa$ given an environment, shape/posture and skin wetness. SIMULSOL is the core algorithm for computing the heat balance.
 
 ```{r}
 # environment
-FLTYPE <- 0 # FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER - need's to be looked at - only invoked in main program when the dive table is set upTC <- 37 # core temperature (°C)
-TAREF <- TA # 1.2 m reference air temperature (°C)
+FLTYPE <- 0 # fluid type: 0 = air; 1 = fresh water; 2 = salt water
+TAREF <- TA # reference air temperature (e.g. at 1.2 or 2m) (°C)
 TLOWER <- TA # ground temperature (°C)
 TSKY <- TA # sky temperature (°C)
 TCONDSB <- TA # surface temperature for conduction (°C)
 TBUSH <- TA # bush temperature (°C)
-TVEG <- TAREF # assume vegetation casting shade is at 1.2 m (reference) air temperature (°C)
+TVEG <- TAREF # assume vegetation casting shade is at reference (e.g. 1.2m or 2m) air temperature (°C)
 RH <- 20 # relative humidity (%)
-VEL <- 1 # wind speed (m s-1)
-BP <- BP # Pa, negative means altitude is used (from CONV)
-ELEV <- 0 # m
+VEL <- 1 # wind speed (m/s)
+BP <- BP # barometric pressure (Pa), negative means altitude is used (from CONV)
+ELEV <- 0 # elevation (m)
 
 # physiology and morphology 
 SKINW <- 0 # part of the skin surface that is wet (%)
@@ -324,26 +318,26 @@ BAREVAP <- 0 # is evaporation partly from bare skin? (0 = no, 1 = yes, % defined
 PCTBAREVAP <- 0 # surface area for evaporation that is skin, e.g. licking paws (%)
 PCTEYES <- 0.03 # surface area made up by the eye (%) - make zero if sleeping
 # behaviour
-FLYHR <- 0 # is flight occuring this hour? (imposes forced evaporative loss)
+FLYHR <- 0 # is flight occurring this hour? (imposes forced evaporative loss)
 
 # configuration factors
-FAGRD <- 0.5 # configuration factor to ground
-FASKY <- 0.5 # configuration factor to sky
-FAVEG <- 0 # this is for overhead veg (at TAREF)
-FABUSH <- 0 # this is for veg below/around animal (at TALOC)
+FAGRD <- 0.5 # configuration factor to ground (-)
+FASKY <- 0.5 # configuration factor to sky (-)
+FAVEG <- 0 # this is for overhead veg (at TAREF) (-)
+FABUSH <- 0 # this is for veg below/around animal (at TALOC) (-)
 
 # reference configuration factors
-FABUSHREF <- FABUSH # nearby bush
-FASKYREF <- FASKY # sky
-FAGRDREF <- FAGRD # ground
-FAVEGREF <- FAVEG # vegetation
+FABUSHREF <- FABUSH # nearby bush (-)
+FASKYREF <- FASKY # sky (-)
+FAGRDREF <- FAGRD # ground (-)
+FAVEGREF <- FAVEG # vegetation (-)
 
-FURTHRMK <- 0 # user-specified fur thermal conductivity (W/mK), not used if 0
+FURTHRMK <- 0 # user-specified fur thermal conductivity (W/m C), not used if 0
 SHAPE <- 4 # shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid
 
 # Initial values
-TS <- TC # CURRENT GUESS OF OBJECT SURFACE TEMPERATURE
-TFA <- TA # current guess of fur/air interface temperature
+TS <- TC # current guess of skin temperature (deg C)
+TFA <- TA # current guess of fur/air interface temperature (deg C)
 
 DIFTOL <- 0.001 # tolerance for SIMULSOL
 
@@ -369,13 +363,13 @@ for(S in 1:2){
       FAVEG <- FAVEGREF / (FASKYREF + FAVEGREF) # proportion of upward view that is vegetation (shade)
       FAGRD <- 0.0
       FABUSH <- 0.0
-      QSLR <- 2 * QSDIR + ((QSSKY / FASKYREF) * FASKY) # direct x 2 because assuming sun in both directions, and unadjusting QSSKY for config factor imposed in SOLAR_ENDO and back to new larger one in both directions
-    }else{  # doing ventral side. NB edit - adjust QSLR for PCOND here.
+      QSLR <- 2 * QSDIR + ((QSSKY / FASKYREF) * FASKY) # direct x 2 because assuming sun in both directions, and un-adjusting QSSKY for config factor imposed in SOLAR_ENDO and back to new larger one in both directions
+    }else{  # doing ventral side
       FASKY <- 0.0
       FAVEG <- 0.0
       FAGRD <- FAGRDREF / (FAGRDREF + FABUSHREF)
       FABUSH <- FABUSHREF / (FAGRDREF + FABUSHREF)
-      QSLR <- (QVENTR / (1 - FASKYREF - FAVEGREF)) * (1 - (2 * PCOND)) # unadjust by config factor imposed in SOLAR_ENDO to have it coming in both directions, but also cutting down according to fractional area conducting to ground (in both directions)
+      QSLR <- (QVENTR / (1 - FASKYREF - FAVEGREF)) * (1 - (2 * PCOND)) # un-adjust by config factor imposed in SOLAR_ENDO to have it coming in both directions, but also cutting down according to fractional area conducting to ground (in both directions)
     }
   }else{
     QSLR <- 0.0
@@ -465,12 +459,12 @@ Finally, find a value of QRESP (heat lost by respiration) to balance the heat bu
 
 ```{r}
 # define basal metabolic rate
-QBASAL <- (70 * AMASS ^ 0.75) * (4.185 / (24 * 3.6)) # heat generation (W)
-DELTAR <- 0 # offset between air temeprature and breath (°C)
+QBASAL <- (70 * AMASS ^ 0.75) * (4.185 / (24 * 3.6)) # heat generation (W), from Kleiber 1947
+DELTAR <- 0 # offset between air temperature and breath (°C)
 O2GAS <- 20.95 # oxygen concentration of air (%)
-N2GAS <- 79.02 # nitrogen concetration of air (%)
+N2GAS <- 79.02 # nitrogen concentration of air (%)
 CO2GAS <- 0.0412 # carbon dioxide concentration of air (%)
-R_PCO2 <- CO2GAS / 100 # reference atmospheric dioxide concentration of air (proportion), to allow for anthropogenic change (\%)}\cr\cr
+R_PCO2 <- CO2GAS / 100 # reference atmospheric dioxide concentration of air (proportion), to allow for anthropogenic change (%)
 RQ <- 0.80 # respiratory quotient (fractional, typically 0.7 (fats) to 1 (carbs), with 0.8 typical for protein)
 EXTREF <- 20 # O2 extraction efficiency (%)
 RELXIT <- 100 # relative humidity of exhaled air (%)
@@ -481,7 +475,7 @@ PANT <- 1 # multiplier on breathing rate (-)
 GEND <- SIMULSOL.out[1, 6]
 GENV <- SIMULSOL.out[2, 6]
 DMULT <- FASKYREF + FAVEGREF
-VMULT <- 1 - DMULT # Assume that reflectivity of veg below = ref of soil so VMULT left as 1 - DMULT
+VMULT <- 1 - DMULT # Assume that reflectivity of veg below equals reflectivity of soil so VMULT left as 1 - DMULT
 X <- GEND * DMULT + GENV * VMULT # weighted estimate of metabolic heat generation
 
 # lung temperature and temperature of exhaled air
