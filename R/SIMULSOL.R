@@ -2,15 +2,15 @@
 #'
 #' R wrapper for Fortran binary of SIMULSOL (endotherm model)
 #' @encoding UTF-8
-#' @param DIFTOL A
-#' @param IPT A
-#' @param FURVARS A
-#' @param GEOMVARS A
-#' @param ENVVARS A
-#' @param TRAITS A
-#' @param TFA A
-#' @param SKINW A
-#' @param TSKIN A
+#' @param DIFTOL error tolerance for SIMULSOL
+#' @param IPT geometry for SIMULSOL, 1 = cylinder, 2 = sphere, 3 = ellipsoid
+#' @param FURVARS fur input variable vector
+#' @param GEOMVARS shape and size input variable vector
+#' @param ENVVARS environmental input vector
+#' @param TRAITS other trait inputs vector
+#' @param TFA current guess of fur/air-interface temperature (°C)
+#' @param SKINW part of the skin surface that is wet (%)
+#' @param TSKIN current guess of skin temperature (°C)
 #' @export
 SIMULSOL <- function(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA,
                      SKINW, TSKIN, results){

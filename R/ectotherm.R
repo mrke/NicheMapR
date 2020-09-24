@@ -703,8 +703,8 @@ ectotherm <- function(
   ndays <- length(rainfall) # get number of days of simulation
 
   # error trapping
-  if(shape < 0 | shape > 5){
-    message("error: shape can only be from 0 to 5 \n")
+  if(shape < 0 | shape > 5  | shape%%1 != 0){
+    message("error: shape can only be an integer from 0 to 5 \n")
     errors<-1
   }
   if(alpha_max < 0 | alpha_max > 1){

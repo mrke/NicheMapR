@@ -4,8 +4,8 @@
 \alias{GEOM_ENDO}
 \title{GEOM_ENDO}
 \usage{
-GEOM_ENDO(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, SHAPE_B,
-  SHAPE_B_REF, SHAPE_C, DHARA, RHOARA, PTCOND, SAMODE, ORIENT)
+GEOM_ENDO(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, SHAPE_B, SHAPE_C,
+  DHARA, RHOARA, PTCOND, SAMODE, ORIENT)
 }
 \arguments{
 \item{AMASS}{mass, kg}
@@ -21,8 +21,6 @@ GEOM_ENDO(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, SHAPE_B,
 \item{SUBQFAT}{subcutaneous fat presence, -}
 
 \item{SHAPE_B}{multiplier on long axis for shape change, -}
-
-\item{SHAPE_B_REF}{reference multiplier on long axis for shape change, -}
 
 \item{SHAPE_C}{multiplier on width relative to height for plate shape change, -}
 

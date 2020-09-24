@@ -5,7 +5,7 @@
 \alias{endoR}
 \title{endoR - the endotherm model of NicheMapR}
 \usage{
-endoR(AMASS = 1, SHAPE = 4, SHAPE_B_REF = 3, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-03, TC = 37, TCMAX = 45, TA = 20, TGRD = TA, TSKY = TA, VEL = 0.1, RH = 5, QSOLR = 0, Z = 20, SHADE = 0, NITESHAD = 0,...)
+endoR(AMASS = 1, SHAPE = 4, SHAPE_B = 1.1, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-03, TC = 37, TCMAX = 45, TA = 20, TGRD = TA, TSKY = TA, VEL = 0.1, RH = 5, QSOLR = 0, Z = 20, SHADE = 0, NITESHAD = 0,...)
 }
 \arguments{
 \item{TA}{= 20, air temperature at local height (°C)}
@@ -28,7 +28,7 @@ endoR(AMASS = 1, SHAPE = 4, SHAPE_B_REF = 3, FURTHRMK = 0, ZFURD = 2E-03, ZFURV 
 
 \item{SHAPE}{= 4, # shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid}
 
-\item{SHAPE_B_REF}{= 3, # initial ratio between long and short axis (-)}
+\item{SHAPE_B}{= 3, # current ratio between long and short axis (-)}
 
 \item{FURTHRMK}{= 0, # user-specified fur thermal conductivity (W/mK), not used if 0}
 
@@ -45,7 +45,7 @@ This model implements postural and physiological thermoregulation under a given
 environmental scenario for an organism of a specified shape and no extra body
 parts. In this function the sequence of thermoregulatory events in the face of
 heat stress is to first uncurl, second change flesh conductivity, third raise
-core temprature, fourth pant and fifth sweat.
+core temperature, fourth pant and fifth sweat.
 }
 \details{
 \strong{ Parameters controlling how the model runs:}\cr\cr
@@ -84,10 +84,9 @@ core temprature, fourth pant and fifth sweat.
 \code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr
 \code{SUBQFAT}{ = 0, is subcutaneous fat present? (0 is no, 1 is yes)}\cr\cr
 \code{FATPCT}{ = 20, \% body fat}\cr\cr
-\code{SHAPE_B}{ = SHAPE_B_REF, current ratio between long and short axis (-)}\cr\cr
-\code{SHAPE_B_MAX}{ = SHAPE_B_REF, max possible ratio between long and short axis (-)}\cr\cr
+\code{SHAPE_B_MAX}{ = 5, max possible ratio between long and short axis (-)}\cr\cr
 \code{SHAPE_C}{ = SHAPE_B, current ratio of length:height (plate)}\cr\cr
-\code{MAXPTVEN}{ = 0.5, maxium fraction of surface area that is ventral (fractional, 0-1)}\cr\cr
+\code{PVEN}{ = 0.5, fraction of surface area that is ventral fur (fractional, 0-1)}\cr\cr
 \code{PCOND}{ = 0, fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
 \code{MAXPCOND}{ = 0, maximum fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
 \code{SAMODE}{ = 0, if 0, uses surface area for SHAPE geometry, if 1, uses bird skin surface area allometry from Walsberg & King. 1978. JEB 76:185–189, if 2 uses mammal surface area from Stahl 1967.J. App. Physiol. 22, 453–460.}\cr\cr
@@ -119,7 +118,7 @@ core temprature, fourth pant and fifth sweat.
 \strong{ Physiology:}\cr\cr
 \code{AK1}{ = 0.9, # initial thermal conductivity of flesh (0.412 - 2.8 W/mK)}\cr\cr
 \code{AK2}{ = 0.230, # conductivity of fat (W/mK)}\cr\cr
-\code{QBASAL}{ = (70 \* AMASS ^ 0.75) \* (4.185 / (24 \* 3.6)), # basal heat generation (W)}\cr\cr
+\code{QBASAL}{ = (70 * AMASS ^ 0.75) * (4.185 / (24 * 3.6)), # basal heat generation (W) based on Kleiber 1947}\cr\cr
 \code{SKINW}{ = 0.5, # part of the skin surface that is wet (\%)}\cr\cr
 \code{FURWET}{ = 0, # Area of fur/feathers that is wet after rain (\%)}\cr\cr
 \code{PCTBAREVAP}{ = 0, surface area for evaporation that is skin, e.g. licking paws (\%)}\cr\cr
@@ -130,7 +129,7 @@ core temprature, fourth pant and fifth sweat.
 \code{RQ}{ = 0.80, # respiratory quotient (fractional, 0-1)}\cr\cr
 \code{EXTREF}{ = 20, # O2 extraction efficiency (\%)}\cr\cr
 \code{PANTMAX}{ = 10, # maximum breathing rate multiplier to simulate panting (-)}\cr\cr
-\code{Q10}{ = 1, # Q10 factor for adjusting BMR for TC}\cr\cr
+\code{Q10}{ = 2, # Q10 factor for adjusting BMR for TC}\cr\cr
 
 \strong{ Initial conditions:}\cr\cr
 \code{TS}{ = TC - 3, # initial skin temperature (°C)}\cr\cr
@@ -183,7 +182,7 @@ enbal variables (energy balance):
 \itemize{
 \item 1 QSOL - solar radiation absorbed (W)
 \item 2 QIRIN - longwave (infra-red) radiation absorbed (W)
-\item 3 QMET  - metabolic heat production (W)
+\item 3 QGEN  - metabolic heat production (W)
 \item 4 QEVAP - evaporation (W)
 \item 5 QIROUT - longwave (infra-red) radiation lost (W)
 \item 6 QCONV - convection (W)
@@ -221,7 +220,7 @@ RAISETC <- 0.25 # increment by which TC is elevated (Â°C)
 
 # size and shape
 AMASS <- 0.0337 # mass (kg)
-SHAPE_B_REF <- 1.1 # start off near to a sphere (-)
+SHAPE_B <- 1.1 # start off near to a sphere (-)
 SHAPE_B_MAX <- 5 # maximum ratio of length to width/depth
 
 # fur/feather properties
@@ -242,13 +241,13 @@ MXWET <- 20 # maximum skin wetness (\%)
 SWEAT <- 0.25 # intervals by which skin wetness is increased (\%)
 Q10 <- 2 # Q10 effect of body temperature on metabolic rate
 QBASAL <- 10 ^ (-1.461 + 0.669 * log10(AMASS * 1000)) # basal heat generation (W) (bird formula from McKechnie and Wolf 2004 Phys. & Biochem. Zool. 77:502-521)
-DELTAR <- 5 # offset between air temeprature and breath (Â°C)
+DELTAR <- 5 # offset between air temperature and breath (Â°C)
 EXTREF <- 15 # O2 extraction efficiency (\%)
 PANTING <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANTMAX
-PANTMAX <- 3# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
+PANTMAX <- 3 # maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
 
 ptm <- proc.time() # start timing
-endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], QSOLR = QSOLR, VEL = VEL, TC = TC, TCMAX = TCMAX, RH = RH, AMASS = AMASS, SHAPE_B_REF = SHAPE_B_REF, SHAPE_B_MAX = SHAPE_B_MAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)}) # run endoR across environments
+endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], QSOLR = QSOLR, VEL = VEL, TC = TC, TCMAX = TCMAX, RH = RH, AMASS = AMASS, SHAPE_B_MAX = SHAPE_B_MAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)}) # run endoR across environments
 proc.time() - ptm # stop timing
 
 endo.out1 <- do.call("rbind", lapply(endo.out, data.frame)) # turn results into data frame

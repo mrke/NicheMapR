@@ -1,24 +1,25 @@
 #' CONV_ENDO
 #'
 #' R wrapper for Fortran binary of CONV_ENDO (endotherm model)
-#' @param TS A
-#' @param TENV A
-#' @param NGEOM A
-#' @param SURFAR A
-#' @param FLTYPE A
-#' @param FURTST A
-#' @param D A
-#' @param TFA A
-#' @param VEL A
-#' @param ZFUR A
-#' @param BP A
-#' @param ELEV A
+#' @encoding UTF-8
+#' @param TS skin temperature (°C)
+#' @param TENV fluid temperature at local height (°C)
+#' @param SHAPE shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid
+#' @param SURFAR surface area for convection, m2
+#' @param FLTYPE FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER
+#' @param FURTST test of fur presence (-) from IRPROP
+#' @param D characteristic dimension for convection, m
+#' @param TFA fur/air interface temperature (°C)
+#' @param VEL wind speed (m/s)
+#' @param ZFUR fur depth, mean (m) (from IRPROP)
+#' @param BP barometric pressure (Pa), negative means altitude is used
+#' @param ELEV elevation (m)
 #' @export
-CONV_ENDO <- function(TS, TENV, NGEOM, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV){
+CONV_ENDO <- function(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV){
   a <- .Fortran("CONV_ENDO",
     as.double(TS),
     as.double(TENV),
-    as.double(NGEOM),
+    as.double(SHAPE),
     as.double(SURFAR),
     as.double(FLTYPE),
     as.double(FURTST),

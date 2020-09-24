@@ -1,7 +1,8 @@
 #' SOLVENDO
 #'
 #' R wrapper for Fortran binary of SOLVENDO (endotherm model)
-#' @param AMASS A
+#' @encoding UTF-8
+#' @param SOLVENDO.input input vector
 #' @export
 SOLVENDO <- function(SOLVENDO.input){
   a <- .Fortran("SOLVENDO",
@@ -32,7 +33,7 @@ SOLVENDO <- function(SOLVENDO.input){
 
   treg.names<-c("TC", "TLUNG", "TSKIN_D", "TSKIN_V", "TFA_D", "TFA_V", "SHAPE_B", "PANT", "SKINWET", "K_FLESH", "K_FUR", "K_FUR_D", "K_FUR_V", "K_COMPFUR", "Q10")
   morph.names<-c("AREA", "VOLUME", "CHAR_DIM", "MASS_FAT", "FAT_THICK", "FLESH_VOL", "LENGTH", "WIDTH", "HEIGHT", "DIAM_FLESH", "DIAM_FUR", "AREA_SIL", "AREA_SILN", "AREA_ASILP", "AREA_SKIN", "AREA_SKIN_EVAP", "AREA_CONV", "AREA_COND", "F_SKY", "F_GROUND")
-  enbal.names<-c("QSOL", "QIRIN", "QMET", "QEVAP", "QIROUT", "QCONV", "QCOND", "ENB", "NTRY", "SUCCESS")
+  enbal.names<-c("QSOL", "QIRIN", "QGEN", "QEVAP", "QIROUT", "QCONV", "QCOND", "ENB", "NTRY", "SUCCESS")
   masbal.names<-c("AIR_L", "O2_L", "H2OResp_g", "H2OCut_g", "O2_mol_in", "O2_mol_out", "N2_mol_in", "N2_mol_out", "AIR_mol_in", "AIR_mol_out")
 
   colnames(treg)<-treg.names

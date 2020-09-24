@@ -1,31 +1,25 @@
 #' IRPROP
 #'
 #' R wrapper for Fortran binary of IRPROP (endotherm model)
-#' @param TA A
-#' @param SHAPE_B_MAX A
-#' @param SHAP_B_REF A
-#' @param SHAPE_B A
-#' @param DHAIRD A
-#' @param DHAIRV A
-#' @param LHAIRD A
-#' @param LHAIRV A
-#' @param ZFURD A
-#' @param ZFURV A
-#' @param RHOD A
-#' @param RHOV A
-#' @param REFLD A
-#' @param REFLV A
-#' @param MAXPTVEN A
-#' @param ZFURCOMP A
-#' @param KHAIR A
+#' @encoding UTF-8
+#' @param TA air temperature at local height (°C)
+#' @param DHAIRD hair diameter, dorsal (m)
+#' @param DHAIRV hair diameter, ventral (m)
+#' @param LHAIRD hair length, dorsal (m)
+#' @param LHAIRV hair length, ventral (m)
+#' @param ZFURD fur depth, dorsal (m)
+#' @param ZFURV fur depth, ventral (m)
+#' @param RHOD hair density, dorsal (1/m2)
+#' @param RHOV hair density, ventral (1/m2)
+#' @param REFLD fur reflectivity dorsal (fractional, 0-1)
+#' @param REFLV fur reflectivity ventral (fractional, 0-1)
+#' @param ZFURCOMP depth of compressed fur (for conduction) (m)
+#' @param PVEN fraction of surface area that is ventral fur (fractional, 0-1)
+#' @param KHAIR hair thermal conductivity (W/m°C)
 #' @export
-IRPROP <- function(TA, SHAPE_B_MAX, SHAP_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV,
-  ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, MAXPTVEN, ZFURCOMP, KHAIR){
+IRPROP <- function(TA, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, ZFURCOMP, PVEN, KHAIR){
   a <- .Fortran("IRPROP",
                 as.double(TA),
-                as.double(SHAPE_B_MAX),
-                as.double(SHAP_B_REF),
-                as.double(SHAPE_B),
                 as.double(DHAIRD),
                 as.double(DHAIRV),
                 as.double(LHAIRD),
@@ -36,8 +30,8 @@ IRPROP <- function(TA, SHAPE_B_MAX, SHAP_B_REF, SHAPE_B, DHAIRD, DHAIRV, LHAIRD,
                 as.double(RHOV),
                 as.double(REFLD),
                 as.double(REFLV),
-                as.double(MAXPTVEN),
                 as.double(ZFURCOMP),
+                as.double(PVEN),
                 as.double(KHAIR),
                 results=matrix(data = 0., nrow = 1, ncol = 26),
                 PACKAGE = "NicheMapR")

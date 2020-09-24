@@ -118,7 +118,7 @@ Heat lost by conduction is:
 Q_{cond} = \left(\frac{k_{fur}}{x_{fur}}+\frac{k_{sub}}{x_{sub}}\right) A_{cond} (T_{fa} - T_{sub})
 \end{align}
 
-where $x_{fur}$ is the thickness of the fur in contact with the substrate (typically compressed compared to the rest of the fur), $A_{cnd}$ is the surface are of the animal in contact with the substrate, $T_{sub}$ is the substrate temperature, and $x_{sub}$ is the depth of the substrate from which the substrate temperature is taken.
+where $x_{fur}$ is the thickness of the fur in contact with the substrate (typically compressed compared to the rest of the fur), $A_{cond}$ is the surface are of the animal in contact with the substrate, $T_{sub}$ is the substrate temperature, and $x_{sub}$ is the depth of the substrate from which the substrate temperature is taken.
 
 The heat gained by solar radiation is:
 
@@ -388,16 +388,7 @@ include_graphics("EndoR_scheme.jpg")
 
 This subroutine tests for the presence of fur and coordinates the computation of the fur properties. It ultimately obtains the parameter $k_{eff}$, the effective conductivity of the fur, from which $k_{fur}$ is determined, and the average absorption coefficent $\beta$ and optical depth $\beta_1$, via the subroutine GETKFUR. 
 
-The IRPROP subroutine obtains these properties for the dorsal and ventral sides of the organism, as well as their weighted average based on the user input of the maximum percentage ventral fur. Note that the actual fraction of ventral fur may change as the organism changes from a curled to an uncurled posture. In the SIMULSOL calculations, the entire body is first assumed to be 'dorsal' and then assumed to be 'ventral'. However, not all the ventral half may have the ventral fur properties, as the user is free to set the maximum proportion of the total area that has the ventral fur properties. This is accounted for in this subroutine by doubling the ventral percentage when weighting the ventral fur properties.
-
-To obtain the variable fraction of the surface area that is ventral $p_{vent}$ in the case of the organism uncurling, the shape factor $S_b$ and reference shape factor $S_{b,ref}$ (explained further in the GEOM subroutine section below) are used:
-
-\begin{align}
-\tag{41}
-p_{vent} = \frac{S_b-S_{b,ref}}{S_{b,max} - S_{b,ref}} p_{vent,max}
-\end{align}
-
-where $S_{b,max}$ is the maximum permittable $S_b$ and $p_{vent,max}$ is the maximum permittable $p_{vent}$.
+The IRPROP subroutine obtains these properties for the dorsal and ventral sides of the organism, as well as their weighted average based on the user input of the maximum percentage ventral fur. Note that the actual fraction of ventral fur may change as the organism changes from a curled to an uncurled posture, so the user may alter the percentage of ventral fur, $p_{vent}$, accordingly. In the SIMULSOL calculations, the entire body is first assumed to be 'dorsal' and then assumed to be 'ventral'. This is accounted for in this subroutine by doubling the ventral percentage when weighting the ventral fur properties.
 
 The $p_{vent}$ value is used in the weighted mean calculation of the fur density $\rho_{fur}$, hair diameter $D_{hair}$, hair length $L_{hair}$, fur depth $z_{fur}$ and absorptivity of the fur $\alpha_{fur}$. 
 
@@ -421,7 +412,7 @@ where
 A_{hair} = \rho_{hair}  \pi \left(\frac{D_{hair}}{2}\right)^2
 \end{align}
 
-and $k_{air} = 0.02425+7.038\text{e-}5 \space T_{air}$, from the DRYAIR subroutine described in  [Properties of Air](properties-of-air.html).
+and $k_{air} = 0.02425+7.038\text{e-}5 \space T_a$, from the DRYAIR subroutine described in  [Properties of Air](properties-of-air.html).
 
 In the vertical direction $y(k^{\prime}_y)$, conductivity is expressed as
 
@@ -444,7 +435,7 @@ Then, the effective conductivity of the fur is the average of these:
 k_{eff} = \frac{k^{\prime}_x + k^{\prime}_y}{2}.
 \end{align}
 
-The average absorption coefficient, used in SIMULSOL to compute the conductivity to longwave radiation $k_{rad}$ is
+The average absorption coefficient, used in SIMULSOL to compute the conductivity to longwave radiation $k_{rad}$, is
 
 \begin{align}
 \tag{46}
@@ -458,7 +449,7 @@ and the optical thickness is
 \beta_1 = \beta z_{fur}.
 \end{align}
 
-The subroutine ensures that $k_{eff}$ does not go below $k_{air}$ as well as correcting for situations where hair diameter is impossibly large for the specified density, where $k_{eff}$ is capped at $k_{hair}$.
+The subroutine ensures that $k_{eff}$ does not go below $k_{air}$ as well as correcting for situations where hair diameter is impossibly large for the specified density, in which case $k_{eff}$ is capped at $k_{hair}$.
 
 ## VII. GEOM_ENDO Subroutine
 
@@ -525,7 +516,7 @@ For the cylinder, the radial dimension from core to skin is:
 R_s = \frac{V_{body}}{2 \pi S_b}^{\frac{1}{3}}
 \end{align}
 
-and to the fur-air interface is thus $R_{fa} = R_s + Z_{fur}$.
+and to the fur-air interface is thus $R_{fa} = R_s + z_{fur}$.
 
 The length of the cylinder (flesh and insulating fat layer) is
 
@@ -563,7 +554,7 @@ For the sphere, the radial dimension from core to skin is:
 R_s = \frac{0.75 V_{body}}{\pi}^{\frac{1}{3}}
 \end{align}
 
-and to the fur-air interface is thus $R_{fa} = R_s + Z_{fur}$.
+and to the fur-air interface is thus $R_{fa} = R_s + z_{fur}$.
 
 The skin area is
 
@@ -605,7 +596,7 @@ The dimension from core to skin is then
 R_s = W_{body} / 2
 \end{align}
 
-and to the fur-air interface is thus $R_{fa} = R_s + Z_{fur}$.
+and to the fur-air interface is thus $R_{fa} = R_s + z_{fur}$.
 
 The skin area is
 
@@ -618,12 +609,12 @@ and the total area (at the fur-air interface) is
 
 \begin{align}
 \tag{61}
-A_{tot} = 2 \left[(L_{body}+Z_{fur}) (W_{body}+Z_{fur}) + (L_{body}+Z_{fur}) (H_{body}+Z_{fur}) + \\ (W_{body}+Z_{fur}) (H_{body}+Z_{fur})\right].
+A_{tot} = 2 \left[(L_{body}+z_{fur}) (W_{body}+z_{fur}) + (L_{body}+z_{fur}) (H_{body}+z_{fur}) + \\ (W_{body}+z_{fur}) (H_{body}+z_{fur})\right].
 \end{align}
 
 If a fat layer is present, the volume of flesh is simply $V_{g} = V_{body} - V_{fat}$ and the radius of the flesh is $R_{g} = 0.5\left(\frac{V_{g}}{S_b S_c}\right)^{\frac{1}{3}}$, and the thickness of the fat layer is $R_{s} - R_{g}$. Otherwise, $V_{g} = V_{body}$ and $R_{g} = R_{s}$.
 
-The silhouette area normal to the sun's rays (maximising solar load) is $A_{sil,n} = (L_{body}+Z_{fur}) (W_{body}+Z_{fur})$, and parallel (minimising solar load) is $A_{sil,p} = (L_{body}+Z_{fur}) (H_{body}+Z_{fur})$.
+The silhouette area normal to the sun's rays (maximising solar load) is $A_{sil,n} = (L_{body}+z_{fur}) (W_{body}+z_{fur})$, and parallel (minimising solar load) is $A_{sil,p} = (L_{body}+z_{fur}) (H_{body}+z_{fur})$.
 
 ### Ellipsoid
 
@@ -641,7 +632,7 @@ A_{maj} = S_b B_{min}
 
 with the assumption that $C_{min} = B_{min}$ (prolate ellipsoid).
 
-Thus, $L_{body} = 2 A_{maj}$, and $W_{body} = H_{body} = 2 B_{min}$. The radius to skin is $R_{s} = B_{min}$ and the radius to the fur is $R_{fa} = R_{s} + Z_{fur}$.
+Thus, $L_{body} = 2 A_{maj}$, and $W_{body} = H_{body} = 2 B_{min}$. The radius to skin is $R_{s} = B_{min}$ and the radius to the fur is $R_{fa} = R_{s} + z_{fur}$.
 
 The skin area is
 
@@ -661,14 +652,14 @@ The total area at the fur-air interface is
 
 \begin{align}
 \tag{66}
-A_{tot} = 2 \pi (B^2_{min}+Z_{fur}) + 2 \pi \frac{(A_{maj}+Z_{fur}) (B_{min}+Z_{fur})}{E_{tot}} \arcsin{E_{tot}}
+A_{tot} = 2 \pi (B^2_{min}+z_{fur}) + 2 \pi \frac{(A_{maj}+z_{fur}) (B_{min}+z_{fur})}{E_{tot}} \arcsin{E_{tot}}
 \end{align}
 
 where the eccentricity for the total area (at the fur-air interface) $E_{tot}$ is
 
 \begin{align}
 \tag{67}
-E_{tot} = \frac{\left[(A_{maj}+Z_{fur})^2 - (C_{min}+Z_{fur})^2\right]^{\frac{1}{2}}}{A_{maj}+Z_{fur}}.
+E_{tot} = \frac{\left[(A_{maj}+z_{fur})^2 - (C_{min}+z_{fur})^2\right]^{\frac{1}{2}}}{A_{maj}+z_{fur}}.
 \end{align}
 
 Alternatively, if the user parameter 'SAMODE' is set to 1, the skin and feather-air interface surface areas are computed according to empirical formulations for birds (Walsberg and King, 1978) that capture the fact that birds have a greater skin surface than feather-air interface surface:
@@ -692,23 +683,23 @@ A_{s} = 1110M^{0.65}/10000
 
 and this is then multiplied by the ratio of the results of equations 66 and 64 to obtain $A_{tot}$.
 
-For the ellipsoid, the silhouette area normal to the sun's rays (maximising solar load) is $A_{sil,n} = \pi (A_{maj}+Z_{fur})(B_{min}+Z_{fur})$, and parallel (minimising solar load) is $A_{sil,p} = \pi (B_{maj}+Z_{fur})(C_{min}+Z_{fur})$.
+For the ellipsoid, the silhouette area normal to the sun's rays (maximising solar load) is $A_{sil,n} = \pi (A_{maj}+z_{fur})(B_{min}+z_{fur})$, and parallel (minimising solar load) is $A_{sil,p} = \pi (B_{min}+z_{fur})(C_{min}+z_{fur})$.
 
-If there is a fat layer, care must be taken in the calcluation that fat layer thickness remains constant as shape changes. The volume of the flesh for the ellipsoid is: 
+If there is a fat layer, care must be taken in the calculation that fat layer thickness remains constant as shape changes. The volume of the flesh for the ellipsoid is: 
 
 \begin{align}
 \tag{71}
-V_{g} = \frac{4}{3} \pi (A_{maj} - Z_{fat})(B_{min} - Z_{fat})(C_{min} - Z_{fat})
+V_{g} = \frac{4}{3} \pi (A_{maj} - z_{fat})(B_{min} - z_{fat})(C_{min} - z_{fat})
 \end{align}
 
-where $Z_{fat}$ is the fat thickness. This can be rearranged as:
+where $z_{fat}$ is the fat thickness. This can be rearranged as:
 
 \begin{align}
 \tag{72}
-Z_{fat}^3 - (A_{maj} + B_{min} + C_{min}) Z_{fat} ^ 2 + \left[(A_{maj} B_{min})+(A_{maj}C_{min}) + (B_{maj}C_{min}) \right] Z_{fat} \\ + \left[\frac{3V_{g}}{4 \pi} - (A_{maj} B_{min} C_{min})\right]=0
+z_{fat}^3 - (A_{maj} + B_{min} + C_{min}) z_{fat} ^ 2 + \left[(A_{maj} B_{min})+(A_{maj}C_{min}) + (B_{min}C_{min}) \right] z_{fat} \\ + \left[\frac{3V_{g}}{4 \pi} - (A_{maj} B_{min} C_{min})\right]=0
 \end{align}
 
-and is solved for $Z_{fat}$ in the GEOM subroutine using the cubic formula. 
+and is solved for $z_{fat}$ in the GEOM subroutine using the cubic formula. 
 
 Note that there comes a point at which the user-specified amount of fat is not enough to stretch over the surface area of the ellipsoid. The surface area will depend on the user-supplied a:b ratio, and if that is too large, creating a large surface area, fat thickness is calculated to be a negative number. In such circumstances, the subroutine sets fat thickness to zero for the simulations.
 
@@ -832,10 +823,10 @@ The Nusselt number for forced convection is calculated with the dimensionless Re
 
 \begin{align}
 \tag{84}
-Re=\frac{\rho_{fluid} V D}{\mu}.
+Re=\frac{\rho_{fluid} v D}{\mu}.
 \end{align}
 
-where $V$ is the wind speed ($\text{m} \text{s}^{-1}$).
+where $v$ is the wind speed ($\text{m} \text{s}^{-1}$).
 
 For a cylinder:
 
@@ -903,7 +894,7 @@ and used to compute $h_c$ via equation 75 and $Q_{conv}$ via equation 9, i.e..
 Q_{conv}=h_c A_{tot} (T_{fa} - T_{fluid})
 \end{align}
 
-where $T_{fa}$ is replaced by $T_{sk}$ if no fur/feathers are present.
+where $T_{fa}$ is replaced by $T_s$ if no fur/feathers are present.
 
 ### Mass transfer coefficient
 
@@ -927,10 +918,10 @@ and the mass transfer coefficient is:
 
 \begin{align}
 \tag{96}
-H_d=\frac{Sh \space d}{D}.
+h_d=\frac{Sh \space d}{D}.
 \end{align}
 
-The overall $H_d$ is the sum of the values of $H_{d,free}$ (computed using $Nu_{free}$) and $H_{d,forced}$ (computed using $Nu_{forced}$).
+The overall $h_d$ is the sum of the values of $h_{d,free}$ (computed using $Nu_{free}$) and $h_{d,forced}$ (computed using $Nu_{forced}$).
 
 ## X. WATER Subroutine
 
@@ -940,7 +931,7 @@ For the specific heat capacity of freshwater:
 
 \begin{align}
 \tag{97}
-C_p=4220.02-4.5531 \space T_{water}+0.182958 \space T_{water}^2 - 0.00310614  \space T_{water}^3 + \\ 1.89399\text{e-}5 \space T_{water}^4.
+C_{p,water}=4220.02-4.5531 \space T_{water}+0.182958 \space T_{water}^2 - 0.00310614  \space T_{water}^3 + \\ 1.89399\text{e-}5 \space T_{water}^4.
 \end{align}
 
 For the thermal conductivity:
@@ -972,7 +963,7 @@ For the specific heat capacity of seawater:
 
 \begin{align}
 \tag{101}
-C_p=3913.1369+1.0211143 \space T_{water}.
+C_{p,water}=3913.1369+1.0211143 \space T_{water}.
 \end{align}
 
 For the thermal conductivity:
@@ -998,7 +989,7 @@ For density:
 
 ## XIII. SEVAP_ENDO Subroutine
 
-This subroutine computes aspects of evaporative heat loss including the term $Q_{evap}$ from equation 12 in Section III above. It takes as input the relative humidity $\text{RH}$, barometric pressure $BP$, air temperature $T_a$, the wind speed $V$, as well the mass transfer coefficient computed in CONV_ENDO $h_d$ (eq. 96, section IX above) and the skin surface area $A_s$ computed in GEOM. The WETAIR subroutine and its sub-function VAPPRS, described in [Properties of Air](properties-of-air.html) is used to compute the skin (saturation) and air vapour densities, $\rho_s$ and $\rho_a$.
+This subroutine computes aspects of evaporative heat loss including the term $Q_{evap}$ from equation 12 in Section III above. It takes as input the relative humidity $\text{RH}$, barometric pressure $P_{bar}$, air temperature $T_a$, the wind speed $v$, as well the mass transfer coefficient computed in CONV_ENDO $h_d$ (eq. 96, section IX above) and the skin surface area $A_s$ computed in GEOM. The WETAIR subroutine and its sub-function VAPPRS, described in [Properties of Air](properties-of-air.html) is used to compute the skin (saturation) and air vapour densities, $\rho_s$ and $\rho_a$.
 
 Evaporation may occur from the skin but also from the eyes, if they are assumed to be open, and from the fur or feathers, if wet from rain, licking or other sources. Evaporation from furred/feathered skin can occur via free convection-driven mass transport only, whereas both forced and free convection will drive evaporation from bare skin or from the fur/feather surface. Thus the effective area of the skin for evaporation, $p_{wet} A$, will vary for these different scenarios.
 
@@ -1006,17 +997,17 @@ Thus, cutaneous water loss is partitioned as
 
 \begin{align}
 \tag{105}
-M_{H2O,furskin} = h_{d,free} p_{wet} (1 - p_{bare}) A_s (\rho_s - \rho_a).
+\dot{M}_{\text{H}_2\text{O},furskin} = h_{d,free} p_{wet} (1 - p_{bare}) A_s (\rho_s - \rho_a).
 \end{align}
 
 and
 
 \begin{align}
 \tag{106}
-M_{H2O,bareskin} = h_{d} p_{wet} p_{bare} A_s (\rho_s - \rho_a)
+\dot{M}_{\text{H}_2\text{O},bareskin} = h_{d} p_{wet} p_{bare} A_s (\rho_s - \rho_a)
 \end{align}
 
-where $p_{bare}$ is a user input determining the proportion of the free-water surface (not total skin surface) that is bare skin. Thus $M_{H2O,cut} = M_{H2O,furskin} + M_{H2O,bareskin}$.
+where $p_{bare}$ is a user input determining the proportion of the free-water surface (not total skin surface) that is bare skin. Thus $\dot{M}_{\text{H}_2\text{O},cut} = \dot{M}_{\text{H}_2\text{O},furskin} + \dot{M}_{\text{H}_2\text{O},bareskin}$.
 
 If the organism is in a state of flight (bird/bat), it is assumed that forced and free mass transport drive evaporation (i.e., effectively $p_{bare} = 1$). 
 
@@ -1024,14 +1015,14 @@ If the eyes are open, an additional amount contributes to non-respiratory evapor
 
 \begin{align}
 \tag{107}
-M_{H2O,eyes}=h_d p_{eyes} A_s (\rho_s - \rho_a).
+\dot{M}_{\text{H}_2\text{O},eyes}=h_d p_{eyes} A_s (\rho_s - \rho_a).
 \end{align}
 
 Finally, the fraction of the fur/feather surface area that is wet is determined by the user input $p_{wetfur}$ and
 
 \begin{align}
 \tag{108}
-M_{H2O,wetfur} = h_{d} p_{wetfur} A_tot (\rho_s - \rho_a).
+\dot{M}_{\text{H}_2\text{O},wetfur} = h_{d} p_{wetfur} A_{tot} (\rho_s - \rho_a).
 \end{align}
 
 The subroutine reports the separate mass losses of water as well as the heat lost by evaporation from the skin/eyes and the fur.
@@ -1108,25 +1099,25 @@ As eq. 18 is being developed to find $T_{fa}$ in SIMULSOL, the $Qr$ terms are ca
 
 \begin{align}
 \tag{115}
-Q_{r1}= A_{fa} F_{A,sky} 4 \epsilon \sigma (T_{rad,fur})^3
+Q_{r1}= A_{fa} F_{sky} 4 \epsilon \sigma (T_{rad,fur})^3
 \end{align}
 
 \begin{align}
 \tag{116}
-Q_{r2}= A_{fa} F_{A,sub} 4 \epsilon \sigma (T_{rad,fur})^3
+Q_{r2}= A_{fa} F_{sub} 4 \epsilon \sigma (T_{rad,fur})^3
 \end{align}
 
 \begin{align}
 \tag{117}
-Q_{r3}= A_{fa} F_{A,bsh} 4 \epsilon \sigma (T_{rad,fur})^3
+Q_{r3}= A_{fa} F_{bsh} 4 \epsilon \sigma (T_{rad,fur})^3
 \end{align}
 
 \begin{align}
 \tag{118}
-Q_{r4}= A_{fa} F_{A,veg} 4 \epsilon \sigma (T_{rad,fur})^3
+Q_{r4}= A_{fa} F_{veg} 4 \epsilon \sigma (T_{rad,fur})^3
 \end{align}
 
-where $F_{a}$ terms are the respective, user-specified configuration factors.
+where $F$ terms are the respective, user-specified configuration factors.
 
 ### Step 5.
 
@@ -1219,7 +1210,7 @@ The moles of $\text{O}_2$ exiting the respiratory system (position 2, Fig. 3) is
 
 \begin{align}
 \tag{126}
-\dot{J}_{\text{O}_2,2} = \dot{J}_{\text{O}_2,2} - \dot{J}_{\text{O}_2,con}.
+\dot{J}_{\text{O}_2,2} = \dot{J}_{\text{O}_2,1} - \dot{J}_{\text{O}_2,con}.
 \end{align}
 
 The moles of air at exit (position 2) will be approximately the same at entrance, since the moles of $\text{O}_2$ removed is nearly the same as the moles of $\text{CO}_2$ added. The molar air flow rate at exit is
@@ -1266,7 +1257,7 @@ The weighted mean guess of $Q_{gen,net}$ from the SIMULSOL calls is finally pass
 
 Various behaviours can be invoked as part of this overall procedure, to help find a solution, including changes in posture (shape), flesh thermal conductivity, allowing core temperature to rise, panting and sweating. This subroutine serves as an example setup, where the latter behaviours are attempted sequentially, in the order just given, but many other variants are possible such as changing the order or allowing processes to happen in parallel. The R function 'endoR_devel' and the Fortran subroutine 'SOLVENDO' are equivalent, with the latter provided as a way to easily develop behavioural algorithms which should then be converted into an equivalent Fortran version for maximal performance (the speed of the calculations may increase over 100-fold when run as a Fortran subroutine).
 
-## References
+## XVI References
 
 Brent, R. (2002) Algorithms for minimization without derivatives, Dover Publications.
 
@@ -1289,3 +1280,11 @@ Mitchell, J.W. (1976) Heat transfer from spheres and other animal forms. Biophys
 Stahl, W.R. (1967) Scaling of respiratory variables in mammals. Journal of Applied Physiology, 22, 453–460.
 
 Walsberg, G.E. & King, J.E. (1978) The Relationship of the External Surface Area of Birds to Skin Surface Area and Body Mass. Journal of Experimental Biology, 76, 185–189.
+
+## XVII Symbols
+
+| Symbol   | units   | Description                                                        |
+|:---------|:--------|:-------------------------------------------------------------------|
+|          |         |                                                                    |
+|          |         |                                                                    |
+|          |         |                                                                    |

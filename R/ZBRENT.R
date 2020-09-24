@@ -1,10 +1,11 @@
 #' ZBRENT_ENDO
 #'
 #' R wrapper for Fortran binary of ZBRENT_ENDO (endotherm model)
-#' @param QM1 A
-#' @param QM2 A
-#' @param TOL A
-#' @param ZBRENT.in A
+#' @encoding UTF-8
+#' @param QM1 bracketing guess 1 of metabolic heat generation, W
+#' @param QM2 bracketing guess 2 of metabolic heat generation, W
+#' @param TOL tolerance of solution, W
+#' @param ZBRENT.in vector of input parameters for RESPFUN
 #' @export
 ZBRENT_ENDO <- function(QM1, QM2, TOL, ZBRENT.in, results){
 
