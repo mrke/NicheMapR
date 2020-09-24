@@ -426,7 +426,7 @@ endoR_devel <- function(
     ### IRPROP, infrared radiation properties of fur
 
     # call the IR properties subroutine
-    IRPROP.out <- IRPROP(TA, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, ZFURCOMP, PVEN, KHAIR)
+    IRPROP.out <- IRPROP((0.7 * TS + 0.3 * TFA), DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, ZFURCOMP, PVEN, KHAIR)
 
     # output
     KEFARA <- IRPROP.out[1:3] # effective thermal conductivity of fur array, mean, dorsal, ventral (W/mK)
@@ -605,15 +605,14 @@ endoR_devel <- function(
       if(S == 2){
         AREACND <- ATOT * (PCOND * 2)
         CD <- AREACND * ((KFURCMPRS / ZFURCOMP) + (KSUB / 0.025)) # assume conduction happens from 2.5 cm depth
-        CONVAR <- CONVAR - AREACND #NB edit - Adjust area used for convection to account for PCOND. This is sent in to simulsol & then conv (unpacked as SURFAR)
+        CONVAR <- CONVAR - AREACND # adjust area used for convection to account for PCOND. This is sent in to SIMULSOL & then CONV (unpacked as SURFAR)
       }else{ #doing dorsal side, no conduction. No need to adjust areas used for convection.
         AREACND <- 0
         CD <- 0
       }
 
-
       # package up inputs
-      FURVARS <- c(LEN,ZFUR,FURTHRMK,KEFF,BETARA,FURTST,ZL)
+      FURVARS <- c(LEN,ZFUR,FURTHRMK,KEFF,BETARA,FURTST,ZL,LHAR[S+1],DHAR[S+1],RHOAR[S+1],REFLFR[S+1],KHAIR,S)
       GEOMVARS <- c(SHAPE,SUBQFAT,CONVAR,VOL,D,CONVAR,CONVSK,RFUR,RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD)
       ENVVARS <- c(FLTYPE,TA,TS,TBUSH,TVEG,TLOWER,TSKY,TCONDSB,RH,VEL,BP,ELEV,FASKY,FABUSH,FAVEG,FAGRD,QSLR)
       TRAITS <- c(TC,AK1,AK2,EMISAN,FATTHK,FLYHR,FURWET,PCTBAREVAP,PCTEYES)
@@ -650,7 +649,9 @@ endoR_devel <- function(
     FAVEG <- FAVEGREF # vegetation
 
     # lung temperature and temperature of exhaled air
-    TLUNG <- (TC + (SIMULSOL.out[1, 2] + SIMULSOL.out[2, 2]) * 0.5) * 0.5 # average of skin and core
+    TS <- (SIMULSOL.out[1, 2] + SIMULSOL.out[2, 2]) * 0.5
+    TFA <- (SIMULSOL.out[1, 1] + SIMULSOL.out[2, 1]) * 0.5
+    TLUNG <- (TC + TS) * 0.5 # average of skin and core
     TAEXIT <- min(TA + DELTAR, TLUNG) # temperature of exhaled air, °C
 
     # now guess for metabolic rate that balances the heat budget while allowing metabolic rate

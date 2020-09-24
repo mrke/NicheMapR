@@ -4,20 +4,20 @@
 #' @encoding UTF-8
 #' @param BP barometric pressure (Pa), negative means altitude is used
 #' @param TA air temperature (°C)
-#' @param RELHUM relative humidity (%)
+#' @param RELHUM relative humidity (\%)
 #' @param VEL wind speed (m/s)
 #' @param TC core temperature (°C)
 #' @param TSURF air temperature (°C)
 #' @param ELEV elevation (m)
-#' @param SKINW part of the skin surface that is wet (%)
+#' @param SKINW part of the skin surface that is wet (\%)
 #' @param FLYHR is flight occurring this hour? (imposes forced evaporative loss)
 #' @param CONVSK area of skin for evaporation (total skin area - hair area), m2
 #' @param HD mass transfer coefficient
 #' @param HDFREE free mass transfer coefficient
-#' @param PCTBAREVAP surface area for evaporation that is skin, e.g. licking paws (%)
-#' @param PCTEYES surface area made up by the eye (%) - make zero if sleeping
+#' @param PCTBAREVAP surface area for evaporation that is skin, e.g. licking paws (\%)
+#' @param PCTEYES surface area made up by the eye (\%) - make zero if sleeping
 #' @param ZFUR fur depth (m)
-#' @param FURWET part of the fur surface that is wet (%)
+#' @param FURWET part of the fur surface that is wet (\%)
 #' @param TFA fur/air interface temperature (°C)
 #' @param CONVAR area for convection (total area minus ventral area, as determined by PCOND), m2
 #' @export

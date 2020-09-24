@@ -23,7 +23,7 @@ SIMULSOL(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA, SKINW,
 
 \item{TFA}{current guess of fur/air-interface temperature (°C)}
 
-\item{SKINW}{part of the skin surface that is wet (%)}
+\item{SKINW}{part of the skin surface that is wet (\%)}
 
 \item{TSKIN}{current guess of skin temperature (°C)}
 }

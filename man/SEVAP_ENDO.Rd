@@ -13,7 +13,7 @@ SEVAP_ENDO(BP, TA, RELHUM, VEL, TC, TSURF, ELEV, SKINW, FLYHR, CONVSK, HD,
 
 \item{TA}{air temperature (°C)}
 
-\item{RELHUM}{relative humidity (%)}
+\item{RELHUM}{relative humidity (\%)}
 
 \item{VEL}{wind speed (m/s)}
 
@@ -23,7 +23,7 @@ SEVAP_ENDO(BP, TA, RELHUM, VEL, TC, TSURF, ELEV, SKINW, FLYHR, CONVSK, HD,
 
 \item{ELEV}{elevation (m)}
 
-\item{SKINW}{part of the skin surface that is wet (%)}
+\item{SKINW}{part of the skin surface that is wet (\%)}
 
 \item{FLYHR}{is flight occurring this hour? (imposes forced evaporative loss)}
 
@@ -33,13 +33,13 @@ SEVAP_ENDO(BP, TA, RELHUM, VEL, TC, TSURF, ELEV, SKINW, FLYHR, CONVSK, HD,
 
 \item{HDFREE}{free mass transfer coefficient}
 
-\item{PCTBAREVAP}{surface area for evaporation that is skin, e.g. licking paws (%)}
+\item{PCTBAREVAP}{surface area for evaporation that is skin, e.g. licking paws (\%)}
 
-\item{PCTEYES}{surface area made up by the eye (%) - make zero if sleeping}
+\item{PCTEYES}{surface area made up by the eye (\%) - make zero if sleeping}
 
 \item{ZFUR}{fur depth (m)}
 
-\item{FURWET}{part of the fur surface that is wet (%)}
+\item{FURWET}{part of the fur surface that is wet (\%)}
 
 \item{TFA}{fur/air interface temperature (°C)}
 

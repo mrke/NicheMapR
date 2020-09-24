@@ -9,7 +9,7 @@
 #' @param ENVVARS environmental input vector
 #' @param TRAITS other trait inputs vector
 #' @param TFA current guess of fur/air-interface temperature (°C)
-#' @param SKINW part of the skin surface that is wet (%)
+#' @param SKINW part of the skin surface that is wet (\%)
 #' @param TSKIN current guess of skin temperature (°C)
 #' @export
 SIMULSOL <- function(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA,

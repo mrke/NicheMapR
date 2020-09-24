@@ -50,7 +50,7 @@ C     USING endo_devel.R
       INTEGER S
     
       DIMENSION IRPROPout(26),GEOMout(25),CONVOUT(14),
-     & SOLARout(7),SIMULSOLout(2,15),SIMULOUT(15),FURVARS(9),
+     & SOLARout(7),SIMULSOLout(2,15),SIMULOUT(15),FURVARS(15),
      & GEOMVARS(16),TRAITS(9),ENVVARS(17),ZBRENTin(17),ZBRENTout(15),
      & INPUT(88),TREG(15),MORPH(20),ENBAL(10),MASBAL(10)
 
@@ -154,8 +154,8 @@ C     USING endo_devel.R
        !### IRPROP, infrared radiation properties of fur
 
        !# call the IR properties subroutine
-       CALL IRPROP(TA, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, 
-     &  RHOD, RHOV, REFLD, REFLV, ZFURCOMP, PVEN, KHAIR, IRPROPout)
+       CALL IRPROP((0.7*TFA+0.3*TS),DHAIRD,DHAIRV,LHAIRD,LHAIRV,ZFURD,
+     & ZFURV,RHOD,RHOV,REFLD,REFLV,ZFURCOMP,PVEN,KHAIR,IRPROPout)
       
        !# output
        KEFARA = IRPROPout(1:3) !# effective thermal conductivity of fur array, mean, dorsal, ventral (W/mK)
@@ -337,14 +337,15 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         IF(S==2)THEN ! doing ventral side, add conduction
          AREACND = ATOT * (PCOND *2)
          CD = AREACND * ((KFURCMPRS/ZFURCOMP)+(KSUB/0.025)) !# assume conduction happens from 2.5 cm depth
-         CONVAR = CONVAR - AREACND !# Adjust area used for convection to account for PCOND. This is sent in to simulsol & used for CONV, RAD
+         CONVAR = CONVAR - AREACND !# adjust area used for convection to account for PCOND. This is sent in to SIMULSOL & then CONV (unpacked as SURFAR)
         ELSE  !# doing dorsal side, no conduction. No need to adjust areas used for convection. 
          AREACND = 0.
          CD = 0.
         ENDIF
 
         !# package up inputs
-        FURVARS = (/LEN,ZFUR,FURTHRMK,KEFF,BETARA,FURTST,ZL/)
+        FURVARS = (/LEN,ZFUR,FURTHRMK,KEFF,BETARA,FURTST,ZL,LHAR(S+1),
+     &   DHAR(S+1),RHOAR(S+1),REFLFR(S+1),KHAIR,REAL(S,8)/)
         GEOMVARS = (/SHAPE,SUBQFAT,CONVAR,VOL,D,CONVAR,CONVSK,RFUR,
      &   RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD/)
         ENVVARS = (/FLTYPE,TA,TS,TBUSH,TVEG,TLOWER,TSKY,TCONDSB,RH,
@@ -387,7 +388,9 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
        FAVEG = FAVEGREF !# vegetation
 
        !# lung temperature and temperature of exhaled air
-       TLUNG =(TC + (SIMULSOLout(1, 2) + SIMULSOLout(2, 2)) * 0.5) * 0.5 !# average of skin and core
+       TS = (SIMULSOLout(1, 2) + SIMULSOLout(2, 2)) * 0.5
+       TFA = (SIMULSOLout(1, 1) + SIMULSOLout(2, 1)) * 0.5
+       TLUNG =(TC + TS) * 0.5 !# average of skin and core
        TAEXIT = min(TA + DELTAR, TLUNG) !# temperature of exhaled air, deg C
 
        !# now guess for metabolic rate that balances the heat budget while allowing metabolic rate

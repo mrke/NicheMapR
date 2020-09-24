@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-This document shows how to use the `endoR.R` function of NicheMapR to compute endotherm heat and mass balances. This function collates all the different steps in [Endotherm Components Tutorial](endotherm-components-tutorial.html) into a single function, 'endoR', that can be applied to vectors of data. The latter calls a FORTRAN routine call 'SOLVENDO' (high speed calculation). An R equivalent of this, 'endoR_devel' (slower), can be used for the development of algorithms for organism-specific sequences of thermoregulatory responses, and then a version of SOLVENDO can be modified accordingly.
+This document shows how to use the `endoR.R` function of NicheMapR to compute endotherm heat and mass balances. This function collates all the different steps in [Endotherm Components Tutorial](endotherm-components-tutorial.html) into a single function, 'endoR', that can be applied to vectors of data. The latter calls a FORTRAN routine call 'SOLVENDO' (high speed calculation). An R equivalent of this, 'endoR_devel' (slower), can be used for the development of algorithms for organism-specific sequences of thermoregulatory responses, and then a version of SOLVENDO can be modified accordingly. All the underlying theory, equations and subroutines are described in [Endotherm Theory Tutorial](endotherm-model-equations.html).
 
 ## Single calculation example
 
