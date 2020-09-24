@@ -9,23 +9,23 @@ SIMULSOL(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA, SKINW,
   TSKIN, results)
 }
 \arguments{
-\item{DIFTOL}{A}
+\item{DIFTOL}{error tolerance for SIMULSOL}
 
-\item{IPT}{A}
+\item{IPT}{geometry for SIMULSOL, 1 = cylinder, 2 = sphere, 3 = ellipsoid}
 
-\item{FURVARS}{A}
+\item{FURVARS}{fur input variable vector}
 
-\item{GEOMVARS}{A}
+\item{GEOMVARS}{shape and size input variable vector}
 
-\item{ENVVARS}{A}
+\item{ENVVARS}{environmental input vector}
 
-\item{TRAITS}{A}
+\item{TRAITS}{other trait inputs vector}
 
-\item{TFA}{A}
+\item{TFA}{current guess of fur/air-interface temperature (°C)}
 
-\item{SKINW}{A}
+\item{SKINW}{part of the skin surface that is wet (%)}
 
-\item{TSKIN}{A}
+\item{TSKIN}{current guess of skin temperature (°C)}
 }
 \description{
 R wrapper for Fortran binary of SIMULSOL (endotherm model)

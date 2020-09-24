@@ -11,3 +11,6 @@ src/*.so
 src/*.dll
 src-i386
 src-x64
+aust_pars.txt
+dem.Rda
+ncep_pars.txt
