@@ -386,7 +386,7 @@ include_graphics("EndoR_scheme.jpg")
 
 ## V. IRPROP Subroutine
 
-This subroutine tests for the presence of fur and coordinates the computation of the fur properties. It ultimately obtains the parameter $k_{eff}$, the effective conductivity of the fur, from which $k_{fur}$ is determined, and the average absorption coefficent $\beta$ and optical depth $\beta_1$, via the subroutine GETKFUR. 
+This subroutine tests for the presence of fur and coordinates the computation of the fur properties. It ultimately obtains the parameter $k_{eff}$, the effective conductivity of the fur, from which $k_{fur}$ is determined, and the average absorption coefficient $\beta$ and optical depth $\beta_1$, via the subroutine GETKFUR. 
 
 The IRPROP subroutine obtains these properties for the dorsal and ventral sides of the organism, as well as their weighted average based on the user input of the maximum percentage ventral fur. Note that the actual fraction of ventral fur may change as the organism changes from a curled to an uncurled posture, so the user may alter the percentage of ventral fur, $p_{vent}$, accordingly. In the SIMULSOL calculations, the entire body is first assumed to be 'dorsal' and then assumed to be 'ventral'. This is accounted for in this subroutine by doubling the ventral percentage when weighting the ventral fur properties.
 
@@ -396,7 +396,7 @@ The IRPROP function loops through the calculated average, dorsal and ventral fur
 
 ## VI. GETKFUR Subroutine
 
-This subroutine takes as input the density of the fur, its length, diameter and thermal conductivity, and computes $k_{eff}$, $\beta$ and $\beta_1$ as follows (from Conley and Porter 1986, modified from Kozlowski 1976).
+This subroutine takes as input the density of the fur, its length, diameter and thermal conductivity, and computes $k_{eff}$, $\beta$ and $\beta_1$ as follows (from Conley and Porter 1986, modified from Kowalski 1976).
 
 The conductivity of the fur is computed along the horizontal direction $x(k^{\prime}_x)$ as a surface area weighted mean of air ($k_{air}$) and hair conductivity:
 
@@ -1043,9 +1043,9 @@ Guess an initial skin temperature $T_s$ because $Q_{evap}$ depends on $T_s$. The
 
 ### Step 3.
 
-Calculate $T_{fa}$ from the equation 18 in Section IV, using the $T_{fa}$ guess to calculate the $h_c$ and $h_r$ terms and the $T_s$ guess to calculate $Q_{evap}$.
+Calculate $T_{fa}$ from the equation 18 in Section IV. Note that the effective fur thermal conductivity $k_{eff}$ depends on air temperature in the fur, which is assumed to be a weighted mean of $T_s$ and $T_{fa}$ (relative weightings 0.7 and 0.3, respectively), thus with each new estimate of $T_s$ and $T_{fa}$ the IRPROP routine is called to get a temperature-adjusted $k_{eff}$ estimate. 
 
-This calculation is made by calls to CONV_ENDO and SEVAP_ENDO to get the heat and mass transfer coefficients and estimates of $Q_{evap}$ from the skin and fur. 
+The $T_{fa}$ guess is also used to calculate the $h_c$ and $h_r$ terms and the $T_s$ guess to calculate $Q_{evap}$. This calculation is made by calls to CONV_ENDO and SEVAP_ENDO to get the heat and mass transfer coefficients and estimates of $Q_{evap}$ from the skin and fur. 
 
 ### Step 4.
 

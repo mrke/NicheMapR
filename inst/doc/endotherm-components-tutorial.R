@@ -364,7 +364,7 @@ for(S in 1:2){
   
   
   # package up inputs
-  FURVARS <- c(LEN,ZFUR,FURTHRMK,KEFF,BETARA,FURTST,ZL)
+  FURVARS <- c(LEN,ZFUR,FURTHRMK,KEFF,BETARA,FURTST,ZL,LHAR[S+1],DHAR[S+1],RHOAR[S+1],REFLFR[S+1],KHAIR,S)
   GEOMVARS <- c(SHAPE,SUBQFAT,CONVAR,VOL,D,CONVAR,CONVSK,RFUR,RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD)
   ENVVARS <- c(FLTYPE,TA,TS,TBUSH,TVEG,TLOWER,TSKY,TCONDSB,RH,VEL,BP,ELEV,FASKY,FABUSH,FAVEG,FAGRD,QSLR)
   TRAITS <- c(TC,AK1,AK2,EMISAN,FATTHK,FLYHR,FURWET,PCTBAREVAP,PCTEYES)
@@ -412,7 +412,8 @@ VMULT <- 1 - DMULT # Assume that reflectivity of veg below equals reflectivity o
 X <- GEND * DMULT + GENV * VMULT # weighted estimate of metabolic heat generation
 
 # lung temperature and temperature of exhaled air
-TLUNG <- (TC + (SIMULSOL.out[1, 3] + SIMULSOL.out[1, 3]) * 0.5) * 0.5 # average of skin and core
+TS <- (SIMULSOL.out[1, 2] + SIMULSOL.out[2, 2]) * 0.5
+TLUNG <- (TC + TS) * 0.5 # average of skin and core
 TAEXIT <- min(TA + DELTAR, TLUNG) # temperature of exhaled air, °C
 
 QMIN <- QBASAL

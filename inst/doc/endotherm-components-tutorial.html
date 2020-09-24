@@ -309,7 +309,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <div id="overview" class="section level2">
 <h2>Overview</h2>
-<p>This document provides an overview of an R implementation of the NicheMapR endotherm model, via the sub-functions of ‘endoR’ and ‘endoR_devel’. This implementation modularises the original version such that many of the internal subroutines and functions can be called separately. The idea is that the user has more flexibility in setting the model up for the behavioural and physiological responses of a particular animal. There is also a tutorial for using ‘endoR’ (and ‘endoR_devel’) itself <a href="endotherm-model-tutorial.html">Endotherm Model Tutorial</a>.</p>
+<p>This document provides an overview of an R implementation of the NicheMapR endotherm model, via the sub-functions of ‘endoR’ and ‘endoR_devel’. This implementation modularises the original version such that many of the internal subroutines and functions can be called separately. The idea is that the user has more flexibility in setting the model up for the behavioural and physiological responses of a particular animal. All the underlying theory, equations and subroutines are described in <a href="endotherm-model-equations.html">Endotherm Theory Tutorial</a>. There is also a tutorial for using ‘endoR’ (and ‘endoR_devel’) itself <a href="endotherm-model-tutorial.html">Endotherm Model Tutorial</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(NicheMapR)</a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="kw">library</span>(knitr)</a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="kw">library</span>(plotrix)</a></code></pre></div>
@@ -1086,39 +1086,41 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb11-136" title="136">    </a>
 <a class="sourceLine" id="cb11-137" title="137">    </a>
 <a class="sourceLine" id="cb11-138" title="138">    <span class="co"># package up inputs</span></a>
-<a class="sourceLine" id="cb11-139" title="139">    FURVARS &lt;-<span class="st"> </span><span class="kw">c</span>(LEN, ZFUR, FURTHRMK, KEFF, BETARA, FURTST, ZL)</a>
-<a class="sourceLine" id="cb11-140" title="140">    GEOMVARS &lt;-<span class="st"> </span><span class="kw">c</span>(SHAPE, SUBQFAT, CONVAR, VOL, D, CONVAR, CONVSK, </a>
-<a class="sourceLine" id="cb11-141" title="141">        RFUR, RFLESH, RSKIN, XR, RRAD, ASEMAJ, BSEMIN, CSEMIN, </a>
-<a class="sourceLine" id="cb11-142" title="142">        CD)</a>
-<a class="sourceLine" id="cb11-143" title="143">    ENVVARS &lt;-<span class="st"> </span><span class="kw">c</span>(FLTYPE, TA, TS, TBUSH, TVEG, TLOWER, TSKY, TCONDSB, </a>
-<a class="sourceLine" id="cb11-144" title="144">        RH, VEL, BP, ELEV, FASKY, FABUSH, FAVEG, FAGRD, QSLR)</a>
-<a class="sourceLine" id="cb11-145" title="145">    TRAITS &lt;-<span class="st"> </span><span class="kw">c</span>(TC, AK1, AK2, EMISAN, FATTHK, FLYHR, FURWET, </a>
-<a class="sourceLine" id="cb11-146" title="146">        PCTBAREVAP, PCTEYES)</a>
-<a class="sourceLine" id="cb11-147" title="147">    </a>
-<a class="sourceLine" id="cb11-148" title="148">    <span class="co"># set IPT, the geometry assumed in SIMULSOL: 1 = cylinder, 2</span></a>
-<a class="sourceLine" id="cb11-149" title="149">    <span class="co"># = sphere, 3 = ellipsoid</span></a>
-<a class="sourceLine" id="cb11-150" title="150">    <span class="cf">if</span> (SHAPE <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>)) {</a>
-<a class="sourceLine" id="cb11-151" title="151">        IPT &lt;-<span class="st"> </span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb11-152" title="152">    }</a>
-<a class="sourceLine" id="cb11-153" title="153">    <span class="cf">if</span> (SHAPE <span class="op">==</span><span class="st"> </span><span class="dv">2</span>) {</a>
-<a class="sourceLine" id="cb11-154" title="154">        IPT &lt;-<span class="st"> </span><span class="dv">2</span></a>
-<a class="sourceLine" id="cb11-155" title="155">    }</a>
-<a class="sourceLine" id="cb11-156" title="156">    <span class="cf">if</span> (SHAPE <span class="op">==</span><span class="st"> </span><span class="dv">4</span>) {</a>
-<a class="sourceLine" id="cb11-157" title="157">        IPT &lt;-<span class="st"> </span><span class="dv">3</span></a>
-<a class="sourceLine" id="cb11-158" title="158">    }</a>
-<a class="sourceLine" id="cb11-159" title="159">    </a>
-<a class="sourceLine" id="cb11-160" title="160">    <span class="co"># call SIMULSOL</span></a>
-<a class="sourceLine" id="cb11-161" title="161">    SIMULSOL.out[S, ] &lt;-<span class="st"> </span><span class="kw">SIMULSOL</span>(DIFTOL, IPT, FURVARS, GEOMVARS, </a>
-<a class="sourceLine" id="cb11-162" title="162">        ENVVARS, TRAITS, TFA, SKINW, TS)</a>
-<a class="sourceLine" id="cb11-163" title="163">}</a>
-<a class="sourceLine" id="cb11-164" title="164"></a>
-<a class="sourceLine" id="cb11-165" title="165">SIMULSOL.out &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), SIMULSOL.out)</a>
-<a class="sourceLine" id="cb11-166" title="166"><span class="kw">colnames</span>(SIMULSOL.out) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;SIDE&quot;</span>, <span class="st">&quot;TFA&quot;</span>, <span class="st">&quot;TSKIN&quot;</span>, <span class="st">&quot;QCONV&quot;</span>, </a>
-<a class="sourceLine" id="cb11-167" title="167">    <span class="st">&quot;QCOND&quot;</span>, <span class="st">&quot;QGENNET&quot;</span>, <span class="st">&quot;QSEVAP&quot;</span>, <span class="st">&quot;QRAD&quot;</span>, <span class="st">&quot;QSLR&quot;</span>, <span class="st">&quot;QRSKY&quot;</span>, <span class="st">&quot;QRBSH&quot;</span>, </a>
-<a class="sourceLine" id="cb11-168" title="168">    <span class="st">&quot;QRVEG&quot;</span>, <span class="st">&quot;QRGRD&quot;</span>, <span class="st">&quot;QFSEVAP&quot;</span>, <span class="st">&quot;NTRY&quot;</span>, <span class="st">&quot;SUCCESS&quot;</span>)</a>
-<a class="sourceLine" id="cb11-169" title="169">tSIMULSOL.out &lt;-<span class="st"> </span><span class="kw">t</span>(SIMULSOL.out)</a>
-<a class="sourceLine" id="cb11-170" title="170"><span class="kw">colnames</span>(tSIMULSOL.out) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;DORSAL&quot;</span>, <span class="st">&quot;VENTRAL&quot;</span>)</a>
-<a class="sourceLine" id="cb11-171" title="171"><span class="kw">kable</span>(tSIMULSOL.out)</a></code></pre></div>
+<a class="sourceLine" id="cb11-139" title="139">    FURVARS &lt;-<span class="st"> </span><span class="kw">c</span>(LEN, ZFUR, FURTHRMK, KEFF, BETARA, FURTST, ZL, </a>
+<a class="sourceLine" id="cb11-140" title="140">        LHAR[S <span class="op">+</span><span class="st"> </span><span class="dv">1</span>], DHAR[S <span class="op">+</span><span class="st"> </span><span class="dv">1</span>], RHOAR[S <span class="op">+</span><span class="st"> </span><span class="dv">1</span>], REFLFR[S <span class="op">+</span><span class="st"> </span><span class="dv">1</span>], </a>
+<a class="sourceLine" id="cb11-141" title="141">        KHAIR, S)</a>
+<a class="sourceLine" id="cb11-142" title="142">    GEOMVARS &lt;-<span class="st"> </span><span class="kw">c</span>(SHAPE, SUBQFAT, CONVAR, VOL, D, CONVAR, CONVSK, </a>
+<a class="sourceLine" id="cb11-143" title="143">        RFUR, RFLESH, RSKIN, XR, RRAD, ASEMAJ, BSEMIN, CSEMIN, </a>
+<a class="sourceLine" id="cb11-144" title="144">        CD)</a>
+<a class="sourceLine" id="cb11-145" title="145">    ENVVARS &lt;-<span class="st"> </span><span class="kw">c</span>(FLTYPE, TA, TS, TBUSH, TVEG, TLOWER, TSKY, TCONDSB, </a>
+<a class="sourceLine" id="cb11-146" title="146">        RH, VEL, BP, ELEV, FASKY, FABUSH, FAVEG, FAGRD, QSLR)</a>
+<a class="sourceLine" id="cb11-147" title="147">    TRAITS &lt;-<span class="st"> </span><span class="kw">c</span>(TC, AK1, AK2, EMISAN, FATTHK, FLYHR, FURWET, </a>
+<a class="sourceLine" id="cb11-148" title="148">        PCTBAREVAP, PCTEYES)</a>
+<a class="sourceLine" id="cb11-149" title="149">    </a>
+<a class="sourceLine" id="cb11-150" title="150">    <span class="co"># set IPT, the geometry assumed in SIMULSOL: 1 = cylinder, 2</span></a>
+<a class="sourceLine" id="cb11-151" title="151">    <span class="co"># = sphere, 3 = ellipsoid</span></a>
+<a class="sourceLine" id="cb11-152" title="152">    <span class="cf">if</span> (SHAPE <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>)) {</a>
+<a class="sourceLine" id="cb11-153" title="153">        IPT &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb11-154" title="154">    }</a>
+<a class="sourceLine" id="cb11-155" title="155">    <span class="cf">if</span> (SHAPE <span class="op">==</span><span class="st"> </span><span class="dv">2</span>) {</a>
+<a class="sourceLine" id="cb11-156" title="156">        IPT &lt;-<span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb11-157" title="157">    }</a>
+<a class="sourceLine" id="cb11-158" title="158">    <span class="cf">if</span> (SHAPE <span class="op">==</span><span class="st"> </span><span class="dv">4</span>) {</a>
+<a class="sourceLine" id="cb11-159" title="159">        IPT &lt;-<span class="st"> </span><span class="dv">3</span></a>
+<a class="sourceLine" id="cb11-160" title="160">    }</a>
+<a class="sourceLine" id="cb11-161" title="161">    </a>
+<a class="sourceLine" id="cb11-162" title="162">    <span class="co"># call SIMULSOL</span></a>
+<a class="sourceLine" id="cb11-163" title="163">    SIMULSOL.out[S, ] &lt;-<span class="st"> </span><span class="kw">SIMULSOL</span>(DIFTOL, IPT, FURVARS, GEOMVARS, </a>
+<a class="sourceLine" id="cb11-164" title="164">        ENVVARS, TRAITS, TFA, SKINW, TS)</a>
+<a class="sourceLine" id="cb11-165" title="165">}</a>
+<a class="sourceLine" id="cb11-166" title="166"></a>
+<a class="sourceLine" id="cb11-167" title="167">SIMULSOL.out &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), SIMULSOL.out)</a>
+<a class="sourceLine" id="cb11-168" title="168"><span class="kw">colnames</span>(SIMULSOL.out) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;SIDE&quot;</span>, <span class="st">&quot;TFA&quot;</span>, <span class="st">&quot;TSKIN&quot;</span>, <span class="st">&quot;QCONV&quot;</span>, </a>
+<a class="sourceLine" id="cb11-169" title="169">    <span class="st">&quot;QCOND&quot;</span>, <span class="st">&quot;QGENNET&quot;</span>, <span class="st">&quot;QSEVAP&quot;</span>, <span class="st">&quot;QRAD&quot;</span>, <span class="st">&quot;QSLR&quot;</span>, <span class="st">&quot;QRSKY&quot;</span>, <span class="st">&quot;QRBSH&quot;</span>, </a>
+<a class="sourceLine" id="cb11-170" title="170">    <span class="st">&quot;QRVEG&quot;</span>, <span class="st">&quot;QRGRD&quot;</span>, <span class="st">&quot;QFSEVAP&quot;</span>, <span class="st">&quot;NTRY&quot;</span>, <span class="st">&quot;SUCCESS&quot;</span>)</a>
+<a class="sourceLine" id="cb11-171" title="171">tSIMULSOL.out &lt;-<span class="st"> </span><span class="kw">t</span>(SIMULSOL.out)</a>
+<a class="sourceLine" id="cb11-172" title="172"><span class="kw">colnames</span>(tSIMULSOL.out) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;DORSAL&quot;</span>, <span class="st">&quot;VENTRAL&quot;</span>)</a>
+<a class="sourceLine" id="cb11-173" title="173"><span class="kw">kable</span>(tSIMULSOL.out)</a></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -1135,38 +1137,38 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </tr>
 <tr class="even">
 <td>TFA</td>
-<td align="right">40.7574300</td>
-<td align="right">31.0869548</td>
+<td align="right">40.7495941</td>
+<td align="right">31.0986388</td>
 </tr>
 <tr class="odd">
 <td>TSKIN</td>
-<td align="right">38.2624281</td>
-<td align="right">34.9638627</td>
+<td align="right">38.2868517</td>
+<td align="right">34.9396336</td>
 </tr>
 <tr class="even">
 <td>QCONV</td>
-<td align="right">79.7643215</td>
-<td align="right">32.9515539</td>
+<td align="right">79.7338967</td>
+<td align="right">32.9865919</td>
 </tr>
 <tr class="odd">
 <td>QCOND</td>
 <td align="right">0.0000000</td>
-<td align="right">2.9479637</td>
+<td align="right">2.9432003</td>
 </tr>
 <tr class="even">
 <td>QGENNET</td>
-<td align="right">-2.4907750</td>
-<td align="right">4.0173060</td>
+<td align="right">-2.5389630</td>
+<td align="right">4.0651100</td>
 </tr>
 <tr class="odd">
 <td>QSEVAP</td>
-<td align="right">0.1463287</td>
-<td align="right">0.1172019</td>
+<td align="right">0.1465213</td>
+<td align="right">0.1170469</td>
 </tr>
 <tr class="even">
 <td>QRAD</td>
-<td align="right">39.7089512</td>
-<td align="right">15.0172015</td>
+<td align="right">39.6909954</td>
+<td align="right">15.0347903</td>
 </tr>
 <tr class="odd">
 <td>QSLR</td>
@@ -1175,7 +1177,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </tr>
 <tr class="even">
 <td>QRSKY</td>
-<td align="right">39.7089512</td>
+<td align="right">39.6909954</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="odd">
@@ -1191,7 +1193,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <tr class="odd">
 <td>QRGRD</td>
 <td align="right">0.0000000</td>
-<td align="right">15.0172015</td>
+<td align="right">15.0347903</td>
 </tr>
 <tr class="even">
 <td>QFSEVAP</td>
@@ -1237,8 +1239,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb12-21" title="21">X &lt;-<span class="st"> </span>GEND <span class="op">*</span><span class="st"> </span>DMULT <span class="op">+</span><span class="st"> </span>GENV <span class="op">*</span><span class="st"> </span>VMULT  <span class="co"># weighted estimate of metabolic heat generation</span></a>
 <a class="sourceLine" id="cb12-22" title="22"></a>
 <a class="sourceLine" id="cb12-23" title="23"><span class="co"># lung temperature and temperature of exhaled air</span></a>
-<a class="sourceLine" id="cb12-24" title="24">TLUNG &lt;-<span class="st"> </span>(TC <span class="op">+</span><span class="st"> </span>(SIMULSOL.out[<span class="dv">1</span>, <span class="dv">3</span>] <span class="op">+</span><span class="st"> </span>SIMULSOL.out[<span class="dv">1</span>, <span class="dv">3</span>]) <span class="op">*</span><span class="st"> </span><span class="fl">0.5</span>) <span class="op">*</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb12-25" title="25"><span class="st">    </span><span class="fl">0.5</span>  <span class="co"># average of skin and core</span></a>
+<a class="sourceLine" id="cb12-24" title="24">TS &lt;-<span class="st"> </span>(SIMULSOL.out[<span class="dv">1</span>, <span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>SIMULSOL.out[<span class="dv">2</span>, <span class="dv">2</span>]) <span class="op">*</span><span class="st"> </span><span class="fl">0.5</span></a>
+<a class="sourceLine" id="cb12-25" title="25">TLUNG &lt;-<span class="st"> </span>(TC <span class="op">+</span><span class="st"> </span>TS) <span class="op">*</span><span class="st"> </span><span class="fl">0.5</span>  <span class="co"># average of skin and core</span></a>
 <a class="sourceLine" id="cb12-26" title="26">TAEXIT &lt;-<span class="st"> </span><span class="kw">min</span>(TA <span class="op">+</span><span class="st"> </span>DELTAR, TLUNG)  <span class="co"># temperature of exhaled air, °C</span></a>
 <a class="sourceLine" id="cb12-27" title="27"></a>
 <a class="sourceLine" id="cb12-28" title="28">QMIN &lt;-<span class="st"> </span>QBASAL</a>
@@ -1269,11 +1271,11 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <tbody>
 <tr class="odd">
 <td>RESPFN</td>
-<td align="right">-0.0956381</td>
+<td align="right">-0.0598116</td>
 </tr>
 <tr class="even">
 <td>QRESP</td>
-<td align="right">1.3990385</td>
+<td align="right">1.3632120</td>
 </tr>
 <tr class="odd">
 <td>GEVAP</td>
@@ -1293,7 +1295,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </tr>
 <tr class="odd">
 <td>RESPGEN</td>
-<td align="right">2.0666659</td>
+<td align="right">2.0664739</td>
 </tr>
 <tr class="even">
 <td>O2STP</td>
