@@ -13,7 +13,7 @@ onelump(t, Tc_init, Ww_g, geom, Tair, Trad, vel, Qsol, Zen, ...)
 
 \item{Ww_g}{= 500, animal weight (g)}
 
-\item{geom}{= 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coefs')}
+\item{geom}{= 2, organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coefs')}
 
 \item{Tair}{= 30, air temperature (°C)}
 
@@ -25,31 +25,31 @@ onelump(t, Tc_init, Ww_g, geom, Tair, Trad, vel, Qsol, Zen, ...)
 
 \item{Zen}{= 20, zenith angle of sun (90 is below horizon), degrees}
 
-\item{k_flesh}{= 0.5, Thermal conductivity of flesh (W/mK, range: 0.412-2.8)}
+\item{k_flesh}{= 0.5, thermal conductivity of flesh (W/mK, range: 0.412-2.8)}
 
 \item{q}{= 0, metabolic heat production rate W/m3}
 
-\item{c_body}{= 3073, Specific heat of flesh J/(kg-K)}
+\item{c_body}{= 3073, specific heat of flesh J/(kg-K)}
 
-\item{emis}{= 0.95, Emissivity of animal (0-1)}
+\item{emis}{= 0.95, emissivity of animal (0-1)}
 
 \item{rho_body}{= 932, animal density (kg/m3)}
 
 \item{alpha}{= 0.85, solar absorptivity, decimal percent}
 
-\item{shape_coefs}{= c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom shape coefficients. Operates if geom=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*Ww_g^b, where AREA is in cm2 and Ww_g is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}
+\item{shape_coefs}{= c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), custom shape coefficients. Operates if geom=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*Ww_g^b, where AREA is in cm2 and Ww_g is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for silhouette area normal to the sun, then silhouette area perpendicular to the sun}
 
-\item{shape_b}{= 1/5, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid}
+\item{shape_b}{= 1/5, proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid}
 
-\item{shape_c}{= 1/5, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}
+\item{shape_c}{= 1/5, proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}
 
 \item{posture}{= 'n' pointing normal 'n', parallel 'p' to the sun's rays, or 'a' in between?}
 
 \item{orient}{= 1, does the object orient toward the sun? (0,1)}
 
-\item{fatosk}{= 0.4, Configuration factor to sky (-) for infrared calculations}
+\item{fatosk}{= 0.4, configuration factor to sky (-) for infrared calculations}
 
-\item{fatosb}{= 0.4, Configuration factor to subsrate for infrared calculations}
+\item{fatosb}{= 0.4, configuration factor to substrate for infrared calculations}
 
 \item{alpha_sub}{= 0.2, substrate solar reflectivity, decimal percent}
 
@@ -60,7 +60,7 @@ onelump(t, Tc_init, Ww_g, geom, Tair, Trad, vel, Qsol, Zen, ...)
 \value{
 Tc Core temperature (°C)
 
-Tcf Final (steady state) temperature (°C), if conditions remained constant indefinately
+Tcf Final (steady state) temperature (°C), if conditions remained constant indefinitely
 
 tau Time constant (s)
 

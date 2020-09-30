@@ -152,7 +152,7 @@ An implementation of the NicheMapR microclimate model that integrates the RNCEP 
 \code{SP}{ = 10, stability parameter for stomatal closure equation, -}\cr\cr
 \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
 \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
-\code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET in soil moisture model}\cr\cr
+\code{LAI}{ = 0.1, leaf area index (can be a single value or a vector of daily values), used to partition traspiration/evaporation from PET in soil moisture model}\cr\cr
 \code{microclima.LAI}{ = 0, leaf area index, used by package microclima for radiation calcs}\cr\cr
 \code{LOR}{ = 1, leaf orientation for package microclima radiation calcs}\cr\cr
 
@@ -173,7 +173,7 @@ An implementation of the NicheMapR microclimate model that integrates the RNCEP 
 
 \code{shore}{ Include tide effects? If 1, the matrix}
 \code{tides}{ is used to specify tide presence, sea water temperature and presence of wavesplash}\cr\cr
-\code{tides}{ = matrix(data = 0, nrow = length(seq(as.POSIXct(dstart, format = "%d/%m/%Y"), as.POSIXct(dfinish, format = "%d/%m/%Y"), by = "days")) * 24, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (°C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
+\code{tides}{ = matrix(data = 0, nrow = length(seq(as.POSIXct(dstart, format = '%d/%m/%Y'), as.POSIXct(dfinish, format = '%d/%m/%Y'), by = 'days')) * 24, ncol = 3), matrix of 1. tide state (0=out, 1=in), 2. Water temperature (°C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
 }
 
 \strong{Outputs:}

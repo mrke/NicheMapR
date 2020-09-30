@@ -13,8 +13,8 @@
 #' @param slope Slope in degrees (if NA, then derived from DEM with package microclima)
 #' @param aspect Aspect in degrees (0 = north) (if NA, then derived from DEM with microclima)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
-#' @param minshade Minimum shade level to use (\%) (can be a single value or a vector of daily values)
-#' @param maxshade Maximum shade level to us (\%) (can be a single value or a vector of daily values)
+#' @param minshade Minimum shade level to use (\%)
+#' @param maxshade Maximum shade level to us (\%)
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
 #' @param coastal Compute coastal effects with microclima? T (TRUE) or F (FALSE) (can take a while and may have high memory requirements depending on DEM size)
 #' @param hourlydata user input of the hourlydata matrix
@@ -132,7 +132,9 @@
 #' \strong{ Intertidal mode parameters:}
 #'
 #' \code{shore}{ Include tide effects? If 1, the matrix}
-#' \code{tides}{ = matrix(data = 0, nrow = length(seq(as.POSIXct(dstart, format = '%d/%m/%Y'), as.POSIXct(dfinish, format = '%d/%m/%Y'), by = "days")) * 24, ncol = 3), matrix to specify 1. tide state (0=out, 1=in), 2. Water temperature (°C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
+#' \code{tides}{ is used to specify tide presence, sea water temperature and presence of wavesplash}\cr\cr
+#' \code{tides}{ = matrix(data = 0, nrow = length(seq(as.POSIXct(dstart, format = '%d/%m/%Y'), as.POSIXct(dfinish, format = '%d/%m/%Y'), by = 'days')) * 24, ncol = 3), matrix of 1. tide state (0=out, 1=in), 2. Water temperature (°C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
+#' }
 #'
 #' \strong{Outputs:}
 #'

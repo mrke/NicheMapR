@@ -25,13 +25,13 @@ ode(y = Tb_init, t = times, func = onelump_var, parms = indata)
 
 \item{alpha}{= 0.85, animal solar absorptivity (-)}
 
-\item{geom}{= 2, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coeffs')}
+\item{geom}{= 2, organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see parameter 'shape_coeffs')}
 
-\item{shape_b}{= 1/5, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid}
+\item{shape_b}{= 1/5, proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid}
 
-\item{shape_c}{= 1/5, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}
+\item{shape_c}{= 1/5, proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}
 
-\item{shape_coefs}{= c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom surface area coefficients. Operates if posture = 5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*Ww_g^b, where AREA is in cm2 and Ww_g is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun}
+\item{shape_coefs}{= c(10.4713,.688,0.425,0.85,3.798,.683,0.694,.743), Custom surface area coefficients. Operates if posture = 5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*Ww_g^b, where AREA is in cm2 and Ww_g is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for silhouette area normal to the sun, then silhouette area perpendicular to the sun}
 
 \item{posture}{= 'n', pointing normal 'n' or parallel 'p' to the sun's rays, or average 'a'?}
 
@@ -60,7 +60,7 @@ ode(y = Tb_init, t = times, func = onelump_var, parms = indata)
 \value{
 Tc Core temperature (°C)
 
-Tcf Final (steady state) temperature (°C), if conditions remained constant indefinately
+Tcf Final (steady state) temperature (°C), if conditions remained constant indefinitely
 
 tau Time constant (s)
 

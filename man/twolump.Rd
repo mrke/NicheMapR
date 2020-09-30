@@ -47,7 +47,7 @@ ode(y = c(Tc_init, Tsk_init, Ts_init), times = time, func = twolump, parms = ind
 
 \item{fatosk}{= 0.4, Configuration factor to sky for infrared calculations (-)}
 
-\item{fatosb}{= 0.4, Configuration factor to subsrate for infrared calculations (-)}
+\item{fatosb}{= 0.4, Configuration factor to substrate for infrared calculations (-)}
 
 \item{alpha_sub}{= 0.2, substrate solar reflectivity, decimal percent}
 
@@ -72,7 +72,7 @@ Tsk 'Skin' / shell temperature (°C)
 
 Ts Outer surface temperature (°C)
 
-Tcf Final (steady state) temperature (°C), if conditions remained constant indefinately
+Tcf Final (steady state) temperature (°C), if conditions remained constant indefinitely
 }
 \description{
 Transient, 'two-lump', heat budget for computing rate of change of temperature
