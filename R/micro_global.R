@@ -17,8 +17,8 @@
 #' @param aspect Aspect in degrees (0 = north)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
 #' @param soiltype Soil type: Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, user-defined = 12, based on Campbell and Norman 1990 Table 9.1.
-#' @param minshade Minimum shade level to use (\%)
-#' @param maxshade Maximum shade level to use (\%)
+#' @param minshade Minimum shade level to use (\%) (can be a single value or a vector of daily values)
+#' @param maxshade Maximum shade level to use (\%) (can be a single value or a vector of daily values)
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
 #' @param ... Additional arguments, see Details
 #' @usage micro_global(loc = c(-89.40123, 43.07305), timeinterval = 12, nyears = 1, soiltype = 4,
@@ -111,7 +111,7 @@
 #' \code{SP}{ = 10, stability parameter for stomatal closure equation, -}\cr\cr
 #' \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
 #' \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
-#' \code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET}\cr\cr
+#' \code{LAI}{ = 0.1, leaf area index (can be a single value or a vector of daily values), used to partition traspiration/evaporation from PET}\cr\cr
 #'
 #' \strong{ Snow mode parameters:}
 #'

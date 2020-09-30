@@ -10,8 +10,8 @@
 #' @param slope Slope in degrees
 #' @param aspect Aspect in degrees (0 = north)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
-#' @param minshade Minimum shade level to use (\%)
-#' @param maxshade Maximum shade level to us (\%)
+#' @param minshade Minimum shade level to use (\%) (can be a single value or a vector of daily values)
+#' @param maxshade Maximum shade level to us (\%) (can be a single value or a vector of daily values)
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
 #' @param ... Additional arguments, see Details
 #' @return metout The above ground micrometeorological conditions under the minimum specified shade
@@ -112,7 +112,7 @@
 #' \code{SP}{ = 10, stability parameter for stomatal closure equation, -}\cr\cr
 #' \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
 #' \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
-#' \code{LAI}{ = 0.1, leaf area index, used to partition traspiration/evaporation from PET}\cr\cr
+#' \code{LAI}{ = 0.1, leaf area index (can be a single value or a vector of daily values), used to partition traspiration/evaporation from PET}\cr\cr
 #'
 #' \strong{ Snow mode parameters:}
 #'
@@ -130,10 +130,7 @@
 #' \strong{ Intertidal mode parameters:}
 #'
 #' \code{shore}{ Include tide effects? If 1, the matrix}
-#' \code{tides}
-#' { is used to specify tide presence, sea water temperature and presence of wavesplash}\cr\cr
-#' \code{tides}{ = matrix(data = 0, nrow = length(seq(as.POSIXct(dstart, format = "%d/%m/%Y"), as.POSIXct(dfinish, format = "%d/%m/%Y"), by = "days")) * 24, ncol = 3), matrix for each how of the simulation of 1. tide state (0=out, 1=in), 2. Water temperature (°C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
-#' }
+#' \code{tides}{ = matrix(data = 0, nrow = length(seq(as.POSIXct(dstart, format = '%d/%m/%Y'), as.POSIXct(dfinish, format = '%d/%m/%Y'), by = "days")) * 24, ncol = 3), matrix to specify 1. tide state (0=out, 1=in), 2. Water temperature (°C) and 3. Wave splash (0=yes, 1=no)}\cr\cr
 #'
 #' \strong{Outputs:}
 #'

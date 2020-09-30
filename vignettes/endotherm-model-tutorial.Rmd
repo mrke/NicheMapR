@@ -23,7 +23,7 @@ This document shows how to use the `endoR.R` function of NicheMapR to compute en
 
 ## Single calculation example
 
-Here is how you run the calculation with all default values, specifying a local air temperature of 0 deg C.
+Here is how you run the calculation with all default values, specifying a local air temperature of 0 $^{\circ}\text{C}$.
 
 ```{r, message=FALSE, warnings=FALSE}
 library(NicheMapR)
@@ -102,7 +102,7 @@ SWEAT <- 0.25 # intervals by which skin wetness is increased (%)
 Q10s <- rep(1, length(TAs))
 Q10s[TAs >= TCMAX] <- 2 # assuming Q10 effect kicks in only after air temp rises above TCMAX
 QBASAL <- 10 ^ (-1.461 + 0.669 * log10(AMASS * 1000)) # basal heat generation (W)
-DELTAR <- 5 # offset between air temeprature and breath (°C)
+DELTAR <- 5 # offset between air temperature and breath (°C)
 EXTREF <- 25 # O2 extraction efficiency (%)
 PANTING <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANTMAX
 PANTMAX <- 15# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
