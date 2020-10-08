@@ -235,8 +235,8 @@ C     1 kg/m3 * 1000g/1 kg * 1 m3/1000000.
          endif
        endif
        if(cursnow.ge.minsnow)then ! snow is present
-        call WETAIR(0,WB,100,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,CP,
-     &  WTRPOT) ! get specific heat and mixing ratio of humid air at zero C
+        call WETAIR(0.D+0,WB,100.D+0,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,
+     &  DENAIR,CP,WTRPOT) ! get specific heat and mixing ratio of humid air at zero C
         cpsnow = (2100*snowdens+(1.005+1.82*(RW/1.+RW))*1000* ! based on https://en.wiktionary.org/wiki/humid_heat
      &   (1-snowdens)) ! compute weighted specific heat accounting for ice vs airm SI units
         snowcond2 = (0.00395+0.00084*(snowdens*1000)-0.0000017756* ! snow thermal conductivity as a function of density (from Aggarwal, R. 2009. Defence Science Journal 59:126–130.)
