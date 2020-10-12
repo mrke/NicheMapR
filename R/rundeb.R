@@ -27,6 +27,7 @@
 #' @param plot = 1, produce example plots? 0=no, 1=yes
 #' @param mass.unit = 'g', mass unit for the plots, 'mg', 'g' or 'kg'
 #' @param length.unit = 'cm', length unit for the plots, 'mm', 'cm' or 'm'
+#' @param ageing = 1, impose ageing? 0=immortal, 1=aging according to parameter h.a
 #' @examples
 #' #library(R.matlab)
 #' #allStat<-readMat('allStat.mat') # this will take a few minutes
@@ -83,7 +84,8 @@ rundeb <- function(
   E.0.mult = 1,
   plot = 1,
   mass.unit = 'g',
-  length.unit = 'cm'){ # end function parameters
+  length.unit = 'cm',
+  ageing = 1){ # end function parameters
 
   n <- div * ndays # time steps
   step<-1/div # step size (hours)
@@ -142,7 +144,9 @@ rundeb <- function(
   p.Am <- p.M * z / kap # recompute new p.Am
   E.m <- p.Am / v # recompute new E.m
   F.m <- p.Am / kap.X * 2 # redefining F.m to a large value - rapid stomach fill
-
+  if(ageing == 0){
+    h.a <- 0
+  }
   # save parameters for output
   pars <- c(F.m = F.m, kap.X = kap.X, kap.P = kap.P, p.Am = p.Am, p.M = p.M, k.J = k.J, v = v, E.m = E.m, E.G = E.G, kap = kap, kap.R = kap.R, E.Hb = E.Hb, E.Hj = E.Hj, E.Hp = E.Hp, h.a = h.a, s.G = s.G, T.A = T.A)
 
