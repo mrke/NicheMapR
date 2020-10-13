@@ -13,7 +13,7 @@
 #' @param ZFURD = 2E-03, # fur depth, dorsal (m)
 #' @param ZFURV = 2E-03, # fur depth, ventral (m)
 #' @param TC = 37, # core temperature (°C)
-#' @param TCMAX = 39, # maximum core temperature (°C)
+#' @param TC_MAX = 39, # maximum core temperature (°C)
 #' @param TA = 20, air temperature at local height (°C)
 #' @param TGRD = TA, ground temperature (°C)
 #' @param TSKY = TA, sky temperature (°C)
@@ -22,7 +22,7 @@
 #' @param QSOLR = 0, solar radiation, horizontal plane (W/m2)
 #' @param Z = 20, zenith angle of sun (degrees from overhead)
 #' @param SHADE = 0, shade level (\%)
-#' @usage endoR(AMASS = 1, SHAPE = 4, SHAPE_B = 1.1, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-03, TC = 37, TCMAX = 45, TA = 20, TGRD = TA, TSKY = TA, VEL = 0.1, RH = 5, QSOLR = 0, Z = 20, SHADE = 0,...)
+#' @usage endoR(AMASS = 1, SHAPE = 4, SHAPE_B = 1.1, FURTHRMK = 0, ZFURD = 2E-03, ZFURV = 2E-03, TC = 37, TC_MAX = 45, TA = 20, TGRD = TA, TSKY = TA, VEL = 0.1, RH = 5, QSOLR = 0, Z = 20, SHADE = 0,...)
 #' @export
 #' @details
 #' \strong{ Parameters controlling how the model runs:}\cr\cr
@@ -48,14 +48,15 @@
 #' \code{SHADE}{ = 0, shade level (\%)}\cr\cr
 #' \code{FLYHR}{ = 0, is flight occuring this hour? (imposes forced evaporative loss)}\cr\cr
 #' \code{UNCURL}{ = 0.1, allows the animal to uncurl to SHAPE_B_MAX, the value being the increment SHAPE_B is increased per iteration}\cr\cr
-#' \code{RAISETC}{ = 0.1, turns on core temperature elevation, the value being the increment by which TC is increased per iteration}\cr\cr
-#' \code{SWEAT}{ = 0.1, turns on sweating, the value being the increment by which SKINW is increased per iteration (\%)}\cr\cr
-#' \code{MXWET}{ = 100, maximum surface area that can be wet (\%)}\cr\cr
-#' \code{AK1inc}{ = 0.1, turns on thermal conductivity increase (W/mK), the value being the increment by which AK1 is increased per iteration (W/m°C)}\cr\cr
-#' \code{AKMAX}{ = 2.8, maximum flesh conductivity (W/mK)}\cr\cr
+#' \code{TC_INC}{ = 0.1, turns on core temperature elevation, the value being the increment by which TC is increased per iteration}\cr\cr
+#' \code{PCTWET_INC}{ = 0.1, turns on sweating, the value being the increment by which PCTWET is increased per iteration (\%)}\cr\cr
+#' \code{PCTWET_MAX}{ = 100, maximum surface area that can be wet (\%)}\cr\cr
+#' \code{AK1_INC}{ = 0.1, turns on thermal conductivity increase (W/mK), the value being the increment by which AK1 is increased per iteration (W/m°C)}\cr\cr
+#' \code{AK1_MAX}{ = 2.8, maximum flesh conductivity (W/mK)}\cr\cr
 #' \code{PANT}{ = 1, multiplier on breathing rate to simulate panting (-)}\cr\cr
-#' \code{PANTING}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
-#' \code{PANTMULT}{ = 0.05, proportional increase of basal metabolic rate at maximum panting level (-)}\cr\cr
+#' \code{PANT_INC}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
+#' \code{PANT_MULT}{ = 0.05, proportional increase of basal metabolic rate at maximum panting level (-)}\cr\cr
+#' \code{PANT_MAX}{ = 10, # maximum breathing rate multiplier to simulate panting (-)}\cr\cr
 #'
 #' \strong{ General morphology:}\cr\cr
 #' \code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr
@@ -92,7 +93,7 @@
 #' \code{AK1}{ = 0.9, # initial thermal conductivity of flesh (0.412 - 2.8 W/mK)}\cr\cr
 #' \code{AK2}{ = 0.230, # conductivity of fat (W/mK)}\cr\cr
 #' \code{QBASAL}{ = (70 * AMASS ^ 0.75) * (4.185 / (24 * 3.6)), # basal heat generation (W) based on Kleiber 1947}\cr\cr
-#' \code{SKINW}{ = 0.5, # part of the skin surface that is wet (\%)}\cr\cr
+#' \code{PCTWET}{ = 0.5, # part of the skin surface that is wet (\%)}\cr\cr
 #' \code{FURWET}{ = 0, # Area of fur/feathers that is wet after rain (\%)}\cr\cr
 #' \code{PCTBAREVAP}{ = 0, surface area for evaporation that is skin, e.g. licking paws (\%)}\cr\cr
 #' \code{PCTEYES}{ = 0, # surface area made up by the eye (\%) - make zero if sleeping}\cr\cr
@@ -101,7 +102,6 @@
 #' \code{TIMACT}{ = 1, # multiplier on metabolic rate for activity costs}\cr\cr
 #' \code{RQ}{ = 0.80, # respiratory quotient (fractional, 0-1)}\cr\cr
 #' \code{EXTREF}{ = 20, # O2 extraction efficiency (\%)}\cr\cr
-#' \code{PANTMAX}{ = 10, # maximum breathing rate multiplier to simulate panting (-)}\cr\cr
 #' \code{Q10}{ = 2, # Q10 factor for adjusting BMR for TC}\cr\cr
 #'
 #' \strong{ Initial conditions:}\cr\cr
@@ -120,7 +120,7 @@
 #' \item 6 TFA_V - ventral fur-air interface temperature (°C)
 #' \item 7 SHAPE_B - current ratio between long and short axis due to postural change (-)
 #' \item 8 PANT - breathing rate multiplier (-)
-#' \item 9 SKINWET - part of the skin surface that is wet (\%)
+#' \item 9 PCTWETET - part of the skin surface that is wet (\%)
 #' \item 10 K_FLESH - thermal conductivity of flesh (W/m°C)
 #' \item 11 K_FUR - thermal conductivity of flesh (W/m°C)
 #' \item 12 K_FUR_D - thermal conductivity of dorsal fur (W/m°C)
@@ -187,8 +187,8 @@
 #'
 #' # core temperature
 #' TC <- 38 # core temperature (deg C)
-#' TCMAX <- 43 # maximum core temperature (deg C)
-#' RAISETC <- 0.25 # increment by which TC is elevated (deg C)
+#' TC_MAX <- 43 # maximum core temperature (deg C)
+#' TC_INC <- 0.25 # increment by which TC is elevated (deg C)
 #'
 #' # size and shape
 #' AMASS <- 0.0337 # mass (kg)
@@ -208,18 +208,18 @@
 #' REFLV = 0.351  # fur reflectivity ventral (fractional, 0-1)
 #'
 #' # physiological responses
-#' SKINW <- 0.1 # base skin wetness (%)
-#' MXWET <- 20 # maximum skin wetness (%)
-#' SWEAT <- 0.25 # intervals by which skin wetness is increased (%)
+#' PCTWET <- 0.1 # base skin wetness (%)
+#' PCTWET_MAX <- 20 # maximum skin wetness (%)
+#' PCTWET_INC <- 0.25 # intervals by which skin wetness is increased (%)
 #' Q10 <- 2 # Q10 effect of body temperature on metabolic rate
 #' QBASAL <- 10 ^ (-1.461 + 0.669 * log10(AMASS * 1000)) # basal heat generation (W) (bird formula from McKechnie and Wolf 2004 Phys. & Biochem. Zool. 77:502-521)
 #' DELTAR <- 5 # offset between air temperature and breath (deg C)
 #' EXTREF <- 15 # O2 extraction efficiency (%)
-#' PANTING <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANTMAX
-#' PANTMAX <- 3 # maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
+#' PANT_INC <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANT_MAX
+#' PANT_MAX <- 3 # maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
 #'
 #' ptm <- proc.time() # start timing
-#' endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], QSOLR = QSOLR, VEL = VEL, TC = TC, TCMAX = TCMAX, RH = RH, AMASS = AMASS, SHAPE_B_MAX = SHAPE_B_MAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF)}) # run endoR across environments
+#' endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], QSOLR = QSOLR, VEL = VEL, TC = TC, TC_MAX = TC_MAX, RH = RH, AMASS = AMASS, SHAPE_B_MAX = SHAPE_B_MAX, PCTWET = PCTWET, PCTWET_INC = PCTWET_INC, PCTWET_MAX = PCTWET_MAX, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, TC_INC = TC_INC, PANT_INC = PANT_INC, PANT_MAX = PANT_MAX, EXTREF = EXTREF)}) # run endoR across environments
 #' proc.time() - ptm # stop timing
 #'
 #' endo.out1 <- do.call("rbind", lapply(endo.out, data.frame)) # turn results into data frame
@@ -285,14 +285,14 @@ endoR <- function(
   SHADE = 0, # shade level (%)
   FLYHR = 0, # is flight occurring this hour? (imposes forced evaporative loss)
   UNCURL = 0.1, # allows the animal to uncurl to SHAPE_B_MAX, the value being the increment SHAPE_B is increased per iteration
-  RAISETC = 0.1, # turns on core temperature elevation, the value being the increment by which TC is increased per iteration
-  SWEAT = 0.1, # turns on sweating, the value being the increment by which SKINW is increased per iteration
-  MXWET = 100, # maximum surface area that can be wet (%)
-  AK1inc = 0.1, # turns on thermal conductivity increase (W/mK), the value being the increment by which AK1 is increased per iteration
-  AKMAX = 2.8, # maximum flesh conductivity (W/mK)
+  TC_INC = 0.1, # turns on core temperature elevation, the value being the increment by which TC is increased per iteration
+  PCTWET_INC = 0.1, # turns on sweating, the value being the increment by which PCTWET is increased per iteration
+  PCTWET_MAX = 100, # maximum surface area that can be wet (%)
+  AK1_INC = 0.1, # turns on thermal conductivity increase (W/mK), the value being the increment by which AK1 is increased per iteration
+  AK1_MAX = 2.8, # maximum flesh conductivity (W/mK)
   PANT = 1, # multiplier on breathing rate to simulate panting (-)
-  PANTING = 0.1, # increment for multiplier on breathing rate to simulate panting (-)
-  PANTMULT = 0.05, # proportional increase of basal metabolic rate at maximum panting level (-)}\cr\cr
+  PANT_INC = 0.1, # increment for multiplier on breathing rate to simulate panting (-)
+  PANT_MULT = 0.05, # proportional increase of basal metabolic rate at maximum panting level (-)}\cr\cr
 
   # MORPHOLOGY
 
@@ -337,12 +337,12 @@ endoR <- function(
 
   # thermal
   TC = 37, # core temperature (°C)
-  TCMAX = 39, # maximum core temperature (°C)
+  TC_MAX = 39, # maximum core temperature (°C)
   AK1 = 0.9, # initial thermal conductivity of flesh (0.412 - 2.8 W/m°C)
   AK2 = 0.230, # conductivity of fat (W/mK)
 
   # evaporation
-  SKINW = 0.5, # part of the skin surface that is wet (%)
+  PCTWET = 0.5, # part of the skin surface that is wet (%)
   FURWET = 0, # part of the fur/feathers that is wet after rain (%)
   PCTBAREVAP = 0, # surface area for evaporation that is skin, e.g. licking paws (%)
   PCTEYES = 0, # surface area made up by the eye (%) - make zero if sleeping
@@ -354,7 +354,7 @@ endoR <- function(
   TIMACT = 1, # multiplier on metabolic rate for activity costs
   RQ = 0.80, # respiratory quotient (fractional, 0-1)
   EXTREF = 20, # O2 extraction efficiency (%)
-  PANTMAX = 5, # maximum breathing rate multiplier to simulate panting (-)
+  PANT_MAX = 5, # maximum breathing rate multiplier to simulate panting (-)
   Q10 = 2, # Q10 factor for adjusting BMR for TC
 
   # initial conditions
@@ -387,42 +387,42 @@ endoR <- function(
       SHAPE_B_MAX <- SHAPE_B
     }
 
-    if(PANTING == 0){
-      PANTMAX <- PANT # can't pant, so panting level set to current value
+    if(PANT_INC == 0){
+      PANT_MAX <- PANT # can't pant, so panting level set to current value
     }
-    if(SWEAT == 0){
-      MXWET <- SKINW # can't sweat, so max maximum skin wetness equal to current value
+    if(PCTWET_INC == 0){
+      PCTWET_MAX <- PCTWET # can't sweat, so max maximum skin wetness equal to current value
     }
-    if(RAISETC == 0){
-      TCMAX <- TC # can't raise Tc, so max value set to current value
+    if(TC_INC == 0){
+      TC_MAX <- TC # can't raise Tc, so max value set to current value
     }
-    if(AK1inc == 0){
-      AKMAX <- AK1 # can't change thermal conductivity, so max value set to current value
+    if(AK1_INC == 0){
+      AK1_MAX <- AK1 # can't change thermal conductivity, so max value set to current value
     }
     if(UNCURL == 0){
       SHAPE_B_MAX <- SHAPE_B # can't change posture, so max multiplier of dimension set to current value
     }
     QGEN <- 0
-    TCREF <- TC
+    TC_REF <- TC
     QBASREF <- QBASAL
     # check if heat stressed already (to save computation)
     if(TA >= TC){
       # set core temperature, flesh thermal conductivity and shape to
       # extreme heat loss values, adjusting basal metabolic
       # rate for temperature increase
-      if(TA > TCMAX){
-        TC <- TCMAX
-        Q10mult <- Q10^((TC - TCREF)/10)
+      if(TA > TC_MAX){
+        TC <- TC_MAX
+        Q10mult <- Q10^((TC - TC_REF)/10)
         QBASAL <- QBASREF * Q10mult
       }
-      AK1 <- AKMAX
+      AK1 <- AK1_MAX
       SHAPE_B <- SHAPE_B_MAX
     }
     TVEG <- TA
     NESTYP <- 0 # not yet used
     RoNEST <- 0 # not yet used
     BLANK <- 0 # spare input
-    SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, BLANK, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, PVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, SKINW, TSKY, TVEG, TAREF, DELTAR, RQ, TIMACT, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AKMAX, AK1inc, TCMAX, RAISETC, TCREF, Q10, QBASREF, PANTMAX, MXWET, SWEAT, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, MAXPCOND, ZFURCOMP, PANTING, ORIENT, SHAPE_C, XR, PANTMULT, KSUB)
+    SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, BLANK, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, PVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, PCTWET, TSKY, TVEG, TAREF, DELTAR, RQ, TIMACT, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AK1_MAX, AK1_INC, TC_MAX, TC_INC, TC_REF, Q10, QBASREF, PANT_MAX, PCTWET_MAX, PCTWET_INC, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, MAXPCOND, ZFURCOMP, PANT_INC, ORIENT, SHAPE_C, XR, PANT_MULT, KSUB)
     if(WRITE_INPUT == 1){
       write.csv(SOLVENDO.input, file = "SOLVENDO.input.csv")
     }
