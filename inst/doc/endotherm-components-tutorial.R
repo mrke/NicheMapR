@@ -211,7 +211,7 @@ TA <- 20 # air temperature (°C)
 RELHUM <- 20 # relative humidity (%)
 TC <- 37 # core temperature (°C)
 TSKIN <- 33 # skin temperature (°C)
-SKINW <- 11 # part of the skin surface that is wet (%)
+PCTWET <- 11 # part of the skin surface that is wet (%)
 FLYHR <- 0 # is flight occurring this hour? (imposes forced evaporative loss)
 BAREVAP <- 0 # is evaporation partly from bare skin? (0 = no, 1 = yes, % defined with PCTSKINEVAP)
 PCTBAREVAP <- 0 # surface area for evaporation that is skin, e.g. licking paws (%)
@@ -219,7 +219,7 @@ PCTEYES <- 0.03 # surface area made up by the eye (%) - make zero if sleeping
 ZFUR <- ZFUR # fur depth (m)
 FURWET <- 0 # part of the fur surface that is wet (%)
 
-SEVAP.out <- SEVAP_ENDO(BP, TA, RELHUM, VEL, TC, TSKIN, ELEV, SKINW, FLYHR, CONVSK, HD, HDFREE, PCTBAREVAP, PCTEYES, ZFUR, FURWET, TFA, CONVAR)
+SEVAP.out <- SEVAP_ENDO(BP, TA, RELHUM, VEL, TC, TSKIN, ELEV, PCTWET, FLYHR, CONVSK, HD, HDFREE, PCTBAREVAP, PCTEYES, ZFUR, FURWET, TFA, CONVAR)
 
 QSEVAP <- SEVAP.out[1] # skin evaporative heat loss (W)
 WEYES <- SEVAP.out[2] # ocular evaporation (kg/s)
@@ -247,7 +247,7 @@ BP <- BP # barometric pressure (Pa), negative means altitude is used (from CONV)
 ELEV <- 0 # elevation (m)
 
 # physiology and morphology 
-SKINW <- 0 # part of the skin surface that is wet (%)
+PCTWET <- 0 # part of the skin surface that is wet (%)
 AK1 <- 0.9 # initial thermal conductivity of flesh (0.412 - 2.8 W/mK)
 AK2 <- 0.230 # conductivity of fat (W/mK)
 XR <- 1 # fractional depth of fur at which longwave radiation is exchanged (0-1)
@@ -381,7 +381,7 @@ for(S in 1:2){
   }
   
   # call SIMULSOL
-  SIMULSOL.out[S,] <- SIMULSOL(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA, SKINW, TS)
+  SIMULSOL.out[S,] <- SIMULSOL(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA, PCTWET, TS)
 }
 
 SIMULSOL.out <- cbind(c(1,2), SIMULSOL.out)

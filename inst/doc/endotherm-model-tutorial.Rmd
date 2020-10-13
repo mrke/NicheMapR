@@ -23,7 +23,7 @@ This document shows how to use the `endoR.R` function of NicheMapR to compute en
 
 ## Single calculation example
 
-Here is how you run the calculation with all default values, specifying a local air temperature of 0 deg C.
+Here is how you run the calculation with all default values, specifying a local air temperature of 0 $^{\circ}\text{C}$.
 
 ```{r, message=FALSE, warnings=FALSE}
 library(NicheMapR)
@@ -72,8 +72,8 @@ hum <- exp_rh
 
 # core temperature
 TC <- 38 # core temperature (deg C)
-TCMAX <- 43 # maximum core temperature (deg C)
-RAISETC <- 0.25 # increment by which TC is elevated (deg C)
+TC_MAX <- 43 # maximum core temperature (deg C)
+TC_INC <- 0.25 # increment by which TC is elevated (deg C)
 
 # size and shape
 AMASS <- 0.0337 # mass (kg)
@@ -96,19 +96,19 @@ REFLD <- 0.248  # fur reflectivity dorsal (fractional, 0-1)
 REFLV <- 0.351  # fur reflectivity ventral (fractional, 0-1)
 
 # physiological responses
-SKINW <- 0.5 # base skin wetness (%)
-MXWET <- 5 # maximum skin wetness (%)
-SWEAT <- 0.25 # intervals by which skin wetness is increased (%)
+PCTWET <- 0.5 # base skin wetness (%)
+PCTWET_MAX <- 5 # maximum skin wetness (%)
+PCTWET_INC <- 0.25 # intervals by which skin wetness is increased (%)
 Q10s <- rep(1, length(TAs))
-Q10s[TAs >= TCMAX] <- 2 # assuming Q10 effect kicks in only after air temp rises above TCMAX
+Q10s[TAs >= TC_MAX] <- 2 # assuming Q10 effect kicks in only after air temp rises above TC_MAX
 QBASAL <- 10 ^ (-1.461 + 0.669 * log10(AMASS * 1000)) # basal heat generation (W)
-DELTAR <- 5 # offset between air temeprature and breath (°C)
+DELTAR <- 5 # offset between air temperature and breath (°C)
 EXTREF <- 25 # O2 extraction efficiency (%)
-PANTING <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANTMAX
-PANTMAX <- 15# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
+PANT_INC <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANT_MAX
+PANT_MAX <- 15 # maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
 
 ptm <- proc.time() # start timing
-endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], VEL = VEL, TC = TC, TCMAX = TCMAX, RH = hum[x], AMASS = AMASS, SHAPE = SHAPE, SHAPE_B = SHAPE_B, SHAPE_B_MAX = SHAPE_B_MAX, SKINW = SKINW, SWEAT = SWEAT, MXWET = MXWET, Q10 = Q10s[x], QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF, UNCURL = UNCURL, SAMODE = SAMODE)}) # run endoR across environments
+endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], VEL = VEL, TC = TC, TC_MAX = TC_MAX, RH = hum[x], AMASS = AMASS, SHAPE = SHAPE, SHAPE_B = SHAPE_B, SHAPE_B_MAX = SHAPE_B_MAX, PCTWET = PCTWET, PCTWET_INC = PCTWET_INC, PCTWET_MAX = PCTWET_MAX, Q10 = Q10s[x], QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, TC_INC = TC_INC, PANT_INC = PANT_INC, PANT_MAX = PANT_MAX, EXTREF = EXTREF, UNCURL = UNCURL, SAMODE = SAMODE)}) # run endoR across environments
 proc.time() - ptm # stop timing
 
 # extract the output
@@ -192,8 +192,8 @@ ABSSB <- 1 - micro$REFL # substrate solar absorptivity (%)
 
 # core temperature
 TC <- 38 # core temperature (deg C)
-TCMAX <- 43 # maximum core temperature (deg C)
-RAISETC <- 0.25 # increment by which TC is elevated (deg C)
+TC_MAX <- 43 # maximum core temperature (deg C)
+TC_INC <- 0.25 # increment by which TC is elevated (deg C)
 
 # size and shape
 AMASS <- 0.0337 # mass (kg)
@@ -215,19 +215,19 @@ REFLD <- 0.248  # fur reflectivity dorsal (fractional, 0-1)
 REFLV <- 0.351  # fur reflectivity ventral (fractional, 0-1)
 
 # physiological responses
-SKINW <- 0.1 # base skin wetness (%)
-MXWET <- 0.1 # maximum skin wetness (%)
-SWEAT <- 0.25 # intervals by which skin wetness is increased (%)
+PCTWET <- 0.1 # base skin wetness (%)
+PCTWET_MAX <- 0.1 # maximum skin wetness (%)
+PCTWET_INC <- 0.25 # intervals by which skin wetness is increased (%)
 Q10 <- 1 # Q10 effect of body temperature on metabolic rate (-)
 QBASAL <- 10 ^ (-1.461 + 0.669 * log10(AMASS * 1000)) # basal heat generation (W)
 DELTAR <- 5 # offset between air temperature and breath (°C)
 EXTREF <- 25 # O2 extraction efficiency (%)
-PANTING <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANTMAX
-PANTMAX <- 15# maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
+PANT_INC <- 0.1 # turns on panting, the value being the increment by which the panting multiplier is increased up to the maximum value, PANT_MAX
+PANT_MAX <- 15 # maximum panting rate - multiplier on air flow through the lungs above that determined by metabolic rate
 
 # run the model
 ptm <- proc.time() # start timing
-endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], TAREF = TAREFs[x], TSKY = TSKYs[x], TGRD = TGRDs[x], VEL = VELs[x], RH = RHs[x], QSOLR = QSOLRs[x], Z = Zs[x], ELEV = ELEV, ABSSB = ABSSB, TC = TC, TCMAX = TCMAX, AMASS = AMASS, SHAPE = SHAPE, SHAPE_B = SHAPE_B, SHAPE_B_MAX = SHAPE_B_MAX, SKINW = SKINW, SWEAT = SWEAT, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, RAISETC = RAISETC, PANTING = PANTING, PANTMAX = PANTMAX, EXTREF = EXTREF, UNCURL = UNCURL, SAMODE = SAMODE, SHADE = 0)})
+endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], TAREF = TAREFs[x], TSKY = TSKYs[x], TGRD = TGRDs[x], VEL = VELs[x], RH = RHs[x], QSOLR = QSOLRs[x], Z = Zs[x], ELEV = ELEV, ABSSB = ABSSB, TC = TC, TC_MAX = TC_MAX, AMASS = AMASS, SHAPE = SHAPE, SHAPE_B = SHAPE_B, SHAPE_B_MAX = SHAPE_B_MAX, PCTWET = PCTWET, PCTWET_INC = PCTWET_INC, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, TC_INC = TC_INC, PANT_INC = PANT_INC, PANT_MAX = PANT_MAX, EXTREF = EXTREF, UNCURL = UNCURL, SAMODE = SAMODE, SHADE = 0)})
 proc.time() - ptm # end timing
 
 # extract the output
@@ -276,5 +276,5 @@ points(TskinD ~ dates, type = 'l', col = 'orange')
 points(TskinV ~ dates, type = 'l', col = 'orange', lty = 2)
 points(TCs ~ dates, type = 'l', col = 'red')
 legend(x = 1, y = 65, legend = c("core", "skin dorsal", "skin ventral", "feathers dorsal", "feathers ventral"), col = c("red", "orange", "orange", "grey", "grey"), lty = c(1, 1, 2, 1, 2), bty = "n", ncol = 2)  
-plot((H2O / (AMASS * 1000)) * 1000 ~ dates, type = 'l', ylab = 'H2O loss, % body mass / h', xlab = 'time', ylim = c(0, 50))
+plot((H2O / (AMASS * 1000)) * 100 ~ dates, type = 'l', ylab = 'H2O loss, % body mass / h', xlab = 'time', ylim = c(0, 5))
 ```

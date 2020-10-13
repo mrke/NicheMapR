@@ -674,7 +674,7 @@ A_{s} = 10M^{0.667}/10000
 A_{tot} = 8.11M^{0.667}/10000.
 \end{align}
 
-Or, if 'SAMODE' is set to 1, the skin surface area is computed according to an empirical relationship for mammals (Stahl, 1976):
+Or, if 'SAMODE' is set to 2, the skin surface area is computed according to an empirical relationship for mammals (Stahl, 1976):
 
 \begin{align}
 \tag{70}
@@ -1049,7 +1049,7 @@ The $T_{fa}$ guess is also used to calculate the $h_c$ and $h_r$ terms and the $
 
 ### Step 4.
 
-As part of the initial calculation of $T_{fa}$, the longwave radiation exchange components must be determined. An estimate of the longwave radiation component of fur thermal conductivity $k_{rad}$ is obtained  is obtained following Conley and Porter (1986, eq. 7):
+As part of the initial calculation of $T_{fa}$, the longwave radiation exchange components must be determined. An estimate of the longwave radiation component of fur thermal conductivity $k_{rad}$ is obtained following Conley and Porter (1986, eq. 7):
 
 \begin{align}
 \tag{109}
@@ -1145,7 +1145,7 @@ This subroutine is a molar balance for computing water loss from breathing, as r
 include_graphics("Gas_System_Diagram.jpg")
 ```
 
-The required $\text{O}_2$ consumption rate at standard temperature and pressure, $\dot{V}_{O_{2},stp}$, is determined from the value of $Q_{gen}$ passed to the function via the SOLVENDO and ZBRENT subrotines (see below). If that value is lower than the specified minimum metabolic rate, $Q_{basal}$, then $Q_{basal}$ is used instead. 
+The required $\text{O}_2$ consumption rate at standard temperature and pressure, $\dot{V}_{O_{2},stp}$, is determined from the value of $Q_{gen}$ passed to the function via the SOLVENDO and ZBRENT subroutines (see below). If that value is lower than the specified minimum metabolic rate, $Q_{basal}$, then $Q_{basal}$ is used instead. 
 
 The conversion to litres of $\text{O}_2$ per second depends on the respiratory quotient, $\text{RQ}$ (ratio of moles of $\text{CO}_2$ produced per mole of $\text{O}_2$ consumed), as follows:
 
@@ -1249,11 +1249,11 @@ where $\lambda$ is the latent heat of vaporisation, computed as $2.5012\text{e+}
 
 ## XV. SOLVENDO and ZBRENT
 
-The entire process of solving the heat budget is coordinated by the SOLVENDO subroutine, which receives the input data from the R environment via the 'endoR' wrapper function. A 'while loop' is run until the value of $Q_{gen}$ obtained by the procedure is less than the specificed minimum possible metabolic rate $Q_{basal}$, which in the extreme is basal metabolic rate but may be a higher value depending on the locomotary and physiological activities assumed to be undertaken by the animal.
+The entire process of solving the heat budget is coordinated by the SOLVENDO subroutine, which receives the input data from the R environment via the 'endoR' wrapper function. A 'while loop' is run until the value of $Q_{gen}$ obtained by the procedure is less than the specified minimum possible metabolic rate $Q_{basal}$, which in the extreme is basal metabolic rate but may be a higher value depending on the locomotary and physiological activities assumed to be undertaken by the animal.
 
-Within the 'while loop', after the inital calls to IRPROP, GEOM_ENDO, SOLAR_ENDO, CONV_ENDO, another loop calls SIMULSOL twice, once for the dorsal and once for the ventral side. For each call, the whole animal is simulated to have the fur/feather properties of the side being considered, and to be exposed in all directions to the environment of that side (i.e. sky or ground). Then, a final averaged value is obtained for $Q_{gen,net}$, $T_s$ and $T_{fa}$, weighted by the configuration factors to the the sky plus vegetation ($F_{sky} + F_{veg}$), versus the remainder ($1 - (F_{sky} + F_{veg})$).
+Within the 'while loop', after the initial calls to IRPROP, GEOM_ENDO, SOLAR_ENDO, CONV_ENDO, another loop calls SIMULSOL twice, once for the dorsal and once for the ventral side. For each call, the whole animal is simulated to have the fur/feather properties of the side being considered, and to be exposed in all directions to the environment of that side (i.e. sky or ground). Then, a final averaged value is obtained for $Q_{gen,net}$, $T_s$ and $T_{fa}$, weighted by the configuration factors to the the sky plus vegetation ($F_{sky} + F_{veg}$), versus the remainder ($1 - (F_{sky} + F_{veg})$).
 
-The weighted mean guess of $Q_{gen,net}$ from the SIMULSOL calls is finally passed to RESPFUN via the root finding function ZBRENT (Brent, 2002) to calculate $Q_{resp}$ by guessing for a value of $Q_{gen}$ that balances the relationship in equation 2, i.e. that $Q_{gen,net} = Q_{gen} - Q_{resp}$. This guessing process is needed because $Q_{resp}$ is dependent on total $Q_{gen}$, not simply $Q_{gen,net}$. Once a suitable value for $Q_{resp}$, it can be added to the value of $Q_{gen,net}$ to determine $Q_{gen}$ and the value of $Q_{gen,net}$ can be checked against the user-provided minimum value to see whether the while-loop can be terminated.
+The weighted mean guess of $Q_{gen,net}$ from the SIMULSOL calls is finally passed to RESPFUN via the root finding function ZBRENT (Brent, 2002) to calculate $Q_{resp}$ by guessing for a value of $Q_{gen}$ that balances the relationship in equation 2, i.e. that $Q_{gen,net} = Q_{gen} - Q_{resp}$. This guessing process is needed because $Q_{resp}$ is dependent on total $Q_{gen}$, not simply $Q_{gen,net}$. Once a suitable value for $Q_{resp}$ is found, it can be added to the value of $Q_{gen,net}$ to determine $Q_{gen}$ and the value of $Q_{gen,net}$ can be checked against the user-provided minimum value to see whether the while-loop can be terminated.
 
 Various behaviours can be invoked as part of this overall procedure, to help find a solution, including changes in posture (shape), flesh thermal conductivity, allowing core temperature to rise, panting and sweating. This subroutine serves as an example setup, where the latter behaviours are attempted sequentially, in the order just given, but many other variants are possible such as changing the order or allowing processes to happen in parallel. The R function 'endoR_devel' and the Fortran subroutine 'SOLVENDO' are equivalent, with the latter provided as a way to easily develop behavioural algorithms which should then be converted into an equivalent Fortran version for maximal performance (the speed of the calculations may increase over 100-fold when run as a Fortran subroutine).
 
