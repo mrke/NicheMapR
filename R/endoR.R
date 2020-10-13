@@ -66,7 +66,6 @@
 #' \code{SHAPE_C}{ = SHAPE_B, current ratio of length:height (plate)}\cr\cr
 #' \code{PVEN}{ = 0.5, fraction of surface area that is ventral fur (fractional, 0-1)}\cr\cr
 #' \code{PCOND}{ = 0, fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
-#' \code{MAXPCOND}{ = 0, maximum fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
 #' \code{SAMODE}{ = 0, if 0, uses surface area for SHAPE geometry, if 1, uses bird skin surface area allometry from Walsberg & King. 1978. JEB 76:185–189, if 2 uses mammal surface area from Stahl 1967.J. App. Physiol. 22, 453–460.}\cr\cr
 #' \code{ORIENT}{ = 0, if 1 = normal to rays of sun (heat maximising), if 2 = parallel to rays of sun (heat minimising), or 0 = average}\cr\cr
 #'
@@ -307,7 +306,6 @@ endoR <- function(
   SHAPE_C = SHAPE_B, # current ratio of length:height (plate)
   PVEN = 0.5, # fraction of surface area that is ventral fur (fractional, 0-1)
   PCOND = 0, # fraction of surface area that is touching the substrate (fractional, 0-1)
-  MAXPCOND = 0, # maximum fraction of surface area that is touching the substrate (fractional, 0-1)
   SAMODE = 0, # if 0, uses surface area for SHAPE parameter geometry, if 1, uses bird skin surface area allometry from Walsberg & King. 1978. JEB 76:185–189, if 2 uses mammal surface area from Stahl 1967.J. App. Physiol. 22, 453–460.
   ORIENT = 0, # if 1 = normal to sun's rays (heat maximising), if 2 = parallel to sun's rays (heat minimising), or 0 = average
 
@@ -422,7 +420,7 @@ endoR <- function(
     NESTYP <- 0 # not yet used
     RoNEST <- 0 # not yet used
     BLANK <- 0 # spare input
-    SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, BLANK, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, PVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, PCTWET, TSKY, TVEG, TAREF, DELTAR, RQ, TIMACT, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AK1_MAX, AK1_INC, TC_MAX, TC_INC, TC_REF, Q10, QBASREF, PANT_MAX, PCTWET_MAX, PCTWET_INC, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, MAXPCOND, ZFURCOMP, PANT_INC, ORIENT, SHAPE_C, XR, PANT_MULT, KSUB)
+    SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, BLANK, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, PVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, PCTWET, TSKY, TVEG, TAREF, DELTAR, RQ, TIMACT, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AK1_MAX, AK1_INC, TC_MAX, TC_INC, TC_REF, Q10, QBASREF, PANT_MAX, PCTWET_MAX, PCTWET_INC, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, BLANK, ZFURCOMP, PANT_INC, ORIENT, SHAPE_C, XR, PANT_MULT, KSUB)
     if(WRITE_INPUT == 1){
       write.csv(SOLVENDO.input, file = "SOLVENDO.input.csv")
     }

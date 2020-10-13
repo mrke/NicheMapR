@@ -114,7 +114,7 @@ rundeb <- function(
   if(exists("T.H")==FALSE){T_H <- 373.15}else{T_H <- T.H}
   if(exists("T.AL")==FALSE){T_AL <- 5E04}else{T_AL <- T.AL}
   if(exists("T.AH")==FALSE){T_AH <- 9E04}else{T_AH <- T.AH}
-  if(exists("T.REF")==FALSE){T_REF <- 20 + 273.15}else{T_REF <- T.REF}
+  if(exists("T.ref")==FALSE){T_REF <- 20 + 273.15}else{T_REF <- T.ref}
 
   # user-specified parameter changes
   kap.orig <- kap # keep original value

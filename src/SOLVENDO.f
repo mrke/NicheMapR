@@ -136,7 +136,7 @@ C     USING endo_devel.R
       SUBQFAT=input(78)
       FATPCT=input(79)
       PCOND=input(80)
-      MAXPCOND = input(81)
+      MAXPCOND = input(81) ! SPARE-NOT USED
       ZFURCOMP = input(82)
       PANT_INC=input(83)
       ORIENT=input(84)
