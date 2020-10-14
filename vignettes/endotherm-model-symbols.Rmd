@@ -1,8 +1,14 @@
 ---
-title: "Endotherm Model Tutorial III: Symbols"
-author: "Michael Kearney and Paul Mathewson"
-date: "24/09/2020"
-output: html_document
+title: "Endotherm Model Tutorial IV: Symbols"
+author: "Michael R. Kearney, Paul D. Mathewson and Warren P. Porter"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Endotherm Model Equations}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
