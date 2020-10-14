@@ -127,7 +127,7 @@ points(TskinV ~ TAs, type = 'l', col = 'orange', lty = 2)
 points(TCs ~ TAs, type = 'l', col = 'red')
 legend(x = 30, y = 33, legend = c("core (obs)", "core (pred)", "skin dorsal", "skin ventral", "feathers dorsal", "feathers ventral"), col = c("red", "red", "orange", "orange", "grey", "grey"), lty = c(NA, 1, 1, 2, 1, 2), bty = "n", pch = c(16, NA, NA, NA, NA, NA))  
 points(Weathers1976Fig2$Tair, Weathers1976Fig2$Tb, pch = 16, col = 2)
-plot(masbal$AIR_L * 1000 / 60 ~ TAs, ylim=c(0,250),  lty = 1, xlim=c(-5,50), ylab = "ml / min", xlab=paste("air temperature (deg C)"), type = 'l') 
+plot(masbal$AIR_L * 1000 / 60 ~ TAs, ylim = c(0, 250),  lty = 1, xlim = c(-5, 50), ylab = "ml air / min", xlab=paste("air temperature (deg C)"), type = 'l') 
 legend(x = 0, y = 250, legend = c("observed", "predicted"), col = c("red", "black"), lty = c(NA, 1), bty = "n", pch = c(16, NA))
 points(Weathers1976Fig5$breaths_min * (13.2 * AMASS ^ 1.08) * ((Weathers1976Fig5$Tair + 273.15) / 273.15) ~ Weathers1976Fig5$Tair, col='red', pch = 16) # tidal volume allometry from Lasiewski, R. C., and W. A. Calder. 1971, correcting volume according to PV = nRT equation, where V_2 = T_2 * V_1 / T_2, and T_1 is at STP, so 0 deg C
 

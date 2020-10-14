@@ -84,7 +84,6 @@ DHARA <- DHAR[1] # fur diameter, mean (m) (from IRPROP)
 RHOARA <- RHOAR[1] # hair density, mean (1/m2) (from IRPROP)
 ZFUR <- ZZFUR[1] # fur depth, mean (m) (from IRPROP)
 PCOND <- 0.1 # fraction of body in contact with substrate (fractional, 0-1)
-BIRD <- 0 # 
 SAMODE <- 0 # if 1, uses bird skin surface area scaling from Walsberg and 1978. JEB Biology 76:185–189, if 2, uses mammal surface area scaling from Stahl (1967) J. of App. Physiology, 453–460.
 ORIENT <- 0 # if 1, largest surface area normal to sun's ray's, if 2, largest surface parallel to sun's rays, if 0, average of normal/parallel posture, 
 
@@ -111,7 +110,7 @@ ASEMAJ <- GEOM.out[16] # semimajor axis length (m)
 BSEMIN <- GEOM.out[17] # b semiminor axis length (m)
 CSEMIN <- GEOM.out[18] # c semiminor axis length (m) (currently only prolate spheroid)
 CONVSK <- GEOM.out[19] # area of skin for evaporation (total skin area - hair area) (m2)
-CONVAR <- GEOM.out[20] # area for convection (total area minus ventral area, as determined by PCOND), m2
+CONVAR <- GEOM.out[20] # area for convection (total area minus ventral area in contact with the substrate, as determined by PCOND), m2
 R1 <- GEOM.out[21] # shape-specific core-skin radius in shortest dimension (m)
 R2 <- GEOM.out[22] # shape-specific core-fur radius in shortest dimension (m)
 
@@ -136,7 +135,7 @@ par(mfrow=c(1,1))
 ## ------------------------------------------------------------------------
 # environmental variables
 QSOLR <- 1000 # solar radiation, horizontal plane (W/m2)
-SHADE <- 0 # shade (fractional, 0-1)
+SHADE <- 0 # shade (%, 0-100)
 Z <- 20 # zenith angle of sun (degrees from overhead)
 ABSSB <- 0.8 # solar absorptivity of substrate (fractional, 0-1)
 
@@ -197,7 +196,7 @@ HDFORC <- CONV.out[7] # forced mass transfer coefficient (kg/m2 s)
 ANU <- CONV.out[8] # Nusselt number (-)
 RE <- CONV.out[9] # Reynold's number (-)
 GR <- CONV.out[10] # Grasshof number (-)
-PR <- CONV.out[11] # Prandlt number (-)
+PR <- CONV.out[11] # Prandtl number (-)
 RA <- CONV.out[12] # Rayleigh number (-)
 SC <- CONV.out[13] # Schmidt number (-)
 BP <- CONV.out[14] # barometric pressure (Pa)
@@ -213,7 +212,7 @@ TC <- 37 # core temperature (°C)
 TSKIN <- 33 # skin temperature (°C)
 PCTWET <- 11 # part of the skin surface that is wet (%)
 FLYHR <- 0 # is flight occurring this hour? (imposes forced evaporative loss)
-BAREVAP <- 0 # is evaporation partly from bare skin? (0 = no, 1 = yes, % defined with PCTSKINEVAP)
+BAREVAP <- 0 # is evaporation partly from bare skin? (0 = no, 1 = yes, % defined with PCTBAREVAP)
 PCTBAREVAP <- 0 # surface area for evaporation that is skin, e.g. licking paws (%)
 PCTEYES <- 0.03 # surface area made up by the eye (%) - make zero if sleeping
 ZFUR <- ZFUR # fur depth (m)
@@ -245,6 +244,7 @@ RH <- 20 # relative humidity (%)
 VEL <- 1 # wind speed (m/s)
 BP <- BP # barometric pressure (Pa), negative means altitude is used (from CONV)
 ELEV <- 0 # elevation (m)
+KSUB <- 2.79 # substrate thermal conductivity (W/m°C)
 
 # physiology and morphology 
 PCTWET <- 0 # part of the skin surface that is wet (%)
@@ -252,7 +252,7 @@ AK1 <- 0.9 # initial thermal conductivity of flesh (0.412 - 2.8 W/mK)
 AK2 <- 0.230 # conductivity of fat (W/mK)
 XR <- 1 # fractional depth of fur at which longwave radiation is exchanged (0-1)
 EMISAN <- 0.99 # animal emissivity (-)
-BAREVAP <- 0 # is evaporation partly from bare skin? (0 = no, 1 = yes, % defined with PCTSKINEVAP)
+BAREVAP <- 0 # is evaporation partly from bare skin? (0 = no, 1 = yes, % defined with PCTBAREVAP)
 PCTBAREVAP <- 0 # surface area for evaporation that is skin, e.g. licking paws (%)
 PCTEYES <- 0.03 # surface area made up by the eye (%) - make zero if sleeping
 # behaviour
@@ -355,7 +355,7 @@ for(S in 1:2){
   # Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*((kfur/zfur)+(ksub/subdepth))
   if(S == 2){
     AREACND <- ATOT * (PCOND * 2)
-    CD <- AREACND * ((KFURCMPRS / ZFURCOMP))
+    CD <- AREACND * ((KFURCMPRS / ZFURCOMP) + (KSUB / 0.025)) # assume conduction happens from 2.5 cm depth
     CONVAR <- CONVAR - AREACND # Adjust area used for convection to account for PCOND. This is sent in to simulsol & then conv (unpacked as SURFAR)
   }else{ #doing dorsal side, no conduction. No need to adjust areas used for convection.
     AREACND <- 0
@@ -370,7 +370,7 @@ for(S in 1:2){
   TRAITS <- c(TC,AK1,AK2,EMISAN,FATTHK,FLYHR,FURWET,PCTBAREVAP,PCTEYES)
   
   # set IPT, the geometry assumed in SIMULSOL: 1 = cylinder, 2 = sphere, 3 = ellipsoid
-  if(SHAPE %in% c(1, 3, 5)){
+  if(SHAPE %in% c(1, 3)){
     IPT <- 1
   }
   if(SHAPE == 2){
