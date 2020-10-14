@@ -712,7 +712,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb2-59" title="59">})  <span class="co"># run endoR across environments</span></a>
 <a class="sourceLine" id="cb2-60" title="60"><span class="kw">proc.time</span>() <span class="op">-</span><span class="st"> </span>ptm  <span class="co"># stop timing</span></a></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.11    0.02    0.13</code></pre>
+##    0.06    0.00    0.06</code></pre>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="co"># extract the output</span></a>
 <a class="sourceLine" id="cb4-2" title="2">endo.out1 &lt;-<span class="st"> </span><span class="kw">do.call</span>(<span class="st">&quot;rbind&quot;</span>, <span class="kw">lapply</span>(endo.out, data.frame))</a>
 <a class="sourceLine" id="cb4-3" title="3"></a>
@@ -863,7 +863,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb5-72" title="72">})</a>
 <a class="sourceLine" id="cb5-73" title="73"><span class="kw">proc.time</span>() <span class="op">-</span><span class="st"> </span>ptm  <span class="co"># end timing</span></a></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.67    0.00    0.67</code></pre>
+##    0.42    0.00    0.42</code></pre>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co"># extract the output</span></a>
 <a class="sourceLine" id="cb7-2" title="2">endo.out1 &lt;-<span class="st"> </span><span class="kw">do.call</span>(<span class="st">&quot;rbind&quot;</span>, <span class="kw">lapply</span>(endo.out, data.frame))</a>
 <a class="sourceLine" id="cb7-3" title="3"></a>

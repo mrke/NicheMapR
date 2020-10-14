@@ -1,0 +1,220 @@
+---
+title: "Endotherm Model Tutorial IV: Symbols"
+author: "Michael R. Kearney, Paul D. Mathewson and Warren P. Porter"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Endotherm Model Symbols}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+| Symbol                       | units    |Variable Name           | Description                                     |
+|:-----------------------------|:--------------------------|:------------------------|:------------------------------------------------|
+|$\alpha_{dors}$               |$\text{proportion}$   | $\text{ABSAND}$  |solar absorptivity, dorsal fur                   |
+|$\alpha_{fur}$                |$\text{proportion}$   | -        |solar absorptivity, fur                          |
+|$\alpha_{sub}$|$\text{proportion}$ | $\text{ABSSB}$  |solar absorptivity, substrate |
+|$\alpha_{vent}$|$\text{proportion}$ | $\text{ABSANV}$ |solar absorptivity, ventral fur |
+|$\beta$|$\text{m}^{-1}$|$\text{BETARA}$|average infrared absorption coefficient |
+|$\beta_1$|$\text{m}$ |$\text{B1ARA}$|fur/feather optical depth|
+|$\delta_T$|$\text{K},^\circ \text{C}$ |$\text{DELTAT}$ |temperature difference between animal surface and surrounding air/fluid |
+|$\epsilon$|$\text{proportion}$|$\text{EMIS}$|longwave emissivity |
+|$\gamma$|$\text{K}^{-1}$|$\text{BETA}$|inverse of the fluid temperature $T_{fluid}$ in Kelvin|
+|$\lambda$|$\text{J} \space \text{kg}^{-1}$|$\text{HTOVPR}$|latent heat of vaporization |
+|$\mu$|$\text{kg} \space \text{m} \space \text{s}^{-1}$ |$\text{VISDYN}$|dynamic viscosity of air or fluid surrounding the animal |
+|$\mu_{fluid}$|$\text{kg} \space \text{m} \space \text{s}^{-1}$ |$\text{VISDYN}$|dynamic viscosity of fluid surrounding the animal |
+|$\rho_{body}$|$\text{kg} \space \text{m}^{-3}$|$\text{ANDENS}$|body density |
+|$\rho_{fat}$|$\text{kg} \space \text{m}^{-3}$|$\text{FATDEN}$|fat density |
+|$\rho_{fluid}$|$\text{kg} \space \text{m}^{-3}$|$\text{DENSTY}$|fluid density |
+|$\rho_{hair,eff}$|$\text{hairs} \space \text{m}^{-2}$|$\text{RHOEFF}$|effective pelage hair density |
+|$\rho_{hair}$|$\text{hairs} \space \text{m}^{-2}$|$\text{RHO}$|pelage hair density |
+|$\rho_a$|$\text{kg} \space \text{m}^{-3}$|$\text{AIRVD}$|vapor density of surrounding air |
+|$\rho_s$|$\text{kg} \space \text{m}^{-3}$|$\text{SURFVD}$|vapor density at the skin surface|
+|$\sigma$|$\text{W} \space \text{m}^{-2} \text{K}^{-4}$|$\text{SIG}$ |Stefan-Boltzmann constant |
+|$A_{cond}$|$\text{m}^2$|$\text{AV}$,$\text{AREACND}$|area of body part in contact with substrate for conduction |
+|$A_{conv}$|$\text{m}^2$|$\text{SURFAR}$,$\text{CONVAR}$|area for convection (total area minus ventral area in contact with substrate, as determined by $p_{cond}$)|
+|$A_{evap}$|$\text{m}^2$ |$\text{CONVSK}$,$\text{AREASKIN}$|area of skin for evaporation (total skin area - hair area)|
+|$A_{fa}$|$\text{m}^2$|$\text{CONVAR}$|fur-air interface area |
+|$A_{hair}$|$\text{proportion}$|$\text{AHAIR}$|proportion of cross-sectional fur area that is hair (rather than air) |
+|$A_{maj}$|$\text{m}$|$\text{ASEMAJ}$|semimajor axis length (ellipsoid)|
+|$A_{s}$|$\text{m}^2$|$\text{CONVSK}$,$\text{AREASKIN}$|area of skin, $\text{m}^2$|
+|$A_{sil,n}$|$\text{m}^2$ | $\text{ASILN}$|silhouette area normal to sun|
+|$A_{sil,p}$|$\text{m}^2$ | $\text{ASILP}$|silhouette area parallel to sun|
+|$A_{sil}$|$\text{m}^2$ | $\text{ASIL}$|silhouette area for solar radiation (may be normal, parallel or in  between)|
+|$A_{tot}$|$\text{m}^2$ | $\text{AREATOTL}$,$\text{AREA}$,$\text{ATOT}$|total area at fur/feathers-air interface|
+|$A_{wet}$|$\text{m}^2$|$\text{EFFSUR}$|surface area acting as a free-water surface |
+|$B_{min}$|$\text{m}$|$\text{BSEMIN}$|semiminor axis length (ellipsoid)|
+|$C_{min}$|$\text{m}$|$\text{CSEMIN}$|semiminor axis length (ellipsoid, currently only prolate spheroid)|
+|$C_d$|$\text{W} \space {^\circ \text{C}}^{-1}$ |$\text{CF}$|constant $\text{(} \frac{k_{fur}}{x_{fur}} \text{+} \frac{k_{sub}}{x_{sub}} \text{)} A_{cond}$ used to simplify equation notation |
+|$C_f$|$\text{W} \space {^\circ \text{C}}^{-1}$ |$\text{CD}$|constant $\frac{\text{2}\pi k_{f} L_{g}}{\text{ln(} \frac{R_{fa}}{R_{s}}\text{) }}$ used to simplify equation notation |
+|$C_{p,air}$|$\text{J} \space \text{kg}^{-1} \space ^\circ \text{C}$|$\text{CP}$|specific heat of air |
+|$C_{p,fluid}$|$\text{J} \space \text{kg}^{-1} \space ^\circ \text{C}$|$\text{CP}$|specific heat of fluid |
+|$C_{p,water}$|$\text{J} \space \text{kg}^{-1} \space ^\circ \text{C}$|$\text{CP}$|specific heat of water |
+|$d$|$\text{m}^{2}\space\text{s}^{-1}$ |$\text{DIFVPR}$|mass diffusivity of water vapor|
+|$D$|$\text{m}$|$\text{D}$|characteristic dimension for convection|
+|$D_{hair}$|$\text{m}$ |$\text{DHAIR}$|hair diameter |
+|$D_1$|-|$\text{DV1}$ |constant $\text{[1+}\frac{C_{f}R_{g}^2}{4k_{g}V_{g}} \text{+}  \frac{C_{f}R_{g}^2}{2k_{i}V_{g}} \text{ln(} \frac{R_{s}}{R_{g}} \text{)]}$ used to simplify equation notation|
+|$D_2$|$^\circ \text{C}$|$\text{DV2}$ |constant $\left[\frac{Q_{evap} R^2_g}{4 k_g V_g} - \frac{Q_{evap} R^2_g}{2 k_i V_g} \ln \left(\frac{R_{s}}{R_g}\right)\right]$ used to simplify equation notation |
+|$D_3$|$^\circ \text{C}$ |$\text{DV3}$| constant $\text{(}\frac{\frac{C_{f}}{D_{1}} \text{(}T_{c}-D_{2}-T_{fa} \text{)} R_{g}^2}{2k_{f}V_{g}} \text{)ln(}\frac{R_{fa}}{R_{rad}} \text{)}$ used to simplify equation notation|
+|$D_4$|$\text{W} \space {^\circ \text{C}}^{-1}$ |$\text{DV4}$|constant $\frac{C_{d}C_{f}R_{g}^2}{D_{1}4k_{g}V_{g}}$ used to simplify equation notation|
+|$D_5$|$\text{W} \space {^\circ \text{C}}^{-1}$ |$\text{DV5}$|constant $\frac{C_{d}C_{f}R_{g}^2}{D_{1}2k_{i}V_{g}}$ used to simplify equation notation |
+|$E_{tot}$|$\text{m}$ |$\text{E2}$|eccentricity of ellipsoid for fur-air interface surface area calculations |
+|$E_s$|$\text{m}$|$\text{E}$ |eccentricity of ellipsoid for skin surface area calculations |
+|$F_{bsh}$|$\text{proportion}$|$\text{FATOBJ}$|configuration factor from animal to surrounding vegetation or objects |
+|$F_{sky}$|$\text{proportion}$|$\text{FASKY}$|configuration factor from animal to sky |
+|$F_{sub}$|$\text{proportion}$|$\text{FAGRD}$|configuration factor from animal to substrate |
+|$F_{veg}$|$\text{proportion}$|$\text{FAVEG}$|configuration factor from animal to overhead vegetation |
+|$G$|$\text{m} \space \text{s}^{-1}$|$\text{GRAV}$ |acceleration due to gravity|
+|$Gr$|-|$\text{GR}$|Grashof number |
+|$H$|$\text{m}$|-|height|
+|$H_{body}$|$\text{m}$|$\text{AHEIT}$|body height (flesh plus fat)|
+|$h_{d,forced}$|$\text{m}\space \text{s}^{-1}$|$\text{HDFORC}$|forced convection mass transfer coefficient |
+|$h_{d,free}$|$\text{m}\space \text{s}^{-1}$|$\text{HDFREE}$ |free convection mass transfer coefficient |
+|$h_{r,bsh}$|$\text{W} \space \text{m}^{-2} \text{K}^{-1}$ |-|radiative heat transfer coefficient between animal and surrounding vegetation or objects |
+|$h_{r,sky}$|$\text{W} \space \text{m}^{-2} \text{K}^{-1}$|- |radiative heat transfer coefficient between animal and sky |
+|$h_{r,sub}$|$\text{W} \space \text{m}^{-2} \text{K}^{-1}$|- |radiative heat transfer coefficient between animal and substrate |
+|$h_{r,veg}$|$\text{W} \space \text{m}^{-2} \text{K}^{-1}$|- |radiative heat transfer coefficient between animal and overhead vegetation |
+|$h_c$|$\text{W} \space \text{m}^{-2} \text{K}^{-1}$|$\text{HC}$,$\text{HCCOMB}$|convective heat transfer coefficient|
+|$h_d$|$\text{m}\space \text{s}^{-1}$ |$\text{HD}$|mass transfer coefficient |
+|$h_r$|$\text{W} \space \text{m}^{-2} \text{K}^{-1}$|- |radiative heat transfer coefficient|
+|$I_{sol}$|$\text{W} \space \text{m}^{-2}$|- |incoming solar radiation |
+|$\dot{J}_{\text{air},1}$|$\text{mol} \space \text{s}^{-1}$|$\text{AIRML1}$|moles of air entering the respiratory system per second |
+|$\dot{J}_{\text{air},2}$|$\text{mol} \space \text{s}^{-1}$|$\text{AIRML2}$|moles of air exiting the respiratory system per second |
+|$\dot{J}_{\text{CO}_2,2}$|$\text{mol} \space \text{s}^{-1}$|$\text{CO2MOL2}$|moles of carbon dioxide exiting the respiratory system |
+|$\dot{J}_{\text{H}_2\text{O},1}$|$\text{mol} \space \text{s}^{-1}$|$\text{WMOL1}$|moles of water entering the respiratory system per second |
+|$\dot{J}_{\text{H}_2\text{O},2}$|$\text{mol} \space \text{s}^{-1}$|$\text{WMOL2}$|moles of water exiting the respiratory system per second |
+|$\dot{J}_{\text{O}_2,1}$|$\text{mol} \space \text{s}^{-1}$|$\text{O2MOL1}$|moles of oxygen entering the respiratory system per second |
+|$\dot{J}_{\text{O}_2,2}$|$\text{mol} \space \text{s}^{-1}$|$\text{O2MOL2}$|moles of oxygen exiting the respiratory system per second |
+|$\dot{J}_{\text{O}_2,con}$|$\text{mol} \space \text{s}^{-1}$|$\text{O2MOLC}$|moles of oxygen consumed per second |
+|$\dot{J}_{in}$|$\text{mol} \space \text{s}^{-1}$|-|mass flow of water into the lungs |
+|$\dot{J}_{out}$|$\text{mol} \space \text{s}^{-1}$|-|mass flow of water out of the lungs |
+|$k^{\prime}_x$|$\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}$|$\text{KX}$ |thermal conductivity of fur in the horizontal direction |
+|$k^{\prime}_y$|$\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}$|$\text{KY}$ |thermal conductivity of fur in the vertical direction |
+|$k_{air}$|$\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}$|$\text{THCOND}$,$\text{KAIR}$ |thermal conductivity of air |
+|$k_{eff}$|$\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}$|$\text{KEFF}$|effective conductive thermal conductivity of the fur/feather layer (average of $k^{\prime}_x$ and $k^{\prime}_y$) |
+|$k_{fluid}$|$\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}$|$\text{THCOND}$|thermal conductivity of fluid |
+|$k_{fur}$|$\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}$|$\text{KFUR}$|combined conductive and radiant thermal conductivity of the fur/feather layer |
+|$k_{hair}$|$\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}$|$\text{KHAIR}$|thermal conductivity of hair (assumed to be keratin) |
+|$k_{rad}$|$\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}$|$\text{KRAD}$|longwave radiation component of fur/feather layer thermal conductivity |
+|$k_{sub}$|$\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}$|$\text{KSUB}$|thermal conductivity of the substrate |
+|$k_g$|$\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}$|$\text{AK1}$|thermal conductivity of flesh |
+|$k_i$|$\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}$|$\text{AK2}$|thermal conductivity of subcutaneous fat |
+|$L_{body}$|$\text{m}$|$\text{ALENTH}$|body length (flesh plus fat)|
+|$L_{hair}$|$\text{m}$ |$\text{LHAIR}$|hair length |
+|$L_g$|$\text{m}$|$\text{LEN}$|length of body part |
+|$M$|$\text{m}$ |$\text{AMASS}$|total body mass |
+|$M_{fat}$|$\text{kg}$|$\text{MFAT}$|mass of body fat|
+|$\dot{M}_{\text{H}_2\text{O},2}$|$\text{kg} \space \text{s}^{-1}$|$\text{KGEVAP}$|mass of water lost from respiratory system per second |
+|$\dot{M}_{\text{H}_2\text{O},bareskin}$|$\text{kg} \space \text{s}^{-1}$|$\text{WCUTHF}$|water mass flux from bare skin |
+|$\dot{M}_{\text{H}_2\text{O},cut}$|$\text{kg} \space \text{s}^{-1}$|$\text{WCUT}$|water mass flux from cutaneous surface |
+|$\dot{M}_{\text{H}_2\text{O},eyes}$|$\text{kg} \space \text{s}^{-1}$|$\text{WEYES}$|total water mass flux from eyes |
+|$\dot{M}_{\text{H}_2\text{O},furskin}$|$\text{kg} \space \text{s}^{-1}$|$\text{WCUTF}$| water mass flux from skin with furred or feathered covering |
+|$\dot{M}_{\text{H}_2\text{O},wetfur}$|$\text{kg} \space \text{s}^{-1}$|$\text{WTFUR}$|water mass flux from furred/feathered surface |
+|$Nu$|-|$\text{NUTOTAL}$|Nusselt number |
+|$Nu_{forced}$|-|$\text{NUFORCED}$|Nusselt number for forced convection |
+|$Nu_{free}$|-|$\text{NUFREE}$|Nusselt number for free convection |
+|$P_{\text{H}_2\text{O},sat}$|$\text{%}$|$\text{ESAT}$|saturation water vapor pressure |
+|$P_{\text{O}_2,ref}$|$\text{%}$|$\text{REFPO2}$|reference partial pressure of oxygen |
+|$P_{\text{O}_2}$|$\text{%}$|$\text{PO2}$|partial pressure of oxygen in the animal's environment |
+|$P_{bar,std}$|$\text{Pa}$ |$\text{PSTD}$|barometric pressure at standard temperature and pressure |
+|$P_{bar}$|$\text{Pa}$|$\text{BP}$,$\text{BARPRS}$|barometric pressure |
+|$p_{\text{CO}_2}$|$\text{proportion}$ |$\text{PCTCO2}$|proportion of carbon dioxide in the animal's environment |
+|$p_{\text{CO}_2,ref}$|$\text{proportion}$ |$\text{RPCTCO2}$|reference atmospheric proportion of carbon dioxide |
+|$p_{\text{N}_2}$|$\text{proportion}$ |$\text{PCTN2}$|proportion of nitrogen in the animal's environment |
+|$p_{\text{N}_2,ref}$|$\text{proportion}$ |$\text{RPCTN2}$|reference atmospheric proportion of nitrogen |
+|$p_{\text{O}_2}$|$\text{proportion}$ |$\text{PCTO2}$|proportion of oxygen in the animal's environment |
+|$p_{\text{O}_2,ref}$|$\text{proportion}$ |$\text{RPCTO2}$|reference atmospheric proportion of oxygen |
+|$p_{bare}$|$\text{proportion}$|$\text{PCTBAREVAP}$|proportion of free-water surface that is bare skin |
+|$p_{cond}$|$\text{proportion}$|$\text{PCOND}$|proportion of surface area in contact with substrate for conduction |
+|$p_{dif}$|$\text{proportion}$|$\text{PCTDIF}$|percent of sunlight that is diffuse |
+|$p_{eyes}$|$\text{proportion}$|$\text{PEYES}$|proportion of surface area comprised of animal's eyes |
+|$p_{fat}$|$\text{proportion}$|$\text{PCTFAT}$|body fat percentage |
+|$p_{shd}$|$\text{proportion}$|$\text{ASHADE}$|fractional overhead shade level |
+|$p_{vent}$|$\text{proportion}$|$\text{PVENT}$|percent of ventral fur |
+|$p_{wet}$|$\text{proportion}$|$\text{PCTWET}$|proportional skin available for evaporation |
+|$p_{wetfur}$|$\text{proportion}$|$\text{FURWET}$|proportion of the fur/feather surface area that is wet |
+|$Pr$|-|$\text{PR}$|Prandtl number|
+|$Q_{air}$|$\text{W}$ |$\text{QAIR}$|heat taken by the air in the respiratory tract|
+|$Q_{basal}$|$\text{W}$ |$\text{QBASAL}$|basal metabolic rate |
+|$Q_{cond}$|$\text{W}$ |$\text{QCOND}$|conductive heat flux |
+|$Q_{conv}$|$\text{W}$ |$\text{QCONV}$|convective heat flux |
+|$Q_{env}$|$\text{W}$ |$\text{QENV}$|heat flux with the surrounding environment ($\text{Q}_{rad}+\text{Q}_{conv}+\text{Q}_{cond}+Q_{evap,fur}-\text{Q}_{sol})$ |
+|$Q_{evap}$|$\text{W}$ |$\text{QSEVAP}$|cutaneous evaporative heat loss |
+|$Q_{evap,fur}$|$\text{W}$ |$\text{QFSEVAP}$|fur surface evaporative heat loss |
+|$Q_{fur}$|$\text{W}$ |$\text{QFUR}$|heat flux through the fur/feather layer |
+|$Q_{gen,net}$|$\text{W}$ |$\text{QGENNET}$|net metabolic heat generation ($\text{Q}_{gen}-\text{Q}_{resp}$) |
+|$Q_{gen}$|$\text{W}$ |$\text{QGEN}$|metabolic heat generation |
+|$Q_{r1}$|$\text{W} \space {^\circ \text{C}}^{-1}$|$\text{QR1}$|abbreviation for radiant heat transfer coefficients, surface areas, and configuration factors to simplify equation notation |
+|$Q_{r2}$|$\text{W} \space {^\circ \text{C}}^{-1}$ |$\text{QR2}$|abbreviation for radiant heat transfer coefficients, surface areas, and configuration factors to simplify equation notation |
+|$Q_{r3}$|$\text{W} \space {^\circ \text{C}}^{-1}$ |$\text{QR3}$|abbreviation for radiant heat transfer coefficients, surface areas, and configuration factors to simplify equation notation |
+|$Q_{r4}$|$\text{W} \space {^\circ \text{C}}^{-1}$ |$\text{QR4}$|abbreviation for radiant heat transfer coefficients, surface areas, and configuration factors to simplify equation notation |
+|$Q_{rad,bsh}$|$\text{W}$ |$\text{QRBSH}$|radiative heat flux with surrounding vegetation |
+|$Q_{rad,sky}$|$\text{W}$ |$\text{QRSKY}$|radiative heat flux with sky |
+|$Q_{rad,sub}$|$\text{W}$ |$\text{QRGRD}$|radiative heat flux with substrate |
+|$Q_{rad,veg}$|$\text{W}$ |$\text{QRVEG}$|radiative heat flux with overhead vegetation |
+|$Q_{rad}$|$\text{W}$ |$\text{QRAD}$|longwave radiative hat flux |
+|$Q_{resp}$|$\text{W}$ |$\text{QRESP}$|respiratory heat loss |
+|$Q_{sol,diff}$|$\text{W}$ | $\text{QSDIFF}$ |total diffuse solar radiation absorbed by the animal |
+|$Q_{sol,dir}$|$\text{W}$ | $\text{QSDIR}$| direct solar radiation absorbed by the animal |
+|$Q_{sol,dors}$|$\text{W}$ | $\text{QDORSL}$ |ventral solar heat flux  |
+|$Q_{sol,norm}$|$\text{W} \space \text{m}^{-2}$ | $\text{QNORM}$ |direct solar radiation intensity normalized for zenith angle |
+|$Q_{sol,sky}$|$\text{W}$ | $\text{QSSKY}$ |diffuse solar radiation absorbed by the animal from the sky |
+|$Q_{sol,sub}$|$\text{W}$ | $\text{QSRSB}$ |diffuse solar radiation absorbed by the animal reflected off the substrate |
+|$Q_{sol,vent}$|$\text{W}$ |$\text{QVENTR}$ |ventral solar heat flux |
+|$Q_{sol}$|$\text{W}$ | $\text{QSLR}$ |total solar heat flux |
+|$r$|$\text{m}$ |-|depth within the fur/feather layer|
+|$R$|$\frac{\text{Pa} \space \text{Litres}}{\text{mol} \space \text{K}}$|$\text{RGC}$| universal gas constant|
+|$R_{fa}$|$\text{m}$|$\text{RFUR}$,$\text{R2}$|shape-specific core-fur radius in shortest dimension|
+|$R_{rad}$|$\text{m}$ |-|radius at which longwave radiation is effectively leaving the fur/feather layer |
+|$R_g$|$\text{m}$ |$\text{RFLESH}$|shape-specific core to surface of heat generating flesh in shortest dimension |
+|$R_s$|$\text{m}$|$\text{RSKIN}$,$\text{R1}$|shape-specific core-skin radius in shortest dimension|
+|$Ra$|-|$\text{RA}$|Rayleigh number |
+|$Re$|-|$\text{RE}$|Reynolds number |
+|$\text{RH}$|%|$\text{RH}$|relative humidity |
+|$\text{RQ}$|$\text{ratio}$|$\text{RQ}$|respiratory quotient (ratio of moles of carbon dioxide produced per mole of oxygen consumed) |
+|$S_b$|$\text{ratio}$ |$\text{SHAPEB}$|ratio of length to height of a flat plate or ellipsoid|
+|$S_c$|$\text{ratio}$ |$\text{SHAPEC}$|ratio of length to width of a cylinder |
+|$Sc$|-|$\text{SC}$|Schmidt number |
+|$Sh$|-|$\text{SH}$|Sherwin number |
+|$T_{air}$|$^\circ \text{C}$|$\text{TAIR}$|air temperature |
+|$T_{ave}$|$^\circ \text{C}$|-|average of $\text{T}_{rad,env}$ and $\text{T}_{rad,fur}$ |
+|$T_{env}$|$^\circ \text{C}$ |-|radiant temperature of relevant environmental component (sky, substrate, vegetation, etc.) |
+|$T_{fa}$|$^\circ \text{C}$|$\text{TFA}$|temperature at the fur-air interface |
+|$T_{fur}$|$^\circ \text{C}$|-|temperature of the fur at depth $r$ |
+|$T_{lung}$|$^\circ \text{C}$|$\text{TLUNG}$|estimated lung temperature |
+|$T_{rad,approx}$|$^\circ \text{C}$|$\text{TRAPPX}$|initial approximation of fur radiant temperature ($\text{T}_{rad,fur}$)|
+|$T_{rad,bsh}$|$\text{K}$|$\text{TBUSH}$|effective radiant temperature of the surrounding vegetation|
+|$T_{rad,env}$|$\text{K}$|-|effective radiant temperature of the environment (e.g., sky, ground, bushes, nearby objects)|
+|$T_{rad,fur}$|$\text{K}$|$\text{TR}$|effective radiant temperature of the fur/feather layer|
+|$T_{rad,sky}$|$\text{K}$|$\text{TSKY}$|effective radiant temperature of the sky |
+|$T_{rad,sub}$|$\text{K}$|$\text{TLOWER}$|effective radiant temperature of substrate |
+|$T_{rad,veg}$|$\text{K}$|$\text{TVEG}$|effective radiant temperature of overhead vegetation |
+|$T_{sub}$|$^\circ \text{C}$|$\text{TGRD}$|substrate temperature |
+|$T_{water}$|$^\circ \text{C}$|$\text{TWATR}$|water temperature |
+|$T_a$|$^\circ \text{C}$|$\text{TA}$|air temperature |
+|$T_c$|$^\circ \text{C}$|$\text{TC}$|core body temperature |
+|$T_s$|$^\circ \text{C}$|$\text{TSKIN}$|skin temperature |
+|$v$|$\text{m} \space \text{s}^{-1}$|$\text{VEL}$|wind speed|
+|$V_{body}$|$\text{m}^3$ |$\text{VOL}$| total body volume |
+|$V_{fat}$|$\text{m}^3$|$\text{VOLFAT}$| volume of body fat|
+|$V_g$|$\text{m}^3$|$\text{VOL}$,$\text{FLSHVL}$|volume of body flesh|
+|$\dot{V}_{air}$|$\text{m}^3 \space \text{s}^{-1}$ |$\text{AIRVOL}$|volume of air flowing through the lungs per second |
+|$\dot{V}_{O_{2},stp}$|$\text{m}^3 \space \text{s}^{-1}$ |$\text{O2STP}$|oxygen consumption rate at standard temperature and pressure |
+|$\dot{V}_{O_2}$|$\text{m}^3 \space \text{s}^{-1}$ |$\text{VO2CON}$|oxygen consumption rate at the current air temperature and barometric pressure |
+|$W_{body}$|$\text{m}$|$\text{AWIDTH}$| body width (flesh plus fat)|
+|$X_{act}$|-|$\text{TIMACT}$|user-specified activity multiplier |
+|$x_{fur}$|$\text{m}$|$\text{ZFURCOMP}$|thickness of compressed fur for calculations of conduction with substrate |
+|$X_{pant}$|-|$\text{PANT}$|multiplier to allow enhanced respiratory heat loss via panting for thermoregulation |
+|$X_{RQ}$|-|-| conversion factor for liters of oxygen per kilocalorie|
+|$x_{sub}$|$\text{m}$|-| depth in the substrate from which temperature is taken for conduction calculations (assumed to be 2.5 cm) |
+|$X_r$|$\text{proportion}$|$\text{XR}$| proportional distance from the skin surface in the fur where radiant exchange takes place (1.0 = at the fur surface; 0.5 = at the midpoint depth|
+|$Z$|$\text{radians}$|$\text{ZEN}$ |solar zenith angle|
+|$z_{fat}$|$\text{m}$|$\text{FATTHK}$| subcutaneous fat thickness|
+|$z_{fur}$|$\text{m}$|$\text{ZL}$| fur/feather layer thickness|
+

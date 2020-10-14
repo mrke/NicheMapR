@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Michael R. Kearney, Paul D. Mathewson and Warren P. Porter" />
+
+<meta name="date" content="2020-10-14" />
+
+<title>Endotherm Model Tutorial IV: Symbols</title>
+
+
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Endotherm Model Tutorial IV: Symbols</h1>
+<h4 class="author">Michael R. Kearney, Paul D. Mathewson and Warren P. Porter</h4>
+<h4 class="date">2020-10-14</h4>
+
+
+
+<table>
+<colgroup>
+<col width="22%"></col>
+<col width="20%"></col>
+<col width="19%"></col>
+<col width="37%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Symbol</th>
+<th align="left">units</th>
+<th align="left">Variable Name</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\alpha_{dors}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{ABSAND}\)</span></td>
+<td align="left">solar absorptivity, dorsal fur</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\alpha_{fur}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left">-</td>
+<td align="left">solar absorptivity, fur</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\alpha_{sub}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{ABSSB}\)</span></td>
+<td align="left">solar absorptivity, substrate</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\alpha_{vent}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{ABSANV}\)</span></td>
+<td align="left">solar absorptivity, ventral fur</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\beta\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{BETARA}\)</span></td>
+<td align="left">average infrared absorption coefficient</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\beta_1\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{B1ARA}\)</span></td>
+<td align="left">fur/feather optical depth</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\delta_T\)</span></td>
+<td align="left"><span class="math inline">\(\text{K},^\circ \text{C}\)</span></td>
+<td align="left"><span class="math inline">\(\text{DELTAT}\)</span></td>
+<td align="left">temperature difference between animal surface and surrounding air/fluid</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{EMIS}\)</span></td>
+<td align="left">longwave emissivity</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\gamma\)</span></td>
+<td align="left"><span class="math inline">\(\text{K}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{BETA}\)</span></td>
+<td align="left">inverse of the fluid temperature <span class="math inline">\(T_{fluid}\)</span> in Kelvin</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\lambda\)</span></td>
+<td align="left"><span class="math inline">\(\text{J} \space \text{kg}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{HTOVPR}\)</span></td>
+<td align="left">latent heat of vaporization</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\mu\)</span></td>
+<td align="left"><span class="math inline">\(\text{kg} \space \text{m} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{VISDYN}\)</span></td>
+<td align="left">dynamic viscosity of air or fluid surrounding the animal</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\mu_{fluid}\)</span></td>
+<td align="left"><span class="math inline">\(\text{kg} \space \text{m} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{VISDYN}\)</span></td>
+<td align="left">dynamic viscosity of fluid surrounding the animal</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\rho_{body}\)</span></td>
+<td align="left"><span class="math inline">\(\text{kg} \space \text{m}^{-3}\)</span></td>
+<td align="left"><span class="math inline">\(\text{ANDENS}\)</span></td>
+<td align="left">body density</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\rho_{fat}\)</span></td>
+<td align="left"><span class="math inline">\(\text{kg} \space \text{m}^{-3}\)</span></td>
+<td align="left"><span class="math inline">\(\text{FATDEN}\)</span></td>
+<td align="left">fat density</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\rho_{fluid}\)</span></td>
+<td align="left"><span class="math inline">\(\text{kg} \space \text{m}^{-3}\)</span></td>
+<td align="left"><span class="math inline">\(\text{DENSTY}\)</span></td>
+<td align="left">fluid density</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\rho_{hair,eff}\)</span></td>
+<td align="left"><span class="math inline">\(\text{hairs} \space \text{m}^{-2}\)</span></td>
+<td align="left"><span class="math inline">\(\text{RHOEFF}\)</span></td>
+<td align="left">effective pelage hair density</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\rho_{hair}\)</span></td>
+<td align="left"><span class="math inline">\(\text{hairs} \space \text{m}^{-2}\)</span></td>
+<td align="left"><span class="math inline">\(\text{RHO}\)</span></td>
+<td align="left">pelage hair density</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\rho_a\)</span></td>
+<td align="left"><span class="math inline">\(\text{kg} \space \text{m}^{-3}\)</span></td>
+<td align="left"><span class="math inline">\(\text{AIRVD}\)</span></td>
+<td align="left">vapor density of surrounding air</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\rho_s\)</span></td>
+<td align="left"><span class="math inline">\(\text{kg} \space \text{m}^{-3}\)</span></td>
+<td align="left"><span class="math inline">\(\text{SURFVD}\)</span></td>
+<td align="left">vapor density at the skin surface</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\sigma\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-2} \text{K}^{-4}\)</span></td>
+<td align="left"><span class="math inline">\(\text{SIG}\)</span></td>
+<td align="left">Stefan-Boltzmann constant</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(A_{cond}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^2\)</span></td>
+<td align="left"><span class="math inline">\(\text{AV}\)</span>,<span class="math inline">\(\text{AREACND}\)</span></td>
+<td align="left">area of body part in contact with substrate for conduction</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(A_{conv}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^2\)</span></td>
+<td align="left"><span class="math inline">\(\text{SURFAR}\)</span>,<span class="math inline">\(\text{CONVAR}\)</span></td>
+<td align="left">area for convection (total area minus ventral area in contact with substrate, as determined by <span class="math inline">\(p_{cond}\)</span>)</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(A_{evap}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^2\)</span></td>
+<td align="left"><span class="math inline">\(\text{CONVSK}\)</span>,<span class="math inline">\(\text{AREASKIN}\)</span></td>
+<td align="left">area of skin for evaporation (total skin area - hair area)</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(A_{fa}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^2\)</span></td>
+<td align="left"><span class="math inline">\(\text{CONVAR}\)</span></td>
+<td align="left">fur-air interface area</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(A_{hair}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{AHAIR}\)</span></td>
+<td align="left">proportion of cross-sectional fur area that is hair (rather than air)</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(A_{maj}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{ASEMAJ}\)</span></td>
+<td align="left">semimajor axis length (ellipsoid)</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(A_{s}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^2\)</span></td>
+<td align="left"><span class="math inline">\(\text{CONVSK}\)</span>,<span class="math inline">\(\text{AREASKIN}\)</span></td>
+<td align="left">area of skin, <span class="math inline">\(\text{m}^2\)</span></td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(A_{sil,n}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^2\)</span></td>
+<td align="left"><span class="math inline">\(\text{ASILN}\)</span></td>
+<td align="left">silhouette area normal to sun</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(A_{sil,p}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^2\)</span></td>
+<td align="left"><span class="math inline">\(\text{ASILP}\)</span></td>
+<td align="left">silhouette area parallel to sun</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(A_{sil}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^2\)</span></td>
+<td align="left"><span class="math inline">\(\text{ASIL}\)</span></td>
+<td align="left">silhouette area for solar radiation (may be normal, parallel or in between)</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(A_{tot}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^2\)</span></td>
+<td align="left"><span class="math inline">\(\text{AREATOTL}\)</span>,<span class="math inline">\(\text{AREA}\)</span>,<span class="math inline">\(\text{ATOT}\)</span></td>
+<td align="left">total area at fur/feathers-air interface</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(A_{wet}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^2\)</span></td>
+<td align="left"><span class="math inline">\(\text{EFFSUR}\)</span></td>
+<td align="left">surface area acting as a free-water surface</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(B_{min}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{BSEMIN}\)</span></td>
+<td align="left">semiminor axis length (ellipsoid)</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(C_{min}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{CSEMIN}\)</span></td>
+<td align="left">semiminor axis length (ellipsoid, currently only prolate spheroid)</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(C_d\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{CF}\)</span></td>
+<td align="left">constant <span class="math inline">\(\text{(} \frac{k_{fur}}{x_{fur}} \text{+} \frac{k_{sub}}{x_{sub}} \text{)} A_{cond}\)</span> used to simplify equation notation</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(C_f\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{CD}\)</span></td>
+<td align="left">constant <span class="math inline">\(\frac{\text{2}\pi k_{f} L_{g}}{\text{ln(} \frac{R_{fa}}{R_{s}}\text{) }}\)</span> used to simplify equation notation</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(C_{p,air}\)</span></td>
+<td align="left"><span class="math inline">\(\text{J} \space \text{kg}^{-1} \space ^\circ \text{C}\)</span></td>
+<td align="left"><span class="math inline">\(\text{CP}\)</span></td>
+<td align="left">specific heat of air</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(C_{p,fluid}\)</span></td>
+<td align="left"><span class="math inline">\(\text{J} \space \text{kg}^{-1} \space ^\circ \text{C}\)</span></td>
+<td align="left"><span class="math inline">\(\text{CP}\)</span></td>
+<td align="left">specific heat of fluid</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(C_{p,water}\)</span></td>
+<td align="left"><span class="math inline">\(\text{J} \space \text{kg}^{-1} \space ^\circ \text{C}\)</span></td>
+<td align="left"><span class="math inline">\(\text{CP}\)</span></td>
+<td align="left">specific heat of water</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(d\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^{2}\space\text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{DIFVPR}\)</span></td>
+<td align="left">mass diffusivity of water vapor</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(D\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{D}\)</span></td>
+<td align="left">characteristic dimension for convection</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(D_{hair}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{DHAIR}\)</span></td>
+<td align="left">hair diameter</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(D_1\)</span></td>
+<td align="left">-</td>
+<td align="left"><span class="math inline">\(\text{DV1}\)</span></td>
+<td align="left">constant <span class="math inline">\(\text{[1+}\frac{C_{f}R_{g}^2}{4k_{g}V_{g}} \text{+} \frac{C_{f}R_{g}^2}{2k_{i}V_{g}} \text{ln(} \frac{R_{s}}{R_{g}} \text{)]}\)</span> used to simplify equation notation</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(D_2\)</span></td>
+<td align="left"><span class="math inline">\(^\circ \text{C}\)</span></td>
+<td align="left"><span class="math inline">\(\text{DV2}\)</span></td>
+<td align="left">constant <span class="math inline">\(\left[\frac{Q_{evap} R^2_g}{4 k_g V_g} - \frac{Q_{evap} R^2_g}{2 k_i V_g} \ln \left(\frac{R_{s}}{R_g}\right)\right]\)</span> used to simplify equation notation</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(D_3\)</span></td>
+<td align="left"><span class="math inline">\(^\circ \text{C}\)</span></td>
+<td align="left"><span class="math inline">\(\text{DV3}\)</span></td>
+<td align="left">constant <span class="math inline">\(\text{(}\frac{\frac{C_{f}}{D_{1}} \text{(}T_{c}-D_{2}-T_{fa} \text{)} R_{g}^2}{2k_{f}V_{g}} \text{)ln(}\frac{R_{fa}}{R_{rad}} \text{)}\)</span> used to simplify equation notation</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(D_4\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{DV4}\)</span></td>
+<td align="left">constant <span class="math inline">\(\frac{C_{d}C_{f}R_{g}^2}{D_{1}4k_{g}V_{g}}\)</span> used to simplify equation notation</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(D_5\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{DV5}\)</span></td>
+<td align="left">constant <span class="math inline">\(\frac{C_{d}C_{f}R_{g}^2}{D_{1}2k_{i}V_{g}}\)</span> used to simplify equation notation</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(E_{tot}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{E2}\)</span></td>
+<td align="left">eccentricity of ellipsoid for fur-air interface surface area calculations</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(E_s\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{E}\)</span></td>
+<td align="left">eccentricity of ellipsoid for skin surface area calculations</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(F_{bsh}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{FATOBJ}\)</span></td>
+<td align="left">configuration factor from animal to surrounding vegetation or objects</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(F_{sky}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{FASKY}\)</span></td>
+<td align="left">configuration factor from animal to sky</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(F_{sub}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{FAGRD}\)</span></td>
+<td align="left">configuration factor from animal to substrate</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(F_{veg}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{FAVEG}\)</span></td>
+<td align="left">configuration factor from animal to overhead vegetation</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(G\)</span></td>
+<td align="left"><span class="math inline">\(\text{m} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{GRAV}\)</span></td>
+<td align="left">acceleration due to gravity</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Gr\)</span></td>
+<td align="left">-</td>
+<td align="left"><span class="math inline">\(\text{GR}\)</span></td>
+<td align="left">Grashof number</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(H\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left">-</td>
+<td align="left">height</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(H_{body}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{AHEIT}\)</span></td>
+<td align="left">body height (flesh plus fat)</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(h_{d,forced}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{HDFORC}\)</span></td>
+<td align="left">forced convection mass transfer coefficient</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(h_{d,free}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{HDFREE}\)</span></td>
+<td align="left">free convection mass transfer coefficient</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(h_{r,bsh}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-2} \text{K}^{-1}\)</span></td>
+<td align="left">-</td>
+<td align="left">radiative heat transfer coefficient between animal and surrounding vegetation or objects</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(h_{r,sky}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-2} \text{K}^{-1}\)</span></td>
+<td align="left">-</td>
+<td align="left">radiative heat transfer coefficient between animal and sky</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(h_{r,sub}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-2} \text{K}^{-1}\)</span></td>
+<td align="left">-</td>
+<td align="left">radiative heat transfer coefficient between animal and substrate</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(h_{r,veg}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-2} \text{K}^{-1}\)</span></td>
+<td align="left">-</td>
+<td align="left">radiative heat transfer coefficient between animal and overhead vegetation</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(h_c\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-2} \text{K}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{HC}\)</span>,<span class="math inline">\(\text{HCCOMB}\)</span></td>
+<td align="left">convective heat transfer coefficient</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(h_d\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{HD}\)</span></td>
+<td align="left">mass transfer coefficient</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(h_r\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-2} \text{K}^{-1}\)</span></td>
+<td align="left">-</td>
+<td align="left">radiative heat transfer coefficient</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(I_{sol}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-2}\)</span></td>
+<td align="left">-</td>
+<td align="left">incoming solar radiation</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\dot{J}_{\text{air},1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{mol} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{AIRML1}\)</span></td>
+<td align="left">moles of air entering the respiratory system per second</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\dot{J}_{\text{air},2}\)</span></td>
+<td align="left"><span class="math inline">\(\text{mol} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{AIRML2}\)</span></td>
+<td align="left">moles of air exiting the respiratory system per second</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\dot{J}_{\text{CO}_2,2}\)</span></td>
+<td align="left"><span class="math inline">\(\text{mol} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{CO2MOL2}\)</span></td>
+<td align="left">moles of carbon dioxide exiting the respiratory system</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\dot{J}_{\text{H}_2\text{O},1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{mol} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{WMOL1}\)</span></td>
+<td align="left">moles of water entering the respiratory system per second</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\dot{J}_{\text{H}_2\text{O},2}\)</span></td>
+<td align="left"><span class="math inline">\(\text{mol} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{WMOL2}\)</span></td>
+<td align="left">moles of water exiting the respiratory system per second</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\dot{J}_{\text{O}_2,1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{mol} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{O2MOL1}\)</span></td>
+<td align="left">moles of oxygen entering the respiratory system per second</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\dot{J}_{\text{O}_2,2}\)</span></td>
+<td align="left"><span class="math inline">\(\text{mol} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{O2MOL2}\)</span></td>
+<td align="left">moles of oxygen exiting the respiratory system per second</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\dot{J}_{\text{O}_2,con}\)</span></td>
+<td align="left"><span class="math inline">\(\text{mol} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{O2MOLC}\)</span></td>
+<td align="left">moles of oxygen consumed per second</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\dot{J}_{in}\)</span></td>
+<td align="left"><span class="math inline">\(\text{mol} \space \text{s}^{-1}\)</span></td>
+<td align="left">-</td>
+<td align="left">mass flow of water into the lungs</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\dot{J}_{out}\)</span></td>
+<td align="left"><span class="math inline">\(\text{mol} \space \text{s}^{-1}\)</span></td>
+<td align="left">-</td>
+<td align="left">mass flow of water out of the lungs</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(k^{\prime}_x\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{KX}\)</span></td>
+<td align="left">thermal conductivity of fur in the horizontal direction</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(k^{\prime}_y\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{KY}\)</span></td>
+<td align="left">thermal conductivity of fur in the vertical direction</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(k_{air}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{THCOND}\)</span>,<span class="math inline">\(\text{KAIR}\)</span></td>
+<td align="left">thermal conductivity of air</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(k_{eff}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{KEFF}\)</span></td>
+<td align="left">effective conductive thermal conductivity of the fur/feather layer (average of <span class="math inline">\(k^{\prime}_x\)</span> and <span class="math inline">\(k^{\prime}_y\)</span>)</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(k_{fluid}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{THCOND}\)</span></td>
+<td align="left">thermal conductivity of fluid</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(k_{fur}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{KFUR}\)</span></td>
+<td align="left">combined conductive and radiant thermal conductivity of the fur/feather layer</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(k_{hair}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{KHAIR}\)</span></td>
+<td align="left">thermal conductivity of hair (assumed to be keratin)</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(k_{rad}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{KRAD}\)</span></td>
+<td align="left">longwave radiation component of fur/feather layer thermal conductivity</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(k_{sub}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{KSUB}\)</span></td>
+<td align="left">thermal conductivity of the substrate</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(k_g\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{AK1}\)</span></td>
+<td align="left">thermal conductivity of flesh</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(k_i\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-1} {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{AK2}\)</span></td>
+<td align="left">thermal conductivity of subcutaneous fat</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(L_{body}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{ALENTH}\)</span></td>
+<td align="left">body length (flesh plus fat)</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(L_{hair}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{LHAIR}\)</span></td>
+<td align="left">hair length</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(L_g\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{LEN}\)</span></td>
+<td align="left">length of body part</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(M\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{AMASS}\)</span></td>
+<td align="left">total body mass</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(M_{fat}\)</span></td>
+<td align="left"><span class="math inline">\(\text{kg}\)</span></td>
+<td align="left"><span class="math inline">\(\text{MFAT}\)</span></td>
+<td align="left">mass of body fat</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\dot{M}_{\text{H}_2\text{O},2}\)</span></td>
+<td align="left"><span class="math inline">\(\text{kg} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{KGEVAP}\)</span></td>
+<td align="left">mass of water lost from respiratory system per second</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\dot{M}_{\text{H}_2\text{O},bareskin}\)</span></td>
+<td align="left"><span class="math inline">\(\text{kg} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{WCUTHF}\)</span></td>
+<td align="left">water mass flux from bare skin</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\dot{M}_{\text{H}_2\text{O},cut}\)</span></td>
+<td align="left"><span class="math inline">\(\text{kg} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{WCUT}\)</span></td>
+<td align="left">water mass flux from cutaneous surface</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\dot{M}_{\text{H}_2\text{O},eyes}\)</span></td>
+<td align="left"><span class="math inline">\(\text{kg} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{WEYES}\)</span></td>
+<td align="left">total water mass flux from eyes</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\dot{M}_{\text{H}_2\text{O},furskin}\)</span></td>
+<td align="left"><span class="math inline">\(\text{kg} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{WCUTF}\)</span></td>
+<td align="left">water mass flux from skin with furred or feathered covering</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\dot{M}_{\text{H}_2\text{O},wetfur}\)</span></td>
+<td align="left"><span class="math inline">\(\text{kg} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{WTFUR}\)</span></td>
+<td align="left">water mass flux from furred/feathered surface</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Nu\)</span></td>
+<td align="left">-</td>
+<td align="left"><span class="math inline">\(\text{NUTOTAL}\)</span></td>
+<td align="left">Nusselt number</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Nu_{forced}\)</span></td>
+<td align="left">-</td>
+<td align="left"><span class="math inline">\(\text{NUFORCED}\)</span></td>
+<td align="left">Nusselt number for forced convection</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Nu_{free}\)</span></td>
+<td align="left">-</td>
+<td align="left"><span class="math inline">\(\text{NUFREE}\)</span></td>
+<td align="left">Nusselt number for free convection</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(P_{\text{H}_2\text{O},sat}\)</span></td>
+<td align="left"><span class="math inline">\(\text{%}\)</span></td>
+<td align="left"><span class="math inline">\(\text{ESAT}\)</span></td>
+<td align="left">saturation water vapor pressure</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(P_{\text{O}_2,ref}\)</span></td>
+<td align="left"><span class="math inline">\(\text{%}\)</span></td>
+<td align="left"><span class="math inline">\(\text{REFPO2}\)</span></td>
+<td align="left">reference partial pressure of oxygen</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(P_{\text{O}_2}\)</span></td>
+<td align="left"><span class="math inline">\(\text{%}\)</span></td>
+<td align="left"><span class="math inline">\(\text{PO2}\)</span></td>
+<td align="left">partial pressure of oxygen in the animal’s environment</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(P_{bar,std}\)</span></td>
+<td align="left"><span class="math inline">\(\text{Pa}\)</span></td>
+<td align="left"><span class="math inline">\(\text{PSTD}\)</span></td>
+<td align="left">barometric pressure at standard temperature and pressure</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(P_{bar}\)</span></td>
+<td align="left"><span class="math inline">\(\text{Pa}\)</span></td>
+<td align="left"><span class="math inline">\(\text{BP}\)</span>,<span class="math inline">\(\text{BARPRS}\)</span></td>
+<td align="left">barometric pressure</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(p_{\text{CO}_2}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{PCTCO2}\)</span></td>
+<td align="left">proportion of carbon dioxide in the animal’s environment</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(p_{\text{CO}_2,ref}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{RPCTCO2}\)</span></td>
+<td align="left">reference atmospheric proportion of carbon dioxide</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(p_{\text{N}_2}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{PCTN2}\)</span></td>
+<td align="left">proportion of nitrogen in the animal’s environment</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(p_{\text{N}_2,ref}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{RPCTN2}\)</span></td>
+<td align="left">reference atmospheric proportion of nitrogen</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(p_{\text{O}_2}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{PCTO2}\)</span></td>
+<td align="left">proportion of oxygen in the animal’s environment</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(p_{\text{O}_2,ref}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{RPCTO2}\)</span></td>
+<td align="left">reference atmospheric proportion of oxygen</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(p_{bare}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{PCTBAREVAP}\)</span></td>
+<td align="left">proportion of free-water surface that is bare skin</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(p_{cond}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{PCOND}\)</span></td>
+<td align="left">proportion of surface area in contact with substrate for conduction</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(p_{dif}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{PCTDIF}\)</span></td>
+<td align="left">percent of sunlight that is diffuse</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(p_{eyes}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{PEYES}\)</span></td>
+<td align="left">proportion of surface area comprised of animal’s eyes</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(p_{fat}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{PCTFAT}\)</span></td>
+<td align="left">body fat percentage</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(p_{shd}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{ASHADE}\)</span></td>
+<td align="left">fractional overhead shade level</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(p_{vent}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{PVENT}\)</span></td>
+<td align="left">percent of ventral fur</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(p_{wet}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{PCTWET}\)</span></td>
+<td align="left">proportional skin available for evaporation</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(p_{wetfur}\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{FURWET}\)</span></td>
+<td align="left">proportion of the fur/feather surface area that is wet</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Pr\)</span></td>
+<td align="left">-</td>
+<td align="left"><span class="math inline">\(\text{PR}\)</span></td>
+<td align="left">Prandtl number</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Q_{air}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QAIR}\)</span></td>
+<td align="left">heat taken by the air in the respiratory tract</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Q_{basal}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QBASAL}\)</span></td>
+<td align="left">basal metabolic rate</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Q_{cond}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QCOND}\)</span></td>
+<td align="left">conductive heat flux</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Q_{conv}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QCONV}\)</span></td>
+<td align="left">convective heat flux</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Q_{env}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QENV}\)</span></td>
+<td align="left">heat flux with the surrounding environment (<span class="math inline">\(\text{Q}_{rad}+\text{Q}_{conv}+\text{Q}_{cond}+Q_{evap,fur}-\text{Q}_{sol})\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Q_{evap}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QSEVAP}\)</span></td>
+<td align="left">cutaneous evaporative heat loss</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Q_{evap,fur}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QFSEVAP}\)</span></td>
+<td align="left">fur surface evaporative heat loss</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Q_{fur}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QFUR}\)</span></td>
+<td align="left">heat flux through the fur/feather layer</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Q_{gen,net}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QGENNET}\)</span></td>
+<td align="left">net metabolic heat generation (<span class="math inline">\(\text{Q}_{gen}-\text{Q}_{resp}\)</span>)</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Q_{gen}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QGEN}\)</span></td>
+<td align="left">metabolic heat generation</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Q_{r1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QR1}\)</span></td>
+<td align="left">abbreviation for radiant heat transfer coefficients, surface areas, and configuration factors to simplify equation notation</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Q_{r2}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QR2}\)</span></td>
+<td align="left">abbreviation for radiant heat transfer coefficients, surface areas, and configuration factors to simplify equation notation</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Q_{r3}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QR3}\)</span></td>
+<td align="left">abbreviation for radiant heat transfer coefficients, surface areas, and configuration factors to simplify equation notation</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Q_{r4}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space {^\circ \text{C}}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QR4}\)</span></td>
+<td align="left">abbreviation for radiant heat transfer coefficients, surface areas, and configuration factors to simplify equation notation</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Q_{rad,bsh}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QRBSH}\)</span></td>
+<td align="left">radiative heat flux with surrounding vegetation</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Q_{rad,sky}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QRSKY}\)</span></td>
+<td align="left">radiative heat flux with sky</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Q_{rad,sub}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QRGRD}\)</span></td>
+<td align="left">radiative heat flux with substrate</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Q_{rad,veg}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QRVEG}\)</span></td>
+<td align="left">radiative heat flux with overhead vegetation</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Q_{rad}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QRAD}\)</span></td>
+<td align="left">longwave radiative hat flux</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Q_{resp}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QRESP}\)</span></td>
+<td align="left">respiratory heat loss</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Q_{sol,diff}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QSDIFF}\)</span></td>
+<td align="left">total diffuse solar radiation absorbed by the animal</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Q_{sol,dir}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QSDIR}\)</span></td>
+<td align="left">direct solar radiation absorbed by the animal</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Q_{sol,dors}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QDORSL}\)</span></td>
+<td align="left">ventral solar heat flux</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Q_{sol,norm}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W} \space \text{m}^{-2}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QNORM}\)</span></td>
+<td align="left">direct solar radiation intensity normalized for zenith angle</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Q_{sol,sky}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QSSKY}\)</span></td>
+<td align="left">diffuse solar radiation absorbed by the animal from the sky</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Q_{sol,sub}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QSRSB}\)</span></td>
+<td align="left">diffuse solar radiation absorbed by the animal reflected off the substrate</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Q_{sol,vent}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QVENTR}\)</span></td>
+<td align="left">ventral solar heat flux</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Q_{sol}\)</span></td>
+<td align="left"><span class="math inline">\(\text{W}\)</span></td>
+<td align="left"><span class="math inline">\(\text{QSLR}\)</span></td>
+<td align="left">total solar heat flux</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(r\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left">-</td>
+<td align="left">depth within the fur/feather layer</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(R\)</span></td>
+<td align="left"><span class="math inline">\(\frac{\text{Pa} \space \text{Litres}}{\text{mol} \space \text{K}}\)</span></td>
+<td align="left"><span class="math inline">\(\text{RGC}\)</span></td>
+<td align="left">universal gas constant</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(R_{fa}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{RFUR}\)</span>,<span class="math inline">\(\text{R2}\)</span></td>
+<td align="left">shape-specific core-fur radius in shortest dimension</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(R_{rad}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left">-</td>
+<td align="left">radius at which longwave radiation is effectively leaving the fur/feather layer</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(R_g\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{RFLESH}\)</span></td>
+<td align="left">shape-specific core to surface of heat generating flesh in shortest dimension</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(R_s\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{RSKIN}\)</span>,<span class="math inline">\(\text{R1}\)</span></td>
+<td align="left">shape-specific core-skin radius in shortest dimension</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Ra\)</span></td>
+<td align="left">-</td>
+<td align="left"><span class="math inline">\(\text{RA}\)</span></td>
+<td align="left">Rayleigh number</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Re\)</span></td>
+<td align="left">-</td>
+<td align="left"><span class="math inline">\(\text{RE}\)</span></td>
+<td align="left">Reynolds number</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\text{RH}\)</span></td>
+<td align="left">%</td>
+<td align="left"><span class="math inline">\(\text{RH}\)</span></td>
+<td align="left">relative humidity</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\text{RQ}\)</span></td>
+<td align="left"><span class="math inline">\(\text{ratio}\)</span></td>
+<td align="left"><span class="math inline">\(\text{RQ}\)</span></td>
+<td align="left">respiratory quotient (ratio of moles of carbon dioxide produced per mole of oxygen consumed)</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(S_b\)</span></td>
+<td align="left"><span class="math inline">\(\text{ratio}\)</span></td>
+<td align="left"><span class="math inline">\(\text{SHAPEB}\)</span></td>
+<td align="left">ratio of length to height of a flat plate or ellipsoid</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(S_c\)</span></td>
+<td align="left"><span class="math inline">\(\text{ratio}\)</span></td>
+<td align="left"><span class="math inline">\(\text{SHAPEC}\)</span></td>
+<td align="left">ratio of length to width of a cylinder</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Sc\)</span></td>
+<td align="left">-</td>
+<td align="left"><span class="math inline">\(\text{SC}\)</span></td>
+<td align="left">Schmidt number</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(Sh\)</span></td>
+<td align="left">-</td>
+<td align="left"><span class="math inline">\(\text{SH}\)</span></td>
+<td align="left">Sherwin number</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(T_{air}\)</span></td>
+<td align="left"><span class="math inline">\(^\circ \text{C}\)</span></td>
+<td align="left"><span class="math inline">\(\text{TAIR}\)</span></td>
+<td align="left">air temperature</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(T_{ave}\)</span></td>
+<td align="left"><span class="math inline">\(^\circ \text{C}\)</span></td>
+<td align="left">-</td>
+<td align="left">average of <span class="math inline">\(\text{T}_{rad,env}\)</span> and <span class="math inline">\(\text{T}_{rad,fur}\)</span></td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(T_{env}\)</span></td>
+<td align="left"><span class="math inline">\(^\circ \text{C}\)</span></td>
+<td align="left">-</td>
+<td align="left">radiant temperature of relevant environmental component (sky, substrate, vegetation, etc.)</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(T_{fa}\)</span></td>
+<td align="left"><span class="math inline">\(^\circ \text{C}\)</span></td>
+<td align="left"><span class="math inline">\(\text{TFA}\)</span></td>
+<td align="left">temperature at the fur-air interface</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(T_{fur}\)</span></td>
+<td align="left"><span class="math inline">\(^\circ \text{C}\)</span></td>
+<td align="left">-</td>
+<td align="left">temperature of the fur at depth <span class="math inline">\(r\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(T_{lung}\)</span></td>
+<td align="left"><span class="math inline">\(^\circ \text{C}\)</span></td>
+<td align="left"><span class="math inline">\(\text{TLUNG}\)</span></td>
+<td align="left">estimated lung temperature</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(T_{rad,approx}\)</span></td>
+<td align="left"><span class="math inline">\(^\circ \text{C}\)</span></td>
+<td align="left"><span class="math inline">\(\text{TRAPPX}\)</span></td>
+<td align="left">initial approximation of fur radiant temperature (<span class="math inline">\(\text{T}_{rad,fur}\)</span>)</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(T_{rad,bsh}\)</span></td>
+<td align="left"><span class="math inline">\(\text{K}\)</span></td>
+<td align="left"><span class="math inline">\(\text{TBUSH}\)</span></td>
+<td align="left">effective radiant temperature of the surrounding vegetation</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(T_{rad,env}\)</span></td>
+<td align="left"><span class="math inline">\(\text{K}\)</span></td>
+<td align="left">-</td>
+<td align="left">effective radiant temperature of the environment (e.g., sky, ground, bushes, nearby objects)</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(T_{rad,fur}\)</span></td>
+<td align="left"><span class="math inline">\(\text{K}\)</span></td>
+<td align="left"><span class="math inline">\(\text{TR}\)</span></td>
+<td align="left">effective radiant temperature of the fur/feather layer</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(T_{rad,sky}\)</span></td>
+<td align="left"><span class="math inline">\(\text{K}\)</span></td>
+<td align="left"><span class="math inline">\(\text{TSKY}\)</span></td>
+<td align="left">effective radiant temperature of the sky</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(T_{rad,sub}\)</span></td>
+<td align="left"><span class="math inline">\(\text{K}\)</span></td>
+<td align="left"><span class="math inline">\(\text{TLOWER}\)</span></td>
+<td align="left">effective radiant temperature of substrate</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(T_{rad,veg}\)</span></td>
+<td align="left"><span class="math inline">\(\text{K}\)</span></td>
+<td align="left"><span class="math inline">\(\text{TVEG}\)</span></td>
+<td align="left">effective radiant temperature of overhead vegetation</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(T_{sub}\)</span></td>
+<td align="left"><span class="math inline">\(^\circ \text{C}\)</span></td>
+<td align="left"><span class="math inline">\(\text{TGRD}\)</span></td>
+<td align="left">substrate temperature</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(T_{water}\)</span></td>
+<td align="left"><span class="math inline">\(^\circ \text{C}\)</span></td>
+<td align="left"><span class="math inline">\(\text{TWATR}\)</span></td>
+<td align="left">water temperature</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(T_a\)</span></td>
+<td align="left"><span class="math inline">\(^\circ \text{C}\)</span></td>
+<td align="left"><span class="math inline">\(\text{TA}\)</span></td>
+<td align="left">air temperature</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(T_c\)</span></td>
+<td align="left"><span class="math inline">\(^\circ \text{C}\)</span></td>
+<td align="left"><span class="math inline">\(\text{TC}\)</span></td>
+<td align="left">core body temperature</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(T_s\)</span></td>
+<td align="left"><span class="math inline">\(^\circ \text{C}\)</span></td>
+<td align="left"><span class="math inline">\(\text{TSKIN}\)</span></td>
+<td align="left">skin temperature</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(v\)</span></td>
+<td align="left"><span class="math inline">\(\text{m} \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{VEL}\)</span></td>
+<td align="left">wind speed</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(V_{body}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^3\)</span></td>
+<td align="left"><span class="math inline">\(\text{VOL}\)</span></td>
+<td align="left">total body volume</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(V_{fat}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^3\)</span></td>
+<td align="left"><span class="math inline">\(\text{VOLFAT}\)</span></td>
+<td align="left">volume of body fat</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(V_g\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^3\)</span></td>
+<td align="left"><span class="math inline">\(\text{VOL}\)</span>,<span class="math inline">\(\text{FLSHVL}\)</span></td>
+<td align="left">volume of body flesh</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\dot{V}_{air}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^3 \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{AIRVOL}\)</span></td>
+<td align="left">volume of air flowing through the lungs per second</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\dot{V}_{O_{2},stp}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^3 \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{O2STP}\)</span></td>
+<td align="left">oxygen consumption rate at standard temperature and pressure</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\dot{V}_{O_2}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}^3 \space \text{s}^{-1}\)</span></td>
+<td align="left"><span class="math inline">\(\text{VO2CON}\)</span></td>
+<td align="left">oxygen consumption rate at the current air temperature and barometric pressure</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(W_{body}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{AWIDTH}\)</span></td>
+<td align="left">body width (flesh plus fat)</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(X_{act}\)</span></td>
+<td align="left">-</td>
+<td align="left"><span class="math inline">\(\text{TIMACT}\)</span></td>
+<td align="left">user-specified activity multiplier</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_{fur}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{ZFURCOMP}\)</span></td>
+<td align="left">thickness of compressed fur for calculations of conduction with substrate</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(X_{pant}\)</span></td>
+<td align="left">-</td>
+<td align="left"><span class="math inline">\(\text{PANT}\)</span></td>
+<td align="left">multiplier to allow enhanced respiratory heat loss via panting for thermoregulation</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(X_{RQ}\)</span></td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">conversion factor for liters of oxygen per kilocalorie</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_{sub}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left">-</td>
+<td align="left">depth in the substrate from which temperature is taken for conduction calculations (assumed to be 2.5 cm)</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(X_r\)</span></td>
+<td align="left"><span class="math inline">\(\text{proportion}\)</span></td>
+<td align="left"><span class="math inline">\(\text{XR}\)</span></td>
+<td align="left">proportional distance from the skin surface in the fur where radiant exchange takes place (1.0 = at the fur surface; 0.5 = at the midpoint depth</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(Z\)</span></td>
+<td align="left"><span class="math inline">\(\text{radians}\)</span></td>
+<td align="left"><span class="math inline">\(\text{ZEN}\)</span></td>
+<td align="left">solar zenith angle</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(z_{fat}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{FATTHK}\)</span></td>
+<td align="left">subcutaneous fat thickness</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(z_{fur}\)</span></td>
+<td align="left"><span class="math inline">\(\text{m}\)</span></td>
+<td align="left"><span class="math inline">\(\text{ZL}\)</span></td>
+<td align="left">fur/feather layer thickness</td>
+</tr>
+</tbody>
+</table>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
