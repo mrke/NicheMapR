@@ -616,7 +616,7 @@ endoR_devel <- function(
       TRAITS <- c(TC,AK1,AK2,EMISAN,FATTHK,FLYHR,FURWET,PCTBAREVAP,PCTEYES)
 
       # set IPT, the geometry assumed in SIMULSOL: 1 = cylinder, 2 = sphere, 3 = ellipsoid
-      if(SHAPE %in% c(1, 3, 5)){
+      if(SHAPE %in% c(1, 3)){
         IPT <- 1
       }
       if(SHAPE == 2){

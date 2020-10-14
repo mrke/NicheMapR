@@ -354,7 +354,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
      &   PCTEYES/)
 
         !# set IPT, the geometry assumed in SIMULSOL: 1 = cylinder, 2 = sphere, 3 = ellipsoid
-        if((SHAPE.eq.1.).or.(SHAPE.eq.3.).or.(SHAPE.eq.5.))THEN
+        if((SHAPE.eq.1.).or.(SHAPE.eq.3.))THEN
          IPT = 1.
         ENDIF
         if(SHAPE.eq.2.)THEN
