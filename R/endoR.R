@@ -403,19 +403,6 @@ endoR <- function(
     QGEN <- 0
     TC_REF <- TC
     QBASREF <- QBASAL
-    # check if heat stressed already (to save computation)
-    if(TA >= TC){
-      # set core temperature, flesh thermal conductivity and shape to
-      # extreme heat loss values, adjusting basal metabolic
-      # rate for temperature increase
-      if(TA > TC_MAX){
-        TC <- TC_MAX
-        Q10mult <- Q10^((TC - TC_REF)/10)
-        QBASAL <- QBASREF * Q10mult
-      }
-      AK1 <- AK1_MAX
-      SHAPE_B <- SHAPE_B_MAX
-    }
     TVEG <- TA
     NESTYP <- 0 # not yet used
     RoNEST <- 0 # not yet used
