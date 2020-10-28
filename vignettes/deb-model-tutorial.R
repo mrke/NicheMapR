@@ -3,7 +3,7 @@ knitr::opts_chunk$set(
   eval = TRUE
 )
 
-## ----fig1, warning=FALSE, message=FALSE, echo=FALSE, fig.width=8, fig.height=5, eval=TRUE, fig.cap="DEB model prediction of length through time of the lizard *Eulamprus quoyii* growing under constant, *ad libitum* food at 25 &deg;C. Photo by the author."----
+## ----fig1, warning=FALSE, message=FALSE, echo=FALSE, fig.width=8, fig.height=5, eval=TRUE, fig.cap="DEB model prediction of length through time of the lizard *Eulamprus quoyii* growing under constant, *ad libitum* food at 25 &deg;C. Photo by the M. Kearney"----
 library(NicheMapR)
 library(knitr) # this packages has a function for producing formatted tables.
 
