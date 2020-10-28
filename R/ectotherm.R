@@ -136,7 +136,7 @@
 #' \itemize{
 #' \item{\code{z}{ = 2.825*z_mult, Zoom factor (cm)}\cr}
 #' \item{\code{del_M}{ =  0.2144, Shape coefficient (-)}\cr}
-#' \item{\code{F_m}{ = 12420, Surface area-specific maximum feeding rate J/cm2/h}\cr}
+#' \item{\code{p_Xm}{ = 12420, Surface area-specific maximum feeding rate J/cm2/h}\cr}
 #' \item{\code{kap_X}{ = 0.85, Digestive efficiency (0-1)}\cr}
 #' \item{\code{v}{ = 0.02795/24, Energy conductance (cm/h)}\cr}
 #' \item{\code{kap}{ = 0.8206, Fraction of mobilised reserve allocated to soma}\cr}
@@ -160,6 +160,11 @@
 #' \item{\code{T_AH}{ = 90000, Arrhenius temperature for decrease above upper boundary of tolerance range \code{T_H}}\cr}
 #' \item{\code{T_L}{ = 6 + 273.15, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
 #' \item{\code{T_H}{ = 33 + 273.15, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr}
+#' \item{\code{T_A2}{ = 8817 Arhhenius temperature}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
+#' \item{\code{T_AL2}{ = 50000, Arrhenius temperature for decrease below lower boundary of tolerance range \code{T_L}}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
+#' \item{\code{T_AH2}{ = 90000, Arrhenius temperature for decrease above upper boundary of tolerance range \code{T_H}}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
+#' \item{\code{T_2L}{ = 6 + 273.15, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
+#' \item{\code{T_H2}{ = 33 + 273.15, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
 #'}
 #' \strong{ Compound/derived DEB parameters:}
 #' \itemize{
@@ -192,7 +197,9 @@
 #' \strong{ Holometabolous insect DEB model parameters:}
 #' \itemize{
 #' \item{\code{stages}{ = 8, number of stages = number of instars plus 1 for egg + 1 for pupa + 1 for imago}\cr}
-#' \item{\code{y_EV_l}{ = 0.6, yield of imago reserve on larval structure (mol/mol)}\cr}
+#' \item{\code{kap_V}{ = 0.8, conversion efficient E -> V -> E (-)}\cr}
+#' \item{\code{k_Ee}{ = 0.06293 / 24, reproduction buffer turnover of imago (1/h)}\cr}
+#' \item{\code{k_EV}{ = 0.03111 / 24, spec decay rate of larval structure in pupa (1/h)}\cr}
 #' \item{\code{S_instar}{ = rep(2.049137, stages), stress at instar n: L_n^2/ L_n-1^2 (-)}\cr}
 #' \item{\code{s_j}{ = 0.9985855, Reprod buffer/structure ratio at pupation as fraction of max}\cr}
 #' \item{\code{L_b}{ = 0.0734, Structural length at birth (cm)}\cr}
@@ -264,6 +271,7 @@
 #' \item{\code{water_stages}{ = matrix(data = c(rep(pct_wet, stages), rep(F_O2, stages), rep(pct_H_P, stages), rep(pct_H_N, stages), rep(pct_H_X, stages), rep(pct_H_R, stages), rep(raindrink, stages), rep(gutfill, stages)),  nrow = stages,  ncol = 8), Stage-specific water budget parameters (pct_wet, F_O2, pct_H_P, pct_H_N, pct_H_X, pct_H_R, raindrink, gutfill)}\cr}
 #' \item{\code{nutri_stages}{ = matrix(data = c(rep(foodlim, stages), rep(0, stages)),  nrow = stages,  ncol = 1),  Stage-specific nutritional parameters (foodlim)}\cr}
 #' \item{\code{arrhenius}{ = matrix(data = matrix(data = c(rep(T_A, stages), rep(T_AL, stages), rep(T_AH, stages), rep(T_L, stages), rep(T_H, stages)),  nrow = stages,  ncol = 5),  nrow = stages,  ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A, T_AL, T_AH, T_L, T_H)}\cr}
+#' \item{\code{arrhenius2}{ = matrix(data = matrix(data = c(rep(T_A2, stages), rep(T_AL2, stages), rep(T_AH2, stages), rep(T_L2, stages), rep(T_H2, stages)),  nrow = stages,  ncol = 5),  nrow = stages,  ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A, T_AL, T_AH, T_L, T_H) for maturity maintenance (causes 'Temperature Size Rule' effect)}\cr}
 #'}
 #' \strong{ Butterfly model parameters (not yet tested):}
 #' \itemize{
@@ -373,6 +381,14 @@
 #' \item 19 E_BABY - Reserve density of baby (J/cm3) (only if viviparous and pregnant)
 #' \item 20 H_S - Hazard rate (1/h)
 #' \item 21 P_SURV - Survival probability due to joint influence of ageing and mortality rates
+#' \item 22 P_A - assimilation flux, J/h
+#' \item 23 P_C - mobilisation flux, J/h
+#' \item 24 P_M - maintenance flux, J/h
+#' \item 25 P_G - growth flux, J/h
+#' \item 26 P_D - dissipation flux, J/h
+#' \item 27 P_J - maturity maintenance flux, J/h
+#' \item 28 P_R - reproduction/maturation flux, J/h
+#' \item 29 P_D - egg flux, J/h
 #'}
 #' yearout variables:
 #' \itemize{
@@ -584,7 +600,7 @@ ectotherm <- function(
   z.mult = 1,
   z = 2.825 * z.mult,
   del_M = 0.2144,
-  F_m = 12420,
+  p_Xm = 12420,
   kap_X = 0.85,
   v = 0.02795 / 24,
   kap = 0.8206,
@@ -604,6 +620,11 @@ ectotherm <- function(
   T_AH = 9.0e+04,
   T_L = 6 + 273.15,
   T_H = 33 + 273.15,
+  T_A2 = T_A,
+  T_AL2 = T_AL,
+  T_AH2 = T_AH,
+  T_L2 = T_L,
+  T_H2 = T_H,
   E_0 = 9220 * z.mult ^ 4,
   f = 1,
   E_sm = 350,
@@ -625,10 +646,12 @@ ectotherm <- function(
   n_M_nitro = c(1, 4 / 5, 3 / 5, 4 / 5),
   metab_mode = 0,
   stages = 8,
-  y_EV_l = 0.95,
   S_instar = rep(2.660, stages),
   s_j = 0.999,
   L_b = 0.06148,
+  kap_V = 0.8,
+  k_Ee = 0.005832307 / 24,
+  k_EV = 0.07077021 / 24,
   V_init = 3e-9,
   E_init = E_0 / V_init,
   E_H_init = 0,
@@ -683,6 +706,8 @@ ectotherm <- function(
   nutri_stages = matrix(data = c(rep(foodlim, stages)),  nrow = stages,  ncol = 1),
   arrhenius = matrix(data = matrix(data = c(rep(T_A, stages), rep(T_AL, stages), rep(T_AH, stages), rep(T_L, stages), rep(T_H, stages)),
                                  nrow = stages, ncol = 5), nrow = stages, ncol = 5),
+  arrhenius2 = matrix(data = matrix(data = c(rep(T_A2, stages), rep(T_AL2, stages), rep(T_AH2, stages), rep(T_L2, stages), rep(T_H2, stages)),
+                                   nrow = stages, ncol = 5), nrow = stages, ncol = 5),
   wings = 0,
   rho1_3 = 0.2,
   trans1 = 0,
@@ -1247,8 +1272,8 @@ ectotherm <- function(
     tannul <- as.numeric(mean(soil[, 12])) # annual mean temperature, deg C
     tester <- 0 # unused
     microyear <- 1 # extraneous
-    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF, EMISSK, EMISSB, ABSSB, shade, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond/100, skint, gas, transient, soilnode, o2max, SPARE4, tannul, nodnum, postur, maxshd, minshd, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, SPARE1, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, F_m, k_sub, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod))
-    debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, FoodWater1, f, s_G, K, X[1], metab_mode, stages, y_EV_l, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He)
+    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF, EMISSK, EMISSB, ABSSB, shade, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond/100, skint, gas, transient, soilnode, o2max, SPARE4, tannul, nodnum, postur, maxshd, minshd, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, SPARE1, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, k_sub, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod))
+    debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, FoodWater1, f, s_G, K, X[1], metab_mode, stages, kap_V, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He, k_Ee, k_EV)
     deblast <- c(iyear, countday, V_init, E_init, ES_init, cumrepro_init, q_init, hs_init, cumbatch_init, V_baby_init, E_baby_init, E_H_init, stage)
 
     # code to determine wet periods for activity in a pond
@@ -1300,6 +1325,7 @@ ectotherm <- function(
       write.csv(GLMpHs, file = "ecto csv input/GLMpHs.csv", row.names = F)
       write.csv(GLMfoods, file = "ecto csv input/GLMfoods.csv", row.names = F)
       write.csv(arrhenius, file = "ecto csv input/arrhenius.csv")
+      write.csv(arrhenius, file = "ecto csv input/arrhenius2.csv")
       write.csv(thermal_stages, file = "ecto csv input/thermal_stages.csv")
       write.csv(behav_stages, file = "ecto csv input/behav_stages.csv")
       write.csv(water_stages, file = "ecto csv input/water_stages.csv")
@@ -1319,7 +1345,7 @@ ectotherm <- function(
       write.table(shadhumid[(seq(1, ndays * 24)), ], file = "ecto csv input/shadhumid.csv", sep = ",", row.names = FALSE)
     }
     # final input list
-    ecto <- list(ndays = ndays, nstages = stages, ectoinput = ectoinput, metout = metout[, 1:18], shadmet = shadmet[, 1:18], soil = soil, shadsoil = shadsoil, soilmoist = soilmoist, shadmoist = shadmoist, soilpot = soilpot, shadpot = shadpot, humid = humid, shadhumid = shadhumid, DEP = DEP, rainfall = rainfall, rainhr = rainhr, iyear = iyear, countday = countday, debmod = debmod, deblast = deblast, foodwaters = foodwaters, foodlevels = foodlevels, wetlandTemps = wetlandTemps, wetlandDepths = wetlandDepths, GLMtemps = GLMtemps, GLMO2s = GLMO2s, GLMsalts = GLMsalts, GLMpHs = GLMpHs, GLMfoods = GLMfoods, arrhenius = arrhenius, thermal_stages = thermal_stages, behav_stages = behav_stages, water_stages = water_stages, nutri_stages = nutri_stages, minshades = minshades, maxshades = maxshades, S_instar = S_instar)
+    ecto <- list(ndays = ndays, nstages = stages, ectoinput = ectoinput, metout = metout[, 1:18], shadmet = shadmet[, 1:18], soil = soil, shadsoil = shadsoil, soilmoist = soilmoist, shadmoist = shadmoist, soilpot = soilpot, shadpot = shadpot, humid = humid, shadhumid = shadhumid, DEP = DEP, rainfall = rainfall, rainhr = rainhr, iyear = iyear, countday = countday, debmod = debmod, deblast = deblast, foodwaters = foodwaters, foodlevels = foodlevels, wetlandTemps = wetlandTemps, wetlandDepths = wetlandDepths, GLMtemps = GLMtemps, GLMO2s = GLMO2s, GLMsalts = GLMsalts, GLMpHs = GLMpHs, GLMfoods = GLMfoods, arrhenius = arrhenius, arrhenius2 = arrhenius2, thermal_stages = thermal_stages, behav_stages = behav_stages, water_stages = water_stages, nutri_stages = nutri_stages, minshades = minshades, maxshades = maxshades, S_instar = S_instar)
 
     message('running ectotherm model ... \n')
 

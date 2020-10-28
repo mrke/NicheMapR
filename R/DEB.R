@@ -9,7 +9,7 @@
 #' @param step = 1/24, step size (days)
 #' @param z = 7.997, Zoom factor (cm)
 #' @param del_M =  0.242, Shape coefficient (-)
-#' @param F_m = 13290*step, Surface area-specific maximum feeding rate J/cm2/h
+#' @param p_Xm = 13290*step, Surface area-specific maximum feeding rate J/cm2/h
 #' @param kap_X = 0.85, Digestive efficiency (decimal \%)
 #' @param v = 0.065*step, Energy conductance (cm/h)
 #' @param kap = 0.886, fraction of mobilised reserve allocated to soma
@@ -25,11 +25,16 @@
 #' @param s_G = 0.01, Gompertz stress coefficient (-)
 #' @param E_0 = 1.04e+06, Energy content of the egg (derived from core parameters) (J)
 #' @param T_REF = 20+273.15, Reference temperature for rate correction (deg C)
-#' @param T_A = 8085 Arhhenius temperature
+#' @param T_A = 8085 Arrhenius temperature
 #' @param T_AL = 18721, Arrhenius temperature for decrease below lower boundary of tolerance range \code{T_L}
 #' @param T_AH = 90000, Arrhenius temperature for decrease above upper boundary of tolerance range \code{T_H}
 #' @param T_L = 288, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response
 #' @param T_H = 315, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response
+#' @param T_A2 = 8085 Arrhenius temperature for maturity maintenance (causes 'Temperature Size Rule' effect)
+#' @param T_AL2 = 18721, Arrhenius temperature for decrease below lower boundary of tolerance range \code{T_L}  for maturity maintenance (causes 'Temperature Size Rule' effect)
+#' @param T_AH2 = 90000, Arrhenius temperature for decrease above upper boundary of tolerance range \code{T_H} for maturity maintenance (causes 'Temperature Size Rule' effect)
+#' @param T_L2 = 288, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response for maturity maintenance (causes 'Temperature Size Rule' effect)
+#' @param T_H2 = 315, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response for maturity maintenance (causes 'Temperature Size Rule' effect)
 #' @param f = 1, functional response (-), usually kept at 1 because gut model controls food availability such that f=0 when gut empty
 #' @param E_sm = 1116, Maximum volume-specific energy density of stomach (J/cm3)
 #' @param K = 500, Half saturation constant (#/cm2)
@@ -60,6 +65,7 @@
 #' @param VTMIN = 26, Voluntary thermal maximum, degrees C, controls whether repro event can occur at a given time
 #' @param VTMAX = 39, Voluntary thermal maximum, degrees C, controls whether repro event can occur at a given time
 #' @param arrhenius = matrix(data = matrix(data = c(rep(T_A,8),rep(T_AL,8),rep(T_AH,8),rep(T_L,8),rep(T_H,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A,T_AL,T_AH,T_L,T_H)
+#' @param arrhenius2 = matrix(data = matrix(data = c(rep(T_A2,8),rep(T_AL2,8),rep(T_AH2,8),rep(T_L2,8),rep(T_H2,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for maturity maintenance (causes 'Temperature Size Rule' effect) DEB model (T_A2,T_AL2,T_AH2,T_L2,T_H2)
 #' @param acthr = 1
 #' @param X = 11
 #' @param E_pres = 6011.93
@@ -144,7 +150,7 @@ DEB<-function(
   step=1/24,
   z=7.997,
   del_M=0.242,
-  F_m=13290*step,
+  p_Xm=13290*step,
   kap_X=0.85,
   v=0.065*step,
   kap=0.886,
@@ -164,6 +170,11 @@ DEB<-function(
   T_AH=9.0E+04,
   T_L=288,
   T_H=315,
+  T_A2=T_A,
+  T_AL2=T_AL,
+  T_AH2=T_AH,
+  T_L2=T_L,
+  T_H2=T_H,
   E_0=1.04e+06,
   f=1,
   E_sm=1116,
@@ -193,6 +204,7 @@ DEB<-function(
   mi=0,
   mh=0.5,
   arrhenius=matrix(data = matrix(data = c(rep(T_A,8),rep(T_AL,8),rep(T_AH,8),rep(T_L,8),rep(T_H,8)),nrow = 8, ncol = 5), nrow = 8, ncol = 5),
+  arrhenius2=matrix(data = matrix(data = c(rep(T_A2,8),rep(T_AL2,8),rep(T_AH2,8),rep(T_L2,8),rep(T_H2,8)),nrow = 8, ncol = 5), nrow = 8, ncol = 5),
   acthr=1,
   X=10,
   E_pres=E_0/3e-9,
@@ -205,7 +217,7 @@ DEB<-function(
   p_B_pres=0,
   E_R=0,
   E_B=0,
-  stages=6,
+  stages=7,
   stage=0,
   breeding=0,
   Tb=33,
@@ -255,6 +267,7 @@ DEB<-function(
   # Arrhenius temperature correction factor
   #Tcorr <- exp(T_A * (1 / (273.15 + T_REF) - 1 / (273.15 + Tb))) / (1 + exp(T_AL * (1 / (273.15 + Tb) - 1 / T_L)) + exp(T_AH * (1 / T_H - 1 / (273.15 + Tb))))
   Tcorr <- exp(T_A / T_REF - T_A / (273.15 + Tb)) * (1 + exp(T_AL / T_REF - T_AL / T_L) + exp(T_AH / T_H - T_AH / T_REF)) / (1 + exp(T_AL / (273.15 + Tb) - T_AL / T_L) + exp(T_AH / T_H - T_AH / (273.15 + Tb)))
+  Tcorr2 <- exp(T_A2 / T_REF - T_A2 / (273.15 + Tb)) * (1 + exp(T_AL2 / T_REF - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / T_REF)) / (1 + exp(T_AL2 / (273.15 + Tb) - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / (273.15 + Tb)))
 
   # metabolic acceleration if present
   s_M <- 1 # -, multiplication factor for v and {p_Am} under metabolic acceleration
@@ -274,20 +287,20 @@ DEB<-function(
   M_V <- d_V / w_V
   p_MT <- p_M * Tcorr
   k_M <- p_MT / E_G
-  k_JT <- k_J * Tcorr
-  p_AmT <- p_MT * z / kap * s_M
+  k_JT <- k_J * Tcorr2
   vT <- v * Tcorr * s_M
+  p_AmT <- p_MT * z / kap * s_M
+  p_XmT <- p_Xm * Tcorr * s_M
+  h_aT <- h_a * Tcorr
   E_m <- p_AmT / vT
-  F_mT <- F_m * Tcorr * s_M
   g <- E_G / (kap * E_m) # energy investment ratio
   e <- E_pres / E_m # scaled reserve density
   V_m <- (kap * p_AmT / p_MT) ^ 3 # maximum structural volume
-  h_aT <- h_a * Tcorr
   L_T <- p_T / p_MT # heating length
   L_pres <- V_pres ^ (1 / 3)
   L_m <- V_m ^ (1 / 3)
   scaled_l <- L_pres / L_m
-  kappa_G <- (d_V * mu_V) / (w_V * E_G)
+  kap_G <- (d_V * mu_V) / (w_V * E_G)
   yEX <- kap_X * mu_X / mu_E
   yXE <- 1 / yEX
   yPX <- kap_X_P * mu_X / mu_P
@@ -303,7 +316,7 @@ DEB<-function(
 
   # parameters
   indata <- list(k_J = k_JT, p_Am = p_AmT, k_M = k_M, p_M = p_MT,
-                 F_m = F_mT, v = vT, E_m = E_m, L_m = L_m, L_T = L_T,
+                 p_Xm = p_XmT, v = vT, E_m = E_m, L_m = L_m, L_T = L_T,
                  kap = kap, g = g, M_V = M_V, mu_E = mu_E,
                  mu_V = mu_V, d_V = d_V, w_V = w_V, acthr = acthr,
                  X = X, K = K, E_Hp = E_Hp, E_Hb = E_Hb, E_Hj = E_Hj, s_G = s_G, h_a = h_aT,
@@ -319,7 +332,7 @@ DEB<-function(
       V <- y[1]# cm^3, structural volume
       E <- y[2]# J/cm3, reserve density
       H <- y[3]# J, maturity
-      Es <- y[4]# J, gut energy
+      E_s <- y[4]# J, stomach energy
       S <- y[5]# J, starvation energy
       q <- y[6]# -, aging acceleration
       hs <- y[7]# -, hazard rate
@@ -330,22 +343,27 @@ DEB<-function(
       V_m <- L_m ^ 3 # cm ^ 3, maximum structural volume
       e <- E / E_m  # -, scaled reserve density
       r <- v * (e / L - (1 + L_T / L) / L_m) / (e + g) # specific growth rate
+      p_C <- E * V * (v / L - r) # J / t, mobilisation rate, equation 2.12 DEB3
       if(metab_mode == 1 & H >= E_Hj){
         r <- min(0, r) # no growth in abp after puberty, but could still be negative because starving
+        p_C <- E * V * v / L
       }
-      p_C <- E * V * (v / L - r) # J / t, mobilisation rate, equation 2.12 DEB3
       dV <- V * r # cm^3 / t, change in structure
 
       if(H < E_Hb){ # embryo
         # structure
         dE <- (- 1 *  E * v) / L
         dH <- (1 - kap) * p_C - k_J * H # J/d, change in maturity
+        p_J <- k_J * H
+        p_R <- (1 - kap) * p_C - p_J
+        p_B <- 0
+
         # no aging or stomach in embryo
         dS <- 0
         dEs <- 0
         dq <- 0
         dhs <- 0
-        dR <- 0
+        dR <- p_R
         dB <- 0
       }else{ # post-embryo
 
@@ -362,17 +380,16 @@ DEB<-function(
 
         # assimilation
         p_A <- p_Am * f * L ^ 2
-        if(metab_mode == 1){
-          if(p_A > p_C & E == E_m){
-            p_A <- p_C
-          }
-        }
 
         # reserve
-        if(Es > 0){
+        if(E_s > p_A){
           dE <- p_A / L ^ 3 - (E * v) / L
         }else{
-          dE <- (-E * v) / L
+          dE <- E_s / L ^ 3 - (E * v) / L
+        }
+
+        if(metab_mode == 1 & H >= E_Hj){
+         p_C <- p_A - dE * V
         }
 
         # maturation
@@ -383,13 +400,17 @@ DEB<-function(
           dH <- 0
         }
 
-        # stomach
+        # feeding
         if(acthr > 0){
           # Regulates X dynamics
-          J_X <- F_m * ((X / K) / (1 + X / K)) * V ^ (2 / 3)
-          dEs <- J_X * f - (p_Am / kap_X) * V ^ (2 / 3)
+          p_X <- f * p_Xm * ((X / K) / (1 + X / K)) * V ^ (2 / 3)
         }else{
-          dEs <- -1 * J_X * (p_Am / kap_X) * V ^ (2 / 3)
+          p_X <- 0
+        }
+        dEs <- p_X - (p_Am / kap_X) * V ^ (2 / 3)
+
+        if(metab_mode == 1 & H >= E_Hj){
+         r <- 0 # no growth in abp after puberty - not setting this to zero messes up ageing calculation
         }
 
         # ageing (equation 6.2 in Kooijman 2010 (DEB3)
@@ -397,17 +418,21 @@ DEB<-function(
         dhs <- q - r * hs # hazard
 
         # reproduction
-        p_R <- (1 - kap) * p_C - p_J
+        if(metab_mode == 1 & E_H_pres >= E_Hj){
+          p_R <- (1 - kap) * p_A - p_J
+        }else{
+          p_R <- (1 - kap) * p_C - p_J
+        }
 
-        if(H <= E_Hp){
+        if(R <= 0 & B <= 0 & S > 0 &  p_R < S){
+         dV <- -1 * abs(p_R) * w_V / (mu_V * d_V)  # subtract from structure since not enough flow to reproduction to pay for pay for somatic maintenance
+         p_R <- 0
+        }
+        if(H < E_Hp){
           p_B <- 0
         }else{
           if(batch == 1){
-            if(metab_mode == 0){ # std model
              batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * (v * V ^ (2 / 3) + k_M * V) / (1 + (1 / g))) - p_J)
-            }else{ # hemi or holometabolus model - p_M takes remainder
-             batchprep <- (kap_R / lambda) * (E_m * V * (v / L - r) - kap * p_C - p_J)
-            }
             if(breeding == 0){
               p_B <- 0
             }else{
@@ -424,6 +449,7 @@ DEB<-function(
             p_B <- p_R
           }#end check for whether batch mode is operating
         }#end check for immature or mature
+        p_R <- p_R - p_B # take finalised value of p_B from p_R
 
         # draw from reproduction and then batch buffers under starvation
         if(dS > 0 & p_R > dS){
@@ -435,13 +461,8 @@ DEB<-function(
           dS <- 0
         }
         #accumulate energy/matter in reproduction and batch buffers
-        if(H > E_Hp){
-          dR <- p_R * kap_R - p_B
-          dB <- p_B
-        }else{
-          dR <- 0
-          dB <- 0
-        }
+        dR <- p_R
+        dB <- p_B
       }
 
       y = list(c(dV, dE, dH, dEs, dS, dq, dhs, dR, dB))
@@ -449,56 +470,69 @@ DEB<-function(
   }
 
   DEB.state <- as.data.frame(deSolve::ode(y = init, times = c(0, 1), func = dget_DEB, parms = indata, method = "ode45"))[2,2:10]
-  colnames(DEB.state) <- c("V", "E", "H", "Es", "S", "q", "hs", "R", "B")
+  colnames(DEB.state) <- c("V", "E", "H", "E_s", "S", "q", "hs", "R", "B")
   V <- max(DEB.state$V, 0)
   E <- max(DEB.state$E, 0)
   E_H <- max(DEB.state$H, 0)
-  Es <- max(DEB.state$Es, 0)
+  E_s <- max(DEB.state$E_s, 0)
+  if(E_s > (E_sm * V)){
+   resid <- E_s - E_sm * V # excess food intake to stomach capacity
+   E_s <- E_sm * V
+  }else{
+   resid <- 0
+  }
   starve <- max(DEB.state$S, 0)
   q <- max(DEB.state$q, 0)
   hs <- max(DEB.state$hs, 0)
-  E_R <- max(DEB.state$R, 0)
-  E_B <- max(DEB.state$B, 0)
+  p_R <- max(DEB.state$R - E_R, 0)
+  p_B <- max(DEB.state$B - E_B, 0)
+  if(E_H >= E_Hp){
+   E_R <- p_R + E_R
+   E_B <- p_B * kap_R + E_B
+  }
   e <- E / E_m # use new value of e
   L_w = V ^ (1 / 3) / del_M * 10 # length in mm
-  if(Es > E_sm * V){
-    Es <- E_sm * V
+  if(E_H >= E_Hb & E_H_pres < E_Hb){
+    L_b <- V ^ (1 / 3)
   }
-
+  if(E_H >= E_Hj & E_H_pres < E_Hj){
+    L_j <- V ^ (1 / 3)
+  }
   # some powers
   p_M2 <- p_MT * V + p_T * V ^ (2 / 3)
   p_J <- k_JT * E_H - starve
-  if(Es > 0){
+  if(E_s > V ^ (2 / 3) * p_AmT * f){
     p_A <- V ^ (2 / 3) * p_AmT * f
   }else{
-    p_A <- 0
+    p_A <- E_s
   }
 
   r <- vT * (e / V ^ (1 / 3) - (1 + L_T / V ^ (1 / 3)) / L_m) / (e + g)
   p_C <- E * (vT / V ^ (1 / 3) - r) * V # J / t, mobilisation rate, equation 2.12 DEB3
-  p_R <- (1 - kap) * p_C - p_J
   if(metab_mode == 1){
     if(E_H >= E_Hj){
-      r <- min(0, r)
-      p_C <- E * V * (vT / V ^ (1 / 3) - r) # J / t, mobilisation rate, equation 2.12 DEB3
-      p_M2 <- kap * p_C
-      p_R <- (1 - kap) * p_C - p_J
+      p_A <- p_R + p_B + p_M2 + p_J + (E_pres - E) * V
+      p_C <- p_A - (E_pres - E) * V
     }
   }
 
-  if(metab_mode == 1){
-   if(p_A > p_C & E == E_m){
-      p_A <- p_C
-    }
-  }
-
-  p_X <- p_A / kap_X #J food eaten per hour
   if(E_H >= E_Hp){
-    p_D <- p_M2 + p_J + (1 - kap_R) * p_R
+    p_D <- p_M2 + p_J + (1 - kap_R) * p_B
   }else{
     p_D <- p_M2 + p_J + p_R
   }
-  p_G <- p_C - p_M2 - p_J - p_R
+  if(metab_mode == 1 & E_H >= E_Hj){
+    p_G <- 0
+  }else{
+    p_G <- p_C - p_M2 - p_J - p_R - p_B
+  }
+
+  # J food eaten per hour
+  if(acthr > 1){
+   p_X <- f * p_XmT * V ^ (2 / 3) * (X / K) / (1 + X / K) - resid
+  }else{
+   p_X <- 0
+  }
 
   testclutch <- floor((E_R + E_B) / E_0)
   # FOR VARIABLE CLUTCH SIZE FROM REPRO AND BATCH BUFFERS
@@ -513,7 +547,7 @@ DEB<-function(
 
   # STD MODEL
   if(metab_mode == 0 & E_Hb == E_Hj){
-    if(E_H <= E_Hb){
+    if(E_H < E_Hb){
       stage <- 0
     }else{
       if(E_H < E_Hp){
@@ -523,7 +557,7 @@ DEB<-function(
       }
     }
     if(E_B > 0){
-      if(E_H > E_Hp){
+      if(E_H >= E_Hp){
         stage <- 3
       }else{
         stage <- stage
@@ -533,7 +567,7 @@ DEB<-function(
 
   # ABJ MODEL
   if(metab_mode == 0 & E_Hb != E_Hj){
-    if(E_H <= E_Hb){
+    if(E_H < E_Hb){
       stage <- 0
     }else{
       if(E_H < E_Hj){
@@ -542,12 +576,12 @@ DEB<-function(
       if(E_H >= E_Hj){
         stage <- 2
       }
-      if(E_H > E_Hp){
+      if(E_H >= E_Hp){
         stage <- 3
       }
     }
     if(E_B > 0){
-      if(E_H > E_Hp){
+      if(E_H >= E_Hp){
         stage <- 4
       }else{
         stage <- stage
@@ -564,7 +598,7 @@ DEB<-function(
     }
     L_thresh <- L_instar[stage]
     if(stage == 0){
-      if(E_H > E_Hb){
+      if(E_H >= E_Hb){
         stage <- stage + 1
       }
     }else{
@@ -612,19 +646,6 @@ DEB<-function(
     }
   }
 
-  # feeding (gut) model (for output of food in - Es computed internally in dget_DEB above)
-  if(E_H > E_Hb){
-    if(acthr > 0){
-      # Regulates X dynamics
-      J_X <- F_mT * ((X / K) / (1 + X / K)) * V ^ (2 / 3)
-      dEsdt <- J_X * f - (p_AmT / kap_X) * V ^ (2 / 3)
-    }else{
-      dEsdt <- -1 * (p_AmT / kap_X) * V ^ (2 / 3)
-    }
-  }else{
-    dEsdt <- -1 * (p_AmT / kap_X) * V ^ (2 / 3)
-  }
-
   #mass balance
   JOJx <- p_A * etaO[1,1] + p_D * etaO[1,2] + p_G * etaO[1,3] # molar flux of food (mol/time step)
   JOJv <- p_A * etaO[2,1] + p_D * etaO[2,2] + p_G * etaO[2,3] # molar flux of reserve (mol/time step)
@@ -666,14 +687,14 @@ DEB<-function(
   #metabolic heat production (Watts) - growth overhead plus dissipation power (maintenance, maturity maintenance,
   #maturation/repro overheads) plus assimilation overheads - correct to 20 degrees so it can be temperature corrected
   #in MET.f for the new guessed Tb
-  DEBQMETW <- ((1 - kappa_G) * p_G + p_D + (p_X - p_A - p_A * mu_P * eta_PA)) / 3600 / Tcorr
+  DEBQMETW <- ((1 - kap_G) * p_G + p_D + (p_A / kap_X - p_A - p_A * mu_P * eta_PA)) / 3600 / Tcorr
 
   GDRYFOOD <- -1 * JOJx * w_X
   GFAECES <- JOJp * w_P
   GNWASTE <- JMNWASTE * w_N
   wetgonad <- ((E_R / mu_E) * w_E) / d_Egg + ((E_B / mu_E) * w_E) / d_Egg
-  wetstorage <- ((V * E / mu_E) * w_E) / d_V
-  wetgut <- ((Es / mu_E) * w_E) / fdry
+  wetstorage <- ((V * E / mu_E) * w_E) / d_E
+  wetgut <- ((E_s / mu_E) * w_E) / fdry
   wetmass <- V * andens_deb + wetgonad + wetstorage + wetgut
 
   dsurvdt <- -1 * p_surv_pres * hs
@@ -686,10 +707,10 @@ DEB<-function(
   q_pres <- q
   hs_pres <- hs
   p_surv_pres <- p_surv
-  E_s_pres <- Es
+  E_s_pres <- E_s
 
-  deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "JMO2", "JMCO2", "JMH2O", "JMNWASTE", "O2ML", "CO2ML", "GH2OMET", "DEBQMETW", "GDRYFOOD", "GFAECES", "GNWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
-  results.deb <- c(stage, V_pres, E_pres, E_H_pres, E_s_pres, E_R, E_B, q_pres, hs_pres, L_w, wetmass, wetgonad, wetgut, wetstorage, p_surv, fecundity, clutches, JMO2, JMCO2, JMH2O, JMNWASTE, O2ML, CO2ML, GH2OMET, DEBQMETW, GDRYFOOD, GFAECES, GNWASTE, p_A, p_C, p_M2, p_G, p_D, p_J, p_R, p_B)
+  deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "JMO2", "JMCO2", "JMH2O", "JMNWASTE", "O2ML", "CO2ML", "GH2OMET", "DEBQMETW", "GDRYFOOD", "GFAECES", "GNWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B", "L_b", "L_j")
+  results.deb <- c(stage, V_pres, E_pres, E_H_pres, E_s_pres, E_R, E_B, q_pres, hs_pres, L_w, wetmass, wetgonad, wetgut, wetstorage, p_surv, fecundity, clutches, JMO2, JMCO2, JMH2O, JMNWASTE, O2ML, CO2ML, GH2OMET, DEBQMETW, GDRYFOOD, GFAECES, GNWASTE, p_A, p_C, p_M2, p_G, p_D, p_J, p_R, p_B, L_b, L_j)
   names(results.deb) <- deb.names
   return(results.deb)
 }

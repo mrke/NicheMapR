@@ -59,6 +59,8 @@ ectorun(ecto)
 
 \item{arrhenius}{Arrhenius thermal response}
 
+\item{arrhenius2}{Arrhenius thermal response for temperature size rule}
+
 \item{thermal_stages}{Stage-specific thermal physiology}
 
 \item{behav_stages}{Stage-specific behaviour}

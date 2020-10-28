@@ -129,7 +129,6 @@ rundeb <- function(
   p.M <- p.M * p.M.mult # multiply by chosen value
   p.Am <- p.M.orig * z / kap.orig # get new p.Am if kap.mult != 1
   z <- p.Am * kap / p.M # get new z if p.M.mult != 1
-
   # covariation rules for scaling
   z <- z * z.mult # multiply by chosen value
   E.0 <- E.0 * z.mult ^ 4 * E.0.mult # multiply by chosen value
@@ -143,7 +142,7 @@ rundeb <- function(
   h.a <- h.a * z.mult # multiply by chosen value
   p.Am <- p.M * z / kap # recompute new p.Am
   E.m <- p.Am / v # recompute new E.m
-  F.m <- p.Am / kap.X * 2 # redefining F.m to a large value - rapid stomach fill
+  p.Xm <- p.Am / kap.X * 5 # food intake a large value - rapid stomach fill
   if(ageing == 0){
     h.a <- 0
   }
@@ -180,7 +179,7 @@ rundeb <- function(
     debout[1,]<-DEB_euler(step=step,
                           z=z,
                           del_M=del.M,
-                          F_m=F.m*step,
+                          p_Xm=p.Xm*step,
                           kap_X=kap.X,
                           v=v*step,
                           kap=kap,
@@ -256,7 +255,7 @@ rundeb <- function(
     debout[1,]<-DEB(step=step,
                     z=z,
                     del_M=del.M,
-                    F_m=F.m*step,
+                    p_Xm=p.Xm*step,
                     kap_X=kap.X,
                     v=v*step,
                     kap=kap,
@@ -346,7 +345,7 @@ rundeb <- function(
         debout[i,]<-DEB_euler(step=step,
                               z=z,
                               del_M=del.M,
-                              F_m=F.m*step,
+                              p_Xm=p.Xm*step,
                               kap_X=kap.X,
                               v=v*step,
                               kap=kap,
@@ -422,7 +421,7 @@ rundeb <- function(
         debout[i,]<-DEB(step=step,
                         z=z,
                         del_M=del.M,
-                        F_m=F.m*step,
+                        p_Xm=p.Xm*step,
                         kap_X=kap.X,
                         v=v*step,
                         kap=kap,

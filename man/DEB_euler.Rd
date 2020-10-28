@@ -4,12 +4,13 @@
 \alias{DEB_euler}
 \title{Dynamic Energy Budget model}
 \usage{
-DEB_euler(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 *
+DEB_euler(step = 1/24, z = 7.997, del_M = 0.242, p_Xm = 13290 *
   step, kap_X = 0.85, v = 0.065 * step, kap = 0.886, p_M = 32 *
   step, p_T = 0, E_G = 7767, kap_R = 0.95, k_J = 0.002 * step,
   E_Hb = 73590, E_Hj = E_Hb, E_Hp = 186500,
   h_a = 2.16e-11/(step^2), s_G = 0.01, T_REF = 20 + 273.15,
   T_A = 8085, T_AL = 18721, T_AH = 90000, T_L = 288, T_H = 315,
+  T_A2 = T_A, T_AL2 = T_AL, T_AH2 = T_AH, T_L2 = T_L, T_H2 = T_H,
   E_0 = 1040000, f = 1, E_sm = 1116, K = 1, andens_deb = 1,
   d_V = 0.3, d_E = 0.3, d_Egg = 0.3, mu_X = 525000,
   mu_E = 585000, mu_V = 5e+05, mu_P = 480000, kap_X_P = 0.1,
@@ -19,13 +20,15 @@ DEB_euler(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 *
   minclutch = 0, batch = 1, lambda = 1/2, VTMIN = 26, VTMAX = 39,
   ma = 1e-04, mi = 0, mh = 0.5, arrhenius = matrix(data =
   matrix(data = c(rep(T_A, 8), rep(T_AL, 8), rep(T_AH, 8), rep(T_L, 8),
-  rep(T_H, 8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), acthr = 1,
-  X = 10, E_pres = E_0/3e-09, V_pres = 3e-09, E_H_pres = 0,
-  q_pres = 0, hs_pres = 0, p_surv = 1, E_s_pres = 0,
-  p_B_pres = 0, E_R = 0, E_B = 0, stages = 7, stage = 0,
-  breeding = 0, Tb = 33, fdry = 0.3, L_b = 0.42, L_j = 1.376,
-  S_instar = rep(1.618, stages), spawnday = 1, day = 1,
-  metab_mode = 0, age = 0)
+  rep(T_H, 8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5),
+  arrhenius2 = matrix(data = matrix(data = c(rep(T_A2, 8), rep(T_AL2, 8),
+  rep(T_AH2, 8), rep(T_L2, 8), rep(T_H2, 8)), nrow = 8, ncol = 5), nrow =
+  8, ncol = 5), acthr = 1, X = 10, E_pres = E_0/3e-09,
+  V_pres = 3e-09, E_H_pres = 0, q_pres = 0, hs_pres = 0,
+  p_surv = 1, E_s_pres = 0, p_B_pres = 0, E_R = 0, E_B = 0,
+  stages = 7, stage = 0, breeding = 0, Tb = 33, fdry = 0.3,
+  L_b = 0.42, L_j = 1.376, S_instar = rep(1.618, stages),
+  spawnday = 1, day = 1, metab_mode = 0, age = 0)
 }
 \arguments{
 \item{step}{= 1/24, step size (days)}
@@ -34,7 +37,7 @@ DEB_euler(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 *
 
 \item{del_M}{=  0.242, Shape coefficient (-)}
 
-\item{F_m}{= 13290*step, Surface area-specific maximum feeding rate J/cm2/h}
+\item{p_Xm}{= 13290*step, Surface area-specific maximum feeding rate J/cm2/h}
 
 \item{kap_X}{= 0.85, Digestive efficiency (decimal \%)}
 
@@ -64,7 +67,7 @@ DEB_euler(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 *
 
 \item{T_REF}{= 20+273.15, Reference temperature for rate correction (deg C)}
 
-\item{T_A}{= 8085 Arhhenius temperature}
+\item{T_A}{= 8085 Arrhenius temperature}
 
 \item{T_AL}{= 18721, Arrhenius temperature for decrease below lower boundary of tolerance range \code{T_L}}
 
@@ -73,6 +76,16 @@ DEB_euler(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 *
 \item{T_L}{= 288, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}
 
 \item{T_H}{= 315, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response}
+
+\item{T_A2}{= 8085 Arrhenius temperature for maturity maintenance (causes 'Temperature Size Rule' effect)}
+
+\item{T_AL2}{= 18721, Arrhenius temperature for decrease below lower boundary of tolerance range \code{T_L} for maturity maintenance (causes 'Temperature Size Rule' effect)}
+
+\item{T_AH2}{= 90000, Arrhenius temperature for decrease above upper boundary of tolerance range \code{T_H} for maturity maintenance (causes 'Temperature Size Rule' effect)}
+
+\item{T_L2}{= 288, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response for maturity maintenance (causes 'Temperature Size Rule' effect)}
+
+\item{T_H2}{= 315, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response for maturity maintenance (causes 'Temperature Size Rule' effect)}
 
 \item{E_0}{= 1.04e+06, Energy content of the egg (derived from core parameters) (J)}
 
@@ -125,6 +138,8 @@ DEB_euler(step = 1/24, z = 7.997, del_M = 0.242, F_m = 13290 *
 \item{VTMAX}{= 39, Voluntary thermal maximum, degrees C, controls whether repro event can occur at a given time}
 
 \item{arrhenius}{= matrix(data = matrix(data = c(rep(T_A,8),rep(T_AL,8),rep(T_AH,8),rep(T_L,8),rep(T_H,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A,T_AL,T_AH,T_L,T_H)}
+
+\item{arrhenius2}{= matrix(data = matrix(data = c(rep(T_A2,8),rep(T_AL2,8),rep(T_AH2,8),rep(T_L2,8),rep(T_H2,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for maturity maintenance (causes 'Temperature Size Rule' effect) DEB model (T_A2,T_AL2,T_AH2,T_L2,T_H2)}
 
 \item{acthr}{= 1}
 
