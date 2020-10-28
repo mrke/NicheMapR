@@ -354,7 +354,7 @@ for(i in 1:length(par.names)){
 if(exists("E.Hj")==FALSE){E.Hj <- E.Hb}
 if(exists("E.He")==FALSE){E.He <- E.Hb}
 if(exists("L.j")==FALSE){L.j <- L.b}
-F.m <- p.Am / kap.X # redefining F.m to max possible value
+p.Xm <- p.Am / kap.X * 10 # redefining p.Xm to a large value relative ot p.Am
 z.mult <- 1         # DEB body size scaling parameter
 
 # assign missing 5-par thermal response curve parameters if necessary
@@ -462,7 +462,7 @@ ecto<-ectotherm(DEB=1,
                 pct_wet=pct_wet,
                 z=z*z.mult,
                 del_M=del.M,
-                F_m=F.m,
+                p_Xm=p.Xm,
                 kap_X=kap.X,
                 v=v/24,
                 kap=kap,

@@ -1,10 +1,10 @@
 ---
-title: "Endotherm Model Tutorial I: component functions"
+title: "Endotherm Model Tutorial II: component functions"
 author: "Michael Kearney"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Endotherm Components Tutorial}
+  %\VignetteIndexEntry{Endotherm Model Components}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
