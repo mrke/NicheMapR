@@ -138,7 +138,7 @@ rundeb <- function(
   E.Hb <- E.Hb * z.mult ^ 3 # multiply by chosen value
   E.Hj <- E.Hj * z.mult ^ 3 # multiply by chosen value
   E.Hp <- E.Hp * z.mult ^ 3 # multiply by chosen value
-  F.m <- F.m * z.mult ^ 3 # multiply by chosen value
+  p.Xm <- p.Xm * z.mult ^ 3 # multiply by chosen value
   h.a <- h.a * z.mult # multiply by chosen value
   p.Am <- p.M * z / kap # recompute new p.Am
   E.m <- p.Am / v # recompute new E.m
@@ -147,12 +147,12 @@ rundeb <- function(
     h.a <- 0
   }
   # save parameters for output
-  pars <- c(F.m = F.m, kap.X = kap.X, kap.P = kap.P, p.Am = p.Am, p.M = p.M, k.J = k.J, v = v, E.m = E.m, E.G = E.G, kap = kap, kap.R = kap.R, E.Hb = E.Hb, E.Hj = E.Hj, E.Hp = E.Hp, h.a = h.a, s.G = s.G, T.A = T.A)
+  pars <- c(p.Xm = p.Xm, kap.X = kap.X, kap.P = kap.P, p.Am = p.Am, p.M = p.M, k.J = k.J, v = v, E.m = E.m, E.G = E.G, kap = kap, kap.R = kap.R, E.Hb = E.Hb, E.Hj = E.Hj, E.Hp = E.Hp, h.a = h.a, s.G = s.G, T.A = T.A)
 
   # initialise DEB output matrix
-  deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "JMO2", "JMCO2", "JMH2O", "JMNWASTE", "O2ML", "CO2ML", "GH2OMET", "DEBQMETW", "GDRYFOOD", "GFAECES", "GNWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
-  debout<-matrix(data = 0, nrow = n, ncol=36)
-  colnames(debout)<-deb.names
+  deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "JMO2", "JMCO2", "JMH2O", "JMNWASTE", "O2ML", "CO2ML", "GH2OMET", "DEBQMETW", "GDRYFOOD", "GFAECES", "GNWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B", "L.b", "L.j")
+  debout <- matrix(data = 0, nrow = n, ncol=38)
+  colnames(debout) <- deb.names
 
   # initial conditions
   i <- 1
