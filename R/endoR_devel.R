@@ -591,7 +591,6 @@ endoR_devel <- function(
       if(S == 2){
         AREACND <- ATOT * (PCOND * 2)
         CD <- AREACND * ((KFURCMPRS / ZFURCOMP) + (KSUB / 0.025)) # assume conduction happens from 2.5 cm depth
-        CONVAR <- CONVAR - AREACND # adjust area used for convection to account for PCOND. This is sent in to SIMULSOL & then CONV (unpacked as SURFAR)
       }else{ #doing dorsal side, no conduction. No need to adjust areas used for convection.
         AREACND <- 0
         CD <- 0
