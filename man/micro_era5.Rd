@@ -5,7 +5,7 @@
 \alias{micro_era5}
 \title{ERA5 implementation of the microclimate model, assuming ERA5 grids have been downloaded with package mcera5, and using package microclima downscaling for local topography.}
 \usage{
-micro_ncep(loc = c(-91.415669, -0.287145), dstart = "01/01/2019", dfinish = "31/07/2019",
+micro_era5(loc = c(-91.415669, -0.287145), dstart = "01/01/2019", dfinish = "31/07/2019",
 REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 Usrhyt = 0.01, ...)
 }
@@ -86,13 +86,12 @@ An implementation of the NicheMapR microclimate model that integrates the ERA5 h
 \strong{ Parameters controlling how the model runs:}\cr\cr
 \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
-\code{IR}{ = 0, Clear-sky longwave radiation computed using Campbell and Norman (1998) eq. 10.10 (includes humidity) (0) or Swinbank formula (1) or from NCEP data (2)}\cr\cr
+\code{IR}{ = 0, Clear-sky longwave radiation computed using Campbell and Norman (1998) eq. 10.10 (includes humidity) (0) or Swinbank formula (1) or from ERA5 data (2)}\cr\cr
 \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
 \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
 \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
-\code{reanalysis}{ = TRUE, Use reanalysis2 NCEP data? TRUE/FALSE}\cr\cr
 \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 \code{warm}{ = 0, uniform warming, °C}\cr\cr
 \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
@@ -143,7 +142,7 @@ An implementation of the NicheMapR microclimate model that integrates the ERA5 h
 { and points half way between)}\cr\cr
 \code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
 \code{rainhourly}{ = 0, Is hourly rain input being supplied (1 = yes, 0 = no)?}\cr\cr
-\code{rainhour}{ = 0, Vector of hourly rainfall values - overrides daily NCEP rain if rainhourly = 1}\cr\cr
+\code{rainhour}{ = 0, Vector of hourly rainfall values - overrides daily ERA5 rain if rainhourly = 1}\cr\cr
 \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
 \code{rainoff}{ = 0, Rain offset (mm), used to induce constant extra input}\cr\cr
 \code{evenrain}{ = 0, Spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)}\cr\cr
@@ -273,10 +272,48 @@ drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar)
 }
 \examples{
 library(NicheMapR)
-dstart <- "02/01/2017"
-dfinish <- "30/12/2017"
-loc <- c(-91.415669, -0.287145) # Isla Fernandina Galapagos
-micro<-micro_ncep(loc = loc, dstart = dstart, dfinish = dfinish)
+library(ecmwfr)
+library(mcera5)
+library(lubridate)
+library(dplyr)
+
+# get ERA5 data with package mcera5 (just do once for region and time of interest)
+
+# assign your credentials (register here: https://cds.climate.copernicus.eu/user/register)
+uid <- "$$$$$$"
+cds_api_key <- "$$$$$$$$-$$$$-$$$$-$$$$-$$$$$$$$$$$$"
+
+ecmwfr::wf_set_key(user = uid, key = cds_api_key, service = "cds")
+
+# bounding coordinates (in WGS84 / EPSG:4326)
+xmn <- 130
+xmx <- 132
+ymn <- -26
+ymx <- -24
+
+# temporal extent
+st_time <- lubridate::ymd("2010:07:01")
+en_time <- lubridate::ymd("2011:12:31")
+
+# filename and location for downloaded .nc files
+file_prefix <- "era5"
+op <- "C:/Spatial_Data/"
+
+# build a request (covering multiple years)
+req <- build_era5_request(xmin = xmn, xmax = xmx,
+                          ymin = ymn, ymax = ymx,
+                          start_time = st_time,
+                          end_time = en_time,
+                          outfile_name = file_prefix)
+str(req)
+request_era5(request = req, uid = uid, out_path = op)
+
+# run micro_era5 for a location (make sure it's within the bounds of your .nc files)
+
+dstart <- "01/01/2011"
+dfinish <- "31/12/2011"
+loc <- c(131, -25) # somewhere in the middle of Australia
+micro<-micro_era5(loc = loc, dstart = dstart, dfinish = dfinish, spatial = 'c:/Spatial_Data/era5')
 
 metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
