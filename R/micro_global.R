@@ -161,7 +161,7 @@
 #' \item 10 POOLDEP - water pooling on surface (mm)
 #' \item 11 PCTWET - soil surface wetness (\%)
 #' \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
-#' \item 13 SOLR - solar radiation (W/m2)
+#' \item 13 SOLR - solar radiation (W/m2) (unshaded, horizontal plane)
 #' \item 14 TSKYC - sky radiant temperature (°C)
 #' \item 15 DEW - dew presence (0 or 1)
 #' \item 16 FROST - frost presence (0 or 1)
@@ -1030,6 +1030,7 @@ micro_global <- function(
       location<-loc
     }
     message(paste('running microclimate model for',timeinterval,'days by',nyears,'years at site',location,'\n'))
+    message('Note: the output column `SOLR` in metout and SHADMET is for unshaded horizontal plane solar radiation \n')
     ptm <- proc.time() # Start timing
     microut<-microclimate(micro)
     message(paste0('runtime ', (proc.time() - ptm)[3], ' seconds')) # Stop the clock

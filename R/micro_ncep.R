@@ -19,8 +19,8 @@
 #' @param coastal Compute coastal effects with microclima? T (TRUE) or F (FALSE) (can take a while and may have high memory requirements depending on DEM size)
 #' @param hourlydata user input of the hourlydata matrix
 #' @param dailyprecip user input of daily rainfall
-#' @param weather.elev optional value indicating the elevation of values in `hourlydata`. Either a numeric value, corresponding to the elevation in (m) of the location from which `hourlydata` were obtained, or one of `ncep` (default, data derive from NOAA-NCEP reanalysis) project or `era5` (derived from Copernicus ERA5 climate reanalysis).
-#' @param cad.effects optional logical indicating whether to calaculate cold air drainage effects (TRUE = Yes, slower. FALSE =  No, quicker)
+#' @param weather.elev optional value indicating the elevation of values in `hourlydata`. Either a numeric value, corresponding to the elevation in (m) of the location from which `hourlydata` were obtained, or `ncep` (default, data derive from NOAA-NCEP reanalysis) project.
+#' @param cad.effects optional logical indicating whether to calculate cold air drainage effects (TRUE = Yes, slower. FALSE =  No, quicker)
 #' @param ... Additional arguments, see Details
 #' @return metout The above ground micrometeorological conditions under the minimum specified shade
 #' @return shadmet The above ground micrometeorological conditions under the maximum specified shade
@@ -168,7 +168,7 @@
 #' \item 10 POOLDEP - water pooling on surface (mm)
 #' \item 11 PCTWET - soil surface wetness (\%)
 #' \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
-#' \item 13 SOLR - solar radiation (W/m2)
+#' \item 13 SOLR - solar radiation (W/m2) (unshaded, adjusted for slope, aspect and horizon angle)
 #' \item 14 TSKYC - sky radiant temperature (°C)
 #' \item 15 DEW - dew presence (0 or 1)
 #' \item 16 FROST - frost presence (0 or 1)
@@ -1165,6 +1165,7 @@ micro_ncep <- function(
       location <- loc
     }
     cat(paste('running microclimate model for ', ndays, ' days from ', tt[1], ' to ', tt[length(tt)], ' at site ', location, '\n'))
+    cat('Note: the output column `SOLR` in metout and SHADMET is for unshaded solar radiation adjusted for slope, aspect and horizon angle \n')
     ptm <- proc.time() # Start timing
     microut<-microclimate(micro)
     print(proc.time() - ptm) # Stop the clock

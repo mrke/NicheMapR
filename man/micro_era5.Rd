@@ -44,6 +44,10 @@ Usrhyt = 0.01, ...)
 
 \item{dailyprecip}{user input of daily rainfall}
 
+\item{weather.elev}{optional value indicating the elevation of values in `hourlydata`. Either a numeric value, corresponding to the elevation in (m) of the location from which `hourlydata` were obtained, or `era5` (default, derived from Copernicus ERA5 climate reanalysis).}
+
+\item{cad.effects}{optional logical indicating whether to calculate cold air drainage effects (TRUE = Yes, slower. FALSE =  No, quicker)}
+
 \item{...}{Additional arguments, see Details}
 }
 \value{
@@ -206,7 +210,7 @@ metout/shadmet variables:
 \item 10 POOLDEP - water pooling on surface (mm)
 \item 11 PCTWET - soil surface wetness (\%)
 \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
-\item 13 SOLR - solar radiation (W/m2)
+\item 13 SOLR - solar radiation (W/m2) (unshaded, adjusted for slope, aspect and horizon angle)
 \item 14 TSKYC - sky radiant temperature (°C)
 \item 15 DEW - dew presence (0 or 1)
 \item 16 FROST - frost presence (0 or 1)

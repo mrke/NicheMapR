@@ -19,6 +19,8 @@
 #' @param coastal Compute coastal effects with microclima? T (TRUE) or F (FALSE) (can take a while and may have high memory requirements depending on DEM size)
 #' @param hourlydata user input of the hourlydata matrix
 #' @param dailyprecip user input of daily rainfall
+#' @param weather.elev optional value indicating the elevation of values in `hourlydata`. Either a numeric value, corresponding to the elevation in (m) of the location from which `hourlydata` were obtained, or `era5` (default, derived from Copernicus ERA5 climate reanalysis).
+#' @param cad.effects optional logical indicating whether to calculate cold air drainage effects (TRUE = Yes, slower. FALSE =  No, quicker)
 #' @param ... Additional arguments, see Details
 #' @return metout The above ground micrometeorological conditions under the minimum specified shade
 #' @return shadmet The above ground micrometeorological conditions under the maximum specified shade
@@ -166,7 +168,7 @@
 #' \item 10 POOLDEP - water pooling on surface (mm)
 #' \item 11 PCTWET - soil surface wetness (\%)
 #' \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
-#' \item 13 SOLR - solar radiation (W/m2)
+#' \item 13 SOLR - solar radiation (W/m2) (unshaded, adjusted for slope, aspect and horizon angle)
 #' \item 14 TSKYC - sky radiant temperature (°C)
 #' \item 15 DEW - dew presence (0 or 1)
 #' \item 16 FROST - frost presence (0 or 1)
@@ -377,7 +379,9 @@ micro_era5 <- function(
   grasshade = 0,
   coastal = F,
   hourlydata = NA,
-  dailyprecip = NA){ # end function parameters
+  dailyprecip = NA,
+  weather.elev = 'era5',
+  cad.effects = TRUE){ # end function parameters
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
@@ -700,7 +704,7 @@ micro_era5 <- function(
                                            start_time = st_time,
                                            end_time = en_time)
       cat("computing radiation and elevation effects with package microclima \n")
-      microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = dailyprecip, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE)
+      microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = dailyprecip, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE, weather.elev = weather.elev, cad.effects = cad.effects)
 
 
       hourlyradwind <- microclima.out$hourlyradwind
@@ -999,6 +1003,7 @@ micro_era5 <- function(
       location <- loc
     }
     cat(paste('running microclimate model for ', ndays, ' days from ', tt[1], ' to ', tt[length(tt)], ' at site ', location, '\n'))
+    cat('Note: the output column `SOLR` in metout and SHADMET is for unshaded solar radiation adjusted for slope, aspect and horizon angle \n')
     ptm <- proc.time() # Start timing
     microut<-microclimate(micro)
     print(proc.time() - ptm) # Stop the clock
