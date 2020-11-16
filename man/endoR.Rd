@@ -205,7 +205,7 @@ library(NicheMapR)
 # environment
 TAs <- seq(0, 50, 2) # air temperatures (deg C)
 VEL <- 0.01 # wind speed (m/s)
-RH <- 10 # relative humidity (\\\%)
+RH <- 10 # relative humidity (\\%)
 QSOLR <- 100 # solar radiation (W/m2)
 
 # core temperature

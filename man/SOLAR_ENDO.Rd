@@ -5,8 +5,19 @@
 \alias{SOLAR_ENDO}
 \title{SOLAR_ENDO}
 \usage{
-SOLAR_ENDO(AREATOTL, ABSAND, ABSANV, ABSSB, ASIL, PCTDIF, QNORM, SHADE,
-  QSOLR, FASKY, FAVEG)
+SOLAR_ENDO(
+  AREATOTL,
+  ABSAND,
+  ABSANV,
+  ABSSB,
+  ASIL,
+  PCTDIF,
+  QNORM,
+  SHADE,
+  QSOLR,
+  FASKY,
+  FAVEG
+)
 }
 \arguments{
 \item{AREATOTL}{surface area for solar exchange, m2}

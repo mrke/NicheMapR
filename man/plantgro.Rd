@@ -4,10 +4,18 @@
 \alias{plantgro}
 \title{plantgro}
 \usage{
-plantgro(soilpot = micro$soilpot, soilmoist = micro$soilmoist,
-  plant_temp = micro$soil[, 6], root_shallow = 4, root_deep = 8,
-  temp_thresh = 15, growth_delay = 1, wilting_point = -200,
-  permanent_wilting_point = -1500, foodwater = 82)
+plantgro(
+  soilpot = micro$soilpot,
+  soilmoist = micro$soilmoist,
+  plant_temp = micro$soil[, 6],
+  root_shallow = 4,
+  root_deep = 8,
+  temp_thresh = 15,
+  growth_delay = 1,
+  wilting_point = -200,
+  permanent_wilting_point = -1500,
+  foodwater = 82
+)
 }
 \arguments{
 \item{soilpot}{= micro$soilpot, matrix of soil water potential from NicheMapR microclimate model to use for calculations}

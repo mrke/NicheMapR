@@ -5,8 +5,22 @@
 \alias{IRPROP}
 \title{IRPROP}
 \usage{
-IRPROP(TA, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD,
-  REFLV, ZFURCOMP, PVEN, KHAIR)
+IRPROP(
+  TA,
+  DHAIRD,
+  DHAIRV,
+  LHAIRD,
+  LHAIRV,
+  ZFURD,
+  ZFURV,
+  RHOD,
+  RHOV,
+  REFLD,
+  REFLV,
+  ZFURCOMP,
+  PVEN,
+  KHAIR
+)
 }
 \arguments{
 \item{TA}{air temperature at local height (°C)}

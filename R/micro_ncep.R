@@ -13,8 +13,8 @@
 #' @param slope Slope in degrees (if NA, then derived from DEM with package microclima)
 #' @param aspect Aspect in degrees (0 = north) (if NA, then derived from DEM with microclima)
 #' @param DEP Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface
-#' @param minshade Minimum shade level to use (\%)
-#' @param maxshade Maximum shade level to us (\%)
+#' @param minshade Minimum shade level to use (\%) (can be a single value or a vector of daily values)
+#' @param maxshade Maximum shade level to use (\%) (can be a single value or a vector of daily values)
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
 #' @param coastal Compute coastal effects with microclima? T (TRUE) or F (FALSE) (can take a while and may have high memory requirements depending on DEM size)
 #' @param hourlydata user input of the hourlydata matrix
@@ -126,7 +126,7 @@
 #' \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
 #' \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
 #' \code{snowcond}{ = 0, effective snow thermal conductivity W/mC (if zero, uses inbuilt function of density)}\cr\cr
-#' \code{intercept}{ = maxshade / 100 * 0.3, snow interception fraction for when there's shade (0-1)}\cr\cr
+#' \code{intercept}{ = max(maxshade) / 100 * 0.3, snow interception fraction for when there's shade (0-1)}\cr\cr
 #' \code{grasshade}{ = 0, if 1, means shade is removed when snow is present, because shade is cast by grass/low shrubs}\cr\cr
 #'
 #' \strong{ Intertidal mode parameters:}
@@ -145,8 +145,7 @@
 #' \code{RAINFALL}{ - vector of daily rainfall (mm)}\cr\cr
 #' \code{elev}{ - elevation at point of simulation (m)}\cr\cr
 #' \code{minshade}{ - minimum shade for simulation (\%)}\cr\cr
-#' \code{maxshade}{ - maximum shade for simulation (single value - if time varying, in 'MAXSHADES') (\%)}\cr\cr
-#' \code{MAXSHADES}{ - vector of maximum shades used (\%)}\cr\cr
+#' \code{maxshade}{ - maximum shade for simulation (\%)}\cr\cr
 #' \code{dem}{ - digital elevation model obtained via 'get_dev' using package 'elevatr' (m)}\cr\cr
 #' \code{DEP}{ - vector of depths used (cm)}\cr\cr
 #' \code{SLOPE}{ - slope at point of simulation (\%)}\cr\cr
@@ -302,8 +301,6 @@ micro_ncep <- function(
   DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200),
   minshade = 0,
   maxshade = 90,
-  MINSHADES = NA,
-  MAXSHADES = NA,
   Refhyt = 2,
   Usrhyt = 0.01,
   Z01 = 0,
@@ -376,7 +373,7 @@ micro_ncep <- function(
   spatial = NA,
   save = 0,
   snowcond = 0,
-  intercept = 0 / 100 * 0.3,
+  intercept = max(maxshade) / 100 * 0.3,
   grasshade = 0,
   coastal = F,
   hourlydata = NA,
@@ -510,19 +507,19 @@ micro_ncep <- function(
         Please enter a correct value (0.1 - 2cm).", '\n')
     errors<-1
   }
-  if(minshade>maxshade | minshade==maxshade){
-    message("ERROR: Your value for minimum shade (minshade) is greater than or equal to the maximum shade (maxshade).
-            Please correct this.", '\n')
+  if(max(minshade-maxshade) >= 0){
+    cat("ERROR: Your value(s) for minimum shade (minshade) is greater than or equal to the maximum shade (maxshade).
+        Please correct this.", '\n')
     errors<-1
   }
-  if(minshade>100 | minshade<0){
-    message("ERROR: Your value for minimum shade (minshade) is out of bounds.
-            Please input a value between 0 and 100.", '\n')
+  if(max(minshade)>100 | min(minshade)<0){
+    cat("ERROR: Your value(s) for minimum shade (minshade) is out of bounds.
+        Please input a value between 0 and 100.", '\n')
     errors<-1
   }
-  if(maxshade>100 | maxshade<0){
-    message("ERROR: Your value for maximum shade (maxshade) is out of bounds.
-            Please input a value between 0 and 100.", '\n')
+  if(max(maxshade)>100 | min(maxshade)<0){
+    cat("ERROR: Your value(s) for maximum shade (maxshade) is out of bounds.
+        Please input a value between 0 and 100.", '\n')
     errors<-1
   }
   # end error trapping
@@ -555,15 +552,15 @@ micro_ncep <- function(
     ida<-ndays
     microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
     daystart<-1
-    if(is.na(MAXSHADES)){
-      maxshades <- rep(maxshade,ndays)
+    if(length(minshade) != ndays){
+      MINSHADES <- rep(0, ndays) + minshade[1] # daily min shade (%)
     }else{
-      maxshades <- MAXSHADES
+      MINSHADES <- rep(0, ndays) + minshade # daily min shade (%)
     }
-    if(is.na(MINSHADES)){
-      minshades <- rep(minshade,ndays)
+    if(length(maxshade) != ndays){
+      MAXSHADES <- rep(0, ndays) + maxshade[1] # daily max shade (%)
     }else{
-      minshades <- MINSHADES
+      MAXSHADES <- rep(0, ndays) + maxshade # daily max shade (%)
     }
     idayst <- 1 # start day
 
@@ -1012,9 +1009,6 @@ micro_ncep <- function(
     WNMINN <- WNMINN * windfac
     WNhr <- WNhr * windfac
 
-    MAXSHADES <- maxshades
-    MINSHADES <- minshades
-
     REFLS <- rep(REFL, ndays)
     PCTWET <- rep(PCTWET, ndays)
     soilwet <- RAINFALL
@@ -1104,51 +1098,16 @@ micro_ncep <- function(
     # microclimate input parameters list
     microinput<-c(ndays, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept, grasshade, solonly, ZH, D0)
 
-    doy1 <- matrix(data = 0, nrow = ndays, ncol = 1)
-    SLES1 <- matrix(data = 0, nrow = ndays, ncol = 1)
-    MAXSHADES1 <- matrix(data = 0, nrow = ndays, ncol = 1)
-    MINSHADES1 <- matrix(data = 0, nrow = ndays, ncol = 1)
-    TMAXX1 <- matrix(data = 0, nrow = ndays, ncol = 1)
-    TMINN1 <- matrix(data = 0, nrow = ndays, ncol = 1)
-    CCMAXX1 <- matrix(data = 0, nrow = ndays, ncol = 1)
-    CCMINN1 <- matrix(data = 0, nrow = ndays, ncol = 1)
-    RHMAXX1 <- matrix(data = 0, nrow = ndays, ncol = 1)
-    RHMINN1 <- matrix(data = 0, nrow = ndays, ncol = 1)
-    WNMAXX1 <- matrix(data = 0, nrow = ndays, ncol = 1)
-    WNMINN1 <- matrix(data = 0, nrow = ndays, ncol = 1)
-    REFLS1 <- matrix(data = 0, nrow = ndays, ncol = 1)
-    PCTWET1 <- matrix(data = 0, nrow = ndays, ncol = 1)
-    RAINFALL1 <- matrix(data = 0, nrow = ndays, ncol = 1)
-    tannul1 <- matrix(data = 0, nrow = ndays, ncol = 1)
-    moists1 <- matrix(data = 0, nrow = 10, ncol = ndays)
-    doy1[1:ndays] <- doy
-    SLES1[1:ndays] <- SLES
-    MAXSHADES1[1:ndays] <- MAXSHADES
-    MINSHADES1[1:ndays] <- MINSHADES
-    TMAXX1[1:ndays] <- TMAXX
-    TMINN1[1:ndays] <- TMINN
-    CCMAXX1[1:ndays] <- CCMAXX
-    CCMINN1[1:ndays] <- CCMINN
-    RHMAXX1[1:ndays] <- RHMAXX
-    RHMINN1[1:ndays] <- RHMINN
-    WNMAXX1[1:ndays] <- WNMAXX
-    WNMINN1[1:ndays] <- WNMINN
-    REFLS1[1:ndays] <- REFLS
-    PCTWET1[1:ndays] <- PCTWET
-    RAINFALL1[1:ndays] <- RAINFALL
-    tannul1[1:ndays] <- tannul
-    moists1[1:10, 1:ndays] <- moists
     if(length(LAI) < ndays){
       LAI<-rep(LAI[1], ndays)
     }
-    LAI1 <- LAI
     if(shore == 0){
       tides <- matrix(data = 0, nrow = 24 * ndays, ncol = 3) # make an empty matrix
     }
     TIMAXS <- c(1, 1, 0, 0)
     TIMINS <- c(0, 0, 1, 1)
     # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
-    micro <- list(tides = tides, microinput = microinput, doy = doy, SLES = SLES1, DEP = DEP, Nodes = Nodes, MAXSHADES = MAXSHADES, MINSHADES = MINSHADES, TIMAXS = TIMAXS, TIMINS = TIMINS, TMAXX = TMAXX1, TMINN = TMINN1, RHMAXX = RHMAXX1, RHMINN = RHMINN1, CCMAXX = CCMAXX1, CCMINN = CCMINN1, WNMAXX = WNMAXX1, WNMINN = WNMINN1, TAIRhr = TAIRhr, RHhr = RHhr, WNhr = WNhr, CLDhr = CLDhr, SOLRhr = SOLRhr, RAINhr = RAINhr, ZENhr = ZENhr, IRDhr = IRDhr, REFLS = REFLS1, PCTWET = PCTWET1, soilinit = soilinit, hori = hori, TAI = TAI, soilprops = soilprops, moists = moists1, RAINFALL = RAINFALL1, tannulrun = deepsoil, PE = PE, KS = KS, BB = BB, BD = BD, DD = DD, L = L, LAI = LAI1)
+    micro <- list(tides = tides, microinput = microinput, doy = doy, SLES = SLES, DEP = DEP, Nodes = Nodes, MAXSHADES = MAXSHADES, MINSHADES = MINSHADES, TIMAXS = TIMAXS, TIMINS = TIMINS, TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN, CCMAXX = CCMAXX, CCMINN = CCMINN, WNMAXX = WNMAXX, WNMINN = WNMINN, TAIRhr = TAIRhr, RHhr = RHhr, WNhr = WNhr, CLDhr = CLDhr, SOLRhr = SOLRhr, RAINhr = RAINhr, ZENhr = ZENhr, IRDhr = IRDhr, REFLS = REFLS, PCTWET = PCTWET, soilinit = soilinit, hori = hori, TAI = TAI, soilprops = soilprops, moists = moists, RAINFALL = RAINFALL, tannulrun = deepsoil, PE = PE, KS = KS, BB = BB, BD = BD, DD = DD, L = L, LAI = LAI)
     # write all input to csv files in their own folder
     if(write_input == 1){
       if(dir.exists("micro csv input") == FALSE){
@@ -1250,15 +1209,15 @@ micro_ncep <- function(
       drrlam <- as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
       srlam <- as.data.frame(microut$srlam) # retrieve scattered solar irradiance
       if(snowmodel == 1){
-        return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, sunsnow = sunsnow, shdsnow = shdsnow, plant = plant, shadplant = shadplant, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], MAXSHADES = MAXSHADES, longlat = longlat, nyears = nyears, minshade = minshade, maxshade = maxshade, DEP = DEP, drlam = drlam, drrlam = drrlam, srlam = srlam, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out))
+        return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, sunsnow = sunsnow, shdsnow = shdsnow, plant = plant, shadplant = shadplant, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = longlat, nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, drlam = drlam, drrlam = drrlam, srlam = srlam, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out))
       }else{
-        return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, plant = plant, shadplant = shadplant, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], MAXSHADES = MAXSHADES, longlat = longlat, nyears = nyears, minshade = minshade, maxshade = maxshade, DEP = DEP, drlam = drlam, drrlam = drrlam, srlam = srlam, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out))
+        return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, plant = plant, shadplant = shadplant, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = longlat, nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, drlam = drlam, drrlam = drrlam, srlam = srlam, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out))
       }
     }else{
       if(snowmodel == 1){
-        return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, sunsnow = sunsnow, shdsnow = shdsnow, plant = plant, shadplant = shadplant, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], MAXSHADES = MAXSHADES, longlat = longlat, nyears = nyears, minshade = minshade, maxshade = maxshade, DEP = DEP, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out))
+        return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, sunsnow = sunsnow, shdsnow = shdsnow, plant = plant, shadplant = shadplant, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = longlat, nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out))
       }else{
-        return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, plant = plant, shadplant = shadplant, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], MAXSHADES = MAXSHADES, longlat = longlat, nyears = nyears, minshade = minshade, maxshade = maxshade, DEP = DEP, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out))
+        return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, plant = plant, shadplant = shadplant, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = longlat, nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out))
       }
     }
   } # end error trapping

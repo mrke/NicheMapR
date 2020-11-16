@@ -56,9 +56,8 @@
 #' \strong{ Environmental inputs:}
 #'
 #' \itemize{
-#' \item{\code{minshade}{ = 0, Minimum shade (\%) available to the animal}\cr}
-#' \item{\code{minshades}{ = rep(minshade,length(micro$MAXSHADES), Vector of daily minimum shade values (\%)}\cr}
-#' \item{\code{maxshades}{ = micro$MAXSHADES, Vector of daily maximum shade values (\%)}\cr}
+#' \item{\code{minshades}{ = micro$minshade, Vector of daily minimum shade values (\%)}\cr}
+#' \item{\code{maxshades}{ = micro$maxshade, Vector of daily maximum shade values (\%)}\cr}
 #' \item{\code{fluid}{ = 0, Fluid type 0=air, 1=water }\cr}
 #' \item{\code{k_sub}{ = 2.79, Substrate thermal conductivity (W/mC)}\cr}
 #' \item{\code{alpha_sub}{ = 1 - micro$REFL, Vector of daily substrate reflectances (0-1)}\cr}
@@ -545,9 +544,8 @@ ectotherm <- function(
   transient = 0,
   delta_shade = 3,
   startday = 1,
-  minshade = 0,
-  minshades = rep(minshade, length(micro$MAXSHADES)),
-  maxshades = micro$MAXSHADES,
+  minshades = micro$minshade,
+  maxshades = micro$maxshade,
   fluid = 0,
   k_sub = 2.79,
   alpha_sub = (1 - micro$REFL),
@@ -850,10 +848,6 @@ ectotherm <- function(
   }
   if(startday < 1){
     message("error: startday must be greater than or equal to 1 \n")
-    errors<-1
-  }
-  if(minshade < 0 | minshade > 100){
-    message("error: minshade can only be from 0 to 100 \n")
     errors<-1
   }
   if(min(minshades) < 0 | max(minshades) > 100){
@@ -1187,7 +1181,6 @@ ectotherm <- function(
     EMISSK <- 1.0 # emissivity of the sky (0-1)
     EMISSB <- 1.0 # emissivity of the substrate (0-1)
     ABSSB <- alpha_sub # solar absorbtivity of the substrate (0-1)
-    shade <- minshade # shade (%)
 
     # animal properties
     Ww_kg <- Ww_g / 1000 # animal wet weight (kg)
@@ -1210,8 +1203,6 @@ ectotherm <- function(
     SPARE2 <- 1 # spare input
     SPARE3 <- 0 # spare input
     o2max <- F_O2 # O2 extraction efficiency
-    minshd <- minshades[1] # minimum shade available
-    maxshd <- maxshades[1] # maximum shade available
     behav <- c(diurn, nocturn, crepus, rainact, burrow, shade_seek, climb, fossorial, SPARE3) # behaviour vector
     DOY <- 1 # day of year at start
 
@@ -1271,7 +1262,10 @@ ectotherm <- function(
     DOYstart <- metout[1, 2] # starting day of year
     tannul <- as.numeric(mean(soil[, 12])) # annual mean temperature, deg C
     tester <- 0 # unused
-    microyear <- 1 # extraneous
+    microyear <- 1 # extraneous, not used
+    shade <- 0 # extraneous, not used
+    minshd <- 0 # extraneous, not used
+    maxshd <- 90 # extraneous, not used
     ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF, EMISSK, EMISSB, ABSSB, shade, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond/100, skint, gas, transient, soilnode, o2max, SPARE4, tannul, nodnum, postur, maxshd, minshd, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, SPARE1, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, k_sub, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod))
     debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, FoodWater1, f, s_G, K, X[1], metab_mode, stages, kap_V, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He, k_Ee, k_EV)
     deblast <- c(iyear, countday, V_init, E_init, ES_init, cumrepro_init, q_init, hs_init, cumbatch_init, V_baby_init, E_baby_init, E_H_init, stage)

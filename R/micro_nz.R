@@ -128,7 +128,7 @@
 #' \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
 #' \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
 #' \code{snowcond}{ = 0, effective snow thermal conductivity W/mC (if zero, uses inbuilt function of density)}\cr\cr
-#' \code{intercept}{ = maxshade / 100 * 0.3, snow interception fraction for when there's shade (0-1)}\cr\cr
+#' \code{intercept}{ = max(maxshade) / 100 * 0.3, snow interception fraction for when there's shade (0-1)}\cr\cr
 #' \code{grasshade}{ = 0, if 1, means shade is removed when snow is present, because shade is cast by grass/low shrubs}\cr\cr
 #'
 #' \strong{ Intertidal mode parameters:}
@@ -149,8 +149,7 @@
 #' \code{RAINFALL}{ - vector of daily rainfall (mm)}\cr\cr
 #' \code{elev}{ - elevation at point of simulation (m)}\cr\cr
 #' \code{minshade}{ - minimum shade for simulation (\%)}\cr\cr
-#' \code{maxshade}{ - maximum shade for simulation (single value - if time varying, in 'MAXSHADES') (\%)}\cr\cr
-#' \code{MAXSHADES}{ - vector of maximum shades used (\%)}\cr\cr
+#' \code{maxshade}{ - maximum shade for simulation (\%)}\cr\cr
 #' \code{DEP}{ - vector of depths used (cm)}\cr\cr
 #'
 #' metout/shadmet variables:
@@ -399,7 +398,7 @@ micro_nz <- function(
   message = 0,
   fail = nyears * 24 * 365,
   snowcond = 0,
-  intercept = maxshade / 100 * 0.3,
+  intercept = max(maxshade) / 100 * 0.3,
   grasshade = 0) {
 
   errors<-0
@@ -546,18 +545,18 @@ micro_nz <- function(
         Please input a value between 0 and 24", '\n')
     errors<-1
   }
-  if(minshade>maxshade | minshade==maxshade){
-    cat("ERROR: Your value for minimum shade (minshade) is greater than or equal to the maximum shade (maxshade).
+  if(max(minshade-maxshade) >= 0){
+    cat("ERROR: Your value(s) for minimum shade (minshade) is greater than or equal to the maximum shade (maxshade).
         Please correct this.", '\n')
     errors<-1
   }
-  if(minshade>100 | minshade<0){
-    cat("ERROR: Your value for minimum shade (minshade) is out of bounds.
+  if(max(minshade)>100 | min(minshade)<0){
+    cat("ERROR: Your value(s) for minimum shade (minshade) is out of bounds.
         Please input a value between 0 and 100.", '\n')
     errors<-1
   }
-  if(maxshade>100 | maxshade<0){
-    cat("ERROR: Your value for maximum shade (maxshade) is out of bounds.
+  if(max(maxshade)>100 | min(maxshade)<0){
+    cat("ERROR: Your value(s) for maximum shade (maxshade) is out of bounds.
         Please input a value between 0 and 100.", '\n')
     errors<-1
   }
@@ -574,8 +573,16 @@ micro_nz <- function(
     doys12<-c(15, 46, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349) # middle day of each month
     microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
     daystart<-1
-    maxshades=rep(maxshade,ndays)
-    minshades=rep(minshade,ndays)
+    if(length(minshade) != ndays){
+      MINSHADES <- rep(0, ndays) + minshade[1] # daily min shade (%)
+    }else{
+      MINSHADES <- rep(0, ndays) + minshade # daily min shade (%)
+    }
+    if(length(maxshade) != ndays){
+      MAXSHADES <- rep(0, ndays) + maxshade[1] # daily max shade (%)
+    }else{
+      MAXSHADES <- rep(0, ndays) + maxshade # daily max shade (%)
+    }
     leapyears<-seq(1972,2060,4)
     for(mm in 1:nyears){
       if(mm == 1){
@@ -645,10 +652,6 @@ micro_nz <- function(
 
 
     soilprop<-cbind(0,0)
-    # creating the shade array
-    MAXSHADES <- rep(0,(ndays))+maxshade # daily max shade (%)
-    MINSHADES <- rep(0,(ndays))+minshade # daily min shade (%)
-
 
     r1<-raster(paste(spatial,'/nz_geo3_km.asc',sep=""))
     NZDEM<-extract(r1,x)*1000
@@ -926,8 +929,6 @@ micro_nz <- function(
 
     tzone<-paste("Etc/GMT-12",sep="") # doing it this way ignores daylight savings!
     ndays<-length(seq(ISOdate(ystart,1,1,tz=tzone)-3600*12, ISOdate((ystart+nyears),1,1,tz=tzone)-3600*13, by="days"))
-    maxshades=rep(maxshade,ndays)
-    minshades=rep(minshade,ndays)
 
     # end preliminary test for incomplete year, if simulation includes the present year
 
@@ -1021,9 +1022,6 @@ micro_nz <- function(
       WNMINN <- Wind * 0.5
       message('min wind * 0.5 \n')
       message('max wind * 2 \n')
-
-      MAXSHADES<-maxshades
-      MINSHADES<-minshades
 
       REFLS <- rep(REFL, ndays)
       PCTWET <- rep(PCTWET, ndays)
@@ -1158,49 +1156,14 @@ micro_nz <- function(
         RAINhr = rainhour
       }
 
-      doy1=matrix(data = 0., nrow = ndays, ncol = 1)
-      SLES1=matrix(data = 0., nrow = ndays, ncol = 1)
-      MAXSHADES1=matrix(data = 0., nrow = ndays, ncol = 1)
-      MINSHADES1=matrix(data = 0., nrow = ndays, ncol = 1)
-      TMAXX1=matrix(data = 0., nrow = ndays, ncol = 1)
-      TMINN1=matrix(data = 0., nrow = ndays, ncol = 1)
-      CCMAXX1=matrix(data = 0., nrow = ndays, ncol = 1)
-      CCMINN1=matrix(data = 0., nrow = ndays, ncol = 1)
-      RHMAXX1=matrix(data = 0., nrow = ndays, ncol = 1)
-      RHMINN1=matrix(data = 0., nrow = ndays, ncol = 1)
-      WNMAXX1=matrix(data = 0., nrow = ndays, ncol = 1)
-      WNMINN1=matrix(data = 0., nrow = ndays, ncol = 1)
-      REFLS1=matrix(data = 0., nrow = ndays, ncol = 1)
-      PCTWET1=matrix(data = 0., nrow = ndays, ncol = 1)
-      RAINFALL1=matrix(data = 0, nrow = ndays, ncol = 1)
-      tannul1=matrix(data = 0, nrow = ndays, ncol = 1)
-      moists1=matrix(data = 0., nrow = 10, ncol = ndays)
-      doy1[1:ndays]<-doy
-      SLES1[1:ndays]<-SLES
-      MAXSHADES1[1:ndays]<-MAXSHADES
-      MINSHADES1[1:ndays]<-MINSHADES
-      TMAXX1[1:ndays]<-TMAXX
-      TMINN1[1:ndays]<-TMINN
-      CCMAXX1[1:ndays]<-CCMAXX
-      CCMINN1[1:ndays]<-CCMINN
-      RHMAXX1[1:ndays]<-RHMAXX
-      RHMINN1[1:ndays]<-RHMINN
-      WNMAXX1[1:ndays]<-WNMAXX
-      WNMINN1[1:ndays]<-WNMINN
-      REFLS1[1:ndays]<-REFLS
-      PCTWET1[1:ndays]<-PCTWET
-      RAINFALL1[1:ndays]<-RAINFALL
-      tannul1[1:ndays]<-tannul
-      moists1[1:10,1:ndays]<-moists
       if(length(LAI)<ndays){
         LAI<-rep(LAI[1],ndays)
-        LAI1 <- LAI
       }
       if(shore==0){
         tides<-matrix(data = 0, nrow = 24*ndays, ncol = 3) # make an empty matrix
       }
       # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
-      micro<-list(tides=tides,microinput=microinput,doy=doy,SLES=SLES1,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX1,TMINN=TMINN1,RHMAXX=RHMAXX1,RHMINN=RHMINN1,CCMAXX=CCMAXX1,CCMINN=CCMINN1,WNMAXX=WNMAXX1,WNMINN=WNMINN1,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,IRDhr=IRDhr,REFLS=REFLS1,PCTWET=PCTWET1,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists1,RAINFALL=RAINFALL1,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,DD=DD,L=L,LAI=LAI)
+      micro<-list(tides=tides,microinput=microinput,doy=doy,SLES=SLES,DEP=DEP,Nodes=Nodes,MAXSHADES=MAXSHADES,MINSHADES=MINSHADES,TIMAXS=TIMAXS,TIMINS=TIMINS,TMAXX=TMAXX,TMINN=TMINN,RHMAXX=RHMAXX,RHMINN=RHMINN,CCMAXX=CCMAXX,CCMINN=CCMINN,WNMAXX=WNMAXX,WNMINN=WNMINN,TAIRhr=TAIRhr,RHhr=RHhr,WNhr=WNhr,CLDhr=CLDhr,SOLRhr=SOLRhr,RAINhr=RAINhr,ZENhr=ZENhr,IRDhr=IRDhr,REFLS=REFLS1,PCTWET=PCTWET,soilinit=soilinit,hori=hori,TAI=TAI,soilprops=soilprops,moists=moists,RAINFALL=RAINFALL,tannulrun=tannulrun,PE=PE,KS=KS,BB=BB,BD=BD,DD=DD,L=L,LAI=LAI)
       # write all input to csv files in their own folder
       if(write_input==1){
         if(dir.exists("micro csv input")==FALSE){
@@ -1303,15 +1266,15 @@ micro_nz <- function(
         drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
         srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
         if(snowmodel == 1){
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2))
         }else{
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2))
         }
       }else{
         if(snowmodel == 1){
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,dates=dates,dates2=dates2))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2))
         }else{
-          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],MAXSHADES=MAXSHADES,longlat=c(x[1],x[2]),nyears=nyears,minshade=minshade,maxshade=maxshade,DEP=DEP,dates=dates,dates2=dates2))
+          return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2))
         }
       }
     } # end of check for na sites

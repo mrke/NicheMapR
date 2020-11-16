@@ -81,10 +81,10 @@ tmins <- t/60
 
 par(mfrow = c(1,2))
 Ww_g <- 5 # body weight, g
-Tc_init <- 20 # initial body temperature, °C
+Tc_init <- 20 # initial body temperature, Â°C
 geom <- 2 # shape (2 = ellipsoid)
-Tair <- 20 # air temperature, °C
-Trad <- Tair # radiant temperature, °C
+Tair <- 20 # air temperature, Â°C
+Trad <- Tair # radiant temperature, Â°C
 vel <- 1 # wind speed, m/s
 Qsol <- 500 # horizontal plane solar radiation, W/m2
 Zen <- 20 # zenith angle of sun, degrees
@@ -92,7 +92,7 @@ alpha <- 0.85 # solar absorptivity, -
 
 Tbs<-onelump(t=t, alpha = alpha, Tc_init = Tc_init, Ww_g = Ww_g,
   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
-plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 30), ylab = 'Temperature, °C',xlab='time, min', las = 1)
+plot(Tbs$Tc ~ tmins, type= 'l' ,col = 1, ylim = c(20, 30), ylab = 'Temperature, Â°C',xlab='time, min', las = 1)
 text(80, 27, "    500 g")
 text(80, 24.5, "5 g")
 text(90, 20.5, "Tair for both sizes", col = "blue")
@@ -107,16 +107,16 @@ abline(Tair,0, lty = 1, col = 'blue')
 abline(h = Tair + .1, lty = 2, col = 'blue')
 
 Ww_g <- 5 # body weight, g
-Tair <- 25 # air temperature, °C
+Tair <- 25 # air temperature, Â°C
 vel <-0.5 # wind speed, m/s
 
 Tbs<-onelump(t=t, alpha = alpha, Tc_init = Tc_init, Ww_g = Ww_g,
   geom = geom, Tair = Tair, Trad = Trad, vel = vel, Qsol = Qsol, Zen = Zen)
-plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,30),ylab='Temperature, °C',xlab='time, min', las = 1)
+plot(Tbs$Tc~tmins,type='l',col=1,ylim=c(20,30),ylab='Temperature, Â°C',xlab='time, min', las = 1)
 abline(h = Tair, lty = 1, col = 'blue')
 
 Ww_g <- 500 # body weight, g
-Tair <- 20 # air temperature, °C
+Tair <- 20 # air temperature, Â°C
 vel <-1 # wind speed, m/s
 
 Tbs<-onelump(t=t, alpha = alpha, Tc_init = Tc_init, Ww_g = Ww_g,

@@ -160,7 +160,7 @@ by choosing the option 'run.gads<-1'
 \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
 \code{rainfrac}{ = 0.5, fraction of rain that falls on the first day of the month (decimal \% with 0 meaning rain falls evenly) - this parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data)}\cr\cr
 \code{snowcond}{ = 0, effective snow thermal conductivity W/mC (if zero, uses inbuilt function of density)}\cr\cr
-\code{intercept}{ = maxshade / 100 * 0.3, snow interception fraction for when there's shade (0-1)}\cr\cr
+\code{intercept}{ = max(maxshade) / 100 * 0.3, snow interception fraction for when there's shade (0-1)}\cr\cr
 \code{grasshade}{ = 0, if 1, means shade is removed when snow is present, because shade is cast by grass/low shrubs}\cr\cr
 
 \strong{ Intertidal mode parameters:}
@@ -180,7 +180,6 @@ by choosing the option 'run.gads<-1'
 \code{elev}{ - elevation at point of simulation (m)}\cr\cr
 \code{minshade}{ - minimum shade for simulation (\%)}\cr\cr
 \code{maxshade}{ - maximum shade for simulation (single value - if time varying, in 'MAXSHADES') (\%)}\cr\cr
-\code{MAXSHADES}{ - vector of maximum shades used (\%)}\cr\cr
 \code{dem}{ - digital elevation model obtained via 'get_dev' using package 'elevatr' (m)}\cr\cr
 \code{DEP}{ - vector of depths used (cm)}\cr\cr
 

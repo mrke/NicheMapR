@@ -5,8 +5,26 @@
 \alias{SEVAP_ENDO}
 \title{SEVAP_ENDO}
 \usage{
-SEVAP_ENDO(BP, TA, RELHUM, VEL, TC, TSURF, ELEV, SKINW, FLYHR, CONVSK, HD,
-  HDFREE, PCTBAREVAP, PCTEYES, ZFUR, FURWET, TFA, CONVAR)
+SEVAP_ENDO(
+  BP,
+  TA,
+  RELHUM,
+  VEL,
+  TC,
+  TSURF,
+  ELEV,
+  SKINW,
+  FLYHR,
+  CONVSK,
+  HD,
+  HDFREE,
+  PCTBAREVAP,
+  PCTEYES,
+  ZFUR,
+  FURWET,
+  TFA,
+  CONVAR
+)
 }
 \arguments{
 \item{BP}{barometric pressure (Pa), negative means altitude is used}

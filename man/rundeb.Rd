@@ -4,13 +4,30 @@
 \alias{rundeb}
 \title{rundeb}
 \usage{
-rundeb(allstat = allstat, species = "Daphnia.magna", Euler = 0,
-  start.stage = 0, stages = 6, S_instar = rep(1.618, stages),
-  ndays = 50, div = 24, Tbs = rep(20, ndays * div), Xs = rep(100,
-  ndays * div), E_sm = 350, fdry = 0.3, clutchsize = 5,
-  kap.mult = 1, z.mult = 1, v.mult = 1, p.M.mult = 1,
-  E.0.mult = 1, plot = 1, mass.unit = "g", length.unit = "cm",
-  ageing = 1)
+rundeb(
+  allstat = allstat,
+  species = "Daphnia.magna",
+  Euler = 0,
+  start.stage = 0,
+  stages = 6,
+  S_instar = rep(1.618, stages),
+  ndays = 50,
+  div = 24,
+  Tbs = rep(20, ndays * div),
+  Xs = rep(100, ndays * div),
+  E_sm = 350,
+  fdry = 0.3,
+  clutchsize = 5,
+  kap.mult = 1,
+  z.mult = 1,
+  v.mult = 1,
+  p.M.mult = 1,
+  E.0.mult = 1,
+  plot = 1,
+  mass.unit = "g",
+  length.unit = "cm",
+  ageing = 1
+)
 }
 \arguments{
 \item{allstat}{= allstat, the allstat data set}

@@ -4,7 +4,8 @@
 \name{SCAN_FordDryLake_2015}
 \alias{SCAN_FordDryLake_2015}
 \title{Ford Dry Lake, SCAN site 2184, year 2015}
-\format{A data frame with 8760 rows and 49 variables:
+\format{
+A data frame with 8760 rows and 49 variables:
 \describe{
   \item{Site}{network type}
   \item{Date}{site id}
@@ -55,7 +56,8 @@
   \item{SVPV.H}{Vapor Pressure - Saturated, Kpa}
   \item{RHUM}{relative humidity, percent}
   \item{datetime}{POSIXct date and time}
-}}
+}
+}
 \source{
 Natural Resource Conservation Service Soil Climate Network Analysis http://www.wcc.nrcs.usda.gov/scan/
 }

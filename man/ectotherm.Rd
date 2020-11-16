@@ -93,9 +93,8 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \strong{ Environmental inputs:}
 
 \itemize{
-\item{\code{minshade}{ = 0, Minimum shade (\%) available to the animal}\cr}
-\item{\code{minshades}{ = rep(minshade,length(micro$MAXSHADES), Vector of daily minimum shade values (\%)}\cr}
-\item{\code{maxshades}{ = micro$MAXSHADES, Vector of daily maximum shade values (\%)}\cr}
+\item{\code{minshades}{ = micro$minshade, Vector of daily minimum shade values (\%)}\cr}
+\item{\code{maxshades}{ = micro$maxshade, Vector of daily maximum shade values (\%)}\cr}
 \item{\code{fluid}{ = 0, Fluid type 0=air, 1=water }\cr}
 \item{\code{k_sub}{ = 2.79, Substrate thermal conductivity (W/mC)}\cr}
 \item{\code{alpha_sub}{ = 1 - micro$REFL, Vector of daily substrate reflectances (0-1)}\cr}

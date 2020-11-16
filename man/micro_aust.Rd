@@ -161,7 +161,7 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
 \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
 \code{snowcond}{ = 0, effective snow thermal conductivity W/mC (if zero, uses inbuilt function of density)}\cr\cr
-\code{intercept}{ = maxshade / 100 * 0.3, snow interception fraction for when there's shade (0-1)}\cr\cr
+\code{intercept}{ = max(maxshade) / 100 * 0.3, snow interception fraction for when there's shade (0-1)}\cr\cr
 \code{grasshade}{ = 0, if 1, means shade is removed when snow is present, because shade is cast by grass/low shrubs}\cr\cr
 
 \strong{ Intertidal mode parameters:}
@@ -181,9 +181,7 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{RAINFALL}{ - vector of daily rainfall (mm)}\cr\cr
 \code{elev}{ - elevation at point of simulation (m)}\cr\cr
 \code{minshade}{ - minimum shade for simulation (\%)}\cr\cr
-\code{maxshade}{ - maximum shade for simulation (single value - if time varying, in 'MAXSHADES') (\%)}\cr\cr
-\code{MINSHADES}{ - vector of minimum shades used (\%)}\cr\cr
-\code{MAXSHADES}{ - vector of maximum shades used (\%)}\cr\cr
+\code{maxshade}{ - maximum shade for simulation (\%)}\cr\cr
 \code{DEP}{ - vector of depths used (cm)}\cr\cr
 
 metout/shadmet variables:
@@ -277,7 +275,7 @@ dates <- micro$dates
 metout <- cbind(dates, metout)
 soil <- cbind(dates, soil)
 soilmoist <- cbind(dates, soilmoist)
-minshade <- micro$minshade
+minshade <- micro$minshade[1]
 
 # plotting above-ground conditions in minimum shade
 with(metout, {plot(TALOC ~ dates, xlab = "Date and Time", ylab = "Temperature (Â°C)"

@@ -5,8 +5,7 @@
 \alias{CONV_ENDO}
 \title{CONV_ENDO}
 \usage{
-CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP,
-  ELEV)
+CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV)
 }
 \arguments{
 \item{TS}{skin temperature (°C)}

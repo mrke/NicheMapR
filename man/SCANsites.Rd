@@ -4,7 +4,8 @@
 \name{SCANsites}
 \alias{SCANsites}
 \title{Summary table of Soil Climate Analysis Network (SCAN) sites.}
-\format{A data frame with 208 rows and 11 variables:
+\format{
+A data frame with 208 rows and 11 variables:
 \describe{
   \item{Network}{network type}
   \item{id}{site id}
@@ -17,7 +18,8 @@
   \item{NRCS Soil Survey Pedon Code}{NRCS Soil Survey Pedon Code}
   \item{GMT offset}{Greenwich Mean Time offset, h}
   \item{start date}{date and time recording started}
-}}
+}
+}
 \source{
 Dunklee, Maggie - NRCS, Portland, OR <maggie.dunklee@por.usda.gov>
 }

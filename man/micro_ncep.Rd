@@ -32,9 +32,9 @@ Usrhyt = 0.01, ...)
 
 \item{DEP}{Soil depths at which calculations are to be made (cm), must be 10 values starting from 0, and more closely spaced near the surface}
 
-\item{minshade}{Minimum shade level to use (\%)}
+\item{minshade}{Minimum shade level to use (\%) (can be a single value or a vector of daily values)}
 
-\item{maxshade}{Maximum shade level to us (\%)}
+\item{maxshade}{Maximum shade level to use (\%) (can be a single value or a vector of daily values)}
 
 \item{Usrhyt}{Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest}
 
@@ -166,7 +166,7 @@ An implementation of the NicheMapR microclimate model that integrates the RNCEP 
 \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr
 \code{rainmelt}{ = 0.0125, paramter in equation that melts snow with rainfall as a function of air temp}\cr\cr
 \code{snowcond}{ = 0, effective snow thermal conductivity W/mC (if zero, uses inbuilt function of density)}\cr\cr
-\code{intercept}{ = maxshade / 100 * 0.3, snow interception fraction for when there's shade (0-1)}\cr\cr
+\code{intercept}{ = max(maxshade) / 100 * 0.3, snow interception fraction for when there's shade (0-1)}\cr\cr
 \code{grasshade}{ = 0, if 1, means shade is removed when snow is present, because shade is cast by grass/low shrubs}\cr\cr
 
 \strong{ Intertidal mode parameters:}
@@ -185,8 +185,7 @@ An implementation of the NicheMapR microclimate model that integrates the RNCEP 
 \code{RAINFALL}{ - vector of daily rainfall (mm)}\cr\cr
 \code{elev}{ - elevation at point of simulation (m)}\cr\cr
 \code{minshade}{ - minimum shade for simulation (\%)}\cr\cr
-\code{maxshade}{ - maximum shade for simulation (single value - if time varying, in 'MAXSHADES') (\%)}\cr\cr
-\code{MAXSHADES}{ - vector of maximum shades used (\%)}\cr\cr
+\code{maxshade}{ - maximum shade for simulation (\%)}\cr\cr
 \code{dem}{ - digital elevation model obtained via 'get_dev' using package 'elevatr' (m)}\cr\cr
 \code{DEP}{ - vector of depths used (cm)}\cr\cr
 \code{SLOPE}{ - slope at point of simulation (\%)}\cr\cr

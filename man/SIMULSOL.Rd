@@ -5,8 +5,18 @@
 \alias{SIMULSOL}
 \title{SIMULSOL}
 \usage{
-SIMULSOL(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA, SKINW,
-  TSKIN, results)
+SIMULSOL(
+  DIFTOL,
+  IPT,
+  FURVARS,
+  GEOMVARS,
+  ENVVARS,
+  TRAITS,
+  TFA,
+  SKINW,
+  TSKIN,
+  results
+)
 }
 \arguments{
 \item{DIFTOL}{error tolerance for SIMULSOL}
