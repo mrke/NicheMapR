@@ -233,6 +233,7 @@
 #' library(mcera5)
 #' library(lubridate)
 #' library(dplyr)
+#' library(tidync)
 #'
 #' # get ERA5 data with package mcera5 (just do once for region and time of interest)
 #'
