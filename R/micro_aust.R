@@ -1032,7 +1032,7 @@ micro_aust <- function(
         if(manualshade == 0){
           maxshades <- static_soil_vars[, 2:13] # assuming FAPAR represents shade
         }
-        shademax <- maxshades
+        shademax <- maxshade
       }
       if((is.na(dbrow) != TRUE & is.na(ALTITUDES) != TRUE) | opendap == 1){
         if(run.gads == 1){
@@ -1738,7 +1738,7 @@ micro_aust <- function(
           tides <- matrix(data = 0, nrow = 24 * ndays, ncol = 3) # make an empty matrix
         }
         # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
-        micro <- list(tides = tides, microinput = microinput, doy = doy, SLES = SLES1, DEP = DEP, Nodes = Nodes, MAXSHADES = MAXSHADES, MINSHADES = MINSHADES, TIMAXS = TIMAXS, TIMINS = TIMINS, TMAXX = TMAXX1, TMINN = TMINN1, RHMAXX = RHMAXX1, RHMINN = RHMINN1, CCMAXX = CCMAXX1, CCMINN = CCMINN1, WNMAXX = WNMAXX1, WNMINN = WNMINN1, TAIRhr = TAIRhr, RHhr = RHhr, WNhr = WNhr, CLDhr = CLDhr, SOLRhr = SOLRhr, RAINhr = RAINhr, ZENhr = ZENhr, IRDhr = IRDhr, REFLS = REFLS1, PCTWET = PCTWET1, soilinit = soilinit, hori = hori, TAI = TAI, soilprops = soilprops, moists = moists1, RAINFALL = RAINFALL1, tannulrun = tannulrun, PE = PE, KS = KS, BB = BB, BD = BD, DD = DD, L = L, LAI = LAI)
+        micro <- list(tides = tides, microinput = microinput, doy = doy, SLES = SLES, DEP = DEP, Nodes = Nodes, MAXSHADES = MAXSHADES, MINSHADES = MINSHADES, TIMAXS = TIMAXS, TIMINS = TIMINS, TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN, CCMAXX = CCMAXX, CCMINN = CCMINN, WNMAXX = WNMAXX, WNMINN = WNMINN, TAIRhr = TAIRhr, RHhr = RHhr, WNhr = WNhr, CLDhr = CLDhr, SOLRhr = SOLRhr, RAINhr = RAINhr, ZENhr = ZENhr, IRDhr = IRDhr, REFLS = REFLS, PCTWET = PCTWET, soilinit = soilinit, hori = hori, TAI = TAI, soilprops = soilprops, moists = moists, RAINFALL = RAINFALL, tannulrun = tannulrun, PE = PE, KS = KS, BB = BB, BD = BD, DD = DD, L = L, LAI = LAI)
         # write all input to csv files in their own folder
         if(write_input==1){
           if(dir.exists("micro csv input") == FALSE){
@@ -1798,7 +1798,7 @@ micro_aust <- function(
         }
 
         message(paste('running microclimate model for', ndays, 'days from ', ystart, ' to ', yfinish, ' at site', location, '\n'))
-        message('Note: the output column `SOLR` in metout and SHADMET is for unshaded horizontal plane solar radiation \n')
+        message('Note: the output column `SOLR` in metout and shadmet is for unshaded horizontal plane solar radiation \n')
         ptm <- proc.time() # Start timing
         microut <- microclimate(micro)
         message(paste0('runtime ', (proc.time() - ptm)[3], ' seconds')) # Stop the clock
@@ -1841,8 +1841,8 @@ micro_aust <- function(
         if(max(metout[,1] == 0)){
           cat("ERROR: the model crashed - try a different error tolerance (ERR) or a different spacing in DEP", '\n')
         }
-        dates <- seq(as.POSIXct(paste0("01/01/", ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/", yfinish + 1), format = "%d/%m/%Y ", tz = 'Etc/GMT+10'), by = 'hours')[1:(length(TMAXX1) * 24)]
-        dates2 <- seq(as.POSIXct(paste0("01/01/", ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/", yfinish + 1), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), by = 'days')[1:length(TMAXX1)]
+        dates <- seq(as.POSIXct(paste0("01/01/", ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/", yfinish + 1), format = "%d/%m/%Y ", tz = 'Etc/GMT+10'), by = 'hours')[1:(length(TMAXX) * 24)]
+        dates2 <- seq(as.POSIXct(paste0("01/01/", ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/", yfinish + 1), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), by = 'days')[1:length(TMAXX)]
         if(lamb == 1){
           drlam <- as.data.frame(microut$drlam) # retrieve direct solar irradiance
           drrlam <- as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance

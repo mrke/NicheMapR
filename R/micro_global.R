@@ -1030,7 +1030,7 @@ micro_global <- function(
       location<-loc
     }
     message(paste('running microclimate model for',timeinterval,'days by',nyears,'years at site',location,'\n'))
-    message('Note: the output column `SOLR` in metout and SHADMET is for unshaded horizontal plane solar radiation \n')
+    message('Note: the output column `SOLR` in metout and shadmet is for unshaded horizontal plane solar radiation \n')
     ptm <- proc.time() # Start timing
     microut<-microclimate(micro)
     message(paste0('runtime ', (proc.time() - ptm)[3], ' seconds')) # Stop the clock

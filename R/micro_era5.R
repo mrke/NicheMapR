@@ -1040,7 +1040,7 @@ micro_era5 <- function(
       location <- loc
     }
     cat(paste('running microclimate model for ', ndays, ' days from ', tt[1], ' to ', tt[length(tt)], ' at site ', location, '\n'))
-    cat('Note: the output column `SOLR` in metout and SHADMET is for unshaded solar radiation adjusted for slope, aspect and horizon angle \n')
+    cat('Note: the output column `SOLR` in metout and shadmet is for unshaded solar radiation adjusted for slope, aspect and horizon angle \n')
     ptm <- proc.time() # Start timing
     microut<-microclimate(micro)
     print(proc.time() - ptm) # Stop the clock
