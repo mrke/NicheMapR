@@ -11,7 +11,7 @@ rungads(lat, lon, relhum, season)
 
 \item{lon}{Longitude in decimal degrees}
 
-\item{relhum}{Integer specifying relative humdity to use, 1:8 corresponds to 0,50,70,80,90,95,98,99 percent relative humidity}
+\item{relhum}{Integer specifying relative humidity to use, 1:8 corresponds to 0,50,70,80,90,95,98,99 percent relative humidity}
 
 \item{season}{Season to obtain data for, 0 = summer, 1 = winter}
 }

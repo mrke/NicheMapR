@@ -5,7 +5,7 @@
 #' see http://www.mpimet.mpg.de/fileadmin/publikationen/Reports/MPI-Report_243.pdf
 #' @param lat Latitude in decimal degrees
 #' @param lon Longitude in decimal degrees
-#' @param relhum Integer specifying relative humdity to use, 1:8 corresponds to 0,50,70,80,90,95,98,99 percent relative humidity
+#' @param relhum Integer specifying relative humidity to use, 1:8 corresponds to 0,50,70,80,90,95,98,99 percent relative humidity
 #' @param season Season to obtain data for, 0 = summer, 1 = winter
 #' @return optdep A vector of wavelength-specific optical depths
 #' @useDynLib "NicheMapR"

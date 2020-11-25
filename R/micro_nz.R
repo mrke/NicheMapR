@@ -187,7 +187,7 @@
 #' \itemize{
 #' \item 1 DOY - day-of-year
 #' \item 2 TIME - time of day (mins)
-#' \item 3-12 WC0cm ... - soil moisuture (m3/m3) at each of the 10 specified depths
+#' \item 3-12 WC0cm ... - soil moisture (m3/m3) at each of the 10 specified depths
 #' }
 #' soilpot and shadpot variables:
 #' \itemize{

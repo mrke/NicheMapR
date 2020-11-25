@@ -1,5 +1,5 @@
       subroutine gads(lat51,lon51,relhum1,season1,optdep1)
-
+      implicit none
 ccccc ------------------------------------------------------------------c
 c     create global distributions of microphysical and optical aerosol  c
 c     properties on the base of the GADS database.                      c
@@ -54,11 +54,28 @@ c                                                                      c
 c      18.11.97                                                M. Hess c
 ccccc -----------------------------------------------------------------c
 
-      integer prnr,acnr,njc,rht
-      real n,numden
-      real lat5,lon5,relhum,optdep(25,2),season
-      double precision lat51,lon51,relhum1,optdep1(25,2),season1
-
+      integer prnr,acnr,njc,rht,mlamb,mhum,nhum,jnopar,nop,ibuf,nih,nlay
+      integer niw,njh,nlmal,ntape,ip,i,iwel,nwel,ihum,il,ih,ilat,ilmal
+      integer ilon,j,late,lata,loni,lone,lona,lati,nprog,nil,mbuf,nseas
+      integer latx,lonx,na,norm,mixnor,season
+      real n,numden,abs,acmr,absbuf,alamb,ahum,extbuf,bacbuf,asybuf
+      real asy,hstra,hfta,hm,h1,h0,ext,bre,kbuf,brebuf,bimbuf,bim
+      real lat5,lon5,relhum,optdep,bac,boundl
+      real boundu,mlay,mpar,nh,nl
+      real nltyp,nptyp,pha,phabuf
+      real sca,scabuf,sis,sisbuf,parlay,par,ncomp,khum,natyp,mcomp,mopar
+      double precision lat51,lon51,relhum1,optdep1,season1
+      
+      dimension optdep1(25,2),optdep(25,2),jnopar(13),nil(10),hfta(10)
+      dimension hstra(10),h0(2,10),h1(2,10),hm(2,10)
+      dimension kbuf(20),extbuf(20),scabuf(20),absbuf(20)
+      dimension sisbuf(20),asybuf(20),bacbuf(20),phabuf(112,20),
+     *brebuf(20),bimbuf(20),rht(2),n(2),njc(2),acnr(5,2),acmr(5,2),
+     *nh(2),atn(2),pat(2),ext(2,5),sca(2,5),abs(2,5),sis(2,5),asy(2,5),
+     *comnam(20),bac(2,5),pha(2,5,112),bre(2,5),bim(2,5),ncomp(10),
+     *nltyp(10),parlay(10,2),boundl(10),boundu(10),par(5),
+     *opanam(13),optnam(13),alamb(61),khum(8),ahum(8),nhum(8),
+     * chum(8)
       character*1 ws,dum
       character*2 chum
       character*3  atn,pat
@@ -72,60 +89,53 @@ ccccc -----------------------------------------------------------------c
 c     CHARACTER(len=255) :: cwd
 
       common /prog/   nprog
-      common /profi/  nil(10),hfta(10),hstra(10),
-     *                h0(2,10),h1(2,10),hm(2,10)
-      common /buffer/ ibuf,kbuf(20),extbuf(20),scabuf(20),absbuf(20),
-     *                sisbuf(20),asybuf(20),bacbuf(20),phabuf(112,20),
-     *                brebuf(20),bimbuf(20),mbuf
-      common /mipoi/  latx,lonx,nl,prnr,rht(2),n(2),
-     *                njc(2),acnr(5,2),acmr(5,2),nh(2),atn(2),pat(2)
-      common /oppoi/  ext(2,5),sca(2,5),abs(2,5),sis(2,5),asy(2,5),
-     *                bac(2,5),pha(2,5,112),bre(2,5),bim(2,5)
-
-      common /atyp/   natyp,mcomp,ncomp(10),numden,
-     *                catyp,typnam,comnam(20)
-      common /layer/  nlay,mlay,nltyp(10),parlay(10,2),boundl(10),
-     *                boundu(10)
-      common /param/  nptyp,mpar,par(5)
+      common /profi/  nil,hfta,hstra,h0,h1,hm
+      common /buffer/ ibuf,kbuf,extbuf,scabuf,absbuf,sisbuf,asybuf,
+     * bacbuf,phabuf,brebuf,bimbuf,mbuf
+      common /mipoi/  latx,lonx,nl,prnr,rht,n,njc,acnr,acmr,nh,atn,pat
+      common /oppoi/  ext,sca,abs,sis,asy,bac,pha,bre,bim
+      common /atyp/   natyp,mcomp,ncomp,numden,catyp,typnam,comnam
+      common /layer/  nlay,mlay,nltyp,parlay,boundl,boundu
       common /season/ nseas,cseas,tseas
-      common /opar/   mopar,jnopar(13),nop,opanam(13),optnam(13)
-      common /wavel/  mlamb,alamb(61),niw
-      common /hum/    khum(8),ahum(8),nih,nhum(8),mhum,chum(8)
+      common /opar/   mopar,jnopar,nop,opanam,optnam
+      common /wavel/  alamb,mlamb,niw
+      common /hum/    khum,ahum,nih,nhum,mhum,chum
       common /geog/   lata,late,lati,lona,lone,loni,na,area
       common /norm/   norm,mixnor
       common /r/      lat5,lon5,relhum,season,optdep
-
-      data alamb /0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,
+CCCCC -----------------------------------------------------------------C
+c     some definitions for this version                                c
+CCCCC -----------------------------------------------------------------C
+      alamb = (/0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,
      *            0.9,1.0,1.25,1.5,1.75,2.0,2.5,3.0,3.2,3.39,3.5,3.75,
      *            4.0,4.5,5.0,5.5,6.0,6.2,6.5,7.2,7.9,8.2,8.5,8.7,9.0,
      *            9.2,9.5,9.8,10.0,10.6,11.0,11.5,12.5,13.0,14.0,14.8,
      *            15.0,16.4,17.2,18.0,18.5,20.0,21.3,22.5,25.0,27.9,30.,
-     *            35.0,40.0/,mlamb/61/
+     *            35.0,40.0/)
+      mlamb = 61
+      ahum = (/0.,50.,70.,80.,90.,95.,98.,99./)
+      nhum = (/0,50,70,80,90,95,98,99/)
+      mhum = 8
+      chum = (/'00','50','70','80','90','95','98','99'/)
 
-      data ahum /0.,50.,70.,80.,90.,95.,98.,99./
-      data nhum /0,50,70,80,90,95,98,99/,mhum/8/
-      data chum /'00','50','70','80','90','95','98','99'/
-
-      data comnam /'inso','waso','soot','ssam','sscm','minm','miam',
+      comnam = (/'inso','waso','soot','ssam','sscm','minm','miam',
      *             'micm','mitr','suso','stco','stma','cucc','cucp',
-     *             'cuma','fog-','cir1','cir2','cir3','    '/
+     *             'cuma','fog-','cir1','cir2','cir3','    '/)
 
-      data optnam /'ext.coef','sca.coef','abs.coef','sisc.alb',
+      optnam = (/'ext.coef','sca.coef','abs.coef','sisc.alb',
      *             'asym.par','op.depth',
      *             '        ','turb.fac','li.ratio','pha.func',
      *             'ext.rat ','abs.rat ',
-     *             '        '/
+     *             '        '/)
 
-      data jnopar/1,1,1,1,1,1,0,0,1,0,0,0,0/,nop/7/
-
-CCCCC -----------------------------------------------------------------C
-c     some definitions for this version                                c
-CCCCC -----------------------------------------------------------------C
+      jnopar = (/1,1,1,1,1,1,0,0,1,0,0,0,0/)
+      nop = 7
+      
       !CALL getcwd(cwd)
       !WRITE(*,*) TRIM(cwd)
       lat5=real(lat51,4)
       lon5=real(lon51)
-      season=real(season1)
+      season=int(season1)
       relhum=real(relhum1)
       niw=1
       njh=1
@@ -334,11 +344,15 @@ C     -----------------------------------------------------------------C
 C     READING THE HEIGHT PROFILES from the file profiles.dat and the   C
 C     extinction coefficients of the upper atmosphere from extcof.dat  C
 CCCCC -----------------------------------------------------------------C
-
-      common /wavel/  mlamb,alamb(61),niw
-      common /profi/ nil(10),hfta(10),hstra(10),
-     *h0(2,10),h1(2,10),hm(2,10)
-      COMMON /FTASTR/ EXTFTA(61),EXTSTR(61)
+      integer mlamb,nprof,ip,IIP,IL,nil,IWL,niw
+      real alamb,hfta,hstra,h0,h1,hm,extfta,extstr,WAVE,EXTFT,EXTST
+      
+      dimension alamb(61),hfta(10),hstra(10),nil(10),
+     *h0(2,10),h1(2,10),hm(2,10),EXTFTA(61),EXTSTR(61)
+      
+      common /wavel/  alamb,mlamb,niw
+      common /profi/ nil,hfta,hstra,h0,h1,hm
+      COMMON /FTASTR/ EXTFTA,EXTSTR
 
 CCCCC -----------------------------------------------------------------C
 C     THERE ARE 7 PROFILE TYPES. The following data are imported:      C
@@ -400,24 +414,30 @@ c     -----------------------------------------------------------------c
 c     Labeling of the TAPE10 output file		        	           c
 ccccc -----------------------------------------------------------------c
 
-      real mixrat,numden
-
+      integer kop,iop,nseas,jnopar,nop,mlamb,niw,nih,nhum,mhum
+      integer lata,late,lati,lona,lone,loni,na,norm,mixnor,jnangle
+      integer angle,nia
+      real mixrat,numden,dens,igma,rmin,khum,ahum,rmod,rmax
+      real sigma,ncomp,natyp,mcomp,mopar,alamb
       character*2 chum
       character*4 comnam
-      character opanam*8,cseas*7,tseas*11,optnam*8,opnam(10)*8
+      character opanam*8,cseas*7,tseas*11,optnam*8,opnam*8
       character catyp*20,area*50,typnam*30
 
+      dimension khum(8),ahum(8),nhum(8),chum(8),comnam(20)
+      dimension igma(10),rmin(10,8),rmax(10,8),rmod(10,8),opnam(10),
+     * mixrat(10),dens(10,8),ncomp(10),jnopar(13),opanam(13),optnam(13)
+      dimension jnangle(112),angle(112),alamb(61)
+      
       common /season/ nseas,cseas,tseas
       common /geog/   lata,late,lati,lona,lone,loni,na,area
-      common /hum/    khum(8),ahum(8),nih,nhum(8),mhum,chum(8)
+      common /hum/    khum,ahum,nih,nhum,mhum,chum
       common /norm/   norm,mixnor
-      common /numdis/ sigma(10),rmin(10,8),rmax(10,8),rmod(10,8),
-     *                mixrat(10),dens(10,8)
-      common /atyp/   natyp,mcomp,ncomp(10),numden,
-     *                catyp,typnam,comnam(20)
-      common /opar/   mopar,jnopar(13),nop,opanam(13),optnam(13)
-      common /wavel/  mlamb,alamb(61),niw
-      common /angle/  jnangle(112),angle(112),nia
+      common /numdis/ sigma,rmin,rmax,rmod,mixrat,dens
+      common /atyp/   natyp,mcomp,ncomp,numden,catyp,typnam,comnam
+      common /opar/   mopar,jnopar,nop,opanam,optnam
+      common /wavel/  alamb,mlamb,niw
+      common /angle/  jnangle,angle,nia
 
 CCCCC -----------------------------------------------------------------C
 C     Output file header                                               C
@@ -485,15 +505,19 @@ CCCCC -----------------------------------------------------------------C
 
       IMPLICIT CHARACTER*3 (Z)
 
-      integer prnr,acnr,njc,rht
-      real n
+      integer latx,lonx,prnr,acnr,njc,rht,nprog,JC,ntape,l,nl,ic,il,lat
+      integer lon
+      real n,itest,nh,acmr,sum
       character*3 atn,pat
 
+      dimension rht(2),n(2),njc(2),acnr(5,2),acmr(5,2),nh(2),atn(2)
+      dimension pat(2),itest(2),zat(11),zrh(8)
+
       common /prog/  nprog
-      common /mipoi/ latx,lonx,nl,prnr,rht(2),n(2),
-     *               njc(2),acnr(5,2),acmr(5,2),nh(2),atn(2),pat(2)
-      common /test/  itest(2)
-      common /dat/   zat(11),zrh(8)
+      common /mipoi/ latx,lonx,nl,prnr,rht,n,
+     *               njc,acnr,acmr,nh,atn,pat
+      common /test/  itest
+      common /dat/   zat,zrh
 
   111 READ(NTAPE,1020,end=999) LATX,LONX,NL,PRNR,
      +   ATN(1),PAT(1),RHT(1),N(1),NJC(1),
@@ -596,8 +620,14 @@ c                                                                      c
 c     Stand: 17.11.97                                         M. Hess  c
 CCCCC -----------------------------------------------------------------C
 
-      integer prnr,acnr,njc,rht
-      real n,numden
+      integer prnr,acnr,njc,rht,ilamb,ihum,ibuf,il,ihu,mhum,ic,jc,iht
+      integer nta,ntap,nbuf,ib,mbuf,ios,iline,ila,mlamb,it,nl,ntheta
+      integer jnopar,nop,niw,nih,nhum,latx,lonx
+      real n,numden,alamb,ahum,acmr,ext,extbuf,asy,bacbuf,abs
+      real asybuf,bre,brebuf,kbuf,khum,bim,mopar,sisca
+      real ncomp,absbuf,bac,nh,pha,bimbuf,natyp
+      real mcomp,phabuf,sca,scabuf,sis,sisbuf,thet
+      real rlamb,extco,scaco,absco,asymf,exn,refr,refi
 
       character*1  dum
       character*2  chum
@@ -610,19 +640,24 @@ CCCCC -----------------------------------------------------------------C
       character*30 typnam
 
       logical exists,ende
-
-      common /opar/   mopar,jnopar(13),nop,opanam(13),optnam(13)
-      common /wavel/  mlamb,alamb(61),niw
-      common /hum/    khum(8),ahum(8),nih,nhum(8),mhum,chum(8)
-      common /atyp/   natyp,mcomp,ncomp(10),numden,
-     *                catyp,typnam,comnam(20)
-      common /mipoi/  latx,lonx,nl,prnr,rht(2),n(2),
-     *                njc(2),acnr(5,2),acmr(5,2),nh(2),atn(2),pat(2)
-      common /oppoi/  ext(2,5),sca(2,5),abs(2,5),sis(2,5),asy(2,5),
+      
+      dimension jnopar(13),opanam(13),optnam(13),alamb(61),khum(8)
+      dimension ahum(8),nhum(8),chum(8),ncomp(10),comnam(20)
+      dimension rht(2),n(2),njc(2),acnr(5,2),acmr(5,2),nh(2),atn(2)
+      dimension pat(2), ext(2,5),sca(2,5),abs(2,5),sis(2,5),asy(2,5),
      *bac(2,5),pha(2,5,112),bre(2,5),bim(2,5)
-      common /buffer/ ibuf,kbuf(20),extbuf(20),scabuf(20),absbuf(20),
+      dimension kbuf(20),extbuf(20),scabuf(20),absbuf(20),
      *sisbuf(20),asybuf(20),bacbuf(20),phabuf(112,20),
-     *brebuf(20),bimbuf(20),mbuf
+     *brebuf(20),bimbuf(20)
+
+      common /opar/   mopar,jnopar,nop,opanam,optnam
+      common /wavel/  alamb,mlamb,niw
+      common /hum/    khum,ahum,nih,nhum,mhum,chum
+      common /atyp/   natyp,mcomp,ncomp,numden,catyp,typnam,comnam
+      common /mipoi/  latx,lonx,nl,prnr,rht,n,njc,acnr,acmr,nh,atn,pat
+      common /oppoi/  ext,sca,abs,sis,asy,bac,pha,bre,bim
+      common /buffer/ ibuf,kbuf,extbuf,scabuf,absbuf,
+     *sisbuf,asybuf,bacbuf,phabuf,brebuf,bimbuf,mbuf
 
 ccccc -----------------------------------------------------------------c
 c      Loop over all components occurring at the grid point            c
@@ -848,37 +883,70 @@ C     -----------------------------------------------------------------C
 C     Calculation and printout of the desired optical parameters       C
 CCCCC -----------------------------------------------------------------C
 
-      integer prnr,acnr,rht
-      real n,numden
-      real lat5,lon5,relhum,season
-      dimension optdep(25,2)
-      REAL EXTN(2),ABSN(2),SCAN(2),PF18N(2),supf(112),phafu(112,2)
-      REAL EXTA(2),ABSA(2),SCAA(2),SSA(2),ASF(2),PF18A(2)
-      real scar(2),absr(2),omer(2)
+      integer prnr,ilamb,ihum,it,l,jc,nl,NJC,itp,kc,iop,kop,il,nlay
+      integer nil,nprog,rht,acnr,jnopar,nop,mlamb,niw,norm,mixnor
+      integer latx,lonx,angle,nia,jnangle,season
+      real numden
+      REAL EXTN,ABSN,SCAN,PF18N,supf,phafu
+      REAL EXTA,ABSA,SCAA,SSA,ASF,PF18A
+      real scar,absr,omer
+      
+      real mlay,nltyp,parlay,boundl,boundu,acmr
+      real hfta,hstra,h0,h1,hm
+      real mopar
+      real alamb
+      real n
+      real nh
+      real ext,sca,abs,sis,asy
+      real bac,pha,bre,bim
+      real EXTFTA,EXTSTR
+      real ITEST,mcomp
+      real oparam,phaf,hftae,odepth
+      real hu,ho,z,odeptha,turbr,turbf
+      real ncomp
+      real smas,smag,natyp
+      real lat5,lon5,relhum,optdep
+      real SUMME,SUMMA,SUMMS,SUMSSA,SUMASF,SUPF18
+      
+      
       character*3  atn,pat
       character*4  comnam
       character*8  opanam,optnam
       character*20 catyp
       character*30 typnam
-      common /atyp/   natyp,mcomp,ncomp(10),numden,
-     *                catyp,typnam,comnam(20)
+      
+      dimension optdep(25,2),EXTN(2),ABSN(2),SCAN(2),PF18N(2),supf(112)
+      dimension phafu(112,2),EXTA(2),ABSA(2),SCAA(2),SSA(2),ASF(2)
+      dimension PF18A(2),scar(2),absr(2),omer(2)
+      dimension nltyp(10),parlay(10,2),boundl(10),boundu(10)
+      dimension nil(10),hfta(10),hstra(10),h0(2,10),h1(2,10),hm(2,10)
+      dimension jnopar(13),opanam(13),optnam(13)
+      dimension alamb(61)
+      dimension rht(2),n(2)
+      dimension njc(2),acnr(5,2),acmr(5,2),nh(2),atn(2),pat(2)
+      dimension ext(2,5),sca(2,5),abs(2,5),sis(2,5),asy(2,5)
+      dimension bac(2,5),pha(2,5,112),bre(2,5),bim(2,5)
+      dimension EXTFTA(61),EXTSTR(61)
+      dimension ITEST(2)
+      dimension oparam(10,2),phaf(112,2)
+      dimension jnangle(112),angle(112)
+      dimension smas(10,8),smag(8),ncomp(10),comnam(20)
+
+      
+      common /atyp/   natyp,mcomp,ncomp,numden,catyp,typnam,comnam
       common /norm/   norm,mixnor
-      common /layer/  nlay,mlay,nltyp(10),parlay(10,2),boundl(10),
-     *                boundu(10)
-      common /profi/ nil(10),hfta(10),hstra(10),
-     *                h0(2,10),h1(2,10),hm(2,10)
-      common /opar/   mopar,jnopar(13),nop,opanam(13),optnam(13)
-      common /wavel/  mlamb,alamb(61),niw
-      common /mipoi/  latx,lonx,nl,prnr,rht(2),n(2),
-     *                njc(2),acnr(5,2),acmr(5,2),nh(2),atn(2),pat(2)
-      common /oppoi/  ext(2,5),sca(2,5),abs(2,5),sis(2,5),asy(2,5),
-     *                bac(2,5),pha(2,5,112),bre(2,5),bim(2,5)
-      COMMON /FTASTR/ EXTFTA(61),EXTSTR(61)
-      COMMON /TEST/   ITEST(2)
-      common /out/    oparam(10,2),phaf(112,2)
+      common /layer/  nlay,mlay,nltyp,parlay,boundl,boundu
+      common /profi/ nil,hfta,hstra,h0,h1,hm
+      common /opar/   mopar,jnopar,nop,opanam,optnam
+      common /wavel/  alamb,mlamb,niw
+      common /mipoi/  latx,lonx,nl,prnr,rht,n,njc,acnr,acmr,nh,atn,pat
+      common /oppoi/  ext,sca,abs,sis,asy,bac,pha,bre,bim
+      COMMON /FTASTR/ EXTFTA,EXTSTR
+      COMMON /TEST/   ITEST
+      common /out/    oparam,phaf
       common /prog/   nprog
-      common /angle/  jnangle(112),angle(112),nia
-      common /masse/  smas(10,8),smag(8)
+      common /angle/  jnangle,angle,nia
+      common /masse/  smas,smag
       common /r/      lat5,lon5,relhum,season,optdep
 
 CCCCC ------------------------------------------------------------------C
@@ -1149,21 +1217,32 @@ c     -----------------------------------------------------------------c
 c     OUTPUT OF DATA for atlopt          			                 c
 ccccc -----------------------------------------------------------------c
 
-      integer prnr,acnr,njc,rht
-      real n
-      real lat5,lon5,relhum,season,optdep
-      dimension optdep(25,2)
-
+      integer prnr,acnr,njc,rht,l,nl,nop,op,ihum,ilamb,iop,jnopar,mlamb
+      integer latx,lonx,angle,nia,jnangle,niw,nih,nhum,mhum,season
+      real alamb
+      real khum,ahum
+      real oparam,phaf
+      real mopar
+      real n,acmr,nh
+      real lat5,lon5,relhum,optdep      
       character*2 chum
-      character opanam*8,atn*3,pat*3,optnam*8
-
-      common /angle/  jnangle(112),angle(112),nia
-      common /wavel/  mlamb,alamb(61),niw
-      common /hum/    khum(8),ahum(8),nih,nhum(8),mhum,chum(8)
-      common /out/    oparam(10,2),phaf(112,2)
-      common /opar/   mopar,jnopar(13),nop,opanam(13),optnam(13)
-      common /mipoi/  latx,lonx,nl,prnr,rht(2),n(2),
+      character opanam*8,atn*3,pat*3,optnam*8      
+      
+      dimension optdep(25,2),jnangle(112),angle(112)
+      dimension alamb(61)
+      dimension khum(8),ahum(8),nhum(8),chum(8)
+      dimension oparam(10,2),phaf(112,2)
+      dimension jnopar(13),opanam(13),optnam(13)
+      dimension rht(2),n(2),
      * njc(2),acnr(5,2),acmr(5,2),nh(2),atn(2),pat(2)
+
+      common /angle/  jnangle,angle,nia
+      common /wavel/  alamb,mlamb,niw
+      common /hum/    khum,ahum,nih,nhum,mhum,chum
+      common /out/    oparam,phaf
+      common /opar/   mopar,jnopar,nop,opanam,optnam
+      common /mipoi/  latx,lonx,nl,prnr,rht,n,
+     * njc,acnr,acmr,nh,atn,pat
       common /r/      lat5,lon5,relhum,season,optdep
 
       do l=1,nl
