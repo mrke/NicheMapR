@@ -61,9 +61,9 @@ ccccc -----------------------------------------------------------------c
       real n,numden,abs,acmr,absbuf,alamb,ahum,extbuf,bacbuf,asybuf
       real asy,hstra,hfta,hm,h1,h0,ext,bre,kbuf,brebuf,bimbuf,bim
       real lat5,lon5,relhum,optdep,bac,boundl
-      real boundu,mlay,mpar,nh,nl
-      real nltyp,nptyp,pha,phabuf
-      real sca,scabuf,sis,sisbuf,parlay,par,ncomp,khum,natyp,mcomp,mopar
+      real boundu,mlay,nh,nl
+      real nltyp,pha,phabuf
+      real sca,scabuf,sis,sisbuf,parlay,ncomp,khum,natyp,mcomp,mopar
       double precision lat51,lon51,relhum1,optdep1,season1
       
       dimension optdep1(25,2),optdep(25,2),jnopar(13),nil(10),hfta(10)
@@ -73,7 +73,7 @@ ccccc -----------------------------------------------------------------c
      *brebuf(20),bimbuf(20),rht(2),n(2),njc(2),acnr(5,2),acmr(5,2),
      *nh(2),atn(2),pat(2),ext(2,5),sca(2,5),abs(2,5),sis(2,5),asy(2,5),
      *comnam(20),bac(2,5),pha(2,5,112),bre(2,5),bim(2,5),ncomp(10),
-     *nltyp(10),parlay(10,2),boundl(10),boundu(10),par(5),
+     *nltyp(10),parlay(10,2),boundl(10),boundu(10),
      *opanam(13),optnam(13),alamb(61),khum(8),ahum(8),nhum(8),
      * chum(8)
       character*1 ws,dum
@@ -131,8 +131,6 @@ CCCCC -----------------------------------------------------------------C
       jnopar = (/1,1,1,1,1,1,0,0,1,0,0,0,0/)
       nop = 7
       
-      !CALL getcwd(cwd)
-      !WRITE(*,*) TRIM(cwd)
       lat5=real(lat51,4)
       lon5=real(lon51)
       season=int(season1)
@@ -162,11 +160,6 @@ ccccc -----------------------------------------------------------------c
 c     Query what should be plotted                                     c
 ccccc -----------------------------------------------------------------c
 
- 1001 continue
-c print*,'  '
-c      write(*,154)
-c  154 format(' (w)inter or (s)ummer? ')
-c      read (*,'(a)') ws
       if(season.eq.1)then
        ws='w'
       else
@@ -177,31 +170,8 @@ ccccc ----------------------------------------------------------------c
 c     Input: wavelength                                               c
 ccccc ----------------------------------------------------------------c
 
-c      print*,' please select wavelength: '
-c      print*,' '
-
       nwel=25
-c      do 11 iwel=1,22
-c         if (nwel.ge.(iwel+44)) then
-c            write(*,114) iwel,alamb(iwel),(iwel+22),alamb(iwel+22),
-c     *                   (iwel+44),alamb(iwel+44)
-c         else if (nwel.ge.(iwel+22)) then
-c            write(*,113) iwel,alamb(iwel),(iwel+22),alamb(iwel+22)
-c         else
-c            write(*,111) iwel,alamb(iwel)
-c         end if
-c   11 continue
 
-C 111 format(5x,'(',i2,')',3x,f5.2,1x,'um')
-C 113 format(5x,'(',i2,')',3x,f5.2,1x,'um',5x,'(',i2,')',
-C    *       3x,f5.2,1x,'um')
-C 114 format(5x,'(',i2,')',3x,f5.2,1x,'um',5x,'(',i2,')',
-C    *       3x,f5.2,1x,'um',
-C    *       5x,'(',i2,')',3x,f5.2,1x,'um')
-
-  909 continue
-c      write (*,*) '?'
-c      read (*,*) iwel
       iwel=1
       do 9999 iwel=1,nwel
 
@@ -209,38 +179,16 @@ c      read (*,*) iwel
         open(ntape,file='extdata/glodat/winter.dat')
         read (ntape,'(a1)') dum
         cseas='winter '
-        else if (ws.eq.'s') then
-         open(ntape,file='extdata/glodat/summer.dat')
-         read (ntape,'(a1)') dum
-         cseas='summer '
-       else
-        print*,' wrong input! try again!'
-        goto 1001
-       end if
-
-       if (iwel.lt.1.or.iwel.gt.nwel) then
-        print*,' wrong number! try again! '
-        goto 909
+       else 
+        open(ntape,file='extdata/glodat/summer.dat')
+        read (ntape,'(a1)') dum
+        cseas='summer '
        end if
 
 ccccc ----------------------------------------------------------------c
 c     Input: humidity                                                 c
 ccccc ----------------------------------------------------------------c
-
-c      print*,' please select rel. humidity: '
-c      print*,' '
-c      do ihum=1,mhum
-c         write(*,121) ihum,nhum(ihum)
-c  121    format (5x,'(',i2,')',3x,i2,' %')
-c      end do
-
-c  908 write (*,*) '?'
-c      read (*,*) ihum
        ihum=int(relhum)
-c      if (ihum.lt.1.or.ihum.gt.mhum) then
-c         print*,' wrong number! try again! '
-c         goto 908
-c      end if
 
 CCCCC -----------------------------------------------------------------C
 C     READING THE HEIGHT PROFILES from the file TAPE9                  c
@@ -251,32 +199,33 @@ C     HSTRA : LAYER THICKNESS OF THE STRATOSPH. AEROSOLS IN KM         C
 C     NIL   : NUMBER OF LAYERS                                         C
 CCCCC -----------------------------------------------------------------C
 
-c      print*,' Anfang prof'
        call prof
-c      print*,' Ende prof'
 
 ccccc -----------------------------------------------------------------c
 c      Labeling of the output files                                    c
 ccccc -----------------------------------------------------------------c
 
-c      print*,' Anfang head4'
        if(iwel.eq.1)then
         call head4 !(iwel,ihum)
        endif
-c      print*,' Ende head4'
 
 ccccc -----------------------------------------------------------------c
 c      Loop over all required wavelengths and moisture classes         c
 ccccc -----------------------------------------------------------------c
 
-       do il=1,niw
-        do ih=1,njh
+       !do il=1,niw
+        !do ih=1,njh
 ccccc -----------------------------------------------------------------c
 c     Loop over all required geographic coordinates                    c
 ccccc -----------------------------------------------------------------c
-         do ilat=lata,late,-lati
-          do ilmal=1,nlmal
-           do ilon=lona,lone,loni
+         !do ilat=lata,late,-lati
+          !do ilmal=1,nlmal
+           !do ilon=lona,lone,loni
+       il=1
+       ih=1
+       ilat=lata
+       ilmal=1
+       ilon=lona
 
 ccccc -----------------------------------------------------------------c
 c      Reading the raw data from the files TAPE201, TAPE207:	       c
@@ -296,40 +245,32 @@ C     ACMR      : MIXING RATIO                                         C
 C                 (PARTIAL NUMBER CONCENTRATION/TOTAL NUMBER CONC.)    C
 ccccc -----------------------------------------------------------------c
 
-c       print*,' Anfang d4raw'
             call d4raw (ilat,ilon,ntape)
-c       print*,' Ende d4raw'
 
 ccccc -----------------------------------------------------------------c
 c      Reading of the optical raw data from the files winter.dat and   c
 c      summer.dat                                                      c
 ccccc -----------------------------------------------------------------c
 
-c       print*,' Anfang optcom'
             call optcom (iwel,ihum)
-c       print*,' ende optcom'
 
 ccccc -----------------------------------------------------------------c
 c      Calculation of the optical parameters at the current grid point c
 ccccc -----------------------------------------------------------------c
 
-c       print*,' Beginning optpar',ilat,ilon
             call optpar(iwel,ihum)
-c       print*,' End optpar',ilat,ilon
 
-           end do
-          end do
-         end do
-        end do
-       end do
+           !end do
+          !end do
+         !end do
+        !end do
+       !end do
        close (ntape)
 9999  continue
 
-c       close (10)
-
       do 9998 i=1,25
        do 9997 j=1,2
-        optdep1(i,j)=optdep(i,j)
+        optdep1(i,j)=real(optdep(i,j),8)
 9997   continue
 9998  continue
 
@@ -392,13 +333,8 @@ CCCCC -----------------------------------------------------------------C
       READ(9,'(/)')
       DO IWL=1,mlamb
        READ(9,*) WAVE,EXTFT,EXTST
-c        do ila=1,niw
-c           IF (WAVE.EQ.alamb(ila)) THEN
        EXTFTA(IWL)=EXTFT
        EXTSTR(IWL)=EXTST
-c              IL=IL+1
-c           END IF
-c        end do
       end do
 
       close (9)
@@ -417,7 +353,7 @@ ccccc -----------------------------------------------------------------c
       integer kop,iop,nseas,jnopar,nop,mlamb,niw,nih,nhum,mhum
       integer lata,late,lati,lona,lone,loni,na,norm,mixnor,jnangle
       integer angle,nia
-      real mixrat,numden,dens,igma,rmin,khum,ahum,rmod,rmax
+      real mixrat,numden,dens,rmin,khum,ahum,rmod,rmax
       real sigma,ncomp,natyp,mcomp,mopar,alamb
       character*2 chum
       character*4 comnam
@@ -425,7 +361,7 @@ ccccc -----------------------------------------------------------------c
       character catyp*20,area*50,typnam*30
 
       dimension khum(8),ahum(8),nhum(8),chum(8),comnam(20)
-      dimension igma(10),rmin(10,8),rmax(10,8),rmod(10,8),opnam(10),
+      dimension rmin(10,8),rmax(10,8),rmod(10,8),opnam(10),
      * mixrat(10),dens(10,8),ncomp(10),jnopar(13),opanam(13),optnam(13)
       dimension jnangle(112),angle(112),alamb(61)
       
@@ -439,36 +375,6 @@ ccccc -----------------------------------------------------------------c
       common /wavel/  alamb,mlamb,niw
       common /angle/  jnangle,angle,nia
 
-CCCCC -----------------------------------------------------------------C
-C     Output file header                                               C
-CCCCC -----------------------------------------------------------------C
-
-c      if (ih.eq.1.and.il.eq.1) then
-c         open (10,file='extdata/aererg.txt')
-
-c         write(10,100) cseas
-c  100	   format('# Global Aerosol Data Set, Version 2.2a'/,
-c     *          '#'/
-c     *          '# ',a7,/
-c     *          '#')
-c  107	 format('====================================================',
-c     *		'============================')
-c      end if
-
-CCCCC -----------------------------------------------------------------C
-C     Labeling for different wavelengths and rel. Damp                 c
-CCCCC -----------------------------------------------------------------C
-
-c      if (nih.ne.0) then
-c         WRITE(10,4000) alamb(il),ahum(ih)
-c 4000    FORMAT('#'/
-c     *          '# wavelength: ',f6.3,3x,'relative humidity: ',F3.0,'%'/
-c     *          '#')
-c      else
-c         WRITE(10,4004) alamb(il)
-c 4004    FORMAT(/' wavelength: ',f6.3,3x,'relative humidity: -- %')
-c      end if
-
       if (jnopar(10).eq.1) then
        kop=nop-1
       else
@@ -478,19 +384,6 @@ c      end if
       do iop=1,kop
        opnam(iop)=opanam(iop)
       end do
-
-c      if (kop.le.10) then
-c         write(10,4001) (opnam(in),in=1,kop)
-c 4001    format('   LAT  LON NL LAMB    RELHUM ',10(1x,a8,1x))
-c      else
-c         write(10,4001) (opnam(in),in=1,10)
-c         write(10,4002) (opnam(in),in=11,kop)
-c 4002    format('                               ',5(1x,a8,1x))
-c      end if
-
-c      write(10,4003)
-c 4003 format('#',13x,'  [1/km]  ','  [1/km]  ','  [1/km]  ',
-c     *       30x,'   [sr]')
 
       return
       end
@@ -524,10 +417,6 @@ CCCCC -----------------------------------------------------------------C
      +      ( ACNR(JC,1),ACMR(JC,1),JC=1,3 )
  1020 FORMAT(2I4,2I3,(2A3,I3,E10.3,I4,3(I3,E10.4)))
 
-c      write(*,1020) LATX,LONX,NL,PRNR,
-c     +   ATN(1),PAT(1),RHT(1),N(1),NJC(1),
-c     +      ( ACNR(JC,1),ACMR(JC,1),JC=1,3 )
-
       IF(LATX.NE.LAT .OR.  LONX.NE.LON) THEN
 c         print*,' Achtung, falsche Koordinaten: ',latx,lonx
        GOTO 111
@@ -536,7 +425,6 @@ c         print*,' Achtung, falsche Koordinaten: ',latx,lonx
       IF (NJC(1).GT.3) THEN
        READ(NTAPE,1025,end=999) ( ACNR(JC,1),ACMR(JC,1),JC=4,NJC(1))
  1025  FORMAT(37X,3(I3,E10.4))
-c      write(*,1025) ( ACNR(JC,1),ACMR(JC,1),JC=4,NJC(1))
       END IF
 
       IF(NL.NE.1) THEN
@@ -557,26 +445,12 @@ c      write(*,1025) ( ACNR(JC,1),ACMR(JC,1),JC=4,NJC(1))
        do ic=1,njc(l)
         sum=sum+acmr(ic,l)
        end do
-       if (abs(sum-1.).ge.0.01) then
-        print*,'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-        print*,'***!!!    sum of mixing ratios is not 1.     !!!***'
-        print*,'***!!! please have a look at errorfile *.err !!!***'
-        print*,'***************************************************'
-        write (2,1001) latx,lonx,sum
-       end if
       end do
-1001  format (2i4,3x,1pe10.3)
 
 CCCCC -----------------------------------------------------------------C
 C     DETERMINATION OF THE AEROSOL TYPE AND HUMIDITY CLASS             C
 C     !!! AEROSOL TYPE IS LAYER-DEPENDENT (NOT TAKEN INTO ACCOUNT)     C
 CCCCC -----------------------------------------------------------------C
-
-c     DO 50 IT=1,11
-c     IF(ATN(1).EQ.ZAT(IT)) THEN
-c	 NT=IT
-c     END IF
-c  50 CONTINUE
 
       DO 60 IL=1,NL
       IF(RHT(IL).LE.30) THEN
@@ -674,16 +548,11 @@ ccccc -----------------------------------------------------------------c
        end if
       
        do ic=1,njc(il)
-
-c	  print*,'Start grinding components: ',ic,njc(il)
-
         jc=acnr(ic,il)
-
 ccccc -----------------------------------------------------------------c
 c     Exclusion? swelling at insoluble, soot and                       c
 c     mineral components and at clouds                                 c
 ccccc -----------------------------------------------------------------c
-
         if ( jc.eq.1.or.jc.eq.3.or.(jc.ge.6.and.jc.le.9).or.
      *   jc.gt.10 ) then
          iht=1
@@ -693,16 +562,13 @@ c        iht=khum(ihum)
          iht=ihum
          nta=700+(jc*10)+iht
         end if
-
 ccccc -----------------------------------------------------------------c
 c     Determination of the file name of the sought component 	       c
 c     from component number and moisture class                              c
 ccccc -----------------------------------------------------------------c
-
         tap(1:15)='extdata/optdat/'
         tap(16:19)=comnam(jc)
         tap(20:21)=chum(iht)
-c     write(10,*) tap
         ntap=20
 
 ccccc -----------------------------------------------------------------c
@@ -714,14 +580,11 @@ c     kbuf(20): ID numbers of the stored components                    c
 c         mbuf: Position of the current component in the buffer        c
 c         ibuf: Position up to which the buffer is occupied            c
 ccccc -----------------------------------------------------------------c
-
         nbuf=ilamb*1000+nta
 c 	  print*,'nbuf= ',nbuf
-
 ccccc -----------------------------------------------------------------c
 c      Check the buffer for compliance with nbuf                       c
 ccccc -----------------------------------------------------------------c
-
         exists=.false.
          do ib=1,20
           if (nbuf.eq.kbuf(ib)) then
@@ -731,15 +594,11 @@ ccccc -----------------------------------------------------------------c
           end if
          end do
    10   continue
-c     print*,'mbuf= ',mbuf
 
 ccccc -----------------------------------------------------------------c
 c      Reading the component data if it is not in the buffer,          c
 c      otherwise transferring it from the buffer                       c
 ccccc -----------------------------------------------------------------c
-
-c     print*,exists
-
         if (exists) then
          ext(il,ic)=extbuf(mbuf)
          sca(il,ic)=scabuf(mbuf)
@@ -753,54 +612,17 @@ c     print*,exists
         if (ibuf.lt.20) then
          ibuf=ibuf+1
         else
-c       print*,' ibuf= ',ibuf
          ibuf=1
         end if
-c       print*,ibuf
 
         kbuf(ibuf)=nbuf
         open (ntap,file=tap,iostat=ios)
-c            print*,'opened file ',tap,iostat
-
         if (ios.ne.0) then
          print*,' error while opening file ',tap
          print*,'  latitude: ',latx
          print*,' longitude: ',lonx
          stop
         end if
-
-
-c ALTER INPUT
-c            read (ntap,200) dum
-c            read (ntap,'(22(/))')
-c            rlamb=0.
-c            do while (rlamb.ne.alamb(ilamb))
-c            do ila=1,ilamb
-c               read (ntap,500) rlamb,extco,sisca,asymf,exn,refr,refi
-c  500          format(2x,8e10.3)
-c            end do
-c            do ila=ilamb+1,mlamb
-c               read (ntap,500) rl
-c               print*,rl
-c            end do
-c
-c            read (ntap,'(4(/))')
-c
-c            ntheta=96
-c            do it=1,ntheta
-c
-c               read (ntap,510,end=511)
-c     *               thet,(pha(il,ic,min(112,it)),ila=1,ilamb)
-c  510          format(1x,70e10.3)
-c
-c               print*,it,thet,pha(il,ic,it)
-c
-c            end do
-c  511       continue
-c
-c
-c  ENDE ALTER INPUT
-
         do iline=1,100
          read (ntap,220) dum2
          if (dum2.eq.'# optical ') then
@@ -853,8 +675,6 @@ c ENDE NEUER INPUT
 
         close (ntap)
 
-c      print*,'closed file ',ntap
-
         end if
        end do
       end do
@@ -863,15 +683,8 @@ ccccc -----------------------------------------------------------------c
 c     Formate							       c
 ccccc -----------------------------------------------------------------c
 
-c  100  format(8e10.3)
   200 format(a1)
   220 format(a10)
-c  300  format(15x,f6.3,/,8x,e10.4,7x,e10.4,7x,e10.4,5x,f7.4,7x,f6.4,/)
-c  301  format(8x,f6.3//)
-c  303  format(7x,e10.3,7x,e10.3,7x,e10.3,7x,f7.4/)
-c  400  format(12(/))
-c 1010  format(70X,e10.3)
-
       return
       end
 
@@ -957,7 +770,6 @@ C     SUMASF      : SUBTOTAL ASYMMETRY FACTOR (ASF)                     C
 C     SUMASF      : SUBTOTAL OF THE SINGLE SCAT. ALB. (SSA)             C
 CCCCC ------------------------------------------------------------------C
 
-
       DO 10 L=1,NL
 
        SUMME = 0.
@@ -974,7 +786,7 @@ CCCCC ------------------------------------------------------------------C
 
        DO 20 JC=1,NJC(L)
 
-c      print*,' Calculation of the sums'
+c      Calculation of the sums'
 
         SUMME = SUMME + ACMR(JC,L)*EXT(l,jc)
         SUMMA = SUMMA + ACMR(JC,L)*ABS(l,jc)
@@ -990,15 +802,13 @@ c      print*,' Calculation of the sums'
          end do
         end if
 
-c      print*,jc,l,njc(l),summe,acmr(jc,l),ext(l,jc)
-
    20  CONTINUE
 
 CCCCC -----------------------------------------------------------------C
 C     Standardized optical parameters				       c
 CCCCC -----------------------------------------------------------------C
 
-c      print*,' Calculation of the standardized values'
+c      Calculation of the standardized values'
 
        EXTN(L) = SUMME
        ABSN(L) = SUMMA
@@ -1158,13 +968,6 @@ CCCCC -----------------------------------------------------------------C
        ODEPTH = ODEPTH + EXTFTA(ilamb)*HFTAE
      +  + EXTSTR(ilamb)*HSTRA(prnr)
 
-c        do il=1,nl
-c        print*,'   exta= ',exta(il),'    hm(il)= ',hm(il,prnr)
-c        end do
-c        print*,' ilamb= ' ,ilamb
-c        print*,' extfta= ',extfta(ilamb),' hftae= ',hftae
-c        print*,' extstr= ',extstr(ilamb),' hstr= ',hstra(prnr)
-
        odeptha=odepth/alog(10.)
 
        turbr=0.008569*alamb(ilamb)**(-4)*(1.+0.0113*alamb(ilamb)**
@@ -1200,11 +1003,7 @@ c       print*,' exta= ', exta(il),' hm= ',hm(il,1)
        end if
       end if
 
-c      print*,'Aufruf von out4'
-
       call out4(iop,ilamb,ihum)
-
-c     print*,'Ende out4'
 
       RETURN
       END
@@ -1217,7 +1016,7 @@ c     -----------------------------------------------------------------c
 c     OUTPUT OF DATA for atlopt          			                 c
 ccccc -----------------------------------------------------------------c
 
-      integer prnr,acnr,njc,rht,l,nl,nop,op,ihum,ilamb,iop,jnopar,mlamb
+      integer prnr,acnr,njc,rht,l,nl,nop,ihum,ilamb,iop,jnopar,mlamb
       integer latx,lonx,angle,nia,jnangle,niw,nih,nhum,mhum,season
       real alamb
       real khum,ahum
@@ -1257,37 +1056,11 @@ ccccc -----------------------------------------------------------------c
 
         if (iop.le.10) then
          if (l.eq.1) then
-c	       write (10,2020) latx,lonx,nl,alamb(ilamb),ahum(ihum),
-c     *			       (oparam(ip,l),ip=1,iop)
-c 2020	  FORMAT(2(1x,I4),i3,3x,f6.3,3x,f3.0,1p3e10.3,0p3e10.3,1pe10.3)
           optdep(ilamb,1)=alamb(ilamb)
           optdep(ilamb,2)=oparam(6,l)
-         else
-c	       write (10,3020)
-c     *			       (oparam(ip,l),ip=1,iop)
-c 3020          FORMAT(13x,1p3e10.3,0p3e10.3,1pe10.3)
          end if
-        else
-c	    if (l.eq.1) then
-c	       write (10,2020) latx,lonx,nl,
-c     *			       (oparam(ip,l),ip=1,5)
-c	       write (10,2030) (oparam(ip,l),ip=6,iop)
-c 2030	       FORMAT(11x,1p10e10.3)
-c	    else
-c	       write (10,3040)
-c     *			       (oparam(ip,l),ip=1,5)
-c 3040	       FORMAT(13x,10e10.3)
-c	       write (10,2030) (oparam(ip,l),ip=6,iop)
-c	    end if
         end if
 
-c	 if(jnopar(10).eq.1) then
-c	    write(10,4002)
-c 4002	    format('   phase function')
-c	    write(10,4010) (phaf(it,l),it=1,nia)
-c 4010	    format(8e10.3)
-c	    write(10,*) ' '
-c	 end if
       end do
 
       return
