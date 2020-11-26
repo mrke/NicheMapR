@@ -984,15 +984,11 @@ micro_ncep <- function(
       ####### get solar attenuation due to aerosols with program GADS #####################
       relhum <- 1
       if(run.gads == 1){ # fortran version
-        optdep.summer1 <- as.data.frame(rungads(longlat[2], longlat[1], relhum, 0))
+        optdep.summer <- as.data.frame(rungads(longlat[2], longlat[1], relhum, 0))
         optdep.winter <- as.data.frame(rungads(longlat[2], longlat[1], relhum, 1))
       }else{ # r version
-        lat5s <- seq(-90, 90, 5) #lat range for GADS
-        lon5s <- seq(-180, 175, 5) #long range for GADS
-        lat5 <- lat5s[which.min(abs(lat5s - lat))] # get nearest latitude square for input location
-        lon5 <- lon5s[which.min(abs(lon5s - lon))] # get nearest longitude square for input location
-        optdep.summer2 <- as.data.frame(gads.r(lat5, lon5, relhum, 0))
-        optdep.winter <- as.data.frame(gads.r(lat5, lon5, relhum, 1))
+        optdep.summer <- as.data.frame(gads.r(longlat[2], longlat[1], relhum, 0))
+        optdep.winter <- as.data.frame(gads.r(longlat[2], longlat[1], relhum, 1))
       }
       optdep<-cbind(optdep.winter[, 1], rowMeans(cbind(optdep.summer[, 2], optdep.winter[, 2])))
       optdep<-as.data.frame(optdep)

@@ -9,7 +9,11 @@
 #' @param season Season to obtain data for, 0 = summer, 1 = winter
 #' @return optdep A vector of wavelength-specific optical depths
 #' @export
-gads.r <- function(lat5, lon5, relhum, season){
+gads.r <- function(lat, lon, relhum, season){
+  lat5s <- seq(-90, 90, 5) #lat range for GADS
+  lon5s <- seq(-180, 175, 5) #long range for GADS
+  lat5 <- lat5s[which.min(abs(lat5s - lat))] # get nearest latitude square for input location
+  lon5 <- lon5s[which.min(abs(lon5s - lon))] # get nearest longitude square for input location
   optdep <- array(0, dim = c(25, 2)) # output array
   niw <- 1
   njh <- 1
