@@ -397,6 +397,10 @@ micro_ncep <- function(
       errors<-1
     }
   }
+  if(run.gads == 1){
+    message("If program is crashing, try run.gads = 2.", '\n')
+    errors<-1
+  }
   if(run.gads%in%c(0, 1, 2)==FALSE){
     cat("ERROR: the variable 'run.gads' be either 0, 1 or 2.
         Please correct.", '\n')
