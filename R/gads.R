@@ -10,6 +10,7 @@
 #' @return optdep A vector of wavelength-specific optical depths
 #' @export
 gads.r <- function(lat, lon, relhum, season){
+  lib.path <- .libPaths()[1]
   lat5s <- seq(-90, 90, 5) #lat range for GADS
   lon5s <- seq(-180, 175, 5) #long range for GADS
   lat5 <- lat5s[which.min(abs(lat5s - lat))] # get nearest latitude square for input location
@@ -129,7 +130,7 @@ gads.r <- function(lat, lon, relhum, season){
   h1[2, c(5,7)] <- 3.5
   hm[1, 1:7] <- c(2, 5.7, 1.77, 0.86, 0.86, 1.9, 1.77)
   hm[2, c(5,7)] <- 1.5
-  extback <- read.table('extdata/extback.dat', skip = 2)
+  extback <- read.table(paste0(lib.path, '/NicheMapR/extdata/extback.dat'), skip = 2)
   extfta <- extback[, 2]
   extstr <- extback[, 3]
 
@@ -155,12 +156,12 @@ gads.r <- function(lat, lon, relhum, season){
   # Input: wavelength
 
   if(ws == 'w'){
-    con <- file('extdata/glodat/winter.dat', open = "r")
+    con <- file(paste0(lib.path, '/NicheMapR/extdata/glodat/winter.dat'), open = "r")
     ntape <- readLines(con) # empty
     close(con)
     cseas <- 'winter '
   }else{
-    con <- file('extdata/glodat/summer.dat', open = "r")
+    con <- file(paste0(lib.path, '/NicheMapR/extdata/glodat/summer.dat'), open = "r")
     ntape <- readLines(con, ) # empty
     close(con)
     cseas <- 'summer '
@@ -311,7 +312,7 @@ gads.r <- function(lat, lon, relhum, season){
           nta <- 700 + (jc * 10) + iht
         }
         # Determination of the file name of the sought component from component number and moisture class
-        tap <- paste0('extdata/optdat/', comnam[jc], chum[iht])
+        tap <- paste0(lib.path, '/NicheMapR/extdata/optdat/', comnam[jc], chum[iht])
         # c     Determination of the identification number for the buffer over   c
         # c     the wavelength                                                   c
         # c                                                                      c
