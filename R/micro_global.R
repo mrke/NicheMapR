@@ -6,7 +6,7 @@
 #' It also optionally uses a global monthly soil moisture estimate from NOAA CPC Soil Moisture http://140.172.38.100/psd/thredds/catalog/Datasets/cpcsoil/catalog.html
 #' Aerosol attenuation can also be computed based on the Global Aerosol Data Set (GADS)
 #' Koepke, P., M. Hess, I. Schult, and E. P. Shettle. 1997. Global Aerosol Data Set. Max-Planck-Institut for Meteorologie, Hamburg
-#' by choosing the option 'run.gads<-1'
+#' by choosing the option 'run.gads<-1' (Fortran version, quicker but may crash on some systems) or 'run.gads<-2' (R version)
 #' @encoding UTF-8
 #' @param loc Longitude and latitude (decimal degrees)
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
@@ -45,7 +45,7 @@
 #'
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 #' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
-#' \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+#' \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes (Fortran version), 2=yes (R version), 0=no}\cr\cr
 #' \code{IR}{ = 0, Clear-sky longwave radiation computed using Campbell and Norman (1998) eq. 10.10 (includes humidity) (0) or Swinbank formula (1)}\cr\cr
 #' \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
 #' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
@@ -372,8 +372,8 @@ micro_global <- function(
   grasshade = 0
 ) {
 
-  SoilMoist=SoilMoist_Init
-  errors<-0
+  SoilMoist <- SoilMoist_Init
+  errors <- 0
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   if(DEP[2]-DEP[1]>3 | DEP[3]-DEP[2]>3){
@@ -399,8 +399,8 @@ micro_global <- function(
       Please correct.", '\n')
     errors<-1
   }
-  if(run.gads%in%c(0,1)==FALSE){
-    message("ERROR: the variable 'run.gads' be either 0 or 1.
+  if(run.gads%in%c(0,1,2)==FALSE){
+    message("ERROR: the variable 'run.gads' be either 0, 1 or 2.
       Please correct.", '\n')
     errors<-1
   }
@@ -858,20 +858,29 @@ micro_global <- function(
     }#end check doing daily sims
     ndays<-length(RAINFALL)
     if(length(TAI) < 111){ # no user supplied values, compute with GADS
-      if(run.gads==1){
+      if(run.gads > 0){
         ####### get solar attenuation due to aerosols with program GADS #####################
-        relhum<-1.
-        optdep.summer<-as.data.frame(rungads(longlat[2],longlat[1],relhum,0))
-        optdep.winter<-as.data.frame(rungads(longlat[2],longlat[1],relhum,1))
-        optdep<-cbind(optdep.winter[,1],rowMeans(cbind(optdep.summer[,2],optdep.winter[,2])))
-        optdep<-as.data.frame(optdep)
-        colnames(optdep)<-c("LAMBDA","OPTDEPTH")
-        a<-lm(OPTDEPTH~poly(LAMBDA, 6, raw=TRUE),data=optdep)
-        LAMBDA<-c(290,295,300,305,310,315,320,330,340,350,360,370,380,390,400,420,440,460,480,500,520,540,560,580,600,620,640,660,680,700,720,740,760,780,800,820,840,860,880,900,920,940,960,980,1000,1020,1080,1100,1120,1140,1160,1180,1200,1220,1240,1260,1280,1300,1320,1380,1400,1420,1440,1460,1480,1500,1540,1580,1600,1620,1640,1660,1700,1720,1780,1800,1860,1900,1950,2000,2020,2050,2100,2120,2150,2200,2260,2300,2320,2350,2380,2400,2420,2450,2490,2500,2600,2700,2800,2900,3000,3100,3200,3300,3400,3500,3600,3700,3800,3900,4000)
-        TAI<-predict(a,data.frame(LAMBDA))
+        relhum <- 1
+        if(run.gads == 1){ # fortran version
+         optdep.summer1 <- as.data.frame(rungads(longlat[2], longlat[1], relhum, 0))
+         optdep.winter <- as.data.frame(rungads(longlat[2], longlat[1], relhum, 1))
+        }else{ # r version
+         lat5s <- seq(-90, 90, 5) #lat range for GADS
+         lon5s <- seq(-180, 175, 5) #long range for GADS
+         lat5 <- lat5s[which.min(abs(lat5s - lat))] # get nearest latitude square for input location
+         lon5 <- lon5s[which.min(abs(lon5s - lon))] # get nearest longitude square for input location
+         optdep.summer2 <- as.data.frame(gads.r(lat5, lon5, relhum, 0))
+         optdep.winter <- as.data.frame(gads.r(lat5, lon5, relhum, 1))
+        }
+        optdep <-cbind(optdep.winter[,1],rowMeans(cbind(optdep.summer[,2],optdep.winter[,2])))
+        optdep <-as.data.frame(optdep)
+        colnames(optdep) <- c("LAMBDA", "OPTDEPTH")
+        a <-lm(OPTDEPTH ~ poly(LAMBDA, 6, raw = TRUE), data = optdep)
+        LAMBDA <- c(290, 295, 300, 305, 310, 315, 320, 330, 340, 350, 360, 370, 380, 390, 400, 420, 440, 460, 480, 500, 520, 540, 560, 580, 600, 620, 640, 660, 680, 700, 720, 740, 760, 780, 800, 820, 840, 860, 880, 900, 920, 940, 960, 980, 1000, 1020, 1080, 1100, 1120, 1140, 1160, 1180, 1200, 1220, 1240, 1260, 1280, 1300, 1320, 1380, 1400, 1420, 1440, 1460, 1480, 1500, 1540, 1580, 1600, 1620, 1640, 1660, 1700, 1720, 1780, 1800, 1860, 1900, 1950, 2000, 2020, 2050, 2100, 2120, 2150, 2200, 2260, 2300, 2320, 2350, 2380, 2400, 2420, 2450, 2490, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000)
+        TAI <- predict(a, data.frame(LAMBDA))
         ################ end GADS ##################################################
       }else{ # use the original profile from Elterman, L. 1970. Vertical-attenuation model with eight surface meteorological ranges 2 to 13 kilometers. U. S. Airforce Cambridge Research Laboratory, Bedford, Mass.
-        TAI<-c(0.42,0.415,0.412,0.408,0.404,0.4,0.395,0.388,0.379,0.379,0.379,0.375,0.365,0.345,0.314,0.3,0.288,0.28,0.273,0.264,0.258,0.253,0.248,0.243,0.236,0.232,0.227,0.223,0.217,0.213,0.21,0.208,0.205,0.202,0.201,0.198,0.195,0.193,0.191,0.19,0.188,0.186,0.184,0.183,0.182,0.181,0.178,0.177,0.176,0.175,0.175,0.174,0.173,0.172,0.171,0.17,0.169,0.168,0.167,0.164,0.163,0.163,0.162,0.161,0.161,0.16,0.159,0.157,0.156,0.156,0.155,0.154,0.153,0.152,0.15,0.149,0.146,0.145,0.142,0.14,0.139,0.137,0.135,0.135,0.133,0.132,0.131,0.13,0.13,0.129,0.129,0.128,0.128,0.128,0.127,0.127,0.126,0.125,0.124,0.123,0.121,0.118,0.117,0.115,0.113,0.11,0.108,0.107,0.105,0.103,0.1)
+        TAI <-c(0.42, 0.415, 0.412, 0.408, 0.404, 0.4, 0.395, 0.388, 0.379, 0.379, 0.379, 0.375, 0.365, 0.345, 0.314, 0.3, 0.288, 0.28, 0.273, 0.264, 0.258, 0.253, 0.248, 0.243, 0.236, 0.232, 0.227, 0.223, 0.217, 0.213, 0.21, 0.208, 0.205, 0.202, 0.201, 0.198, 0.195, 0.193, 0.191, 0.19, 0.188, 0.186, 0.184, 0.183, 0.182, 0.181, 0.178, 0.177, 0.176, 0.175, 0.175, 0.174, 0.173, 0.172, 0.171, 0.17, 0.169, 0.168, 0.167, 0.164, 0.163, 0.163, 0.162, 0.161, 0.161, 0.16, 0.159, 0.157, 0.156, 0.156, 0.155, 0.154, 0.153, 0.152, 0.15, 0.149, 0.146, 0.145, 0.142, 0.14, 0.139, 0.137, 0.135, 0.135, 0.133, 0.132, 0.131, 0.13, 0.13, 0.129, 0.129, 0.128, 0.128, 0.128, 0.127, 0.127, 0.126, 0.125, 0.124, 0.123, 0.121, 0.118, 0.117, 0.115, 0.113, 0.11, 0.108, 0.107, 0.105, 0.103, 0.1)
       } #end check if running gads
     }
     ################ soil properties  ##################################################

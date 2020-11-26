@@ -73,7 +73,7 @@ set of surface climate over global land areas. Climate Research 21:1-25"
 It also optionally uses a global monthly soil moisture estimate from NOAA CPC Soil Moisture http://140.172.38.100/psd/thredds/catalog/Datasets/cpcsoil/catalog.html
 Aerosol attenuation can also be computed based on the Global Aerosol Data Set (GADS)
 Koepke, P., M. Hess, I. Schult, and E. P. Shettle. 1997. Global Aerosol Data Set. Max-Planck-Institut for Meteorologie, Hamburg
-by choosing the option 'run.gads<-1'
+by choosing the option 'run.gads<-1' (Fortran version, quicker but may crash on some systems) or 'run.gads<-2' (R version)
 }
 \details{
 \itemize{
@@ -81,7 +81,7 @@ by choosing the option 'run.gads<-1'
 
 \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
-\code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+\code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes (Fortran version), 2=yes (R version), 0=no}\cr\cr
 \code{IR}{ = 0, Clear-sky longwave radiation computed using Campbell and Norman (1998) eq. 10.10 (includes humidity) (0) or Swinbank formula (1)}\cr\cr
 \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
 \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr

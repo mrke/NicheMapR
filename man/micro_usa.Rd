@@ -105,7 +105,7 @@ An implementation of the NicheMapR microclimate model that uses the GRIDMET dail
 
 \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
-\code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+\code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes (Fortran version), 2=yes (R version), 0=no}\cr\cr
 \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 \code{IR}{ = 0, Clear-sky longwave radiation computed using Campbell and Norman (1998) eq. 10.10 (includes humidity) (0) or Swinbank formula (1)}\cr\cr
 \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr

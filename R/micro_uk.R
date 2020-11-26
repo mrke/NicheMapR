@@ -40,7 +40,7 @@
 #'
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
 #' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
-#' \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes, 0=no}\cr\cr
+#' \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes (Fortran version), 2=yes (R version), 0=no}\cr\cr
 #' \code{IR}{ = 0, Clear-sky longwave radiation computed using Campbell and Norman (1998) eq. 10.10 (includes humidity) (0) or Swinbank formula (1)}\cr\cr
 #' \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
 #' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
@@ -411,8 +411,8 @@ micro_uk <- function(
       Please correct.", '\n')
     errors<-1
   }
-  if(run.gads%in%c(0,1)==FALSE){
-    cat("ERROR: the variable 'run.gads' be either 0 or 1.
+  if(run.gads%in%c(0, 1, 2)==FALSE){
+    cat("ERROR: the variable 'run.gads' be either 0, 1 or 2.
       Please correct.", '\n')
     errors<-1
   }
@@ -946,11 +946,20 @@ micro_uk <- function(
 
     if(is.na(ALTITUDES)!=TRUE){
 
-      if(run.gads==1){
+      if(run.gads > 0){
         ####### get solar attenuation due to aerosols with program GADS #####################
-        relhum<-1.
-        optdep.summer<-as.data.frame(rungads(longlat[2],longlat[1],relhum,0))
-        optdep.winter<-as.data.frame(rungads(longlat[2],longlat[1],relhum,1))
+        relhum <- 1
+        if(run.gads == 1){ # fortran version
+          optdep.summer1 <- as.data.frame(rungads(longlat[2], longlat[1], relhum, 0))
+          optdep.winter <- as.data.frame(rungads(longlat[2], longlat[1], relhum, 1))
+        }else{ # r version
+          lat5s <- seq(-90, 90, 5) #lat range for GADS
+          lon5s <- seq(-180, 175, 5) #long range for GADS
+          lat5 <- lat5s[which.min(abs(lat5s - lat))] # get nearest latitude square for input location
+          lon5 <- lon5s[which.min(abs(lon5s - lon))] # get nearest longitude square for input location
+          optdep.summer2 <- as.data.frame(gads.r(lat5, lon5, relhum, 0))
+          optdep.winter <- as.data.frame(gads.r(lat5, lon5, relhum, 1))
+        }
         optdep<-cbind(optdep.winter[,1],rowMeans(cbind(optdep.summer[,2],optdep.winter[,2])))
         optdep<-as.data.frame(optdep)
         colnames(optdep)<-c("LAMBDA","OPTDEPTH")
