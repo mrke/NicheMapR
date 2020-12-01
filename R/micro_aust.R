@@ -634,8 +634,8 @@ micro_aust <- function(
     }
     idayst <- 1 # start day
     ida <- ndays # end day
-    dates <- Sys.time() - 60 * 60 * 24
-    curyear <- as.numeric(format(dates, "%Y"))
+    curdate <- Sys.time() - 60 * 60 * 24
+    curyear <- as.numeric(format(curdate, "%Y"))
     # location and terrain
     f1 <- paste0(spatial, "ausclim_rowids.nc")
     f2 <- paste0(spatial, "ausdem_shift1.tif")
@@ -1169,8 +1169,8 @@ micro_aust <- function(
           # using proportion becasue 0 x % is still 0
           # add columns with days, months and years
           RAIN_current <- as.data.frame(RAINFALL)
-          dates <- seq(ISOdate(ystart, 1, 1, tz = paste("Etc/GMT-", 10, sep="")) - 3600 * 12, ISOdate((ystart+nyears),1, 1, tz = paste("Etc/GMT-",10, sep=""))-3600*13, by="days")
-          dates <- subset(dates, format(dates, "%m/%d") != "02/29") # remove leap years
+          #dates <- seq(ISOdate(ystart, 1, 1, tz = paste("Etc/GMT+", 10, sep="")) - 3600 * 12, ISOdate((ystart+nyears),1, 1, tz = paste("Etc/GMT+",10, sep=""))-3600*13, by="days")
+          #dates <- subset(dates, format(dates, "%m/%d") != "02/29") # remove leap years
           RAINFALL_sum <- aggregate(RAIN_current, by = list(format(dates, "%m-%Y")), FUN = sum)
           dates2 <- RAINFALL_sum$Group.1
           RAINFALL_sum <- RAINFALL_sum[order(as.Date(paste0("01-",RAINFALL_sum$Group.1), "%m-%Y")), 2]
