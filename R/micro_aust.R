@@ -1166,11 +1166,11 @@ micro_aust <- function(
         }
         if(scenario != ""){
           # first work out for each site the new predicted rainfall amount for each month - use this to adjust for fact that will underestimate chcange
-          # using proportion becasue 0 x % is still 0
+          # using proportion because 0 x % is still 0
           # add columns with days, months and years
           RAIN_current <- as.data.frame(RAINFALL)
-          #dates <- seq(ISOdate(ystart, 1, 1, tz = paste("Etc/GMT+", 10, sep="")) - 3600 * 12, ISOdate((ystart+nyears),1, 1, tz = paste("Etc/GMT+",10, sep=""))-3600*13, by="days")
-          #dates <- subset(dates, format(dates, "%m/%d") != "02/29") # remove leap years
+          dates <- seq(ISOdate(ystart, 1, 1, tz = paste("Etc/GMT+", 10, sep="")) - 3600 * 12, ISOdate((ystart+nyears),1, 1, tz = paste("Etc/GMT+",10, sep=""))-3600*13, by="days")
+          dates <- subset(dates, format(dates, "%m/%d") != "02/29") # remove leap years
           RAINFALL_sum <- aggregate(RAIN_current, by = list(format(dates, "%m-%Y")), FUN = sum)
           dates2 <- RAINFALL_sum$Group.1
           RAINFALL_sum <- RAINFALL_sum[order(as.Date(paste0("01-",RAINFALL_sum$Group.1), "%m-%Y")), 2]
@@ -1851,6 +1851,10 @@ micro_aust <- function(
         }
         dates <- seq(as.POSIXct(paste0("01/01/", ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/", yfinish + 1), format = "%d/%m/%Y ", tz = 'Etc/GMT+10'), by = 'hours')[1:(length(TMAXX) * 24)]
         dates2 <- seq(as.POSIXct(paste0("01/01/", ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/", yfinish + 1), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), by = 'days')[1:length(TMAXX)]
+        if(yfinish == as.numeric(format(Sys.time(), "%Y"))){ # cut days down if doing current year (incomplete)
+          dates <- dates[dates < Sys.time()]
+          dates2 <- dates[dates2 < Sys.time()]
+        }
         if(lamb == 1){
           drlam <- as.data.frame(microut$drlam) # retrieve direct solar irradiance
           drrlam <- as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
