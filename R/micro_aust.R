@@ -1851,10 +1851,6 @@ micro_aust <- function(
         }
         dates <- seq(as.POSIXct(paste0("01/01/", ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/", yfinish + 1), format = "%d/%m/%Y ", tz = 'Etc/GMT+10'), by = 'hours')[1:(length(TMAXX) * 24)]
         dates2 <- seq(as.POSIXct(paste0("01/01/", ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/", yfinish + 1), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), by = 'days')[1:length(TMAXX)]
-        if(yfinish == as.numeric(format(Sys.time(), "%Y"))){ # cut days down if doing current year (incomplete)
-          dates <- dates[dates < Sys.time()]
-          dates2 <- dates[dates2 < Sys.time()]
-        }
         if(lamb == 1){
           drlam <- as.data.frame(microut$drlam) # retrieve direct solar irradiance
           drrlam <- as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
