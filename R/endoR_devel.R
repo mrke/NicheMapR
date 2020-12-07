@@ -34,6 +34,7 @@
 #' \strong{ Parameters controlling how the model runs:}\cr\cr
 #' \code{DIFTOL}{ = 0.001, error tolerance for SIMULSOL (°C)}\cr\cr
 #' \code{THERMOREG}{ = 1, thermoregulate? (1 = yes, 0 = no)}\cr\cr
+#' \code{RESPIRE}{ = 1, respiration? (1 = yes, 0 = no)}\cr\cr
 #'
 #' \strong{ Environment:}\cr\cr
 #' \code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr
@@ -237,7 +238,7 @@
 #' masbal <- endo.out1[, grep(pattern = "masbal", colnames(endo.out1))]
 #' colnames(masbal) <- gsub(colnames(masbal), pattern = "masbal.", replacement = "")
 #'
-#' QGEN <- enbal$QMET # metabolic rate (W)
+#' QGEN <- enbal$QGEN # metabolic rate (W)
 #' H2O <- masbal$H2OResp_g + masbal$H2OCut_g # g/h water evaporated
 #' TFA_D <- treg$TFA_D # dorsal fur surface temperature
 #' TFA_V <- treg$TFA_V # ventral fur surface temperature
@@ -367,7 +368,8 @@ endoR_devel <- function(
 
   # other model settings
   DIFTOL = 0.001, # tolerance for SIMULSOL
-  THERMOREG = 1
+  THERMOREG = 1, # invoke thermoregulatory response
+  RESPIRE = 1 # compute respiration and associated heat loss
 ){
   # check shape for problems
   if(SHAPE_B <= 1 & SHAPE == 4){
@@ -589,8 +591,11 @@ endoR_devel <- function(
 
       # Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*((kfur/zfur)+(ksub/subdepth))
       if(S == 2){
-        AREACND <- ATOT * (PCOND * 2)
-        CD <- AREACND * ((KFURCMPRS / ZFURCOMP) + (KSUB / 0.025)) # assume conduction happens from 2.5 cm depth
+        if(ZFURCOMP == 0){
+          CD <- AREACND * ((AK1 / 0.025) + (KSUB / 0.025)) # assume conduction happens from 2.5 cm depth
+        }else{
+          CD <- AREACND * ((KFURCMPRS / ZFURCOMP) + (KSUB / 0.025)) # assume conduction happens from 2.5 cm depth
+        }
       }else{ #doing dorsal side, no conduction. No need to adjust areas used for convection.
         AREACND <- 0
         CD <- 0
@@ -626,6 +631,7 @@ endoR_devel <- function(
     DMULT <- FASKYREF + FAVEGREF
     VMULT <- 1 - DMULT # assume that reflectivity of veg below = ref of soil so VMULT left as 1 - DMULT
     X <- GEND * DMULT + GENV * VMULT # weighted estimate of metabolic heat generation
+    QSUM <- X
 
     # reset configuration factors
     FABUSH <- FABUSHREF # nearby bush
@@ -639,26 +645,30 @@ endoR_devel <- function(
     TLUNG <- (TC + TS) * 0.5 # average of skin and core
     TAEXIT <- min(TA + DELTAR, TLUNG) # temperature of exhaled air, °C
 
-    # now guess for metabolic rate that balances the heat budget while allowing metabolic rate
-    # to remain at or above QBASAL, via 'shooting method' ZBRENT
-    QMIN <- QBASAL
-    if(TA < TC & TSKINMAX < TC){
-      QM1 <- QBASAL * 2 * -1
-      QM2 <- QBASAL * 50
+    if(RESPIRE == 1){
+      # now guess for metabolic rate that balances the heat budget while allowing metabolic rate
+      # to remain at or above QBASAL, via 'shooting method' ZBRENT
+      QMIN <- QBASAL
+      if(TA < TC & TSKINMAX < TC){
+        QM1 <- QBASAL * 2 * -1
+        QM2 <- QBASAL * 50
+      }else{
+        QM1 <- QBASAL * 50* -1
+        QM2 <- QBASAL * 2
+      }
+      TOL <- AMASS * 0.01
+
+      ZBRENT.in <- c(TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG, GMASS, EXTREF, RH,
+                     RELXIT, TIMACT, TAEXIT, QSUM, PANT, R_PCO2)
+      # call ZBRENT subroutine which calls RESPFUN
+      ZBRENT.out <- ZBRENT_ENDO(QM1, QM2, TOL, ZBRENT.in)
+      colnames(ZBRENT.out) <- c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")
+      QGEN <- ZBRENT.out[7] # Q_GEN,NET
     }else{
-      QM1 <- QBASAL * 50* -1
-      QM2 <- QBASAL * 2
+      QGEN <- QSUM
+      ZBRENT.out <- matrix(data = 0, nrow = 1, ncol = 15)
+      colnames(ZBRENT.out) <- c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")
     }
-    QSUM <- X
-    TOL <- AMASS * 0.01
-
-    ZBRENT.in <- c(TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG, GMASS, EXTREF, RH,
-                   RELXIT, TIMACT, TAEXIT, QSUM, PANT, R_PCO2)
-    # call ZBRENT subroutine which calls RESPFUN
-    ZBRENT.out <- ZBRENT_ENDO(QM1, QM2, TOL, ZBRENT.in)
-    colnames(ZBRENT.out) <- c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")
-
-    QGEN <- ZBRENT.out[7] # Q_GEN,NET
     SHAPE_B_LAST <- SHAPE_B
     AK1_LAST <- AK1
     TC_LAST <- TC
@@ -697,6 +707,8 @@ endoR_devel <- function(
           }
         }
       }
+    }else{
+      break
     }
   }
   # SIMULSOL output, dorsal
@@ -760,7 +772,11 @@ endoR_devel <- function(
 
   QSOL <- QSLR.D * DMULT + QSLR.V * VMULT # solar, W
   QIRIN <- QIRIN.D * DMULT + QIRIN.V * VMULT # infrared in, W
-  QMET <- RESPGEN # metabolism, W
+  if(RESPIRE == 1){
+    QGEN <- RESPGEN # metabolism, W
+  }else{
+    QGEN <- QSUM
+  }
   QEVAP <- QSEVAP.D * DMULT + QSEVAP.V * VMULT + QFSEVAP.D * DMULT + QFSEVAP.V * VMULT + QRESP # evaporation, W
   QIROUT <- QIROUT.D * DMULT + QIROUT.V * VMULT # infrared out, W
   QCONV <- QCONV.D * DMULT + QCONV.V * VMULT # convection, W
@@ -768,7 +784,7 @@ endoR_devel <- function(
 
   treg1 <- c(TC_LAST, TLUNG, TSKCALCAV.D, TSKCALCAV.V, TFA.D, TFA.V, SHAPE_B_LAST, PANT_LAST, PCTWET_LAST, AK1_LAST, KEFARA[1], KEFARA[2], KEFARA[3], KFURCMPRS, Q10mult)
   morph1 <- c(ATOT, VOL, D, MASFAT, FATTHK, FLSHVL, ALENTH, AWIDTH, AHEIT, R1, R2, ASIL, ASILN, ASILP, AREASKIN, CONVSK, CONVAR, AREACND / 2, FASKY, FAGRD)
-  enbal1 <- c(QSOL, QIRIN, QMET, QEVAP, QIROUT, QCONV, QCOND, RESPFN, max(NTRY.D, NTRY.V), min(SUCCESS.D, SUCCESS.V))
+  enbal1 <- c(QSOL, QIRIN, QGEN, QEVAP, QIROUT, QCONV, QCOND, RESPFN, max(NTRY.D, NTRY.V), min(SUCCESS.D, SUCCESS.V))
   masbal1 <- c(AIRVOL, O2STP, GEVAP, SWEAT.G.S, O2MOL1, O2MOL2, N2MOL1, N2MOL2, AIRML1, AIRML2) * 3600
 
   treg <- matrix(data = treg1, nrow = 1, ncol = 15)
@@ -776,15 +792,14 @@ endoR_devel <- function(
   masbal <- matrix(data = masbal1, nrow = 1, ncol = 10)
   enbal <- matrix(data = enbal1, nrow = 1, ncol = 10)
 
-  treg.names<-c("TC", "TLUNG", "TSKIN_D", "TSKIN_V", "TFA_D", "TFA_V", "SHAPE_B", "PANT", "PCTWET", "K_FLESH", "K_FUR", "K_FUR_D", "K_FUR_V", "K_COMPFUR", "Q10")
-  morph.names<-c("AREA", "VOLUME", "CHAR_DIM", "MASS_FAT", "FAT_THICK", "FLESH_VOL", "LENGTH", "WIDTH", "HEIGHT", "DIAM_FLESH", "DIAM_FUR", "AREA_SIL", "AREA_SILN", "AREA_ASILP", "AREA_SKIN", "AREA_SKIN_EVAP", "AREA_CONV", "AREA_COND", "F_SKY", "F_GROUND")
-  enbal.names<-c("QSOL", "QIRIN", "QGEN", "QEVAP", "QIROUT", "QCONV", "QCOND", "ENB", "NTRY", "SUCCESS")
-  masbal.names<-c("AIR_L", "O2_L", "H2OResp_g", "H2OCut_g", "O2_mol_in", "O2_mol_out", "N2_mol_in", "N2_mol_out", "AIR_mol_in", "AIR_mol_out")
-
-  colnames(treg)<-treg.names
-  colnames(morph)<-morph.names
-  colnames(enbal)<-enbal.names
-  colnames(masbal)<-masbal.names
+  treg.names <- c("TC", "TLUNG", "TSKIN_D", "TSKIN_V", "TFA_D", "TFA_V", "SHAPE_B", "PANT", "PCTWET", "K_FLESH", "K_FUR", "K_FUR_D", "K_FUR_V", "K_COMPFUR", "Q10")
+  morph.names <- c("AREA", "VOLUME", "CHAR_DIM", "MASS_FAT", "FAT_THICK", "FLESH_VOL", "LENGTH", "WIDTH", "HEIGHT", "DIAM_FLESH", "DIAM_FUR", "AREA_SIL", "AREA_SILN", "AREA_ASILP", "AREA_SKIN", "AREA_SKIN_EVAP", "AREA_CONV", "AREA_COND", "F_SKY", "F_GROUND")
+  enbal.names <- c("QSOL", "QIRIN", "QGEN", "QEVAP", "QIROUT", "QCONV", "QCOND", "ENB", "NTRY", "SUCCESS")
+  masbal.names <- c("AIR_L", "O2_L", "H2OResp_g", "H2OCut_g", "O2_mol_in", "O2_mol_out", "N2_mol_in", "N2_mol_out", "AIR_mol_in", "AIR_mol_out")
+  colnames(treg) <- treg.names
+  colnames(morph) <- morph.names
+  colnames(enbal) <- enbal.names
+  colnames(masbal) <- masbal.names
 
   if(max(treg) == 0){
     warning("A solution could not be found and panting/'sweating' options are exhausted; try allowing greater evaporation or allowing higher body maximum body temperature")

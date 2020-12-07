@@ -116,6 +116,8 @@
 #' @return p_J Maturity power, J/time
 #' @return p_R Reproduction power, J/time
 #' @return p_B Reproduction batch power, J/time
+#' @return L_b Structural length at birth, cm
+#' @return L_j Structural length at end of metabolic acceleration (if occurring), cm
 #' @examples
 #' # simulate growth and reproduction at different constant body temperatures at
 #' # constant food for a lizard (Tiliqua rugosa - default parameter values, starting
@@ -127,8 +129,8 @@
 #' Tbs=seq(25, 35, 5) # sequence of body temperatures to use
 #'
 #' for(j in 1:length(Tbs)){
-#'   debout<-matrix(data = 0, nrow = n, ncol = 36)
-#'   deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "JMO2", "JMCO2", "JMH2O", "JMNWASTE", "O2ML", "CO2ML", "GH2OML", "DEBQMETW", "GDRYFOOD", "GFAECES", "GNWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
+#'   debout<-matrix(data = 0, nrow = n, ncol = 38)
+#'   deb.names <- c("stage", "V", "E", "E_H", "E_s", "E_R", "E_B", "q", "hs", "length", "wetmass", "wetgonad", "wetgut", "wetstorage", "p_surv", "fecundity", "clutches", "JMO2", "JMCO2", "JMH2O", "JMNWASTE", "O2ML", "CO2ML", "GH2OMET", "DEBQMETW", "GDRYFOOD", "GFAECES", "GNWASTE", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B", "L_b", "L_j")
 #'   colnames(debout)<-deb.names
 #'
 #'   # initialise

@@ -741,9 +741,9 @@ micro_global <- function(
     CCMAXX <- CCMINN
     if(runmoist == 0){
       # extract soil moisture
-      soilmoisture<-suppressWarnings(raster::brick(paste(folder, "/soilw.mon.ltm.v2.nc", sep = "")))
+      soilmoisture <- suppressWarnings(raster::brick(paste(folder, "/soilw.mon.ltm.v2.nc", sep = "")))
       message("extracting soil moisture data")
-      SoilMoist<-raster::extract(soilmoisture, x) / 1000 # this is originally in mm/m
+      SoilMoist <- raster::extract(soilmoisture, x) / 1000 # this is originally in mm/m
     }
     if(is.na(max(SoilMoist, ALTT, CLIMATE)) == TRUE){
       message("Sorry, there is no environmental data for this location")
@@ -788,8 +788,8 @@ micro_global <- function(
       WNMINN1 <-suppressWarnings(spline(doys12,WNMINN,n=timeinterval,xmin=1,xmax=365,method="periodic"))
       WNMINN<-rep(WNMINN1$y,nyears)
       if(runmoist==0){
-        SoilMoist1 <-suppressWarnings(spline(doys12,SoilMoist,n=timeinterval,xmin=1,xmax=365,method="periodic"))
-        SoilMoist<-rep(SoilMoist1$y,nyears)
+        SoilMoist1 <- suppressWarnings(spline(doys12,SoilMoist,n=timeinterval,xmin=1,xmax=365,method="periodic"))
+        SoilMoist <- rep(SoilMoist1$y,nyears)
       }
     }
     if(timeinterval<365){
@@ -802,7 +802,7 @@ micro_global <- function(
       WNMAXX<-rep(WNMAXX,nyears)
       WNMINN<-rep(WNMINN,nyears)
       if(runmoist==0){
-        SoilMoist<-rep(SoilMoist,nyears)
+        SoilMoist <- rep(SoilMoist,nyears)
       }
       RAINFALL<-rep(RAINFALL,nyears)
     }

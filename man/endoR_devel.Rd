@@ -57,6 +57,7 @@ the FORTRAN code of endoR (SOLVENDO.f) accordingly and compile your own version.
 \strong{ Parameters controlling how the model runs:}\cr\cr
 \code{DIFTOL}{ = 0.001, error tolerance for SIMULSOL (°C)}\cr\cr
 \code{THERMOREG}{ = 1, thermoregulate? (1 = yes, 0 = no)}\cr\cr
+\code{RESPIRE}{ = 1, respiration? (1 = yes, 0 = no)}\cr\cr
 
 \strong{ Environment:}\cr\cr
 \code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr
@@ -261,7 +262,7 @@ colnames(enbal) <- gsub(colnames(enbal), pattern = "enbal.", replacement = "")
 masbal <- endo.out1[, grep(pattern = "masbal", colnames(endo.out1))]
 colnames(masbal) <- gsub(colnames(masbal), pattern = "masbal.", replacement = "")
 
-QGEN <- enbal$QMET # metabolic rate (W)
+QGEN <- enbal$QGEN # metabolic rate (W)
 H2O <- masbal$H2OResp_g + masbal$H2OCut_g # g/h water evaporated
 TFA_D <- treg$TFA_D # dorsal fur surface temperature
 TFA_V <- treg$TFA_V # ventral fur surface temperature

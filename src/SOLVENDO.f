@@ -33,16 +33,17 @@ C     USING endo_devel.R
       DOUBLE PRECISION QRSKYV,QRVEGD,QRVEGV,QSDIFF,QSDIR,QSEVAPD,QSEVAPV
       DOUBLE PRECISION QSLR,QSLRD,QSLRV,QSOL,QSOLAR,QSOLR,QSRSB,QSSKY
       DOUBLE PRECISION QSUM,QVENTR,R1,R2,RA,RE,REFLD,REFLV,RELXIT
-      DOUBLE PRECISION RESPFN,RESPGEN,RFLESH,RFUR,RH,RHOARA,RHOD,RHOV
-      DOUBLE PRECISION RONEST,RP_CO2,RQ,RRAD,RSKIN,SAMODE,SC,SHADE,SHAPE
-      DOUBLE PRECISION SHAPEB,SHAPEB_LAST,SHAPEB_MAX,SHAPEC,sigma
+      DOUBLE PRECISION RESPFN,RESPGEN,RESPIRE,RFLESH,RFUR,RH,RHOARA,RHOD
+      DOUBLE PRECISION RHOV,RONEST,RP_CO2,RQ,RRAD,RSKIN,SAMODE,SC,SHADE
+      DOUBLE PRECISION SHAPE,SHAPEB,SHAPEB_LAST,SHAPEB_MAX,SHAPEC,SIGMA
       DOUBLE PRECISION SIMULOUT,SIMULSOLout,SOLARout,SUBQFAT,SUCCESSD
       DOUBLE PRECISION SUCCESSV,SURFAR,SWEATGS,TA,TAEXIT,TAREF,TBUSH,TC
       DOUBLE PRECISION TC_INC,TC_LAST,TC_MAX,TCONDSB,TC_REF,TENV,TFA
-      DOUBLE PRECISION TFAD,TFAV,TGRD,TIMACT,TLOWER,TLUNG,TOL,TRAITS
-      DOUBLE PRECISION TREG,TS,TSKCALCAVD,TSKCALCAVV,TSKINMAX,TSKY,TVEG
-      DOUBLE PRECISION UNCURL,VEL,VMULT,VOL,VOLFAT,X,XR,Z,ZBRENTin
-      DOUBLE PRECISION ZBRENTout,ZEN,ZFUR,ZFURCOMP,ZFURD,ZFURV,ZL,BLANK1
+      DOUBLE PRECISION TFAD,TFAV,TGRD,THERMOREG,TIMACT,TLOWER,TLUNG,TOL
+      DOUBLE PRECISION TRAITS,TREG,TS,TSKCALCAVD,TSKCALCAVV,TSKINMAX
+      DOUBLE PRECISION TSKY,TVEG,UNCURL,VEL,VMULT,VOL,VOLFAT,X,XR,Z
+      DOUBLE PRECISION ZBRENTin,ZBRENTout,ZEN,ZFUR,ZFURCOMP,ZFURD,ZFURV
+      DOUBLE PRECISION ZL
 
       DOUBLE PRECISION, DIMENSION(3) :: KEFARA,BETARA,B1ARA,DHAR,LHAR,
      & RHOAR,ZZFUR,REFLFR
@@ -52,15 +53,15 @@ C     USING endo_devel.R
       DIMENSION IRPROPout(26),GEOMout(25),CONVOUT(14),
      & SOLARout(7),SIMULSOLout(2,15),SIMULOUT(15),FURVARS(15),
      & GEOMVARS(16),TRAITS(9),ENVVARS(17),ZBRENTin(17),ZBRENTout(15),
-     & INPUT(88),TREG(15),MORPH(20),ENBAL(10),MASBAL(10)
+     & INPUT(89),TREG(15),MORPH(20),ENBAL(10),MASBAL(10)
 
       PI = ACOS(-1.0d0)
-      
+      ZBRENTout=0.
       QGEN=input(1)
       QBASAL=input(2)
       TA=input(3)
       SHAPEB_MAX=input(4)
-      BLANK1=input(5)
+      RESPIRE=input(5)
       SHAPEB=input(6)
       DHAIRD=input(7)
       DHAIRV=input(8)
@@ -144,6 +145,7 @@ C     USING endo_devel.R
       XR=input(86)
       PANT_MULT=input(87)
       KSUB=input(88)
+      THERMOREG=input(89)
       
       TSKINMAX=TC ! initialise
       Q10mult=1. ! initialise
@@ -336,7 +338,11 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         !# Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*((kfur/zfur)+(ksub/subdepth))
         IF(S==2)THEN ! doing ventral side, add conduction
          AREACND = ATOT * (PCOND *2)
-         CD = AREACND * ((KFURCMPRS/ZFURCOMP)+(KSUB/0.025)) !# assume conduction happens from 2.5 cm depth
+         IF(ZFURCOMP.EQ.0.)THEN
+          CD = AREACND * ((AK1/0.025)+(KSUB/0.025)) !# assume conduction happens from 2.5 cm depth
+         ELSE
+          CD = AREACND * ((KFURCMPRS/ZFURCOMP)+(KSUB/0.025)) !# assume conduction happens from 2.5 cm depth
+         ENDIF
         ELSE  !# doing dorsal side, no conduction. No need to adjust areas used for convection. 
          AREACND = 0.
          CD = 0.
@@ -379,7 +385,8 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
        DMULT = FASKYREF + FAVEGREF
        VMULT = 1. - DMULT !# assume that reflectivity of veg below equals reflectivity of soil so VMULT left as 1 - DMULT
        X = GEND * DMULT + GENV * VMULT !# weighted estimate of metabolic heat generation
-
+       QSUM = X
+       
        !# reset configuration factors
        FABUSH = FABUSHREF !# nearby bush
        FASKY = FASKYREF !# sky
@@ -391,33 +398,36 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
        TFA = (SIMULSOLout(1, 1) + SIMULSOLout(2, 1)) * 0.5
        TLUNG =(TC + TS) * 0.5 !# average of skin and core
        TAEXIT = min(TA + DELTAR, TLUNG) !# temperature of exhaled air, deg C
-
-       !# now guess for metabolic rate that balances the heat budget while allowing metabolic rate
-       !# to remain at or above QBASAL, via 'shooting method' ZBRENT
-       QMIN = QBASAL
-       IF((TA.LT.TC).AND.(TSKINMAX.LT.TC))THEN
-        QM1 = QBASAL * 2.* (-1.)
-        QM2 = QBASAL * 50.
-       ELSE
-        QM1 = QBASAL * 50.* (-1.)
-        QM2 = QBASAL * 2.
-       ENDIF
-
-       QSUM = X
-       TOL = AMASS * 0.01
-       ZBRENTin = (/TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG,
-     &  GMASS, EXTREF, RH, RELXIT, TIMACT, TAEXIT, QSUM, PANT, RP_CO2/)
       
-       !# call ZBRENT subroutine which calls RESPFUN
-       CALL ZBRENT_ENDO(QM1, QM2, TOL, ZBRENTin, ZBRENTout)
-       !colnames(ZBRENTout) = c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")
+       IF(RESPIRE.EQ.1.)THEN
+        !# now guess for metabolic rate that balances the heat budget while allowing metabolic rate
+        !# to remain at or above QBASAL, via 'shooting method' ZBRENT
+        QMIN = QBASAL
+        IF((TA.LT.TC).AND.(TSKINMAX.LT.TC))THEN
+         QM1 = QBASAL * 2.* (-1.)
+         QM2 = QBASAL * 50.
+        ELSE
+         QM1 = QBASAL * 50.* (-1.)
+         QM2 = QBASAL * 2.
+        ENDIF
 
+        TOL = AMASS * 0.01
+        ZBRENTin = (/TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG,
+     &   GMASS, EXTREF, RH, RELXIT, TIMACT, TAEXIT, QSUM, PANT, RP_CO2/)
+      
+        !# call ZBRENT subroutine which calls RESPFUN
+        CALL ZBRENT_ENDO(QM1, QM2, TOL, ZBRENTin, ZBRENTout)
+        !colnames(ZBRENTout) = c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")
+       ELSE
+        QGEN = QSUM
+       ENDIF
        QGEN = ZBRENTout(7) ! Q_GEN,NET
        SHAPEB_LAST = SHAPEB
        AK1_LAST = AK1
        TC_LAST = TC
        PANT_LAST = PANT
        PCTWET_LAST = PCTWET
+       IF(THERMOREG.EQ.1)THEN
        if(SHAPEB.lt.SHAPEB_MAX)THEN
         SHAPEB = SHAPEB + UNCURL
        else
@@ -449,6 +459,9 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
           ENDIF
          ENDIF
         ENDIF
+       ENDIF
+       ELSE
+        RETURN
        ENDIF
       END DO
       

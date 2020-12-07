@@ -27,6 +27,8 @@
 #' @details
 #' \strong{ Parameters controlling how the model runs:}\cr\cr
 #' \code{DIFTOL}{ = 0.001, error tolerance for SIMULSOL (°C)}\cr\cr
+#' \code{THERMOREG}{ = 1, thermoregulate? (1 = yes, 0 = no)}\cr\cr
+#' \code{RESPIRE}{ = 1, respiration? (1 = yes, 0 = no)}\cr\cr
 #' \code{WRITE_INPUT}{ = 0, write input to csv (1 = yes)}\cr\cr
 #'
 #' \strong{ Environment:}\cr\cr
@@ -361,6 +363,8 @@ endoR <- function(
 
   # other model settings
   DIFTOL = 0.001, # tolerance for SIMULSOL
+  THERMOREG = 1, # invoke thermoregulatory response
+  RESPIRE = 1, # compute respiration and associated heat loss
   WRITE_INPUT = 0
 ){
   errors <- 0

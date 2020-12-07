@@ -4,16 +4,16 @@
 \alias{gads.r}
 \title{gads.r}
 \usage{
-gads.r(lat5, lon5, relhum, season)
+gads.r(lat, lon, relhum, season)
 }
 \arguments{
-\item{relhum}{Integer specifying relative humidity to use, 1:8 corresponds to 0,50,70,80,90,95,98,99 percent relative humidity}
-
-\item{season}{Season to obtain data for, 0 = summer, 1 = winter}
-
 \item{lat}{Latitude in decimal degrees}
 
 \item{lon}{Longitude in decimal degrees}
+
+\item{relhum}{Integer specifying relative humidity to use, 1:8 corresponds to 0,50,70,80,90,95,98,99 percent relative humidity}
+
+\item{season}{Season to obtain data for, 0 = summer, 1 = winter}
 }
 \value{
 optdep A vector of wavelength-specific optical depths
