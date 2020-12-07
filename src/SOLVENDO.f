@@ -418,53 +418,53 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         !# call ZBRENT subroutine which calls RESPFUN
         CALL ZBRENT_ENDO(QM1, QM2, TOL, ZBRENTin, ZBRENTout)
         !colnames(ZBRENTout) = c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")
+        QGEN = ZBRENTout(7) ! Q_GEN,NET
        ELSE
         QGEN = QSUM
        ENDIF
-       QGEN = ZBRENTout(7) ! Q_GEN,NET
        SHAPEB_LAST = SHAPEB
        AK1_LAST = AK1
        TC_LAST = TC
        PANT_LAST = PANT
        PCTWET_LAST = PCTWET
        IF(THERMOREG.EQ.1)THEN
-       if(SHAPEB.lt.SHAPEB_MAX)THEN
-        SHAPEB = SHAPEB + UNCURL
-       else
-        SHAPEB = SHAPEB_MAX
-        if(AK1.lt.AK1_MAX)THEN
-         AK1 = AK1 + AK1_INC
+        if(SHAPEB.lt.SHAPEB_MAX)THEN
+         SHAPEB = SHAPEB + UNCURL
         else
-         AK1 = AK1_MAX
-         if(TC.lt.TC_MAX)THEN
-          TC = TC + TC_INC
-          Q10mult = Q10**((TC - TC_REF)/10.)
-          QBASAL = QBASREF * Q10mult
+         SHAPEB = SHAPEB_MAX
+         if(AK1.lt.AK1_MAX)THEN
+          AK1 = AK1 + AK1_INC
          else
-          TC = TC_MAX
-          Q10mult = Q10**((TC - TC_REF)/10.)
-          if(PANT.lt.PANT_MAX)THEN
-           PANT = PANT + PANT_INC
-           PANT_COST=((PANT-1D0)/(PANT_MAX-1D0)*PANT_MULT*QBASREF)
-           QBASAL = QBASREF * Q10mult + PANT_COST           
+          AK1 = AK1_MAX
+          if(TC.lt.TC_MAX)THEN
+           TC = TC + TC_INC
+           Q10mult = Q10**((TC - TC_REF)/10.)
+           QBASAL = QBASREF * Q10mult
           else
-           PANT = PANT_MAX
-           PANT_COST=((PANT-1D0)/(PANT_MAX-1D0)*PANT_MULT*QBASREF)
-           QBASAL = QBASREF * Q10mult + PANT_COST           
-           PCTWET = PCTWET + PCTWET_INC
-           if((PCTWET.GT.PCTWET_MAX).OR.(PCTWET_INC.eq.0.))THEN
-            PCTWET = PCTWET_MAX
-            RETURN
+           TC = TC_MAX
+           Q10mult = Q10**((TC - TC_REF)/10.)
+           if(PANT.lt.PANT_MAX)THEN
+            PANT = PANT + PANT_INC
+            PANT_COST=((PANT-1D0)/(PANT_MAX-1D0)*PANT_MULT*QBASREF)
+            QBASAL = QBASREF * Q10mult + PANT_COST           
+           else
+            PANT = PANT_MAX
+            PANT_COST=((PANT-1D0)/(PANT_MAX-1D0)*PANT_MULT*QBASREF)
+            QBASAL = QBASREF * Q10mult + PANT_COST           
+            PCTWET = PCTWET + PCTWET_INC
+            if((PCTWET.GT.PCTWET_MAX).OR.(PCTWET_INC.eq.0.))THEN
+             PCTWET = PCTWET_MAX
+             RETURN
+            ENDIF
            ENDIF
           ENDIF
          ENDIF
         ENDIF
-       ENDIF
        ELSE
-        RETURN
+        GO TO 111
        ENDIF
       END DO
-      
+111   CONTINUE      
       ! SIMULSOL output, dorsal
       TFAD=SIMULSOLout(1, 1) ! temperature of feathers/fur-air interface, deg C
       TSKCALCAVD=SIMULSOLout(1, 2) ! average skin temperature, deg C
