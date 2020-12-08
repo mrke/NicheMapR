@@ -180,7 +180,7 @@ C     USING endo_devel.R
 
        !# call the subroutine
        CALL GEOM_ENDO(AMASS,ANDENS,FATPCT,SHAPE,ZFUR,SUBQFAT,SHAPEB,
-     &  SHAPEC,DHARA,RHOARA,PCOND,SAMODE,ORIENT,GEOMout)
+     &  SHAPEC,DHARA,RHOARA,PCOND,SAMODE,ORIENT,Z,GEOMout)
  
        !# output
        VOL = GEOMout(1) !# volume, m3
@@ -337,7 +337,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
 
         !# Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*((kfur/zfur)+(ksub/subdepth))
         IF(S==2)THEN ! doing ventral side, add conduction
-         AREACND = ATOT * (PCOND *2)
+         AREACND = ATOT * (PCOND * 2)
          IF(ZFURCOMP.EQ.0.)THEN
           CD = AREACND * ((AK1/0.025)+(KSUB/0.025)) !# assume conduction happens from 2.5 cm depth
          ELSE

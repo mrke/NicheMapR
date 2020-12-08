@@ -15,6 +15,7 @@
 #' @param PCOND fraction of surface area conducting to substrate, -
 #' @param SAMODE surface area mode, -
 #' @param ORIENT orientation to solar, -
+#' @param ZEN zenith angle, degrees
 #' @export
 GEOM_ENDO <- function(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT){
   a <- .Fortran("GEOM_ENDO",
@@ -31,6 +32,7 @@ GEOM_ENDO <- function(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAP
     as.double(PCOND),
     as.double(SAMODE),
     as.double(ORIENT),
+    as.double(ZEN),
     results=matrix(data = 0, nrow = 1, ncol = 22),
     PACKAGE = "NicheMapR")
 

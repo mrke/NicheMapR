@@ -47,6 +47,8 @@ GEOM_ENDO(
 \item{SAMODE}{surface area mode, -}
 
 \item{ORIENT}{orientation to solar, -}
+
+\item{ZEN}{zenith angle, degrees}
 }
 \description{
 R wrapper for Fortran binary of GEOM_ENDO (endotherm model)

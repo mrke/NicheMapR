@@ -74,7 +74,7 @@
 #' \code{PVEN}{ = 0.5, fraction of surface area that is ventral fur (fractional, 0-1)}\cr\cr
 #' \code{PCOND}{ = 0, fraction of surface area that is touching the substrate (fractional, 0-1)}\cr\cr
 #' \code{SAMODE}{ = 0, if 0, uses surface area for SHAPE geometry, if 1, uses bird skin surface area allometry from Walsberg & King. 1978. JEB 76:185–189, if 2 uses mammal surface area from Stahl 1967.J. App. Physiol. 22, 453–460.}\cr\cr
-#' \code{ORIENT}{ = 0, if 1 = normal to rays of sun (heat maximising), if 2 = parallel to rays of sun (heat minimising), or 0 = average}\cr\cr
+#' \code{ORIENT}{ = 0, if 1 = normal to rays of sun (heat maximising), if 2 = parallel to rays of sun (heat minimising), 3 = vertical and changing with solar altitude, or 0 = average of parallel and perpendicular}\cr\cr
 #'
 #' \strong{ Fur properties:}\cr\cr
 #' \code{DHAIRD}{ = 30E-06, hair diameter, dorsal (m)}\cr\cr
@@ -314,7 +314,7 @@ endoR_devel <- function(
   PVEN = 0.5, # fraction of surface area that is ventral fur (fractional, 0-1)
   PCOND = 0, # fraction of surface area that is touching the substrate (fractional, 0-1)
   SAMODE = 0, # if 0, uses surface area for SHAPE parameter geometry, if 1, uses bird skin surface area allometry from Walsberg & King. 1978. JEB 76:185–189, if 2 uses mammal surface area from Stahl 1967.J. App. Physiol. 22, 453–460.
-  ORIENT = 0, # if 1 = normal to sun's rays (heat maximising), if 2 = parallel to sun's rays (heat minimising), or 0 = average
+  ORIENT = 0, # if 1 = normal to sun's rays (heat maximising), if 2 = parallel to sun's rays (heat minimising), 3 = vertical and changing with solar altitude, or 0 = average
 
   # fur properties
   FURTHRMK = 0, # user-specified fur thermal conductivity (W/mK), not used if 0
@@ -436,7 +436,7 @@ endoR_devel <- function(
     ZFUR <- ZZFUR[1] # fur depth, mean (m) (from IRPROP)
 
     # call the subroutine
-    GEOM.out <- GEOM_ENDO(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT)
+    GEOM.out <- GEOM_ENDO(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT, Z)
 
     # output
     VOL <- GEOM.out[1] # volume, m3
@@ -467,10 +467,10 @@ endoR_devel <- function(
     # solar radiation normal to sun's rays
     ZEN <- pi/180*Z # convert degrees to radians
     if(Z < 90){ # compute solar radiation on a surface normal to the direct rays of the sun
-      CZ = cos(ZEN)
-      QNORM = QSOLR/CZ
+      CZ <- cos(ZEN)
+      QNORM <- QSOLR / CZ
     }else{ # diffuse skylight only
-      QNORM = QSOLR
+      QNORM <- QSOLR
     }
 
     ABSAND <- 1 - REFLFR[2] # solar absorptivity of dorsal fur (fractional, 0-1)
@@ -591,6 +591,7 @@ endoR_devel <- function(
 
       # Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*((kfur/zfur)+(ksub/subdepth))
       if(S == 2){
+        AREACND <- ATOT * (PCOND * 2)
         if(ZFURCOMP == 0){
           CD <- AREACND * ((AK1 / 0.025) + (KSUB / 0.025)) # assume conduction happens from 2.5 cm depth
         }else{
