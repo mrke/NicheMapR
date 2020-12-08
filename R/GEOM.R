@@ -17,7 +17,7 @@
 #' @param ORIENT orientation to solar, -
 #' @param ZEN zenith angle, degrees
 #' @export
-GEOM_ENDO <- function(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT){
+GEOM_ENDO <- function(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT, ZEN){
   a <- .Fortran("GEOM_ENDO",
     as.double(AMASS),
     as.double(ANDENS),
