@@ -212,8 +212,8 @@ An implementation of the NicheMapR microclimate model that uses the GRIDMET dail
 \code{nyears}{ - number of years for which predictions are made}\cr\cr
 \code{RAINFALL}{ - vector of daily rainfall (mm)}\cr\cr
 \code{elev}{ - elevation at point of simulation (m)}\cr\cr
-\code{minshade}{ - minimum shade for simulation (\%)}\cr\cr
-\code{maxshade}{ - maximum shade for simulation (\%)}\cr\cr
+\code{minshade}{ - minimum shade for each day of simulation (\%)}\cr\cr
+\code{maxshade}{ - maximum shade for each day of simulation (\%)}\cr\cr
 \code{DEP}{ - vector of depths used (cm)}\cr\cr
 
 metout/shadmet variables:

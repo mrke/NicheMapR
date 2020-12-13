@@ -18,7 +18,8 @@ GEOM_ENDO(
   RHOARA,
   PCOND,
   SAMODE,
-  ORIENT
+  ORIENT,
+  ZEN
 )
 }
 \arguments{

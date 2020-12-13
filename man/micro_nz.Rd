@@ -181,8 +181,8 @@ An implementation of the NicheMapR microclimate model that uses the Virtual Clim
 \code{nyears}{ - number of years for which predictions are made}\cr\cr
 \code{RAINFALL}{ - vector of daily rainfall (mm)}\cr\cr
 \code{elev}{ - elevation at point of simulation (m)}\cr\cr
-\code{minshade}{ - minimum shade for simulation (\%)}\cr\cr
-\code{maxshade}{ - maximum shade for simulation (\%)}\cr\cr
+\code{minshade}{ - minimum shade for each day of simulation (\%)}\cr\cr
+\code{maxshade}{ - maximum shade for each day of simulation (\%)}\cr\cr
 \code{DEP}{ - vector of depths used (cm)}\cr\cr
 
 metout/shadmet variables:
@@ -279,8 +279,8 @@ plotsoil<-cbind(dates,soil)
 plotshadmet<-cbind(dates,shadmet)
 plotshadsoil<-cbind(dates,shadsoil)
 
-minshade<-micro$minshade
-maxshade<-micro$maxshade
+minshade<-micro$minshade[1]
+maxshade<-micro$maxshade[1]
 
 # plotting above-ground conditions in minimum shade
 with(plotmetout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Air Temperature (Â°C)"

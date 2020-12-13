@@ -144,8 +144,8 @@
 #' \code{nyears}{ - number of years for which predictions are made}\cr\cr
 #' \code{RAINFALL}{ - vector of daily rainfall (mm)}\cr\cr
 #' \code{elev}{ - elevation at point of simulation (m)}\cr\cr
-#' \code{minshade}{ - minimum shade for simulation (\%)}\cr\cr
-#' \code{maxshade}{ - maximum shade for simulation (\%)}\cr\cr
+#' \code{minshade}{ - minimum shade for each day of simulation (\%)}\cr\cr
+#' \code{maxshade}{ - maximum shade for each day of simulation (\%)}\cr\cr
 #' \code{DEP}{ - vector of depths used (cm)}\cr\cr
 #'
 #' metout/shadmet variables:
@@ -373,7 +373,7 @@ micro_usa <- function(
   fail = nyears * 24 * 365,
   save = 0,
   snowcond = 0,
-  intercept = max(maxshade) / 100 * 0.4,
+  intercept = max(maxshade) / 100 * 0.3,
   grasshade = 0) { # end function parameters
 
   ystart <- as.numeric(substr(dstart, 7, 10))
@@ -938,7 +938,7 @@ micro_usa <- function(
     if(opendap == 1 & save != 2){ # could be less than whole years
       doy <- doy[cut:(cut+countday-1)]
     }
-    ida<-ndays
+    ida <- ndays
     idayst <- 1
 
     if(length(minshade) != ndays){

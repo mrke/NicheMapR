@@ -142,8 +142,8 @@
 #' \code{nyears}{ - number of years for which predictions are made}\cr\cr
 #' \code{RAINFALL}{ - vector of daily rainfall (mm)}\cr\cr
 #' \code{elev}{ - elevation at point of simulation (m)}\cr\cr
-#' \code{minshade}{ - minimum shade for simulation (\%)}\cr\cr
-#' \code{maxshade}{ - maximum shade for simulation (single value - if time varying, in 'MAXSHADES') (\%)}\cr\cr
+#' \code{minshade}{ - minimum shade for each day of simulation (\%)}\cr\cr
+#' \code{maxshade}{ - maximum shade for each day of simulation (\%)}\cr\cr
 #' \code{dem}{ - digital elevation model obtained via 'get_dev' using package 'elevatr' (m)}\cr\cr
 #' \code{DEP}{ - vector of depths used (cm)}\cr\cr
 #'
@@ -229,8 +229,8 @@
 #'soil <- as.data.frame(micro$soil) # soil temperatures, minimum shade
 #'shadsoil <- as.data.frame(micro$shadsoil) # soil temperatures, maximum shade
 #'
-#'minshade <- micro$minshade
-#'maxshade <- micro$maxshade
+#'minshade <- micro$minshade[1]
+#'maxshade <- micro$maxshade[1]
 #'
 #'# plotting above-ground conditions in minimum shade
 #'with(metout, {plot(TALOC ~ micro$dates, xlab = "Date and Time", ylab = "Air Temperature (°C)"
@@ -368,7 +368,7 @@ micro_global <- function(
   warm = 0,
   windfac = 1,
   snowcond = 0,
-  intercept = max(maxshade) / 100 * 0.4,
+  intercept = max(maxshade) / 100 * 0.3,
   grasshade = 0
 ) {
 
