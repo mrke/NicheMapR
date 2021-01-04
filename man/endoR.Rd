@@ -144,7 +144,7 @@ treg variables (thermoregulatory response):
 \item 6 TFA_V - ventral fur-air interface temperature (°C)
 \item 7 SHAPE_B - current ratio between long and short axis due to postural change (-)
 \item 8 PANT - breathing rate multiplier (-)
-\item 9 PCTWETET - part of the skin surface that is wet (\%)
+\item 9 PCTWET - part of the skin surface that is wet (\%)
 \item 10 K_FLESH - thermal conductivity of flesh (W/m°C)
 \item 11 K_FUR - thermal conductivity of flesh (W/m°C)
 \item 12 K_FUR_D - thermal conductivity of dorsal fur (W/m°C)

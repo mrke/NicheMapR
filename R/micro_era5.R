@@ -737,10 +737,10 @@ micro_era5 <- function(
       years <- as.numeric(unique(format(tme, "%Y")))
       longitude <- loc[1]
       latitude <- loc[2]
-      hourlydata <- mcera5::point_nc_to_df(nc = paste0(spatial, '_', years, '.nc'), x = loc[1], y = loc[2],
+      hourlydata <- mcera5::point_nc_to_df(nc = paste0(spatial, '_', years, '.nc'), long = loc[1], lat = loc[2],
                                            start_time = st_time,  end_time = en_time)
       # gather daily precipitation
-      dailyprecip <- point_nc_to_df_precip(nc = paste0(spatial, '_', years, '.nc'), x = loc[1], y = loc[2],
+      dailyprecip <- mcera5::point_nc_to_df_precip(nc = paste0(spatial, '_', years, '.nc'), long = loc[1], lat = loc[2],
                                            start_time = st_time,
                                            end_time = en_time)
       cat("computing radiation and elevation effects with package microclima \n")
