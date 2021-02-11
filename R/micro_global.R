@@ -83,7 +83,7 @@
 #' \code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr
 #' \code{TAI}{ = 0, Vector of 111 values, one per wavelenght bin, for solar attenuation - used to overide GADS}\cr\cr
 #' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
-#' \code{warm}{ = , uniform warming, °C}\cr\cr
+#' \code{warm}{ = 0, warming offset vector, °C (negative values mean cooling). Can supply a single value or a vector the length of the number of days to be simulated.}\cr\cr
 #'
 #' \strong{ Soil moisture mode parameters:}
 #'
@@ -144,7 +144,7 @@
 #' \code{elev}{ - elevation at point of simulation (m)}\cr\cr
 #' \code{minshade}{ - minimum shade for each day of simulation (\%)}\cr\cr
 #' \code{maxshade}{ - maximum shade for each day of simulation (\%)}\cr\cr
-#' \code{dem}{ - digital elevation model obtained via 'get_dev' using package 'elevatr' (m)}\cr\cr
+#' \code{dem}{ - digital elevation model obtained via 'get_dem' using package 'elevatr' (m)}\cr\cr
 #' \code{DEP}{ - vector of depths used (cm)}\cr\cr
 #'
 #' metout/shadmet variables:

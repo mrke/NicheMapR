@@ -50,7 +50,7 @@
 #' \code{dailywind}{ = 1, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 #' \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
-#' \code{warm}{ = 0, uniform warming, °C}\cr\cr
+#' \code{warm}{ = 0, warming offset vector, °C (negative values mean cooling). Can supply a single value or a vector the length of the number of days to be simulated.}\cr\cr
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 #' \code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
@@ -105,7 +105,7 @@
 #' { and points half way between)}\cr\cr
 #' \code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
 #' \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
-#' \code{rainoff}{ = 0, Rain offset (mm), used to induce constant extra input}\cr\cr
+#' \code{rainoff}{ = 0, Rain offset (mm), used to induce changes in rainfall from NIWA values. Can be a single value or a vector matching the number of days to simulate. If negative values are used, rainfall will be prevented from becomming negative.}\cr\cr
 #' \code{evenrain}{ = 0, Spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)}\cr\cr
 #' \code{SoilMoist_Init}{ = c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3), initial soil water content at each soil node, m3/m3}\cr\cr
 #' \code{L}{ = c(0,0,8.2,8.0,7.8,7.4,7.1,6.4,5.8,4.8,4.0,1.8,0.9,0.6,0.8,0.4,0.4,0,0)*10000, root density (m/m3), (19 values descending through soil for specified soil nodes in parameter}\cr\cr
@@ -971,6 +971,7 @@ micro_nz <- function(
         VP<-VP*VP_diff2 # modify the predicted VP by this factor
       }
       RAINFALL<-Rain+rainoff
+      RAINFALL[RAINFALL < 0] <- 0
 
       if(scenario!=""){
         RAIN_current<-as.data.frame(RAINFALL)
@@ -1100,7 +1101,7 @@ micro_nz <- function(
       WNMINN<-WNMINN*(1.2/2)^0.15
 
 
-      # impose uniform warming
+      # impose warming
       TMAXX<-TMAXX+warm
       TMINN<-TMINN+warm
 

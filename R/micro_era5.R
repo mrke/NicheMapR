@@ -51,7 +51,7 @@
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
-#' \code{warm}{ = 0, uniform warming, °C}\cr\cr
+#' \code{warm}{ = 0, warming offset vector, °C (negative values mean cooling). Can supply a single value or a vector the length of the number of days to be simulated.}\cr\cr
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
@@ -102,7 +102,7 @@
 #' \code{rainhourly}{ = 0, Is hourly rain input being supplied (1 = yes, 0 = no)?}\cr\cr
 #' \code{rainhour}{ = 0, Vector of hourly rainfall values - overrides daily ERA5 rain if rainhourly = 1}\cr\cr
 #' \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
-#' \code{rainoff}{ = 0, Rain offset (mm), used to induce constant extra input}\cr\cr
+#' \code{rainoff}{ = 0, Rain offset (mm), used to induce changes in rainfall from ERA5 values. Can be a single value or a vector matching the number of days to simulate. If negative values are used, rainfall will be prevented from becomming negative.}\cr\cr
 #' \code{evenrain}{ = 0, Spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)}\cr\cr
 #' \code{SoilMoist_Init}{ = c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3), initial soil water content at each soil node, m3/m3}\cr\cr
 #' \code{L}{ = c(0,0,8.2,8.0,7.8,7.4,7.1,6.4,5.8,4.8,4.0,1.8,0.9,0.6,0.8,0.4,0.4,0,0)*10000, root density (m/m3), (19 values descending through soil for specified soil nodes in parameter}\cr\cr
@@ -875,18 +875,30 @@ micro_era5 <- function(
       TAI<-c(0.0670358341290886, 0.0662612704779235, 0.065497075238002, 0.0647431301168489, 0.0639993178022531, 0.0632655219571553, 0.0625416272145492, 0.0611230843885423, 0.0597427855962549, 0.0583998423063099, 0.0570933810229656, 0.0558225431259535, 0.0545864847111214, 0.0533843764318805, 0.0522154033414562, 0.0499736739981675, 0.047855059159556, 0.0458535417401334, 0.0439633201842001, 0.0421788036108921, 0.0404946070106968, 0.0389055464934382, 0.0374066345877315, 0.0359930755919066, 0.0346602609764008, 0.0334037648376212, 0.0322193394032758, 0.0311029105891739, 0.0300505736074963, 0.0290585886265337, 0.0281233764818952, 0.0272415144391857, 0.0264097320081524, 0.0256249068083005, 0.0248840604859789, 0.0241843546829336, 0.0235230870563317, 0.0228976873502544, 0.0223057135186581, 0.0217448478998064, 0.0212128934421699, 0.0207077699817964, 0.0202275105711489, 0.0197702578594144, 0.0193342605242809, 0.0189178697551836, 0.0177713140039894, 0.0174187914242432, 0.0170790495503944, 0.0167509836728154, 0.0164335684174899, 0.0161258546410128, 0.0158269663770596, 0.0155360978343254, 0.0152525104459325, 0.0149755299703076, 0.0147045436435285, 0.0144389973831391, 0.0141783930434343, 0.0134220329447663, 0.0131772403830191, 0.0129356456025128, 0.0126970313213065, 0.0124612184223418, 0.0122280636204822, 0.01199745718102, 0.0115436048739351, 0.0110993711778668, 0.0108808815754663, 0.0106648652077878, 0.0104513876347606, 0.0102405315676965, 0.00982708969547694, 0.00962473896278535, 0.00903679230300494, 0.00884767454432418, 0.0083031278398166, 0.00796072474935954, 0.00755817587626185, 0.00718610751850881, 0.00704629977586921, 0.00684663903049612, 0.00654155580333479, 0.00642947339729728, 0.00627223096874308, 0.00603955966866779, 0.00580920937536261, 0.00568506186880564, 0.00563167068287251, 0.00556222005081865, 0.00550522989971023, 0.00547395763028062, 0.0054478983436216, 0.00541823364504573, 0.00539532163908382, 0.00539239864119488, 0.00541690124712384, 0.00551525885358836, 0.00564825853509463, 0.00577220185074264, 0.00584222986640171, 0.00581645238345584, 0.00566088137411449, 0.00535516862329704, 0.00489914757707667, 0.00432017939770409, 0.0036813032251836, 0.00309019064543606, 0.00270890436501562, 0.00276446109239711, 0.00356019862584603)
     } #end check if running gads
 
-    if(warm != 0){
+    if(max(abs(warm)) != 0){
       # impose uniform temperature change
       TMAXX <- TMAXX + warm
       TMINN <- TMINN + warm
-      TAIRhr <- TAIRhr + warm
+      if(length(warm) == length(TMAXX)){
+       warm.hr <- rep(warm, each = 24)
+      }else{
+       warm.hr <- warm
+      }
+      TAIRhr <- TAIRhr + warm.hr
       sigma <- 5.67e-8 #Stefan-Boltzman, W/(m.K)
       if(IRDhr == 2){
-        IRDhr <- sigma * ((IRDhr / sigma) ^ (1 / 4) + warm) ^ 4 # adjust downward radiation for altered 'sky temperature'
+        IRDhr <- sigma * ((IRDhr / sigma) ^ (1 / 4) + warm.hr) ^ 4 # adjust downward radiation for altered 'sky temperature'
       }
     }
     RAINFALL <- RAINFALL + rainoff
+    RAINFALL[RAINFALL < 0] <- 0
+    if(length(rainoff) == length(RAINFALL)){
+      rainoff.hr <- rep(rainoff, each = 24)
+    }else{
+      rainoff.hr <- rainoff
+    }
     RAINhr <- RAINhr + rainoff
+    RAINhr[RAINhr < 0] <- 0
     ALLMINTEMPS <- TMINN
     ALLMAXTEMPS <- TMAXX
     ALLTEMPS <- cbind(ALLMAXTEMPS, ALLMINTEMPS)

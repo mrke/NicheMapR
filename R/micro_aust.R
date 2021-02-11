@@ -49,7 +49,7 @@
 #' \code{dailywind}{ = 1, use McVicar grids for wind speed (does not work for opendap = 1)? 1 = yes, 0 = no}\cr\cr
 #' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 #' \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1 = yes, 0 = no}\cr\cr
-#' \code{warm}{ = 0, uniform warming, °C}\cr\cr
+#' \code{warm}{ = 0, warming offset vector, °C (negative values mean cooling). Can supply a single value or a vector the length of the number of days to be simulated.}\cr\cr
 #' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 #' \code{opendap}{ = 1, query met grids via opendap}\cr\cr
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
