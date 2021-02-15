@@ -446,18 +446,18 @@ micro_global <- function(
     message("ERROR: Deepest soil depth (DEP array) is too large (<=500 cm)", '\n')
     errors<-1
   }
-  if(Thcond<0){
-    message("ERROR: Thermal variable conductivity (THCOND) is negative.
+  if(min(Thcond)<0){
+    cat("ERROR: Thermal variable conductivity (THCOND) is negative.
         Please input a positive value.", '\n')
     errors<-1
   }
-  if(Density<0){
-    message("ERROR: Density variable (Density) is negative.
+  if(min(Density)<0){
+    cat("ERROR: Density variable (Density) is negative.
         Please input a positive value.", '\n')
     errors<-1
   }
-  if(SpecHeat<0){
-    message("ERROR: Specific heat variable (SpecHeat) is negative.
+  if(min(SpecHeat)<0){
+    cat("ERROR: Specific heat variable (SpecHeat) is negative.
         Please input a positive value.", '\n')
     errors<-1
   }
