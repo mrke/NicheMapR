@@ -70,10 +70,10 @@
 #' \code{ZH2}{ = 0, 2nd segment, height above surface(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
 #' \code{EC}{ = 0.0167238, Eccenricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)}\cr\cr
 #' \code{SLE}{ = 0.95, Substrate longwave IR emissivity (decimal \%), typically close to 1}\cr\cr
-#' \code{Thcond}{ = 2.5, Soil minerals thermal conductivity (W/mK)}\cr\cr
-#' \code{Density}{ = 2.56, Soil minerals density (Mg/m3)}\cr\cr
-#' \code{SpecHeat}{ = 870, Soil minerals specific heat (J/kg-K)}\cr\cr
-#' \code{BulkDensity}{ = 1.3, Soil bulk density (Mg/m3)}\cr\cr
+#' \code{Thcond}{ = 2.5, Soil minerals thermal conductivity, single value or vector of 10 specific to each depth (W/mK)}\cr\cr
+#' \code{Density}{ = 2.56, Soil minerals density, single value or vector of 10 specific to each depth (Mg/m3)}\cr\cr
+#' \code{SpecHeat}{ = 870, Soil minerals specific heat, single value or vector of 10 specific to each depth (J/kg-K)}\cr\cr
+#' \code{BulkDensity}{ = 1.3, Soil bulk density (Mg/m3), single value or vector of 10 specific to each depth}\cr\cr
 #' \code{PCTWET}{ = 0, \% of ground surface area acting as a free water surface (overridden if soil moisture model is running)}\cr\cr
 #' \code{rainwet}{ = 1.5, mm of rainfall causing the ground to be 90\% wet for the day}\cr\cr
 #' \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
@@ -1121,7 +1121,8 @@ micro_nz <- function(
       soilprops<-matrix(data = 0, nrow = 10, ncol = 5)
 
       soilprops[,1]<-BulkDensity
-      soilprops[,2]<-min(0.26, 1 - BulkDensity / Density) # not used if soil moisture computed
+      soilprops[,2] <- BulkDensity / Density # not used if soil moisture computed
+      soilprops[soilprops[,2] < 0.26, 2] <- 0.26
       soilprops[,3]<-Thcond
       soilprops[,4]<-SpecHeat
       soilprops[,5]<-Density

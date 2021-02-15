@@ -593,7 +593,8 @@ endoR_devel <- function(
       if(S == 2){
         AREACND <- ATOT * (PCOND * 2)
         if(ZFURCOMP == 0){
-          CD <- AREACND * ((AK1 / 0.025) + (KSUB / 0.025)) # assume conduction happens from 2.5 cm depth
+          #CD <- AREACND * ((AK1 / 0.025) + (KSUB / 0.025)) # assume conduction happens from 2.5 cm depth
+          CD <- AREACND * (KSUB / 0.025) # assume conduction happens from 2.5 cm depth
         }else{
           CD <- AREACND * ((KFURCMPRS / ZFURCOMP) + (KSUB / 0.025)) # assume conduction happens from 2.5 cm depth
         }
