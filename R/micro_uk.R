@@ -979,8 +979,8 @@ micro_uk <- function(
       }
       if(warm != 0){
         # impose temperature change
-        TMAXX<-TMAXX+seq(0, ndays-1)/(ndays-1)*warm
-        TMINN<-TMINN+seq(0, ndays-1)/(ndays-1)*warm
+        TMAXX<-TMAXX+seq(0, ndays-1)/seq(0, ndays-1)*warm
+        TMINN<-TMINN+seq(0, ndays-1)/seq(0, ndays-1)*warm
       }
       RAINFALL<-Rain+rainoff
       RAINFALL[RAINFALL < 0] <- 0
