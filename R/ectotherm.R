@@ -1090,8 +1090,8 @@ ectotherm <- function(
     message("error: contype must be 0 or 1 \n")
     errors<-1
   }
-  if(!conthole %in% c(0,1)){
-    message("error: conthole must be 0 or 1 \n")
+  if(conthole < 0){
+    message("error: conthole must be >= 0 \n")
     errors<-1
   }
   if(!container %in% c(0,1)){
