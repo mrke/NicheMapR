@@ -458,7 +458,7 @@ ecto<-ectotherm(DEB=1,
                 climb=climb,
                 mindepth=mindepth,
                 maxdepth=maxdepth,
-                minshade=minshade,
+                minshades = rep(minshade, length(micro$RAINFALL)),
                 pct_wet=pct_wet,
                 z=z*z.mult,
                 del_M=del.M,
@@ -506,10 +506,10 @@ ecto<-ectotherm(DEB=1,
                 photofinish = photofinish)
 
 # retrieve output
-environ<-as.data.frame(ecto$environ) # behaviour, Tb and environment
-enbal<-as.data.frame(ecto$enbal) # heat balance outputs
-masbal<-as.data.frame(ecto$masbal) # mass balance outputs
-debout<-as.data.frame(ecto$debout) # DEB model outputs
+environ <- as.data.frame(ecto$environ) # behaviour, Tb and environment
+enbal <- as.data.frame(ecto$enbal) # heat balance outputs
+masbal <- as.data.frame(ecto$masbal) # mass balance outputs
+debout <- as.data.frame(ecto$debout) # DEB model outputs
 yearout <- as.data.frame(ecto$yearout) # whole life cycle summary
 yearsout <- as.data.frame(ecto$yearsout) # annual summaries
 ```
