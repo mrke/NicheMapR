@@ -15,11 +15,11 @@
 #' @param DEP Depths used for the microclimate model
 #' @param rainfall Daily rainfall
 #' @param rainhr Hourly rainfall (overwrites rainfall if non-negative
-#' @param debmod Dynamic Energy Budget (DEB) model paramters
+#' @param debmod Dynamic Energy Budget (DEB) model parameters
 #' @param deblast Initial DEB state
 #' @param foodwaters Food water content (add units)
 #' @param foodlevels Food levels (add units)
-#' @param wetlandTemps Tempature of water body
+#' @param wetlandTemps Temperature of water body
 #' @param wetlandDepths Depth of water body
 #' @param GLMtemps General Lake Model water temperatures
 #' @param GLMO2s General Lake Model water O2 partial pressures

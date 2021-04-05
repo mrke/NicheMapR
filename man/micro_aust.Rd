@@ -83,7 +83,7 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{dailywind}{ = 1, use McVicar grids for wind speed (does not work for opendap = 1)? 1 = yes, 0 = no}\cr\cr
 \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1 = yes, 0 = no}\cr\cr
-\code{warm}{ = 0, uniform warming, °C}\cr\cr
+\code{warm}{ = 0, warming offset vector, °C (negative values mean cooling). Can supply a single value or a vector the length of the number of days to be simulated.}\cr\cr
 \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 \code{opendap}{ = 1, query met grids via opendap}\cr\cr
 \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
@@ -102,10 +102,10 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{ZH2}{ = 0, 2nd segment, height above surface(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
 \code{EC}{ = 0.0167238, Eccenricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)}\cr\cr
 \code{SLE}{ = 0.95, Substrate longwave IR emissivity (decimal \%), typically close to 1}\cr\cr
-\code{Thcond}{ = 2.5, Soil minerals thermal conductivity (W/mK)}\cr\cr
-\code{Density}{ = 2.56, Soil minerals density (Mg/m3)}\cr\cr
-\code{SpecHeat}{ = 870, Soil minerals specific heat (J/kg-K)}\cr\cr
-\code{BulkDensity}{ = 1.3, Soil bulk density (Mg/m3)}\cr\cr
+\code{Thcond}{ = 2.5, Soil minerals thermal conductivity, single value or vector of 10 specific to each depth (W/mK)}\cr\cr
+\code{Density}{ = 2.56, Soil minerals density, single value or vector of 10 specific to each depth (Mg/m3)}\cr\cr
+\code{SpecHeat}{ = 870, Soil minerals specific heat, single value or vector of 10 specific to each depth (J/kg-K)}\cr\cr
+\code{BulkDensity}{ = 1.3, Soil bulk density (Mg/m3), single value or vector of 10 specific to each depth}\cr\cr
 \code{PCTWET}{ = 0, \% of ground surface area acting as a free water surface (overridden if soil moisture model is running)}\cr\cr
 \code{rainwet}{ = 1.5, mm of rainfall causing the ground to be 90\% wet for the day}\cr\cr
 \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr

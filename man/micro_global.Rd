@@ -104,10 +104,10 @@ by choosing the option 'run.gads<-1' (Fortran version, quicker but may crash on 
 \code{ZH2}{ = 0, 2nd segment, height above surface(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
 \code{EC}{ = 0.0167238, Eccenricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)}\cr\cr
 \code{SLE}{ = 0.95, Substrate longwave IR emissivity (decimal \%), typically close to 1}\cr\cr
-\code{Thcond}{ = 2.5, Soil minerals thermal conductivity (W/mK)}\cr\cr
-\code{Density}{ = 2.56, Soil minerals density (Mg/m3)}\cr\cr
-\code{SpecHeat}{ = 870, Soil minerals specific heat (J/kg-K)}\cr\cr
-\code{BulkDensity}{ = 1.3, Soil bulk density (mg/m3)}\cr\cr
+\code{Thcond}{ = 2.5, Soil minerals thermal conductivity, single value or vector of 10 specific to each depth (W/mK)}\cr\cr
+\code{Density}{ = 2.56, Soil minerals density, single value or vector of 10 specific to each depth (Mg/m3)}\cr\cr
+\code{SpecHeat}{ = 870, Soil minerals specific heat, single value or vector of 10 specific to each depth (J/kg-K)}\cr\cr
+\code{BulkDensity}{ = 1.3, Soil bulk density (Mg/m3), single value or vector of 10 specific to each depth}\cr\cr
 \code{PCTWET}{ = 0, \% of ground surface area acting as a free water surface (overridden if soil moisture model is running)}\cr\cr
 \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
 \code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
@@ -119,7 +119,7 @@ by choosing the option 'run.gads<-1' (Fortran version, quicker but may crash on 
 \code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr
 \code{TAI}{ = 0, Vector of 111 values, one per wavelenght bin, for solar attenuation - used to overide GADS}\cr\cr
 \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
-\code{warm}{ = , uniform warming, °C}\cr\cr
+\code{warm}{ = 0, warming offset vector, °C (negative values mean cooling). Can supply a single value or a vector the length of the number of days to be simulated.}\cr\cr
 
 \strong{ Soil moisture mode parameters:}
 
@@ -180,7 +180,7 @@ by choosing the option 'run.gads<-1' (Fortran version, quicker but may crash on 
 \code{elev}{ - elevation at point of simulation (m)}\cr\cr
 \code{minshade}{ - minimum shade for each day of simulation (\%)}\cr\cr
 \code{maxshade}{ - maximum shade for each day of simulation (\%)}\cr\cr
-\code{dem}{ - digital elevation model obtained via 'get_dev' using package 'elevatr' (m)}\cr\cr
+\code{dem}{ - digital elevation model obtained via 'get_dem' using package 'elevatr' (m)}\cr\cr
 \code{DEP}{ - vector of depths used (cm)}\cr\cr
 
 metout/shadmet variables:

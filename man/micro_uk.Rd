@@ -86,7 +86,7 @@ An implementation of the NicheMapR microclimate model that uses the CHESS daily 
 \code{dailywind}{ = 1, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
-\code{warm}{ = 0, uniform warming, °C}\cr\cr
+\code{warm}{ = 0, warming offset vector, °C (negative values mean cooling). Can supply a single value or a vector the length of the number of days to be simulated.}\cr\cr
 \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
 \code{opendap}{ = 1, query met grids via opendap (does not work on PC unless you compile ncdf4 - see https://github.com/pmjherman/r-ncdf4-build-opendap-windows)}\cr\cr
 \code{soilgrids}{ = 1, query soilgrids.org database for soil hydraulic properties?}\cr\cr
@@ -106,10 +106,10 @@ An implementation of the NicheMapR microclimate model that uses the CHESS daily 
 \code{ZH2}{ = 0, 2nd segment, height above surface(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
 \code{EC}{ = 0.0167238, Eccenricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)}\cr\cr
 \code{SLE}{ = 0.95, Substrate longwave IR emissivity (decimal \%), typically close to 1}\cr\cr
-\code{Thcond}{ = 2.5, Soil minerals thermal conductivity (W/mK)}\cr\cr
-\code{Density}{ = 2.56, Soil minerals density (Mg/m3)}\cr\cr
-\code{SpecHeat}{ = 870, Soil minerals specific heat (J/kg-K)}\cr\cr
-\code{BulkDensity}{ = 1.3, Soil bulk density (Mg/m3)}\cr\cr
+\code{Thcond}{ = 2.5, Soil minerals thermal conductivity, single value or vector of 10 specific to each depth (W/mK)}\cr\cr
+\code{Density}{ = 2.56, Soil minerals density, single value or vector of 10 specific to each depth (Mg/m3)}\cr\cr
+\code{SpecHeat}{ = 870, Soil minerals specific heat, single value or vector of 10 specific to each depth (J/kg-K)}\cr\cr
+\code{BulkDensity}{ = 1.3, Soil bulk density (Mg/m3), single value or vector of 10 specific to each depth}\cr\cr
 \code{PCTWET}{ = 0, \% of ground surface area acting as a free water surface (overridden if soil moisture model is running)}\cr\cr
 \code{rainwet}{ = 1.5, mm of rainfall causing the ground to be 90\% wet for the day}\cr\cr
 \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
@@ -141,7 +141,7 @@ An implementation of the NicheMapR microclimate model that uses the CHESS daily 
 { and points half way between)}\cr\cr
 \code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
 \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
-\code{rainoff}{ = 0, Rain offset (mm), used to induce constant extra input}\cr\cr
+\code{rainoff}{ = 0, Rain offset (mm), used to induce changes in rainfall from CHESS values. Can be a single value or a vector matching the number of days to simulate. If negative values are used, rainfall will be prevented from becomming negative.}\cr\cr
 \code{evenrain}{ = 0, Spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)}\cr\cr
 \code{SoilMoist_Init}{ = c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3), initial soil water content at each soil node, m3/m3}\cr\cr
 \code{L}{ = c(0,0,8.2,8.0,7.8,7.4,7.1,6.4,5.8,4.8,4.0,1.8,0.9,0.6,0.8,0.4,0.4,0,0)*10000, root density (m/m3), (19 values descending through soil for specified soil nodes in parameter}\cr\cr

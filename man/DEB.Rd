@@ -45,6 +45,7 @@ DEB(
   mu_E = 585000,
   mu_V = 5e+05,
   mu_P = 480000,
+  mu_N = 244000/5,
   kap_X_P = 0.1,
   n_X = c(1, 1.8, 0.5, 0.15),
   n_E = c(1, 1.8, 0.5, 0.15),
@@ -171,6 +172,8 @@ DEB(
 \item{mu_V}{= 500000, Molar Gibbs energy (chemical potential) of structure (J/mol)}
 
 \item{mu_P}{= 480000, Molar Gibbs energy (chemical potential) of faeces (J/mol)}
+
+\item{mu_N}{= 244e3/5, Molar Gibbs energy (chemical potential) of nitrogenous waste (J/mol), synthesis from NH3, Withers page 119}
 
 \item{kap_X_P}{= 0.1, Faecation efficiency of food to faeces (-)}
 

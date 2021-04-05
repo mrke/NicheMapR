@@ -46,6 +46,7 @@
 #' @param mu_E = 585000, Molar Gibbs energy (chemical potential) of reserve (J/mol)
 #' @param mu_V = 500000, Molar Gibbs energy (chemical potential) of structure (J/mol)
 #' @param mu_P = 480000, Molar Gibbs energy (chemical potential) of faeces (J/mol)
+#' @param mu_N = 244e3/5, Molar Gibbs energy (chemical potential) of nitrogenous waste (J/mol), synthesis from NH3, Withers page 119
 #' @param kap_X_P = 0.1, Faecation efficiency of food to faeces (-)
 #' @param n_X = c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in food
 #' @param n_E = c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in reserve
@@ -189,6 +190,7 @@ DEB_euler<-function(
   mu_E=585000,
   mu_V=500000,
   mu_P=480000,
+  mu_N=244e3/5,
   kap_X_P=0.1,
   n_X=c(1,1.8,0.5,0.15),
   n_E=c(1,1.8,0.5,0.15),
@@ -677,7 +679,12 @@ DEB_euler<-function(
   #metabolic heat production (Watts) - growth overhead plus dissipation power (maintenance, maturity maintenance,
   #maturation/repro overheads) plus assimilation overheads - correct to 20 degrees so it can be temperature corrected
   #in MET.f for the new guessed Tb
-  DEBQMETW <- ((1 - kap_G) * p_G + p_D + (p_A / kap_X - p_A - p_A * mu_P * eta_PA)) / 3600 / Tcorr
+  mu_O <- c(mu_X, mu_V, mu_E, mu_P) # J/mol, chemical potentials of organics
+  mu_M <- c(0, 0, 0, mu_N)          # J/mol, chemical potentials of minerals C: CO2, H: H2O, O: O2, N: nitrogenous waste
+  J_O <- c(JOJx, JOJv, JOJe, JOJp) # eta_O * diag(p_ADG(2,:)); # mol/d, J_X, J_V, J_E, J_P in rows, A, D, G in cols
+  J_M <- c(JMCO2, JMH2O, JMO2, JMNWASTE) # - (n_M\n_O) * J_O;        # mol/d, J_C, J_H, J_O, J_N in rows, A, D, G in cols
+  p_T <- sum(-J_O * mu_O -J_M * mu_M) / 3600 / Tcorr # W
+  DEBQMETW <- p_T
 
   GDRYFOOD <- -1 * JOJx * w_X
   GFAECES <- JOJp * w_P
