@@ -237,6 +237,7 @@ DEB_euler<-function(
   # initialise for reproduction and starvation
   if(clutch_ab[1] > 0){
     clutchsize <- floor(clutch_ab[1] * (V_pres ^ (1 / 3) / del_M) - clutch_ab[2])
+    clutchsize[clutchsize < 0] <- 0
   }
   orig_clutchsize <- clutchsize
   fecundity <- 0
