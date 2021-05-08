@@ -627,7 +627,7 @@ micro_ncep <- function(
                call. = FALSE)
         }
         #ov <- fromJSON(paste0('https://rest.soilgrids.org/query?lon=',x[1],'&lat=',x[2],',&attributes=BLDFIE,SLTPPT,SNDPPT,CLYPPT'), flatten = TRUE)
-        ov <- fromJSON(paste0('https://rest.soilgrids.org/soilgrids/v2.0/properties/query?lon=',x[1],'&lat=',x[2],'&property=bdod&property=silt&property=clay&property=sand'), flatten = TRUE)
+        ov <- jsonlite::fromJSON(paste0('https://rest.soilgrids.org/soilgrids/v2.0/properties/query?lon=',x[1],'&lat=',x[2],'&property=bdod&property=silt&property=clay&property=sand'), flatten = TRUE)
         if(length(ov) > 3){
           soilpro <- cbind(c(0, 5, 15, 30, 60, 100), unlist(ov$properties$layers$depths[[1]]$values.mean) / 100, unlist(ov$properties$layers$depths[[2]]$values.mean) / 10, unlist(ov$properties$layers$depths[[4]]$values.mean) / 10, unlist(ov$properties$layers$depths[[3]]$values.mean) / 10)
           soilpro <- rbind(soilpro, soilpro[6, ])

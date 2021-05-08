@@ -160,7 +160,8 @@ DEB_const<-function(
   E_Hb=7.359e+04,
   E_Hj=E_Hb,
   E_Hp=1.865e+05,
-  h_a=2.16e-11/(step^2),
+  E_He=E_Hp,
+  h_a=2.16e-11*(step^2),
   s_G=0.01,
   T_REF=20+273.15,
   T_A=8085,
@@ -210,12 +211,16 @@ DEB_const<-function(
   stages=7,
   Tb=33,
   fdry=0.3,
-  L_b=0.42,
+  L_b=0.07101934,
   L_j=1.376,
+  s_j=0.9977785,
+  k_EV=0.002948759*step,
+  kap_V=0.8,
   S_instar=rep(1.618, stages),
   day=1,
   metab_mode=0,
-  age=0){
+  age=0,
+  foetal=0){
 
   if (!require("deSolve", quietly = TRUE)) {
     stop("package 'deSolve' is needed. Please install it.",
@@ -247,6 +252,7 @@ DEB_const<-function(
 
   # temperature corrections and compound parameters
   M_V <- d_V / w_V
+  p_Am <- p_M * z / kap
   p_MT <- p_M * Tcorr
   k_M <- p_MT / E_G
   k_JT <- k_J * Tcorr2
@@ -276,7 +282,7 @@ DEB_const<-function(
 
   breeding <- 1
 
-  # function for solver (running for one time step)
+  # general DEB function for solver (std, abj, abp)
   dget_DEB <- function(t, y, indata){
     with(as.list(c(indata, y)), {
 
@@ -439,6 +445,140 @@ DEB_const<-function(
     })
   }
 
+  # embryo for stx model (mammals, foetal development)
+  dget_lx <- function(t, y, indata){
+    with(as.list(c(indata, y)), {
+
+      # unpack variables
+      vH <- y[1] # d, tau vH
+      l <- y[2] # d, tau l
+
+      if(vH < vHb){
+        li <- sF * f # -, scaled ultimate length
+        f  <- sF * f # -, scaled functional response
+      }else{
+        li <- f - lT
+      }
+      dl <- (g / 3) * (li - l) / (f + g)   # d/d tau l
+      dvH <- 3 * l^2 * dl + l ^ 3 - k * vH # d/d tau vH
+      y <- list(c(dvH, dl))
+    })
+  }
+
+  # embryo for hex model
+  dget_ELH <- function(t, y, indata){
+    with(as.list(c(indata, y)), {
+
+      # unpack variables
+      E <- y[1] # J, RESERVE
+      L <- y[2] # CM, STRUCTURAL LENGTH
+      H <- y[3] # J, MATURITY
+
+      # use embryo equation for length, from Kooijman 2009 eq. 2
+      V <- L ^ 3                                                # CM^3, STRUCTURAL VOLUME
+      E_s <- E / V / E_m                                        # -, SCALED RESERVE DENSITY
+      dL <- (v * E_s - k_M * g * L) / (3 * (E_s + g))           # CM/TIME, CHANGE IN LENGTH
+      #r <- v * (E_s / L - 1 / L_m) / (E_s + g)                  # 1/TIME, GROWTH RATE
+      SC <- L ^ 2 * (g * E_s)/(g + E_s) * (1 + (k_M * L) / v)
+      dE <- -1 * SC * p_Am                                      # J/TIME, CHANGE IN RESERVE
+      U_H <- H / p_Am                                           # SCALED MATURITY
+      dH <- ((1 - kap) * SC - k_J * U_H) * p_Am                 # J/TIME, CHANGE IN MATURITY
+
+      y <- list(c(dE, dL, dH))
+    })
+  }
+
+  # larva for hex model
+  dget_AELES <- function(t, y, indata){
+    with(as.list(c(indata, y)), {
+
+      # unpack variables
+      E <- y[1] # J, RESERVE
+      L <- y[2] # CM, STRUCTURAL LENGTH
+      E_R <- y[3] #J, REPRODUCTION BUFFER
+      E_S <- min(y[4], E_sm * (L ^ 3)) #J, STOMACH ENERGY
+
+      V <- L ^ 3                                 # CM^3, STRUCTURAL VOLUME
+      e <- E / V / E_m                        # -, SCALED RESERVE DENSITY
+      r <- (e * k_E - g * k_M)/ (e + g)    # 1/TIME, SPECIFIC GROWTH RATE
+      p_C <- E * (k_E - r)                       # J/TIME, MOBILISATION RATE
+      p_A <- f2 * p_Am * V                       # J/TIME, ASSIMILATION RATE, NOTE MULTPLYING BY V SINCE ALREADY DIVIDED BY L_B WHICH IS THE SAME AS MULT BY V^2/3 AND BY L/L_b
+      p_X <- p_Xm * ((X / K) / (f2 + X / K)) * V # J/TIME, FOOD ENERGY INTAKE RATE, NOTE MULTPLYING BY V SINCE ALREADY DIVIDED BY L_B WHICH IS THE SAME AS MULT BY V^2/3 AND BY L/L_b
+      #p_X <- p_A / kap_X                         # J/TIME, FOOD ENERGY INTAKE RATE, NOTE MULTPLYING BY V SINCE ALREADY DIVIDED BY L_B WHICH IS THE SAME AS MULT BY V^2/3 AND BY L/L_b
+      if(E_S < p_A){                             # NO ASSIMILATION IF STOMACH TOO EMPTY
+        dE <- E_S - p_C                           # J/TIME, CHANGE IN RESERVE
+      }else{
+        dE <- f * p_Am * V - p_C                 # J/TIME, CHANGE IN RESERVE, NOTE MULTPLYING BY V SINCE ALREADY DIVIDED BY L_B WHICH IS THE SAME AS MULT BY V^2/3 AND BY L/L_b
+      }
+      dL <- r * L / 3                            # CM/TIME, CHANGE IN LENGTH
+      dER <- (1 - kap) * p_C - p_J               # J/TIME, CHANGE IN REPROD BUFFER
+      dEs <- p_X - f * (p_Am / kap_X) * V        # J/TIME, CHANGE IN STOMACH ENERGY, NOTE MULTPLYING BY V SINCE ALREADY DIVIDED BY L_B WHICH IS THE SAME AS MULT BY V^2/3 AND BY L/L_b
+
+      y <- list(c(dE, dL, dER, dEs))
+    })
+  }
+
+  # pupa for hex model
+  dget_AVELHS <- function(t, y, indata){
+    with(as.list(c(indata, y)), {
+
+      # unpack variables
+      V <- y[1] # CM3, STRUCTURAL VOLUME OF LARVA
+      E <- y[2] # J, RESERVE OF LARVA
+      L <- y[3] # CM, STRUCTURAL LENGTH OF IMAGO
+      H <- y[4] # J, MATURITY
+
+      dV <- -1 * V * k_E                          # CM^3/TIME, CHANGE IN LARVAL STRUCTURAL VOLUME
+      e <- E / L ^ 3 / E_m                     # -, SCALED RESERVE DENSITY
+      r <- v_j * (e / L - 1 / L_m)/ (e + g) # 1/TIME, SPECIFIC GROWTH RATE
+      p_C <- E * (v_j / L - r)                    # J/TIME, MOBILISATION RATE
+      dE <-  dV * g * E_m * kap * kap_V - p_C     # J/TIME, CHANGE IN RESERVE
+      dL <- r * L / 3                             # CM/TIME, CHANGE IN LENGTH OF IMAGO
+      dH <- (1 - kap) * p_C - k_J * H             # J/TIME, CHANGE IN MATURITY
+
+      y <- list(c(dV, dE, dL, dH))
+    })
+  }
+
+  # imago for hex model
+  dget_EEES <- function(t, y, indata){
+    with(as.list(c(indata, y)), {
+
+      # unpack variables
+      E <- y[1] # J, RESERVE
+      E_R <- y[2] # J, REPRODUCTION BUFFER
+      E_B <- y[3] # J, EGG BATCH BUFFER
+      E_s <- min(y[4], E_sm * (L ^ 3)) # J, ENERGY OF THE STOMACH
+      q <- y[5] # -, aging acceleration
+      hs <- y[6] # -, hazard rate
+      V <- L ^ 3
+      E_m <- p_Am / v   # -, SCALED RESERVE DENSITY
+      e <- E / V / E_m
+      p_C <- E * k_E             # J/TIME, RESERVE MOBILISATION
+      p_R <- p_C - p_M - p_J     # J/TIME, ENERGY ALLOCATION FROM RESERVE TO E_R
+      p_X <- p_Xm * ((X / K) / (f2 + X / K)) * V ^ (2 / 3) # J/TIME, FOOD ENERGY INTAKE RATE
+      if(breed == 1){
+        p_CR <- kap_R * p_R        # J/H, DRAIN FROM E_R TO EGGS
+      }else{
+        p_CR <- 0
+      }
+      if(E_s < p_A){      # NO ASSIMILATION IF STOMACH TOO EMPTY
+        dE <- E_s - p_C           # J/TIME, CHANGE IN RESERVE
+      }else{
+        dE <- f * p_Am * V - p_C  # J/TIME, CHANGE IN RESERVE
+      }
+      dER <- max(0, p_R - p_CR) # J/TIME, CHANGE IN REPROD BUFFER
+      dEB <- p_CR                # J/TIME, CHANGE IN EGG BUFFER
+      dES <- p_X - f * (p_Am / kap_X) * V # J/TIME, CHANGE IN STOMACH ENERGY
+      r <- 0
+      # ageing (equation 6.2 in Kooijman 2010 (DEB3)
+      dq <- (q * (V / L_m ^ 3) * s_G + h_a) * e * (((v * s_M) / L) - r) - r * q # ageing acceleration
+      dhs <- q - r * hs # hazard
+
+      y <- list(c(dE, dER, dEB, dES, dq, dhs))
+    })
+  }
+
   # events
 
   eventfun <- function(t, y, pars) y
@@ -455,90 +595,93 @@ DEB_const<-function(
     }
     return(y)
   }
+  birth_stx <- function(t, y, pars) {
+    if(y[1] > vHb) {
+      y[1] <- 0
+    }
+    return(y)
+  }
   metamorphosis <- function(t, y, pars) {
     if(y[3] > E_Hj) {
       y[3] <- 0
     }
     return(y)
   }
-
-  # parameters
-  indata <- list(k_J = k_JT,
-                 p_Am = p_AmT,
-                 k_M = k_M,
-                 p_M = p_MT,
-                 p_Xm = p_XmT,
-                 v = vT,
-                 E_m = E_m,
-                 L_m = L_m,
-                 L_T = L_T,
-                 kap = kap,
-                 g = g,
-                 M_V = M_V,
-                 mu_E = mu_E,
-                 mu_V = mu_V,
-                 d_V = d_V,
-                 w_V = w_V,
-                 X = X,
-                 K = K,
-                 E_Hp = E_Hp,
-                 E_Hb = E_Hb,
-                 E_Hj = E_Hj,
-                 s_G = s_G,
-                 h_a = h_aT,
-                 batch = batch,
-                 kap_R = kap_R,
-                 lambda = lambda,
-                 breeding = breeding,
-                 kap_X = kap_X,
-                 f = f,
-                 E_sm = E_sm,
-                 L_b = L_b,
-                 L_j = L_j,
-                 metab_mode = metab_mode)
-
-  times <- seq(0, (1 / step) * ndays)
-
-  # initial conditions for solver
-  init <- c(V_init, E_init, E_H_init + 1e-10, E_s_init + 1e-10, hs_init + 1e-10, q_init + 1e-10, hs_init + 1e-10, E_R_init + 1e-10, E_B_init + 1e-10)
-
-  #"egg", "hatchling", "puberty", "adult"
-
-  if(E_H_init < E_Hb){
-    # to birth
-    DEB.state.birth <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_DEB, parms = indata, method = "lsodes", events = list(func = eventfun, root = TRUE, terminalroot = 3), rootfunc = birth))[, 2:10]
-    colnames(DEB.state.birth) <- c("V", "E", "H", "E_s", "S", "q", "hs", "R", "B")
-    L.b <- max(DEB.state.birth$V ^ (1 / 3))
-    t_birth <- which(DEB.state.birth$V ^ (1 / 3) == L.b)[1]
-    DEB.state.birth <- DEB.state.birth[1:t_birth, ]
-    init <- as.numeric(DEB.state.birth[nrow(DEB.state.birth), ])
-    if(nrow(DEB.state.birth) > 1){
-      DEB.state.birth <- head(DEB.state.birth, -1)
+  pupate <- function(t, y, pars) {
+    if(y[3] / (y[2] ^ 3) > E_RJ) {
+      y[3] <- 0
     }
-    times <- seq(0, (1 / step) * ndays - t_birth)
-
-    # parameters
-    indata <- list(k_J = k_JT, p_Am = p_AmT, k_M = k_M, p_M = p_MT,
-                   p_Xm = p_XmT, v = vT, E_m = E_m, L_m = L_m, L_T = L_T,
-                   kap = kap, g = g, M_V = M_V, mu_E = mu_E,
-                   mu_V = mu_V, d_V = d_V, w_V = w_V,
-                   X = X, K = K, E_Hp = E_Hp, E_Hb = E_Hb, E_Hj = E_Hj, s_G = s_G, h_a = h_aT,
-                   batch = batch, kap_R = kap_R, lambda = lambda,
-                   breeding = breeding, kap_X = kap_X, f = f, E_sm = E_sm, L_b = L.b,
-                   L_j = L_j, metab_mode = metab_mode)
+    return(y)
   }
-  if(E_H_init < E_Hj){
-    if(E_Hb != E_Hj){
-      # to metamorphosis
-      DEB.state.meta <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_DEB, parms = indata, method = "lsodes", events = list(func = eventfun, root = TRUE, terminalroot = 3), rootfun = metamorphosis))[, 2:10]
-      colnames(DEB.state.meta) <- c("V", "E", "H", "E_s", "S", "q", "hs", "R", "B")
-      L.j <- max(DEB.state.meta$V ^ (1 / 3))
-      t_meta <- which(DEB.state.meta$V ^ (1 / 3) == L.j)
-      DEB.state.meta <- DEB.state.meta[1:t_meta, ]
-      init <- as.numeric(DEB.state.meta[nrow(DEB.state.meta), ])
-      if(nrow(DEB.state.meta) > 1){
-        DEB.state.meta <- head(DEB.state.meta, -1)
+  eclose <- function(t, y, pars) {
+    if(y[4] > E_He) {
+      y[4] <- 0
+    }
+    return(y)
+  }
+
+  if(metab_mode < 2){
+    if(foetal == 1){
+      f_emb <- 1e6
+    }else{
+      f_emb <- f
+    }
+    # parameters
+    indata <- list(k_J = k_JT,
+                   p_Am = p_AmT,
+                   k_M = k_M,
+                   p_M = p_MT,
+                   p_Xm = p_XmT,
+                   v = vT,
+                   E_m = E_m,
+                   L_m = L_m,
+                   L_T = L_T,
+                   kap = kap,
+                   g = g,
+                   M_V = M_V,
+                   mu_E = mu_E,
+                   mu_V = mu_V,
+                   d_V = d_V,
+                   w_V = w_V,
+                   X = X,
+                   K = K,
+                   E_Hp = E_Hp,
+                   E_Hb = E_Hb,
+                   E_Hj = E_Hj,
+                   s_G = s_G,
+                   h_a = h_aT,
+                   batch = batch,
+                   kap_R = kap_R,
+                   lambda = lambda,
+                   breeding = breeding,
+                   kap_X = kap_X,
+                   f = f_emb,
+                   E_sm = E_sm,
+                   L_b = L_b,
+                   L_j = L_j,
+                   metab_mode = metab_mode)
+
+    times <- seq(0, (1 / step) * ndays)
+
+    # initial conditions for solver
+    init <- c(V_init, E_init, E_H_init + 1e-10, E_s_init + 1e-10, hs_init + 1e-10, q_init + 1e-10, hs_init + 1e-10, E_R_init + 1e-10, E_B_init + 1e-10)
+
+    #"egg", "hatchling", "puberty", "adult"
+
+    if(E_H_init < E_Hb){
+      # to birth
+      DEB.state.birth <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_DEB, parms = indata, method = "lsodes", events = list(func = eventfun, root = TRUE, terminalroot = 3), rootfunc = birth))[, 2:10]
+      colnames(DEB.state.birth) <- c("V", "E", "H", "E_s", "S", "q", "hs", "R", "B")
+      L.b <- max(DEB.state.birth$V ^ (1 / 3))
+      t_birth <- which(DEB.state.birth$V ^ (1 / 3) == L.b)[1]
+      DEB.state.birth <- DEB.state.birth[1:t_birth, ]
+      init <- as.numeric(DEB.state.birth[nrow(DEB.state.birth), ])
+      if(nrow(DEB.state.birth) > 1){
+        DEB.state.birth <- head(DEB.state.birth, -1)
       }
+      times <- seq(0, (1 / step) * ndays - t_birth)
+
+      # parameters
       indata <- list(k_J = k_JT, p_Am = p_AmT, k_M = k_M, p_M = p_MT,
                      p_Xm = p_XmT, v = vT, E_m = E_m, L_m = L_m, L_T = L_T,
                      kap = kap, g = g, M_V = M_V, mu_E = mu_E,
@@ -546,101 +689,321 @@ DEB_const<-function(
                      X = X, K = K, E_Hp = E_Hp, E_Hb = E_Hb, E_Hj = E_Hj, s_G = s_G, h_a = h_aT,
                      batch = batch, kap_R = kap_R, lambda = lambda,
                      breeding = breeding, kap_X = kap_X, f = f, E_sm = E_sm, L_b = L.b,
-                     L_j = L.j, metab_mode = metab_mode)
-      if(E_H_init < E_Hb){
-        times <- seq(0, (1 / step) * ndays - t_birth - t_meta)
-      }else{
-        times <- seq(0, (1 / step) * ndays - t_meta)
-      }
+                     L_j = L_j, metab_mode = metab_mode)
     }
-  }
-
-  if(E_H_init < E_Hp & metab_mode != 1){
-
-    # to puberty
-
-    #DEB.state.pub <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_DEB, parms = indata, method = "lsodes", events = list(func = eventfun, root = TRUE, terminalroot = 3), rootfun = puberty))[, 2:10]
-    DEB.state.pub <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_DEB, parms = indata, method = "lsoda", events = list(func = eventfun, root = TRUE, terminalroot = 3), rootfun = puberty))[, 2:10]
-    colnames(DEB.state.pub) <- c("V", "E", "H", "E_s", "S", "q", "hs", "R", "B")
-    L.p <- max(DEB.state.pub$V ^ (1 / 3))
-    t_puberty <- which(DEB.state.pub$V ^ (1 / 3) == L.p)[1]
-    DEB.state.pub <- DEB.state.pub[1:t_puberty, ]
-    init <- as.numeric(DEB.state.pub[nrow(DEB.state.pub), ])
-    if(nrow(DEB.state.pub) > 1){
-      DEB.state.pub <- head(DEB.state.pub, -1)
-    }
-    if(E_Hb != E_Hj){
-
-      if(E_H_init < E_Hb){
-        times <- seq(0, (1 / step) * ndays - t_birth - t_meta - t_puberty)
-      }else{
-        times <- seq(0, (1 / step) * ndays - t_meta - t_puberty)
-      }
-    }else{
-      if(E_H_init < E_Hb){
-        times <- seq(0, (1 / step) * ndays - t_birth - t_puberty)
-      }else{
-        times <- seq(0, (1 / step) * ndays - t_puberty)
-      }
-    }
-  }
-  # to end of time sequence
-
-  DEB.state.end <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_DEB, parms = indata, method = "lsodes"))[, 2:10]
-  colnames(DEB.state.end) <- c("V", "E", "H", "E_s", "S", "q", "hs", "R", "B")
-
-  if(E_Hb != E_Hj){
-    if(metab_mode == 1){
-      if(E_H_init < E_Hb){
-        DEB.state <- rbind(DEB.state.birth, DEB.state.meta, DEB.state.end)
-      }else{
-        if(E_H_init < E_Hj){
-          DEB.state <- rbind(DEB.state.meta, DEB.state.end)
+    if(E_H_init < E_Hj){
+      if(E_Hb != E_Hj){
+        # to metamorphosis
+        DEB.state.meta <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_DEB, parms = indata, method = "lsodes", events = list(func = eventfun, root = TRUE, terminalroot = 3), rootfun = metamorphosis))[, 2:10]
+        colnames(DEB.state.meta) <- c("V", "E", "H", "E_s", "S", "q", "hs", "R", "B")
+        L.j <- max(DEB.state.meta$V ^ (1 / 3))
+        t_meta <- which(DEB.state.meta$V ^ (1 / 3) == L.j)
+        DEB.state.meta <- DEB.state.meta[1:t_meta, ]
+        init <- as.numeric(DEB.state.meta[nrow(DEB.state.meta), ])
+        if(nrow(DEB.state.meta) > 1){
+          DEB.state.meta <- head(DEB.state.meta, -1)
+        }
+        indata <- list(k_J = k_JT, p_Am = p_AmT, k_M = k_M, p_M = p_MT,
+                       p_Xm = p_XmT, v = vT, E_m = E_m, L_m = L_m, L_T = L_T,
+                       kap = kap, g = g, M_V = M_V, mu_E = mu_E,
+                       mu_V = mu_V, d_V = d_V, w_V = w_V,
+                       X = X, K = K, E_Hp = E_Hp, E_Hb = E_Hb, E_Hj = E_Hj, s_G = s_G, h_a = h_aT,
+                       batch = batch, kap_R = kap_R, lambda = lambda,
+                       breeding = breeding, kap_X = kap_X, f = f, E_sm = E_sm, L_b = L.b,
+                       L_j = L.j, metab_mode = metab_mode)
+        if(E_H_init < E_Hb){
+          times <- seq(0, (1 / step) * ndays - t_birth - t_meta)
         }else{
-          if(E_H_init < E_Hp){
-            DEB.state <- rbind(DEB.state.pub)
+          times <- seq(0, (1 / step) * ndays - t_meta)
+        }
+      }
+    }
+
+    if(E_H_init < E_Hp & metab_mode != 1){
+
+      # to puberty
+
+      #DEB.state.pub <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_DEB, parms = indata, method = "lsodes", events = list(func = eventfun, root = TRUE, terminalroot = 3), rootfun = puberty))[, 2:10]
+      DEB.state.pub <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_DEB, parms = indata, method = "lsoda", events = list(func = eventfun, root = TRUE, terminalroot = 3), rootfun = puberty))[, 2:10]
+      colnames(DEB.state.pub) <- c("V", "E", "H", "E_s", "S", "q", "hs", "R", "B")
+      L.p <- max(DEB.state.pub$V ^ (1 / 3))
+      t_puberty <- which(DEB.state.pub$V ^ (1 / 3) == L.p)[1]
+      DEB.state.pub <- DEB.state.pub[1:t_puberty, ]
+      init <- as.numeric(DEB.state.pub[nrow(DEB.state.pub), ])
+      if(nrow(DEB.state.pub) > 1){
+        DEB.state.pub <- head(DEB.state.pub, -1)
+      }
+      if(E_Hb != E_Hj){
+
+        if(E_H_init < E_Hb){
+          times <- seq(0, (1 / step) * ndays - t_birth - t_meta - t_puberty)
+        }else{
+          times <- seq(0, (1 / step) * ndays - t_meta - t_puberty)
+        }
+      }else{
+        if(E_H_init < E_Hb){
+          times <- seq(0, (1 / step) * ndays - t_birth - t_puberty)
+        }else{
+          times <- seq(0, (1 / step) * ndays - t_puberty)
+        }
+      }
+    }
+    # to end of time sequence
+
+    DEB.state.end <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_DEB, parms = indata, method = "lsodes"))[, 2:10]
+    colnames(DEB.state.end) <- c("V", "E", "H", "E_s", "S", "q", "hs", "R", "B")
+
+    if(E_Hb != E_Hj){
+      if(metab_mode == 1){
+        if(E_H_init < E_Hb){
+          DEB.state <- rbind(DEB.state.birth, DEB.state.meta, DEB.state.end)
+        }else{
+          if(E_H_init < E_Hj){
+            DEB.state <- rbind(DEB.state.meta, DEB.state.end)
+          }else{
+            if(E_H_init < E_Hp){
+              DEB.state <- rbind(DEB.state.pub)
+            }
+          }
+        }
+      }else{
+        if(E_H_init < E_Hb){
+          DEB.state <- rbind(DEB.state.birth, DEB.state.meta, DEB.state.pub, DEB.state.end)
+        }else{
+          if(E_H_init < E_Hj){
+            DEB.state <- rbind(DEB.state.meta, DEB.state.pub, DEB.state.end)
+          }else{
+            if(E_H_init < E_Hp){
+              DEB.state <- rbind(DEB.state.pub, DEB.state.end)
+            }else{
+              DEB.state <- DEB.state.end
+            }
           }
         }
       }
     }else{
       if(E_H_init < E_Hb){
-        DEB.state <- rbind(DEB.state.birth, DEB.state.meta, DEB.state.pub, DEB.state.end)
+        DEB.state <- rbind(DEB.state.birth, DEB.state.pub, DEB.state.end)
       }else{
-        if(E_H_init < E_Hj){
-          DEB.state <- rbind(DEB.state.meta, DEB.state.pub, DEB.state.end)
+        if(E_H_init < E_Hp){
+          DEB.state <- rbind(DEB.state.pub, DEB.state.end)
         }else{
-          if(E_H_init < E_Hp){
-            DEB.state <- rbind(DEB.state.pub, DEB.state.end)
-          }else{
-            DEB.state <- DEB.state.end
-          }
+          DEB.state <- DEB.state.end
         }
       }
     }
   }else{
-    if(E_H_init < E_Hb){
-      DEB.state <- rbind(DEB.state.birth, DEB.state.pub, DEB.state.end)
-    }else{
-      if(E_H_init < E_Hp){
-        DEB.state <- rbind(DEB.state.pub, DEB.state.end)
-      }else{
-        DEB.state <- DEB.state.end
-      }
+    # embryo
+
+    # parameters
+    indata <- list(f = f,
+                   k_M = k_M,
+                   v = vT,
+                   k_J = k_JT,
+                   E_m = E_m,
+                   g = g,
+                   kap = kap,
+                   E_G = E_G,
+                   p_M = p_MT,
+                   p_Am = p_AmT,
+                   L_m = L_m)
+
+    times <- seq(0, (1 / step) * ndays)
+
+    #if(E_H_init < E_Hb){
+    # to birth
+
+    # initial conditions for solver
+    init <- c(E_init * V_init, V_init ^ (1 / 3), E_H_init + 1e-10)
+
+    DEB.state.embryo <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_ELH, parms = indata, method = "lsodes", events = list(func = eventfun, root = TRUE, terminalroot = 3), rootfunc = birth))[, 2:4]
+    colnames(DEB.state.embryo) <- c("E", "L", "H")
+    L.b <- max(DEB.state.embryo$L)
+    t_birth <- which(DEB.state.embryo$L == L.b)[1]
+    DEB.state.embryo <- DEB.state.embryo[1:t_birth, ]
+    init <- as.numeric(DEB.state.embryo[nrow(DEB.state.embryo), ])
+    E_pres <- init[1]
+    L_pres <- init[2]
+    E_H_pres <- init[3]
+    if(nrow(DEB.state.embryo) > 1){
+      DEB.state.embryo <- head(DEB.state.embryo, -1)
     }
+    times <- seq(0, (1 / step) * ndays - t_birth)
+    #}
+
+    # larva
+
+    p_J <- E_H_pres * k_JT
+    k_ET <- vT / L.b
+    E_RJ <- s_j * ((1 - kap) * E_m * g *(((v / L.b) + (p_M / E_G))/ ((v / L.b) - g * (p_M / E_G))))
+
+    # parameters
+    indata <- list(f = f,
+                   k_m = k_M,
+                   k_E = k_ET,
+                   p_J = p_J,
+                   p_Am = (p_M * z / kap) / L.b * Tcorr,
+                   E_m = E_m,
+                   g = g,
+                   kap = kap,
+                   p_Xm = p_XmT / L.b,
+                   X = X,
+                   K = K,
+                   f2 = 1,
+                   kap_X = kap_X,
+                   E_sm = E_sm,
+                   E_RJ = E_RJ)
+
+    # initial conditions for solver
+    init <- c(E_pres, L_pres, E_R_init + 1e-10, E_s_init + 1e-10)
+
+    # to pupation
+    DEB.state.larva <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_AELES, parms = indata, method = "lsodes", events = list(func = eventfun, root = TRUE, terminalroot = 3), rootfunc = pupate))[, 2:5]
+    colnames(DEB.state.larva) <- c("E", "L", "E_R", "E_s")
+    L.j <- max(DEB.state.larva$L)
+    t_pupate <- which(DEB.state.larva$L == L.j)
+    DEB.state.larva <- DEB.state.larva[1:t_pupate, ]
+    DEB.state.larva$E_s[DEB.state.larva$E_s > E_sm * DEB.state.larva$L ^ 3] <- E_sm * DEB.state.larva$L[DEB.state.larva$E_s > E_sm * DEB.state.larva$L ^ 3] ^ 3
+    init <- as.numeric(DEB.state.larva[nrow(DEB.state.larva), ])
+    if(nrow(DEB.state.larva) > 1){
+      DEB.state.larva <- head(DEB.state.larva, -1)
+    }
+    E_pres <- init[1]
+    L_pres <- init[2]
+    E_R_pres <- init[3]
+    E_s_pres <- init[4]
+    #if(E_H_init < E_Hb){
+    times <- seq(0, (1 / step) * ndays - t_birth - t_pupate)
+    #}else{
+    #  times <- seq(0, (1 / step) * ndays - t_pupate)
+    #}
+
+    # pupa
+
+    s_M <- L.j / L.b
+    v_jT <- vT * s_M
+    kT_EV <- k_EV * Tcorr#v_jT / L.j#k_EV * Tcorr
+    L_m <- kap * p_Am * s_M / p_M
+    # parameters
+    indata <- list(f = f,
+                   k_E = kT_EV,
+                   v_j = v_jT,
+                   E_m = E_m,
+                   g = g,
+                   kap = kap,
+                   kap_V = kap_V,
+                   k_J = k_JT,
+                   L_m = L_m,
+                   E_He = E_He)
+    # initial conditions for solver
+    init <- c(L_pres ^ 3, E_pres, 1e-4, E_H_init + 1e-10)
+    # to eclosion
+    DEB.state.pupa <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_AVELHS, parms = indata, method = "lsodes", events = list(func = eventfun, root = TRUE, terminalroot = 4), rootfunc = eclose))[, 2:5]
+    colnames(DEB.state.pupa) <- c("V", "E", "L", "H")
+    # plot(DEB.state.pupa$V + DEB.state.pupa$L^3,type='l',ylim=c(0, max(DEB.state.pupa$V + DEB.state.pupa$L^3)))
+    # points(DEB.state.pupa$V,type='l')
+    # points(DEB.state.pupa$L^3,type='l')
+    L.e <- max(DEB.state.pupa$L)
+    t_eclose <- which(DEB.state.pupa$L == L.e)
+    DEB.state.pupa <- DEB.state.pupa[1:t_eclose, ]
+    init <- as.numeric(DEB.state.pupa[nrow(DEB.state.pupa), ])
+    if(nrow(DEB.state.pupa) > 1){
+      DEB.state.pupa <- head(DEB.state.pupa, -1)
+    }
+    V_old_pres <- init[1]
+    E_pres <- init[2]
+    L_pres <- init[3]
+    H_pres <- init[4]
+    #if(E_H_init < E_Hb){
+    times <- seq(0, (1 / step) * ndays - t_birth - t_pupate - t_eclose)
+    #}else{
+    #  times <- seq(0, (1 / step) * ndays - t_pupate - t_eclose)
+    #}
+
+    # imago
+    V_pres <- L_pres ^ 3
+    p_J <- E_H_pres * k_JT
+    p_A <- V_pres ^ (2 / 3) * p_Am * Tcorr * f
+    # parameters
+    indata <- list(f = f,
+                   k_E = vT / L.e,
+                   p_J = p_J,
+                   p_Am = p_AmT * s_M,
+                   p_M = V_pres * p_MT,
+                   p_A = p_A,
+                   kap = kap,
+                   p_Xm = p_XmT * s_M,
+                   X = X,
+                   K = K,
+                   f2 = 1,
+                   kap_X = kap_X,
+                   kap_R = kap_R,
+                   v = vT,
+                   E_sm = E_sm,
+                   s_G = s_G,
+                   h_a = h_aT,
+                   L = L_pres,
+                   breed = breeding,
+                   s_M = s_M,
+                   E_m = E_m,
+                   L = L.e,
+                   L_m = L_m)
+
+    init <- c(E_pres, E_R_pres, 1e-10, 1e-10, 1e-10, 1e-10)
+
+    # to end
+    DEB.state.imago <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_EEES, parms = indata, method = "lsodes"))[, 2:7]
+    colnames(DEB.state.imago) <- c("E", "E_R", "E_B", "E_s", "q", "hs")
+    DEB.state.imago$E_s[DEB.state.imago$E_s > E_sm * L.j ^ 3] <- E_sm * L.j ^ 3
+    DEB.state.imago$E[DEB.state.imago$E / L.e ^ 3 > E_m] <- E_m * L.e ^ 3
+
+    V <- c(DEB.state.embryo$L ^ 3, DEB.state.larva$L ^ 3, DEB.state.pupa$V + DEB.state.pupa$L ^ 3, DEB.state.imago$E_s * 0 + L.e ^ 3)
+    V2 <- c(DEB.state.embryo$L ^ 3, DEB.state.larva$L ^ 3, DEB.state.pupa$L ^ 3, DEB.state.imago$E_s * 0 + L.e ^ 3)
+    E2 <- c(DEB.state.embryo$E / DEB.state.embryo$L ^ 3, DEB.state.larva$E / DEB.state.larva$L ^ 3, DEB.state.pupa$E / DEB.state.pupa$L ^ 3, DEB.state.imago$E / L.e ^ 3)
+    E <- c(DEB.state.embryo$E / DEB.state.embryo$L ^ 3, DEB.state.larva$E / DEB.state.larva$L ^ 3, DEB.state.pupa$E / (DEB.state.pupa$V + DEB.state.pupa$L ^ 3), DEB.state.imago$E / L.e ^ 3)
+    #E2 <- c(DEB.state.embryo$E, DEB.state.larva$E, DEB.state.pupa$E, DEB.state.imago$E)
+    H <- c(DEB.state.embryo$H, DEB.state.larva$E * 0 + tail(DEB.state.embryo$H, 1), DEB.state.pupa$H, DEB.state.imago$E * 0 + tail(DEB.state.pupa$H, 1))
+    E_s <- c(DEB.state.embryo$L * 0, DEB.state.larva$E_s, DEB.state.pupa$V * 0, DEB.state.imago$E_s)
+    E_s[E_s > V * E_sm] <- V[E_s > V * E_sm] * E_sm
+    q <- c(DEB.state.embryo$L * 0, DEB.state.larva$L * 0, DEB.state.pupa$V * 0, DEB.state.imago$q)
+    hs <- c(DEB.state.embryo$L * 0, DEB.state.larva$L * 0, DEB.state.pupa$V * 0, DEB.state.imago$hs)
+    S <- hs * 0
+    R <- c(DEB.state.embryo$L * 0, DEB.state.larva$E_R, DEB.state.pupa$V * 0 + tail(DEB.state.larva$E_R, 1), DEB.state.imago$E_R)
+    B <- 0
+    DEB.state <- as.data.frame(cbind(V, E, H, E_s, S, q, hs, R, B))
+    E_Hp <- max(H)
+    E_Hj <- E_Hp
+    E_He <- E_Hp
   }
 
   V <- DEB.state$V
+  if(metab_mode !=2){
+    V2 <- V
+  }
   E <- DEB.state$E
   E_H <- DEB.state$H
   E_s <- DEB.state$E_s
-  resid <- E_s - E_sm * V # excess food intake to stomach capacity
-  E_s[E_s > E_sm * V] <- E_sm * V[E_s > E_sm * V]
+  resid <- E_s - E_sm * V2 # excess food intake to stomach capacity
+  E_s[E_s > E_sm * V2] <- E_sm * V2[E_s > E_sm * V2]
+  E_s[E_s < 0] <- 0
+  resid[resid < 0] <- 0
 
   starve <- DEB.state$S
   q <- DEB.state$q
   hs <- DEB.state$hs
-  p_R <- c(DEB.state$R[2:(length(DEB.state$R))] - DEB.state$R[1:((length(DEB.state$R)-1))], 0)
-  p_B <- c(DEB.state$B[2:(length(DEB.state$B))] - DEB.state$B[1:((length(DEB.state$B)-1))], 0)
+  p_R <- c(0, DEB.state$R[2:(length(DEB.state$R))] - DEB.state$R[1:((length(DEB.state$R)-1))])
+  #p_R <- c(DEB.state$R[2:(length(DEB.state$R))] - DEB.state$R[1:((length(DEB.state$R)-1))], 0)
+  if(metab_mode == 2){ # add in p_R due to maturation
+    #dEH <- c(DEB.state$H[2:(length(DEB.state$H))] - DEB.state$H[1:((length(DEB.state$H)-1))], 0)
+    dEH <- c(0, DEB.state$H[2:(length(DEB.state$H))] - DEB.state$H[1:((length(DEB.state$H)-1))])
+    dEH[dEH < 0] <- 0
+    p_R[1:t_birth] <- dEH[1:t_birth]
+    p_R[(t_birth + t_pupate):(t_birth + t_pupate + t_eclose)] <- dEH[(t_birth + t_pupate):(t_birth + t_pupate + t_eclose)]
+  }
+  p_B <- c(0, DEB.state$B[2:(length(DEB.state$B))] - DEB.state$B[1:((length(DEB.state$B)-1))])
+  if(metab_mode == 2){
+    p_R[which(hs == init[5])-1] <- 0 # fixing spike caused by transition between pupa and imago
+  }
   p_B <- p_R + p_B
   p_B[E_H < E_Hp] <- 0
   p_R[p_R < 0] <- 0
@@ -650,17 +1013,31 @@ DEB_const<-function(
   }
   E_R <- p_R * 0
   E_B <- E_R
-  E_R[E_H >= E_Hp] <- cumsum(p_R[E_H >= E_Hp])
+  if(metab_mode != 2){
+    E_R[E_H >= E_Hp] <- cumsum(p_R[E_H >= E_Hp])
+  }else{
+    E_R <- cumsum(p_R)
+  }
   E_B[E_H >= E_Hp] <- cumsum(p_B[E_H >= E_Hp] * kap_R)
   s_M <- rep(1, length(E_H))
-  if(E_Hb != E_Hj){
-    s_M[E_H > E_Hb] <- V[E_H > E_Hb] ^ (1 / 3) / L.b
-    s_M[E_H > E_Hj] <- L.j / L.b
+  if(metab_mode == 2){
+    s_M <- V ^ (1 / 3) / L.b
+    s_M[E_H < E_Hb & p_A == 0] <- 1
+    s_M[DEB.state$R / DEB.state$V > E_RJ] <- L.j / L.b
+  }else{
+    if(E_Hb != E_Hj){
+      s_M[E_H > E_Hb] <- V[E_H > E_Hb] ^ (1 / 3) / L.b
+      s_M[E_H > E_Hj] <- L.j / L.b
+    }
   }
   e <- E / E_m # use new value of e
   L_w <- V ^ (1 / 3) / del_M * 10 # length in mm
   L_b <- V[E_H >= E_Hb][1] ^ (1 / 3)
-  L_j <- V[E_H >= E_Hj][1] ^ (1 / 3)
+  if(metab_mode < 2){
+    L_j <- V[E_H >= E_Hj][1] ^ (1 / 3)
+  }else{
+    L_j <- V[DEB.state$R/DEB.state$V >= E_RJ][1] ^ (1 / 3)
+  }
   V_m <- (kap * (p_AmT * s_M) / p_MT) ^ 3 # cm ^ 3, maximum structural volume
   L_m <- V_m ^ (1 / 3)
 
@@ -669,25 +1046,35 @@ DEB_const<-function(
   p_J <- k_JT * E_H - starve
   p_A <- E_s
   p_A[E_s > V ^ (2 / 3) * p_AmT * s_M * f] <- V[E_s > V ^ (2 / 3) * p_AmT * s_M * f] ^ (2 / 3) * p_AmT * s_M[E_s > V ^ (2 / 3) * p_AmT * s_M * f] * f
-  r <- vT * (e / V ^ (1 / 3) - (1 + L_T / V ^ (1 / 3)) / L_m) / (e + g)
+  r <- vT * s_M * (e / V ^ (1 / 3) - (1 + L_T / V ^ (1 / 3)) / L_m) / (e + g)
   p_C <- E * ((vT * s_M) / V ^ (1 / 3) - r) * V # J / t, mobilisation rate, equation 2.12 DEB3
+
   if(metab_mode == 1){
     dE <- c(DEB.state$E[2:(length(DEB.state$E))] - DEB.state$E[1:((length(DEB.state$E)-1))], 0)
     p_A[E_H >= E_Hj] <- p_R[E_H >= E_Hj] + p_B[E_H >= E_Hj] + p_M2[E_H >= E_Hj] + p_J[E_H >= E_Hj] + dE[E_H >= E_Hj] * V[E_H >= E_Hj]
     p_C[E_H >= E_Hj] <- p_A[E_H >= E_Hj] - dE[E_H >= E_Hj] * V[E_H >= E_Hj]
+    p_A[p_A < 0] <- 0
   }
 
   p_D <- p_M2 + p_J + p_R
   p_D[E_H >= E_Hp] <- p_M2[E_H >= E_Hp] + p_J[E_H >= E_Hp] + (1 - kap_R) * p_B[E_H >= E_Hp]
 
-  p_G <- p_C - p_M2 - p_J - p_R - p_B
-
-  if(metab_mode == 1){
+  if(metab_mode == 2){
+    p_G <- p_C - p_M2 - p_J
+    p_G[E_H < E_He & p_A > 0] <- p_G[E_H < E_He & p_A > 0] - p_R[E_H < E_He & p_A > 0]
+  }else{
+    p_G <- p_C - p_M2 - p_J - p_R - p_B
+  }
+  if(metab_mode >= 1){
     p_G[E_H >= E_Hj] <- 0
   }
 
   p_X <- f * p_XmT * s_M * V ^ (2 / 3) * (X / K) / (1 + X / K) - resid
-  p_X[E_H < E_Hb] <- 0
+  if(metab_mode < 2){
+    p_X[E_H < E_Hb] <- 0
+  }else{
+    p_X[E_s == 0] <- 0
+  }
 
   # initialise for reproduction and starvation
   if(clutch_ab[1] > 0){
@@ -747,6 +1134,21 @@ DEB_const<-function(
     }
     stage[E_H > E_Hp] <- stages
     stage[firstlay:length(stage)] <- stages + 1
+  }
+
+  # hex model
+  if(metab_mode == 2){
+    L_instar <- rep(0, stages)
+    L_instar[1] <- S_instar[1] ^ 0.5 * L_b
+    stage[E_H > E_Hb] <- 1
+    for(j in 2:stages){
+      L_instar[j] <- S_instar[j] ^ 0.5 * L_instar[j - 1]
+      L_thresh <- L_instar[j]
+      stage[V ^ (1 / 3) > L_thresh] <- j
+    }
+    stage[E_R >= E_RJ] <- stages - 2
+    stage[E_H >= E_He] <- stages - 1
+    stage[firstlay:length(stage)] <- stages
   }
 
   #mass balance

@@ -3,7 +3,7 @@
 #' Function to simulate the development, growth and reproduction trajectory of
 #' an organism using DEB theory, drawing parameters from the 'AmP' parameter
 #' database at https://github.com/add-my-pet/AmPtool. It requires the
-#' 'allstat.mat' file to have been converted to 'allstat.Rda' via the R.matlab
+#' 'allStat.mat' file to have been converted to 'allStat.Rda' via the R.matlab
 #' package (i.e. allStat <- readMat('allStat.mat' then
 #' save(allStat, file = 'allstat.Rda'))).
 #' @param allstat = allstat, the allstat data set
