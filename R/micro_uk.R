@@ -655,7 +655,7 @@ micro_uk <- function(
             call. = FALSE)
         }
         require(jsonlite)
-        ov <- jsonlite::jsonlite::fromJSON(paste0('https://rest.soilgrids.org/query?lon=',x[1],'&lat=',x[2],',&attributes=BLDFIE,SLTPPT,SNDPPT,CLYPPT'), flatten = TRUE)
+        ov <- jsonlite::fromJSON(paste0('https://rest.soilgrids.org/query?lon=',x[1],'&lat=',x[2],',&attributes=BLDFIE,SLTPPT,SNDPPT,CLYPPT'), flatten = TRUE)
         if(length(ov) > 3){
           soilpro <- cbind(c(0,5,15,30,60,100,200), unlist(ov$properties$BLDFIE$M)/1000, unlist(ov$properties$CLYPPT$M), unlist(ov$properties$SLTPPT$M), unlist(ov$properties$SNDPPT$M) )
           colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
