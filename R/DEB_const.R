@@ -254,7 +254,7 @@ DEB_const<-function(
   M_V <- d_V / w_V
   p_Am <- p_M * z / kap
   p_MT <- p_M * Tcorr
-  k_M <- p_MT / E_G
+  k_MT <- p_MT / E_G
   k_JT <- k_J * Tcorr2
   vT <- v * Tcorr
   p_AmT <- p_MT * z / kap
@@ -408,7 +408,7 @@ DEB_const<-function(
           p_B <- 0
         }else{
           if(batch == 1){
-            batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * ((v * s_M) * V ^ (2 / 3) + k_M * V) / (1 + (1 / g))) - p_J)
+            batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * ((v * s_M) * V ^ (2 / 3) + k_MT * V) / (1 + (1 / g))) - p_J)
             if(breeding == 0){
               p_B <- 0
             }else{
@@ -621,15 +621,11 @@ DEB_const<-function(
   }
 
   if(metab_mode < 2){
-    if(foetal == 1){
-      f_emb <- 1e6
-    }else{
-      f_emb <- f
-    }
+
     # parameters
     indata <- list(k_J = k_JT,
                    p_Am = p_AmT,
-                   k_M = k_M,
+                   k_M = k_MT,
                    p_M = p_MT,
                    p_Xm = p_XmT,
                    v = vT,
@@ -655,7 +651,7 @@ DEB_const<-function(
                    lambda = lambda,
                    breeding = breeding,
                    kap_X = kap_X,
-                   f = f_emb,
+                   f = f,
                    E_sm = E_sm,
                    L_b = L_b,
                    L_j = L_j,
@@ -669,6 +665,9 @@ DEB_const<-function(
     #"egg", "hatchling", "puberty", "adult"
 
     if(E_H_init < E_Hb){
+      if(foetal == 1){
+        indata$f
+      }
       # to birth
       DEB.state.birth <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_DEB, parms = indata, method = "lsodes", events = list(func = eventfun, root = TRUE, terminalroot = 3), rootfunc = birth))[, 2:10]
       colnames(DEB.state.birth) <- c("V", "E", "H", "E_s", "S", "q", "hs", "R", "B")
@@ -682,7 +681,7 @@ DEB_const<-function(
       times <- seq(0, (1 / step) * ndays - t_birth)
 
       # parameters
-      indata <- list(k_J = k_JT, p_Am = p_AmT, k_M = k_M, p_M = p_MT,
+      indata <- list(k_J = k_JT, p_Am = p_AmT, k_M = k_MT, p_M = p_MT,
                      p_Xm = p_XmT, v = vT, E_m = E_m, L_m = L_m, L_T = L_T,
                      kap = kap, g = g, M_V = M_V, mu_E = mu_E,
                      mu_V = mu_V, d_V = d_V, w_V = w_V,
@@ -703,7 +702,7 @@ DEB_const<-function(
         if(nrow(DEB.state.meta) > 1){
           DEB.state.meta <- head(DEB.state.meta, -1)
         }
-        indata <- list(k_J = k_JT, p_Am = p_AmT, k_M = k_M, p_M = p_MT,
+        indata <- list(k_J = k_JT, p_Am = p_AmT, k_M = k_MT, p_M = p_MT,
                        p_Xm = p_XmT, v = vT, E_m = E_m, L_m = L_m, L_T = L_T,
                        kap = kap, g = g, M_V = M_V, mu_E = mu_E,
                        mu_V = mu_V, d_V = d_V, w_V = w_V,
@@ -797,7 +796,7 @@ DEB_const<-function(
 
     # parameters
     indata <- list(f = f,
-                   k_M = k_M,
+                   k_M = k_MT,
                    v = vT,
                    k_J = k_JT,
                    E_m = E_m,
@@ -839,7 +838,7 @@ DEB_const<-function(
 
     # parameters
     indata <- list(f = f,
-                   k_m = k_M,
+                   k_m = k_MT,
                    k_E = k_ET,
                    p_J = p_J,
                    p_Am = (p_M * z / kap) / L.b * Tcorr,
