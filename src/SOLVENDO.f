@@ -28,7 +28,7 @@ C     USING endo_devel.R
       DOUBLE PRECISION Q10mult,QBASAL,QBASREF,QCOND,QCONDD,QCONDV,QCONV
       DOUBLE PRECISION QCONVD,QCONVV,QDORSL,QEVAP,QFSEVAPD,QFSEVAPV,QGEN
       DOUBLE PRECISION QGENNETD,QGENNETV,QIR,QIRIN,QIRIND,QIRINV,QIROUT
-      DOUBLE PRECISION QIROUTD,QIROUTV,QM1,QM2,QMET,QMIN,QNORM,QRADD
+      DOUBLE PRECISION QIROUTD,QIROUTV,QM1,QM2,QMIN,QNORM,QRADD
       DOUBLE PRECISION QRADV,QRBSHD,QRBSHV,QRESP,QRGRDD,QRGRDV,QRSKYD
       DOUBLE PRECISION QRSKYV,QRVEGD,QRVEGV,QSDIFF,QSDIR,QSEVAPD,QSEVAPV
       DOUBLE PRECISION QSLR,QSLRD,QSLRV,QSOL,QSOLAR,QSOLR,QSRSB,QSSKY
@@ -43,7 +43,7 @@ C     USING endo_devel.R
       DOUBLE PRECISION TRAITS,TREG,TS,TSKCALCAVD,TSKCALCAVV,TSKINMAX
       DOUBLE PRECISION TSKY,TVEG,UNCURL,VEL,VMULT,VOL,VOLFAT,X,XR,Z
       DOUBLE PRECISION ZBRENTin,ZBRENTout,ZEN,ZFUR,ZFURCOMP,ZFURD,ZFURV
-      DOUBLE PRECISION ZL
+      DOUBLE PRECISION ZL,RFURCMP,BLCMP
 
       DOUBLE PRECISION, DIMENSION(3) :: KEFARA,BETARA,B1ARA,DHAR,LHAR,
      & RHOAR,ZZFUR,REFLFR
@@ -52,7 +52,7 @@ C     USING endo_devel.R
     
       DIMENSION IRPROPout(26),GEOMout(25),CONVOUT(14),
      & SOLARout(7),SIMULSOLout(2,15),SIMULOUT(15),FURVARS(15),
-     & GEOMVARS(16),TRAITS(9),ENVVARS(17),ZBRENTin(17),ZBRENTout(15),
+     & GEOMVARS(20),TRAITS(9),ENVVARS(17),ZBRENTin(17),ZBRENTout(15),
      & INPUT(89),TREG(15),MORPH(20),ENBAL(10),MASBAL(10)
 
       PI = ACOS(-1.0d0)
@@ -328,6 +328,18 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         RFUR = R1 + ZL !# body radius including fur, m
         D = 2. * RFUR !# diameter, m
         RRAD = RSKIN + (XR * ZL) !# effective radiation radius, m
+        IF(SHAPE.NE.4)THEN ! For cylinder and sphere geometries
+          RFURCMP=RSKIN+ZFURCOMP
+        ELSE
+          RFURCMP=RFUR ! Note that this value is never used if conduction not being modeled, but need to have a value for the calculations
+        ENDIF
+
+        IF(SHAPE.EQ.4)THEN  ! For ellipsoid geometry
+          BLCMP=BSEMIN+ZFURCOMP
+         ELSE
+          BLCMP=RFUR ! Note that this value is never used if conduction not being modeled, but need to have a value for the calculations
+        ENDIF
+
         LEN = ALENTH !# length, m
 
         !# Correcting volume to account for subcutaneous fat
@@ -338,11 +350,13 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         !# Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*((kfur/zfur)+(ksub/subdepth))
         IF(S==2)THEN ! doing ventral side, add conduction
          AREACND = ATOT * (PCOND * 2)
-         IF(ZFURCOMP.EQ.0.)THEN
-          CD = AREACND * ((AK1/0.025)+(KSUB/0.025)) !# assume conduction happens from 2.5 cm depth
-         ELSE
-          CD = AREACND * ((KFURCMPRS/ZFURCOMP)+(KSUB/0.025)) !# assume conduction happens from 2.5 cm depth
-         ENDIF
+         !IF(ZFURCOMP.EQ.0.)THEN
+          !CD = AREACND * ((AK1/0.025)+(KSUB/0.025)) !# assume conduction happens from 2.5 cm depth
+          CD = (AREACND * KSUB) / 0.025 !# assume conduction happens from 2.5 cm depth
+         !ELSE
+         ! !CD = AREACND * ((KFURCMPRS/ZFURCOMP)+(KSUB/0.025)) !# assume conduction happens from 2.5 cm depth
+         ! CD = (AREACND * (KFURCMPRS / ZFURCOMP) * KSUB) / 0.025 !# assume conduction happens from 2.5 cm depth
+         !ENDIF
         ELSE  !# doing dorsal side, no conduction. No need to adjust areas used for convection. 
          AREACND = 0.
          CD = 0.
@@ -352,7 +366,8 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         FURVARS = (/LEN,ZFUR,FURTHRMK,KEFF,BETARA,FURTST,ZL,LHAR(S+1),
      &   DHAR(S+1),RHOAR(S+1),REFLFR(S+1),KHAIR,REAL(S,8)/)
         GEOMVARS = (/SHAPE,SUBQFAT,CONVAR,VOL,D,CONVAR,CONVSK,RFUR,
-     &   RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD/)
+     &   RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD,PCOND,RFURCMP,
+     &  BLCMP,KFURCMPRS/)
         ENVVARS = (/FLTYPE,TA,TS,TBUSH,TVEG,TLOWER,TSKY,TCONDSB,RH,
      &   VEL,BP,ELEV,FASKY,FABUSH,FAVEG,FAGRD,QSLR/)
         TRAITS = (/TC,AK1,AK2,EMISAN,FATTHK,FLYHR,FURWET,PCTBAREVAP,
@@ -445,11 +460,11 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
            Q10mult = Q10**((TC - TC_REF)/10.)
            if(PANT.lt.PANT_MAX)THEN
             PANT = PANT + PANT_INC
-            PANT_COST=((PANT-1D0)/(PANT_MAX-1D0)*PANT_MULT*QBASREF)
+            PANT_COST=((PANT-1D0)/(PANT_MAX-1D0)*(1-PANT_MULT)*QBASREF)
             QBASAL = QBASREF * Q10mult + PANT_COST           
            else
             PANT = PANT_MAX
-            PANT_COST=((PANT-1D0)/(PANT_MAX-1D0)*PANT_MULT*QBASREF)
+            PANT_COST=((PANT-1D0)/(PANT_MAX-1D0)*(1-PANT_MULT)*QBASREF)
             QBASAL = QBASREF * Q10mult + PANT_COST           
             PCTWET = PCTWET + PCTWET_INC
             if((PCTWET.GT.PCTWET_MAX).OR.(PCTWET_INC.eq.0.))THEN
