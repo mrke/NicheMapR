@@ -62,7 +62,7 @@
 #' \code{AK1_MAX}{ = 2.8, maximum flesh conductivity (W/mK)}\cr\cr
 #' \code{PANT}{ = 1, multiplier on breathing rate to simulate panting (-)}\cr\cr
 #' \code{PANT_INC}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
-#' \code{PANT_MULT}{ = 0.05, proportional increase of basal metabolic rate at maximum panting level (-)}\cr\cr
+#' \code{PANT_MULT}{ = 1.05, multiplier on basal metabolic rate at maximum panting level (-)}\cr\cr
 #' \code{PANT_MAX}{ = 10, # maximum breathing rate multiplier to simulate panting (-)}\cr\cr
 #'
 #' \strong{ General morphology:}\cr\cr
@@ -298,7 +298,7 @@ endoR_devel <- function(
   AK1_MAX = 2.8, # maximum flesh conductivity (W/mK)
   PANT = 1, # multiplier on breathing rate to simulate panting (-)
   PANT_INC = 0.1, # increment for multiplier on breathing rate to simulate panting (-)
-  PANT_MULT = 0.05, # proportional increase of basal metabolic rate at maximum panting level (-)}\cr\cr
+  PANT_MULT = 1.05, # multiplier on basal metabolic rate at maximum panting level (-)}\cr\cr
 
   # MORPHOLOGY
 
@@ -583,7 +583,17 @@ endoR_devel <- function(
       D <- 2 * RFUR # diameter, m
       RRAD <- RSKIN + (XR * ZL) # effective radiation radius, m
       LEN <- ALENTH # length, m
+      if(SHAPE != 4){ #! For cylinder and sphere geometries
+       RFURCMP <- RSKIN + ZFURCOMP
+      }else{
+       RFURCMP <- RFUR #! Note that this value is never used if conduction not being modeled, but need to have a value for the calculations
+      }
 
+      if(SHAPE == 4){  #! For ellipsoid geometry
+       BLCMP <- BSEMIN + ZFURCOMP
+      }else{
+       BLCMP <- RFUR #! Note that this value is never used if conduction not being modeled, but need to have a value for the calculations
+      }
       # Correcting volume to account for subcutaneous fat
       if(SUBQFAT == 1 & FATTHK > 0.0){
         VOL <- FLSHVL
@@ -592,20 +602,15 @@ endoR_devel <- function(
       # Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*((kfur/zfur)+(ksub/subdepth))
       if(S == 2){
         AREACND <- ATOT * (PCOND * 2)
-        if(ZFURCOMP == 0){
-          #CD <- AREACND * ((AK1 / 0.025) + (KSUB / 0.025)) # assume conduction happens from 2.5 cm depth
-          CD <- AREACND * (KSUB / 0.025) # assume conduction happens from 2.5 cm depth
-        }else{
-          CD <- AREACND * ((KFURCMPRS / ZFURCOMP) + (KSUB / 0.025)) # assume conduction happens from 2.5 cm depth
-        }
-      }else{ #doing dorsal side, no conduction. No need to adjust areas used for convection.
+        CD <- (AREACND * KSUB) / 0.025 # assume conduction happens from 2.5 cm depth
+       }else{ #doing dorsal side, no conduction. No need to adjust areas used for convection.
         AREACND <- 0
         CD <- 0
       }
 
       # package up inputs
       FURVARS <- c(LEN,ZFUR,FURTHRMK,KEFF,BETARA,FURTST,ZL,LHAR[S+1],DHAR[S+1],RHOAR[S+1],REFLFR[S+1],KHAIR,S)
-      GEOMVARS <- c(SHAPE,SUBQFAT,CONVAR,VOL,D,CONVAR,CONVSK,RFUR,RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD)
+      GEOMVARS <- c(SHAPE,SUBQFAT,CONVAR,VOL,D,CONVAR,CONVSK,RFUR,RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD,PCOND,RFURCMP,BLCMP,KFURCMPRS)
       ENVVARS <- c(FLTYPE,TA,TS,TBUSH,TVEG,TLOWER,TSKY,TCONDSB,RH,VEL,BP,ELEV,FASKY,FABUSH,FAVEG,FAGRD,QSLR)
       TRAITS <- c(TC,AK1,AK2,EMISAN,FATTHK,FLYHR,FURWET,PCTBAREVAP,PCTEYES)
 
@@ -694,11 +699,11 @@ endoR_devel <- function(
             Q10mult <- Q10^((TC - TC_REF)/10)
             if(PANT < PANT_MAX){
               PANT <- PANT + PANT_INC
-              PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * PANT_MULT * QBASREF)
+              PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * (1 - PANT_MULT) * QBASREF)
               QBASAL <- QBASREF * Q10mult + PANT_COST
             }else{
               PANT <- PANT_MAX
-              PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * PANT_MULT * QBASREF)
+              PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * (1 - PANT_MULT) * QBASREF)
               QBASAL <- QBASREF * Q10mult + PANT_COST
               PCTWET <- PCTWET + PCTWET_INC
               if(PCTWET > PCTWET_MAX | PCTWET_INC == 0){

@@ -57,7 +57,7 @@
 #' \code{AK1_MAX}{ = 2.8, maximum flesh conductivity (W/mK)}\cr\cr
 #' \code{PANT}{ = 1, multiplier on breathing rate to simulate panting (-)}\cr\cr
 #' \code{PANT_INC}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
-#' \code{PANT_MULT}{ = 0.05, proportional increase of basal metabolic rate at maximum panting level (-)}\cr\cr
+#' \code{PANT_MULT}{ = 1.05, multiplier on basal metabolic rate at maximum panting level (-)}\cr\cr
 #' \code{PANT_MAX}{ = 10, # maximum breathing rate multiplier to simulate panting (-)}\cr\cr
 #'
 #' \strong{ General morphology:}\cr\cr
@@ -293,7 +293,7 @@ endoR <- function(
   AK1_MAX = 2.8, # maximum flesh conductivity (W/mK)
   PANT = 1, # multiplier on breathing rate to simulate panting (-)
   PANT_INC = 0.1, # increment for multiplier on breathing rate to simulate panting (-)
-  PANT_MULT = 0.05, # proportional increase of basal metabolic rate at maximum panting level (-)}\cr\cr
+  PANT_MULT = 1.05, # multiplier on basal metabolic rate at maximum panting level (-)
 
   # MORPHOLOGY
 
