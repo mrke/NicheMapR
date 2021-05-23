@@ -467,7 +467,7 @@ DEB<-function(
         }
         #accumulate energy/matter in reproduction and batch buffers
         dR <- p_R
-        dB <- p_B
+        dB <- p_B * kap_R
       }
 
       y = list(c(dV, dE, dH, dEs, dS, dq, dhs, dR, dB))
@@ -490,10 +490,10 @@ DEB<-function(
   q <- max(DEB.state$q, 0)
   hs <- max(DEB.state$hs, 0)
   p_R <- max(DEB.state$R - E_R, 0)
-  p_B <- max(DEB.state$B - E_B, 0)
+  p_B <- max(DEB.state$B - E_B, 0) / kap_R
   if(E_H >= E_Hp){
-   E_R <- p_R + E_R
-   E_B <- p_B * kap_R + E_B
+   E_R <- max(DEB.state$R, 0)
+   E_B <- max(DEB.state$B, 0)
   }
   e <- E / E_m # use new value of e
   L_w = V ^ (1 / 3) / del_M * 10 # length in mm
