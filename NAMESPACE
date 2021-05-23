@@ -2,7 +2,9 @@
 
 export(CONV_ENDO)
 export(DEB)
+export(DEB_const)
 export(DEB_euler)
+export(DEB_var)
 export(DRYAIR)
 export(GEOM_ENDO)
 export(IRPROP)

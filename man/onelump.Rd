@@ -97,7 +97,7 @@ text(80, 27, "    500 g")
 text(80, 24.5, "5 g")
 text(90, 20.5, "Tair for both sizes", col = "blue")
 text(90, 26, "   vel = 1.0 m/s")
-text(90, 23.5, "     vel = 1.0 m/s")"     vel = 1.0 m/s")
+text(90, 23.5, "     vel = 1.0 m/s")
 
 Ww_g <- 500 # body weight, g
 Tbs<-onelump(t=t, alpha = alpha, Tc_init = Tc_init, Ww_g = Ww_g,

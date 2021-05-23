@@ -80,7 +80,7 @@ third raise core temperature, fourth pant and fifth sweat.
 \code{AK1_MAX}{ = 2.8, maximum flesh conductivity (W/mK)}\cr\cr
 \code{PANT}{ = 1, multiplier on breathing rate to simulate panting (-)}\cr\cr
 \code{PANT_INC}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
-\code{PANT_MULT}{ = 0.05, proportional increase of basal metabolic rate at maximum panting level (-)}\cr\cr
+\code{PANT_MULT}{ = 1.05, multiplier on basal metabolic rate at maximum panting level (-)}\cr\cr
 \code{PANT_MAX}{ = 10, # maximum breathing rate multiplier to simulate panting (-)}\cr\cr
 
 \strong{ General morphology:}\cr\cr
@@ -257,7 +257,7 @@ colnames(enbal) <- gsub(colnames(enbal), pattern = "enbal.", replacement = "")
 masbal <- endo.out1[, grep(pattern = "masbal", colnames(endo.out1))]
 colnames(masbal) <- gsub(colnames(masbal), pattern = "masbal.", replacement = "")
 
-QGEN <- enbal$QMET # metabolic rate (W)
+QGEN <- enbal$QGEN # metabolic rate (W)
 H2O <- masbal$H2OResp_g + masbal$H2OCut_g # g/h water evaporated
 TFA_D <- treg$TFA_D # dorsal fur surface temperature
 TFA_V <- treg$TFA_V # ventral fur surface temperature

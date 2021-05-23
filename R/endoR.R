@@ -233,7 +233,7 @@
 #' masbal <- endo.out1[, grep(pattern = "masbal", colnames(endo.out1))]
 #' colnames(masbal) <- gsub(colnames(masbal), pattern = "masbal.", replacement = "")
 #'
-#' QGEN <- enbal$QMET # metabolic rate (W)
+#' QGEN <- enbal$QGEN # metabolic rate (W)
 #' H2O <- masbal$H2OResp_g + masbal$H2OCut_g # g/h water evaporated
 #' TFA_D <- treg$TFA_D # dorsal fur surface temperature
 #' TFA_V <- treg$TFA_V # ventral fur surface temperature

@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 This vignette demonstrates the Dynamic Energy Budget (DEB) model functions of the NicheMapR package (Kearney and Porter, 2019). The package includes stand-alone R functions for simulating DEB models as well as the integration of DEB models with the NicheMapR ectotherm model (see [Introduction to the NicheMapR ectotherm model](ectotherm-model-tutorial.html)).
 
-The document first provides a short overview of DEB theory in the context of mechanistic niche modelling, and describes the modelling scheme overall and the parameters required. It then shows how to bring existing DEB parameter estimates into R (there are now estimates for >2,000 species) and how to run simulations from them using the DEB R functions within the package. Finally it demonstrates how to use the DEB model within the NicheMapR ectotherm function to predict the full life-cycle heat, water, energy and nutritional budget as a function of microclimate. 
+The document first provides a short overview of DEB theory in the context of mechanistic niche modelling, and describes the modelling scheme overall and the parameters required. It then shows how to bring existing DEB parameter estimates into R (there are now estimates for ~3,000 species) and how to run simulations from them using the DEB R functions within the package. Finally it demonstrates how to use the DEB model within the NicheMapR ectotherm function to predict the full life-cycle heat, water, energy and nutritional budget as a function of microclimate. 
 
 DEB theory is a thermodynamically formalised framework for capturing the 'macro-metabolic' processes of feeding, assimilation, storage, mobilisation, maintenance, development, growth, reproduction and senescence of an organism across the whole life cycle. It was developed by Kooijman over ~30 years (Kooijman 1986a, 1986b, 1993, 2000, 2010). There is a family of models under DEB theory which capture qualitatively different metabolic schemes, including 'von Bertalanffy growth' and more complex patterns such as those of holometabolus insects (Llandres et al. 2015).
 
@@ -243,7 +243,7 @@ A sophisticated and well-document scheme is now available for estimating DEB par
 
 # Getting DEB parameters into R
 
-DEB Parameters are now available for over 1800 species [Add-my-pet Portal](http://www.bio.vu.nl/thb/deb/deblab/add_my_pet/). This site provides the file [allStat.mat](https://www.bio.vu.nl/thb/deb/deblab/add_my_pet/AmPdata/AmPdata.zip), which includes parameters and implied properties for all species in the AmP collection (Marques et al. 2018). This file can be read into R with the 'R.matlab' package and saved as an R data object. The initial read of the .mat file takes a while (~5-10 minutes), but the '.Rda' file to which it is converted loads much faster (seconds).
+DEB Parameters are now available for ~3000 species [Add-my-pet Portal](http://www.bio.vu.nl/thb/deb/deblab/add_my_pet/). This site provides the file [allStat.mat](https://www.bio.vu.nl/thb/deb/deblab/add_my_pet/AmPdata/AmPdata.zip), which includes parameters and implied properties for all species in the AmP collection (Marques et al. 2018). This file can be read into R with the 'R.matlab' package and saved as an R data object. The initial read of the .mat file takes a while (~5-10 minutes), but the '.Rda' file to which it is converted loads much faster (seconds).
 
 Here is the code to read and convert the 'allStat.mat' file.
 
@@ -310,9 +310,7 @@ length.unit <- 'mm'
 plot <- 1 # plot results?
 start.stage <- 1 # stage in life cycle to start (0 = egg, 1 = juvenile, 2 = puberty)
 
-deb <- rundeb(species = species, ndays = ndays, div = div, Tbs = Tbs, clutchsize = clutchsize, 
-              Xs = Xs, mass.unit = mass.unit, length.unit = length.unit, 
-              start.stage = start.stage, E_sm = E_sm, plot = plot)
+deb <- rundeb(species = species, ndays = ndays, div = div, Tbs = Tbs, clutchsize = clutchsize, Xs = Xs, mass.unit = mass.unit, length.unit = length.unit, start.stage = start.stage, E_sm = E_sm, plot = plot)
 ```
 
 # Integration of DEB with the ectotherm model
@@ -354,8 +352,9 @@ for(i in 1:length(par.names)){
 if(exists("E.Hj")==FALSE){E.Hj <- E.Hb}
 if(exists("E.He")==FALSE){E.He <- E.Hb}
 if(exists("L.j")==FALSE){L.j <- L.b}
-p.Xm <- p.Am / kap.X * 10 # redefining p.Xm to a large value relative ot p.Am
-z.mult <- 1         # DEB body size scaling parameter
+p.Xm <- p.Am / kap.X * 10 # redefining p.Xm to a large value relative to p.Am because 
+# running a stomach model
+z.mult <- 1 # DEB body size scaling parameter
 
 # assign missing 5-par thermal response curve parameters if necessary
 if(exists("T.L")==FALSE){T.L <- CT_min + 273.15}
@@ -394,8 +393,6 @@ minshade <- 0     # min available shade?
 nocturn <- 0      # nocturnal activity
 crepus <- 0       # crepuscular activity
 diurn <- 1        # diurnal activity
-minshades <- rep(0, nyear * 365)   # min available shade?
-maxshades <- micro$MAXSHADES # max available shade?
 ```
 
 Because we are running the DEB model, we need to set the initial state in terms of structure, reserve, maturity and life cycle stage. Here we set it to an embryo but the code for a hatchling or a mature individual is also included.
@@ -458,7 +455,6 @@ ecto<-ectotherm(DEB=1,
                 climb=climb,
                 mindepth=mindepth,
                 maxdepth=maxdepth,
-                minshades = rep(minshade, length(micro$RAINFALL)),
                 pct_wet=pct_wet,
                 z=z*z.mult,
                 del_M=del.M,

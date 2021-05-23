@@ -66,7 +66,7 @@ sunsnow Hourly predictions of snow temperature under the minimum specified shade
 shadsnow Hourly predictions snow temperature under the maximum specified shade
 }
 \description{
-An implementation of the NicheMapR microclimate model that uses the CHESS daily weather database. Specifically uses the following files, and needs all 12 for a given year: dtr, tas, huss, precip, rsds, sfcWind, psurf. Also uses the OS Terrain 50 DEM (assumes file name is 'terr50.tif'), which was aggregated to 1km to match met data for lapse-rate correction (assumes file name is 'terr1000.tif'). Citation for CHESS data: Robinson, E.L. ; Blyth, E. ; Clark, D.B. ; Comyn-Platt, E. ; Finch, J. ; Rudd, A.C. (2017). Climate hydrology and ecology research support system meteorology dataset for Great Britain (1961-2015) [CHESS-met] v1.2. NERC Environmental Information Data Centre. https://doi.org/10.5285/b745e7b1-626c-4ccc-ac27-56582e77b900
+An implementation of the NicheMapR microclimate model that uses the CHESS daily weather database. Specifically uses the following files, and needs all 12 for a given year: dtr, tas, huss, precip, rsds, sfcWind, psurf. Also uses the OS Terrain 50 DEM (assumes file name is 'terr50.tif'), which was aggregated to 1km to match met data for lapse-rate correction (assumes file name is 'terr1000.tif'). Citation for CHESS data: Robinson, E.L. ; Blyth, E. ; Clark, D.B. ; Comyn-Platt, E. ; Finch, J. ; Rudd, A.C. (2017). Climate hydrology and ecology research support system meteorology dataset for Great Britain (1961-2015) [CHESS-met] v1.2. NERC Environmental Information Data Centre. https://catalogue.ceh.ac.uk/documents/2ab15bf0-ad08-415c-ba64-831168be7293
 }
 \details{
 \itemize{
@@ -115,8 +115,8 @@ An implementation of the NicheMapR microclimate model that uses the CHESS daily 
 \code{cap}{ = 1, organic cap present on soil surface? (cap has lower conductivity - 0.2 W/mC - and higher specific heat 1920 J/kg-K)}\cr\cr
 \code{CMH2O}{ = 1, Precipitable cm H2O in air column, 0.1 = very dry; 1.0 = moist air conditions; 2.0 = humid, tropical conditions (note this is for the whole atmospheric profile, not just near the ground)}\cr\cr
 \code{hori}{ = rep(0,24), Horizon angles (degrees), from 0 degrees azimuth (north) clockwise in 15 degree intervals}\cr\cr
-\code{lapse_min}{ = 0.0039 Lapse rate for minimum air temperature (degrees C/m)}
-\code{lapse_max}{ = 0.0077 Lapse rate for maximum air temperature (degrees C/m)}
+\code{lapse_min}{ = 0.0039 Lapse rate for minimum air temperature (degrees C/m)}\cr\cr
+\code{lapse_max}{ = 0.0077 Lapse rate for maximum air temperature (degrees C/m)}\cr\cr
 \code{TIMAXS}{ = c(1.0, 1.0, 0.0, 0.0), Time of Maximums for Air Wind RelHum Cloud (h), air & Wind max's relative to solar noon, humidity and cloud cover max's relative to sunrise}\cr\cr
 \code{TIMINS}{ = c(0, 0, 1, 1), Time of Minimums for Air Wind RelHum Cloud (h), air & Wind min's relative to sunrise, humidity and cloud cover min's relative to solar noon}\cr\cr
 \code{timezone}{ = 0, Use GNtimezone function in package geonames to correct to local time zone (excluding daylight saving correction)? 1=yes, 0=no}\cr\cr

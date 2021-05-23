@@ -438,7 +438,7 @@ DEB_const<-function(
         }
         #accumulate energy/matter in reproduction and batch buffers
         dR <- p_R
-        dB <- p_B
+        dB <- p_B * kap_R
       }
 
       y = list(c(dV, dE, dH, dEs, dS, dq, dhs, dR, dB))

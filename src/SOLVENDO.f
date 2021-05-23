@@ -347,16 +347,10 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
          VOL = FLSHVL
         ENDIF
 
-        !# Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*((kfur/zfur)+(ksub/subdepth))
+        !# Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*ksub/subdepth
         IF(S==2)THEN ! doing ventral side, add conduction
          AREACND = ATOT * (PCOND * 2)
-         !IF(ZFURCOMP.EQ.0.)THEN
-          !CD = AREACND * ((AK1/0.025)+(KSUB/0.025)) !# assume conduction happens from 2.5 cm depth
-          CD = (AREACND * KSUB) / 0.025 !# assume conduction happens from 2.5 cm depth
-         !ELSE
-         ! !CD = AREACND * ((KFURCMPRS/ZFURCOMP)+(KSUB/0.025)) !# assume conduction happens from 2.5 cm depth
-         ! CD = (AREACND * (KFURCMPRS / ZFURCOMP) * KSUB) / 0.025 !# assume conduction happens from 2.5 cm depth
-         !ENDIF
+         CD = (AREACND * KSUB) / 0.025 !# assume conduction happens from 2.5 cm depth
         ELSE  !# doing dorsal side, no conduction. No need to adjust areas used for convection. 
          AREACND = 0.
          CD = 0.

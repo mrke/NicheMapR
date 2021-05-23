@@ -24,6 +24,10 @@ Suggests:
     jsonlite,
     microclima,
     RNCEP,
+    jpeg,
+    png,
+    Hmisc,
+    plotrix
 Imports:
     ncdf4,
     RNetCDF,
@@ -34,7 +38,7 @@ Vignettes: properties-of-air,ectotherm-model-tutorial,microclimate-model-
     tutorial,microclimate-monthly-input-example,microclimate-inputs,microclimate-
     model-theory-equations,microclimate-hourly-input-example,microclimate-IO,
     deb-model-tutorial,endotherm-model-tutorial,endotherm-components-tutorial,
-    endotherm-model-equations
+    endotherm-model-equations,transient-equation-derivations
 Encoding: UTF-8
 URL: https://github.com/mrke/NicheMapR
 BugReports: https://github.com/mrke/NicheMapR/issues

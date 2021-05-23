@@ -583,6 +583,7 @@ endoR_devel <- function(
       D <- 2 * RFUR # diameter, m
       RRAD <- RSKIN + (XR * ZL) # effective radiation radius, m
       LEN <- ALENTH # length, m
+
       if(SHAPE != 4){ #! For cylinder and sphere geometries
        RFURCMP <- RSKIN + ZFURCOMP
       }else{
@@ -594,15 +595,16 @@ endoR_devel <- function(
       }else{
        BLCMP <- RFUR #! Note that this value is never used if conduction not being modeled, but need to have a value for the calculations
       }
+
       # Correcting volume to account for subcutaneous fat
       if(SUBQFAT == 1 & FATTHK > 0.0){
         VOL <- FLSHVL
       }
 
-      # Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*((kfur/zfur)+(ksub/subdepth))
+      # Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*ksub/subdepth
       if(S == 2){
-        AREACND <- ATOT * (PCOND * 2)
-        CD <- (AREACND * KSUB) / 0.025 # assume conduction happens from 2.5 cm depth
+        AREACND <- ATOT * PCOND * 2
+        CD <- AREACND * KSUB / 0.025 # assume conduction happens from 2.5 cm depth
        }else{ #doing dorsal side, no conduction. No need to adjust areas used for convection.
         AREACND <- 0
         CD <- 0

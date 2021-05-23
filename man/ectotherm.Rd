@@ -223,6 +223,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{mu_E}{ = 585000, Molar Gibbs energy (chemical potential) of reserve (J/mol)}\cr}
 \item{\code{mu_V}{ = 500000, Molar Gibbs energy (chemical potential) of structure (J/mol)}\cr}
 \item{\code{mu_P}{ = 480000, Molar Gibbs energy (chemical potential) of faeces (J/mol)}\cr}
+\item{\code{mu_N}{ = 244e3/5, Molar Gibbs energy (chemical potential) of nitrogenous waste (J/mol), synthesis from NH3, Withers page 119}\cr}
 \item{\code{kap_X_P}{ = 0.1, Faecation efficiency of food to faeces (-)}\cr}
 \item{\code{n_X}{ = c(1, 1.8, 0.5, 0.15), chem. indices of C, O, H and N in food}\cr}
 \item{\code{n_E}{ = c(1, 1.8, 0.5, 0.15), chem. indices of C, O, H and N in reserve}\cr}
