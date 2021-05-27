@@ -1,6 +1,6 @@
 ---
 title: "Endotherm Model Tutorial I: theory, equations and subroutines"
-author: "Michael R. Kearney, Paul D. Mathewson and Warren P. Porter"
+author: "Warren P. Porter, Paul D. Mathewson & Michael R. Kearney"
 date: "`r Sys.Date()`"
 output: html_document
 vignette: >
