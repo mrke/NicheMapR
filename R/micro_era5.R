@@ -764,24 +764,24 @@ micro_era5 <- function(
 
       # gather daily precipitation
       if(length(years)==1){
-        dailyprecip <- mcera5::point_nc_to_df_precip(nc = paste0(spatial, '_', years, '.nc'), long = loc[1], lat = loc[2],
+        dailyprecip <- mcera5::extract_precip(nc = paste0(spatial, '_', years, '.nc'), long = loc[1], lat = loc[2],
                                                      start_time = st_time,
                                                      end_time = en_time)
       } else {
         for(i in 1:length(years)){
           if(i==1){
-            dailyprecip <- mcera5::point_nc_to_df_precip(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
+            dailyprecip <- mcera5::extract_precip(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
                                                          start_time = st_time,
                                                          end_time = as.Date(paste(years[i],'12','31', sep='-')))
           }
           if(i!=1 & i!=length(years)){
-            dailyprecip.i <- mcera5::point_nc_to_df_precip(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
+            dailyprecip.i <- mcera5::extract_precip(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
                                                            start_time = as.Date(paste(years[i],'01','01', sep='-')),
                                                            end_time = as.Date(paste(years[i],'12','31', sep='-')))
             dailyprecip <- c(dailyprecip, dailyprecip.i)
           }
           if(i==length(years)){
-            dailyprecip.i <- mcera5::point_nc_to_df_precip(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
+            dailyprecip.i <- mcera5::extract_precip(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
                                                            start_time = as.Date(paste(years[i],'01','01', sep='-')),
                                                            end_time = en_time)
             dailyprecip <- c(dailyprecip, dailyprecip.i)
