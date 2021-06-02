@@ -17,7 +17,7 @@ C     GENERAL PUBLIC LICENSE FOR MORE DETAILS.
 C     YOU SHOULD HAVE RECEIVED A COPY OF THE GNU GENERAL PUBLIC LICENSE
 C     ALONG WITH THIS PROGRAM. IF NOT, SEE HTTP://WWW.GNU.ORG/LICENSES/.
 
-C     EQUATIONS TO COMPUTE RATES OF CHANGE IN RESERVE, STRUCTURAL VOLUME, MATURITY,
+C     EQUATIONS TO COMPUTE RATES OF CHANGE IN RESERVE, STRUCTURAL VOLUME, MATURITY, 
 C     STOMACH ENERGY, AGEING, REPRODUCTION AND BATCH BUFFER FOR ABP DEB MODEL FOR
 C     AN INSECT (HEMIMETABOLOUS)
 
@@ -67,13 +67,13 @@ C     AN INSECT (HEMIMETABOLOUS)
       F=RPAR(30)
       METAB_MODE=INT(RPAR(31))
       E_HJ=RPAR(32)
-
+      
       ! UNPACK VARIABLES
       A = Y(1)! TIME
       V = Y(2)! cm3, STRUCTURAL VOLUME
       E = Y(3)! J/cm3, RESERVE DENSITY
       H = Y(4)! J, MATURITY
-      E_S = Y(5)! J, GUT ENERGY
+      E_S = MAX(0.,Y(5))! J, GUT ENERGY
       S = Y(6)! J, STARVATION ENERGY
       Q = Y(7)! -, DAMAGE ENERGY
       HS = Y(8)! -, AGEING ENERGY
@@ -90,15 +90,15 @@ C     AN INSECT (HEMIMETABOLOUS)
        P_C = E * V * VDOT / L ! J / T, MOBILISATION RATE, EQUATION 2.12 DEB3
       ENDIF
       DV = V * RDOT
-
+      
       IF(H.LT.E_HB)THEN ! EMBRYO
        ! STRUCTURE
        IF(WAITING.GT.0.)THEN
         DV = 0.
        ENDIF
        dE = (- 1 *  E * VDOT) / L
-       dH = (1 - KAP) * P_C - K_J * H ! J/d, change in maturity
-       P_J = K_J * H
+       dH = (1 - KAP) * P_C - K_J * H ! J/d, change in maturity        
+       P_J = K_J * H 
        DH = (1. - KAP) * P_C - P_J
        P_R = (1.-KAP) * P_C-P_J
        P_B = 0.
@@ -110,7 +110,7 @@ C     AN INSECT (HEMIMETABOLOUS)
        DR = P_R
        DB = 0.
       ELSE ! POST-EMBRYO
-
+      
        ! structure and starvation
        IF(V * RDOT < 0.)THEN
         DS = -1. * V * RDOT * MU_V * D_V / W_V ! J / T, STARVATION ENERGY TO BE SUBTRACTED FROM REPRODUCTION BUFFER IF NECESSARY
@@ -121,37 +121,37 @@ C     AN INSECT (HEMIMETABOLOUS)
        ELSE
         DS = 0.
        ENDIF
-
+       
        ! assimilation
        P_A = P_AM * F * L ** 2.
-
+       
        ! RESERVE
        IF(E_S .GT. P_A)THEN
         DE = P_A / L**3. - (E * VDOT) / L
        ELSE
-        DE = E_S / L**3. - (E * VDOT) / L
+        DE = MAX(0., E_S / L**3.) - (E * VDOT) / L
        ENDIF
-
+       
        ! MATURATION
        P_J = K_J * H  ! adding starvation costs to P_J so maturation time (immature) or reproduction (mature) can be sacrificed to pay somatic maintenance
        IF(H .LT. E_HP)THEN
         DH = (1. - KAP) * P_C - P_J
        ELSE
         DH = 0.
-       ENDIF
-
+       ENDIF 
+       
        ! FEEDING
        IF(ACTHR .GT. 1.)THEN
         P_X = F * P_XM * ((X / K) / (1. + X / K)) * V ** (2. / 3.)! J/TIME, FOOD ENERGY INTAKE RATE
        ELSE
         P_X = 0.
        ENDIF
-       DES = P_X - (P_AM / KAP_X) * V**(2. / 3.)! J/TIME, CHANGE IN STOMACH ENERGY
+       DES = P_X - (P_AM / KAP_X) * V**(2. / 3.)! J/TIME, CHANGE IN STOMACH ENERGY        
 
        IF((METAB_MODE.EQ.1).AND.(H.GE.E_HJ))THEN
         RDOT=0. ! no growth in abp after puberty - not setting this to zero messes up ageing calculation
        ENDIF
-
+       
        ! AGEING
        DQ = (Q * (V / V_M)*S_G + H_A)*E_SC* ((VDOT / L) - RDOT)-RDOT*Q
        DHS = Q - RDOT * HS
@@ -159,14 +159,14 @@ C     AN INSECT (HEMIMETABOLOUS)
        IF((METAB_MODE.EQ.1).AND.(H.GE.E_HJ))THEN
         P_C = P_A - DE * V
        ENDIF
-
+       
        ! REPRODUCTION
        IF((METAB_MODE.EQ.1).AND.(H.GE.E_HJ))THEN
         P_R = (1.-KAP)*P_A-P_J
        ELSE
         P_R = (1.-KAP)*P_C-P_J
        ENDIF
-
+      
        IF((R.LE.0.).AND.(B.LE.0).AND.(S.GT.0.).AND.(P_R.LT.S))THEN
         DV = -1. * ABS(P_R) * W_V / (MU_V * D_V)  ! SUBTRACT FROM STRUCTURE SINCE NOT ENOUGH FLOW TO REPRODUCTION TO PAY FOR SOMATIC MAINTENANCE
         P_R = 0.
@@ -175,7 +175,7 @@ C     AN INSECT (HEMIMETABOLOUS)
         P_B = 0.
        ELSE
         IF(BATCH .EQ. 1.)THEN
-          BATCHPREP = (KAP_R / LAMBDA) * ((1. - KAP) * (E_M * (VDOT *
+          BATCHPREP = (KAP_R / LAMBDA) * ((1. - KAP) * (E_M * (VDOT * 
      &    V ** (2. / 3.) + K_M * V) / (1. + (1. / G))) - P_J)
          IF(BREEDING .LT. 1)THEN
           P_B = 0.
@@ -197,17 +197,17 @@ C     AN INSECT (HEMIMETABOLOUS)
 
        ! draw from reproduction and then batch buffers under starvation
        if((dS.GT.0.).AND.(p_R.GT.dS))THEN
-         p_R = p_R - dS
+         p_R = MAX(0.,p_R - dS)
          dS = 0.
        ENDIF
        if((dS.GT.0.).AND.(p_B.GT.dS))THEN
-         p_B = p_B - dS
+         p_B = MAX(0.,p_B - dS)
          dS = 0.
        ENDIF
         DR = P_R
         DB = P_B * KAP_R
       ENDIF
-
+      
       DDEB(1)=1.0D+00
       DDEB(2)=DV
       DDEB(3)=DE

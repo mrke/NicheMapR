@@ -360,7 +360,7 @@ DEB_euler<-function(
     if(E_s_pres > p_A){
       dEdt <- p_A / L_pres ^ 3 - (E_pres * vT) / L_pres
     }else{
-      dEdt <- E_s_pres / V_pres - (E_pres * vT) / L_pres
+      dEdt <- max(0, E_s_pres / V_pres) - (E_pres * vT) / L_pres
     }
   }
 
@@ -421,8 +421,8 @@ DEB_euler<-function(
   if(metab_mode == 1 & E_H >= E_Hj){
     p_C <- p_A - dEdt * V
   }
-  p_J <- k_JT * E_H # adding starvation costs to P_J so maturation time (immature) or reproduction (mature) can be sacrificed to pay somatic maintenance
-  p_M2 <- p_MT * V + p_T * V ^ (2 / 3)
+  p_J <- max(0, k_JT * E_H - starve)# adding starvation costs to P_J so maturation time (immature) or reproduction (mature) can be sacrificed to pay somatic maintenance
+  p_M2 <-max(0, p_MT * V + p_T * V ^ (2 / 3))
 
   if(metab_mode == 1 & E_H_pres >= E_Hj){
     p_R <- (1 - kap) * p_A - p_J
@@ -460,7 +460,7 @@ DEB_euler<-function(
     starve <- 0
   }
   if(starve > 0 & E_B > starve){
-    p_B <- p_B - starve
+    p_B <- max(0, p_B - starve)
     starve <- 0
   }
 
@@ -474,7 +474,8 @@ DEB_euler<-function(
   if(E_s_pres < p_A){
     p_A <- E_s_pres
   }
-
+  p_A <- max(0, p_A)
+  p_C <- max(0, p_C)
   # more powers
   if(E_H >= E_Hp){
     p_D <- p_M2 + p_J + (1 - kap_R) * p_B

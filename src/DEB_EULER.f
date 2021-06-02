@@ -498,7 +498,7 @@ C       USE EMBRYO EQUATION FOR SCALED RESERVE, U_E, FROM KOOIJMAN 2009 EQ. 1
         IF(E_S(HOUR-1).GT.P_A)THEN
          DEDT = P_A/V_PRES-(E_PRES*VDOT)/L_PRES
         ELSE
-         DEDT = E_S(HOUR-1)/V_PRES-(E_PRES*VDOT)/L_PRES
+         DEDT = MAX(0., E_S(HOUR-1)/V_PRES)-(E_PRES*VDOT)/L_PRES
         ENDIF
        ENDIF
       ENDIF
@@ -638,23 +638,23 @@ C     END CHECK FOR IMMATURE OR MATURE
       ! DRAW FROM REPRODUCTION AND THEN BATCH BUFFERS UNDER STARVATION
       IF(HOUR.EQ.1)THEN
        IF((STARVE.GT.0.).AND.(CUMREPRO_INIT.GT.STARVE))THEN
-        P_R = P_R - STARVE
+        P_R = MAX(0.,P_R - STARVE)
         STARVE = 0.
         STARVING = 0
        ENDIF
        IF((STARVE.GT.0.).AND.(CUMREPRO_INIT.GT.STARVE))THEN
-        P_B = P_B - STARVE
+        P_B = MAX(0.,P_B - STARVE)
         STARVE = 0.
         STARVING = 0
        ENDIF
       ELSE
        IF((STARVE.GT.0.).AND.(CUMREPRO(HOUR-1).GT.STARVE))THEN
-        P_R = P_R - STARVE
+        P_R = MAX(0.,P_R - STARVE)
         STARVE = 0.
         STARVING = 0
        ENDIF
        IF((STARVE.GT.0.).AND.(CUMBATCH(HOUR-1).GT.STARVE))THEN
-        P_B = P_B - STARVE
+        P_B = MAX(0.,P_B - STARVE)
         STARVE = 0.
         STARVING = 0
        ENDIF

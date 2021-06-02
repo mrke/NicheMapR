@@ -337,7 +337,7 @@ DEB<-function(
       V <- y[1]# cm^3, structural volume
       E <- y[2]# J/cm3, reserve density
       H <- y[3]# J, maturity
-      E_s <- y[4]# J, stomach energy
+      E_s <- max(0, y[4])# J, stomach energy
       S <- y[5]# J, starvation energy
       q <- y[6]# -, aging acceleration
       hs <- y[7]# -, hazard rate
@@ -390,7 +390,7 @@ DEB<-function(
         if(E_s > p_A){
           dE <- p_A / L ^ 3 - (E * v) / L
         }else{
-          dE <- E_s / L ^ 3 - (E * v) / L
+          dE <- max(0, E_s / L ^ 3) - (E * v) / L
         }
 
         if(metab_mode == 1 & H >= E_Hj){
@@ -504,14 +504,14 @@ DEB<-function(
     L_j <- V ^ (1 / 3)
   }
   # some powers
-  p_M2 <- p_MT * V + p_T * V ^ (2 / 3)
-  p_J <- k_JT * E_H - starve
+  p_M2 <- max(0, p_MT * V + p_T * V ^ (2 / 3))
+
+  p_J <- max(0, k_JT * E_H - starve)
   if(E_s > V ^ (2 / 3) * p_AmT * f){
     p_A <- V ^ (2 / 3) * p_AmT * f
   }else{
     p_A <- E_s
   }
-
   r <- vT * (e / V ^ (1 / 3) - (1 + L_T / V ^ (1 / 3)) / L_m) / (e + g)
   p_C <- E * (vT / V ^ (1 / 3) - r) * V # J / t, mobilisation rate, equation 2.12 DEB3
   if(metab_mode == 1){
@@ -520,6 +520,8 @@ DEB<-function(
       p_C <- p_A - (E_pres - E) * V
     }
   }
+  p_A <- max(0, p_A)
+  p_C <- max(0, p_C)
 
   if(E_H >= E_Hp){
     p_D <- p_M2 + p_J + (1 - kap_R) * p_B

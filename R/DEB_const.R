@@ -290,7 +290,7 @@ DEB_const<-function(
       V <- y[1]# cm^3, structural volume
       E <- y[2]# J/cm3, reserve density
       H <- y[3]# J, maturity
-      E_s <- y[4]# J, stomach energy
+      E_s <- max(0, y[4])# J, stomach energy
       S <- y[5]# J, starvation energy
       q <- y[6]# -, aging acceleration
       hs <- y[7]# -, hazard rate
@@ -360,7 +360,7 @@ DEB_const<-function(
         if(E_s > p_A){
           dE <- p_A / L ^ 3 - (E * (v * s_M)) / L
         }else{
-          dE <- E_s / L ^ 3 - (E * (v * s_M)) / L
+          dE <- max(0, E_s / L ^ 3) - (E * (v * s_M)) / L
         }
 
         if(metab_mode == 1 & H >= E_Hj){
@@ -433,7 +433,7 @@ DEB_const<-function(
           dS <- 0
         }
         if(dS > 0 & p_B > dS){
-          p_B <- p_B - dS
+          p_B <- max(0, p_B - dS)
           dS <- 0
         }
         #accumulate energy/matter in reproduction and batch buffers
@@ -496,7 +496,7 @@ DEB_const<-function(
       E <- y[1] # J, RESERVE
       L <- y[2] # CM, STRUCTURAL LENGTH
       E_R <- y[3] #J, REPRODUCTION BUFFER
-      E_S <- min(y[4], E_sm * (L ^ 3)) #J, STOMACH ENERGY
+      E_S <- max(0, min(y[4], E_sm * (L ^ 3))) #J, STOMACH ENERGY
 
       V <- L ^ 3                                 # CM^3, STRUCTURAL VOLUME
       e <- E / V / E_m                        # -, SCALED RESERVE DENSITY
@@ -506,7 +506,7 @@ DEB_const<-function(
       p_X <- p_Xm * ((X / K) / (f2 + X / K)) * V # J/TIME, FOOD ENERGY INTAKE RATE, NOTE MULTPLYING BY V SINCE ALREADY DIVIDED BY L_B WHICH IS THE SAME AS MULT BY V^2/3 AND BY L/L_b
       #p_X <- p_A / kap_X                         # J/TIME, FOOD ENERGY INTAKE RATE, NOTE MULTPLYING BY V SINCE ALREADY DIVIDED BY L_B WHICH IS THE SAME AS MULT BY V^2/3 AND BY L/L_b
       if(E_S < p_A){                             # NO ASSIMILATION IF STOMACH TOO EMPTY
-        dE <- E_S - p_C                           # J/TIME, CHANGE IN RESERVE
+        dE <- max(0, E_S) - p_C                           # J/TIME, CHANGE IN RESERVE
       }else{
         dE <- f * p_Am * V - p_C                 # J/TIME, CHANGE IN RESERVE, NOTE MULTPLYING BY V SINCE ALREADY DIVIDED BY L_B WHICH IS THE SAME AS MULT BY V^2/3 AND BY L/L_b
       }
@@ -548,7 +548,7 @@ DEB_const<-function(
       E <- y[1] # J, RESERVE
       E_R <- y[2] # J, REPRODUCTION BUFFER
       E_B <- y[3] # J, EGG BATCH BUFFER
-      E_s <- min(y[4], E_sm * (L ^ 3)) # J, ENERGY OF THE STOMACH
+      E_s <- max(0, min(y[4], E_sm * (L ^ 3))) # J, ENERGY OF THE STOMACH
       q <- y[5] # -, aging acceleration
       hs <- y[6] # -, hazard rate
       V <- L ^ 3
@@ -563,7 +563,7 @@ DEB_const<-function(
         p_CR <- 0
       }
       if(E_s < p_A){      # NO ASSIMILATION IF STOMACH TOO EMPTY
-        dE <- E_s - p_C           # J/TIME, CHANGE IN RESERVE
+        dE <- max(E_s, 0) - p_C           # J/TIME, CHANGE IN RESERVE
       }else{
         dE <- f * p_Am * V - p_C  # J/TIME, CHANGE IN RESERVE
       }
@@ -1005,6 +1005,7 @@ DEB_const<-function(
   }
   p_B <- p_R + p_B
   p_B[E_H < E_Hp] <- 0
+  p_B[p_B < 0] <- 0
   p_R[p_R < 0] <- 0
   if(max(E_H) > E_Hp){ # temporary workaround for weird p_G driven by low p_R at transition to maturity
     suppressWarnings(p_R_fix <- which(p_R == p_R[E_H > E_Hp])[1] - 1)
@@ -1042,11 +1043,14 @@ DEB_const<-function(
 
   # some powers
   p_M2 <- p_MT * V + p_T * V ^ (2 / 3)
+  p_M2[p_M2 < 0] <- 0
   p_J <- k_JT * E_H - starve
+  p_J[p_J < 0] <- 0
   p_A <- E_s
   p_A[E_s > V ^ (2 / 3) * p_AmT * s_M * f] <- V[E_s > V ^ (2 / 3) * p_AmT * s_M * f] ^ (2 / 3) * p_AmT * s_M[E_s > V ^ (2 / 3) * p_AmT * s_M * f] * f
   r <- vT * s_M * (e / V ^ (1 / 3) - (1 + L_T / V ^ (1 / 3)) / L_m) / (e + g)
   p_C <- E * ((vT * s_M) / V ^ (1 / 3) - r) * V # J / t, mobilisation rate, equation 2.12 DEB3
+  p_C[p_C < 0] <- 0
 
   if(metab_mode == 1){
     dE <- c(DEB.state$E[2:(length(DEB.state$E))] - DEB.state$E[1:((length(DEB.state$E)-1))], 0)

@@ -221,7 +221,8 @@ DEB_var<-function(
     stop("package 'deSolve' is needed. Please install it.",
          call. = FALSE)
   }
-
+  L.b <- L_b
+  L.j <- L_j
   #DEB mass balance-related calculations
   n_O <- cbind(n_X, n_V, n_E, n_P) # matrix of composition of organics, i.e. food, structure, reserve and faeces
   CHON <- c(12, 1, 16, 14)
@@ -281,11 +282,11 @@ DEB_var<-function(
       Tcorr <- exp(T_A / T_REF - T_A / (273.15 + Tb)) * (1 + exp(T_AL / T_REF - T_AL / T_L) + exp(T_AH / T_H - T_AH / T_REF)) / (1 + exp(T_AL / (273.15 + Tb) - T_AL / T_L) + exp(T_AH / T_H - T_AH / (273.15 + Tb)))
       Tcorr2 <- exp(T_A2 / T_REF - T_A2 / (273.15 + Tb)) * (1 + exp(T_AL2 / T_REF - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / T_REF)) / (1 + exp(T_AL2 / (273.15 + Tb) - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / (273.15 + Tb)))
 
-            # unpack variables
+      # unpack variables
       V <- y[1]# cm^3, structural volume
       E <- y[2]# J/cm3, reserve density
       H <- y[3]# J, maturity
-      E_s <- y[4]# J, stomach energy
+      E_s <- max(0, y[4])# J, stomach energy
       S <- y[5]# J, starvation energy
       q <- y[6]# -, aging acceleration
       hs <- y[7]# -, hazard rate
@@ -355,7 +356,7 @@ DEB_var<-function(
         if(E_s > p_A){
           dE <- p_A / L ^ 3 - (E * (v * Tcorr * s_M)) / L
         }else{
-          dE <- E_s / L ^ 3 - (E * (v * Tcorr * s_M)) / L
+          dE <- max(0, E_s / L ^ 3) - (E * (v * Tcorr * s_M)) / L
         }
 
         if(metab_mode == 1 & H >= E_Hj){
@@ -558,7 +559,7 @@ DEB_var<-function(
       p_C <- E * k_E * Tcorr              # J/TIME, RESERVE MOBILISATION
       p_R <- p_C - p_M - p_J * Tcorr2     # J/TIME, ENERGY ALLOCATION FROM RESERVE TO E_R
       p_X <- p_Xm * Tcorr * ((X / K) / (f2 + X / K)) * V ^ (2 / 3) # J/TIME, FOOD ENERGY INTAKE RATE
-      if(breed == 1){
+      if(breeding == 1){
         p_CR <- kap_R * p_R               # J/H, DRAIN FROM E_R TO EGGS
       }else{
         p_CR <- 0
@@ -753,7 +754,7 @@ DEB_var<-function(
                        p_Am = p_Am,
                        k_M = k_M,
                        p_M = p_M,
-                       p_Xm = p_XT,
+                       p_Xm = p_Xm,
                        v = v,
                        E_m = E_m,
                        L_m = L_m,
@@ -1064,7 +1065,7 @@ DEB_var<-function(
                    s_G = s_G,
                    h_a = h_a,
                    L = L_pres,
-                   breed = breeding,
+                   breeding = breeding,
                    s_M = s_M,
                    E_m = E_m,
                    L = L.e,
@@ -1146,6 +1147,7 @@ DEB_var<-function(
   p_B <- p_R + p_B
   p_B[E_H < E_Hp] <- 0
   p_R[p_R < 0] <- 0
+  p_B[p_B < 0] <- 0
   if(max(E_H) > E_Hp){ # temporary workaround for weird p_G driven by low p_R at transition to maturity
     suppressWarnings(p_R_fix <- which(p_R == p_R[E_H > E_Hp])[1] - 1)
     p_R[p_R_fix] <- (p_R[p_R_fix - 1] + p_B[p_R_fix + 1]) / 2
@@ -1182,7 +1184,9 @@ DEB_var<-function(
 
   # some powers
   p_M2 <- p_M * Tcorr * V + p_T * V ^ (2 / 3)
+  p_M2[p_M2 < 0] <- 0
   p_J <- k_J * E_H * Tcorr2 - starve
+  p_J[p_J < 0] <- 0
   p_A <- V ^ (2 / 3) * p_Am * Tcorr * s_M * f
   p_A[E_s == 0] <- 0
   #p_A[E_s > V ^ (2 / 3) * p_Am * Tcorr * s_M * f] <- V[E_s > V ^ (2 / 3) * p_Am * Tcorr * s_M * f] ^ (2 / 3) * p_Am * s_M[E_s > V ^ (2 / 3) * p_Am * Tcorr * s_M * f] * f
@@ -1195,7 +1199,7 @@ DEB_var<-function(
     p_C[E_H >= E_Hj] <- p_A[E_H >= E_Hj] - dE[E_H >= E_Hj] * V[E_H >= E_Hj]
     p_A[p_A < 0] <- 0
   }
-
+  p_C[p_C < 0] <- 0
   p_D <- p_M2 + p_J + p_R
   p_D[E_H >= E_Hp] <- p_M2[E_H >= E_Hp] + p_J[E_H >= E_Hp] + (1 - kap_R) * p_B[E_H >= E_Hp]
 
@@ -1208,7 +1212,7 @@ DEB_var<-function(
   if(metab_mode >= 1){
     p_G[E_H >= E_Hj] <- 0
   }
-
+  p_G[p_G < 0] <- 0
   p_X <- f * p_Xm * s_M * V ^ (2 / 3) * (X / K) / (1 + X / K) - resid
   if(metab_mode < 2){
     p_X[E_H < E_Hb] <- 0
