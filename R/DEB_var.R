@@ -216,7 +216,7 @@ DEB_var<-function(
   metab_mode=0,
   age=0,
   foetal=0){
-
+  
   if (!require("deSolve", quietly = TRUE)) {
     stop("package 'deSolve' is needed. Please install it.",
          call. = FALSE)
@@ -240,12 +240,12 @@ DEB_var<-function(
   JM_JO <- -1 * n_M_inv %*% n_O
   etaO <- matrix(c(y_XE / mu_E * -1, 0, 1 / mu_E, y_PE / mu_E, 0, 0, -1 / mu_E, 0, 0, y_VE / mu_E, -1 / mu_E, 0), nrow = 4)
   w_N <- CHON %*% n_M_nitro
-
+  
   # Arrhenius temperature correction factor
   #Tcorr <- exp(T_A * (1 / (273.15 + T_REF) - 1 / (273.15 + Tb))) / (1 + exp(T_AL * (1 / (273.15 + Tb) - 1 / T_L)) + exp(T_AH * (1 / T_H - 1 / (273.15 + Tb))))
   #Tcorr <- exp(T_A / T_REF - T_A / (273.15 + Tb)) * (1 + exp(T_AL / T_REF - T_AL / T_L) + exp(T_AH / T_H - T_AH / T_REF)) / (1 + exp(T_AL / (273.15 + Tb) - T_AL / T_L) + exp(T_AH / T_H - T_AH / (273.15 + Tb)))
   #Tcorr2 <- exp(T_A2 / T_REF - T_A2 / (273.15 + Tb)) * (1 + exp(T_AL2 / T_REF - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / T_REF)) / (1 + exp(T_AL2 / (273.15 + Tb) - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / (273.15 + Tb)))
-
+  
   # temperature corrections and compound parameters
   M_V <- d_V / w_V
   p_Am <- p_M * z / kap
@@ -268,33 +268,33 @@ DEB_var<-function(
   w_E <- wO[3]
   w_V <- wO[2]
   w_P <- wO[4]
-
-
+  
+  
   breeding <- 1
-
+  
   # general DEB function for solver (std, abj, abp)
   dget_DEB <- function(t, y, indata){
     with(as.list(c(indata, y)), {
-
+      
       # temperature correction
       Tb <- Tbf(t)
       X <- Xf(t)
       Tcorr <- exp(T_A / T_REF - T_A / (273.15 + Tb)) * (1 + exp(T_AL / T_REF - T_AL / T_L) + exp(T_AH / T_H - T_AH / T_REF)) / (1 + exp(T_AL / (273.15 + Tb) - T_AL / T_L) + exp(T_AH / T_H - T_AH / (273.15 + Tb)))
       Tcorr2 <- exp(T_A2 / T_REF - T_A2 / (273.15 + Tb)) * (1 + exp(T_AL2 / T_REF - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / T_REF)) / (1 + exp(T_AL2 / (273.15 + Tb) - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / (273.15 + Tb)))
-
+      
       # unpack variables
-      V <- y[1]# cm^3, structural volume
-      E <- y[2]# J/cm3, reserve density
-      H <- y[3]# J, maturity
+      V <- max(0, y[1])# cm^3, structural volume
+      E <- max(0, y[2])# J/cm3, reserve density
+      H <- max(0, y[3])# J, maturity
       E_s <- max(0, y[4])# J, stomach energy
-      S <- y[5]# J, starvation energy
+      S <- max(0, y[5])# J, starvation energy
       q <- y[6]# -, aging acceleration
       hs <- y[7]# -, hazard rate
-      R <- y[8]# J, reproduction buffer energy
-      B <- y[9]# J, egg batch energy
-
+      R <-  max(0, y[8])# J, reproduction buffer energy
+      B <-  max(0, y[9])# J, egg batch energy
+      
       s_M <- 1
-
+      
       if(E_Hj != E_Hb){
         if(H < E_Hb){
           s_M <- 1
@@ -308,7 +308,7 @@ DEB_var<-function(
       }else{
         s_M <- 1
       }
-
+      
       L <- V ^ (1 / 3) # cm, structural length
       V_m <- (kap * (p_Am * s_M) / p_M) ^ 3 # cm ^ 3, maximum structural volume
       L_m <- V_m ^ (1 / 3)
@@ -320,7 +320,7 @@ DEB_var<-function(
         p_C <- E * V * (v * Tcorr * s_M) / L
       }
       dV <- V * r # cm^3 / t, change in structure
-
+      
       if(H < E_Hb){ # embryo
         # structure
         dE <- (- 1 *  E * v * Tcorr) / L
@@ -328,7 +328,7 @@ DEB_var<-function(
         p_J <- k_J * H * Tcorr2
         p_R <- (1 - kap) * p_C - p_J
         p_B <- 0
-
+        
         # no aging or stomach in embryo
         dS <- 0
         dEs <- 0
@@ -337,7 +337,7 @@ DEB_var<-function(
         dR <- p_R
         dB <- 0
       }else{ # post-embryo
-
+        
         # structure and starvation
         if(V * r < 0){
           dS <- V * r * -1 * mu_V * d_V / w_V # J / t, starvation energy to be subtracted from reproduction buffer if necessary
@@ -348,21 +348,22 @@ DEB_var<-function(
         }else{
           dS <- 0
         }
-
+        
         # assimilation
         p_A <- (p_Am * Tcorr * s_M) * f * L ^ 2
-
+        
         # reserve
         if(E_s > p_A){
-          dE <- p_A / L ^ 3 - (E * (v * Tcorr * s_M)) / L
+          dE <- max(0, p_A / L ^ 3) - (E * (v * Tcorr * s_M)) / L
         }else{
           dE <- max(0, E_s / L ^ 3) - (E * (v * Tcorr * s_M)) / L
         }
-
+        
         if(metab_mode == 1 & H >= E_Hj){
           p_C <- p_A - dE * V
         }
-
+        p_C <- max(0, p_C)
+        
         # maturation
         p_J <- k_J * H * Tcorr2
         if(H < E_Hp){
@@ -379,32 +380,32 @@ DEB_var<-function(
           p_X <- 0
         }
         dEs <- p_X - ((p_Am * Tcorr * s_M) / kap_X) * V ^ (2 / 3)
-
+        
         if(metab_mode == 1 & H >= E_Hj){
           r <- 0 # no growth in abp after puberty - not setting this to zero messes up ageing calculation
         }
-
+        
         # ageing (equation 6.2 in Kooijman 2010 (DEB3)
         dq <- (q * (V / V_m) * s_G + h_a * Tcorr) * e * (((v * Tcorr * s_M) / L) - r) - r * q # ageing acceleration
         dhs <- q - r * hs * Tcorr # hazard
-
+        
         # reproduction
         if(metab_mode == 1 & H >= E_Hj){
           p_R <- (1 - kap) * p_A - p_J
         }else{
           p_R <- (1 - kap) * p_C - p_J
         }
-
-        if(R <= 0 & B <= 0 & S > 0 &  p_R < S){
+        p_R <- max(0, p_R)
+        if(R <= 0 & B <= 0 & S > 0 & p_R < S){
           dV <- -1 * abs(p_R) * w_V / (mu_V * d_V)  # subtract from structure since not enough flow to reproduction to pay for pay for somatic maintenance
           p_R <- 0
         }
-
+        
         if(H < E_Hp){
           p_B <- 0
         }else{
           if(batch == 1){
-            batchprep <- (kap_R / lambda) * ((1 - kap) * (E_m * ((v * Tcorr * s_M) * V ^ (2 / 3) + k_M * Tcorr * V) / (1 + (1 / g))) - p_J)
+            batchprep <- max(0, (kap_R / lambda) * ((1 - kap) * (E_m * ((v * Tcorr * s_M) * V ^ (2 / 3) + k_M * Tcorr * V) / (1 + (1 / g))) - p_J))
             if(breeding == 0){
               p_B <- 0
             }else{
@@ -421,40 +422,51 @@ DEB_var<-function(
             p_B <- p_R
           }#end check for whether batch mode is operating
         }#end check for immature or mature
-        p_R <- p_R - p_B # take finalised value of p_B from p_R
-
+        p_B <- max(0, p_B)
+        p_R <- max(0, p_R - p_B) # take finalised value of p_B from p_R
+        
         # draw from reproduction and then batch buffers under starvation
         if(dS > 0 & p_R > dS){
           p_R <- p_R - dS
-          dS <- 0
+          if(p_R < 0){
+           dS <- abs(p_R)
+           p_R <- 0
+          }else{
+           dS <- 0
+          }
         }
         if(dS > 0 & p_B > dS){
           p_B <- p_B - dS
-          dS <- 0
+          if(p_B < 0){
+            dS <- abs(p_B)
+            p_B <- 0
+          }else{
+            dS <- 0
+          }
         }
         #accumulate energy/matter in reproduction and batch buffers
         dR <- p_R
         dB <- p_B
       }
-
+      
       y = list(c(dV, dE, dH, dEs, dS, dq, dhs, dR, dB))
     })
   }
-
+  
   # embryo for hex model
   dget_ELH <- function(t, y, indata){
     with(as.list(c(indata, y)), {
-
+      
       # temperature correction
       Tb <- Tbf(t)
       Tcorr <- exp(T_A / T_REF - T_A / (273.15 + Tb)) * (1 + exp(T_AL / T_REF - T_AL / T_L) + exp(T_AH / T_H - T_AH / T_REF)) / (1 + exp(T_AL / (273.15 + Tb) - T_AL / T_L) + exp(T_AH / T_H - T_AH / (273.15 + Tb)))
       Tcorr2 <- exp(T_A2 / T_REF - T_A2 / (273.15 + Tb)) * (1 + exp(T_AL2 / T_REF - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / T_REF)) / (1 + exp(T_AL2 / (273.15 + Tb) - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / (273.15 + Tb)))
-
+      
       # unpack variables
       E <- y[1] # J, RESERVE
       L <- y[2] # CM, STRUCTURAL LENGTH
       H <- y[3] # J, MATURITY
-
+      
       # use embryo equation for length, from Kooijman 2009 eq. 2
       V <- L ^ 3                                                # CM^3, STRUCTURAL VOLUME
       E_s <- E / V / E_m                                        # -, SCALED RESERVE DENSITY
@@ -464,29 +476,29 @@ DEB_var<-function(
       dE <- -1 * SC * p_Am * Tcorr                              # J/TIME, CHANGE IN RESERVE
       U_H <- H / p_Am * Tcorr                                   # SCALED MATURITY
       dH <- ((1 - kap) * SC - k_J * Tcorr2 * U_H) * p_Am * Tcorr# J/TIME, CHANGE IN MATURITY
-
+      
       y <- list(c(dE, dL, dH))
     })
   }
-
+  
   # larva for hex model
   dget_AELES <- function(t, y, indata){
     with(as.list(c(indata, y)), {
-
+      
       # temperature correction
       Tb <- Tbf(t)
       Tcorr <- exp(T_A / T_REF - T_A / (273.15 + Tb)) * (1 + exp(T_AL / T_REF - T_AL / T_L) + exp(T_AH / T_H - T_AH / T_REF)) / (1 + exp(T_AL / (273.15 + Tb) - T_AL / T_L) + exp(T_AH / T_H - T_AH / (273.15 + Tb)))
       Tcorr2 <- exp(T_A2 / T_REF - T_A2 / (273.15 + Tb)) * (1 + exp(T_AL2 / T_REF - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / T_REF)) / (1 + exp(T_AL2 / (273.15 + Tb) - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / (273.15 + Tb)))
-
+      
       # food
       X <- Xf(t)
-
+      
       # unpack variables
       E <- y[1] # J, RESERVE
       L <- y[2] # CM, STRUCTURAL LENGTH
       E_R <- y[3] #J, REPRODUCTION BUFFER
       E_S <- min(y[4], E_sm * (L ^ 3)) #J, STOMACH ENERGY
-
+      
       V <- L ^ 3                                         # CM^3, STRUCTURAL VOLUME
       e <- E / V / E_m                                   # -, SCALED RESERVE DENSITY
       r <- (e * k_E * Tcorr - g * k_M * Tcorr)/ (e + g)  # 1/TIME, SPECIFIC GROWTH RATE
@@ -495,33 +507,33 @@ DEB_var<-function(
       p_X <- p_Xm * Tcorr * ((X / K) / (f2 + X / K)) * V # J/TIME, FOOD ENERGY INTAKE RATE, NOTE MULTPLYING BY V SINCE ALREADY DIVIDED BY L_B WHICH IS THE SAME AS MULT BY V^2/3 AND BY L/L_b
       #p_X <- p_A / kap_X                                # J/TIME, FOOD ENERGY INTAKE RATE, NOTE MULTPLYING BY V SINCE ALREADY DIVIDED BY L_B WHICH IS THE SAME AS MULT BY V^2/3 AND BY L/L_b
       if(E_S < p_A){                                     # NO ASSIMILATION IF STOMACH TOO EMPTY
-        dE <- E_S - p_C                                  # J/TIME, CHANGE IN RESERVE
+        dE <- max(0, E_S) - p_C                                  # J/TIME, CHANGE IN RESERVE
       }else{
         dE <- f * p_Am * Tcorr * V - p_C                 # J/TIME, CHANGE IN RESERVE, NOTE MULTPLYING BY V SINCE ALREADY DIVIDED BY L_B WHICH IS THE SAME AS MULT BY V^2/3 AND BY L/L_b
       }
       dL <- r * L / 3                                    # CM/TIME, CHANGE IN LENGTH
       dER <- (1 - kap) * p_C - p_J * Tcorr2              # J/TIME, CHANGE IN REPROD BUFFER
       dEs <- p_X * Tcorr - f * (p_Am * Tcorr / kap_X) * V# J/TIME, CHANGE IN STOMACH ENERGY, NOTE MULTPLYING BY V SINCE ALREADY DIVIDED BY L_B WHICH IS THE SAME AS MULT BY V^2/3 AND BY L/L_b
-
+      
       y <- list(c(dE, dL, dER, dEs))
     })
   }
-
+  
   # pupa for hex model
   dget_AVELHS <- function(t, y, indata){
     with(as.list(c(indata, y)), {
-
+      
       # temperature correction
       Tb <- Tbf(t)
       Tcorr <- exp(T_A / T_REF - T_A / (273.15 + Tb)) * (1 + exp(T_AL / T_REF - T_AL / T_L) + exp(T_AH / T_H - T_AH / T_REF)) / (1 + exp(T_AL / (273.15 + Tb) - T_AL / T_L) + exp(T_AH / T_H - T_AH / (273.15 + Tb)))
       Tcorr2 <- exp(T_A2 / T_REF - T_A2 / (273.15 + Tb)) * (1 + exp(T_AL2 / T_REF - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / T_REF)) / (1 + exp(T_AL2 / (273.15 + Tb) - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / (273.15 + Tb)))
-
+      
       # unpack variables
       V <- y[1] # CM3, STRUCTURAL VOLUME OF LARVA
       E <- y[2] # J, RESERVE OF LARVA
       L <- y[3] # CM, STRUCTURAL LENGTH OF IMAGO
       H <- y[4] # J, MATURITY
-
+      
       dV <- -1 * V * k_E * Tcorr                    # CM^3/TIME, CHANGE IN LARVAL STRUCTURAL VOLUME
       e <- E / L ^ 3 / E_m                          # -, SCALED RESERVE DENSITY
       r <- v_j * Tcorr * (e / L - 1 / L_m)/ (e + g) # 1/TIME, SPECIFIC GROWTH RATE
@@ -529,23 +541,23 @@ DEB_var<-function(
       dE <-  dV * g * E_m * kap * kap_V - p_C       # J/TIME, CHANGE IN RESERVE
       dL <- r * L / 3                               # CM/TIME, CHANGE IN LENGTH OF IMAGO
       dH <- (1 - kap) * p_C - k_J * Tcorr2 * H       # J/TIME, CHANGE IN MATURITY
-
+      
       y <- list(c(dV, dE, dL, dH))
     })
   }
-
+  
   # imago for hex model
   dget_EEES <- function(t, y, indata){
     with(as.list(c(indata, y)), {
-
+      
       # temperature correction
       Tb <- Tbf(t)
       Tcorr <- exp(T_A / T_REF - T_A / (273.15 + Tb)) * (1 + exp(T_AL / T_REF - T_AL / T_L) + exp(T_AH / T_H - T_AH / T_REF)) / (1 + exp(T_AL / (273.15 + Tb) - T_AL / T_L) + exp(T_AH / T_H - T_AH / (273.15 + Tb)))
       Tcorr2 <- exp(T_A2 / T_REF - T_A2 / (273.15 + Tb)) * (1 + exp(T_AL2 / T_REF - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / T_REF)) / (1 + exp(T_AL2 / (273.15 + Tb) - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / (273.15 + Tb)))
-
+      
       # food
       X <- Xf(t)
-
+      
       # unpack variables
       E <- y[1]                           # J, RESERVE
       E_R <- y[2]                         # J, REPRODUCTION BUFFER
@@ -565,7 +577,7 @@ DEB_var<-function(
         p_CR <- 0
       }
       if(E_s < p_A){      # NO ASSIMILATION IF STOMACH TOO EMPTY
-        dE <- E_s - p_C           # J/TIME, CHANGE IN RESERVE
+        dE <- max(0, E_s) - p_C           # J/TIME, CHANGE IN RESERVE
       }else{
         dE <- f * p_Am * Tcorr * V - p_C  # J/TIME, CHANGE IN RESERVE
       }
@@ -576,15 +588,15 @@ DEB_var<-function(
       # ageing (equation 6.2 in Kooijman 2010 (DEB3)
       dq <- (q * (V / L_m ^ 3) * s_G + h_a * Tcorr) * e * (((v * Tcorr * s_M) / L) - r) - r * q # ageing acceleration
       dhs <- q - r * hs # hazard
-
+      
       y <- list(c(dE, dER, dEB, dES, dq, dhs))
     })
   }
-
+  
   # events
-
+  
   eventfun <- function(t, y, pars) y
-
+  
   birth <- function(t, y, pars) {
     if(y[3] > E_Hb) {
       y[3] <- 0
@@ -621,9 +633,9 @@ DEB_var<-function(
     }
     return(y)
   }
-
+  
   if(metab_mode < 2){
-
+    
     # parameters
     indata <- list(k_J = k_J,
                    p_Am = p_Am,
@@ -668,14 +680,14 @@ DEB_var<-function(
                    T_H2 = T_H2,
                    T_AL2 = T_AL2,
                    T_AH2 = T_AH2)
-
+    
     times <- seq(0, (1 / step) * ndays)
-
+    
     # initial conditions for solver
     init <- c(V_init, E_init, E_H_init + 1e-10, E_s_init + 1e-10, hs_init + 1e-10, q_init + 1e-10, hs_init + 1e-10, E_R_init + 1e-10, E_B_init + 1e-10)
-
+    
     #"egg", "hatchling", "puberty", "adult"
-
+    
     if(E_H_init < E_Hb){
       if(foetal == 1){
         indata$f
@@ -692,7 +704,7 @@ DEB_var<-function(
       # }
       #times <- seq(0, (1 / step) * ndays - t_birth)
       times <- seq(t_birth, (1 / step) * ndays)
-
+      
       # parameters
       indata <- list(k_J = k_J,
                      p_Am = p_Am,
@@ -802,11 +814,11 @@ DEB_var<-function(
         }
       }
     }
-
+    
     if(E_H_init < E_Hp & metab_mode != 1){
-
+      
       # to puberty
-
+      
       #DEB.state.pub <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_DEB, parms = indata, method = "lsodes", events = list(func = eventfun, root = TRUE, terminalroot = 3), rootfun = puberty))[, 2:10]
       DEB.state.pub <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_DEB, parms = indata, method = "lsoda", events = list(func = eventfun, root = TRUE, terminalroot = 3), rootfun = puberty))[, 2:10]
       colnames(DEB.state.pub) <- c("V", "E", "H", "E_s", "S", "q", "hs", "R", "B")
@@ -818,7 +830,7 @@ DEB_var<-function(
         DEB.state.pub <- head(DEB.state.pub, -1)
       }
       if(E_Hb != E_Hj){
-
+        
         if(E_H_init < E_Hb){
           #times <- seq(0, (1 / step) * ndays - t_birth - t_meta - t_puberty)
           times <- seq(t_birth + t_meta + t_puberty, (1 / step) * ndays)
@@ -837,10 +849,10 @@ DEB_var<-function(
       }
     }
     # to end of time sequence
-
-    DEB.state.end <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_DEB, parms = indata, method = "lsodes"))[, 2:10]
+    
+    DEB.state.end <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_DEB, parms = indata, method = "lsoda"))[, 2:10]
     colnames(DEB.state.end) <- c("V", "E", "H", "E_s", "S", "q", "hs", "R", "B")
-
+    
     if(E_Hb != E_Hj){
       if(metab_mode == 1){
         if(E_H_init < E_Hb){
@@ -882,7 +894,7 @@ DEB_var<-function(
     }
   }else{
     # embryo
-
+    
     # parameters
     indata <- list(f = f,
                    k_M = k_M,
@@ -906,15 +918,15 @@ DEB_var<-function(
                    T_H2 = T_H2,
                    T_AL2 = T_AL2,
                    T_AH2 = T_AH2)
-
+    
     times <- seq(0, (1 / step) * ndays)
-
+    
     #if(E_H_init < E_Hb){
     # to birth
-
+    
     # initial conditions for solver
     init <- c(E_init * V_init, V_init ^ (1 / 3), E_H_init + 1e-10)
-
+    
     DEB.state.embryo <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_ELH, parms = indata, method = "lsodes", events = list(func = eventfun, root = TRUE, terminalroot = 3), rootfunc = birth))[, 2:4]
     colnames(DEB.state.embryo) <- c("E", "L", "H")
     L.b <- max(DEB.state.embryo$L)
@@ -930,13 +942,13 @@ DEB_var<-function(
     #times <- seq(0, (1 / step) * ndays - t_birth)
     times <- seq(t_birth, (1 / step) * ndays)
     #}
-
+    
     # larva
-
+    
     p_J <- E_H_pres * k_J
     k_E <- v / L.b
     E_RJ <- s_j * ((1 - kap) * E_m * g *(((v / L.b) + (p_M / E_G))/ ((v / L.b) - g * (p_M / E_G))))
-
+    
     # parameters
     indata <- list(f = f,
                    k_m = k_M,
@@ -963,10 +975,10 @@ DEB_var<-function(
                    T_H2 = T_H2,
                    T_AL2 = T_AL2,
                    T_AH2 = T_AH2)
-
+    
     # initial conditions for solver
     init <- c(E_pres, L_pres, E_R_init + 1e-10, E_s_init + 1e-10)
-
+    
     # to pupation
     DEB.state.larva <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_AELES, parms = indata, method = "lsodes", events = list(func = eventfun, root = TRUE, terminalroot = 3), rootfunc = pupate))[, 2:5]
     colnames(DEB.state.larva) <- c("E", "L", "E_R", "E_s")
@@ -988,9 +1000,9 @@ DEB_var<-function(
     #}else{
     #  times <- seq(0, (1 / step) * ndays - t_pupate)
     #}
-
+    
     # pupa
-
+    
     s_M <- L.j / L.b
     v_j <- v * s_M
     #k_EV <- k_EV * Tcorr#v_jT / L.j#k_EV * Tcorr
@@ -1042,7 +1054,7 @@ DEB_var<-function(
     #}else{
     #  times <- seq(0, (1 / step) * ndays - t_pupate - t_eclose)
     #}
-
+    
     # imago
     V_pres <- L_pres ^ 3
     p_J <- E_H_pres * k_J
@@ -1081,15 +1093,15 @@ DEB_var<-function(
                    T_H2 = T_H2,
                    T_AL2 = T_AL2,
                    T_AH2 = T_AH2)
-
+    
     init <- c(E_pres, E_R_pres, 1e-10, 1e-10, 1e-10, 1e-10)
-
+    
     # to end
     DEB.state.imago <- as.data.frame(deSolve::ode(y = init, times = times, func = dget_EEES, parms = indata, method = "lsodes"))[, 2:7]
     colnames(DEB.state.imago) <- c("E", "E_R", "E_B", "E_s", "q", "hs")
     DEB.state.imago$E_s[DEB.state.imago$E_s > E_sm * L.j ^ 3] <- E_sm * L.j ^ 3
     DEB.state.imago$E[DEB.state.imago$E / L.e ^ 3 > E_m] <- E_m * L.e ^ 3
-
+    
     V <- c(DEB.state.embryo$L ^ 3, DEB.state.larva$L ^ 3, DEB.state.pupa$V + DEB.state.pupa$L ^ 3, DEB.state.imago$E_s * 0 + L.e ^ 3)
     V2 <- c(DEB.state.embryo$L ^ 3, DEB.state.larva$L ^ 3, DEB.state.pupa$L ^ 3, DEB.state.imago$E_s * 0 + L.e ^ 3)
     E2 <- c(DEB.state.embryo$E / DEB.state.embryo$L ^ 3, DEB.state.larva$E / DEB.state.larva$L ^ 3, DEB.state.pupa$E / DEB.state.pupa$L ^ 3, DEB.state.imago$E / L.e ^ 3)
@@ -1108,14 +1120,16 @@ DEB_var<-function(
     E_Hj <- E_Hp
     E_He <- E_Hp
   }
-
+  
   # temperature correction
-  Tb <- Tbf(seq(0, nrow(DEB.state)-1))
+  Tb <- Tbf(seq(0, (nrow(DEB.state)-1)))
   Tcorr <- exp(T_A / T_REF - T_A / (273.15 + Tb)) * (1 + exp(T_AL / T_REF - T_AL / T_L) + exp(T_AH / T_H - T_AH / T_REF)) / (1 + exp(T_AL / (273.15 + Tb) - T_AL / T_L) + exp(T_AH / T_H - T_AH / (273.15 + Tb)))
   Tcorr2 <- exp(T_A2 / T_REF - T_A2 / (273.15 + Tb)) * (1 + exp(T_AL2 / T_REF - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / T_REF)) / (1 + exp(T_AL2 / (273.15 + Tb) - T_AL2 / T_L2) + exp(T_AH2 / T_H2 - T_AH2 / (273.15 + Tb)))
   X <- Xf(seq(0, nrow(DEB.state)-1))
-
-
+  
+  DEB.state$R[DEB.state$R < 0] <- 0
+  DEB.state$B[DEB.state$B < 0] <- 0
+  DEB.state$E_s[DEB.state$E_s < 0] <- 0
   V <- DEB.state$V
   if(metab_mode !=2){
     V2 <- V
@@ -1127,7 +1141,7 @@ DEB_var<-function(
   E_s[E_s > E_sm * V2] <- E_sm * V2[E_s > E_sm * V2]
   E_s[E_s < 0] <- 0
   resid[resid < 0] <- 0
-
+  
   starve <- DEB.state$S
   q <- DEB.state$q
   hs <- DEB.state$hs
@@ -1141,17 +1155,18 @@ DEB_var<-function(
     p_R[(t_birth + t_pupate):(t_birth + t_pupate + t_eclose)] <- dEH[(t_birth + t_pupate):(t_birth + t_pupate + t_eclose)]
   }
   p_B <- c(0, DEB.state$B[2:(length(DEB.state$B))] - DEB.state$B[1:((length(DEB.state$B)-1))])
+  #p_B <- c(DEB.state$B[2:(length(DEB.state$B))] - DEB.state$B[1:((length(DEB.state$B)-1))], 0)
   if(metab_mode == 2){
     p_R[which(hs == init[5])-1] <- 0 # fixing spike caused by transition between pupa and imago
   }
-  p_B <- p_R + p_B
+  #p_B <- p_R + p_B
   p_B[E_H < E_Hp] <- 0
   p_R[p_R < 0] <- 0
   p_B[p_B < 0] <- 0
-  if(max(E_H) > E_Hp){ # temporary workaround for weird p_G driven by low p_R at transition to maturity
-    suppressWarnings(p_R_fix <- which(p_R == p_R[E_H > E_Hp])[1] - 1)
-    p_R[p_R_fix] <- (p_R[p_R_fix - 1] + p_B[p_R_fix + 1]) / 2
-  }
+  # if(max(E_H) > E_Hp){ # temporary workaround for weird p_G driven by low p_R at transition to maturity
+  #   suppressWarnings(p_R_fix <- which(p_R == p_R[E_H > E_Hp])[1] - 1)
+  #   p_R[p_R_fix] <- (p_R[p_R_fix - 1] + p_B[p_R_fix + 1]) / 2
+  # }
   E_R <- p_R * 0
   E_B <- E_R
   if(metab_mode != 2){
@@ -1181,18 +1196,19 @@ DEB_var<-function(
   }
   V_m <- (kap * (p_Am * s_M) / p_M) ^ 3 # cm ^ 3, maximum structural volume
   L_m <- V_m ^ (1 / 3)
-
+  
   # some powers
   p_M2 <- p_M * Tcorr * V + p_T * V ^ (2 / 3)
   p_M2[p_M2 < 0] <- 0
-  p_J <- k_J * E_H * Tcorr2 - starve
+  p_J <- k_J * E_H * Tcorr2
   p_J[p_J < 0] <- 0
   p_A <- V ^ (2 / 3) * p_Am * Tcorr * s_M * f
   p_A[E_s == 0] <- 0
+  p_A[p_A < 0] <- 0
   #p_A[E_s > V ^ (2 / 3) * p_Am * Tcorr * s_M * f] <- V[E_s > V ^ (2 / 3) * p_Am * Tcorr * s_M * f] ^ (2 / 3) * p_Am * s_M[E_s > V ^ (2 / 3) * p_Am * Tcorr * s_M * f] * f
   r <- v * Tcorr * s_M * (e / V ^ (1 / 3) - (1 + L_T / V ^ (1 / 3)) / L_m) / (e + g)
   p_C <- E * ((v * Tcorr * s_M) / V ^ (1 / 3) - r) * V # J / t, mobilisation rate, equation 2.12 DEB3
-
+  
   if(metab_mode == 1){
     dE <- c(DEB.state$E[2:(length(DEB.state$E))] - DEB.state$E[1:((length(DEB.state$E)-1))], 0)
     p_A[E_H >= E_Hj] <- p_R[E_H >= E_Hj] + p_B[E_H >= E_Hj] + p_M2[E_H >= E_Hj] + p_J[E_H >= E_Hj] + dE[E_H >= E_Hj] * V[E_H >= E_Hj]
@@ -1202,7 +1218,7 @@ DEB_var<-function(
   p_C[p_C < 0] <- 0
   p_D <- p_M2 + p_J + p_R
   p_D[E_H >= E_Hp] <- p_M2[E_H >= E_Hp] + p_J[E_H >= E_Hp] + (1 - kap_R) * p_B[E_H >= E_Hp]
-
+  
   if(metab_mode == 2){
     p_G <- p_C - p_M2 - p_J
     p_G[E_H < E_He & p_A > 0] <- p_G[E_H < E_He & p_A > 0] - p_R[E_H < E_He & p_A > 0]
@@ -1213,13 +1229,13 @@ DEB_var<-function(
     p_G[E_H >= E_Hj] <- 0
   }
   p_G[p_G < 0] <- 0
-  p_X <- f * p_Xm * s_M * V ^ (2 / 3) * (X / K) / (1 + X / K) - resid
+  p_X <- max(0, f * p_Xm * s_M * V ^ (2 / 3) * (X / K) / (1 + X / K) - resid)
   if(metab_mode < 2){
     p_X[E_H < E_Hb] <- 0
   }else{
     p_X[E_s == 0] <- 0
   }
-
+  
   # initialise for reproduction and starvation
   if(clutch_ab[1] > 0){
     clutchsize <- floor(clutch_ab[1] * (V ^ (1 / 3) / del_M) - clutch_ab[2])
@@ -1246,18 +1262,18 @@ DEB_var<-function(
       }
     }
   }
-
+  
   # determine stages
-
+  
   stage <- rep(0, length(E_H))
-
+  
   # STD MODEL
   if(metab_mode == 0 & E_Hb == E_Hj){
     stage[E_H > E_Hb] <- 1
     stage[E_H > E_Hp] <- 2
     stage[firstlay:length(stage)] <- 3
   }
-
+  
   # ABJ MODEL
   if(metab_mode == 0 & E_Hb != E_Hj){
     stage[E_H > E_Hb] <- 1
@@ -1265,7 +1281,7 @@ DEB_var<-function(
     stage[E_H > E_Hp] <- 3
     stage[firstlay:length(stage)] <- 4
   }
-
+  
   # ABP acceleration model
   if(metab_mode == 1){
     L_instar <- rep(0, stages)
@@ -1279,7 +1295,7 @@ DEB_var<-function(
     stage[E_H > E_Hp] <- stages
     stage[firstlay:length(stage)] <- stages + 1
   }
-
+  
   # hex model
   if(metab_mode == 2){
     L_instar <- rep(0, stages)
@@ -1294,30 +1310,30 @@ DEB_var<-function(
     stage[E_H >= E_He] <- stages - 1
     stage[firstlay:length(stage)] <- stages
   }
-
+  
   #mass balance
   JOJx <- p_A * etaO[1,1] + p_D * etaO[1,2] + p_G * etaO[1,3] # molar flux of food (mol/time step)
   JOJv <- p_A * etaO[2,1] + p_D * etaO[2,2] + p_G * etaO[2,3] # molar flux of reserve (mol/time step)
   JOJe <- p_A * etaO[3,1] + p_D * etaO[3,2] + p_G * etaO[3,3] # molar flux of structure (mol/time step)
   JOJp <- p_A * etaO[4,1] + p_D * etaO[4,2] + p_G * etaO[4,3] # molar flux of faeces (mol/time step)
-
+  
   JOJx_GM <- p_D * etaO[1,2] + p_G * etaO[1,3] # non-assimilation (i.e. growth and maintenance) molar flux of food (mol/time step)
   JOJv_GM <- p_D * etaO[2,2] + p_G * etaO[2,3] # non-assimilation (i.e. growth and maintenance) molar flux of reserve (mol/time step)
   JOJe_GM <- p_D * etaO[3,2] + p_G * etaO[3,3] # non-assimilation (i.e. growth and maintenance) molar flux of structure (mol/time step)
   JOJp_GM <- p_D * etaO[4,2] + p_G * etaO[4,3] # non-assimilation (i.e. growth and maintenance) molar flux of faeces (mol/time step)
-
+  
   JMCO2 <- JOJx * JM_JO[1,1] + JOJv * JM_JO[1,2] + JOJe * JM_JO[1,3] + JOJp * JM_JO[1,4] # molar flux of CO2 (mol/time step)
   JMH2O <- JOJx * JM_JO[2,1] + JOJv * JM_JO[2,2] + JOJe * JM_JO[2,3] + JOJp * JM_JO[2,4] # molar flux of H2O (mol/time step)
   JMO2 <- JOJx * JM_JO[3,1] + JOJv * JM_JO[3,2] + JOJe * JM_JO[3,3] + JOJp * JM_JO[3,4] # molar flux of O2 (mol/time step)
   JMNWASTE <- JOJx * JM_JO[4,1] + JOJv * JM_JO[4,2] + JOJe * JM_JO[4,3] + JOJp * JM_JO[4,4] # molar flux of nitrogenous waste (mol/time step)
-
+  
   JMCO2_GM <- JOJx_GM * JM_JO[1,1] + JOJv_GM * JM_JO[1,2] + JOJe_GM * JM_JO[1,3] + JOJp_GM * JM_JO[1,4]
   JMH2O_GM <- JOJx_GM * JM_JO[2,1] + JOJv_GM * JM_JO[2,2] + JOJe_GM * JM_JO[2,3] + JOJp_GM * JM_JO[2,4]
   JMO2_GM <- JOJx_GM * JM_JO[3,1] + JOJv_GM * JM_JO[3,2] + JOJe_GM * JM_JO[3,3] + JOJp_GM * JM_JO[3,4]
   JMNWASTE_GM <- JOJx_GM * JM_JO[4,1] + JOJv_GM * JM_JO[4,2] + JOJe_GM * JM_JO[4,3] + JOJp_GM * JM_JO[4,4]
-
+  
   #RQ <- JMCO2 / JMO2 # respiratory quotient
-
+  
   #PV=nRT
   #T=273.15 #K
   #R=0.082058 #L*atm/mol*K
@@ -1332,7 +1348,7 @@ DEB_var<-function(
   O2ML <- -1 * JMO2 * gas_cor # mlO2/time, temperature corrected (including SDA)
   CO2ML <- JMCO2 * gas_cor # mlCO2/time, temperature corrected (including SDA)
   GH2OMET <- JMH2O * 18.01528 # g metabolic water/time
-
+  
   # metabolic heat production (Watts) - growth overhead plus dissipation power (maintenance, maturity maintenance,
   # maturation/repro overheads) plus assimilation overheads - correct to 20 degrees so it can be temperature corrected
   # in MET.f for the new guessed Tb
@@ -1343,7 +1359,8 @@ DEB_var<-function(
   J_M <- c(JMCO2, JMH2O, JMO2, JMNWASTE) # - (n_M\n_O) * J_O;        # mol/d, J_C, J_H, J_O, J_N in rows, A, D, G in cols
   p_T <- sum(-J_O * mu_O -J_M * mu_M) / 3600 / Tcorr # W
   DEBQMETW <- p_T
-
+  E_R[E_R < 0] <- 0
+  E_B[E_B < 0] <- 0
   GDRYFOOD <- -1 * JOJx * w_X
   GFAECES <- JOJp * w_P
   GNWASTE <- JMNWASTE * w_N[1]
@@ -1351,7 +1368,7 @@ DEB_var<-function(
   wetstorage <- ((V * E / mu_E) * w_E) / d_E
   wetgut <- ((E_s / mu_E) * w_E) / fdry
   wetmass <- V * andens_deb + wetgonad + wetstorage + wetgut
-
+  
   p_surv <- hs * 0
   p_surv[1] <- p_surv_init
   for(i in 2:length(p_surv)){

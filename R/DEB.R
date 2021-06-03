@@ -454,16 +454,26 @@ DEB<-function(
             p_B <- p_R
           }#end check for whether batch mode is operating
         }#end check for immature or mature
-        p_R <- p_R - p_B # take finalised value of p_B from p_R
+        p_R <- max(0, p_R - p_B) # take finalised value of p_B from p_R
 
         # draw from reproduction and then batch buffers under starvation
         if(dS > 0 & p_R > dS){
           p_R <- p_R - dS
-          dS <- 0
+          if(p_R < 0){
+            dS <- abs(p_R)
+            p_R <- 0
+          }else{
+            dS <- 0
+          }
         }
         if(dS > 0 & p_B > dS){
           p_B <- p_B - dS
-          dS <- 0
+          if(p_B < 0){
+            dS <- abs(p_B)
+            p_B <- 0
+          }else{
+            dS <- 0
+          }
         }
         #accumulate energy/matter in reproduction and batch buffers
         dR <- p_R
@@ -506,7 +516,7 @@ DEB<-function(
   # some powers
   p_M2 <- max(0, p_MT * V + p_T * V ^ (2 / 3))
 
-  p_J <- max(0, k_JT * E_H - starve)
+  p_J <- k_JT * E_H
   if(E_s > V ^ (2 / 3) * p_AmT * f){
     p_A <- V ^ (2 / 3) * p_AmT * f
   }else{

@@ -364,7 +364,7 @@ DEB_euler<-function(
     }
   }
 
-  p_J <- k_JT * E_H_pres # adding starvation costs to P_J so maturation time (immature) or reproduction (mature) can be sacrificed to pay somatic maintenance
+  p_J <- k_JT * E_H_pres
   #maturation
   if(E_H_pres < E_Hp){
     if(E_H_pres < E_Hb){
@@ -421,7 +421,7 @@ DEB_euler<-function(
   if(metab_mode == 1 & E_H >= E_Hj){
     p_C <- p_A - dEdt * V
   }
-  p_J <- max(0, k_JT * E_H - starve)# adding starvation costs to P_J so maturation time (immature) or reproduction (mature) can be sacrificed to pay somatic maintenance
+  p_J <- k_JT * E_H
   p_M2 <-max(0, p_MT * V + p_T * V ^ (2 / 3))
 
   if(metab_mode == 1 & E_H_pres >= E_Hj){
@@ -452,16 +452,26 @@ DEB_euler<-function(
      p_B <- p_R
    }#end check for whether batch mode is operating
   }#end check for immature or mature
-  p_R <- p_R - p_B # take finalised value of p_B from p_R
+  p_R <- max(0, p_R - p_B) # take finalised value of p_B from p_R
 
   # draw from reproduction and then batch buffers under starvation
   if(starve > 0 & E_R > starve){
     p_R <- p_R - starve
-    starve <- 0
+    if(p_R < 0){
+      starve <- abs(p_R)
+      p_R <- 0
+    }else{
+      starve <- 0
+    }
   }
   if(starve > 0 & E_B > starve){
     p_B <- max(0, p_B - starve)
-    starve <- 0
+    if(p_B < 0){
+      starve <- abs(p_B)
+      p_B <- 0
+    }else{
+      starve <- 0
+    }
   }
 
   if(metab_mode == 1){ # APB (e.g. hemimetabolous insect
