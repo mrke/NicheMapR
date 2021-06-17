@@ -55,7 +55,7 @@ gads.r <- function(lat, lon, relhum, season){
              35.0,40.0)
   mlamb <- 61
 
-  ahum <- c(0.,50.,70.,80.,90.,95.,98.,99.)
+  ahum <- c(0,50,70,80,90,95,98,99)
   nhum <- c(0,50,70,80,90,95,98,99)
   mhum <- 8
   chum <- c('00','50','70','80','90','95','98','99')
@@ -179,6 +179,9 @@ gads.r <- function(lat, lon, relhum, season){
   }
 
   for(iwel in 1:nwel){
+    if(exists("k2")){
+      rm(k2)
+    }
     ilamb <- iwel
 
     # c      Reading the raw data from the files TAPE201, TAPE207:	       c
@@ -213,34 +216,38 @@ gads.r <- function(lat, lon, relhum, season){
     acnr[3, 1] <- as.numeric(substr(line.read, 64, 66))
     acmr[3, 1] <- as.numeric(substr(line.read, 67, 76))
     if(njc[1] > 3){
+      k2 <- k
       for(jc in 4:njc[1]){
-        k <- k + 1
-        line.read <- ntape[k]
-        acnr[4, njc[1]] <- as.numeric(substr(line.read, 38, 40))
-        acmr[4, njc[1]] <- as.numeric(substr(line.read, 41, 50))
+        k2 <- k2 + 1
+        line.read2 <- ntape[k2]
+        acnr[jc, 1] <- as.numeric(substr(line.read2, 38, 40))
+        acmr[jc, 1] <- as.numeric(substr(line.read2, 41, 50))
       }
     }
     if(nl != 1){
       for(l in 2:nl){
-        k <- k + 1
-        line.read <- ntape[k]
-        atn[l] <- substr(line.read, 15, 17)
-        pat[l] <- substr(line.read, 18, 20)
-        rht[l] <- as.numeric(substr(line.read, 21, 23))
-        n[l] <- as.numeric(substr(line.read, 24, 33))
-        njc[l] <- as.numeric(substr(line.read, 34, 37))
-        acnr[1, l] <- as.numeric(substr(line.read, 38, 40))
-        acmr[1, l] <- as.numeric(substr(line.read, 41, 50))
-        acnr[2, l] <- as.numeric(substr(line.read, 51, 53))
-        acmr[2, l] <- as.numeric(substr(line.read, 54, 63))
-        acnr[3, l] <- as.numeric(substr(line.read, 64, 66))
-        acmr[3, l] <- as.numeric(substr(line.read, 67, 76))
+        if(!exists("k2")){
+          k2 <- k
+        }
+        k2 <- k2 + 1
+        line.read2 <- ntape[k2]
+        atn[l] <- substr(line.read2, 15, 17)
+        pat[l] <- substr(line.read2, 18, 20)
+        rht[l] <- as.numeric(substr(line.read2, 21, 23))
+        n[l] <- as.numeric(substr(line.read2, 24, 33))
+        njc[l] <- as.numeric(substr(line.read2, 34, 37))
+        acnr[1, l] <- as.numeric(substr(line.read2, 38, 40))
+        acmr[1, l] <- as.numeric(substr(line.read2, 41, 50))
+        acnr[2, l] <- as.numeric(substr(line.read2, 51, 53))
+        acmr[2, l] <- as.numeric(substr(line.read2, 54, 63))
+        acnr[3, l] <- as.numeric(substr(line.read2, 64, 66))
+        acmr[3, l] <- as.numeric(substr(line.read2, 67, 76))
         if(njc[l] > 3){
-          k <- k + 1
-          line.read <- ntape[k]
           for(jc in 4:njc[l]){
-            acnr[4, jc] <- as.numeric(substr(line.read, 38, 40))
-            acmr[4, jc] <- as.numeric(substr(line.read, 41, 50))
+            k2 <- k2 + 1
+            line.read2 <- ntape[k2]
+            acnr[jc, l] <- as.numeric(substr(line.read2, 38, 40))
+            acmr[jc, l] <- as.numeric(substr(line.read2, 41, 50))
           }
         }
       }
@@ -250,7 +257,7 @@ gads.r <- function(lat, lon, relhum, season){
       for(ic in 1:njc[l]){
         sum <- sum + acmr[ic, l]
       }
-      if(abs(sum-1.)>=0.01){
+      if(abs(sum -1) >= 0.01){
         cat('sum of mixing ratios is not 1. please have a look at errorfile *.err')
       }
     }
@@ -259,7 +266,7 @@ gads.r <- function(lat, lon, relhum, season){
 
     for(il in 1:nl){
       if(rht[il] < 30){
-        nh(il) <- 1
+        nh[il] <- 1
       }else{
         if(rht[il] > 30 & rht[il] <= 65){
           nh[il] <- 2
@@ -302,7 +309,7 @@ gads.r <- function(lat, lon, relhum, season){
       }
 
       for(ic in 1:njc[il]){
-        jc <- acnr[ic,il]
+        jc <- acnr[ic, il]
         # Exclusion? swelling at insoluble, soot and mineral components and at clouds
         if(jc == 1 | jc == 3 | (jc >= 6 & jc <= 9) | jc > 10){
           iht <- 1
