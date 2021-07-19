@@ -2,11 +2,11 @@
 title: 'Endotherm Model Tutorial I: theory, equations and subroutines'
 author: "Warren P. Porter, Paul D. Mathewson & Michael R. Kearney"
 date: "`r Sys.Date()`"
-output:
-  pdf_document: default
-  #html_document: default
-vignette: |
-  %\VignetteIndexEntry{Endotherm Model Equations} %\VignetteEncoding{UTF-8} %\VignetteEngine{knitr::knitr}
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Endotherm Model Components}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 editor_options:
   chunk_output_type: console
 ---
