@@ -4,7 +4,7 @@ author: "Warren P. Porter, Paul D. Mathewson & Michael R. Kearney"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Endotherm Model Components}
+  %\VignetteIndexEntry{Endotherm Model Equations}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options:
