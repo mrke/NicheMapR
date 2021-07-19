@@ -1,11 +1,11 @@
-## ---- echo = FALSE, warning = FALSE, message = FALSE---------------------
+## ---- echo = FALSE, warning = FALSE, message = FALSE--------------------------
 knitr::opts_chunk$set(
  eval = TRUE, tidy.opts=list(width.cutoff=60), tidy=TRUE  
 )
 library(jpeg)
 library(knitr)
 
-## ----table, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'---------
 tabl <- "
 
 *Symbols* | *Definition*	| *Units*  	
@@ -150,7 +150,7 @@ plot(Biot ~ masses, ylab = 'Biot number', xlab = 'mass (g)', ylim = c(0, .25))
 abline(h=0.1)
 
 ## ---- echo=FALSE, out.width = "40%", fig.align="center", fig.cap = "A one-lump model of heat loss assuming a point (line) source of heat in the centre of the cylindrical geometry", fig.pos='!h'----
-include_graphics("C:/Users/mrke/Dropbox/Current Research Projects/global transient/manuscript/Lizard_System_Diagram3.jpg")
+include_graphics("Lizard_System_Diagram3.jpg")
 
 ## ---- echo=FALSE, out.width = "40%", fig.align="center", fig.cap = "A one lump model of heat exchange assuming distributed metabolic heat generation", fig.pos='!h'----
 include_graphics("Bat_System_Diagram.jpg")

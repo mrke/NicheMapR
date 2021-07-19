@@ -169,18 +169,13 @@ nocturn <- 0      # nocturnal activity
 crepus <- 0       # crepuscular activity
 diurn <- 1        # diurnal activity
 minshades <- rep(0, 12)   # min available shade?
-maxshades <- micro$MAXSHADES # max available shade?
+maxshades <- micro$maxshade # max available shade?
 ```
 
 Run the ectotherm model, retrieve the output and create some mock dates.
 
 ```{r, warning=FALSE, message=FALSE}
-ecto <- ectotherm(Ww_g = Ww_g, alpha_max = alpha_max, alpha_min = alpha_min, shape = shape, pct_wet = pct_wet,
-                  T_F_max = T_F_max, T_F_min = T_F_min, T_B_min = T_B_min, T_RB_min = T_RB_min,
-                  CT_max = CT_max, CT_min = CT_min, T_pref = T_pref, mindepth = mindepth, 
-                  maxdepth = maxdepth, shade_seek = shade_seek, burrow = burrow, climb = climb,
-                  minshades = minshades, nocturn = nocturn, diurn = diurn, crepus = crepus,
-                  maxshades = maxshades)
+ecto <- ectotherm(Ww_g = Ww_g, alpha_max = alpha_max, alpha_min = alpha_min, shape = shape, pct_wet = pct_wet, T_F_max = T_F_max, T_F_min = T_F_min, T_B_min = T_B_min, T_RB_min = T_RB_min, CT_max = CT_max, CT_min = CT_min, T_pref = T_pref, mindepth = mindepth, maxdepth = maxdepth, shade_seek = shade_seek, burrow = burrow, climb = climb, minshades = minshades, nocturn = nocturn, diurn = diurn, crepus = crepus, maxshades = maxshades)
 
 # retrieve output
 environ <- as.data.frame(ecto$environ) # behaviour, Tb and environment
@@ -246,7 +241,7 @@ Explore what changing the thermal thresholds `CT_min`, `T_RB_min`, `T_B_min`, `T
 
 ```{r, echo=FALSE, fig.width=7, fig.height=7, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"}
 micro <- micro_global(loc = longlat, maxshade = 10)
-maxshades <- micro$MAXSHADES
+maxshades <- micro$maxshade
 
 ecto <- ectotherm(Ww_g = Ww_g, alpha_max = alpha_max, alpha_min = alpha_min, pct_wet = pct_wet, T_F_max = T_F_max, T_F_min = T_F_min, T_B_min = T_B_min, T_RB_min = T_RB_min, CT_max = CT_max, CT_min = CT_min, T_pref = T_pref, mindepth = mindepth, maxdepth = maxdepth, shade_seek = shade_seek, burrow = burrow, climb = climb, minshades = minshades, nocturn = nocturn, diurn = diurn, crepus = crepus, maxshades = maxshades)
 
@@ -372,13 +367,11 @@ maxdepth <- 10    # max depth (node, 1-10) allowed
 shade_seek <- 1   # shade seeking?
 burrow <- 1       # can it burrow?
 climb <- 0        # can it climb to thermoregulate?
-minshade <- 0     # min available shade?
-maxshade <- 90    # min available shade?
 nocturn <- 0      # nocturnal activity
 crepus <- 0       # crepuscular activity
 diurn <- 1        # diurnal activity
 minshades <- rep(0, nyear * 365)   # min available shade?
-maxshades <- micro$MAXSHADES # max available shade?
+maxshades <- micro$maxshade # max available shade?
 
 # DEB initial state
 
@@ -429,7 +422,6 @@ ecto<-ectotherm(DEB=1,
                 climb=climb,
                 mindepth=mindepth,
                 maxdepth=maxdepth,
-                minshade=minshade,
                 pct_wet=pct_wet,
                 z=z*z.mult,
                 del_M=del.M,

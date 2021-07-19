@@ -1,9 +1,9 @@
-## ---- echo = FALSE-------------------------------------------------------
+## ---- echo = FALSE------------------------------------------------------------
 knitr::opts_chunk$set(
  eval = TRUE
 )
 
-## ----table1, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table1, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 *Physical Quantity*       |	*Quantity Symbol* |	*Unit*   |	*Unit Symbol*
 ------------------------- | ----------------- | -------- | --------------
@@ -14,7 +14,7 @@ thermodynamic temperature | *T*               | kelvin   | K
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 *Physical Quantity*  | *Quantity Symbol*   | *Unit*   | *Unit Symbol*   | *Unit Definition*
 -------------------- | ------------------- | -------- | --------------- | -----------------
@@ -27,7 +27,7 @@ Celsius temperature$^*$ | $t$              | degree Celsius   | &deg;C   | $K$
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table3, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table3, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 *Multiple* | *Prefix*	| *Symbol* |	*Multiple* | *Prefix*	 | *Symbol*
 ---------- | -------- | -------- | ----------- | --------- | -------
@@ -40,7 +40,7 @@ $10^{-12}$ | pico	    | *p*      | $10^{12}$   | tera	     | T
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table4, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table4, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 **Force**   
 &nbsp;&nbsp;&nbsp;&nbsp;dyne = $10^5$ N$^*$  
@@ -90,7 +90,7 @@ $^{*}$exact, by definition
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table5, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table5, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 *Quantity*                                           | *Symbol*	| *Value*  |	*Units*
 ---------------------------------------------------- | -------- | -------- | -----------
@@ -112,7 +112,7 @@ Thermal conductivity of dry air at 25 &deg;C and 101325 Pa$^{*}$	 | *k*	    | $2
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table6, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table6, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 
 *Compound* | *10&deg;C*	| *15&deg;C*  |	 *20&deg;C* | *25&deg;C*	| *30&deg;C*	| *35&deg;C*	
@@ -173,7 +173,7 @@ ZnSO$_4$&middot;7H$_2$O$^{21}$|- | - | - | 88.5 | - | -
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table7, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table7, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 
 *Compound* | *Relative Humidity*	| *Compound*  |	 *Relative Humidity*	
@@ -190,7 +190,7 @@ K$_2$HPO$_4$|44.5 | - | -
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table8, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table8, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 
 *Compound* | *Relative Humidity*	| *Compound*  |	 *Relative Humidity*	
@@ -229,7 +229,7 @@ Mg silicoflouride|91.5 | Zn(CNS)$_2$ | 80.5
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table9, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table9, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 
 *Compound* | *Mass*, g m$^{-3}$ (STPD)	| *Relative Humidity*  	
@@ -253,19 +253,19 @@ CuSO$_4$|1.4 | 5.6
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table10, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table10, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'-------
 library(NicheMapR)
 knitr::kable(PropAirTable10) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table11, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table11, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'-------
 library(NicheMapR)
 knitr::kable(PropAirTable11) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table12, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table12, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'-------
 library(NicheMapR)
 knitr::kable(PropAirTable12) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -314,7 +314,7 @@ grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$bbemit,type='l',ylim=ylim,ylab=ylab, xlab=xlab,cex.lab=1.5,cex.axis=1.5,lwd=2)
 plotrix::boxed.labels(10, 550, expression(paste(phi," = ",5.67032," x 10"^{-8},"(",italic(t)," + 273.15)"^{4})),cex=1.5,bg="white",border=NA)
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -334,7 +334,7 @@ plotrix::boxed.labels(30, 1.4, expression(paste(italic(rho)," = ",frac(italic(P)
 plotrix::boxed.labels(10,1.3,"100 000 Pa",cex=1.5,bg="white",border=NA)
 plotrix::boxed.labels(0,1.14,"85 000 Pa",cex=1.5,bg="white",border=NA)
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(2,1)) # set up for 2 plots in 1 columns
 dps=seq(0,50,5)
 par(oma = c(5,5,2,2) + 0.1)
@@ -382,7 +382,7 @@ plotrix::boxed.labels(310+x,-23.5+y, expression(paste(italic(beta)," = ",265.5))
 plotrix::boxed.labels(360+x,-21.5+y, "}",cex=1.5,bg="white",border=NA)
 plotrix::boxed.labels(420+x,-21.5+y, "OVER ICE",cex=.8,bg="white",border=NA)
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -409,7 +409,7 @@ plotrix::boxed.labels(37, 2.30E-5, expression(paste(italic(T)," = ",italic(t)+27
 plotrix::boxed.labels(37, 2.2E-5, expression(paste(italic(n)," = ",1.81)),cex=1.05,bg="white",border=NA) 
 plotrix::boxed.labels(37, 2.1E-5, expression(paste(italic(rho)[0]," = ",2.26," x ",10^{5})),cex=1.05,bg="white",border=NA) 
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -431,7 +431,7 @@ plotrix::boxed.labels(10, 1.04E-5, expression(paste(italic(T)[0]," = ",296.16)),
 plotrix::boxed.labels(10, 0.94E-5, expression(paste(italic(C)," = ",120)),cex=1.05,bg="white",border=NA) 
 plotrix::boxed.labels(10, 0.81E-5, expression(paste(italic(rho)[0]," = ",italic(t)+273.15)),cex=1.05,bg="white",border=NA) 
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -448,7 +448,7 @@ grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$ggroup,type='l',ylim=c(9E5,10E6),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
 plotrix::boxed.labels(10, 8E6, expression(paste(italic(gamma)," = ",frac(0.0980618*italic(beta),italic(nu)^{2}))),cex=1.15,bg="white",border=NA) 
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
 par(yaxs="i")
@@ -465,7 +465,7 @@ grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$viskin,type='l',ylim=c(0.2E-5,2.2E-5),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
 plotrix::boxed.labels(-10, 2E-5, expression(paste(italic(nu)," = ",frac(italic(mu),italic(rho)))),cex=1.5,bg="white",border=NA) 
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
 par(yaxs="i")
@@ -483,7 +483,7 @@ points(tairs,DRYAIR(db=tairs)$htovpr,type='l',ylim=c(2.35E6,2.6E6),ylab=ylab, xl
 plotrix::boxed.labels(20, 2.55E6, expression(paste(italic(L)," = ",2.5012," x 10"^6-2378.7*italic(t))),cex=1.25,bg="white",border=NA) 
 plotrix::boxed.labels(20, 2.53E6, expression(-20<paste(italic(L)<60)),cex=1.25,bg="white",border=NA) 
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -505,7 +505,7 @@ plotrix::boxed.labels(28, 0.035, expression(paste(100,"% ",italic(rh))),cex=1.05
 plotrix::boxed.labels(35, 0.025, expression(paste(50,"% ",italic(rh))),cex=1.05,bg="white",border=NA)
 plotrix::boxed.labels(39, 0.016, expression(paste(25,"% ",italic(rh))),cex=1.05,bg="white",border=NA) 
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -527,7 +527,7 @@ plotrix::boxed.labels(28, 1040, expression(paste(100,"% ",italic(rh))),cex=1.05,
 plotrix::boxed.labels(35, 1025, expression(paste(50,"% ",italic(rh))),cex=1.05,bg="white",border=NA)
 plotrix::boxed.labels(39, 1018, expression(paste(25,"% ",italic(rh))),cex=1.05,bg="white",border=NA) 
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
 par(yaxs="i")
@@ -545,7 +545,7 @@ points(alts,DRYAIR(db=20, alt=alts)$patmos,type='l',ylim=c(0.7E5,1.2E5),ylab=yla
 plotrix::boxed.labels(1500, 1.1E5, expression(paste(italic(p)," = ",101325,bgroup("[",1-(2.2569*10^{-5}*Z),"]")^5.2553)),cex=1.25,bg="white",border=NA) 
 plotrix::boxed.labels(1500, 1.05E5, expression(-1000<paste(italic(Z)<20000)),cex=1.25,bg="white",border=NA) 
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -565,7 +565,7 @@ Hmisc::subplot(fun=plot(tairs,((9/5)*tairs)+32,type='l',xlim=c(-40,-20),ylim=c(-
 plotrix::boxed.labels(-5, 95, expression(paste(italic(t)[f]," = ",bgroup("[",bgroup("(",frac(9,5),")")*italic(t)[c],"]")+32)),cex=1.25,bg="white",border=NA) 
 plotrix::boxed.labels(-5, 75, expression(paste(italic(t)[c]," = ",bgroup("(",frac(5,9),")")*(italic(t)[f]-32))),cex=1.25,bg="white",border=NA) 
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
 par(yaxs="i")
@@ -583,7 +583,7 @@ grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$tcoeff,type='l',ylim=c(3E-3,4E-3),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
 plotrix::boxed.labels(15,3.8E-3, expression(paste(italic(beta)," = ",frac(1,italic(t)+273.15))),cex=1.25,bg="white",border=NA) 
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
 par(yaxs="i")
@@ -635,7 +635,7 @@ for(wb in seq(10,50,10)){
   plotrix::boxed.labels(wb-1,WETAIR(db=wb, rh=100)$vd+.002,wb,cex=1.25,bg="white",border=NA)
 }
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -658,7 +658,7 @@ plotrix::boxed.labels(26, 4200, expression(paste(100,"% ",italic(rh))),cex=1.05,
 plotrix::boxed.labels(32, 3000, expression(paste(50,"% ",italic(rh))),cex=1.05,bg="white",border=NA)
 plotrix::boxed.labels(37, 2000, expression(paste(25,"% ",italic(rh))),cex=1.05,bg="white",border=NA) 
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 tairs=seq(-20,50,5)
 par(mar = c(5,5,4,2) + 0.1)
@@ -682,7 +682,7 @@ plotrix::boxed.labels(26, 5.5, expression(paste(100,"% ",italic(rh))),cex=1.05,b
 plotrix::boxed.labels(32, 4, expression(paste(50,"% ",italic(rh))),cex=1.05,bg="white",border=NA)
 plotrix::boxed.labels(37, 2.5, expression(paste(25,"% ",italic(rh))),cex=1.05,bg="white",border=NA) 
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(2,1)) # set up for 2 plots in 1 columns
 tairs=seq(0,50,5)
 par(oma = c(5,5,2,2) + 0.1)
@@ -725,7 +725,7 @@ mtext(text=xlab, side=1, outer=TRUE,cex=1.25,line=2)
 plotrix::boxed.labels(99.5,5E5,expression(paste(0,degree*C)),cex=1.25,bg="white",border=NA)
 plotrix::boxed.labels(99.75,5E5,expression(paste(50,degree*C)),cex=1.25,bg="white",border=NA)
 
-## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8----
+## ----echo=FALSE, message=FALSE, results='asis', fig.width=7, fig.height=8-----
 par(mfrow = c(1,1)) # set up for 2 plots in 1 columns
 par(xaxs="i")
 par(yaxs="i")
@@ -780,7 +780,7 @@ plot(Tair_min_january,zlim=c(-40,50),main="Min Air Temperature, January")
 # plot the January min relative humidity
 plot(RH_max_january,zlim=c(0,100),main="Max Relative Humidity, January") 
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #' DRYAIR
 #'
 #' Calculates several properties of dry air and related characteristics shown
@@ -828,7 +828,7 @@ DRYAIR <- function(db=db, bp=0, alt=0){
     thcond=thcond, htovpr=htovpr, tcoeff=tcoeff, ggroup=ggroup, bbemit=bbemit, emtmax=emtmax))
 }
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #' WETAIR
 #'
 #' Calculates several properties of humid air as output variables below. The program
@@ -895,7 +895,7 @@ WETAIR <- function(db=db, wb=db, rh=0, dp=999, bp=101325){
   wtrpot=wtrpot, rh=rh))
 }
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #' VAPPRS
 #'
 #' Calculates saturation vapour pressure for a given air temperature.

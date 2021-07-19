@@ -1,25 +1,25 @@
-## ---- echo = FALSE-------------------------------------------------------
+## ---- echo = FALSE------------------------------------------------------------
 knitr::opts_chunk$set(
  eval = TRUE
 )
 
-## ---- message=FALSE, warnings=FALSE--------------------------------------
+## ---- message=FALSE, warnings=FALSE-------------------------------------------
 library(NicheMapR)
 longlat <- c(146.77, -19.29) # Townsville, northern Australia
 micro <- micro_global(loc = longlat)
 ecto <- ectotherm() # uses default settings (the Eastern Water Skink)
 
-## ---- echo=FALSE, results='asis', message=FALSE, warnings=FALSE----------
+## ---- echo=FALSE, results='asis', message=FALSE, warnings=FALSE---------------
 knitr::kable(head(ecto$environ[,c(4:15,25)], 13), digits = 2)
 knitr::kable(head(ecto$environ[,c(26:27)], 13), digits = 2)
 
-## ---- echo=FALSE, results='asis', message=FALSE, warnings=FALSE----------
+## ---- echo=FALSE, results='asis', message=FALSE, warnings=FALSE---------------
 knitr::kable(head(ecto$enbal, 13), digits = 2)
 
-## ---- echo=FALSE, results='asis', message=FALSE, warnings=FALSE----------
+## ---- echo=FALSE, results='asis', message=FALSE, warnings=FALSE---------------
 knitr::kable(head(ecto$masbal[,c(1:5, 15:17)], 12))
 
-## ---- warning=FALSE, message=FALSE---------------------------------------
+## ---- warning=FALSE, message=FALSE--------------------------------------------
 Ww_g <- 40        # wet weight of animal (g)
 pct_wet <- 0.2    # % of surface area acting as a free-water exchanger
 alpha_min <-0.85  # minimum solar absorbtivity (dec %)
@@ -41,15 +41,10 @@ nocturn <- 0      # nocturnal activity
 crepus <- 0       # crepuscular activity
 diurn <- 1        # diurnal activity
 minshades <- rep(0, 12)   # min available shade?
-maxshades <- micro$MAXSHADES # max available shade?
+maxshades <- micro$maxshade # max available shade?
 
-## ---- warning=FALSE, message=FALSE---------------------------------------
-ecto <- ectotherm(Ww_g = Ww_g, alpha_max = alpha_max, alpha_min = alpha_min, shape = shape, pct_wet = pct_wet,
-                  T_F_max = T_F_max, T_F_min = T_F_min, T_B_min = T_B_min, T_RB_min = T_RB_min,
-                  CT_max = CT_max, CT_min = CT_min, T_pref = T_pref, mindepth = mindepth, 
-                  maxdepth = maxdepth, shade_seek = shade_seek, burrow = burrow, climb = climb,
-                  minshades = minshades, nocturn = nocturn, diurn = diurn, crepus = crepus,
-                  maxshades = maxshades)
+## ---- warning=FALSE, message=FALSE--------------------------------------------
+ecto <- ectotherm(Ww_g = Ww_g, alpha_max = alpha_max, alpha_min = alpha_min, shape = shape, pct_wet = pct_wet, T_F_max = T_F_max, T_F_min = T_F_min, T_B_min = T_B_min, T_RB_min = T_RB_min, CT_max = CT_max, CT_min = CT_min, T_pref = T_pref, mindepth = mindepth, maxdepth = maxdepth, shade_seek = shade_seek, burrow = burrow, climb = climb, minshades = minshades, nocturn = nocturn, diurn = diurn, crepus = crepus, maxshades = maxshades)
 
 # retrieve output
 environ <- as.data.frame(ecto$environ) # behaviour, Tb and environment
@@ -102,7 +97,7 @@ with(bask, points(TIME ~ DOY, pch = 15, cex = 2, col = 'light blue')) # basking 
 
 ## ---- echo=FALSE, fig.width=7, fig.height=7, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"----
 micro <- micro_global(loc = longlat, maxshade = 10)
-maxshades <- micro$MAXSHADES
+maxshades <- micro$maxshade
 
 ecto <- ectotherm(Ww_g = Ww_g, alpha_max = alpha_max, alpha_min = alpha_min, pct_wet = pct_wet, T_F_max = T_F_max, T_F_min = T_F_min, T_B_min = T_B_min, T_RB_min = T_RB_min, CT_max = CT_max, CT_min = CT_min, T_pref = T_pref, mindepth = mindepth, maxdepth = maxdepth, shade_seek = shade_seek, burrow = burrow, climb = climb, minshades = minshades, nocturn = nocturn, diurn = diurn, crepus = crepus, maxshades = maxshades)
 
@@ -154,7 +149,7 @@ with(night,plot(TIME ~ DOY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,co
 with(forage,points(TIME~DOY,pch=15,cex=2,col='orange')) # foraging Tbs
 with(bask,points(TIME~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
 
-## ---- warning=FALSE, message=FALSE, echo=FALSE, fig.width=8, fig.height=5----
+## ---- warning=FALSE, message=FALSE, echo=FALSE, fig.width=8, fig.height=5-----
 rm(list=ls())
 longlat <- c(146.77, -19.29) # Townsville, northern Australia
 nyear <- 5
@@ -216,13 +211,11 @@ maxdepth <- 10    # max depth (node, 1-10) allowed
 shade_seek <- 1   # shade seeking?
 burrow <- 1       # can it burrow?
 climb <- 0        # can it climb to thermoregulate?
-minshade <- 0     # min available shade?
-maxshade <- 90    # min available shade?
 nocturn <- 0      # nocturnal activity
 crepus <- 0       # crepuscular activity
 diurn <- 1        # diurnal activity
 minshades <- rep(0, nyear * 365)   # min available shade?
-maxshades <- micro$MAXSHADES # max available shade?
+maxshades <- micro$maxshade # max available shade?
 
 # DEB initial state
 
@@ -273,7 +266,6 @@ ecto<-ectotherm(DEB=1,
                 climb=climb,
                 mindepth=mindepth,
                 maxdepth=maxdepth,
-                minshade=minshade,
                 pct_wet=pct_wet,
                 z=z*z.mult,
                 del_M=del.M,

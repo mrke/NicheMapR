@@ -1,9 +1,9 @@
-## ---- echo = FALSE-------------------------------------------------------
+## ---- echo = FALSE------------------------------------------------------------
 knitr::opts_chunk$set(
  eval = TRUE
 )
 
-## ----table1, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table1, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
@@ -19,7 +19,7 @@ fail                      | -                 | integer            | integrator 
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
@@ -37,7 +37,7 @@ EC                        | -                 | 0.0034 to 0.058   | eccenricity 
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table3, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table3, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
@@ -53,7 +53,7 @@ ZH2                       | m                 | 0 or (> RUF, < ZH1)   | 2nd segm
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table4, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table4, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
@@ -67,7 +67,7 @@ IUV                      | -                | 0-1             | flag to use gamm
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table5, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table5, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
@@ -82,7 +82,7 @@ PCTWETS                   | %                 | 0-100             | percentage o
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table6, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table6, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
@@ -93,7 +93,7 @@ soilinit                  | &deg;C            | -80 - +60         | initial subs
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table7, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table7, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
@@ -119,7 +119,7 @@ RAINhr                    | mm                | 0-2000            | hourly rainf
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table8, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table8, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 *Name*                    | *Units *             |	*Allowed Range*   |	*Description*
 ------------------------- | -------------------- | ------------------ | --------------
@@ -133,7 +133,7 @@ soilprops[,5]$^{3}$       | Mg m$^{-3}$          | >0                 | mineral 
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table9, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table9, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'--------
 tabl <- "
 *Name*                    | *Units *             |	*Allowed Range*  |	*Description*
 ------------------------- | -------------------- | ----------------- | --------------
@@ -157,7 +157,7 @@ evenrain                  | -                    | 1 or 2            | even rain
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table10, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table10, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'-------
 tabl <- "
 *Name*                    | *Units *             |	*Allowed Range*   |	*Description*
 ------------------------- | -------------------- | ------------------ | --------------
@@ -173,7 +173,7 @@ grasshade                 | -                    | 0 or 1             | if 1, sh
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ----table11, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----
+## ----table11, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'-------
 tabl <- "
 *Name*                    | *Units *             |	*Allowed Range*   |	*Description*
 ------------------------- | -------------------- | ------------------ | --------------

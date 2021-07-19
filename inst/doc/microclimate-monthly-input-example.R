@@ -1,9 +1,9 @@
-## ---- echo = FALSE-------------------------------------------------------
+## ---- echo = FALSE------------------------------------------------------------
 knitr::opts_chunk$set(
  eval = TRUE
 )
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 library(NicheMapR) # load the NicheMapR package
 
 writecsv <- 0 # make Fortran program write output as csv files
@@ -17,7 +17,7 @@ IR <- 0 # compute clear-sky longwave radiation using Campbell and Norman (1998) 
 message <- 0 # do not allow the Fortran integrator to output warnings
 fail <- 24 * 365 # how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 doynum <- 12 # number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 doy<-c(15, 46, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349) # middle day of each month
 idayst <- 1 # start month
@@ -30,7 +30,7 @@ ALMINT <- 24.074 # minutes latitude
 ALREF <- 89 # reference longitude for time zone
 EC <- 0.0167238 # Eccenricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 RUF <- 0.004 # Roughness height (m), , e.g. sand is 0.05, grass may be 2.0, current allowed range: 0.001 (snow) - 2.0 cm.
 Refhyt <- 2 # Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured
 Usrhyt <- 0.01# local height (m) at which air temperature, relative humidity and wind speed calculatinos will be made
@@ -43,7 +43,7 @@ Z02 <- 0 # 2nd segment roughness height(m)
 ZH1 <- 0 # Top of (1st) segment, height above surface(m)
 ZH2 <- 0 # 2nd segment, height above surface(m)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 SLE <- 0.96 # substrate longwave IR emissivity (decimal %), typically close to 1
 REFL <- 0.10 # substrate solar reflectivity (decimal %)
 CMH2O <- 1 # precipitable cm H2O in air column, 0.1 = VERY DRY; 1.0 = MOIST AIR CONDITIONS; 2.0 = HUMID, TROPICAL CONDITIONS (note this is for the whole atmospheric profile, not just near the ground)
@@ -51,7 +51,7 @@ CMH2O <- 1 # precipitable cm H2O in air column, 0.1 = VERY DRY; 1.0 = MOIST AIR 
 # the values extracted from GADS for Madison
 TAI<-c(0.269904738,0.266147825, 0.262442906, 0.258789404, 0.255186744, 0.251634356, 0.248131676, 0.2412732, 0.234606887, 0.228128378, 0.221833385, 0.215717692, 0.20977715, 0.204007681, 0.198405272, 0.187685927, 0.177588357, 0.168082846, 0.159140695, 0.150734206, 0.142836655, 0.135422274, 0.128466227, 0.12194459, 0.115834329, 0.110113284, 0.104760141, 0.099754417, 0.09507644, 0.090707328, 0.086628967, 0.082823998, 0.07927579, 0.075968428, 0.072886691, 0.070016034, 0.067342571, 0.064853053, 0.062534858, 0.060375964, 0.058364941, 0.056490925, 0.054743609, 0.053113222, 0.051590514, 0.050166738, 0.046408775, 0.045302803, 0.044259051, 0.043271471, 0.042334415, 0.041442618, 0.040591184, 0.039775572, 0.038991583, 0.038235345, 0.037503301, 0.036792197, 0.036099067, 0.034101935, 0.033456388, 0.032817888, 0.032184949, 0.031556287, 0.030930816, 0.030307633, 0.029065372, 0.027825562, 0.027205981, 0.026586556, 0.025967391, 0.025348692, 0.024114005, 0.023498886, 0.021669152, 0.021066668, 0.019292088, 0.018144698, 0.016762709, 0.015451481, 0.014949794, 0.014224263, 0.013093462, 0.012670686, 0.012070223, 0.011164062, 0.010241734, 0.009731103, 0.009507687, 0.009212683, 0.008965785, 0.008827751, 0.008710756, 0.008574128, 0.008462605, 0.008446967, 0.008539475, 0.009015237, 0.009748444, 0.010586023, 0.011359647, 0.011901268, 0.012062153, 0.011735443, 0.010882215, 0.009561062, 0.007961182, 0.006438984, 0.005558204, 0.006133532, 0.009277754)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 ALTT <- 226 # altitude (m)
 slope <- 0 # slope (degrees, range 0-90)
 azmuth <- 180 # aspect (degrees, 0 = North, range 0-360)
@@ -64,11 +64,11 @@ minshade <- 0 # minimum available shade (%)
 maxshade <- 90 # maximum available shade (%)
 PCTWET <- 0 # percentage of surface area acting as a free water surface (%)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 DEP <- c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200) # Soil nodes (cm) - keep spacing close near the surface, last value is where it is assumed that the soil temperature is at the annual mean air temperature
 ERR <- 1.5 # Integrator error for soil temperature calculations
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 TIMINS <- c(0, 0, 1, 1)   # time of minima for air temp, wind, humidity and cloud cover (h), air & wind mins relative to sunrise, humidity and cloud cover mins relative to solar noon
 TIMAXS <- c(1, 1, 0, 0)   # time of maxima for air temp, wind, humidity and cloud cover (h), air temp & wind maxs relative to solar noon, humidity and cloud cover maxs relative to sunrise
 TMINN <- c(-14.3, -12.1, -5.1, 1.2, 6.9, 12.3, 15.2, 13.6, 8.9, 3, -3.2, -10.6) # minimum air temperatures (°C)
@@ -97,7 +97,7 @@ SLES <- rep(SLE, doynum) # set up vector of ground emissivities for each day
 REFLS <- rep(REFL, doynum) # set up vector of soil reflectances for each day
 PCTWET <- rep(PCTWET, doynum) # set up vector of soil wetness for each day
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # set up a profile of soil properites with depth for each day to be run
 Numtyps <- 1 # number of soil types
 Nodes <- matrix(data = 0, nrow = 10, ncol = doynum) # array of all possible soil nodes
@@ -126,7 +126,7 @@ soilprops[1, 4]<-SpecHeat # insert specific heat to profile 1
 soilprops[1, 5]<-Density # insert mineral density to profile 1
 soilinit<-rep(tannul, 20) # make inital soil temps equal to mean annual
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # note that these are set for sand (Table 9.1 in Campbell and Norman, 1995)
 PE <- rep(0.7, 19) #air entry potential J/kg
 KS <- rep(0.0058, 19) #saturated conductivity, kg s/m3
@@ -149,7 +149,7 @@ SoilMoist_Init <- rep(0.2, 10) # initial soil water content for each node, m3/m3
 moists <- matrix(nrow = 10, ncol = doynum, data = 0) # set up an empty vector for soil moisture values through time
 moists[1:10, ] <- SoilMoist_Init # insert inital soil moisture
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 snowtemp <- 1.5 # temperature at which precipitation falls as snow (used for snow model)
 snowdens <- 0.375 # snow density (mg/m3)
 densfun <- c(0.5979, 0.2178, 0.001, 0.0038) # slope and intercept of linear model of snow density as a function of day of year - if it is c(0,0) then fixed density used
@@ -160,21 +160,21 @@ snowcond <- 0 # effective snow thermal conductivity W/mC (if zero, uses inbuilt 
 intercept <- 0 # snow interception fraction for when there's shade (0-1)
 grasshade <- 0 # if 1, means shade is removed when snow is present, because shade is cast by grass/low veg
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # intertidal simulation input vector (col 1 = tide in(1)/out(0), col 2 = sea water temperature in °C, col 3 = % wet from wave splash)
 tides <- matrix(data = 0, nrow = 24 * doynum, ncol = 3) # matrix for tides
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # input parameter vector
 microinput<-c(doynum, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept, grasshade, solonly, ZH, D0)
 
 # Final input list - all these variables are expected by the input argument of the Fortran microclimate subroutine
 micro<-list(microinput = microinput, tides = tides, doy = doy, SLES = SLES, DEP = DEP, Nodes = Nodes, MAXSHADES = MAXSHADES, MINSHADES = MINSHADES, TIMAXS = TIMAXS, TIMINS = TIMINS, TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN, CCMAXX = CCMAXX, CCMINN = CCMINN, WNMAXX = WNMAXX, WNMINN = WNMINN, TAIRhr = TAIRhr, RHhr = RHhr, WNhr = WNhr, CLDhr = CLDhr, SOLRhr = SOLRhr, RAINhr = RAINhr, ZENhr = ZENhr, REFLS = REFLS, PCTWET = PCTWET, soilinit = soilinit, hori = hori, TAI = TAI, soilprops = soilprops, moists = moists, RAINFALL = RAINFALL, tannulrun = tannulrun, PE = PE, KS = KS, BB = BB, BD = BD, DD = DD, L = L, LAI = LAI)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 microut <- microclimate(micro) # run the model in Fortran
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 metout <- as.data.frame(microut$metout[1:(doynum * 24), ]) # retrieve above ground microclimatic conditions, min shade
 shadmet <- as.data.frame(microut$shadmet[1:(doynum * 24), ]) # retrieve above ground microclimatic conditions, max shade
 soil <- as.data.frame(microut$soil[1:(doynum * 24), ]) # retrieve soil temperatures, minimum shade
@@ -186,7 +186,7 @@ shadhumid <- as.data.frame(microut$shadhumid[1:(doynum * 24), ]) # retrieve soil
 soilpot <- as.data.frame(microut$soilpot[1:(doynum * 24), ]) # retrieve soil water potential, minimum shade
 shadpot <- as.data.frame(microut$shadpot[1:(doynum * 24), ]) # retrieve soil water potential, maximum shade
 
-## ---- fig.width = 7, fig.height = 6--------------------------------------
+## ---- fig.width = 7, fig.height = 6-------------------------------------------
 # append dates
 days <- rep(seq(1, 12), 24)
 days <- days[order(days)]

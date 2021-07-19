@@ -1,5 +1,8 @@
-output: rmarkdown::html_vignette
+---
+title: "Transient Equation Derivations"
 author: "Warren Porter & Michael Kearney"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Transient Equation Derivations}
   %\VignetteEncoding{UTF-8}
@@ -267,7 +270,7 @@ abline(h=0.1)
 When the Biot number is sufficiently low (< 0.1), uniform body temperature can be assumed and the system diagram of Fig. 2 reduces to Fig. 4.
 
 ```{r, echo=FALSE, out.width = "40%", fig.align="center", fig.cap = "A one-lump model of heat loss assuming a point (line) source of heat in the centre of the cylindrical geometry", fig.pos='!h'}
-include_graphics("C:/Users/mrke/Dropbox/Current Research Projects/global transient/manuscript/Lizard_System_Diagram3.jpg")
+include_graphics("Lizard_System_Diagram3.jpg")
 ```
 
 The thermal capacitance, $C$, is the product of mass and specific heat, $mc_p$. Notice here that the energy input due to metabolism is assumed to be generated at the core 'node' and is connected by a 'short circuit' to the skin node. Using the system diagram to write the heat balance equation $Q_{in} + Q_{gen} = Q_{out} + Q_{st}$ or, more specifically,
