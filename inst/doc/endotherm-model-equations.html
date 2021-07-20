@@ -12,7 +12,7 @@
 
 <meta name="author" content="Warren P. Porter, Paul D. Mathewson &amp; Michael R. Kearney" />
 
-<meta name="date" content="2021-07-19" />
+<meta name="date" content="2021-07-20" />
 
 <title>Endotherm Model Tutorial I: theory, equations and subroutines</title>
 
@@ -241,7 +241,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Endotherm Model Tutorial I: theory, equations and subroutines</h1>
 <h4 class="author">Warren P. Porter, Paul D. Mathewson &amp; Michael R. Kearney</h4>
-<h4 class="date">2021-07-19</h4>
+<h4 class="date">2021-07-20</h4>
 
 
 
@@ -544,7 +544,7 @@ A_{hair} = \rho_{hair}  \pi \left(\frac{D_{hair}}{2}\right)^2
 <p>In the vertical direction <span class="math inline">\(y(k^{\prime}_y)\)</span>, conductivity is expressed as</p>
 <p><span class="math display">\[\begin{align}
 \tag{44}
-k^{\prime}_y = k_{air} (\rho^{-\frac{1}{2}}_{hair,eff}-D_{hair}) + \frac{D_{hair} k_{hair} k_{air}}{D_{hair} k_{air} + (\rho^{-\frac{1}{2}}_{hair,eff}-D_{hair})k_{hair}} 
+k^{\prime}_y = \rho_{hair,eff}^{\frac{1}{2}} k_{air} (\rho^{-\frac{1}{2}}_{hair,eff}-D_{hair}) + \frac{D_{hair} k_{hair} k_{air}}{D_{hair} k_{air} + (\rho^{-\frac{1}{2}}_{hair,eff}-D_{hair})k_{hair}} 
 \end{align}\]</span></p>
 <p>where the effective hair density is</p>
 <p><span class="math display">\[\begin{align}

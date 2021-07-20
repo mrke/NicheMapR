@@ -435,7 +435,7 @@ In the vertical direction $y(k^{\prime}_y)$, conductivity is expressed as
 
 \begin{align}
 \tag{44}
-k^{\prime}_y = k_{air} (\rho^{-\frac{1}{2}}_{hair,eff}-D_{hair}) + \frac{D_{hair} k_{hair} k_{air}}{D_{hair} k_{air} + (\rho^{-\frac{1}{2}}_{hair,eff}-D_{hair})k_{hair}} 
+k^{\prime}_y = \rho_{hair,eff}^{\frac{1}{2}} k_{air} (\rho^{-\frac{1}{2}}_{hair,eff}-D_{hair}) + \frac{D_{hair} k_{hair} k_{air}}{D_{hair} k_{air} + (\rho^{-\frac{1}{2}}_{hair,eff}-D_{hair})k_{hair}} 
 \end{align}
 
 where the effective hair density is
