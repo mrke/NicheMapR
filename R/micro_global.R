@@ -287,7 +287,7 @@
 #'}
 #' @export
 micro_global <- function(
-  loc = c(-89.4557, 43.1379 ),
+  loc = c(-89.4557, 43.1379),
   timeinterval = 12,
   nyears = 1,
   soiltype = 4,
@@ -821,7 +821,7 @@ micro_global <- function(
       sort<-matrix(data = 0,nrow = 365,ncol = 2)
       m<-1
       b<-0
-      for (i in 1:12){ #begin loop throught 12 months of year
+      for (i in 1:12){ #begin loop through 12 months of year
         ndays=daymon[i]
         for (k in 1:ndays){
           b<-b+1
