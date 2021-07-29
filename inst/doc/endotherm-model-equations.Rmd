@@ -67,13 +67,13 @@ Q_{gen} + Q_{sol} = Q_{resp} + Q_{evap} + Q_{rad} + Q_{conv} + Q_{cond} + Q_{eva
 
 That is, at steady state for a particular core body temperature, the heat production by the body and the heat gain from any solar radiation must equal the overall heat lost by the combination of respiration, evaporation, long wavelength radiation, convection and conduction. Otherwise, the animal will not be in steady state and body temperature will rise or fall. Figure 1 provides a schematic of the overall heat transfer.
 
-```{r, echo=FALSE, out.width = "100%", fig.align="center", fig.cap = "Figure 1. A cross section system diagram for heat flow in an animal", fig.pos='!h'}
+```{r, echo=FALSE, out.width = "100%", fig.align="center", fig.cap = "A cross section system diagram for heat flow in an animal", fig.pos='!h'}
 include_graphics("Endo_System_Diagram.jpg")
 ```
 
 ## III. Mechanism equations
 
-We now expand the terms in the previous section to show their mechanistic underpinnings in relation to body dimensions, metabolic processes and the associated parameters and environmental forcing variables. These terms are further expanded in the ensuing sections that detail the subroutines and functions of the endoR program, including generalisation to different shapes; here we consider cylindrical geometry only (see also, Bird et al. 2002 for a general treatment of these kinds of problem).
+We now expand the terms in the previous section to show their mechanistic underpinnings in relation to body dimensions, metabolic processes and the associated parameters and environmental forcing variables. These terms are further expanded in the ensuing sections that detail the subroutines and functions of the endoR program, including generalisation to different shapes; here we consider cylindrical geometry only (see also, Bird et al. 2002 for a general treatment of these kinds of problems).
 
 The equation for net metabolic heat generation $Q_{gen,net}$ for a cylinder is:
 
@@ -118,7 +118,7 @@ Heat lost by conduction is:
 Q_{cond} = \frac{A_{cond} k_{sub}}{x_{sub}} (T_{fa} - T_{sub})
 \end{align}
 
-where $A_{cond}$ is the surface are of the animal in contact with the substrate, $T_{sub}$ is the substrate temperature, and $x_{sub}$ is the depth of the substrate from which the substrate temperature is taken.
+where $A_{cond}$ is the surface area of the animal in contact with the substrate, $T_{sub}$ is the substrate temperature, and $x_{sub}$ is the depth of the substrate from which the substrate temperature is taken.
 
 The heat gained by solar radiation is:
 
@@ -136,7 +136,7 @@ The heat lost by evaporation is:
 Q_{evap} = h_d A_{wet} (\rho_s- \rho_a) \lambda
 \end{align}
 
-where $A_{wet}$ is the surface area acting as a free-water surface, $h_d$ is the mass transfer coefficient, $\rho_s$ and $\rho_a$ are the water vapour densities at the skin surface and in the air surrouding the organism, respectively, and $\lambda$ is the latent heat of evaporation.
+where $A_{wet}$ is the surface area acting as a free-water surface, $h_d$ is the mass transfer coefficient, $\rho_s$ and $\rho_a$ are the water vapour densities at the skin surface and in the free stream air (outside the animal's boundary layer), respectively, and $\lambda$ is the latent heat of vaporization.
 
 Finally, the heat lost by respiration is:
 
@@ -149,11 +149,11 @@ where $\dot{J}_{in}$ and $\dot{J}_{out}$ are the mass flows of water in and out 
 
 ## IV. Strategy to solve for the skin and fur-air interface temperatures
 
-The heat balance equation (eq. 5) permits the calculation of the required metabolic for an  animal to maintain a target body temperature under a given set of microclimate conditions. As illustrated in the solution below and in the terms of the previous section, the heat flux through each layer (core to skin; skin to fur-air interface; fur-air interface to environment) is dependent on the temperature gradient existing in each layer, the thermal conductivity of each layer, and the shape and dimensions of each layer. However, the only known temperatures for the model animals are the core temperature and the surrounding air temperature. We must calculate the skin temperature and the fur-air interface temperature in order to solve the heat balance and determine what metabolic rate is required for the animal to maintain its body temperature in its current environmental conditions.
+The heat balance equation (eq. 5) permits the calculation of the required metabolic rate for an  animal to maintain a target body temperature under a given set of microclimate conditions. As illustrated in the solution below and in the terms of the previous section, the heat flux through each layer (core to skin; skin to fur-air interface; fur-air interface to environment) is dependent on the temperature gradient existing in each layer, the thermal conductivity of each layer, and the shape and dimensions of each layer. However, the only known temperatures for the model animals are the core temperature and the surrounding air temperature. We must calculate the skin temperature and the fur-air interface temperature in order to solve the heat balance and determine what metabolic rate is required for the animal to maintain its body temperature in its current environmental conditions.
 
 In developing a solution for this heat budget, the following assumptions were made:
 
-1. All solar is absorbed at the coat surface (i.e., does not penetrate into fur layer). This is a more appropriate assumption for birds than it is for mammals. The incorporation of variable penetration of solar radiation into fur is an area for future development.
+1. All solar is absorbed at the coat surface (i.e., does not penetrate into fur layer). This is a more appropriate assumption for birds than it is for mammals. The incorporation of variable penetration of solar radiation into fur is in development.
 
 2. Evaporative heat loss $Q_{evap}$ takes place at the skin surface and thus this component of $Q_{gen,net}$ does not pass through the fur layer (i.e. equation 1), but additional evaporative heat loss may also occur from the fur surface via the term $Q_{evap,fur}$.
 
@@ -244,7 +244,7 @@ Overall, accounting for conduction, the heat balance in terms of $T_{fa}$ withou
 
 \begin{align}
 \tag{23}
-T_{fa} = \frac{\frac{2 \pi L_g}{D_1} (T_c C_{d1} - D_2 - T_{fa,cmp}C_{d2})-h_r A_{fa} \frac{D_3}{D_4}-h_r A_{fa} \frac{T_{fa,cmp} C_{d2}}{D_4}}{\frac{2 \pi L_g C_{d3}}{D_1}+h_r A_{fa} \frac{\left(\frac{k_f}{ln\left(\frac{R_{fa}}{R_rad}\right)} \left(1 - PCOND\right)\right)}{D_4}+h_c A_{fa}}\\ + \frac{h_r A_{fa} T_{env} + h_c A_{fa} T_a - C_d T_{fa,cmp} +C_d T_{sub}-Q_{evap,fur} + Q_{sol}}{\frac{2 \pi L_g C_{d3}}{D_1}+h_r A_{fa} \frac{\left(\frac{k_f}{ln\left(\frac{R_{fa}}{R_rad}\right)} \left(1 - PCOND\right)\right)}{D_4}+h_c A_{fa}}
+T_{fa} = \frac{\frac{2 \pi L_g}{D_1} (T_c C_{d1} - D_2 - T_{fa,cmp}C_{d2})-h_r A_{fa} \frac{D_3}{D_4}-h_r A_{fa} \frac{T_{fa,cmp} C_{d2}}{D_4}}{\frac{2 \pi L_g C_{d3}}{D_1}+h_r A_{fa} \frac{\left(\frac{k_f}{ln\left(\frac{R_{fa}}{R_{rad}}\right)} \left(1 - PCOND\right)\right)}{D_4}+h_c A_{fa}}\\ + \frac{h_r A_{fa} T_{env} + h_c A_{fa} T_a - C_d T_{fa,cmp} +C_d T_{sub}-Q_{evap,fur} + Q_{sol}}{\frac{2 \pi L_g C_{d3}}{D_1}+h_r A_{fa} \frac{\left(\frac{k_f}{ln\left(\frac{R_{fa}}{R_{rad}}\right)} \left(1 - PCOND\right)\right)}{D_4}+h_c A_{fa}}
 \end{align}
 
 This is achieved by the following steps:
@@ -397,7 +397,7 @@ T_{fa} = \frac{\frac{2 \pi L_g}{D_1} (T_c C_{d1} - D_2- T_{fa,cmp}C_{d2})+h_r A_
 
 We now describe the equations in further detail with respect to the separate Fortran subroutines of the endoR program, in the order in which they are called as shown in Fig. 2. These subroutines all have R wrappers so that they can be called separately. However, the overall process of solving the heat budget for a given environment, including behaviorual responses, is coordinated by the SOLVENDO subroutine, explained at the end of the document under section XV.
 
-```{r, echo=FALSE, out.width = "100%", fig.align="center", fig.cap = "Figure 2. The relationship between subroutines of the endoR program in NicheMapR.", fig.pos='!h'}
+```{r, echo=FALSE, out.width = "100%", fig.align="center", fig.cap = "The relationship between subroutines of the endoR program in NicheMapR.", fig.pos='!h'}
 include_graphics("EndoR_scheme.jpg")
 ```
 
@@ -413,9 +413,9 @@ The IRPROP function loops through the calculated average, dorsal and ventral fur
 
 ## VI. GETKFUR Subroutine
 
-This subroutine takes as input the density of the fur, its length, diameter and thermal conductivity, and computes $k_{eff}$, $\beta$ and $\beta_1$ as follows (from Conley and Porter 1986, modified from Kowalski 1976).
+This subroutine takes as input the density and depth of the fur, its length, diameter and thermal conductivity, and computes $k_{eff}$, $\beta$ and $\beta_1$ as follows (from Conley and Porter 1986, modified from Kowalski 1976). Note that the optical depth, $\beta_1$, can be used to inform the value the user inserts for where in the fur is the effective fur temperature that is radiating to the environment.
 
-The conductivity of the fur is computed along the horizontal direction $x(k^{\prime}_x)$ as a surface area weighted mean of air ($k_{air}$) and hair conductivity:
+The conductivity of the fur is computed along the horizontal direction $x(k^{\prime}_x)$ as a surface area weighted mean of air ($k_{air}$) and hair conductivity ($k_{hair}$):
 
 \begin{align}
 \tag{42}
@@ -470,7 +470,7 @@ The subroutine ensures that $k_{eff}$ does not go below $k_{air}$ as well as cor
 
 ## VII. GEOM_ENDO Subroutine
 
-This subroutine computes various lengths, areas, masses and volumes given the shape chosen, which presently includes a cylinder, sphere, plate or ellipsoid. Specifically it computes:
+This subroutine computes various lengths, areas, masses and volumes given the shape chosen, which presently includes a cylinder, sphere or ellipsoid. Specifically it computes:
 
 - $V_{body}$, the total body volume, $\text{m}^3$
 - $V_{fat}$, the volume of body fat, $\text{m}^3$
@@ -568,7 +568,7 @@ For the sphere, the radial dimension from core to skin is:
 
 \begin{align}
 \tag{56}
-R_s = \frac{\frac{3}{4} V_{body}}{\pi}^{\frac{1}{3}}
+R_s = \frac{3V_{body}}{4\pi}^{\frac{1}{3}}
 \end{align}
 
 and to the fur-air interface is thus $R_{fa} = R_s + z_{fur}$.
@@ -592,46 +592,6 @@ with the length $L_{body}$, width $W_{body}$ and height $H_{body}$ being $2 R_{f
 If a fat layer is present, the volume of flesh is simply $V_{g} = V_{body} - V_{fat}$ and the radius of the flesh is $R_{g} = \left(\frac{3V_{g}}{4\pi}\right)^{\frac{1}{3}}$, and the thickness of the fat layer is $R_{s} - R_{g}$. Otherwise, $V_{g} = V_{body}$ and $R_{g} = R_{s}$.
 
 The silhouette areas normal and parallel to the sun's rays are of course identical $A_{sil,n} = A_{sil,p} = \pi R_{fa}^2$.
-
-### Plate
-
-For the plate, the height is computed as:
-
-\begin{align}
-\tag{59}
-H_{body} = \frac{V_{body}}{S_b S_c}^{\frac{1}{3}}
-\end{align}
-
-where $S_c$ is the ratio of length to height of the plate.
-
-Then, the length is $L_{body} = S_b H_{body}$ and the width is $W_{body} = S_c H_{body}$.
-
-The dimension from core to skin is then
-
-\begin{align}
-\tag{60}
-R_s = W_{body} / 2
-\end{align}
-
-and to the fur-air interface is thus $R_{fa} = R_s + z_{fur}$.
-
-The skin area is
-
-\begin{align}
-\tag{61}
-A_{s} = 2 (L_{body} W_{body} + L_{body} H_{body} + W_{body} H_{body})
-\end{align}
-
-and the total area (at the fur-air interface) is
-
-\begin{align}
-\tag{62}
-A_{tot} = 2 \left[(L_{body}+z_{fur}) (W_{body}+z_{fur}) + (L_{body}+z_{fur}) (H_{body}+z_{fur}) + (W_{body}+z_{fur}) (H_{body}+z_{fur})\right].
-\end{align}
-
-If a fat layer is present, the volume of flesh is simply $V_{g} = V_{body} - V_{fat}$ and the radius of the flesh is $R_{g} = 0.5\left(\frac{V_{g}}{S_b S_c}\right)^{\frac{1}{3}}$, and the thickness of the fat layer is $R_{s} - R_{g}$. Otherwise, $V_{g} = V_{body}$ and $R_{g} = R_{s}$.
-
-The silhouette area normal to the sun's rays (maximising solar load) is $A_{sil,n} = (L_{body}+z_{fur}) (W_{body}+z_{fur})$, and parallel (minimising solar load) is $A_{sil,p} = (L_{body}+z_{fur}) (H_{body}+z_{fur})$.
 
 ### Ellipsoid
 
@@ -753,7 +713,7 @@ Thus the total diffuse radiation absorbed $Q_{sol,dif} = Q_{sol,sky} + Q_{sol,su
 
 ## IX. CONV_ENDO Subroutine
 
-This subroutine computes the heat exchange by convection, $Q_{conv}$, as sum of the free (driven by surface temperature) and forced (driven by wind speed) components. As indicated in equation 9, this requires calculation of the heat transfer coefficient 
+This subroutine computes the heat exchange by convection, $Q_{conv}$, as sum of the free (driven by the surface surface-free stream air temperature gradient) and forced (driven by wind speed) components. As indicated in equation 9, this requires calculation of the heat transfer coefficient 
 
 \begin{align}
 \tag{77}
@@ -786,7 +746,7 @@ The Grashof number is
 Gr=\frac{\rho_{fluid}^2 \space \gamma \space G D^3 \delta_T}{\mu^2}
 \end{align}
 
-where $\rho_{fluid}$ is the fluid density (computed with DRYAIR, WATER or SEAWATER), $G$ is the acceleration due to gravity, $\gamma$ is the inverse of the fluid temperature $T_a$ in Kelvin and $\delta_T$ is the temperature difference between the fluid and the relevant surface of the animal (skin or fur-air interface, depending on whether fur/feathers are present).
+where $\rho_{fluid}$ is the fluid density (computed with DRYAIR, WATER or SEAWATER), $G$ is the acceleration due to gravity, $\gamma$ is the inverse of the free stream fluid temperature $T_a$ in Kelvin and $\delta_T$ is the temperature difference between the fluid and the relevant surface of the animal (skin or fur-air interface, depending on whether fur/feathers are present).
 
 The equation for the Nusselt number varies with shape.
 
@@ -819,20 +779,12 @@ $Ra \ge 10000$,
 Nu_{free}=0.5168 Ra^{0.2501}.
 \end{align}
 
-For a sphere or an ellipsoid, following Bird et al. (2002):
+For a sphere or an ellipsoid, following Bird et al. (2002, equation 14.6-12, page 445):
 
 \begin{align}
 \tag{84}
 Nu_{free}=2+0.60 Gr^{\frac{1}{4}} Pr^{\frac{1}{3}}.
 \end{align}
-
-For a plate, following Gates (1980, eq. 9.77, turbulent range):
-
-\begin{align}
-\tag{85}
-Nu_{free}=0.13 Ra^{\frac{1}{3}}.
-\end{align}
-
 
 ### Forced Convection
 
@@ -845,7 +797,7 @@ Re=\frac{\rho_{fluid} v D}{\mu}.
 
 where $v$ is the wind speed ($\text{m} \text{s}^{-1}$).
 
-For a cylinder:
+For a cylinder (Kreith 1965):
 
 For $Re < 4$,
 
@@ -888,13 +840,6 @@ For a sphere or an ellipsoid:
 Nu_{forced}=0.37 Re^{0.6}.
 \end{align}
 
-For a plate, following Gates (1980, eq. 9.49):
-
-\begin{align}
-\tag{93}
-Nu_{forced}=0.032 Re^{0.8}.
-\end{align}
-
 ### Combined free and forced convection
 
 Once $Nu_{free}$ and $Nu_{forced}$ are determined, they can be combined as described in Bird et al. (2002):
@@ -915,7 +860,7 @@ where $T_{fa}$ is replaced by $T_s$ if no fur/feathers are present.
 
 ### Mass transfer coefficient
 
-The mass transfer coefficient can be computed using the Chiltern-Colburn analogy: $\frac{Sh}{Re \space Sc^{\frac{1}{3}}} = \frac{Nu}{Re \space Pr^{\frac{1}{3}}}$ where $Sh$ is the Sherwoood number and $Sc$ is the Schmidt number (the mass transfer analog of the Prandtl number).
+The mass transfer coefficient can be computed using the Chilton-Colburn analogy: $\frac{Sh}{Re \space Sc^{\frac{1}{3}}} = \frac{Nu}{Re \space Pr^{\frac{1}{3}}}$ where $Sh$ is the Sherwoood number and $Sc$ is the Schmidt number (the mass transfer analog of the Prandtl number).
 
 \begin{align}
 \tag{96}
@@ -924,7 +869,7 @@ Sc=\frac{\mu}{\rho_{fluid} d}
 
 where $d$ is the mass diffusivity of water vapor ($\text{m}^2/\text{s}$). 
 
-Thus, from the Chiltern-Colburn analogy:
+Thus, from the Chilton-Colburn analogy:
 
 \begin{align}
 \tag{97}
@@ -1067,7 +1012,7 @@ With the initial $T_s$ guess, calculate $T_{fa,cmp}$. For the part of the ventra
 Q_{fur,cnd} = Q_{cond}.
 \end{align}
 
-Inserting mechanism equations:
+Inserting mechanism equations as an example for cylinders:
 \begin{align}
 \tag{112}
 \frac{2 \pi L_g k_{f,cmp} PCOND}{\ln\left(\frac{R_{fa,cmp}}{R_s}\right)} \left( T_s-T_{fa,cmp}\right) = \frac{A_{cnd} k_{sub}}{x_{sub}} \left( T_{fa,cmp}-T_{sub}\right)
@@ -1236,11 +1181,13 @@ Using the $T_{fa,cmp}$ calculation, calculate $Q_{cond}$ using eq. 10. Recognisi
 
 Check that 1) the two $T_s$ calculations give the same skin temperature, within specified tolerance and 2) that $Q_{gen,net} = Q_{fur} = Q_{cond}$.
 
+Note that all of the calculations done here are for the cylindrical geometry and will be different for other geometries.
+
 ## XIV. RESPFUN
 
 This subroutine is a molar balance for computing water loss from breathing, as represented in Figure 3. It uses the oxygen demand for maintaining a core temperature to compute the amount of air flowing in and out of the lungs and hence the heat lost by evaporation. The user can specify the ambient gas levels so that, for instance, conditions in a burrow can be simulated.
 
-```{r, echo=FALSE, out.width = "100%", fig.align="center", fig.cap = "Figure 3. The exchange of respiratory gases entering the respiratory tract at imagainary surface 1, with carbon dioxide and water vapour added from the body and oxygen consumed according to the metabolic rate and the remainder exiting the body at imaginary surface 2. Figure modified from Porter et al. (2000)", fig.pos='!h'}
+```{r, echo=FALSE, out.width = "100%", fig.align="center", fig.cap = "The exchange of respiratory gases entering the respiratory tract at imagainary surface 1, with carbon dioxide and water vapour added from the body and oxygen consumed according to the metabolic rate and the remainder exiting the body at imaginary surface 2. Figure modified from Porter et al. (2000)", fig.pos='!h'}
 include_graphics("Gas_System_Diagram.jpg")
 ```
 
@@ -1555,7 +1502,7 @@ Walsberg, G.E. & King, J.E. (1978) The Relationship of the External Surface Area
 |$Re$|$\text{none, ratio}$|$\text{RE}$|Reynolds number |
 |$\text{RH}$|$\text{\%}$|$\text{RH}$|relative humidity |
 |$\text{RQ}$|$\text{none, ratio}$|$\text{RQ}$|respiratory quotient (ratio of moles of carbon dioxide produced per mole of oxygen consumed) |
-|$S_b$|$\text{none, ratio}$|$\text{SHAPEB}$|ratio of length to height of a flat plate or ellipsoid|
+|$S_b$|$\text{none, ratio}$|$\text{SHAPEB}$|ratio of length to height of an ellipsoid|
 |$S_c$|$\text{none, ratio}$|$\text{SHAPEC}$|ratio of length to width of a cylinder |
 |$Sc$|$\text{none, ratio}$|$\text{SC}$|Schmidt number |
 |$Sh$|$\text{none, ratio}$|$\text{SH}$|Sherwin number |
