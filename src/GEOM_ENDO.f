@@ -186,7 +186,7 @@ C     ELLIPSOID
 C       ASSUMING A PROLATE SPHEROID
 C       VOL = 4/3* PI*A*B*C
 C       SO VOL = 4/3* PI*G*B*B*B, ASSUMING C = B, A = G*B
-C       SO B = (((3/(4*G))*VOL)/PI)^(1/3)
+C       SO B = ((3*V)/(4*PI*G))**(1/3)
         BSEMIN=(((3./(4.*SHAPEB))*VOL)/PI)**(1./3.)
         CSEMIN=BSEMIN
         ASEMAJ=SHAPEB*(BSEMIN)
