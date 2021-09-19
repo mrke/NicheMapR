@@ -37,6 +37,18 @@ shadplant Hourly predictions of plant variables under the maximum specified shad
 sunsnow Hourly predictions of the snow temperature under the minimum specified shade
 
 shdsnow Hourly predictions of the snow temperature under the maximum specified shade
+
+tcond Hourly predictions of the soil thermal conductivity under the minimum specified shade
+
+shadtcond Hourly predictions of the soil thermal conductivity under the maximum specified shade
+
+specheat Hourly predictions of the soil specific heat capacity under the minimum specified shade
+
+shadspecheat Hourly predictions of soil specific heat capacity under the maximum specified shade
+
+densit Hourly predictions of the soil density under the minimum specified shade
+
+shaddensit Hourly predictions of the soil density under the maximum specified shade
 }
 \description{
 R wrapper for Fortran binary of Niche Mapper microclimate model

@@ -29,6 +29,10 @@ ectorun(ecto)
 
 \item{shadhumid}{Hourly predictions of the soil humidity under the maximum specified shade}
 
+\item{tcond}{Hourly predictions of the soil thermal conductivity under the minimum specified shade}
+
+\item{shadtcond}{Hourly predictions of the soil humidity under the maximum specified shade}
+
 \item{DEP}{Depths used for the microclimate model}
 
 \item{rainfall}{Daily rainfall}

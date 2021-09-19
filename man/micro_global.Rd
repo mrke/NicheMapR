@@ -65,6 +65,18 @@ shadplant Hourly predictions of plant transpiration, leaf water potential and ro
 sunsnow Hourly predictions of snow temperature under the minimum specified shade
 
 shadsnow Hourly predictions snow temperature under the maximum specified shade
+
+tcond Hourly predictions of the soil thermal conductivity under the minimum specified shade
+
+shadtcond Hourly predictions of the soil thermal conductivity under the maximum specified shade
+
+specheat Hourly predictions of the soil specific heat capacity under the minimum specified shade
+
+shadspecheat Hourly predictions of soil specific heat capacity under the maximum specified shade
+
+densit Hourly predictions of the soil density under the minimum specified shade
+
+shaddensit Hourly predictions of the soil density under the maximum specified shade
 }
 \description{
 An implementation of the NicheMapR microclimate model that uses the global climate database
@@ -239,6 +251,24 @@ plant and shadplant variables:
 \item  3 TRANS - plant transpiration rate (g/m2/h)
 \item  4 LEAFPOT - leaf water potential (J/kg = kPa = bar/100)
 \item  5-14 RPOT0cm ... - root water potential (J/kg = kPa = bar/100), at each of the 10 specified depths
+}
+tcond and shadtcond variables:
+\itemize{
+\item  1 DOY - day-of-year
+\item  2 TIME - time of day (mins)
+\item  3-12 TC0cm ... - soil thermal conductivity (W/m-K), at each of the 10 specified depths
+}
+specheat and shadspecheat variables:
+\itemize{
+\item  1 DOY - day-of-year
+\item  2 TIME - time of day (mins)
+\item  3-12 SP0cm ... - soil specific heat capacity (J/kg-K), at each of the 10 specified depths
+}
+densit and shaddensit variables:
+\itemize{
+\item  1 DOY - day-of-year
+\item  2 TIME - time of day (mins)
+\item  3-12 DE0cm ... - soil density (Mg/m3), at each of the 10 specified depths
 }
 
 if snow model is run i.e. parameter lamb = 1\cr
