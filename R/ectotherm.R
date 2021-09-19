@@ -59,7 +59,6 @@
 #' \item{\code{minshades}{ = micro$minshade, Vector of daily minimum shade values - can be different to value used in microclimate model (e.g. to simulate sunspot tracking on a forest floor) (\%)}\cr}
 #' \item{\code{maxshades}{ = micro$maxshade, Vector of daily maximum shade values - can be different to value used in microclimate model (e.g. to simulate use of fine-scale shade in a generally unshaded habitat) (\%)}\cr}
 #' \item{\code{fluid}{ = 0, Fluid type 0=air, 1=water }\cr}
-#' \item{\code{k_sub}{ = 2.79, Substrate thermal conductivity (W/mC)}\cr}
 #' \item{\code{alpha_sub}{ = 1 - micro$REFL, Vector of daily substrate reflectances (0-1)}\cr}
 #' \item{\code{DEP}{ = micro$DEP, Depths available from the microclimate model simulation}\cr}
 #' \item{\code{metout}{ = micro$metout, Microclimate model output for above ground, minimum shade conditions}\cr}
@@ -72,6 +71,8 @@
 #' \item{\code{shadhumid}{ = micro$shadhumid, Microclimate model output for soil humidity, maximum shade conditions}\cr}
 #' \item{\code{soilpot}{ = micro$soilpot, Microclimate model output for soil water potential, minimum shade conditions}\cr}
 #' \item{\code{shadpot}{ = micro$shadpot, Microclimate model output for soil water potential, maximum shade conditions}\cr}
+#' \item{\code{tcond}{ = micro$tcond, Microclimate model output for soil thermal conductivity, minimum shade conditions}\cr}
+#' \item{\code{shadtcond}{ = micro$shadtcond, Microclimate model output for soil thermal conductivity, maximum shade conditions}\cr}
 #' \item{\code{rainfall}{ = micro$RAINFALL, Vector of daily rainfall (mm)}\cr}
 #' \item{\code{rainhr}{ = rep(-1,nrow(metout)), Vector of hourly rainfall (mm), overwrites rainfall if not negative}\cr}
 #' \item{\code{elev}{ = as.numeric(micro$elev), Elevation of simulation (m), obtained from microclimate model output by default}\cr}
@@ -88,11 +89,16 @@
 #' \item{\code{fatosk}{ = 0.4, Configuration factor to sky (-) for infrared calculations}\cr}
 #' \item{\code{fatosb}{ = 0.4, Configuration factor to subsrate for infrared calculations}\cr}
 #' \item{\code{rinsul}{ = 0, Insulative fat layer thickness (m)}\cr}
-#' \item{\code{pct_cond}{ = 10, Percentage of surface contacting the substrate (\%)}\cr}
+#' \item{\code{pct_cond}{ = 10, Percentage of animal surface contacting the substrate (\%)}\cr}
 #' \item{\code{c_body}{ = 3073, Specific heat of flesh J/(kg-K)}\cr}
 #' \item{\code{k_flesh}{ = 0.5, Thermal conductivity of flesh (W/mC, range: 0.412-2.8)}\cr}
 #' \item{\code{rho_body}{ = 1000, Density of flesh (kg/m3)}\cr}
 #' \item{\code{epsilon}{ = 0.95, Emissivity of animal (0-1)}\cr}
+#' \item{\code{eggshape_a}{ = 1, Proportionality factor (-) for going from volume to area, keep this 1 (redundant parameter that should be removed)}\cr}
+#' \item{\code{eggshape_b}{ = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid }\cr}
+#' \item{\code{eggshape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
+#' \item{\code{eggmult }{ = 1 # multiply egg mass by clutch size for heat and water exchange calculations?
+#' \item{\code{eggpct_cond}{ = 50, Percentage of egg surface contacting the substrate (\%)}\cr}
 #'}
 #' \strong{ Behavioural parameters:}
 #'
@@ -548,7 +554,6 @@ ectotherm <- function(
   minshades = micro$minshade,
   maxshades = micro$maxshade,
   fluid = 0,
-  k_sub = 2.79,
   alpha_sub = (1 - micro$REFL),
   DEP = micro$DEP,
   metout = micro$metout,
@@ -561,6 +566,8 @@ ectotherm <- function(
   shadhumid = micro$shadhumid,
   soilpot = micro$soilpot,
   shadpot = micro$shadpot,
+  tcond = micro$tcond,
+  shadtcond = micro$shadtcond,
   rainfall = micro$RAINFALL,
   rainhr = rep(-1,nrow(metout)),
   elev = as.numeric(micro$elev),
@@ -570,10 +577,14 @@ ectotherm <- function(
   shape_a = 1,
   shape_b = 3,
   shape_c = 2 / 3,
+  eggshape_a = 1,
+  eggshape_b = 3,
+  eggshape_c = 2 / 3,
   fatosk = 0.4,
   fatosb = 0.4,
   rinsul = 0,
   pct_cond = 10,
+  eggpct_cond = 10,
   c_body = 3073,
   k_flesh = 0.5,
   rho_body = 1000,
@@ -660,6 +671,7 @@ ectotherm <- function(
   depress = 1,
   clutchsize = 5,
   clutch_ab = c(0, 0),
+  eggmult = 0,
   viviparous = 0,
   minclutch = 0,
   batch = 1,
@@ -872,10 +884,6 @@ ectotherm <- function(
     message("error: fluid must be 0 or 1 \n")
     errors<-1
   }
-  if(k_sub < 0){
-    message("error: k_sub can't be negative \n")
-    errors<-1
-  }
   if(alpha_sub < 0 | alpha_sub > 1){
     message("error: alpha_sub can only be from 0 to 1 \n")
     errors<-1
@@ -924,6 +932,14 @@ ectotherm <- function(
     message("error: shadpot must have 12 columns \n")
     errors<-1
   }
+  if(ncol(tcond) < 12){
+    message("error: tcond must have 12 columns \n")
+    errors<-1
+  }
+  if(ncol(shadtcond) < 12){
+    message("error: shadtcond must have 12 columns \n")
+    errors<-1
+  }
   if(min(rainfall) < 0){
     message("error: rainfall contains some negative values \n")
     errors<-1
@@ -952,6 +968,18 @@ ectotherm <- function(
     message("error: shape_c can't be negative \n")
     errors<-1
   }
+  if(eggshape_a < 0){
+    message("error: shape_a can't be negative \n")
+    errors<-1
+  }
+  if(eggshape_b < 0){
+    message("error: shape_b can't be negative \n")
+    errors<-1
+  }
+  if(eggshape_c < 0){
+    message("error: shape_c can't be negative \n")
+    errors<-1
+  }
   if(fatosk < 0 | fatosk > 1){
     message("error: fatosk can only be from 0 to 1 \n")
     errors<-1
@@ -970,6 +998,10 @@ ectotherm <- function(
   }
   if(pct_cond < 0 | pct_cond > 100){
     message("error: pct_cond can only be from 0 to 100 \n")
+    errors<-1
+  }
+  if(eggpct_cond < 0 | eggpct_cond > 100){
+    message("error: eggpct_cond can only be from 0 to 100 \n")
     errors<-1
   }
   if(c_body < 0){
@@ -1268,7 +1300,7 @@ ectotherm <- function(
     shade <- 0 # extraneous, not used
     minshd <- 0 # extraneous, not used
     maxshd <- 90 # extraneous, not used
-    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF, EMISSK, EMISSB, ABSSB, shade, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond/100, skint, gas, transient, soilnode, o2max, SPARE4, tannul, nodnum, postur, maxshd, minshd, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, SPARE1, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, k_sub, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod))
+    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF, EMISSK, EMISSB, ABSSB, shade, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, SPARE4, tannul, nodnum, postur, maxshd, minshd, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, SPARE1, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, eggpct_cond))
     debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, FoodWater1, f, s_G, K, X[1], metab_mode, stages, kap_V, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He, k_Ee, k_EV, mu_N)
     deblast <- c(iyear, countday, V_init, E_init, ES_init, cumrepro_init, q_init, hs_init, cumbatch_init, V_baby_init, E_baby_init, E_H_init, stage)
 
@@ -1339,9 +1371,11 @@ ectotherm <- function(
       write.table(shadpot[(seq(1, ndays * 24)), ], file = "ecto csv input/shadpot.csv", sep = ",", row.names = FALSE)
       write.table(humid[(seq(1, ndays * 24)), ], file = "ecto csv input/humid.csv", sep = ",", row.names = FALSE)
       write.table(shadhumid[(seq(1, ndays * 24)), ], file = "ecto csv input/shadhumid.csv", sep = ",", row.names = FALSE)
+      write.table(tcond[(seq(1, ndays * 24)), ], file = "ecto csv input/tcond.csv", sep = ",", row.names = FALSE)
+      write.table(shadtcond[(seq(1, ndays * 24)), ], file = "ecto csv input/shadtcond.csv", sep = ",", row.names = FALSE)
     }
     # final input list
-    ecto <- list(ndays = ndays, nstages = stages, ectoinput = ectoinput, metout = metout[, 1:18], shadmet = shadmet[, 1:18], soil = soil, shadsoil = shadsoil, soilmoist = soilmoist, shadmoist = shadmoist, soilpot = soilpot, shadpot = shadpot, humid = humid, shadhumid = shadhumid, DEP = DEP, rainfall = rainfall, rainhr = rainhr, iyear = iyear, countday = countday, debmod = debmod, deblast = deblast, foodwaters = foodwaters, foodlevels = foodlevels, wetlandTemps = wetlandTemps, wetlandDepths = wetlandDepths, GLMtemps = GLMtemps, GLMO2s = GLMO2s, GLMsalts = GLMsalts, GLMpHs = GLMpHs, GLMfoods = GLMfoods, arrhenius = arrhenius, arrhenius2 = arrhenius2, thermal_stages = thermal_stages, behav_stages = behav_stages, water_stages = water_stages, nutri_stages = nutri_stages, minshades = minshades, maxshades = maxshades, S_instar = S_instar)
+    ecto <- list(ndays = ndays, nstages = stages, ectoinput = ectoinput, metout = metout[, 1:18], shadmet = shadmet[, 1:18], soil = soil, shadsoil = shadsoil, soilmoist = soilmoist, shadmoist = shadmoist, soilpot = soilpot, shadpot = shadpot, humid = humid, shadhumid = shadhumid, tcond = tcond, shadtcond = shadtcond, DEP = DEP, rainfall = rainfall, rainhr = rainhr, iyear = iyear, countday = countday, debmod = debmod, deblast = deblast, foodwaters = foodwaters, foodlevels = foodlevels, wetlandTemps = wetlandTemps, wetlandDepths = wetlandDepths, GLMtemps = GLMtemps, GLMO2s = GLMO2s, GLMsalts = GLMsalts, GLMpHs = GLMpHs, GLMfoods = GLMfoods, arrhenius = arrhenius, arrhenius2 = arrhenius2, thermal_stages = thermal_stages, behav_stages = behav_stages, water_stages = water_stages, nutri_stages = nutri_stages, minshades = minshades, maxshades = maxshades, S_instar = S_instar)
 
     message('running ectotherm model ... \n')
 
@@ -1357,9 +1391,9 @@ ectotherm <- function(
     yearsout <- ectout$yearsout
 
     if(DEB==0){
-      return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,rainfall=rainfall,rainhr=rainhr,enbal=enbal,environ=environ,masbal=masbal,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
+      return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,tcond=tcond,shadtcond=shadtcond,rainfall=rainfall,rainhr=rainhr,enbal=enbal,environ=environ,masbal=masbal,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
     }else{
-      return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,rainfall=rainfall,rainhr=rainhr,enbal=enbal,masbal=masbal,environ=environ,debout=debout,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
+      return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,tcond=tcond,shadtcond=shadtcond,rainfall=rainfall,rainhr=rainhr,enbal=enbal,masbal=masbal,environ=environ,debout=debout,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
     }
   } # end error check
 }

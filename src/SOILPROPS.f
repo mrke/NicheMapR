@@ -46,7 +46,8 @@ c     Predicting the effect of temperature on soil thermal conductivity. Soil Sc
       INTEGER JULNUM,DOY,Numtyps
       INTEGER NON,evenrain,runmoist,runsnow,trouble
       INTEGER I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92,I93
-     & ,I94,I95,I96,ij,I97,I98,I99,I100,I101    
+     &,I94,I95,I96,ij,I97,I98,I99,I100,I101,I102,I103,I104,I105,I106
+     &,I107    
       INTEGER IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART,IEND2
       DIMENSION DENDAY(30),SPDAY(30),TKDAY(30)
       dimension soilprop(10,5),TSOI(30),moistt(10)
@@ -60,7 +61,7 @@ c     Predicting the effect of temperature on soil thermal conductivity. Soil Sc
       COMMON/SOILND/NON
       COMMON/DAYJUL/JULNUM,DOY
       COMMON/WMAIN/I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92,I93
-     & ,I94,I95,I96,I97,I98,I99,I100,I101
+     & ,I94,I95,I96,I97,I98,I99,I100,I101,I102,I103,I104,I105,I106,I107
       common/soilmoist/condep,rainmult,maxpool
       common/soilmoist3/runmoist,evenrain,maxcount 
       common/soimoist2/rww,pc,rl,sp,r1,im

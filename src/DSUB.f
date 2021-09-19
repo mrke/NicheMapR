@@ -196,7 +196,11 @@ C     SURFACE ABSORPTIVITY FOR SUB. DSUB CALCULATIONS
 C     SURFACE REFLECTIVITY FOR SOLRAD CALCULATIONS
       REFL = REFLS(doy)
       SLE = SLES(doy)
-      moist=moists(1:10,doy)
+      if((SIOUT(1).eq.1440).and.(doy.gt.1))then
+       moist=moists(1:10,doy-1) ! initalise with last soil moisture estimate
+      else
+       moist=moists(1:10,doy)
+      endif
       if(runsnow.eq.1)then
        methour=(int(SIOUT(1)/60)+1)+24*(doy-1)
        if(methour.gt.1)then

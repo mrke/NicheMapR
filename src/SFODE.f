@@ -41,7 +41,7 @@ C     AT RETURN X AND Y CONTAIN THEIR LAST GOOD VALUES
       Integer I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,IPRINT,ep,moist
       INTEGER I91,I92,I93,I94,I95,I96,slipped,trouble,runsnow,numrun
       INTEGER I97,I98,I99,I100,I101,errout,maxerr,errcount,JULNUM,DOY
-      integer solonly
+      integer solonly,I102,I103,I104,I105,I106,I107
 
       DIMENSION curmoist2(18),moist(10),qphase(10),sumphase2(10)
 
@@ -49,7 +49,7 @@ C     AT RETURN X AND Y CONTAIN THEIR LAST GOOD VALUES
       common/moistcom/moist,ep
 c     I/O file designations: I1-I7 (in MAIN); I2 = output file
       COMMON/WMAIN/I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92,I93
-     & ,I94,I95,I96,I97,I98,I99,I100,I101
+     & ,I94,I95,I96,I97,I98,I99,I100,I101,I102,I103,I104,I105,I106,I107
       COMMON/WORK/ERROR(40),TERR(40),TNEW(40),YI(40),YP(40),YC(40),
      1 F(6,40),G(40),Y(40)
      2  ,DUMMY(1160)

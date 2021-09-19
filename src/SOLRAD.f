@@ -89,7 +89,7 @@ C     REPINT(N)    RECIPROCAL OF EPINT
      & prevden,grasshade
 
       INTEGER I,I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92,I93
-     & ,I94,I95,I96
+     & ,I94,I95,I96,I102,I103,I104,I105,I106,I107
       integer ia,IALT,icorr,iday,idom,ielam,IDA,IDAYST
       integer iedum,IEND,iep,ILAM,intcz,INTIME
       integer IPINT,isos,ISTART,IT,IUV,IVAR,jct,JJ,JTEST,julnum
@@ -132,7 +132,7 @@ C     REPINT(N)    RECIPROCAL OF EPINT
       COMMON/WSINE/TIMSR,TIMSS,TIMTMX,TMIN,TMAX,TMIN2,TMAX2
       COMMON/NDAY/ND
       COMMON/WMAIN/I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92,I93
-     & ,I94,I95,I96,I97,I98,I99,I100,I101
+     & ,I94,I95,I96,I97,I98,I99,I100,I101,I102,I103,I104,I105,I106,I107
       common/solropt/solout
       Common/wfun/airms,cz
       COMMON/DAYJUL/JULNUM,DOY

@@ -12,6 +12,8 @@
 #' @param shadpot Hourly predictions of the soil water potential under the maximum specified shade
 #' @param humid Hourly predictions of the soil humidity under the minimum specified shade
 #' @param shadhumid Hourly predictions of the soil humidity under the maximum specified shade
+#' @param tcond Hourly predictions of the soil thermal conductivity under the minimum specified shade
+#' @param shadtcond Hourly predictions of the soil humidity under the maximum specified shade
 #' @param DEP Depths used for the microclimate model
 #' @param rainfall Daily rainfall
 #' @param rainhr Hourly rainfall (overwrites rainfall if non-negative
@@ -53,6 +55,8 @@ ectorun <- function(ecto) {
                 as.double(ecto$shadpot),
                 as.double(ecto$humid),
                 as.double(ecto$shadhumid),
+                as.double(ecto$tcond),
+                as.double(ecto$shadtcond),
                 as.double(ecto$DEP),
                 as.double(ecto$rainfall),
                 as.double(ecto$rainhr),

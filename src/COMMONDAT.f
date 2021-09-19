@@ -28,5 +28,7 @@ c     along with this program. If not, see http://www.gnu.org/licenses/.
      &TINS(:,:),TARS(:),RELS(:),CLDS(:),VELS(:),SOLS(:),ZENS(:),ZSLS(:),
      &PCTWET(:),julday(:),rainhr(:),LAIs(:),DRLAMBDA(:,:),DRRLAMBDA(:,:)
      &,SRLAMBDA(:,:),sunsnow(:,:),shdsnow(:,:),plant(:,:),shadplant(:,:)
+     &,tcond(:,:),shadtcond(:,:),specheat(:,:),shadspecheat(:,:)
+     &,densit(:,:),shaddensit(:,:)
       end module commondat
 

@@ -16,6 +16,12 @@
 #' @return shadplant Hourly predictions of plant variables under the maximum specified shade
 #' @return sunsnow Hourly predictions of the snow temperature under the minimum specified shade
 #' @return shdsnow Hourly predictions of the snow temperature under the maximum specified shade
+#' @return tcond Hourly predictions of the soil thermal conductivity under the minimum specified shade
+#' @return shadtcond Hourly predictions of the soil thermal conductivity under the maximum specified shade
+#' @return specheat Hourly predictions of the soil specific heat capacity under the minimum specified shade
+#' @return shadspecheat Hourly predictions of soil specific heat capacity under the maximum specified shade
+#' @return densit Hourly predictions of the soil density under the minimum specified shade
+#' @return shaddensit Hourly predictions of the soil density under the maximum specified shade
 #' @useDynLib "NicheMapR"
 #' @export
 microclimate <- function(micro) {
@@ -29,8 +35,6 @@ microclimate <- function(micro) {
                 as.double(micro$MAXSHADES),
                 as.double(micro$MINSHADES),
                 as.double(micro$Nodes),
-                as.double(micro$TIMAXS),
-                as.double(micro$TIMINS),
                 as.double(micro$RHMAXX),
                 as.double(micro$RHMINN),
                 as.double(micro$CCMAXX),
@@ -78,6 +82,12 @@ microclimate <- function(micro) {
                 shdsnow=matrix(data = 0, nrow = 24 * doynum, ncol = 11),
                 plant=matrix(data = 0, nrow = 24 * doynum, ncol = 14),
                 shadplant=matrix(data = 0, nrow = 24 * doynum, ncol = 14),
+                tcond=matrix(data = 0, nrow = 24 * doynum, ncol = 12),
+                shadtcond=matrix(data = 0, nrow = 24 * doynum, ncol = 12),
+                specheat=matrix(data = 0, nrow = 24 * doynum, ncol = 12),
+                shadspecheat=matrix(data = 0, nrow = 24 * doynum, ncol = 12),
+                densit=matrix(data = 0, nrow = 24 * doynum, ncol = 12),
+                shaddensit=matrix(data = 0, nrow = 24 * doynum, ncol = 12),
                 drlam=matrix(data = 0, nrow = 24 * doynum, ncol = 113),
                 drrlam=matrix(data = 0, nrow = 24 * doynum, ncol = 113),
                 srlam=matrix(data = 0, nrow = 24 * doynum, ncol = 113), PACKAGE = "NicheMapR")
@@ -95,6 +105,12 @@ microclimate <- function(micro) {
   shdsnow <- matrix(data = 0, nrow = 24 * doynum, ncol = 11)
   plant <- matrix(data = 0, nrow = 24 * doynum, ncol = 14)
   shadplant <- matrix(data = 0, nrow = 24 * doynum, ncol = 14)
+  tcond <- matrix(data = 0, nrow = 24 * doynum, ncol = 12)
+  shadtcond <- matrix(data = 0, nrow = 24 * doynum, ncol = 12)
+  specheat <- matrix(data = 0, nrow = 24 * doynum, ncol = 12)
+  shadspecheat <- matrix(data = 0, nrow = 24 * doynum, ncol = 12)
+  densit <- matrix(data = 0, nrow = 24 * doynum, ncol = 12)
+  shaddensit <- matrix(data = 0, nrow = 24 * doynum, ncol = 12)
   drlam <- matrix(data = 0, nrow = 24 * doynum, ncol = 113)
   drrlam <- matrix(data = 0, nrow = 24 * doynum, ncol = 113)
   srlam <- matrix(data = 0, nrow = 24 * doynum, ncol = 113)
@@ -112,6 +128,12 @@ microclimate <- function(micro) {
   storage.mode(shdsnow) <- "double"
   storage.mode(plant) <- "double"
   storage.mode(shadplant) <- "double"
+  storage.mode(tcond) <- "double"
+  storage.mode(shadtcond) <- "double"
+  storage.mode(specheat) <- "double"
+  storage.mode(shadspecheat) <- "double"
+  storage.mode(densit) <- "double"
+  storage.mode(shaddensit) <- "double"
   storage.mode(drlam) <- "double"
   storage.mode(drrlam) <- "double"
   storage.mode(srlam) <- "double"
@@ -129,6 +151,12 @@ microclimate <- function(micro) {
   shdsnow <- a$shdsnow
   plant <- a$plant
   shadplant <- a$shadplant
+  tcond <- a$tcond
+  shadtcond <- a$shadtcond
+  specheat <- a$specheat
+  shadspecheat <- a$shadspecheat
+  densit <- a$densit
+  shaddensit <- a$shaddensit
   drlam <- a$drlam
   drrlam <- a$drrlam
   srlam <- a$srlam
@@ -142,6 +170,9 @@ microclimate <- function(micro) {
   humid.names <- c("DOY", "TIME", paste0("RH", micro$DEP, "cm"))
   pot.names <- c("DOY", "TIME", paste0("PT", micro$DEP, "cm"))
   plant.names <- c("DOY", "TIME", "TRANS", "LPT", paste0("RPT", micro$DEP, "cm"))
+  tcond.names <- c("DOY", "TIME", paste0("TC", micro$DEP, "cm"))
+  spheat.names <- c("DOY", "TIME", paste0("SP", micro$DEP, "cm"))
+  denst.names <- c("DOY", "TIME", paste0("DE", micro$DEP, "cm"))
   colnames(soilmoist) <- moist.names
   colnames(shadmoist) <- moist.names
   colnames(humid) <- humid.names
@@ -150,6 +181,12 @@ microclimate <- function(micro) {
   colnames(shadpot) <- pot.names
   colnames(plant) <- plant.names
   colnames(shadplant) <- plant.names
+  colnames(tcond) <- tcond.names
+  colnames(shadtcond) <- tcond.names
+  colnames(specheat) <- spheat.names
+  colnames(shadspecheat) <- spheat.names
+  colnames(densit) <- denst.names
+  colnames(shaddensit) <- denst.names
   snow.names <- c("DOY", "TIME", paste0("SN", c(1, 2, 3, 4, 5, 6, 7, 8, 9)))
   colnames(sunsnow) <- snow.names
   colnames(shdsnow) <- snow.names
@@ -157,5 +194,5 @@ microclimate <- function(micro) {
   colnames(drlam) <- drlam.colnames
   colnames(drrlam) <- drlam.colnames
   colnames(srlam) <- drlam.colnames
-  return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, plant = plant, shadplant = shadplant,  sunsnow=sunsnow, shdsnow=shdsnow, drlam=drlam, drrlam=drrlam, srlam=srlam))
+  return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, plant = plant, shadplant = shadplant,  sunsnow=sunsnow, shdsnow=shdsnow, tcond=tcond, shadtcond=shadtcond, specheat=specheat, shadspecheat=shadspecheat, densit=densit, shaddensit=shaddensit, drlam=drlam, drrlam=drrlam, srlam=srlam))
 }

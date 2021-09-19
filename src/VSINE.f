@@ -30,7 +30,7 @@ C     ******THIS PROGRAM COMPUTES TIME AND VALUES FOR MICROMET. *****
       double precision vsmin,vsmax,slope1,slope2,slope3,frmin,timec
       INTEGER I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,IVAR,jsum,itest1,i
       integer microdaily,cnt,non,iday,itest2,itime,jct,I91,I92,I93
-     & ,I94,I95,I96 
+     & ,I94,I95,I96,I102,I103,I104,I105,I106,I107
       INTEGER I97,I98,I99,I100,I101
       
       DIMENSION TIMARY (25),XA(25),YA(25)
@@ -39,7 +39,7 @@ C     ******THIS PROGRAM COMPUTES TIME AND VALUES FOR MICROMET. *****
       COMMON /WSINE/TIMSR,TIMSS,TIMTMX,TMIN,TMAX,TMIN2,TMAX2
       COMMON /SOILND/NON
       COMMON/WMAIN/I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92,I93
-     & ,I94,I95,I96,I97,I98,I99,I100,I101
+     & ,I94,I95,I96,I97,I98,I99,I100,I101,I102,I103,I104,I105,I106,I107
       common/init/itair,icld,iwind,irelhum,iday
       COMMON/DAILY/microdaily
       COMMON/dataky/DEPS,CNT

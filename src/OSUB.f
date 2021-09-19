@@ -59,13 +59,15 @@ C     VERSION 2 SEPT. 2000
      & sumphase,sumphase2,snowage,prevden,qphase2,sumlayer,densrat,
      & cummelted,melted,snowfall,rainmelt,cpsnow,netsnow,hcap,meltheat,
      & layermass,xtrain,QFREZE,grasshade,MAXSURF
+      double precision Thconduct,Density,Spheat
 
       integer maxsnode2,maxsnode3,maxcount,js,numrun,rainhourly,hourly
       INTEGER I,IEND,IFINAL,ILOCT,IOUT,IPRINT,ITEST,trouble
       INTEGER J,JULNUM,MM,DOY,N,NAIR,ND,NOUT,dew,writecsv,runsnow
       INTEGER I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,slipped,sat
       INTEGER I91,I92,I93,I94,I95,I96,runmoist,evenrain,step,timestep
-      INTEGER I97,I98,I99,I100,I101,errout,maxerr,errcount
+      INTEGER I97,I98,I99,I100,I101,I102,I103,I104,I105,I106,I107
+      INTEGER errout,maxerr,errcount
       INTEGER IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART
 
       INTEGER methour,IRmode,microdaily,runshade,k,lamb,cnd
@@ -87,6 +89,7 @@ C      FILES 6,I2,I3 & I10 ARE CONSOLE, OUTPUT, METOUT & SOIL RESPECTIVELY
       DIMENSION curmoist2(18),curhumid2(18),curpot2(18),curroot2(18)
       DIMENSION PE(19),KS(19),BD(19),BB(19),L(19),curroot(18),DD(19)
       DIMENSION sumphase2(10)
+      DIMENSION Thconduct(30),Density(30),Spheat(30)
 
       COMMON/TABLE/TI(211),TD(211)
       COMMON/TABLE2/ILOCT(21)
@@ -103,7 +106,7 @@ C    BALANCES
       COMMON/WDSUB/TSKY,ARAD,CRAD,CLOUD,CLR,SOLR
       COMMON/WOSUB/DEPP
       COMMON/WMAIN/I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92,I93
-     & ,I94,I95,I96,I97,I98,I99,I100,I101
+     & ,I94,I95,I96,I97,I98,I99,I100,I101,I102,I103,I104,I105,I106,I107
       COMMON/DAYS/TANNUL
       COMMON/DAYJUL/JULNUM,DOY
       COMMON/SNOWPRED/snowtemp,snowdens,snowmelt,snownode,minsnow
@@ -114,6 +117,7 @@ C     PERCENT GROUND SHADE & ELEVATION (M) TO METOUT
       COMMON/LOCLHUM/RHLOCL
       COMMON/VIEWFACT/VIEWF
       COMMON/SOYFILS/DENDAY,SPDAY,TKDAY
+      COMMON/SOYVAR2/Thconduct,Density,Spheat
       common/prevtime/lastime,temp,lastsurf
       common/prevtime2/slipped
       common/soilmoist/condep,rainmult,maxpool
@@ -1196,6 +1200,15 @@ c     end check for previous slippage
           plant(methour,3)=trans2 * 1000 * 3600 !g/m2/h
           plant(methour,4)=leafpot
           plant(methour,5:14)=curroot(1:10)
+          tcond(methour,1)=JULDAY(DOY)
+          tcond(methour,2)=SIOUT(1)
+          tcond(methour,3:12)=(Thconduct(9:18)/60.)*418.6
+          specheat(methour,1)=JULDAY(DOY)
+          specheat(methour,2)=SIOUT(1)
+          specheat(methour,3:12)=spheat(9:18)*4185.
+          densit(methour,1)=JULDAY(DOY)
+          densit(methour,2)=SIOUT(1)
+          densit(methour,3:12)=Density(9:18)*1.0E+3            
          endif
          if(writecsv.eq.1)then
           WRITE(I3,154) metout(methour,1),",",metout(methour,2),",",
@@ -1232,6 +1245,21 @@ c     end check for previous slippage
      &(methour,8),",",plant(methour,9),",",plant(methour,10)
      &,",",plant(methour,11),",",plant(methour,12),",",plant(methour,13)
      &,",",plant(methour,14)
+      WRITE(I102,161) tcond(methour,1),",",tcond(methour,2),","
+     &,tcond(methour,3),",",tcond(methour,4),",",tcond(metho
+     &ur,5),",",tcond(methour,6),",",tcond(methour,7),",",tcond
+     &(methour,8),",",tcond(methour,9),",",tcond(methour,10)
+     &,",",tcond(methour,11),",",tcond(methour,12)
+      WRITE(I103,161) specheat(methour,1),",",specheat(methour,2),","
+     &,specheat(methour,3),",",specheat(methour,4),",",specheat(metho
+     &ur,5),",",specheat(methour,6),",",specheat(methour,7),",",specheat
+     &(methour,8),",",specheat(methour,9),",",specheat(methour,10)
+     &,",",specheat(methour,11),",",specheat(methour,12)
+      WRITE(I104,161) densit(methour,1),",",densit(methour,2),","
+     &,densit(methour,3),",",densit(methour,4),",",densit(metho
+     &ur,5),",",densit(methour,6),",",densit(methour,7),",",densit
+     &(methour,8),",",densit(methour,9),",",densit(methour,10)
+     &,",",densit(methour,11),",",densit(methour,12)     
         endif
       if(runsnow.eq.1)then
       WRITE(I7,159) JULDAY(DOY),",",SIOUT(1),",",
@@ -1441,6 +1469,15 @@ c     end check for previous slippage
           shadplant(methour,3)=trans2 * 1000 * 3600 !g/m2/h
           shadplant(methour,4)=leafpot
           shadplant(methour,5:14)=curroot(1:10)
+          shadtcond(methour,1)=JULDAY(DOY)
+          shadtcond(methour,2)=SIOUT(1)
+          shadtcond(methour,3:12)=(Thconduct(9:18)/60.)*418.6
+          shadspecheat(methour,1)=JULDAY(DOY)
+          shadspecheat(methour,2)=SIOUT(1)
+          shadspecheat(methour,3:12)=spheat(9:18)*4185.0
+          shaddensit(methour,1)=JULDAY(DOY)
+          shaddensit(methour,2)=SIOUT(1)
+          shaddensit(methour,3:12)=Density(9:18)*1.0E+3    
          endif
          if((writecsv.eq.1).and.(runshade.eq.1))then
           WRITE(I12,154) shadmet(methour,1),",",shadmet(methour,2),",",
@@ -1486,6 +1523,23 @@ c     end check for previous slippage
      &,shadplant(methour,10),",",shadplant(methour,11),","
      &,shadplant(methour,12),",",shadplant(methour,13),","
      &,shadplant(methour,14)
+      WRITE(I105,161) shadtcond(methour,1),",",shadtcond(methour,2),","
+     &,shadtcond(methour,3),",",shadtcond(methour,4),",",shadtcond(metho
+     &ur,5),",",shadtcond(methour,6),",",shadtcond(methour,7),",",shadtc
+     &ond(methour,8),",",shadtcond(methour,9),",",shadtcond(methour,10)
+     &,",",shadtcond(methour,11),",",shadtcond(methour,12)
+      WRITE(I106,161) shadspecheat(methour,1),",",shadspecheat(methour,2
+     &),",",shadspecheat(methour,3),",",shadspecheat(methour,4),",",shad
+     &specheat(methour,5),",",shadspecheat(methour,6),",",shadspecheat(m
+     &ethour,7),",",shadspecheat(methour,8),",",shadspecheat(methour,9)
+     &,",",shadspecheat(methour,10),",",shadspecheat(methour,11),",",sha
+     &dspecheat(methour,12)
+      WRITE(I107,161) shaddensit(methour,1),",",shaddensit(methour,2)
+     &,",",shaddensit(methour,3),",",shaddensit(methour,4),",",shaddensi
+     &t(methour,5),",",shaddensit(methour,6),",",shaddensit(methour,7)
+     &,",",shaddensit(methour,8),",",shaddensit(methour,9),",",shaddensi
+     &t(methour,10),",",shaddensit(methour,11),",",
+     &shaddensit(methour,12)         
           endif
          endif
         ENDIF

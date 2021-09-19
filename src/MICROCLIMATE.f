@@ -1,11 +1,12 @@
       subroutine microclimate(nn2,microinput1,julday1,SLES1,DEP1,
-     &maxshades1,minshades1,Nodes1,timaxs1
-     &,timins1,RHMAXX1,RHMINN1,CCMAXX1,CCMINN1,WNMAXX1,WNMINN1,TMAXX1
+     &maxshades1,minshades1,Nodes1,
+     &RHMAXX1,RHMINN1,CCMAXX1,CCMINN1,WNMAXX1,WNMINN1,TMAXX1
      &,TMINN1,REFLS1,PCTWET1,soilinit1,hori1,tai1,soilprop1,
      &moists1,rain1,tannulrun1,tides1,PE1,KS1,BB1,BD1,DD1,L1,LAI1
      &,TAIRhr1,RHhr1,WNhr1,CLDhr1,SOLRhr1,RAINhr1,ZENhr1,IRhr1,metout1
      &,soil1,shadmet1,shadsoil1,soilmoist1,shadmoist1,humid1,shadhumid1
-     &,soilpot1,shadpot1,sunsnow1,shdsnow1,plant1,shadplant1,DRLAMBDA1
+     &,soilpot1,shadpot1,sunsnow1,shdsnow1,plant1,shadplant1,tcond1,
+     &shadtcond1,specheat1,shadspecheat1,densit1,shaddensit1,DRLAMBDA1
      &,DRRLAMBDA1,SRLAMBDA1)
 
 C     NicheMapR: software for biophysical mechanistic niche modelling
@@ -75,7 +76,8 @@ c     OSUB outputs the microclimate calculations.
      & METOUT1,SHADMET1
       double precision, DIMENSION(24*int(nn2),12), intent(inout) ::
      &SOIL1,SHADSOIL1,soilpot1,shadpot1,humid1,shadhumid1,soilmoist1,
-     &shadmoist1
+     &shadmoist1,tcond1,shadtcond1,specheat1,shadspecheat1,densit1,
+     &shaddensit1
       double precision, DIMENSION(24*int(nn2),14), intent(inout) ::
      &plant1,shadplant1
       double precision, DIMENSION(24*int(nn2),11), intent(inout) ::
@@ -83,7 +85,7 @@ c     OSUB outputs the microclimate calculations.
       double precision, DIMENSION(24*int(nn2),113), intent(inout)
      & ::DRLAMBDA1,DRRLAMBDA1,SRLAMBDA1
       double precision, DIMENSION(24*int(nn2),3), intent(in) :: tides1
-      double precision DEP1,timaxs1,timins1,hori1,tai1,
+      double precision DEP1,hori1,tai1,
      &microinput1,soilprop1,PE1,KS1,BB1,BD1,L1,soilinit1,DD1
 
       double precision C,DEP,DTAU,ERR1,H,OUT,PAR,PTWET,SABNEW,soildp,
@@ -110,6 +112,7 @@ c     OSUB outputs the microclimate calculations.
 
       INTEGER I,I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I20,KK,LL,I100
       INTEGER I91,I92,I93,I94,I95,I96,IPCH,IPRINT,cnt,II,I97,I98,I99
+      INTEGER I102,I103,I104,I105,I106,I107
       Integer ENDMON,IDAY,IDMAIN,IFINAL,ILOCT,IOUT,trouble,maxcount,I101
       Integer ISHADE,ITEST,J,JULNUM,NOCON,NOPRNT,NOSUM,NOTRAN,NON,NAN
       Integer M,MM,MONLY,DOY,N,ND,NDEP,NDMAX,NDUM1,NKHT,NLIZ,maxerr
@@ -124,13 +127,13 @@ c     OSUB outputs the microclimate calculations.
       CHARACTER(12) FNAME
 
       DIMENSION snownode(10),snode(10),qphase(10)
-      DIMENSION microinput1(62)
+      DIMENSION microinput1(70)
       DIMENSION soilprop(10,5),soilprop1(10,5),moist(10)
       DIMENSION DEPS(21),curmoist2(18)
       DIMENSION TIMINS(4),TIMAXS(4)
       DIMENSION tai1(111),tai(111)
       DIMENSION Dep1(10),minutes(25)
-      DIMENSION TIMINS1(4),TIMAXS1(4)
+c      DIMENSION TIMINS1(4),TIMAXS1(4)
       DIMENSION soilinit1(20),hori1(24),densfun(4),sumphase2(10)
       DIMENSION julstnd(2),depp(30),Thconduct(30),Density(30),Spheat(30)
       DIMENSION hori(24),azi(24),PE(19),KS(19),BD(19),BB(19),DD(19)
@@ -151,7 +154,7 @@ c     OSUB outputs the microclimate calculations.
 c      COMMON/WSTEDI/ASVLIZ(6),SHADE(4)
       COMMON/PAR/PAR(18)
       COMMON/WMAIN/I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,I91,I92,I93
-     & ,I94,I95,I96,I97,I98,I99,I100,I101
+     & ,I94,I95,I96,I97,I98,I99,I100,I101,I102,I103,I104,I105,I106,I107
       COMMON/NDAY/ND
       common/solropt/solout
       COMMON/GROUND/SHAYD,ALTT,MAXSHD,SABNEW,PTWET,rainfall
@@ -247,8 +250,11 @@ C     DROP OUT OPTION.  IOT=1,2,3,4,5,6
      &nodes(10,nn2),TDSS(nn2),TINS(20,nn2),TARS(nn2*25),RELS(nn2*25),
      &CLDS(nn2*25),VELS(nn2*25),SOLS(nn2*25),ZENS(nn2*25),ZSLS(nn2*25),
      &julday(nn2),LAIs(nn2),pctwet(nn2),rainhr(nn2*25),DRLAMBDA(nn2*24,
-     &113),DRRLAMBDA(nn2*24,113),SRLAMBDA(nn2*24,113),sunsnow(nn2*24,11)
-     &,shdsnow(nn2*24,11),plant(nn2*24,14),shadplant(nn2*24,14))
+     &113),DRRLAMBDA(nn2*24,113),SRLAMBDA(nn2*24,113),
+     &sunsnow(nn2*24,11),shdsnow(nn2*24,11),plant(nn2*24,14),
+     &shadplant(nn2*24,14),tcond(nn2*24,12),shadtcond(nn2*24,12)
+     &,specheat(nn2*24,12),shadspecheat(nn2*24,12),densit(nn2*24,12),
+     &shaddensit(nn2*24,12))
 C    INITIALIZING MONTH OF YEAR COUNTER
       DOY=1
 c    INITIALIZING DATAKY COUNTER
@@ -284,6 +290,12 @@ c    INITIALIZING DATAKY COUNTER
       shdsnow1(:,:)=0.D0
       plant1(:,:)=0.D0
       shadplant1(:,:)=0.D0
+      tcond1(:,:)=0.D0
+      shadtcond1(:,:)=0.D0
+      specheat1(:,:)=0.D0
+      shadspecheat1(:,:)=0.D0
+      densit1(:,:)=0.D0
+      shaddensit1(:,:)=0.D0
       metout(:,:)=0.D0
       shadmet(:,:)=0.D0
       soil(:,:)=0.D0
@@ -298,6 +310,12 @@ c    INITIALIZING DATAKY COUNTER
       shdsnow(:,:)=0.D0
       plant(:,:)=0.D0
       shadplant(:,:)=0.D0
+      tcond(:,:)=0.D0
+      shadtcond(:,:)=0.D0
+      specheat(:,:)=0.D0
+      shadspecheat(:,:)=0.D0
+      densit(:,:)=0.D0
+      shaddensit(:,:)=0.D0
       DRLAMBDA(:,:)=0.D0
       DRRLAMBDA(:,:)=0.D0
       SRLAMBDA(:,:)=0.D0
@@ -448,10 +466,15 @@ c    WRITE(I2,*)i,' ',j,' ',Thconds(i,j),' ',Thconds1(i,j)
       AZMUTH=microinput1(20)
       ALTT=microinput1(21)
       CMH2O=microinput1(22)
-      do 907 i=1,4
-      timaxs(i)=timaxs1(i)
-      timins(i)=timins1(i)
-907   continue
+      timaxs(1)=microinput1(63)
+      timaxs(2)=microinput1(64)
+      timaxs(3)=microinput1(65)
+      timaxs(4)=microinput1(66)
+      timins(1)=microinput1(67)
+      timins(2)=microinput1(68)
+      timins(3)=microinput1(69)
+      timins(4)=microinput1(70)
+      
       do 908 i=1,IDA
       julday(i)=julday1(i)
       LAIs(i)=LAI1(i)
@@ -497,6 +520,12 @@ C    ****     COMPUTER READ - WRITE SETUP *************
       I99=29
       I100=30
       I101=31
+      I102=32
+      I103=33
+      I104=34
+      I105=35
+      I106=36
+      I107=37      
 c    setting solrad output option(y/n) for file Solrout
       solout='N'
 
@@ -534,10 +563,23 @@ C     USE UNIT 13 FOR HOUR, SOIL DEPTH & SOIL TEMPERATURE OUTPUT
       write(I95,112) "JULDAY",",","TIME",",","PT1",",","PT2",","
      &,"PT3",",","PT4",",","PT5",",","PT6",",","PT7",",","PT8",","
      &,"PT9",",","PT10"
-      OPEN (I1, FILE = 'soil_properties.csv')
-      write(I1,113) "JULDAY",",","TIME",",","DEN1",",","DEN2",","
-     &,"DEN3",",","DEN4",",","SPH1",",","SPH2",",","SPH3",",","SPH4",","
-     &,"COND1",",","COND2",",","COND3",",","COND4"
+      OPEN (I102, FILE = 'tcond.csv')
+      write(I102,112) "JULDAY",",","TIME",",","CD1",",","CD2",","
+     &,"CD3",",","CD4",",","CD5",",","CD6",",","CD7",",","CD8",","
+     &,"CD9",",","CD10"
+      OPEN (I103, FILE = 'specheat.csv')
+      write(I103,112) "JULDAY",",","TIME",",","SH1",",","SH2",","
+     &,"SH3",",","SH4",",","SH5",",","SH6",",","SH7",",","SH8",","
+     &,"SH9",",","SH10"
+      OPEN (I104, FILE = 'densit.csv')
+      write(I104,112) "JULDAY",",","TIME",",","DE1",",","DE2",","
+     &,"DE3",",","DE4",",","DE5",",","DE6",",","DE7",",","DE8",","
+     &,"DE9",",","DE10"      
+     
+C     OPEN (I1, FILE = 'soil_properties.csv')
+C     write(I1,113) "JULDAY",",","TIME",",","DEN1",",","DEN2",","
+C    &,"DEN3",",","DEN4",",","SPH1",",","SPH2",",","SPH3",",","SPH4",","
+C    &,"COND1",",","COND2",",","COND3",",","COND4"
       endif
       if(runsnow.eq.1)then
       OPEN (I7, FILE = 'sunsnow.csv')
@@ -644,6 +686,18 @@ C     USE UNIT 14 FOR HOUR, SOIL DEPTH & SOIL TEMPERATURE OUTPUT when % shade = 
       write(I96,112) "JULDAY",",","TIME",",","PT1",",","PT2",","
      &,"PT3",",","PT4",",","PT5",",","PT6",",","PT7",",","PT8",","
      &,"PT9",",","PT10"
+      OPEN (I105, FILE = 'shadtcond.csv')
+      write(I105,112) "JULDAY",",","TIME",",","CD1",",","CD2",","
+     &,"CD3",",","CD4",",","CD5",",","CD6",",","CD7",",","CD8",","
+     &,"CD9",",","CD10"
+      OPEN (I106, FILE = 'shadspecheat.csv')
+      write(I106,112) "JULDAY",",","TIME",",","SH1",",","SH2",","
+     &,"SH3",",","SH4",",","SH5",",","SH6",",","SH7",",","SH8",","
+     &,"SH9",",","SH10"
+      OPEN (I107, FILE = 'shaddensit.csv')
+      write(I107,112) "JULDAY",",","TIME",",","DE1",",","DE2",","
+     &,"DE3",",","DE4",",","DE5",",","DE6",",","DE7",",","DE8",","
+     &,"DE9",",","DE10"     
 C     OPEN (I101, FILE = 'shadplant.csv')
 C     write(I101,116) "JULDAY",",","TIME",",","TRANS",",","LEAFPOT",","
 C    &,"RTPOT1",",","RTPOT2",",","RTPOT3",",","RTPOT4",",","RTPOT5",","
@@ -958,12 +1012,18 @@ C    LOOPING FOR THE SECOND DAY WITH MAX SHADE
           soilmoist1(i,j)=soilmoist(i,j)
           humid1(i,j)=humid(i,j)
           soilpot1(i,j)=soilpot(i,j)
+          tcond1(i,j)=tcond(i,j)
+          specheat1(i,j)=specheat(i,j)
+          densit1(i,j)=densit(i,j)
           if(runshade.eq.1)then
            if(j.le.12)then
             shadsoil1(i,j)=shadsoil(i,j)
             shadmoist1(i,j)=shadmoist(i,j)
             shadhumid1(i,j)=shadhumid(i,j)
             shadpot1(i,j)=shadpot(i,j)
+            shadtcond1(i,j)=shadtcond(i,j)
+            shadspecheat1(i,j)=shadspecheat(i,j)
+            shaddensit1(i,j)=shaddensit(i,j)
            endif
           endif
 911      continue
@@ -1014,6 +1074,9 @@ C    LOOPING FOR THE SECOND DAY WITH MAX SHADE
           close (i95)
           close (i100)
           close (i101)
+          close (i102)
+          close (i103)
+          close (i104)
          endif
          if(runshade.eq.1)then
           close (i8)
@@ -1023,12 +1086,16 @@ C    LOOPING FOR THE SECOND DAY WITH MAX SHADE
            close (i93)
            close (i94)
            close (i96)
+           close (i105)
+           close (i106)
+           close (i107)
           endif
          endif
         endif
         DEALLOCATE(SLES,RAIN,TIDES,metout
      &,shadmet,soil,shadsoil,soilmoist,shadmoist
      &,soilpot,shadpot,humid,shadhumid,plant,shadplant,
+     &tcond,specheat,densit,shadtcond,shadspecheat,shaddensit,
      &maxshades,minshades,CCMAXX,CCMINN,RHMAXX,RHMINN
      &,WNMAXX,WNMINN,TMAXX,TMINN,TANNULRUN,sunsnow,shdsnow
      &,REFLS,moists,intrvls,snowhr,nodes,TDSS,
@@ -1054,6 +1121,9 @@ C    CHECK FOR THE END OF A YEAR, DAY COUNTER INCREMENTED IN OUTPUT SUBROUTINE O
           soilmoist1(i,j)=soilmoist(i,j)
           humid1(i,j)=humid(i,j)
           soilpot1(i,j)=soilpot(i,j)
+          tcond1(i,j)=tcond(i,j)
+          specheat1(i,j)=specheat(i,j)
+          densit1(i,j)=densit(i,j)          
 9111     continue
          i=1
 9121    continue
@@ -1092,11 +1162,18 @@ C    CHECK FOR THE END OF A YEAR, DAY COUNTER INCREMENTED IN OUTPUT SUBROUTINE O
           close (i95)
           close (i100)
           close (i101)
+          close (i102)
+          close (i103)
+          close (i104)
+          close (i105) 
+          close (i106)
+          close (i107)          
          endif
         endif
         DEALLOCATE(SLES,RAIN,TIDES,metout
      &,shadmet,soil,shadsoil,soilmoist,shadmoist
      &,soilpot,shadpot,humid,shadhumid,plant,shadplant,
+     &tcond,shadtcond,specheat,shadspecheat,densit,shaddensit,
      &maxshades,minshades,CCMAXX,CCMINN,RHMAXX,RHMINN
      &,WNMAXX,WNMINN,TMAXX,TMINN,TANNULRUN,sunsnow,shdsnow
      &,REFLS,moists,intrvls,snowhr,nodes,TDSS,
