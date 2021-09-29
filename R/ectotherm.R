@@ -97,7 +97,7 @@
 #' \item{\code{eggshape_a}{ = 1, Proportionality factor (-) for going from volume to area, keep this 1 (redundant parameter that should be removed)}\cr}
 #' \item{\code{eggshape_b}{ = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid }\cr}
 #' \item{\code{eggshape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
-#' \item{\code{eggmult }{ = 1 # multiply egg mass by clutch size for heat and water exchange calculations?
+#' \item{\code{eggmult }{ = 1 # multiply egg mass by clutch size for heat and water exchange calculations?}\cr}
 #' \item{\code{eggpct_cond}{ = 50, Percentage of egg surface contacting the substrate (\%)}\cr}
 #'}
 #' \strong{ Behavioural parameters:}
@@ -1299,7 +1299,7 @@ ectotherm <- function(
     tannul <- as.numeric(mean(soil[, 12])) # annual mean temperature, deg C
     tester <- 0 # unused
     microyear <- 1 # extraneous, not used
-    K_skin <- (1.12 * 60 * 24 / 1e6) / (1000 * 3600 * 24 * 100 / 100 / 24) # kg/m/s/(J/kg) #g cm-2 d-1 bar-1 # was shade
+    K_skin <- (1.12 * 60 * 24 / 1e6) / (1000 * 3600 * 24 * 100 / 100 / 24) # kg/m/s/(J/kg) #g cm-2 h-1 bar-1 # was shade
     spec_hyd <- 0.0304 / 100 # m3 / (m3 J kg) # was minshd
     psi_body <- -7.07 * 100 # J / kg # was maxshd
     b <- rep(6.592933, 10)
