@@ -61,6 +61,8 @@
 #' \item{\code{fluid}{ = 0, Fluid type 0=air, 1=water }\cr}
 #' \item{\code{alpha_sub}{ = 1 - micro$REFL, Vector of daily substrate reflectances (0-1)}\cr}
 #' \item{\code{DEP}{ = micro$DEP, Depths available from the microclimate model simulation}\cr}
+#' \item{\code{KS}{ = micro$KS[seq(1, 19, 2)], Depth-specific saturated hydraulic conductivity (kg s/m3) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
+#' \item{\code{b}{ = micro$BB[seq(1, 19, 2)], Depth-specific Campbell's b parameter (-) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
 #' \item{\code{metout}{ = micro$metout, Microclimate model output for above ground, minimum shade conditions}\cr}
 #' \item{\code{shadmet}{ = micro$shadmet, Microclimate model output for above ground, maximum shade conditions}\cr}
 #' \item{\code{soil}{ = micro$soil, Microclimate model output for soil temperature, minimum shade conditions}\cr}
@@ -118,7 +120,7 @@
 #' \item{\code{CT_minthresh}{ = 12, Number of consecutive hours below CT_min that leads to death - simulation will terminate beyond this threshold if \code{CT_kill}=1}\cr}
 #' \item{\code{CT_kill}{ = 0, Animal dies when it hits critical thermal limits? 1=yes, 0=no}\cr}
 #'}
-#' \strong{ Water and food budget parameters (only relevant if \code{DEB}=1):}
+#' \strong{ Water and food budget parameters (first eight only relevant if \code{DEB}=1):}
 #'
 #' \itemize{
 #' \item{\code{pct_H_P}{ = 73, Water in faeces (product) (\%)}\cr}
@@ -129,6 +131,12 @@
 #' \item{\code{gutfill}{ = 75, Gut fill (\%) at which satiation occurs - if greater than 100\%, animal always tries to forage}\cr}
 #' \item{\code{raindrink}{ = 0, Rainfall level at which rehydration from drinking occurs - if 0 animal can always drink}\cr}
 #' \item{\code{foodlim}{ = 1, Is the animal food limited - if 0 animal can always find food (useful for making different life stages dependent on soil moisture-based food estimates}\cr}
+#' \item{\code{K_skin}{ = 4.48e-10, - Hydraulic conductivity of skin (kg/(m s (J/kg)) - drives liquid water exchange with substrate}\cr}
+#' \item{\code{spec_hyd_body}{ = 0.000304, Specific hydration of body (m3 / (m3 (J/kg))) - drives liquid water exchange with substrate if K_skin > 0 }\cr}
+#' \item{\code{psi_body}{ = -707, Water potential of body (J/kg) - drives liquid water exchange with substrate if K_skin > 0}\cr}
+#' \item{\code{K_egg}{ = 4.48e-10, - Hydraulic conductivity of egg shell (kg/(m s (J/kg)) - drives liquid water exchange with substrate}\cr}
+#' \item{\code{spec_hyd_egg}{ = 0.000304, Specific hydration of egg (m3 / (m3 (J/kg))) - drives liquid water exchange with substrate if K_skin > 0 }\cr}
+#' \item{\code{psi_egg}{ = -707, Water potential of egg (J/kg) - drives liquid water exchange with substrate if K_skin > 0}\cr}
 #' }
 #' \strong{ Dynamic Energy Budget (DEB) model parameters:}
 #' \itemize{
@@ -546,6 +554,12 @@ ectotherm <- function(
   pantmax = 1,
   F_O2 = 20,
   delta_air = 0.1,
+  k_body = 4.48e-10,
+  psi_body = -707,
+  spec_hyd_body =0.000304,
+  k_egg = 4.48e-10,
+  psi_egg = -707,
+  spec_hyd_egg = 0.000304,
   nyears = micro$nyears,
   enberr = 0.0002,
   live = 1,
@@ -558,6 +572,8 @@ ectotherm <- function(
   fluid = 0,
   alpha_sub = (1 - micro$REFL),
   DEP = micro$DEP,
+  KS = micro$KK,
+  b = micro$BB,
   metout = micro$metout,
   shadmet = micro$shadmet,
   soil = micro$soil,
@@ -1299,12 +1315,12 @@ ectotherm <- function(
     tannul <- as.numeric(mean(soil[, 12])) # annual mean temperature, deg C
     tester <- 0 # unused
     microyear <- 1 # extraneous, not used
-    K_skin <- (1.12 * 60 * 24 / 1e6) / (1000 * 3600 * 24 * 100 / 100 / 24) # kg/m/s/(J/kg) #g cm-2 h-1 bar-1 # was shade
-    spec_hyd <- 0.0304 / 100 # m3 / (m3 J kg) # was minshd
-    psi_body <- -7.07 * 100 # J / kg # was maxshd
-    b <- rep(6.592933, 10)
-    KS <- rep(0.0004439024, 10)
-    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF, EMISSK, EMISSB, ABSSB, K_skin, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, SPARE4, tannul, nodnum, postur, psi_body, spec_hyd, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, SPARE1, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, eggpct_cond, b, KS))
+    #K_skin <- (1.12 * 60 * 24 / 1e6) / (1000 * 3600 * 24 * 100 / 100 / 24) # kg/m/s/(J/kg) #g cm-2 h-1 bar-1 # was shade
+    #spec_hyd <- 0.0304 / 100 # m3 / (m3 J kg) # was minshd
+    #psi_body <- -7.07 * 100 # J / kg # was maxshd
+    #b <- rep(6.592933, 10)
+    #KS <- rep(0.0004439024, 10)
+    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF, EMISSK, EMISSB, ABSSB, K_skin, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, SPARE4, tannul, nodnum, postur, psi_body, spec_hyd_egg, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, SPARE1, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, eggpct_cond, k_egg, psi_body, spec_hyd_egg, b, KS))
     debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, FoodWater1, f, s_G, K, X[1], metab_mode, stages, kap_V, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He, k_Ee, k_EV, mu_N)
     deblast <- c(iyear, countday, V_init, E_init, ES_init, cumrepro_init, q_init, hs_init, cumbatch_init, V_baby_init, E_baby_init, E_H_init, stage)
 

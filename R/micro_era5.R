@@ -1116,6 +1116,12 @@ micro_era5 <- function(
     shadmet <- microut$shadmet # retrieve above ground microclimatic conditions, max shade
     soil <- microut$soil # retrieve soil temperatures, minimum shade
     shadsoil <- microut$shadsoil # retrieve soil temperatures, maximum shade
+    tcond <- microut$tcond
+    shadtcond <- microut$shadtcond
+    specheat <- microut$specheat
+    shadspecheat <- microut$shadspecheat
+    densit <- microut$densit
+    shaddensit <- microut$shaddensit
     if(runmoist==1){
       soilmoist <- microut$soilmoist # retrieve soil moisture, minimum shade
       shadmoist <- microut$shadmoist # retrieve soil moisture, maximum shade
@@ -1155,15 +1161,15 @@ micro_era5 <- function(
       drrlam <- as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
       srlam <- as.data.frame(microut$srlam) # retrieve scattered solar irradiance
       if(snowmodel == 1){
-        return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, sunsnow = sunsnow, shdsnow = shdsnow, plant = plant, shadplant = shadplant, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = longlat, nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, drlam = drlam, drrlam = drrlam, srlam = srlam, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out))
+        return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, sunsnow = sunsnow, shdsnow = shdsnow, plant = plant, shadplant = shadplant, tcond = tcond, shadtcond = shadtcond, specheat = specheat, shadspecheat = shadspecheat, densit = densit, shaddensit = shaddensit, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = longlat, nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, drlam = drlam, drrlam = drrlam, srlam = srlam, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS))
       }else{
-        return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, plant = plant, shadplant = shadplant, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = longlat, nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, drlam = drlam, drrlam = drrlam, srlam = srlam, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out))
+        return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, plant = plant, shadplant = shadplant, tcond = tcond, shadtcond = shadtcond, specheat = specheat, shadspecheat = shadspecheat, densit = densit, shaddensit = shaddensit, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = longlat, nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, drlam = drlam, drrlam = drrlam, srlam = srlam, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS))
       }
     }else{
       if(snowmodel == 1){
-        return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, sunsnow = sunsnow, shdsnow = shdsnow, plant = plant, shadplant = shadplant, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = longlat, nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out))
+        return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, sunsnow = sunsnow, shdsnow = shdsnow, plant = plant, shadplant = shadplant, tcond = tcond, shadtcond = shadtcond, specheat = specheat, shadspecheat = shadspecheat, densit = densit, shaddensit = shaddensit, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = longlat, nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS))
       }else{
-        return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, plant = plant, shadplant = shadplant, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = longlat, nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out))
+        return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, plant = plant, shadplant = shadplant, tcond = tcond, shadtcond = shadtcond, specheat = specheat, shadspecheat = shadspecheat, densit = densit, shaddensit = shaddensit, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = longlat, nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS))
       }
     }
   } # end error trapping
