@@ -24,7 +24,7 @@ C     EQUATIONS TO COMPUTE LIQUID WATER EXCHANGE WITH SOIL FOR EGG OR SKIN
       
       INTEGER IPAR,N
       DOUBLE PRECISION ISPLINE,M,PSI_E,DMPSI,PSI_S,RPAR,D_PSI_E,D_M,PI
-      DOUBLE PRECISION M_S,K_S,K_S_SI,B,M_A,MPSI,A
+      DOUBLE PRECISION M_S,K_S,B,M_A,MPSI,A
       DOUBLE PRECISION A_S,K_E,SPEC_HYD,K_SAT,P_E
       DIMENSION DMPSI(N),MPSI(N),RPAR(34),IPAR(31)
       
@@ -36,13 +36,12 @@ C     EQUATIONS TO COMPUTE LIQUID WATER EXCHANGE WITH SOIL FOR EGG OR SKIN
       B=RPAR(6)
       M_A=RPAR(7)
       PSI_S=RPAR(8)
-      A=MPSI(1)! % D, TIME
-      M=MPSI(2)! % G, EGG MASS
-      PSI_E=MPSI(3)! % BAR, EGG WATER POTENTIAL
+      A=MPSI(1)! % H, TIME
+      M=MPSI(2)! % KG, EGG MASS
+      PSI_E=MPSI(3)! % J/KG, EGG WATER POTENTIAL
       PI=3.14159265
 
-      K_S_SI=K_SAT*(P_E/(PSI_S))**(2+3/B)                         ! equation 9.2 from Campbell and Norman 2001
-      !K_S=K_S_SI*1000.*3600.*24.*100./100.                            ! from kg s m-3 = kg/m/s/(J/kg) to g/cm/h/bar
+      K_S=K_SAT*(P_E/(PSI_S))**(2+3/B)                                ! equation 9.2 from Campbell and Norman 2001
       M_S=(PSI_S-PSI_E)/(1./(A_S*K_E)+1./((2.*PI*A_S)**(1./2.)*K_S))  ! DARCY'S LAW 
       D_M=M_S-M_A                                                     ! KG/TIME, CHANGE IN MASS
       D_PSI_E=D_M/(SPEC_HYD*M)                                        ! J/KG/TIME, change in egg water potential
