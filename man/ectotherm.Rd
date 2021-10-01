@@ -100,6 +100,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{DEP}{ = micro$DEP, Depths available from the microclimate model simulation}\cr}
 \item{\code{KS}{ = micro$KS[seq(1, 19, 2)], Depth-specific saturated hydraulic conductivity (kg s/m3) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
 \item{\code{b}{ = micro$BB[seq(1, 19, 2)], Depth-specific Campbell's b parameter (-) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
+\item{\code{PE}{ = micro$PE[seq(1, 19, 2)], Depth-specific air-entry water potential (J / kg) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
 \item{\code{metout}{ = micro$metout, Microclimate model output for above ground, minimum shade conditions}\cr}
 \item{\code{shadmet}{ = micro$shadmet, Microclimate model output for above ground, maximum shade conditions}\cr}
 \item{\code{soil}{ = micro$soil, Microclimate model output for soil temperature, minimum shade conditions}\cr}
