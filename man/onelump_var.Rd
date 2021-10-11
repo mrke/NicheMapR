@@ -13,9 +13,9 @@ ode(y = Tb_init, t = times, func = onelump_var, parms = indata)
 
 \item{Ww_g}{= 500 weight (g)}
 
-\item{rho_body}{animal density (kg/m3)}
+\item{rho_body}{= 1000, animal density (kg/m3)}
 
-\item{q}{metabolic rate (W/m3)}
+\item{q}{= 0, metabolic rate (W/m3)}
 
 \item{c_body}{= 3073, specific heat of flesh (J/kg-C)}
 

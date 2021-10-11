@@ -7,8 +7,8 @@
 #' @param t time intervals (s) at which output is required
 #' @param Tc_init = 5, initial temperature (°C) Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)
 #' @param Ww_g = 500 weight (g)
-#' @param rho_body animal density (kg/m3)
-#' @param q  metabolic rate (W/m3)
+#' @param rho_body = 1000, animal density (kg/m3)
+#' @param q = 0, metabolic rate (W/m3)
 #' @param c_body = 3073, specific heat of flesh (J/kg-C)
 #' @param k_flesh = 0.5, conductivity of flesh (W/mK)
 #' @param emis = 0.95, emissivity of skin (-)
