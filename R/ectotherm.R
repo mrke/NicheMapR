@@ -373,7 +373,7 @@
 #' \item 18 H2OBal_g - Instantaneous water balance (g/h)
 #' \item 19 H2OCumBal_g - Cumulative water balance (g)
 #' \item 20 H2OLiq_g - Change in liquid water exchange with substrate (g)
-#' \item 21 H2OPSI_g - Organism water potential (J/kg)
+#' \item 21 PSI_kPa - Organism water potential (J/kg = kPa)
 #'}
 #' debout variables:
 #' \itemize{
