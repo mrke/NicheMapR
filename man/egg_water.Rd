@@ -21,7 +21,7 @@ ode(y = c(m_init, psi_e_init), times = t, func = egg_water, parms = indata)
 
 \item{spec_hyd}{= 0.5, water potential-specific hydration (cm3 cm-3 bar-1)}
 
-\item{pct_wet}{= 0.24, percent of surface area acting as a free-water surface for evaporation (%)}
+\item{pct_wet}{= 0.24, percent of surface area acting as a free-water surface for evaporation (\%)}
 
 \item{P_e}{= -0.5052209, soil air entry potential (J/kg), derived from soil texture data via the function 'pedotransfer' and used to get soil hydraulic conductivity}
 

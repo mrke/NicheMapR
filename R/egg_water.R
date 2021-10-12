@@ -13,7 +13,7 @@
 #' @param f_air = 0.5, fraction of egg surface exposed to air
 #' @param K_e = 1.12 * 60 * 24 / 1e6 / (3600 * 24 * 10), hydraulic conductance of egg (kg m-2 s-1 (J/kg)-1), converted from original μg cm-2 min-1 bar-1
 #' @param spec_hyd = 0.5, water potential-specific hydration (cm3 cm-3 bar-1)
-#' @param pct_wet = 0.24, percent of surface area acting as a free-water surface for evaporation (%)
+#' @param pct_wet = 0.24, percent of surface area acting as a free-water surface for evaporation (\%)
 #' @param P_e = -0.5052209, soil air entry potential (J/kg), derived from soil texture data via the function 'pedotransfer' and used to get soil hydraulic conductivity
 #' @param b = 1.41005, Campbell's b parameter (-), derived from soil texture data via the function 'pedotransfer' and used to get soil hydraulic conductivity
 #' @param K_sat = 0.003733307, soil saturated hydraulic conductivity (-) derived from soil texture data via the function 'pedotransfer' and used to get soil hydraulic conductivity

@@ -1202,13 +1202,13 @@ c     end check for previous slippage
           plant(methour,5:14)=curroot(1:10)
           tcond(methour,1)=JULDAY(DOY)
           tcond(methour,2)=SIOUT(1)
-          tcond(methour,3:12)=(Thconduct(9:18)/60.)*418.6
+          tcond(methour,3:12)=(Thconduct(1:10)/60.)*418.6
           specheat(methour,1)=JULDAY(DOY)
           specheat(methour,2)=SIOUT(1)
-          specheat(methour,3:12)=spheat(9:18)*4185.
+          specheat(methour,3:12)=spheat(1:10)*4185.
           densit(methour,1)=JULDAY(DOY)
           densit(methour,2)=SIOUT(1)
-          densit(methour,3:12)=Density(9:18)*1.0E+3            
+          densit(methour,3:12)=Density(1:10)*1.0E+3            
          endif
          if(writecsv.eq.1)then
           WRITE(I3,154) metout(methour,1),",",metout(methour,2),",",
@@ -1471,13 +1471,13 @@ c     end check for previous slippage
           shadplant(methour,5:14)=curroot(1:10)
           shadtcond(methour,1)=JULDAY(DOY)
           shadtcond(methour,2)=SIOUT(1)
-          shadtcond(methour,3:12)=(Thconduct(9:18)/60.)*418.6
+          shadtcond(methour,3:12)=(Thconduct(1:10)/60.)*418.6
           shadspecheat(methour,1)=JULDAY(DOY)
           shadspecheat(methour,2)=SIOUT(1)
-          shadspecheat(methour,3:12)=spheat(9:18)*4185.0
+          shadspecheat(methour,3:12)=spheat(1:10)*4185.0
           shaddensit(methour,1)=JULDAY(DOY)
           shaddensit(methour,2)=SIOUT(1)
-          shaddensit(methour,3:12)=Density(9:18)*1.0E+3    
+          shaddensit(methour,3:12)=Density(1:10)*1.0E+3    
          endif
          if((writecsv.eq.1).and.(runshade.eq.1))then
           WRITE(I12,154) shadmet(methour,1),",",shadmet(methour,2),",",
