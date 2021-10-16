@@ -77,7 +77,7 @@
 #' # plot results
 #' par(mfrow = c(2, 1))
 #' with(egg_ode, plot(t / (24 * 3600), m * 1000, type = 'l', ylab = 'egg mass, g', xlab = 'time, days', col = 'black'))
-#' with(egg_ode, plot(t / (24 * 3600), psi_e, type = 'l', ylab = 'egg water potential, bars', xlab = 'time, days', col = 'black', ylim = c(psi_e_init, PSI_soil)))
+#' with(egg_ode, plot(t / (24 * 3600), psi_e, type = 'l', ylab = 'egg water potential, J / kg', xlab = 'time, days', col = 'black', ylim = c(psi_e_init, PSI_soil)))
 #' abline(h = PSI_soil, lty = 2, col = 'blue')
 #' @export
 egg_water <- function(t, y, indata) {
