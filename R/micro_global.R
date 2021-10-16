@@ -940,7 +940,7 @@ micro_global <- function(
     soilprops<-matrix(data = 0, nrow = 10, ncol = 5) # create an empty soil properties matrix
     if(soilgrids == 1){
       soilprops[,1]<-BulkDensity
-      soilprops[,2] <- BulkDensity / Density # not used if soil moisture computed
+      soilprops[,2] <- 1 - BulkDensity / Density # not used if soil moisture computed
       soilprops[soilprops[,2] < 0.26, 2] <- 0.26
       soilprops[,3]<-Thcond
       soilprops[,4]<-SpecHeat
