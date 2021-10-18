@@ -385,7 +385,7 @@
 #' \item 6 V - Structural volume (cm3)
 #' \item 7 E - Reserve density (J/cm3)
 #' \item 8 E_H - Maturity state (J)
-#' \item 9 LENGTH - Physical length (mm) (what this represents depends on choice of length measure for DEB paramter fitting, e.g. snout-vent length, head length, etc.)
+#' \item 9 L_W - Physical length (mm) (what this represents depends on choice of length measure for DEB paramter fitting, e.g. snout-vent length, head length, etc.)
 #' \item 10 WETMASS - Wet mass total (reserve, structure, reproduction buffer, stomach contents) (g)
 #' \item 11 WETGONAD - Wet mass of gonad (batch and reproduction buffers) (g)
 #' \item 12 WETGUT - Wet mass of food in gut (g)
