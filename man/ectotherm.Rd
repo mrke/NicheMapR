@@ -205,6 +205,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 }
 \strong{ Thermal DEB parameters:}
 \itemize{
+\item{\code{arrhen_mode}{ = 1, equation used for Arrhenius rate correction - 0 is original Sharpe-Schoolfield formulation, 1 is version used in DEB tempcorr function from AmPtool}\cr}
 \item{\code{T_REF}{ = 20 + 273.15, Reference temperature for rate correction (°C)}\cr}
 \item{\code{T_A}{ = 8817 Arhhenius temperature}\cr}
 \item{\code{T_AL}{ = 50000, Arrhenius temperature for decrease below lower boundary of tolerance range \code{T_L}}\cr}
