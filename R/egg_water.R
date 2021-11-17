@@ -68,7 +68,7 @@
 #' PSIsoilf <- approxfun(t, rep(PSI_soil, length(t)), rule = 2) # J/kg, soil water potential
 #'
 #' # input parameters
-#' indata <- list(A_tot = A_tot, K_e = K_e, spec_hyd = spec_hyd, pct_wet = pct_wet, elev = elev, vel = vel, K_sat = K_sat, P_e = P_e, b = b)
+#' indata <- list(A_tot = A_tot, K_e = K_e, spec_hyd = spec_hyd, f_air = f_air, pct_wet = pct_wet, elev = elev, vel = vel, K_sat = K_sat, P_e = P_e, b = b)
 #'
 #' # solve
 #' egg_ode <- as.data.frame(deSolve::ode(y = c(m_init, psi_e_init), times = t, func = egg_water, parms = indata))
