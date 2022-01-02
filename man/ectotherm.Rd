@@ -115,6 +115,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{shadtcond}{ = micro$shadtcond, Microclimate model output for soil thermal conductivity, maximum shade conditions}\cr}
 \item{\code{rainfall}{ = micro$RAINFALL, Vector of daily rainfall (mm)}\cr}
 \item{\code{rainhr}{ = rep(-1,nrow(metout)), Vector of hourly rainfall (mm), overwrites rainfall if not negative}\cr}
+\item{\code{preshr}{ = rep(101325 * ((1 - (0.0065 * as.numeric(micro$elev) / 288)) ^ (1/0.190284)), nrow(metout)), Vector of hourly atmospheric pressure (Pa), defaulting to elevation-adjusted values}\cr}
 \item{\code{elev}{ = as.numeric(micro$elev), Elevation of simulation (m), obtained from microclimate model output by default}\cr}
 \item{\code{longitude}{ = micro$longlat[1], Longitude (decimal degrees), obtained from microclimate model output by default}\cr}
 \item{\code{latitude}{ = micro$longlat[2], Latitude (decimal degrees), obtained from microclimate model output by default}\cr}

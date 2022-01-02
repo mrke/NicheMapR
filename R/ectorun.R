@@ -60,6 +60,7 @@ ectorun <- function(ecto) {
                 as.double(ecto$DEP),
                 as.double(ecto$rainfall),
                 as.double(ecto$rainhr),
+                as.double(ecto$preshr),
                 as.double(ecto$debmod),
                 as.double(ecto$deblast),
                 as.double(ecto$foodwaters),
