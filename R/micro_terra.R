@@ -619,8 +619,8 @@ micro_terra <- function(
     cat("ERROR: Scenario can only be 0, 2, or 4 corresponding to the TerraClimate climate change scenarios", '\n')
     errors<-1
   }
-  if(scenario > 0 & yfinish > 2015){
-    cat("ERROR: TerraClimate climate change scenarios are only for years 1958 to 2015", '\n')
+  if(scenario > 0 & (yfinish > 2015 | ystart < 1985)){
+    cat("ERROR: TerraClimate climate change scenarios are only for years 1985 to 2015", '\n')
     errors<-1
   }
   # end error trapping
