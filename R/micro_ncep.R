@@ -578,7 +578,6 @@ micro_ncep <- function(
 
     doy <- as.numeric(strftime(tme, format = "%j"))
     ndays<-length(doy)
-    doynum<-ndays
     ida<-ndays
     microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
     daystart<-1

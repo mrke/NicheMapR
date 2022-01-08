@@ -440,7 +440,12 @@ micro_aust <- function(
       require(raster)
       cat('downloading DEM via package elevatr \n')
       dem <- microclima::get_dem(lat = loc[2], long = loc[1]) # mercator equal area projection
-      elev <- extract(dem, loc)[1]
+      dem <- microclima::get_dem(lat = loc[2], long = loc[1]) # mercator equal area projection
+      xy <- data.frame(x = loc[1], y = loc[2])
+      coordinates(xy) = ~x + y
+      proj4string(xy) = "+init=epsg:4326"
+      xy <- as.data.frame(spTransform(xy, crs(dem)))
+      elev <- extract(dem, xy)[1]
     }
     require(RNetCDF)
     ALTITUDES <- elev
