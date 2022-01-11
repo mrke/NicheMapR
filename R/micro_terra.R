@@ -46,6 +46,7 @@
 #' @return shadspecheat Hourly predictions of soil specific heat capacity under the maximum specified shade
 #' @return densit Hourly predictions of the soil density under the minimum specified shade
 #' @return shaddensit Hourly predictions of the soil density under the maximum specified shade
+#' @export
 #' @details
 #' \itemize{
 #' \strong{Parameters controlling how the model runs:}\cr\cr
@@ -320,7 +321,6 @@
 #'  }
 #'}
 #'points(shadmet$SNOWDEP ~ micro$dates, type = 'h', col = 'light blue')
-#' @export
 micro_terra <- function(
   loc = c(-89.4557, 43.1379),
   ystart = 2000,
