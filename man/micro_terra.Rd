@@ -103,7 +103,7 @@ by choosing the option 'run.gads<-1' (Fortran version, quicker but may crash on 
 \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 \code{elevatr}{ = 0, Use elevatr package to get high resolution elevation for location? 1 = yes, 0 = no}\cr\cr
 \code{terrain}{ = 0, Use elevatr package to adjust horizon angles, slope and aspect? 1 = yes, 0 = no}\cr\cr
-\code{microclima}{ = 0, Use microclima and elevatr package to adjust solar radiation for terrain? 1 = yes, 0 = no}\cr\cr
+\code{microclima}{ = 0, Use microclima and elevatr package to compute diffuse fraction of solar radiation (1) and adjust solar radiation for terrain (2)? 0 = no}\cr\cr
 \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
@@ -203,6 +203,7 @@ by choosing the option 'run.gads<-1' (Fortran version, quicker but may crash on 
 \code{maxshade}{ - maximum shade for each day of simulation (\%)}\cr\cr
 \code{dem}{ - digital elevation model obtained via 'get_dem' using package 'elevatr' (m)}\cr\cr
 \code{DEP}{ - vector of depths used (cm)}\cr\cr
+\code{diffuse_frac}{ - vector of hourly values of the fraction of total solar radiation that is diffuse (-), computed by microclima if microclima > 0}\cr\cr
 
 metout/shadmet variables:
 \itemize{
@@ -298,7 +299,7 @@ drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar)
 }
 }
 \examples{
-micro <- micro_terra() # run the model with default location (Madison, Wisconsin) from 2000 to 2020 and settings
+micro <- micro_terra() # run the model with default location (Madison, Wisconsin) from 2000 to 2015 and settings
 
 metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 shadmet <- as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade

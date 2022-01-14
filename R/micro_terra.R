@@ -62,7 +62,7 @@
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{elevatr}{ = 0, Use elevatr package to get high resolution elevation for location? 1 = yes, 0 = no}\cr\cr
 #' \code{terrain}{ = 0, Use elevatr package to adjust horizon angles, slope and aspect? 1 = yes, 0 = no}\cr\cr
-#' \code{microclima}{ = 0, Use microclima and elevatr package to adjust solar radiation for terrain? 1 = yes, 0 = no}\cr\cr
+#' \code{microclima}{ = 0, Use microclima and elevatr package to compute diffuse fraction of solar radiation (1) and adjust solar radiation for terrain (2)? 0 = no}\cr\cr
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
@@ -162,6 +162,7 @@
 #' \code{maxshade}{ - maximum shade for each day of simulation (\%)}\cr\cr
 #' \code{dem}{ - digital elevation model obtained via 'get_dem' using package 'elevatr' (m)}\cr\cr
 #' \code{DEP}{ - vector of depths used (cm)}\cr\cr
+#' \code{diffuse_frac}{ - vector of hourly values of the fraction of total solar radiation that is diffuse (-), computed by microclima if microclima > 0}\cr\cr
 #'
 #' metout/shadmet variables:
 #' \itemize{
@@ -256,7 +257,7 @@
 #' \item  3-113 290, ..., 4000 - irradiance (W/(m2 nm)) at each of 111 wavelengths from 290 to 4000 nm
 #' }
 #' @examples
-#'micro <- micro_terra() # run the model with default location (Madison, Wisconsin) from 2000 to 2020 and settings
+#'micro <- micro_terra() # run the model with default location (Madison, Wisconsin) from 2000 to 2015 and settings
 #'
 #'metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #'shadmet <- as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
@@ -1219,8 +1220,7 @@ micro_terra <- function(
     SOLRhr<-rep(0,24*ndays)
 
     hourly <- 0
-    if(microclima == 1){
-      hourly <- 2
+    if(microclima > 0){
       cat('using microclima and elevatr to adjust solar for topographic and vegetation effects \n')
       if (!require("microclima", quietly = TRUE)) {
         stop("package 'microclima' is needed. Please install it.",
@@ -1244,14 +1244,14 @@ micro_terra <- function(
       coordinates(xy) = ~x + y
       proj4string(xy) = "+init=epsg:4326"
       xy <- as.data.frame(spTransform(xy, crs(dem)))
-      #if (class(slope) == "logical") {
-      slope <- terrain(dem, unit = "degrees")
-      slope <- extract(slope, xy)
-      #}
-      #if (class(aspect) == "logical") {
-      aspect <- terrain(dem, opt = "aspect", unit = "degrees")
-      aspect <- extract(aspect, xy)
-      #}
+      if (class(slope) == "logical") {
+        slope <- terrain(dem, unit = "degrees")
+        slope <- extract(slope, xy)
+      }
+      if (class(aspect) == "logical") {
+        aspect <- terrain(dem, opt = "aspect", unit = "degrees")
+        aspect <- extract(aspect, xy)
+      }
       ha <- 0
       ha36 <- 0
       for (i in 0:35) {
@@ -1336,18 +1336,26 @@ micro_terra <- function(
       h_dif <- h_dp * afd * 4.87/0.0036
       h_dni[si == 0] <- 0
       h_dif[is.na(h_dif)] <- 0
+      diffuse_frac_all <- h_dif / (h_dni + h_dif) # calculated diffuse fraction
+      diffuse_frac_all[is.na(diffuse_frac_all)] <- 1
       radwind2 <- .shortwave.ts(h_dni * 0.0036, h_dif * 0.0036, jd, hour.microclima, lat, long, slope, aspect, ha = ha, svv = 1, x = microclima.LOR, l = mean(microclima.LAI), albr = 0, merid = long, dst = 0, difani = FALSE)
       #microclima.out$hourlyradwind <- radwind2
       SOLRhr_all <- radwind2$swrad / 0.0036
-      VIEWF <- 1 # accounted for already in microclima cals
-      hori <- rep(0, 24) # accounted for already in microclima calcs
+      if(microclima == 2){ # use hourly solar from microclima
+        hourly <- 2
+        VIEWF <- 1 # accounted for already in microclima cals
+        hori <- rep(0, 24) # accounted for already in microclima calcs
+      }
+    }else{
+      diffuse_frac <- NA
     }
-    if(timeinterval == 12 & microclima == 1){
+    if(timeinterval == 12 & microclima > 0){
       dates_all <- head(seq(as.POSIXct(paste0("01/01/", ystart), format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(paste0("01/01/", yfinish + 1), format = "%d/%m/%Y ", tz = 'UTC'), by = 'hours'), -1)
       month.dates.to.do2 <- days1900[which(alldays %in% allmonths & alldays > as.Date(paste0(ystart, '-01-01')) & alldays < as.Date(paste0(yfinish + 1, '-01-01')))]
       mon <- alldays[month.dates.to.do2]
       dates3 <- dates_all[which(format(dates_all, "%Y-%m-%d") %in% as.character(mon))]
-      SOLRhr <- SOLRhr_all[which(dates_all %in% dates4)]
+      SOLRhr <- SOLRhr_all[which(dates_all %in% dates3)]
+      diffuse_frac <- diffuse_frac_all[which(dates_all %in% dates3)]
     }
 
     ndays<-length(RAINFALL)
@@ -1606,15 +1614,15 @@ micro_terra <- function(
       drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
       srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
       if(snowmodel == 1){
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2,dates3=dates3,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,slope=slope,aspect=aspect,hori=hori,dem=dem))
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2,dates3=dates3,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,slope=slope,aspect=aspect,hori=hori,dem=dem, diffuse_frac = diffuse_frac))
       }else{
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2,dates3=dates3,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,slope=slope,aspect=aspect,hori=hori,dem=dem))
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2,dates3=dates3,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,slope=slope,aspect=aspect,hori=hori,dem=dem, diffuse_frac = diffuse_frac))
       }
     }else{
       if(snowmodel == 1){
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2,dates3=dates3,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,slope=slope,aspect=aspect,hori=hori,dem=dem))
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2,dates3=dates3,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,slope=slope,aspect=aspect,hori=hori,dem=dem, diffuse_frac = diffuse_frac))
       }else{
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2,dates3=dates3,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,slope=slope,aspect=aspect,hori=hori,dem=dem))
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2,dates3=dates3,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,slope=slope,aspect=aspect,hori=hori,dem=dem, diffuse_frac = diffuse_frac))
       }
     }
   } # end error trapping
