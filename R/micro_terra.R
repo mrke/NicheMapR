@@ -755,8 +755,16 @@ micro_terra <- function(
     lat <- ncvar_get(nc, "lat")
     flat <- match(abs(lat - x[2]) < 1/48, 1)
     latindex <- which(flat %in% 1)
+    if(length(latindex) == 0){
+      flat <- match(abs(lat - x[2]) < 1/47.9, 1)
+      latindex <- which(flat %in% 1)[1]
+    }
     flon <- match(abs(lon - x[1]) < 1/48, 1)
     lonindex <- which(flon %in% 1)
+    if(length(lonindex) == 0){
+      flon <- match(abs(lon - x[1]) < 1/47.9, 1)
+      lonindex <- which(flon %in% 1)[1]
+    }
     time <- ncvar_get(nc, "time")
     alldays <- head(seq(as.Date('1900-01-01'), as.Date(paste0(yfinish + 1,'-01-01')), 'days'), -1)
     days1900 <- seq(1:length(alldays))
