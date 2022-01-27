@@ -11,6 +11,7 @@
 #' @param loc Longitude and latitude (decimal degrees)
 #' @param timeinterval The number of time intervals to generate predictions for over a year (must be 12 <= x <=365)
 #' @param nyears The number of years to run
+#' @param dem A digital elevation model used produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if dem = NA and terrain/elevatr/microclima != 0)
 #' @param REFL Soil solar reflectance, decimal \%
 #' @param elev Elevation, if to be user specified (m)
 #' @param slope Slope in degrees
@@ -58,6 +59,9 @@
 #' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
+#' \code{elevatr}{ = 0, Use elevatr package to get high resolution elevation for location? 1 = yes, 0 = no}\cr\cr
+#' \code{terrain}{ = 0, Use elevatr package to adjust horizon angles, slope and aspect? 1 = yes, 0 = no}\cr\cr
+#' \code{microclima}{ = 0, Use microclima and elevatr package to compute diffuse fraction of solar radiation (1) and adjust solar radiation for terrain (2)? 0 = no}\cr\cr
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
@@ -118,6 +122,8 @@
 #' \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
 #' \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
 #' \code{LAI}{ = 0.1, leaf area index (can be a single value or a vector of daily values), used to partition traspiration/evaporation from PET}\cr\cr
+#' \code{microclima.LAI}{ = 0, leaf area index, used by package microclima for radiation calcs}\cr\cr
+#' \code{microclima.LOR}{ = 1, leaf orientation for package microclima radiation calcs}\cr\cr
 #'
 #' \strong{ Snow mode parameters:}
 #'
@@ -152,6 +158,7 @@
 #' \code{maxshade}{ - maximum shade for each day of simulation (\%)}\cr\cr
 #' \code{dem}{ - digital elevation model obtained via 'get_dem' using package 'elevatr' (m)}\cr\cr
 #' \code{DEP}{ - vector of depths used (cm)}\cr\cr
+#' \code{diffuse_frac}{ - vector of hourly values of the fraction of total solar radiation that is diffuse (-), computed by microclima if microclima > 0}\cr\cr
 #'
 #' metout/shadmet variables:
 #' \itemize{
@@ -324,6 +331,7 @@ micro_global <- function(
   DEP=c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200),
   minshade = 0,
   maxshade = 90,
+  dem = NA,
   Refhyt = 1.2,
   Usrhyt = 0.01,
   Z01 = 0,
@@ -336,6 +344,9 @@ micro_global <- function(
   run.gads = 1,
   write_input = 0,
   writecsv = 0,
+  elevatr = 0,
+  terrain = 0,
+  microclima = 0,
   ERR = 1.5,
   RUF = 0.004,
   ZH = 0,
@@ -372,6 +383,8 @@ micro_global <- function(
   IM = 1e-06,
   MAXCOUNT = 500,
   LAI=0.1,
+  microclima.LAI = 0,
+  microclima.LOR = 1,
   snowmodel = 0,
   snowtemp = 1.5,
   snowdens = 0.375,
@@ -627,6 +640,34 @@ micro_global <- function(
     ALMINT <- (abs(x[1])-ALONG)*60
     azmuth<-aspect
 
+    if(terrain == 1){
+      elevatr <- 1
+    }
+    if(is.na(elev) & elevatr == 1){
+      require(microclima)
+      require(raster)
+      cat('downloading DEM via package elevatr \n')
+      dem <- microclima::get_dem(lat = loc[2], long = loc[1]) # mercator equal area projection
+      xy <- data.frame(x = loc[1], y = loc[2])
+      coordinates(xy) = ~x + y
+      proj4string(xy) = "+init=epsg:4326"
+      xy <- as.data.frame(spTransform(xy, crs(dem)))
+      elev <- extract(dem, xy)[1]
+      if(terrain == 1){
+        cat('computing slope, aspect and horizon angles \n')
+        slope <- terrain(dem, unit = "degrees")
+        slope <- extract(slope, xy)
+        aspect <- terrain(dem, opt = "aspect", unit = "degrees")
+        aspect <- extract(aspect, xy)
+        ha24 <- 0
+        for (i in 0:23) {
+          har <- horizonangle(dem, i * 10, res(dem)[1])
+          ha24[i + 1] <- atan(extract(har, xy)) * (180/pi)
+        }
+        hori <- ha24
+      }
+    }
+
     hori<-as.matrix(hori) #horizon angles
     VIEWF <- 1-sum(sin(as.data.frame(hori) * pi / 180)) / length(hori) # convert horizon angles to radians and calc view factor(s)
     SLES <- rep(SLE,timeinterval*nyears)
@@ -712,6 +753,7 @@ micro_global <- function(
     global_climate <- raster::brick(paste0(folder, "/global_climate.nc"))
     CLIMATE <- raster::extract(global_climate, x)
     ALTT <- as.numeric(CLIMATE[, 1])
+
     delta_elev <- 0
     if(is.na(elev) == FALSE){ # check if user-specified elevation
       delta_elev <- ALTT - elev # get delta for lapse rate correction
@@ -883,7 +925,173 @@ micro_global <- function(
         RAINFALL<-RAINFALL/rep(daymon,nyears)
       }
     }#end check doing daily sims
+
     ndays<-length(RAINFALL)
+    SOLRhr<-rep(0,24*ndays)
+
+    hourly <- 0
+    if(microclima > 0 & timeinterval %in% c(12, 365)){
+
+      # function to assist with interpolated data in leap years
+      leapfix <- function(indata, yearlist, mult = 1){
+        leapyears <- seq(1900, 2060, 4)
+        for(j in 1:length(yearlist)){
+          if(yearlist[j] %in% leapyears){# add day for leap year if needed
+            if(mult == 1){
+              data <- c(indata[1:59], indata[59], indata[60:365])
+            }else{
+              data <- c(indata[1:(59 * mult)], indata[(58*mult+1):(59 * mult)], indata[(59 * mult + 1):(365 * mult)])
+            }
+          }else{
+            data <- indata
+          }
+          if(j == 1){
+            alldata <- data
+          }else{
+            alldata <- c(alldata, data)
+          }
+        }
+        return(alldata)
+      }
+
+      cat('using microclima and elevatr to adjust solar for topographic and vegetation effects \n')
+      if (!require("microclima", quietly = TRUE)) {
+        stop("package 'microclima' is needed. Please install it.",
+             call. = FALSE)
+      }
+      if (!require("zoo", quietly = TRUE)) {
+        stop("package 'zoo' is needed. Please install it.",
+             call. = FALSE)
+      }
+      cat("Downloading digital elevation data \n")
+      lat <- x[2]
+      long <- x[1]
+      yearlist <- seq(1960, 1960 + nyears - 1)
+      tt <- seq(as.POSIXct(paste0('01/01/', yearlist[1]), format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(paste0('31/12/', yearlist[nyears]), format = "%d/%m/%Y", tz = 'UTC')+23*3600, by = 'hours')
+      timediff <- x[1] / 15
+      hour.microclima <- as.numeric(format(tt, "%H")) + timediff-floor(timediff)
+      jd <- julday(as.numeric(format(tt, "%Y")), as.numeric(format(tt, "%m")), as.numeric(format(tt, "%d")))
+      if(!is.raster(dem)){
+        dem <- microclima::get_dem(r = NA, lat = lat, long = long, resolution = 100, zmin = -20)
+      }
+      xy <- data.frame(x = long, y = lat)
+      coordinates(xy) = ~x + y
+      proj4string(xy) = "+init=epsg:4326"
+      xy <- as.data.frame(spTransform(xy, crs(dem)))
+      if (class(slope) == "logical") {
+        slope <- terrain(dem, unit = "degrees")
+        slope <- extract(slope, xy)
+      }
+      if (class(aspect) == "logical") {
+        aspect <- terrain(dem, opt = "aspect", unit = "degrees")
+        aspect <- extract(aspect, xy)
+      }
+      ha <- 0
+      ha36 <- 0
+      for (i in 0:35) {
+        har <- horizonangle(dem, i * 10, res(dem)[1])
+        ha36[i + 1] <- atan(extract(har, xy)) * (180/pi)
+      }
+      for (i in 1:length(hour.microclima)) {
+        saz <- solazi(hour.microclima[i], lat, long, jd[i], merid = long)
+        saz <- round(saz/10, 0) + 1
+        saz <- ifelse(saz > 36, 1, saz)
+        ha[i] <- ha36[saz]
+      }
+      cloud <- rep(CCMAXX / 2, nyears)
+      methspline <- 'periodic'
+      for(i in 1:nyears){
+        if(yearlist[i] %in% seq(1900, 2060, 4)){
+          xmax <- 366
+        }else{
+          xmax <- 365
+        }
+        if(i == 1){
+          start <- 1
+          end <- 12
+          cloud1 <-suppressWarnings(spline(doys12,cloud[start:end],n=xmax,xmin=1,xmax=xmax,method=methspline))
+          cloud2<-cloud1$y
+        }else{
+          start <- end + 1
+          end <- end + 12
+          cloud1 <-suppressWarnings(spline(c(0, doys12), c(tail(cloud2, 1), cloud[start:end]), n = xmax, xmin = 1, xmax = xmax, method = methspline))
+          cloud2<-c(cloud2, cloud1$y)
+        }
+      }
+      cloudhr <- cbind(rep(seq(1, length(cloud2)),24), rep(cloud2, 24))
+      cloudhr <- cloudhr[order(cloudhr[,1]),]
+      cloudhr <- cloudhr[,2]
+      #cloudhr <- leapfix(cloudhr, yearlist, 24)
+      micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, TAI = TAI, timeinterval = 365, solonly = 1)
+      clearskyrad <- micro_clearsky$metout[, c(1, 13)][, 2]
+      dsw2 <- leapfix(clearskyrad, yearlist, 24) *(0.36+0.64*(1-cloudhr/100)) # Angstrom formula (formula 5.33 on P. 177 of "Climate Data and Resources" by Edward Linacre 1992
+      # partition total solar into diffuse and direct using code from microclima::hourlyNCEP
+      si <- microclima::siflat(hour.microclima, lat, long, jd, merid = long)
+      am <- microclima::airmasscoef(hour.microclima, lat, long, jd, merid = long)
+      dp <- vector(length = length(jd))
+      for (i in 1:length(jd)) {
+        dp[i] <- microclima:::difprop(dsw2[i], jd[i], hour.microclima[i], lat, long, watts = TRUE, hourly = TRUE, merid = long)
+      }
+      dp[dsw2 == 0] <- NA
+      dnir <- (dsw2 * (1 - dp))/si
+      dnir[si == 0] <- NA
+      difr <- (dsw2 * dp)
+      edni <- dnir/((4.87/0.0036) * (1 - dp))
+      edif <- difr/((4.87/0.0036) * dp)
+      bound <- function(x, mn = 0, mx = 1) {
+        x[x > mx] <- mx
+        x[x < mn] <- mn
+        x
+      }
+      odni <- bound((log(edni)/-am), mn = 0.001, mx = 1.7)
+      odif <- bound((log(edif)/-am), mn = 0.001, mx = 1.7)
+      nd <- length(odni)
+      sel <- which(is.na(am * dp * odni * odif) == F)
+      dp[1] <- dp[min(sel)]
+      odni[1] <- odni[min(sel)]
+      odif[1] <- odif[min(sel)]
+      dp[nd] <- dp[max(sel)]
+      odni[nd] <- odni[max(sel)]
+      odif[nd] <- odif[max(sel)]
+      dp[nd] <- dp[max(sel)]
+      odni[nd] <- odni[max(sel)]
+      odif[nd] <- odif[max(sel)]
+      if (!require("raster", quietly = TRUE)) {
+        stop("package 'raster' is needed. Please install it.",
+             call. = FALSE)
+      }
+      dp <- na.approx(dp, na.rm = F)
+      odni <- na.approx(odni, na.rm = F)
+      odif <- na.approx(odif, na.rm = F)
+      h_dp <- bound(dp)
+      h_oi <- bound(odni, mn = 0.24, mx = 1.7)
+      h_od <- bound(odif, mn = 0.24, mx = 1.7)
+      afi <- exp(-am * h_oi)
+      afd <- exp(-am * h_od)
+      h_dni <- (1 - h_dp) * afi * 4.87/0.0036
+      h_dif <- h_dp * afd * 4.87/0.0036
+      h_dni[si == 0] <- 0
+      h_dif[is.na(h_dif)] <- 0
+      diffuse_frac_all <- h_dif / (h_dni + h_dif) # calculated diffuse fraction
+      diffuse_frac_all[is.na(diffuse_frac_all)] <- 1
+      radwind2 <- .shortwave.ts(h_dni * 0.0036, h_dif * 0.0036, jd, hour.microclima, lat, long, slope, aspect, ha = ha, svv = 1, x = microclima.LOR, l = mean(microclima.LAI), albr = 0, merid = long, dst = 0, difani = FALSE)
+      #microclima.out$hourlyradwind <- radwind2
+      SOLRhr_all <- radwind2$swrad / 0.0036
+      diffuse_frac <- diffuse_frac_all
+      if(microclima == 2){ # use hourly solar from microclima
+        hourly <- 2
+        VIEWF <- 1 # accounted for already in microclima cals
+        hori <- rep(0, 24) # accounted for already in microclima calcs
+      }
+    }else{
+      diffuse_frac <- NA
+    }
+    if(timeinterval == 12 & microclima > 0){
+      dates_all <- head(seq(as.POSIXct(paste0("01/01/", yearlist[1]), format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(paste0("01/01/", yearlist[nyears] + 1), format = "%d/%m/%Y ", tz = 'UTC'), by = 'hours'), -1)
+      dates_15th <- which(format(dates_all, "%d") == "15")
+      diffuse_frac <- diffuse_frac_all[dates_15th]
+    }
+
     if(length(TAI) < 111){ # no user supplied values, compute with GADS
       if(run.gads > 0){
         ####### get solar attenuation due to aerosols with program GADS #####################
@@ -1124,15 +1332,15 @@ micro_global <- function(
       drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
       srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
       if(snowmodel == 1){
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS))
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,dem=dem, diffuse_frac = diffuse_frac))
       }else{
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS))
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,dem=dem, diffuse_frac = diffuse_frac))
       }
     }else{
       if(snowmodel == 1){
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS))
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,dem=dem, diffuse_frac = diffuse_frac))
       }else{
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS))
+        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,dem=dem, diffuse_frac = diffuse_frac))
       }
     }
   } # end error trapping
