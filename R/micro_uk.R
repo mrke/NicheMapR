@@ -51,6 +51,7 @@
 #' \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
 #' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 #' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
+#' \code{Soil_Init}{ = NA, initial soil temperature at each soil node, °C (if NA, will use the mean air temperature to initialise)}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{manualshade}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1=yes, 0=no}\cr\cr
@@ -338,6 +339,7 @@ micro_uk <- function(
   solonly = 0,
   clearsky = 0,
   run.gads = 1,
+  Soil_Init = NA,
   write_input = 0,
   writecsv = 0,
   manualshade = 1,
@@ -1060,7 +1062,11 @@ micro_uk <- function(
       AZMUTH<-AZMUTHS
 
       avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
-      soilinit<-rep(avetemp,20)
+      if(is.na(Soil_Init)){
+        soilinit <- rep(avetemp, 20)
+      }else{
+        soilinit <- c(Soil_Init, rep(avetemp, 10))
+      }
       tannul<-mean(unlist(ALLTEMPS))
 
       if(nyears==1){

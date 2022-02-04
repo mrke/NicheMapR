@@ -57,6 +57,7 @@
 #' \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
 #' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 #' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
+#' \code{Soil_Init}{ = NA, initial soil temperature at each soil node, °C (if NA, will use the mean air temperature to initialise)}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{elevatr}{ = 0, Use elevatr package to get high resolution elevation for location? 1 = yes, 0 = no}\cr\cr
@@ -342,6 +343,7 @@ micro_global <- function(
   solonly = 0,
   clearsky = 0,
   run.gads = 1,
+  Soil_Init = NA,
   write_input = 0,
   writecsv = 0,
   elevatr = 0,
@@ -875,7 +877,11 @@ micro_global <- function(
     orig.RAINFALL <- RAINFALL
     # get annual mean temp for creating deep soil (2m) boundary condition
     avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
-    soilinit<-rep(avetemp,20)
+    if(is.na(Soil_Init)){
+      soilinit <- rep(avetemp, 20)
+    }else{
+      soilinit <- c(Soil_Init, rep(avetemp, 10))
+    }
     tannul<-mean(unlist(ALLTEMPS))
     tannulrun<-rep(tannul,doynum)
 
@@ -974,6 +980,7 @@ micro_global <- function(
       if(!is.raster(dem)){
         dem <- microclima::get_dem(r = NA, lat = lat, long = long, resolution = 100, zmin = -20)
       }
+      require(raster)
       xy <- data.frame(x = long, y = lat)
       coordinates(xy) = ~x + y
       proj4string(xy) = "+init=epsg:4326"

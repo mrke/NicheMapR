@@ -48,6 +48,7 @@
 #' \code{IR}{ = 0, Clear-sky longwave radiation computed using Campbell and Norman (1998) eq. 10.10 (includes humidity) (0) or Swinbank formula (1)}\cr\cr
 #' \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
 #' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
+#' \code{Soil_Init}{ = NA, initial soil temperature at each soil node, °C (if NA, will use the mean air temperature to initialise)}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
@@ -329,6 +330,7 @@ micro_usa <- function(
   clearsky = 0,
   solonly = 0,
   run.gads = 1,
+  Soil_Init = NA,
   write_input = 0,
   writecsv = 0,
   #terrain = 0,
@@ -1062,7 +1064,11 @@ micro_usa <- function(
       AZMUTH<-AZMUTHS
 
       avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
-      soilinit<-rep(avetemp,20)
+      if(is.na(Soil_Init)){
+        soilinit <- rep(avetemp, 20)
+      }else{
+        soilinit <- c(Soil_Init, rep(avetemp, 10))
+      }
       tannul<-mean(unlist(ALLTEMPS))
 
       if(nyears==1){

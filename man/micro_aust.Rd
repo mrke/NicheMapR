@@ -87,6 +87,7 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1 = yes, 0 = no}\cr\cr
 \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
+\code{Soil_Init}{ = NA, initial soil temperature at each soil node, °C (if NA, will use the mean air temperature to initialise)}\cr\cr
 \code{microclima}{ = 0, Use microclima and elevatr package to adjust solar radiation for terrain? 1 = yes, 0 = no}\cr\cr
 \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1 = yes, 0 = no}\cr\cr
 \code{manualshade}{ = 1, Use CSIRO Soil and Landscape Grid of Australia? 1 = yes, 0 = no}\cr\cr
