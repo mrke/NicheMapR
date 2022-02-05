@@ -102,7 +102,7 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
         VPD <- c(VPD, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       }
       var <- 'srad'
-      message(paste0('extracting vapour pressure deficit data from TerraClimate for ', yearlist[i], '\n'))
+      message(paste0('extracting solar radiation data from TerraClimate for ', yearlist[i], '\n'))
       ncfile <- paste0(source, "/TerraClimate_", var,"_", yearlist[i], ".nc")
       nc <- nc_open(ncfile)
       if(i == 1){

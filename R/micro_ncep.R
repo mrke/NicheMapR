@@ -64,6 +64,8 @@
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
 #' \code{spatial}{ = NA, specify folder with local NCEP data (no trailing forward slash), goes to the web if NA }\cr\cr
+#' \code{scenario}{ = 0, climate change scenario from terraclimate (0 is historical, 2 is plus 2 deg C, 4 is plus 4 deg C }\cr\cr
+#' \code{terra_source}{ = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data", specify location of terraclimate data, goes to the web by default}\cr\cr
 #' \code{save}{ = 0, don't save forcing data (0), save the forcing data (1) or read previously saved data (2)}\cr\cr
 #'
 #' \strong{ General additional parameters:}\cr\cr
@@ -399,6 +401,8 @@ micro_ncep <- function(
   message = 0,
   fail = nyears * 24 * 365,
   spatial = NA,
+  scenario = 0,
+  terra_source = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data",
   save = 0,
   snowcond = 0,
   intercept = max(maxshade) / 100 * 0.3,
@@ -921,25 +925,162 @@ micro_ncep <- function(
       elev <- tref$elev[1] # m
       ALTT <- elev
       TAIRhr <- tref$telev + tref$tcad # reference Tair corrected for lapse rate and cold air drainage
+
+      if(scenario != 0){
+        TAIRhr_orig <- TAIRhr
+        yearstodo <- seq(ystart, yfinish)
+        nyears <- yfinish - ystart + 1
+        leapyears <- seq(1900, 2060, 4)
+        message("generate climate change scenario", '\n')
+        # diff spline function
+        getdiff <- function(diffs){
+          diff1 <- (unlist(diffs[1]) + unlist(diffs[length(diffs)])) / 2
+
+          # generate list of days
+          for(ys in 1:nyears){
+            if(ys == 1){
+              if(nyears == 1){
+                if(yearstodo[ys] %in% leapyears){
+                  day<-c(1, 15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5, 366)
+                }else{
+                  day<-c(1, 15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5, 365)
+                }
+              }else{
+              if(yearstodo[ys] %in% leapyears){
+                day<-c(1, 15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5)
+              }else{
+                day<-c(1, 15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5)
+              }
+              }
+            }else{
+              if(ys == nyears){
+                if(yearstodo[ys] %in% leapyears){
+                  day<-c(15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5, 366)
+                }else{
+                  day<-c(15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5, 365)
+                }
+              }else{
+                if(yearstodo[ys] %in% leapyears){
+                  day<-c(15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5)
+                }else{
+                  day<-c(15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5)
+                }
+              }
+            }
+            if(ys == 1){
+              days2 <- day
+              days <- day
+            }else{
+              if(yearstodo[ys] %in% leapyears){
+                days2 <- c(days2, (day + 366 * (ys - 1)))
+              }else{
+                days2 <- c(days2, (day + 365 * (ys - 1)))
+              }
+              days <- c(days, day)
+            }
+          }
+
+          diffs3 <- c(diff1, diffs, diff1)
+          days_diffs <- data.frame(matrix(NA, nrow = nyears * 12 + 2, ncol = 3))
+          days_diffs[, 1] <- days
+          days_diffs[, 3] <- days2
+          days_diffs[, 2] <- diffs3
+          colnames(days_diffs) <- c("days", "diffs", "new_day")
+
+          # interpolate monthly differences
+          f <- approxfun(x = days_diffs$new_day, y = days_diffs$diffs)
+          xx <- seq(1, max(days2), 1)
+          sp_diff <- f(xx)
+          return(sp_diff)
+        }
+
+        terra <- as.data.frame(get_terra(ystart = ystart, yfinish = yfinish, source = terra_source))
+        if(scenario == 4){
+          terra_cc <- as.data.frame(get_terra(ystart = ystart, yfinish = yfinish, scenario = 4, source = terra_source))
+        }
+        if(scenario == 2){
+          terra_cc <- as.data.frame(get_terra(ystart = ystart, yfinish = yfinish, scenario = 2, source = terra_source))
+        }
+
+        tmin_diffs <- terra_cc$TMINN - terra$TMINN
+        tmax_diffs <- terra_cc$TMAXX - terra$TMAXX
+        precip_diffs <- terra_cc$RAINFALL / terra$RAINFALL
+        srad_diffs <- terra_cc$SRAD / terra$SRAD
+        vpd_diffs <- terra_cc$VPD / terra$VPD
+
+        TMINN_diff <- getdiff(tmin_diffs)
+        TMAXX_diff <- getdiff(tmax_diffs)
+        VPD_diff <- getdiff(vpd_diffs)
+        SOLAR_diff <- getdiff(srad_diffs)
+        RAIN_diff <- getdiff(precip_diffs)
+
+        TMINN_diff <- rep(TMINN_diff, each=24)
+        TMAXX_diff <- rep(TMAXX_diff, each=24)
+        VPD_diff <- rep(VPD_diff, each=24)
+        SOLAR_diff <- rep(SOLAR_diff, each=24)
+        #RAIN_diff <- rep(RAIN_diff, each=24)
+
+        mins <- aggregate(TAIRhr, by = list(format(tt, "%Y-%m-%d")), FUN = min)$x
+        maxs <- aggregate(TAIRhr, by = list(format(tt, "%Y-%m-%d")), FUN = max)$x
+        mins <- rep(mins, each=24)
+        maxs <- rep(maxs, each=24)
+        mins2 <- TAIRhr / mins[1:length(TAIRhr)]
+        maxs2 <- TAIRhr / maxs
+        mins2[mins2 != 1] <- 0
+        maxs2[maxs2 != 1] <- 0
+        minweight <- rep(NA, length(mins2))
+        maxweight <- minweight
+        minweight[mins2 == 1] <- 1
+        minweight[maxs2 == 1] <- 0
+        maxweight[mins2 == 1] <- 0
+        maxweight[maxs2 == 1] <- 1
+        minweight <- zoo::na.approx(minweight, na.rm = FALSE)
+        maxweight <- zoo::na.approx(maxweight, na.rm = FALSE)
+        minweight[is.na(minweight)] <- 0.5
+        maxweight[is.na(maxweight)] <- 0.5
+        minweight[minweight > 1] <- 1
+        minweight[minweight < 0] <- 0
+        maxweight[maxweight > 1] <- 1
+        maxweight[maxweight < 0] <- 0
+        diff <- TMINN_diff * minweight + TMAXX_diff * maxweight
+        TAIRhr <- TAIRhr + diff
+      }
       SOLRhr <- hourlyradwind$swrad / 0.0036
+      if(scenario != 0){
+       SOLRhr <- SOLRhr * SOLAR_diff
+      }
       SOLRhr[SOLRhr < 0] <- 0
       SOLRhr <- zoo::na.approx(SOLRhr)
-      cloudhr <- hourlydata$cloudcover
       IRDhr <- hourlydata$downlong / 0.0036
       if(IR != 2){
         IRDhr <- IRDhr * 0 + -1 # make negative so computed internally in the microclimate model
       }
       CLDhr <- hourlydata$cloudcover
+      if(scenario != 0){
+        CLDhr <- CLDhr * (1 + 1 - SOLAR_diff)
+      }
       CLDhr[CLDhr < 0] <- 0
       CLDhr[CLDhr > 100] <- 100
       RHhr <- suppressWarnings(humidityconvert(h = hourlydata$humidity, intype = 'specific', p = hourlydata$pressure, tc = TAIRhr)$relative)
       RHhr[RHhr > 100] <- 100
       RHhr[RHhr < 0] <- 0
+      if(scenario != 0){
+       VPDhr <- WETAIR(db = TAIRhr_orig, rh = 100)$e - WETAIR(db = TAIRhr_orig, rh = RHhr)$e
+       VPDhr <- VPDhr * VPD_diff
+       e <- WETAIR(db = TAIRhr, rh = 100)$e - VPDhr
+       es <- WETAIR(db = TAIRhr, rh = 100)$esat
+       RHhr <- (e / es) * 100
+       RHhr[RHhr > 100] <- 100
+       RHhr[RHhr < 0] <- 0
+      }
       WNhr <- hourlyradwind$windspeed
       WNhr[is.na(WNhr)] <- 0.1
       RAINhr <- WNhr * 0 # using daily rain for now
       PRESShr <- hourlydata$pressure
       RAINFALL <- dailyprecip
+      if(scenario != 0){
+        RAINFALL <- RAINFALL * RAIN_diff
+      }
       RAINFALL[RAINFALL < 0.1] <- 0
       ZENhr2 <- ZENhr
       ZENhr2[ZENhr2!=90] <- 0
