@@ -558,6 +558,10 @@ micro_ncep <- function(
         Please input a value between 0 and 100.", '\n')
     errors<-1
   }
+  if(!(scenario %in% c(0, 2, 4))){
+    message('ERROR: scenario must be either 0 (historical), 2 (plus 2) or 4 (plus 4) \n')
+    errors<-1
+  }
   # end error trapping
 
   if(errors==0){ # continue
@@ -1018,8 +1022,10 @@ micro_ncep <- function(
         TMAXX_diff <- rep(TMAXX_diff, each=24)
         VPD_diff <- rep(VPD_diff, each=24)
         SOLAR_diff <- rep(SOLAR_diff, each=24)
-        #RAIN_diff <- rep(RAIN_diff, each=24)
 
+        # code to apply changes in min and max air temperature to hourly air temperature data
+
+        # find times of maxima and minima
         mins <- aggregate(TAIRhr, by = list(format(tt, "%Y-%m-%d")), FUN = min)$x
         maxs <- aggregate(TAIRhr, by = list(format(tt, "%Y-%m-%d")), FUN = max)$x
         mins <- rep(mins, each=24)
@@ -1028,6 +1034,8 @@ micro_ncep <- function(
         maxs2 <- TAIRhr / maxs
         mins2[mins2 != 1] <- 0
         maxs2[maxs2 != 1] <- 0
+
+        # construct weightings so that changes in min and max air temp can be applied
         minweight <- rep(NA, length(mins2))
         maxweight <- minweight
         minweight[mins2 == 1] <- 1
@@ -1042,6 +1050,8 @@ micro_ncep <- function(
         minweight[minweight < 0] <- 0
         maxweight[maxweight > 1] <- 1
         maxweight[maxweight < 0] <- 0
+
+        # construct final weighted correction factor and apply
         diff <- TMINN_diff * minweight + TMAXX_diff * maxweight
         TAIRhr <- TAIRhr + diff
       }
