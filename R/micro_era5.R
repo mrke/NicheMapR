@@ -1046,6 +1046,8 @@ micro_era5 <- function(
     }else{
       RAINhr = rainhour
     }
+    TIMAXS <- c(1, 1, 0, 0)
+    TIMINS <- c(0, 0, 1, 1)
     # microclimate input parameters list
     microinput<-c(ndays, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept, grasshade, solonly, ZH, D0, TIMAXS = TIMAXS, TIMINS = TIMINS)
 
@@ -1055,8 +1057,7 @@ micro_era5 <- function(
     if(shore == 0){
       tides <- matrix(data = 0, nrow = 24 * ndays, ncol = 3) # make an empty matrix
     }
-    TIMAXS <- c(1, 1, 0, 0)
-    TIMINS <- c(0, 0, 1, 1)
+
     # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
     micro <- list(tides = tides, microinput = microinput, doy = doy, SLES = SLES, DEP = DEP, Nodes = Nodes, MAXSHADES = MAXSHADES, MINSHADES = MINSHADES, TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN, CCMAXX = CCMAXX, CCMINN = CCMINN, WNMAXX = WNMAXX, WNMINN = WNMINN, TAIRhr = TAIRhr, RHhr = RHhr, WNhr = WNhr, CLDhr = CLDhr, SOLRhr = SOLRhr, RAINhr = RAINhr, ZENhr = ZENhr, IRDhr = IRDhr, REFLS = REFLS, PCTWET = PCTWET, soilinit = soilinit, hori = hori, TAI = TAI, soilprops = soilprops, moists = moists, RAINFALL = RAINFALL, tannulrun = deepsoil, PE = PE, KS = KS, BB = BB, BD = BD, DD = DD, L = L, LAI = LAI)
     # write all input to csv files in their own folder
