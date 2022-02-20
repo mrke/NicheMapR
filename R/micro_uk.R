@@ -1062,10 +1062,12 @@ micro_uk <- function(
       AZMUTH<-AZMUTHS
 
       avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
-      if(is.na(Soil_Init)){
+      if(is.na(Soil_Init[1])){
         soilinit <- rep(avetemp, 20)
+        spinup <- 1
       }else{
         soilinit <- c(Soil_Init, rep(avetemp, 10))
+        spinup <- 0
       }
       tannul<-mean(unlist(ALLTEMPS))
 
@@ -1151,7 +1153,7 @@ micro_uk <- function(
       ALAT<-as.numeric(ALAT)
 
       # microclimate input parameters list
-      microinput<-c(ndays,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade,solonly,ZH,D0, TIMAXS = TIMAXS, TIMINS = TIMINS)
+      microinput<-c(ndays,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade,solonly,ZH,D0,TIMAXS,TIMINS,spinup)
 
       # hourly option set to 0, so make empty vectors
       if(hourly==0){

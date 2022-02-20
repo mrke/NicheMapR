@@ -1128,10 +1128,12 @@ micro_terra <- function(
 
     # get annual mean temp for creating deep soil (2m) boundary condition
     avetemp<-(sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2)
-    if(is.na(Soil_Init)){
-     soilinit <- rep(avetemp, 20)
+    if(is.na(Soil_Init[1])){
+      soilinit <- rep(avetemp, 20)
+      spinup <- 1
     }else{
-     soilinit <- c(Soil_Init, rep(avetemp, 10))
+      soilinit <- c(Soil_Init, rep(avetemp, 10))
+      spinup <- 0
     }
 
     tannul<-mean(unlist(ALLTEMPS))
@@ -1485,7 +1487,7 @@ micro_terra <- function(
     ZENhr<-rep(-1,24*ndays)
     IRDhr<-rep(-1,24*ndays)
     # microclimate input parameters list
-    microinput<-c(ndays,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade,solonly,ZH,D0,TIMAXS,TIMINS)
+    microinput<-c(ndays,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade,solonly,ZH,D0,TIMAXS,TIMINS,spinup)
 
     if(length(LAI)<ndays){
       LAI<-rep(LAI[1],ndays)
