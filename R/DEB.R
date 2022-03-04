@@ -255,7 +255,7 @@ DEB<-function(
   n_O <- cbind(n_X, n_V, n_E, n_P) # matrix of composition of organics, i.e. food, structure, reserve and faeces
   CHON <- c(12, 1, 16, 14)
   wO <- CHON %*% n_O
-  w_V <- wO[3]
+  w_V <- wO[2]
   M_V <- d_V / w_V
   y_EX <- kap_X * mu_X / mu_E # yield of reserve on food
   y_XE <- 1 / y_EX # yield of food on reserve
@@ -710,6 +710,8 @@ DEB<-function(
   J_O <- c(JOJx, JOJv, JOJe, JOJp) # eta_O * diag(p_ADG(2,:)); # mol/d, J_X, J_V, J_E, J_P in rows, A, D, G in cols
   J_M <- c(JMCO2, JMH2O, JMO2, JMNWASTE) # - (n_M\n_O) * J_O;        # mol/d, J_C, J_H, J_O, J_N in rows, A, D, G in cols
   p_T <- sum(-J_O * mu_O -J_M * mu_M) / 3600 / Tcorr # W
+  #p_T <- sum(-J_O * mu_O -J_M * mu_M) - (213.79 * JMCO2 + 69.9 * JMH2O + 192 * .5 * JMNWASTE) / 3600 / Tcorr # W
+  p_T <- (sum(-1 * J_O * mu_O -J_M * mu_M) / 3600 - (213.79 * JMCO2 + 69.9 * JMH2O + 192 * .5 * JMNWASTE) * (Tb + 273.15) / 3600)  # W
   DEBQMETW <- p_T
 
   GDRYFOOD <- -1 * JOJx * w_X
