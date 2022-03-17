@@ -60,6 +60,8 @@
 #' \item{\code{maxshades}{ = micro$maxshade, Vector of daily maximum shade values - can be different to value used in microclimate model (e.g. to simulate use of fine-scale shade in a generally unshaded habitat) (\%)}\cr}
 #' \item{\code{fluid}{ = 0, Fluid type 0=air, 1=water }\cr}
 #' \item{\code{alpha_sub}{ = 1 - micro$REFL, Vector of daily substrate reflectances (0-1)}\cr}
+#' \item{\code{epsilon_sub}{ = 0.95, Emissivity of substrate (0-1)}\cr}
+#' \item{\code{epsilon_sky}{ = 1, Emissivity of sky (0-1)}\cr}
 #' \item{\code{DEP}{ = micro$DEP, Depths available from the microclimate model simulation}\cr}
 #' \item{\code{KS}{ = micro$KS[seq(1, 19, 2)], Depth-specific saturated hydraulic conductivity (kg s/m3) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
 #' \item{\code{b}{ = micro$BB[seq(1, 19, 2)], Depth-specific Campbell's b parameter (-) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
@@ -612,6 +614,8 @@ ectotherm <- function(
   k_flesh = 0.5,
   rho_body = 1000,
   epsilon = 0.95,
+  epsilon_sub = 0.95,
+  epsilon_sky = 1,
   warmsig = 0,
   fossorial = 0,
   rainact = 0,
@@ -1236,8 +1240,8 @@ ectotherm <- function(
     OBJDIS <- 1.0 # currently unused - distance (m) from nearby object of different temp to sky and ground (e.g. warm rock, fire)
     OBJL <- 0.0001 # currently unused - diameter (m) of nearby object of different temp to sky and ground (e.g. warm rock, fire)
     PDIF <- 0.1 # proportion of sunlight that is diffuse (0-1), ultimately will make this as an optional vector from microclima
-    EMISSK <- 1.0 # emissivity of the sky (0-1)
-    EMISSB <- 1.0 # emissivity of the substrate (0-1)
+    EMISSK <- epsilon_sky # emissivity of the sky (0-1)
+    EMISSB <- epsilon_sub # emissivity of the substrate (0-1)
     ABSSB <- alpha_sub # solar absorbtivity of the substrate (0-1)
 
     # animal properties

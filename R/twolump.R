@@ -139,6 +139,7 @@ twolump<-function(t,y,indata){
     DENSTY <- press / (287.04 * (Tair + 273.15)) # air density, kg/m3
     THCOND <- 0.02425 + (7.038 * 10 ^ -5 * Tair) # air thermal conductivity, W/(m.K)
     VISDYN <- (1.8325 * 10 ^ -5 * ((296.16 + 120) / ((Tair + 273.15) + 120))) * (((Tair + 273.15) / 296.16) ^ 1.5) # dynamic viscosity of air, kg/(m.s)
+    VISKIN <- VISDYN / DENSTY
 
     # geometry section ############################################################
     m <- Ww_g / 1000 # convert weight to kg  C<-m*c_body # thermal capacitance, J/K
@@ -251,7 +252,7 @@ twolump<-function(t,y,indata){
     }
     h_conv_forced <- NUfor * THCOND / L # convection coefficent, forced
 
-    GR <- abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Ts - Tair) / VISDYN ^ 2) # Grashof number
+    GR <- abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Ts - Tair) / VISKIN ^ 2) # Grashof number
     Raylei <- GR * PR # Rayleigh number
 
     # get Nusselt for Free Convect
