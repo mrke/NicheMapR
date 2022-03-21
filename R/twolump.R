@@ -252,7 +252,7 @@ twolump<-function(t,y,indata){
     }
     h_conv_forced <- NUfor * THCOND / L # convection coefficent, forced
 
-    GR <- abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Ts - Tair) / VISKIN ^ 2) # Grashof number
+    GR <- abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Ts - Tair) / VISKYN ^ 2) # Grashof number
     Raylei <- GR * PR # Rayleigh number
 
     # get Nusselt for Free Convect
