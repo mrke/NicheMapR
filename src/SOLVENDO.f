@@ -454,11 +454,11 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
            Q10mult = Q10**((TC - TC_REF)/10.)
            if(PANT.lt.PANT_MAX)THEN
             PANT = PANT + PANT_INC
-            PANT_COST=((PANT-1D0)/(PANT_MAX-1D0)*(1-PANT_MULT)*QBASREF)
+            PANT_COST=((PANT-1D0)/(PANT_MAX-1D0)*(PANT_MULT-1)*QBASREF)
             QBASAL = QBASREF * Q10mult + PANT_COST           
            else
             PANT = PANT_MAX
-            PANT_COST=((PANT-1D0)/(PANT_MAX-1D0)*(1-PANT_MULT)*QBASREF)
+            PANT_COST=((PANT-1D0)/(PANT_MAX-1D0)*(PANT_MULT-1)*QBASREF)
             QBASAL = QBASREF * Q10mult + PANT_COST           
             PCTWET = PCTWET + PCTWET_INC
             if((PCTWET.GT.PCTWET_MAX).OR.(PCTWET_INC.eq.0.))THEN

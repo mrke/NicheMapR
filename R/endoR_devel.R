@@ -695,17 +695,17 @@ endoR_devel <- function(
           if(TC < TC_MAX){
             TC <- TC + TC_INC
             Q10mult <- Q10^((TC - TC_REF)/10)
-            QBASAL = QBASREF * Q10mult
+            QBASAL <- QBASREF * Q10mult
           }else{
             TC <- TC_MAX
             Q10mult <- Q10^((TC - TC_REF)/10)
             if(PANT < PANT_MAX){
               PANT <- PANT + PANT_INC
-              PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * (1 - PANT_MULT) * QBASREF)
+              PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * (PANT_MULT - 1) * QBASREF)
               QBASAL <- QBASREF * Q10mult + PANT_COST
             }else{
               PANT <- PANT_MAX
-              PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * (1 - PANT_MULT) * QBASREF)
+              PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * (PANT_MULT - 1) * QBASREF)
               QBASAL <- QBASREF * Q10mult + PANT_COST
               PCTWET <- PCTWET + PCTWET_INC
               if(PCTWET > PCTWET_MAX | PCTWET_INC == 0){
