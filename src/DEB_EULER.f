@@ -443,6 +443,7 @@ C      USE EMBRYO EQUATION FOR LENGTH, FROM KOOIJMAN 2009 EQ. 2
        IF(V_PRES*R.LT.0.)THEN
         STARVING=1
         STARVE=V_PRES*R*(-1.)*MU_V*D_V/W_V  !CM3 * G/CM3 (G) * MOL/G (MOL) * J/MOL (J)
+        DVDT=0.
         IF(HOUR.EQ.1)THEN
          IF(CUMBATCH_INIT.LT.STARVE)THEN
           DVDT=R*V_PRES
@@ -644,23 +645,23 @@ C     END CHECK FOR IMMATURE OR MATURE
       ! DRAW FROM REPRODUCTION AND THEN BATCH BUFFERS UNDER STARVATION
       IF(HOUR.EQ.1)THEN
        IF((STARVE.GT.0.).AND.(CUMREPRO_INIT.GT.STARVE))THEN
-        P_R = MAX(0.,P_R - STARVE)
+        P_R = P_R - STARVE
         STARVE = 0.
         STARVING = 0
        ENDIF
        IF((STARVE.GT.0.).AND.(CUMREPRO_INIT.GT.STARVE))THEN
-        P_B = MAX(0.,P_B - STARVE)
+        P_B = P_B - STARVE
         STARVE = 0.
         STARVING = 0
        ENDIF
       ELSE
        IF((STARVE.GT.0.).AND.(CUMREPRO(HOUR-1).GT.STARVE))THEN
-        P_R = MAX(0.,P_R - STARVE)
+        P_R = P_R - STARVE
         STARVE = 0.
         STARVING = 0
        ENDIF
        IF((STARVE.GT.0.).AND.(CUMBATCH(HOUR-1).GT.STARVE))THEN
-        P_B = MAX(0.,P_B - STARVE)
+        P_B = P_B - STARVE
         STARVE = 0.
         STARVING = 0
        ENDIF

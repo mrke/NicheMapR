@@ -334,7 +334,8 @@ DEB_euler<-function(
     dVdt <- V_pres * r
     if(V_pres * r < 0){
       starve <- V_pres * r * -1 * mu_V * d_V / w_V
-      if(E_B < starve){
+      dVdt <- 0
+      if(E_B + E_R < starve){ # reproduction and batch buffer has run out so draw from structure
         dVdt <- V_pres * r
         starve <- 0
       }
@@ -457,21 +458,11 @@ DEB_euler<-function(
   # draw from reproduction and then batch buffers under starvation
   if(starve > 0 & E_R > starve){
     p_R <- p_R - starve
-    if(p_R < 0){
-      starve <- abs(p_R)
-      p_R <- 0
-    }else{
-      starve <- 0
-    }
+    starve <- 0
   }
   if(starve > 0 & E_B > starve){
-    p_B <- max(0, p_B - starve)
-    if(p_B < 0){
-      starve <- abs(p_B)
-      p_B <- 0
-    }else{
-      starve <- 0
-    }
+    p_B <- p_B - starve
+    starve <- 0
   }
 
   if(metab_mode == 1){ # APB (e.g. hemimetabolous insect

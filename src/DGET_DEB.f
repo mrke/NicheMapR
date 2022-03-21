@@ -114,7 +114,8 @@ C     AN INSECT (HEMIMETABOLOUS)
        ! structure and starvation
        IF(V * RDOT < 0.)THEN
         DS = -1. * V * RDOT * MU_V * D_V / W_V ! J / T, STARVATION ENERGY TO BE SUBTRACTED FROM REPRODUCTION BUFFER IF NECESSARY
-        IF(B .LT. DS)THEN !# batch buffer has run out so draw from structure
+        DV = 0.
+        IF((R + B) .LT. DS)THEN !# reproduction and batch buffer has run out so draw from structure
          DV = V * RDOT
          DS = 0.
         ENDIF
@@ -196,12 +197,12 @@ C     AN INSECT (HEMIMETABOLOUS)
        P_R = P_R - P_B ! TAKE FINALISED VALUE OF P_B FROM P_R
 
        ! draw from reproduction and then batch buffers under starvation
-       if((dS.GT.0.).AND.(p_R.GT.dS))THEN
-         p_R = MAX(0.,p_R - dS)
+       if((dS.GT.0.).AND.(R.GT.dS))THEN
+         p_R = p_R - dS
          dS = 0.
        ENDIF
-       if((dS.GT.0.).AND.(p_B.GT.dS))THEN
-         p_B = MAX(0.,p_B - dS)
+       if((dS.GT.0.).AND.(B.GT.dS))THEN
+         p_B = p_B - dS
          dS = 0.
        ENDIF
         DR = P_R

@@ -341,7 +341,8 @@ DEB_var<-function(
         # structure and starvation
         if(V * r < 0){
           dS <- V * r * -1 * mu_V * d_V / w_V # J / t, starvation energy to be subtracted from reproduction buffer if necessary
-          if(B < dS){ # batch buffer has run out so draw from structure
+          dV <- 0
+          if(B + R < dS){ # reproduction and batch buffer has run out so draw from structure
             dV <- V * r
             dS <- 0
           }
@@ -426,23 +427,13 @@ DEB_var<-function(
         p_R <- max(0, p_R - p_B) # take finalised value of p_B from p_R
 
         # draw from reproduction and then batch buffers under starvation
-        if(dS > 0 & p_R > dS){
-          p_R <- p_R - dS
-          if(p_R < 0){
-           dS <- abs(p_R)
-           p_R <- 0
-          }else{
-           dS <- 0
-          }
+        if(dS > 0 & R > dS){
+         p_R <- p_R - dS
+         dS <- 0
         }
-        if(dS > 0 & p_B > dS){
-          p_B <- p_B - dS
-          if(p_B < 0){
-            dS <- abs(p_B)
-            p_B <- 0
-          }else{
-            dS <- 0
-          }
+        if(dS > 0 & B > dS){
+         p_B <- p_B - dS
+         dS <- 0
         }
         #accumulate energy/matter in reproduction and batch buffers
         dR <- p_R
