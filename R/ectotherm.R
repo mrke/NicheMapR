@@ -60,7 +60,7 @@
 #' \item{\code{maxshades}{ = micro$maxshade, Vector of daily maximum shade values - can be different to value used in microclimate model (e.g. to simulate use of fine-scale shade in a generally unshaded habitat) (\%)}\cr}
 #' \item{\code{fluid}{ = 0, Fluid type 0=air, 1=water }\cr}
 #' \item{\code{alpha_sub}{ = 1 - micro$REFL, Vector of daily substrate reflectances (0-1)}\cr}
-#' \item{\code{epsilon_sub}{ = 0.95, Emissivity of substrate (0-1)}\cr}
+#' \item{\code{epsilon_sub}{ = 1, Emissivity of substrate (0-1)}\cr}
 #' \item{\code{epsilon_sky}{ = 1, Emissivity of sky (0-1)}\cr}
 #' \item{\code{DEP}{ = micro$DEP, Depths available from the microclimate model simulation}\cr}
 #' \item{\code{KS}{ = micro$KS[seq(1, 19, 2)], Depth-specific saturated hydraulic conductivity (kg s/m3) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
