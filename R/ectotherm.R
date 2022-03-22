@@ -1050,7 +1050,7 @@ ectotherm <- function(
   }
   if(epsilon < 0.9){
     message("warning: epsilon is rarely below 0.9 for living things \n")
-    errors<-1
+    errors<-0
   }
   if(!fossorial %in% c(0,1)){
     message("error: fossorial must be 0 or 1 \n")
