@@ -614,7 +614,7 @@ ectotherm <- function(
   k_flesh = 0.5,
   rho_body = 1000,
   epsilon = 0.95,
-  epsilon_sub = 0.95,
+  epsilon_sub = 1,
   epsilon_sky = 1,
   warmsig = 0,
   fossorial = 0,
