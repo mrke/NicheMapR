@@ -1103,13 +1103,16 @@ C     G METABOLIC WATER/H
 C     METABOLIC HEAT PRODUCTION (WATTS) - GROWTH OVERHEAD PLUS DISSIPATION POWER (MAINTENANCE, MATURITY MAINTENANCE,
 C     MATURATION/REPRO OVERHEADS) PLUS ASSIMILATION OVERHEADS - CORRECT TO 20 DEGREES SO IT CAN BE TEMPERATURE CORRECTED
 C     IN MET.F FOR THE NEW GUESSED TB
-      DEBQMET(HOUR) = ((1.-KAP_G)*P_G+P_D+(P_A/KAP_X-P_A-P_A*MU_P
-     & *ETA_PA))/3600./TCORR
+C      DEBQMET(HOUR) = ((1.-KAP_G)*P_G+P_D+(P_A/KAP_X-P_A-P_A*MU_P
+C     & *ETA_PA))/3600./TCORR
       MU_O = (/MU_X, MU_V, MU_E, MU_P/) ! J/mol, chemical potentials of organics
       MU_M = (/0.D0, 0.D0, 0.D0, MU_N/)          ! J/mol, chemical potentials of minerals C: CO2, H: H2O, O: O2, N: nitrogenous waste
       J_O = (/JOJX, JOJV, JOJE, JOJP/) ! eta_O * diag(p_ADG(2,:)); # mol/d, J_X, J_V, J_E, J_P in rows, A, D, G in cols
       J_M = (/JMCO2, JMH2O, JMO2, JMNWASTE/) ! - (n_M\n_O) * J_O;        # mol/d, J_C, J_H, J_O, J_N in rows, A, D, G in cols
-      DEBQMET(HOUR) = sum(-J_O * MU_O -J_M * MU_M)/3600./TCORR ! W    
+      !DEBQMET(HOUR) = sum(-J_O * MU_O -J_M * MU_M)/3600./TCORR ! W 
+      DEBQMET(HOUR) = (sum(-J_O*MU_O-J_M*MU_M)/3600.
+     &-(213.79*JMCO2+69.9*JMH2O+192*.5*JMNWASTE)*(Tb+273.15)/3600)
+     &/TCORR ! W 
       
       DRYFOOD(HOUR)=-1*JOJX*W_X ! DRY FOOD INTAKE (G)
       FAECES(HOUR)=JOJP*W_P ! FAECES PRODUCTION (G)

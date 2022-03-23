@@ -700,7 +700,7 @@ DEB<-function(
   mu_M <- c(0, 0, 0, mu_N)          # J/mol, chemical potentials of minerals C: CO2, H: H2O, O: O2, N: nitrogenous waste
   J_O <- c(JOJx, JOJv, JOJe, JOJp) # eta_O * diag(p_ADG(2,:)); # mol/d, J_X, J_V, J_E, J_P in rows, A, D, G in cols
   J_M <- c(JMCO2, JMH2O, JMO2, JMNWASTE) # - (n_M\n_O) * J_O;        # mol/d, J_C, J_H, J_O, J_N in rows, A, D, G in cols
-  p_T <- sum(-J_O * mu_O -J_M * mu_M) / 3600 / Tcorr # W
+  #p_T <- sum(-J_O * mu_O -J_M * mu_M) / 3600 / Tcorr # W
   #p_T <- sum(-J_O * mu_O -J_M * mu_M) - (213.79 * JMCO2 + 69.9 * JMH2O + 192 * .5 * JMNWASTE) / 3600 / Tcorr # W
   p_T <- (sum(-1 * J_O * mu_O -J_M * mu_M) / 3600 - (213.79 * JMCO2 + 69.9 * JMH2O + 192 * .5 * JMNWASTE) * (Tb + 273.15) / 3600)  # W
   DEBQMETW <- p_T
