@@ -252,6 +252,33 @@ DEB_euler<-function(
   hs_init <- hs_pres # specific death probability rate (hazard rate)
 
   #DEB mass balance-related calculations
+  # match H fraction in organics to stated chemical potentials (needed later for heat production)
+  n_X[2] <- ((mu_X / 10 ^ 5) - 4.3842 * n_X[1] - (-1.8176) * n_X[3] - (0.0593) * n_X[4]) / 0.9823
+  n_V[2] <- ((mu_V / 10 ^ 5) - 4.3842 * n_V[1] - (-1.8176) * n_V[3] - (0.0593) * n_V[4]) / 0.9823
+  n_E[2] <- ((mu_E / 10 ^ 5) - 4.3842 * n_E[1] - (-1.8176) * n_E[3] - (0.0593) * n_E[4]) / 0.9823
+  n_P[2] <- ((mu_P / 10 ^ 5) - 4.3842 * n_P[1] - (-1.8176) * n_P[3] - (0.0593) * n_P[4]) / 0.9823
+  # enthalpies (combustion frame)
+  h_X <- 10^5 * (4.3284 * n_X[1] + 1.0994 * n_X[2] + (-2.0915) * n_X[3] + (-0.1510) * n_X[4]) #J mol^(-1)
+  h_V <- 10^5 * (4.3284 * n_V[1] + 1.0994 * n_V[2] + (-2.0915) * n_V[3] + (-0.1510) * n_V[4]) #J mol^(-1)
+  h_E <- 10^5 * (4.3284 * n_E[1] + 1.0994 * n_E[2] + (-2.0915) * n_E[3] + (-0.1510) * n_E[4]) #J mol^(-1)
+  h_P <- 10^5 * (4.3284 * n_P[1] + 1.0994 * n_P[2] + (-2.0915) * n_P[3] + (-0.1510) * n_P[4]) #J mol^(-1)
+  h_CO2 <- 0 #J mol^(-1)
+  h_O2 <- 0 #J mol^(-1)
+  h_H2O <- 0 #J mol^(-1)
+  if(all(n_M_nitro == c(0, 3, 0, 1))){ # ammonia
+    h_N <- 382805
+    mu_N <- 0
+  }
+  if(all(n_M_nitro == c(1.0, 0.8, 0.6, 0.8))){ # uric acid
+    h_N <- 384238
+    mu_N <- 244e3/5
+  }
+  if(all(n_M_nitro == c(1, 2, 1, 2))){ # urea
+    h_N <- 631890
+    mu_N <- 122e3
+  }
+  h_O <- c(h_X, h_V, h_E, h_P)
+  h_M <- c(h_CO2, h_H2O, h_O2, h_N)
   n_O <- cbind(n_X, n_V, n_E, n_P) # matrix of composition of organics, i.e. food, structure, reserve and faeces
   CHON <- c(12, 1, 16, 14)
   wO <- CHON %*% n_O
@@ -680,15 +707,14 @@ DEB_euler<-function(
   GH2OMET <- JMH2O * 18.01528 # g metabolic water/time
 
   #metabolic heat production (Watts) - growth overhead plus dissipation power (maintenance, maturity maintenance,
-  #maturation/repro overheads) plus assimilation overheads - correct to 20 degrees so it can be temperature corrected
-  #in MET.f for the new guessed Tb
+  #maturation/repro overheads) plus assimilation overheads
   mu_O <- c(mu_X, mu_V, mu_E, mu_P) # J/mol, chemical potentials of organics
   mu_M <- c(0, 0, 0, mu_N)          # J/mol, chemical potentials of minerals C: CO2, H: H2O, O: O2, N: nitrogenous waste
   J_O <- c(JOJx, JOJv, JOJe, JOJp) # eta_O * diag(p_ADG(2,:)); # mol/d, J_X, J_V, J_E, J_P in rows, A, D, G in cols
   J_M <- c(JMCO2, JMH2O, JMO2, JMNWASTE) # - (n_M\n_O) * J_O;        # mol/d, J_C, J_H, J_O, J_N in rows, A, D, G in cols
-  #p_T <- sum(-J_O * mu_O -J_M * mu_M) / 3600 / Tcorr # W
-  #p_T <- sum(-J_O * mu_O -J_M * mu_M) - (213.79 * JMCO2 + 69.9 * JMH2O + 192 * .5 * JMNWASTE) / 3600 / Tcorr # W
-  p_T <- (sum(-1 * J_O * mu_O -J_M * mu_M) / 3600 - (213.79 * JMCO2 + 69.9 * JMH2O + 192 * .5 * JMNWASTE) * (Tb + 273.15) / 3600)  # W
+
+  # compute heat production
+  p_T <- sum(-1 * J_O * h_O -J_M * h_M) / 3600
   DEBQMETW <- p_T
 
   GDRYFOOD <- -1 * JOJx * w_X

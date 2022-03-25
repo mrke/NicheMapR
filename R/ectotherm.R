@@ -1278,6 +1278,33 @@ ectotherm <- function(
 
     # DEB mass balance calculations
     E_m <- (p_M * z / kap) / v # maximum reserve density, J/cm3
+    # match H fraction in organics to stated chemical potentials (needed later for heat production)
+    n_X[2] <- ((mu_X / 10 ^ 5) - 4.3842 * n_X[1] - (-1.8176) * n_X[3] - (0.0593) * n_X[4]) / 0.9823
+    n_V[2] <- ((mu_V / 10 ^ 5) - 4.3842 * n_V[1] - (-1.8176) * n_V[3] - (0.0593) * n_V[4]) / 0.9823
+    n_E[2] <- ((mu_E / 10 ^ 5) - 4.3842 * n_E[1] - (-1.8176) * n_E[3] - (0.0593) * n_E[4]) / 0.9823
+    n_P[2] <- ((mu_P / 10 ^ 5) - 4.3842 * n_P[1] - (-1.8176) * n_P[3] - (0.0593) * n_P[4]) / 0.9823
+    # enthalpies (combustion frame)
+    h_X <- 10^5 * (4.3284 * n_X[1] + 1.0994 * n_X[2] + (-2.0915) * n_X[3] + (-0.1510) * n_X[4]) #J mol^(-1)
+    h_V <- 10^5 * (4.3284 * n_V[1] + 1.0994 * n_V[2] + (-2.0915) * n_V[3] + (-0.1510) * n_V[4]) #J mol^(-1)
+    h_E <- 10^5 * (4.3284 * n_E[1] + 1.0994 * n_E[2] + (-2.0915) * n_E[3] + (-0.1510) * n_E[4]) #J mol^(-1)
+    h_P <- 10^5 * (4.3284 * n_P[1] + 1.0994 * n_P[2] + (-2.0915) * n_P[3] + (-0.1510) * n_P[4]) #J mol^(-1)
+    h_CO2 <- 0 #J mol^(-1)
+    h_O2 <- 0 #J mol^(-1)
+    h_H2O <- 0 #J mol^(-1)
+    if(all(n_M_nitro == c(0, 3, 0, 1))){ # ammonia
+      h_N <- 382805
+      mu_N <- 0
+    }
+    if(all(n_M_nitro == c(1.0, 0.8, 0.6, 0.8))){ # uric acid
+      h_N <- 384238
+      mu_N <- 244e3/5
+    }
+    if(all(n_M_nitro == c(1, 2, 1, 2))){ # urea
+      h_N <- 631890
+      mu_N <- 122e3
+    }
+    h_O <- c(h_X, h_V, h_E, h_P)
+    h_M <- c(h_CO2, h_H2O, h_O2, h_N)
     n_O <- cbind(n_X, n_V, n_E, n_P) # matrix of C-mole composition of organics, i.e. food, structure, reserve and faeces
     CHON <- c(12, 1, 16, 14) # molar masses of carbon, hydrogen, oxygen and nitrogen, g/mol
     wO <- CHON %*% n_O # molar weight of organics, g/mol
@@ -1329,7 +1356,7 @@ ectotherm <- function(
     #b <- rep(6.592933, 10)
     #KS <- rep(0.0004439024, 10)
     ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF, EMISSK, EMISSB, ABSSB, K_skin, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, SPARE4, tannul, nodnum, postur, psi_body, spec_hyd_body, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, arrhen_mode, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, pct_cond_egg, K_egg, psi_egg, spec_hyd_egg, b, KS, PE))
-    debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, FoodWater1, f, s_G, K, X[1], metab_mode, stages, kap_V, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He, k_Ee, k_EV, mu_N)
+    debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, FoodWater1, f, s_G, K, X[1], metab_mode, stages, kap_V, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He, k_Ee, k_EV, mu_N, h_O, h_M[4])
     deblast <- c(iyear, countday, V_init, E_init, ES_init, cumrepro_init, q_init, hs_init, cumbatch_init, V_baby_init, E_baby_init, E_H_init, stage)
 
     # code to determine wet periods for activity in a pond

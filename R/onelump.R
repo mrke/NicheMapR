@@ -303,9 +303,9 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
     Raylei = (GR ^ 0.25) * (PR ^ 0.333)
     NUfre = 2 + 0.60 * Raylei
   }
-  h_conv_free <- NUfre * THCOND / L # convection coefficent, forced
-  h_conv <- h_conv_free + h_conv_forced # combined convection coefficient
-  Nu <- h_conv * L / THCOND # Nu combined
+  Nutotal <- (NUfre^3 + NUfor^3)^(1./3.)
+  sh <- Nutotal * (SC / PR) ^ (1 / 3)
+  h_conv <- Nutotal*(THCOND/L) # combined convection coefficient
   #R_conv <- 1 / (h_conv * ATOT) # convective resistance, eq. 3 of Transient Equations Derivation vignette
   h_rad <- 4 * emis * sigma * ((Tc + Trad) / 2 + 273.15) ^ 3 # radiation heat transfer coefficient, eq. 46 of Transient Equations Derivation vignette
 
