@@ -476,15 +476,15 @@ C     QIN = QOUT + QSTORED  REARRANGED TO GET THE RATE OF CHANGE OF TEMPERATURE 
         DTDT(1)=(QCOND+QCONV)/WC(1)
         QEVAP=0.D0
       else
-       IF(PTWET.lt.1e-8)THEN
-C       DRY SURFACE
-         if(runsnow.eq.1)then
-          DTDT(1)=(QSOLAR+QRAD+QCOND+QCONV+QFREZE)/WC(j)
-         else
-          DTDT(1)=(QSOLAR+QRAD+QCOND+QCONV)/WC(1)
-         endif
-         QEVAP=0.D0
-        ELSE
+C      IF(PTWET.lt.1e-8)THEN
+CC       DRY SURFACE
+C        if(runsnow.eq.1)then
+C         DTDT(1)=(QSOLAR+QRAD+QCOND+QCONV+QFREZE)/WC(j)
+C        else
+C         DTDT(1)=(QSOLAR+QRAD+QCOND+QCONV)/WC(1)
+C        endif
+C        QEVAP=0.D0
+C       ELSE
 C       SNOW or WET SURFACE
 C       GETTING THE RELATIVE HUMIDITY FOR THIS POINT IN TIME
          RH = TAB('REL',TIME)
@@ -521,7 +521,7 @@ C       CHECKING FOR DIVIDE BY ZERO
          else
           DTDT(1)=(QSOLAR+QRAD+QCOND+QCONV-QEVAP)/WC(1)
          endif
-       ENDIF ! end check for wet surface
+c       ENDIF ! end check for wet surface
       endif ! end check for tide
 C     SETTING UP THE DEEP SOIL TEMPERATURE, TDS, FOR SOIL TRANSIENTS.
 C     (N=MM+1); N = # OF SOIL NODES SET UP IN 'DEP' ARRAY IN INPUT DATA

@@ -24,7 +24,7 @@ c     warning - this is all in SI units!
       double precision AIRVD,ALTT,BP,CP,DB,DENAIR,DP,E,EFFSUR,ESAT
       double precision HD,HTOVPR,MAXSHD,PSTD,PTWET,GWSURF
       double precision QEVAP,RH,RELHUM,RW,SABNEW,SHAYD,SURFVD
-      double precision TAIR,TSURF,TVIR 
+      double precision TAIR,TSURF,TVIR,WATER2
       double precision TVINC,VD,WATER,WB,WTRPOT,rainfall
       integer sat
 
@@ -66,7 +66,10 @@ C     CONVERTING TO THE FRACTION OF A UNIT SURFACE AREA THAT IS WET
       endif
 C     AMOUNT OF WATER EVAPORATED FROM THE SURFACE (KG/S)
       WATER = EFFSUR * HD *(SURFVD - AIRVD)  
-
+      WATER2 = HD *(SURFVD - AIRVD)
+      if(WATER2.lt.0)then
+      WATER=WATER2
+      endif
 C     FROM DRYAIR: LATENT HEAT OF VAPORIZATION 
 c      HTOVPR = 2.5012E+06 - 2.3787E+03 * TAIR
       if(TSURF.gt.0)then

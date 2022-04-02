@@ -58,12 +58,13 @@ C     VERSION 2 SEPT. 2000
       double precision snowdens,snowmelt,snowtemp,cursnow,qphase,melt,
      & sumphase,sumphase2,snowage,prevden,qphase2,sumlayer,densrat,
      & cummelted,melted,snowfall,rainmelt,cpsnow,netsnow,hcap,meltheat,
-     & layermass,xtrain,QFREZE,grasshade,MAXSURF
-      double precision Thconduct,Density,Spheat
+     & layermass,xtrain,QFREZE,grasshade,MAXSURF,LAMBDA_E_D,CE
+      double precision Thconduct,Density,Spheat,dew,Q_AIR,Q_STAR_AIR
+      DOUBLE PRECISION Q_STAR_SURF,S,SIGMA_Q,G,R_N,GAMMA,QCOND,ZP
 
       integer maxsnode2,maxsnode3,maxcount,js,numrun,rainhourly,hourly
       INTEGER I,IEND,IFINAL,ILOCT,IOUT,IPRINT,ITEST,trouble
-      INTEGER J,JULNUM,MM,DOY,N,NAIR,ND,NOUT,dew,writecsv,runsnow
+      INTEGER J,JULNUM,MM,DOY,N,NAIR,ND,NOUT,writecsv,runsnow
       INTEGER I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,slipped,sat
       INTEGER I91,I92,I93,I94,I95,I96,runmoist,evenrain,step,timestep
       INTEGER I97,I98,I99,I100,I101,I102,I103,I104,I105,I106,I107
@@ -1035,21 +1036,63 @@ c      get wave splash value and if greater than zero, override prev pctwet valu
        PTWET=tides(methour,3)
       endif
 
-      frosttest=(out(34)+out(4))/2.
-      if((QEVAP.lt.-0.0000025).and.(out(34).lt.0))then
-c    if((QEVAP.lt.-0.0000025).and.(out(4).lt.0))then
-c    if((out(34).lt.0))then
-c    if((QEVAP.lt.0).and.(frosttest.lt.0))then
+C	  CALCULATING DEWFALL
+c     caculations based on Garratt, J. R., & Segal, M. (1988). On the contribution of atmospheric moisture to dew formation. Boundary-Layer Meteorology, 45(3), 209–236. https://doi.org/10.1007/BF01066671
+c     NOTE: difference between this model and Garratt & Segal is that QCONV +VE means gain in this model and loss in Garratt and Segal
+      soiltemp(1)=OUT(4)
+      VEL2M=TAB('VEL',TIME)/(100.*60.)
+      RH = TAB('REL',TIME)
+      if(RH.gt.100.)then
+       RH= 100.
+      endif
+      CALL MICRO(HGTP,RUFP,ZH,D0,TAIR,soiltemp(1),VELR,QCONV,AMOL,
+     &NAIR,ZZ,VV,T,ZENR)
+      WB = 0.
+      DP = 999.
+C     BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
+C     EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
+      PSTD=101325.
+      PATMOS=PSTD*((1.-(0.0065*ALTT/288.))**(1./0.190284))
+      BP=PATMOS
+      CALL WETAIR (TAIR,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,
+     &      CP,WTRPOT)
+      Q_AIR=VD/DENAIR ! kg water / kg air, air specific humidity
+      RH=100.
+      CALL WETAIR (TAIR,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,
+     &      CP,WTRPOT)
+      Q_STAR_AIR=VD/DENAIR ! kg water / kg air, air saturated specific humidity
+      CALL WETAIR(soiltemp(1),WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,
+     &      DENAIR,CP,WTRPOT) 
+      Q_STAR_SURF=VD/DENAIR ! kg water / kg air, surface saturated specific humidity
+      S=(Q_STAR_SURF-Q_STAR_AIR)/(soiltemp(1)-TAIR) ! kg water / kg air / K, slope of saturation curve, EQ.5 FROM GARRATT ET AL 1988
+      if(soiltemp(1).gt.0)then
+       HTOVPR=2500.8-2.36*soiltemp(1)+0.0016*soiltemp(1)**2-0.00006
+     &*soiltemp(1)**3
+      else
+       HTOVPR=2834.1-0.29*soiltemp(1)-0.004*soiltemp(1)**2
+      endif
+      HTOVPR=HTOVPR*1000.D0 ! J / kg, latent heat of vapourisation
+      GAMMA=CP/HTOVPR ! kg water / kg air / K, psychometric constant
+      SIGMA_Q=Q_STAR_AIR-Q_AIR ! kg water / kg air, difference between saturated and actual specific humidity of air
+      R_N=(SOLR+QRAD)*4.185*10000./60. ! W / m2, net radiation
+      G=(SOLR+QRAD+QCONV-QEVAP)*4.185*10000./60. ! W / m2, soil heat flux (negative at night)
+      ZP=(RUFP/100.)/EXP(REAL(2.0)) ! m, 'analogous scaling length for property "p"', ln(z_0/z_p) = 2. in GARRATT ET AL 1988 p. 234
+      CE=(0.4**2.)/(LOG((HGTP/100.)/(RUFP/100.))*LOG((HGTP/100.)/ZP)) ! -, bulk transfer coefficient, eq. A10 FROM GARRATT ET AL 1988
+      LAMBDA_E_D=(S/(S+GAMMA))*(R_N-G)
+     & +(GAMMA/(S+GAMMA))*(DENAIR*HTOVPR*SIGMA_Q)*CE*VEL2M ! W, EQ. 6B FROM GARRATT ET AL 1988
+       DEW = -1.*LAMBDA_E_D/HTOVPR * 3600. ! kg / h / m2 = mm / h
+      IF((DEW.LT.0.).or.(cursnow.gt.0))THEN
+       DEW=0.
+      ENDIF
+
+C	  TESTING FOR FROST
+      if((cursnow.eq.0).and.(DEW.GT.0.).and.(out(34).lt.0))then
        FROST = 1
+       DEW = 0.
       else
        FROST = 0
       endif
 
-      if(QEVAP.lt.0)then
-       DEW = 1
-      else
-       DEW = 0
-      endif
 C     END OF OUTPUT SETUP
 
 

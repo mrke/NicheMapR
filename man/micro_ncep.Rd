@@ -112,6 +112,8 @@ An implementation of the NicheMapR microclimate model that integrates the RNCEP 
 \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
 \code{spatial}{ = NA, specify folder with local NCEP data (no trailing forward slash), goes to the web if NA }\cr\cr
+\code{scenario}{ = 0, climate change scenario from terraclimate (0 is historical, 2 is plus 2 deg C, 4 is plus 4 deg C }\cr\cr
+\code{terra_source}{ = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data", specify location of terraclimate data, goes to the web by default}\cr\cr
 \code{save}{ = 0, don't save forcing data (0), save the forcing data (1) or read previously saved data (2)}\cr\cr
 
 \strong{ General additional parameters:}\cr\cr
@@ -225,7 +227,7 @@ metout/shadmet variables:
 \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
 \item 13 SOLR - solar radiation (W/m2) (unshaded, adjusted for slope, aspect and horizon angle)
 \item 14 TSKYC - sky radiant temperature (°C)
-\item 15 DEW - dew presence (0 or 1)
+\item 15 DEW - dew fall (mm / h)
 \item 16 FROST - frost presence (0 or 1)
 \item 17 SNOWFALL - snow predicted to have fallen (cm)
 \item 18 SNOWDEP - predicted snow depth (cm)

@@ -181,7 +181,7 @@
 #' \item 12 ZEN - zenith angle of sun (degrees - 90 = below the horizon)
 #' \item 13 SOLR - solar radiation (W/m2) (unshaded, horizontal plane)
 #' \item 14 TSKYC - sky radiant temperature (°C)
-#' \item 15 DEW - dew presence (0 or 1)
+#' \item 15 DEW - dew fall (mm / h)
 #' \item 16 FROST - frost presence (0 or 1)
 #' \item 17 SNOWFALL - snow predicted to have fallen (cm)
 #' \item 18 SNOWDEP - predicted snow depth (cm)

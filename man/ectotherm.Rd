@@ -97,6 +97,8 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{maxshades}{ = micro$maxshade, Vector of daily maximum shade values - can be different to value used in microclimate model (e.g. to simulate use of fine-scale shade in a generally unshaded habitat) (\%)}\cr}
 \item{\code{fluid}{ = 0, Fluid type 0=air, 1=water }\cr}
 \item{\code{alpha_sub}{ = 1 - micro$REFL, Vector of daily substrate reflectances (0-1)}\cr}
+\item{\code{epsilon_sub}{ = 1, Emissivity of substrate (0-1)}\cr}
+\item{\code{epsilon_sky}{ = 1, Emissivity of sky (0-1)}\cr}
 \item{\code{DEP}{ = micro$DEP, Depths available from the microclimate model simulation}\cr}
 \item{\code{KS}{ = micro$KS[seq(1, 19, 2)], Depth-specific saturated hydraulic conductivity (kg s/m3) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
 \item{\code{b}{ = micro$BB[seq(1, 19, 2)], Depth-specific Campbell's b parameter (-) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
@@ -139,7 +141,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{eggshape_b}{ = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid }\cr}
 \item{\code{eggshape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
 \item{\code{eggmult }{ = 1 # multiply egg mass by clutch size for heat and water exchange calculations?}\cr}
-\item{\code{eggpct_cond}{ = 50, Percentage of egg surface contacting the substrate (\%)}\cr}
+\item{\code{pct_cond_egg}{ = 50, Percentage of egg surface contacting the substrate (\%)}\cr}
 }
 \strong{ Behavioural parameters:}
 
