@@ -212,7 +212,7 @@ metout/shadmet variables:
 \item 13 SOLR - solar radiation (W/m2) (unshaded, horizontal plane)
 \item 14 TSKYC - sky radiant temperature (°C)
 \item 15 DEW - dew fall (mm / h)
-\item 16 FROST - frost presence (0 or 1)
+\item 16 FROST - frost (mm / h)
 \item 17 SNOWFALL - snow predicted to have fallen (cm)
 \item 18 SNOWDEP - predicted snow depth (cm)
 \item 19 SNOWDENS - snow density (g/cm3)

@@ -37,7 +37,7 @@ C     VERSION 2 SEPT. 2000
       DOUBLE PRECISION TSKY,ARAD,CRAD,CLOD,CLOUD,CLR,SOLR,QRADVG,QRADGR
       DOUBLE PRECISION RCSP,HGTP,RUFP,BEGP,PRTP,ERRP,snowout,curmoist
      & ,soiltemp,SLEP,NONP,SUN,PLT,rainfall,curhumid,surflux,IRDown
-      DOUBLE PRECISION CLEAR,QRADSK,SIGP,TAIR,SRAD,QEVAP,frosttest,vel2m
+      DOUBLE PRECISION CLEAR,QRADSK,SIGP,TAIR,SRAD,QEVAP,vel2m
       DOUBLE PRECISION htovpr,water,gwsurf,EP,zz,vv,curroot2
       DOUBLE PRECISION melthresh,time3,err
 
@@ -60,7 +60,7 @@ C     VERSION 2 SEPT. 2000
      & cummelted,melted,snowfall,rainmelt,cpsnow,netsnow,hcap,meltheat,
      & layermass,xtrain,QFREZE,grasshade,MAXSURF,LAMBDA_E_D,CE
       double precision Thconduct,Density,Spheat,dew,Q_AIR,Q_STAR_AIR
-      DOUBLE PRECISION Q_STAR_SURF,S,SIGMA_Q,G,R_N,GAMMA,QCOND,ZP
+      DOUBLE PRECISION Q_STAR_SURF,S,SIGMA_Q,G,R_N,GAMMA,ZP
 
       integer maxsnode2,maxsnode3,maxcount,js,numrun,rainhourly,hourly
       INTEGER I,IEND,IFINAL,ILOCT,IOUT,IPRINT,ITEST,trouble
@@ -1087,10 +1087,10 @@ C     EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
 
 C	  TESTING FOR FROST
       if((cursnow.eq.0).and.(DEW.GT.0.).and.(out(34).lt.0))then
-       FROST = 1
+       FROST = DEW
        DEW = 0.
       else
-       FROST = 0
+       FROST = 0.
       endif
 
 C     END OF OUTPUT SETUP
