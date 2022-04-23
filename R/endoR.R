@@ -100,7 +100,6 @@
 #' \code{PCTEYES}{ = 0, # surface area made up by the eye (\%) - make zero if sleeping}\cr\cr
 #' \code{DELTAR}{ = 0, # offset between air temperature and breath (°C)}\cr\cr
 #' \code{RELXIT}{ = 100, # relative humidity of exhaled air, \%}\cr\cr
-#' \code{TIMACT}{ = 1, # multiplier on metabolic rate for activity costs}\cr\cr
 #' \code{RQ}{ = 0.80, # respiratory quotient (fractional, 0-1)}\cr\cr
 #' \code{EXTREF}{ = 20, # O2 extraction efficiency (\%)}\cr\cr
 #' \code{Q10}{ = 2, # Q10 factor for adjusting BMR for TC}\cr\cr
@@ -351,7 +350,6 @@ endoR <- function(
 
   # metabolism/respiration
   QBASAL = (70 * AMASS ^ 0.75) * (4.185 / (24 * 3.6)), # basal heat generation (W) from Kleiber (1947)
-  TIMACT = 1, # multiplier on metabolic rate for activity costs
   RQ = 0.80, # respiratory quotient (fractional, 0-1)
   EXTREF = 20, # O2 extraction efficiency (%)
   PANT_MAX = 5, # maximum breathing rate multiplier to simulate panting (-)
@@ -411,7 +409,8 @@ endoR <- function(
     NESTYP <- 0 # not yet used
     RoNEST <- 0 # not yet used
     BLANK <- 0 # spare input
-    SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, RESPIRE, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, PVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, PCTWET, TSKY, TVEG, TAREF, DELTAR, RQ, TIMACT, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AK1_MAX, AK1_INC, TC_MAX, TC_INC, TC_REF, Q10, QBASREF, PANT_MAX, PCTWET_MAX, PCTWET_INC, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, BLANK, ZFURCOMP, PANT_INC, ORIENT, SHAPE_C, XR, PANT_MULT, KSUB, THERMOREG)
+    BLANK2 <- 1 # spare input
+    SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, RESPIRE, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, PVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, PCTWET, TSKY, TVEG, TAREF, DELTAR, RQ, BLANK2, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AK1_MAX, AK1_INC, TC_MAX, TC_INC, TC_REF, Q10, QBASREF, PANT_MAX, PCTWET_MAX, PCTWET_INC, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, BLANK, ZFURCOMP, PANT_INC, ORIENT, SHAPE_C, XR, PANT_MULT, KSUB, THERMOREG)
     if(WRITE_INPUT == 1){
       write.csv(SOLVENDO.input, file = "SOLVENDO.input.csv")
     }

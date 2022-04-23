@@ -123,7 +123,6 @@ third raise core temperature, fourth pant and fifth sweat.
 \code{PCTEYES}{ = 0, # surface area made up by the eye (\%) - make zero if sleeping}\cr\cr
 \code{DELTAR}{ = 0, # offset between air temperature and breath (°C)}\cr\cr
 \code{RELXIT}{ = 100, # relative humidity of exhaled air, \%}\cr\cr
-\code{TIMACT}{ = 1, # multiplier on metabolic rate for activity costs}\cr\cr
 \code{RQ}{ = 0.80, # respiratory quotient (fractional, 0-1)}\cr\cr
 \code{EXTREF}{ = 20, # O2 extraction efficiency (\%)}\cr\cr
 \code{Q10}{ = 2, # Q10 factor for adjusting BMR for TC}\cr\cr

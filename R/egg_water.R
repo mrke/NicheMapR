@@ -9,7 +9,7 @@
 #' @param t time intervals (s) at which output is required
 #' @param m_init = 5.8 / 1000, mass of freshly laid egg (kg)
 #' @param psi_e_init = -707, water potential of freshly laid egg (J/kg)
-#' @param A_tot = 16.46 / 10000, total surface area (m3)
+#' @param A_tot = 16.46 / 10000, total surface area (m2)
 #' @param f_air = 0.5, fraction of egg surface exposed to air
 #' @param K_e = 1.12 * 60 * 24 / 1e6 / (3600 * 24 * 10), hydraulic conductance of egg (kg m-2 s-1 (J/kg)-1), converted from original μg cm-2 min-1 bar-1
 #' @param spec_hyd = 0.5, water potential-specific hydration (cm3 cm-3 bar-1)
@@ -87,8 +87,8 @@ egg_water <- function(t, y, indata) {
     psi_e <- as.numeric(y[2]) # J/kg, water potential of egg
 
     # derived parameters
-    A_e <- A_tot * f_air # cm2, surface area exposed to air
-    A_s <- A_tot * (1 - f_air) # cm2, surface area in contact with soil
+    A_e <- A_tot * f_air # m2, surface area exposed to air
+    A_s <- A_tot * (1 - f_air) # m2, surface area in contact with soil
 
     # evaporative exchange sub function
     egg_evap <- function(T_air, T_egg, RH, vel, elev, m, A_e, pct_wet){
@@ -129,7 +129,7 @@ egg_water <- function(t, y, indata) {
       rho_H2O_skin <- WETAIR(db = T_egg, rh = 100)$vd # vapour density of air, kg/m3
 
       # area wet
-      A_eff <- A_e * pct_wet / 100 # get effective wet area and convert to m2
+      A_eff <- A_e * pct_wet / 100 # get effective wet area
 
       # 'cutaneous' water loss rate
       E_cut <- A_eff * HD * (rho_H2O_skin - rho_H2O_air) # water loss rate, kg/s
@@ -141,7 +141,7 @@ egg_water <- function(t, y, indata) {
     RH <- RHsoilf(t) * 100 # %, relative humidity
     if(RH > 100){RH <- 100}
     if(RH < 0){RH <- 0}
-    m_a <- egg_evap(T_air, T_egg, RH, vel, elev, m, A_e, pct_wet) # kg/s, evaporative water exchange
+    m_a <- egg_evap(T_air, T_egg, RH, vel, elev, m, A_e, pct_wet) # kg/s, evapourative water exchange
 
     # liquid water exchange calculations
     psi_s <- min(0, PSIsoilf(t)) # interpolate water potential to current time, J/kg

@@ -105,7 +105,6 @@
 #' \code{PCTEYES}{ = 0, # surface area made up by the eye (\%) - make zero if sleeping}\cr\cr
 #' \code{DELTAR}{ = 0, # offset between air temperature and breath (°C)}\cr\cr
 #' \code{RELXIT}{ = 100, # relative humidity of exhaled air, \%}\cr\cr
-#' \code{TIMACT}{ = 1, # multiplier on metabolic rate for activity costs}\cr\cr
 #' \code{RQ}{ = 0.80, # respiratory quotient (fractional, 0-1)}\cr\cr
 #' \code{EXTREF}{ = 20, # O2 extraction efficiency (\%)}\cr\cr
 #' \code{Q10}{ = 2, # Q10 factor for adjusting BMR for TC}\cr\cr
@@ -356,7 +355,6 @@ endoR_devel <- function(
 
   # metabolism/respiration
   QBASAL = (70 * AMASS ^ 0.75) * (4.185 / (24 * 3.6)), # basal heat generation (W) from Kleiber (1947)
-  TIMACT = 1, # multiplier on metabolic rate for activity costs
   RQ = 0.80, # respiratory quotient (fractional, 0-1)
   EXTREF = 20, # O2 extraction efficiency (%)
   PANT_MAX = 5, # maximum breathing rate multiplier to simulate panting (-)
@@ -668,7 +666,7 @@ endoR_devel <- function(
       TOL <- AMASS * 0.01
 
       ZBRENT.in <- c(TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG, GMASS, EXTREF, RH,
-                     RELXIT, TIMACT, TAEXIT, QSUM, PANT, R_PCO2)
+                     RELXIT, 1.0, TAEXIT, QSUM, PANT, R_PCO2)
       # call ZBRENT subroutine which calls RESPFUN
       ZBRENT.out <- ZBRENT_ENDO(QM1, QM2, TOL, ZBRENT.in)
       colnames(ZBRENT.out) <- c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")

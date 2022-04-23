@@ -13,7 +13,7 @@ ode(y = c(m_init, psi_e_init), times = t, func = egg_water, parms = indata)
 
 \item{psi_e_init}{= -707, water potential of freshly laid egg (J/kg)}
 
-\item{A_tot}{= 16.46 / 10000, total surface area (m3)}
+\item{A_tot}{= 16.46 / 10000, total surface area (m2)}
 
 \item{f_air}{= 0.5, fraction of egg surface exposed to air}
 
