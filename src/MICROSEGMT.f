@@ -78,7 +78,7 @@ C     ZH2=30.    13.                  60.          25
       PSI1(X)=2.*DLOG((1.+X)/2.)+DLOG((1.+X*X)/2.)-2.*ATAN(X)+3.14159/2
       PSI2(X)=2.*DLOG((1.+X*X)/2.)
       GAM=16.
-      RCPTKG=6.003E-8 !RHO*CP*T/(K*G) = 6.003E-8 IN CAL-MIN-CM-C UNITS
+      RCPTKG=6.003D-8 !RHO*CP*T/(K*G) = 6.003D-8 IN CAL-MIN-CM-C UNITS
       DUM2=DLOG(Z/Z01+1)
 
 C     COMPUTING VEL. PROFILE PARAMETERS FROM 200 CM REFERENCE VELOCITY
@@ -119,7 +119,7 @@ C
 C
       AMOLN=RCPTKG*USTAR**3/QC
       DEL=ABS((AMOLN-AMOL)/AMOL)
-      IF (DEL .LT. 1.0E-02) THEN
+      IF (DEL .LT. 1.0D-02) THEN
        GO TO 2
       ELSE
       ENDIF

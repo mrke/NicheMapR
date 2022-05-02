@@ -150,17 +150,17 @@ c     # lower boundary condition set to saturated (stays constant)
       H(M+1)=1. ! humidity
       W(M+1)=WS(M+1) ! water content
       WN(M+1)=WS(M+1) ! water content
-      Z(1)=-1E10 ! depth at node 1, m
-      Z(M+1)=1E20 ! depth at deepest node, m
+      Z(1)=-1D10 ! depth at node 1, m
+      Z(M+1)=1D20 ! depth at deepest node, m
       K(M+1)=KS(M)*(PE(M)/P(M+1))**N(M+1) ! lower boundary conductivity
 
 c     initialize root water uptake variables
       do 98 I=2,M
-       if(L(I).gt.0)then
+       if(L(I).gt.0.)then
         RR(I)=2*RW/(L(I)*(Z(I+1)-Z(I-1))) ! root resistance
         BZ(I)=(1-M)*LOG(PI*R1*R1*L(I))/(2*PI*L(I)*(Z(I+1)-Z(I-1)))
        else
-        RR(I)=1E+20 ! root resistance
+        RR(I)=1D+20 ! root resistance
         BZ(I)=0.D0
        endif
 98    continue
@@ -237,7 +237,7 @@ c      # mass balance
 c     # Thomas algorithm (Gauss elimination)
       do 5 I=2,(M-1)
        C(I)=C(I)/B(I)
-       if(C(I).lt.1e-8)then
+       if(C(I).lt.1D-8)then
         C(I)=0.D0
        endif
        F(I)=F(I)/B(I)

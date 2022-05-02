@@ -121,10 +121,10 @@ C     Nodes(max node depth,subst type) are real numbers. The number to the left 
         DEPP(9)=0.D0
        endif
        do 555 i=1,8
-        if(snode(i).lt.1e-8)then
+        if(snode(i).lt.1D-8)then
          t(i)=t(1)
          tt(i)=tt(1)
-         if((snode(8).lt.1e-8).and.(cursnow.lt.1e-8))then
+         if((snode(8).lt.1D-8).and.(cursnow.lt.1D-8))then
           t(9)=t(1)
           tt(9)=tt(1)
          endif
@@ -258,16 +258,16 @@ C       mass*specific heat product (per unit area)
          RCSP=DENDAY(1)*SPDAY(1)
          WC(1)=RCSP*DEPP(2)/2.
          SOK=TKDAY(1)
-         if(DEPP(2).lt.1e-8)then
+         if(DEPP(2).lt.1D-8)then
           C(1)=0.D0
          else
           C(1)=SOK/DEPP(2)
          endif
         else
-         if((depp(i+1).gt.1e-8).or.(i.eq.18))then
+         if((depp(i+1).gt.1D-8).or.(i.eq.18))then
 C         mass*specific heat product (per unit area)
           RCSP = DENDAY(I)*SPDAY(I)
-          if((depp(i).lt.1e-8).and.(maxsnode1.gt.0))then
+          if((depp(i).lt.1D-8).and.(maxsnode1.gt.0))then
            WC(I)=RCSP*DEPP(9-maxsnode2)
           else
            WC(I)=RCSP*(DEPP(I+1)-DEPP(I-1))/2.
@@ -426,7 +426,7 @@ c      TSKY=((QRADSK + QRADVG)/(SIGP))**(1./4.)-273
 c     change for snow - check what node is to be used for conduction, will be node 10 if no snow
        j=1
        do 1103 i=2,18
-        if(density(i-1).lt.1e-8)then
+        if(density(i-1).lt.1D-8)then
          j=j+1
         endif
 1103   continue

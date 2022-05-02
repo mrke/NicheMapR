@@ -126,9 +126,9 @@ c    # standard sea level air pressure, Pa
 c    # deg K
        T_K=TSOI(i)+273.15
 c    # W/mC thermal conductivity of dry air (equation 9 in Campbell et al. 1994)
-       k_a=0.024+7.73e-5*TSOI(i)-2.6e-8*TSOI(i)**2
+       k_a=0.024+7.73D-5*TSOI(i)-2.6D-8*TSOI(i)**2
 c    # W/mC thermal conductivity of water (equation 8 in Campbell et al. 1994)
-       k_w=0.554+2.24e-3*TSOI(i)-9.87e-6*TSOI(i)**2
+       k_w=0.554+2.24D-3*TSOI(i)-9.87D-6*TSOI(i)**2
 c    # W/mC thermal conductivity of minerals (value of 2.5 suggested from Campbell and Norman 1998, Table 8.2)
 c      k_m= 2.5
 
@@ -138,7 +138,7 @@ c    # air pressure
 c    # relative humidity
        hr=1.0
 c    # vapour diffusivity in air (m2/s), standard value at 0 deg C and sea level pressure (Campbell et al. 1994)
-       D_v0=2.12e-5
+       D_v0=2.12D-5
 c    # molar density of air (mol/m3), standard value at 0 deg C and sea level pressure (Campbell et al. 1994)
        rho_hat0=44.65
 c    # temperature/pressure-corrected vapour diffusivity in air (m2/s) (p. 309 in Campbell et al. 1994)
@@ -223,7 +223,7 @@ c     Convert specific heats from J/kg-K to cal/g-K for DSUB'S Microclimate calc
        Spheat(i)=Spheat(i)/4186.
 c     Convert densities from kg/m3 to g/cm3 for DSUB'S Microclimate calculations
 C     1 kg/m3 * 1000g/1 kg * 1 m3/1000000.
-       Density(i)=Density(i)/1.0E+3
+       Density(i)=Density(i)/1.0D+3
 2     continue
 
       if(runsnow.eq.1)then
@@ -257,7 +257,7 @@ C     1 kg/m3 * 1000g/1 kg * 1 m3/1000000.
          endif
          ! now only give layers with snow the density of snow, otherwise zero (which means they have no influence)
          if((snode(i).gt.0).or.
-     &    (((snode(i).lt.1e-8).and.(snode(min(8,i+1)).gt.0))))then
+     &    (((snode(i).lt.1D-8).and.(snode(min(8,i+1)).gt.0))))then
           Density(i)=snowdens
          else
           Density(i)=0.D0

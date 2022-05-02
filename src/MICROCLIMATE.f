@@ -210,7 +210,7 @@ c    Variable soil properties data from Iomet1
       DATA MINUTES/0,60,120,180,240,300,360,420,480,540,600,660,720,780
      &    ,840,900,960,1020,1080,1140,1200,1260,1320,1380,1440/
       MAXSURF = 95.
-C     SIG=.8126E-10     1
+C     SIG=.8126D-10     1
 C     RCS=.5            2
 C     STC=.05
 C     SSA=.7            4

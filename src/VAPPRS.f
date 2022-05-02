@@ -1,46 +1,45 @@
-      FUNCTION VAPPRS(DB)
+      function vapprs(db)
 
-C     NICHEMAPR: SOFTWARE FOR BIOPHYSICAL MECHANISTIC NICHE MODELLING
+C     NicheMapR: software for biophysical mechanistic niche modelling
 
-C     COPYRIGHT (C) 2018 MICHAEL R. KEARNEY AND WARREN P. PORTER
+C     Copyright (C) 2018 Michael R. Kearney and Warren P. Porter
 
-C     THIS PROGRAM IS FREE SOFTWARE: YOU CAN REDISTRIBUTE IT AND/OR MODIFY
-C     IT UNDER THE TERMS OF THE GNU GENERAL PUBLIC LICENSE AS PUBLISHED BY
-C     THE FREE SOFTWARE FOUNDATION, EITHER VERSION 3 OF THE LICENSE, OR (AT
-C      YOUR OPTION) ANY LATER VERSION.
+c     This program is free software: you can redistribute it and/or modify 
+c     it under the terms of the GNU General Public License as published by 
+c     the Free Software Foundation, either version 3 of the License, or (at
+c      your option) any later version.
 
-C     THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT
-C     WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
-C     MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. SEE THE GNU
-C     GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+c     This program is distributed in the hope that it will be useful, but
+c     WITHOUT ANY WARRANTY; without even the implied warranty of 
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+c     General Public License for more details.
 
-C     YOU SHOULD HAVE RECEIVED A COPY OF THE GNU GENERAL PUBLIC LICENSE
-C     ALONG WITH THIS PROGRAM. IF NOT, SEE HTTP://WWW.GNU.ORG/LICENSES/.
+c     You should have received a copy of the GNU General Public License 
+c     along with this program. If not, see http://www.gnu.org/licenses/.
 
-      IMPLICIT NONE
+c     Subroutine wetair calculates several properties of humid air.  
+c     This version was taken from 
+c     Tracy, C. R., W. R. Welch, B. Pinshow, M. R. Kearney, and W. P. 
+c     Porter. 2016. Properties of air: A manual for use in biophysical ecology. 
+c     5th edition. The University of Wisconsin, Madison. 
+c     which is available as a vignette in the NicheMapR package
 
-      DOUBLE PRECISION DB,ESTAR,LOGE,T,VAPPRS
-C     TEMPERATURE LIMITS ON DB
-      IF (DB .GT. 100.) THEN
-       DB = 100.
-      ELSE
-       IF (DB .LT. -40.) THEN
-        DB = -40.
-       ELSE
-       CONTINUE
-       ENDIF
-      ENDIF
-      T=DB+273.16
-      IF (T .LE. 273.16) GO TO 20
-      LOGE=-7.90298*(373.16/T-1.)+5.02808*DLOG10(373.16/T)-1.3816E-07
-     &*(10.**(11.344*(1.-T/373.16))-1.)+8.1328E-03*(10.**(-3.49149*
-     &(373.16/T-1.))-1.)+ALOG10(1013.246)
-      ESTAR=(10.**LOGE)*100
-      GO TO 30
-20    LOGE=-9.09718*(273.16/T-1.)-3.56654*DLOG10(273.16/T)+.876793*
-     & (1.-T/273.16)+ALOG10(6.1071)
-       ESTAR=(10.**LOGE)*100.
-30    CONTINUE
-      VAPPRS=ESTAR
-      RETURN
-      END
+      implicit none
+      double precision loge,t,db,estar,vapprs
+      t=db+273.16 
+      if (t .le. 273.16)go to 20 
+      loge=-7.90298*(373.16/t-1.)+5.02808*   
+     x dlog10(373.16/t)-1.3816D-07 
+     x *(10.**(11.344*(1.-t/373.16))-1.)+8.1328D-03 
+     x *(10.**(-3.49149* 
+     x (373.16/t-1.))-1.)+log10(1013.246)
+      estar=(10.**loge)*100  
+      go to 30   
+20    loge=-9.09718*(273.16/t-1.)-3.56654*   
+     x dlog10(273.16/t)+.876793*  
+     x (1.-t/273.16)+log10(6.1071)   
+      estar=(10.**loge)*100. 
+30    continue   
+      vapprs=estar   
+      return 
+      end
