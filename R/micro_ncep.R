@@ -934,6 +934,14 @@ micro_ncep <- function(
         TAIRhr_orig <- TAIRhr
         yearstodo <- seq(ystart, yfinish)
         nyears <- yfinish - ystart + 1
+        if(yfinish > 2015){
+          ystart_terra <- 2015 - nyears
+          yfinish_terra <- 2015
+          message(paste0("terraclimate climate change scenarios are for 1985 to 2015 - using ", ystart, "-", yfinish), '\n')
+        }else{
+          ystart_terra <- ystart
+          yfinish_terra <- yfinish
+        }
         leapyears <- seq(1900, 2060, 4)
         message("generate climate change scenario", '\n')
         # diff spline function
@@ -998,12 +1006,12 @@ micro_ncep <- function(
           return(sp_diff)
         }
 
-        terra <- as.data.frame(get_terra(ystart = ystart, yfinish = yfinish, source = terra_source))
+        terra <- as.data.frame(get_terra(ystart = ystart_terra, yfinish = yfinish_terra, source = terra_source))
         if(scenario == 4){
-          terra_cc <- as.data.frame(get_terra(ystart = ystart, yfinish = yfinish, scenario = 4, source = terra_source))
+          terra_cc <- as.data.frame(get_terra(ystart = ystart_terra, yfinish = yfinish_terra, scenario = 4, source = terra_source))
         }
         if(scenario == 2){
-          terra_cc <- as.data.frame(get_terra(ystart = ystart, yfinish = yfinish, scenario = 2, source = terra_source))
+          terra_cc <- as.data.frame(get_terra(ystart = ystart_terra, yfinish = yfinish_terra, scenario = 2, source = terra_source))
         }
 
         tmin_diffs <- terra_cc$TMINN - terra$TMINN
@@ -1076,7 +1084,7 @@ micro_ncep <- function(
       RHhr[RHhr < 0] <- 0
       if(scenario != 0){
        VPDhr <- WETAIR(db = TAIRhr_orig, rh = 100)$e - WETAIR(db = TAIRhr_orig, rh = RHhr)$e
-       VPDhr <- VPDhr * VPD_diff
+       VPDhr <- VPDhr - mean(VPD_diff) # note using mean here because otherwise can lead to unrealistically low RH which then stronly affects TSKY
        e <- WETAIR(db = TAIRhr, rh = 100)$e - VPDhr
        es <- WETAIR(db = TAIRhr, rh = 100)$esat
        RHhr <- (e / es) * 100

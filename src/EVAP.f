@@ -81,7 +81,7 @@ c     convert qevap to cal/min/cm2 for dsub
        QEVAP = WATER * HTOVPR / 4.184 * 60. / 10000.  
       endif
 C     KG/S TO G/S 
-      GWSURF  = WATER * 1000. D0
+      GWSURF  = WATER * 1000.D0
 c     don't lose water if heat is just going into melting snow
       if(TSURF.le.0)then
        gwsurf=0.D0
