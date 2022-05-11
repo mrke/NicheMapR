@@ -18,31 +18,31 @@ knitr::kable(head(micro$soil[, 1:12], 2), digits = 2)
 ## ---- message=FALSE, warnings=FALSE, fig.width=7, fig.height=6----------------
 require(lattice, quietly = TRUE)
 soil <- as.data.frame(micro$soil) # get the soil data
-minshade <- micro$minshade # get the value for minimum shade
+minshade <- micro$minshade[1] # get the value for minimum shade
 with(subset(soil, DOY==196 | DOY==349), {xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)", auto.key = list(columns = 5), as.table = TRUE, type = "b", main = paste(minshade,"% shade"))})
 
 ## ---- message=FALSE, warnings=FALSE, fig.width=7, fig.height=6----------------
 micro <- micro_global(loc = longlat, runshade = 0, minshade = 50)
 soil <- as.data.frame(micro$soil) # get the soil data
-minshade<-micro$minshade # get the value for minimum shade
+minshade<-micro$minshade[1] # get the value for minimum shade
 with(subset(soil, DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type = "b", main = paste(minshade, "% shade"))})
 
 ## ---- message=FALSE, warnings=FALSE, fig.width=7, fig.height=6----------------
 micro <- micro_global(loc = longlat, runshade = 0, minshade = 0, slope = 45, aspect = 180)
 soil <- as.data.frame(micro$soil) # get the soil data
-minshade <- micro$minshade # get the value for minimum shade
+minshade <- micro$minshade[1] # get the value for minimum shade
 with(subset(soil, DOY==196 | DOY==349), {xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type = "b", main = paste(minshade, "% shade, 45 degree slope, 180 degrees aspect"))})
 
 ## ---- message=FALSE, warnings=FALSE, fig.width=7, fig.height=6----------------
 micro <- micro_global(loc = longlat, runshade = 0, minshade = 0, hori = c(0, 0, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 0, 0, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65))
 soil <- as.data.frame(micro$soil) # get the soil data
-minshade <- micro$minshade # get the value for minimum shade
+minshade <- micro$minshade[1] # get the value for minimum shade
 with(subset(soil,DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)", auto.key = list(columns = 5), as.table = TRUE, type = "b", main=paste(minshade,"% shade, north-south gully"))})
 
 ## ---- message=FALSE, warnings=FALSE, fig.width=7, fig.height=6----------------
 micro <- micro_global(runshade = 0, minshade = 0, soiltype = 0)
 soil <- as.data.frame(micro$soil) # get the soil data
-minshade <- micro$minshade # get the value for minimum shade
+minshade <- micro$minshade[1] # get the value for minimum shade
 with(subset(soil, DOY==196 | DOY==349), {xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)",  auto.key = list(columns = 5), as.table = TRUE, type = "b", main = paste(minshade, "% shade, rock substrate"))})
 
 ## ---- message=FALSE, warnings=FALSE-------------------------------------------
@@ -62,7 +62,7 @@ knitr::kable(head(micro$shadhumid[, 10:12], 2))
 
 ## ---- message=FALSE, warnings=FALSE, fig.width=7, fig.height=6----------------
 soilmoist <- as.data.frame(micro$soilmoist) # get the minimum shade soil moisture output
-minshade <- micro$minshade # get the value for minimum shade
+minshade <- micro$minshade[1] # get the value for minimum shade
 # append dates
 days <- rep(seq(1, 12), 24)
 days <- days[order(days)]
@@ -79,7 +79,7 @@ for(i in 1:10){
 ## ---- message=FALSE, warnings=FALSE, fig.width=7, fig.height=6----------------
 micro<-micro_global(loc = longlat, runmoist = 1, soiltype = 11)
 soilmoist<-as.data.frame(micro$soilmoist) # get the minimum shade soil moisture output
-minshade<-micro$minshade # get the value for minimum shade
+minshade<-micro$minshade[1] # get the value for minimum shade
 # append dates
 days<-rep(seq(1,12),24)
 days<-days[order(days)]
@@ -98,7 +98,7 @@ for(i in 1:10){
 nyears<-5
 micro<-micro_global(loc = longlat, runmoist = 1, soiltype = 11, nyears = nyears)
 soilmoist<-as.data.frame(micro$soilmoist) # get the minimum shade soil moisture output
-minshade<-micro$minshade # get the value for minimum shade
+minshade<-micro$minshade[1] # get the value for minimum shade
 # append dates
 days<-rep(seq(1,12*nyears)/12,24)
 days<-days[order(days)]
@@ -117,7 +117,7 @@ for(i in 1:10){
 timeinterval <- 365
 micro <- micro_global(loc = longlat, runmoist = 1, soiltype = 11, timeinterval = timeinterval)
 soilmoist <- as.data.frame(micro$soilmoist)  # get the minimum shade soil moisture output
-minshade <- micro$minshade  # get the value for minimum shade
+minshade <- micro$minshade[1]  # get the value for minimum shade
 # append dates
 days <- rep(seq(1, timeinterval), 24)
 days <- days[order(days)]
@@ -133,7 +133,7 @@ for (i in 1:10) {
 
 ## ---- message=FALSE, warnings=FALSE, fig.width=7, fig.height=6----------------
 soil <- as.data.frame(micro$soil)  # get the minimum shade soil temperature output
-minshade <- micro$minshade  # get the value for minimum shade
+minshade <- micro$minshade[1]  # get the value for minimum shade
 # append dates
 days <- rep(seq(1, timeinterval), 24)
 days <- days[order(days)]
@@ -153,7 +153,7 @@ nyears <- 2  # running two years, first one acting as a 'burn in' year and disca
 micro <- micro_global(loc = longlat, runmoist = 1, snowmodel = 1, timeinterval = timeinterval, nyears = 2)
 soil <- as.data.frame(micro$soil)[(365 * 24 + 1):(365 * 24 * nyears), ]  # get the minimum shade soil temperature output, discarding the first year
 metout <- as.data.frame(micro$metout)[(365 * 24 + 1):(365 * 24 * nyears), ]  # get the minimum shade above ground conditions, discarding the first year
-minshade <- micro$minshade  # get the value for minimum shade
+minshade <- micro$minshade[1]  # get the value for minimum shade
 # append dates
 days <- rep(seq(366, timeinterval * nyears), 24)
 days <- days[order(days)]
@@ -183,7 +183,7 @@ timeinterval<-365
   tides[1:(timeinterval*nyears*24),1]<-mocktides # put the mock tides in the tides vector, column 1
 micro<-micro_global(loc=longlat, shore = 1, soiltype = 0, timeinterval = timeinterval, nyears = nyears, tides = tides)
 soil<-as.data.frame(micro$soil) # get the minimum shade soil temperature output first year
-minshade<-micro$minshade # get the value for minimum shade
+minshade<-micro$minshade[1] # get the value for minimum shade
 # append dates
 days<-rep(seq(1,timeinterval),24)
 days<-days[order(days)]
