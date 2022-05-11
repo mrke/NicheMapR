@@ -21,19 +21,21 @@
 #' @export
 get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish = 2015, source = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data"){
   library(ncdf4)
+  errors <- 0
   if(!(scenario %in% c(0, 2, 4))){
     message('ERROR: scenario must be either 0 (historical), 2 (plus 2) or 4 (plus 4) \n')
-    break
+    errors <- 1
   }
   maxyear <- as.numeric(substr(Sys.time(), start = 1, stop = 4)) - 2
   if(ystart < 1958 | ystart > maxyear){
     message(paste0('ERROR: data only available for years 1958 to ', maxyear, ' \n'))
-    break
+    errors <- 1
   }
   if(scenario %in% c(2, 4) & (ystart < 1985 | yfinish > 2015)){
     message('ERROR: climate change scenarios only available for years 1985 to 2015 \n')
-    break
+    errors <- 1
   }
+  if(errors != 1){
   nyears <- yfinish - ystart + 1
   yearlist <- seq(ystart, yfinish)
   count <- c(1, 1, -1)
@@ -207,4 +209,5 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
     output <- cbind(TMINN, TMAXX, RAINFALL, VPD, SRAD, SoilMoist)
   }
   return(output)
+  }
 }
