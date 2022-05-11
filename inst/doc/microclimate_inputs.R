@@ -89,6 +89,7 @@ tabl <- "
 DEP                       | cm                | 0-1000            | vector of 10 depths$^1$
 ERR                       | -                 | >0                | integrator error (typically 1.5-2)
 tannul                    | &deg;C            | -80 - +60         | annual mean temperature
+spinup                    | -                 | 0 or 1            | repeate first day's simulation for steady state?
 soilinit                  | &deg;C            | -80 - +60         | initial substrate temperature profile$^1$
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion

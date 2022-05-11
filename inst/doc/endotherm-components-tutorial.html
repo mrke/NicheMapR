@@ -12,11 +12,23 @@
 
 <meta name="author" content="Michael Kearney" />
 
-<meta name="date" content="2022-03-27" />
+<meta name="date" content="2022-05-11" />
 
 <title>Endotherm Model Tutorial II: component functions</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -26,6 +38,7 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
+
 
 
 <style type="text/css">
@@ -127,7 +140,187 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -139,15 +332,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<h1 class="title toc-ignore">Endotherm Model Tutorial II: component functions</h1>
+<h1 class="title toc-ignore">Endotherm Model Tutorial II: component
+functions</h1>
 <h4 class="author">Michael Kearney</h4>
-<h4 class="date">2022-03-27</h4>
+<h4 class="date">2022-05-11</h4>
 
 
 
 <div id="overview" class="section level2">
 <h2>Overview</h2>
-<p>This document provides an overview of an R implementation of the NicheMapR endotherm model, via the sub-functions of ‘endoR’ and ‘endoR_devel’. This implementation modularises the original version such that many of the internal subroutines and functions can be called separately. The idea is that the user has more flexibility in setting the model up for the behavioural and physiological responses of a particular animal. All the underlying theory, equations and subroutines are described in <a href="endotherm-model-equations.html">Endotherm Theory Tutorial</a>. Also the <a href="endotherm-model-tutorial.html">Endotherm Model Tutorial</a> shows how to use ‘endoR’ (and ‘endoR_devel’) as a whole.</p>
+<p>This document provides an overview of an R implementation of the
+NicheMapR endotherm model, via the sub-functions of ‘endoR’ and
+‘endoR_devel’. This implementation modularises the original version such
+that many of the internal subroutines and functions can be called
+separately. The idea is that the user has more flexibility in setting
+the model up for the behavioural and physiological responses of a
+particular animal. All the underlying theory, equations and subroutines
+are described in <a href="endotherm-model-equations.html">Endotherm
+Theory Tutorial</a>. Also the <a href="endotherm-model-tutorial.html">Endotherm Model Tutorial</a> shows
+how to use ‘endoR’ (and ‘endoR_devel’) as a whole.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(NicheMapR)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotrix)</span></code></pre></div>
@@ -156,7 +359,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2>Running the separate subroutines</h2>
 <div id="irprop" class="section level3">
 <h3>IRPROP</h3>
-<p>This subroutine computes the three parameters needed for computing conduction and infrared radiation through the fur.</p>
+<p>This subroutine computes the three parameters needed for computing
+conduction and infrared radiation through the fur.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># environmental input</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>TA <span class="ot">&lt;-</span> <span class="dv">20</span>  <span class="co"># air temperature, for calculation of conductivity of air (°C)</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -178,7 +382,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>KHAIR <span class="ot">&lt;-</span> <span class="fl">0.209</span>  <span class="co"># hair thermal conductivity (W/m°C)</span></span>
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co"># call the subroutine</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>IRPROP.out <span class="ot">&lt;-</span> <span class="fu">IRPROP</span>(TA, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, </span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>IRPROP.out <span class="ot">&lt;-</span> <span class="fu">IRPROP</span>(TA, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD,</span>
 <span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    ZFURV, RHOD, RHOV, REFLD, REFLV, ZFURCOMP, PVEN, KHAIR)</span>
 <span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co"># output</span></span>
@@ -193,12 +397,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>FURTST <span class="ot">&lt;-</span> IRPROP.out[<span class="dv">25</span>]  <span class="co"># test of presence of fur (length x diameter x density x depth) (-)</span></span>
 <span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>KFURCMPRS <span class="ot">&lt;-</span> IRPROP.out[<span class="dv">26</span>]  <span class="co"># effective thermal conductivity of compressed ventral fur (W/mK)</span></span>
 <span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>IRPROP.lab <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;KEFARA mean&quot;</span>, <span class="st">&quot;KEFARA dorsal&quot;</span>, <span class="st">&quot;KEFARA ventral&quot;</span>, </span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;BETARA mean&quot;</span>, <span class="st">&quot;BETARA dorsal&quot;</span>, <span class="st">&quot;BETARA ventral&quot;</span>, <span class="st">&quot;B1ARA mean&quot;</span>, </span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;B1ARA dorsal&quot;</span>, <span class="st">&quot;B1ARA ventral&quot;</span>, <span class="st">&quot;DHAR mean&quot;</span>, <span class="st">&quot;DHAR dorsal&quot;</span>, </span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;DHAR ventral&quot;</span>, <span class="st">&quot;LHAR mean&quot;</span>, <span class="st">&quot;LHAR dorsal&quot;</span>, <span class="st">&quot;LHAR ventral&quot;</span>, </span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;RHOAR mean&quot;</span>, <span class="st">&quot;RHOAR dorsal&quot;</span>, <span class="st">&quot;RHOAR ventral&quot;</span>, <span class="st">&quot;ZZFUR mean&quot;</span>, </span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;ZZFUR dorsal&quot;</span>, <span class="st">&quot;ZZFUR ventral&quot;</span>, <span class="st">&quot;REFLFR mean&quot;</span>, <span class="st">&quot;REFLFR dorsal&quot;</span>, </span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>IRPROP.lab <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;KEFARA mean&quot;</span>, <span class="st">&quot;KEFARA dorsal&quot;</span>, <span class="st">&quot;KEFARA ventral&quot;</span>,</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;BETARA mean&quot;</span>, <span class="st">&quot;BETARA dorsal&quot;</span>, <span class="st">&quot;BETARA ventral&quot;</span>, <span class="st">&quot;B1ARA mean&quot;</span>,</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;B1ARA dorsal&quot;</span>, <span class="st">&quot;B1ARA ventral&quot;</span>, <span class="st">&quot;DHAR mean&quot;</span>, <span class="st">&quot;DHAR dorsal&quot;</span>,</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;DHAR ventral&quot;</span>, <span class="st">&quot;LHAR mean&quot;</span>, <span class="st">&quot;LHAR dorsal&quot;</span>, <span class="st">&quot;LHAR ventral&quot;</span>,</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;RHOAR mean&quot;</span>, <span class="st">&quot;RHOAR dorsal&quot;</span>, <span class="st">&quot;RHOAR ventral&quot;</span>, <span class="st">&quot;ZZFUR mean&quot;</span>,</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;ZZFUR dorsal&quot;</span>, <span class="st">&quot;ZZFUR ventral&quot;</span>, <span class="st">&quot;REFLFR mean&quot;</span>, <span class="st">&quot;REFLFR dorsal&quot;</span>,</span>
 <span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;REFLFR ventral&quot;</span>, <span class="st">&quot;FURTST&quot;</span>, <span class="st">&quot;KFURCMPRS&quot;</span>)</span>
 <span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">cbind</span>(IRPROP.lab, IRPROP.out[<span class="dv">1</span><span class="sc">:</span><span class="dv">26</span>]))</span></code></pre></div>
 <table>
@@ -315,43 +519,48 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 </tbody>
 </table>
-<p>Example analysis of fur diameter on effective thermal conductivity of fur.</p>
+<p>Example analysis of fur diameter on effective thermal conductivity of
+fur.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>DHAIRs <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">150</span>, <span class="dv">2</span>)  <span class="co"># hair diameters (micrometers)</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>KEFARAs <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(DHAIRs)) {</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    KEFARAs[i] <span class="ot">&lt;-</span> <span class="fu">IRPROP</span>(TA, DHAIRs[i] <span class="sc">*</span> <span class="fl">1e-06</span>, DHAIRs[i] <span class="sc">*</span> <span class="fl">1e-06</span>, </span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    KEFARAs[i] <span class="ot">&lt;-</span> <span class="fu">IRPROP</span>(TA, DHAIRs[i] <span class="sc">*</span> <span class="fl">1e-06</span>, DHAIRs[i] <span class="sc">*</span> <span class="fl">1e-06</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV,</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        ZFURCOMP, PVEN, KHAIR)[<span class="dv">1</span>]</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(KEFARAs <span class="sc">~</span> DHAIRs, <span class="at">type =</span> <span class="st">&quot;p&quot;</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">ylab =</span> <span class="st">&quot;effective fur conductivity, W K-1 m-1&quot;</span>, </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(KEFARAs <span class="sc">~</span> DHAIRs, <span class="at">type =</span> <span class="st">&quot;p&quot;</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">ylab =</span> <span class="st">&quot;effective fur conductivity, W K-1 m-1&quot;</span>,</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab =</span> <span class="st">&quot;hair diameter, um&quot;</span>)</span></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
-<p>Example analysis of fur density on effective thermal conductivity of fur.</p>
+<p>Example analysis of fur density on effective thermal conductivity of
+fur.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>RHOs <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">50000</span>, <span class="dv">500</span>)  <span class="co"># hair densities (1/cm2)</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>KEFARAs <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(RHOs)) {</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    KEFARAs[i] <span class="ot">&lt;-</span> <span class="fu">IRPROP</span>(TA, DHAIRD, DHAIRV, LHAIRD, LHAIRV, </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        ZFURD, ZFURV, RHOs[i] <span class="sc">*</span> <span class="dv">10000</span>, RHOs[i] <span class="sc">*</span> <span class="dv">10000</span>, REFLD, </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    KEFARAs[i] <span class="ot">&lt;-</span> <span class="fu">IRPROP</span>(TA, DHAIRD, DHAIRV, LHAIRD, LHAIRV,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        ZFURD, ZFURV, RHOs[i] <span class="sc">*</span> <span class="dv">10000</span>, RHOs[i] <span class="sc">*</span> <span class="dv">10000</span>, REFLD,</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        REFLV, ZFURCOMP, PVEN, KHAIR)[<span class="dv">1</span>]</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(KEFARAs <span class="sc">~</span> RHOs, <span class="at">type =</span> <span class="st">&quot;p&quot;</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">ylab =</span> <span class="st">&quot;effective fur conductivity, W K-1 m-1&quot;</span>, </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(KEFARAs <span class="sc">~</span> RHOs, <span class="at">type =</span> <span class="st">&quot;p&quot;</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">ylab =</span> <span class="st">&quot;effective fur conductivity, W K-1 m-1&quot;</span>,</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab =</span> <span class="st">&quot;hair density, 1/cm2&quot;</span>)</span></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
-<p>Example analysis of fur depth on effective thermal conductivity of fur.</p>
+<p>Example analysis of fur depth on effective thermal conductivity of
+fur.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ZFURs <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">50</span>, <span class="dv">1</span>)  <span class="co"># hair depths (mm)</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>KEFARAs <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(ZFURs)) {</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    KEFARAs[i] <span class="ot">&lt;-</span> <span class="fu">IRPROP</span>(TA, DHAIRD, DHAIRV, LHAIRD, LHAIRV, </span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        ZFURs[i] <span class="sc">*</span> <span class="fl">0.001</span>, ZFURs[i] <span class="sc">*</span> <span class="fl">0.001</span>, RHOD, RHOV, REFLD, </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    KEFARAs[i] <span class="ot">&lt;-</span> <span class="fu">IRPROP</span>(TA, DHAIRD, DHAIRV, LHAIRD, LHAIRV,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        ZFURs[i] <span class="sc">*</span> <span class="fl">0.001</span>, ZFURs[i] <span class="sc">*</span> <span class="fl">0.001</span>, RHOD, RHOV, REFLD,</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        REFLV, ZFURCOMP, PVEN, KHAIR)[<span class="dv">1</span>]</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(KEFARAs <span class="sc">~</span> ZFURs, <span class="at">type =</span> <span class="st">&quot;p&quot;</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">ylab =</span> <span class="st">&quot;effective fur conductivity, W K-1 m-1&quot;</span>, </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(KEFARAs <span class="sc">~</span> ZFURs, <span class="at">type =</span> <span class="st">&quot;p&quot;</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">ylab =</span> <span class="st">&quot;effective fur conductivity, W K-1 m-1&quot;</span>,</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab =</span> <span class="st">&quot;fur depth, mm&quot;</span>)</span></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div id="geom_endo" class="section level3">
 <h3>GEOM_ENDO</h3>
-<p>This subroutine computes aspects of the animal’s geometry. Note that GEOM_ENDO requires outputs from IRPROP on fur properties. Note also that this routine is called ‘allom’ in past versions of ‘Niche Mapper’.</p>
+<p>This subroutine computes aspects of the animal’s geometry. Note that
+GEOM_ENDO requires outputs from IRPROP on fur properties. Note also that
+this routine is called ‘allom’ in past versions of ‘Niche Mapper’.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># input</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>AMASS <span class="ot">&lt;-</span> <span class="dv">10</span>  <span class="co"># animal mass (kg)</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>ANDENS <span class="ot">&lt;-</span> <span class="dv">1000</span>  <span class="co"># animal density (kg/m3)</span></span>
@@ -365,15 +574,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>ZFUR <span class="ot">&lt;-</span> ZZFUR[<span class="dv">1</span>]  <span class="co"># fur depth, mean (m) (from IRPROP)</span></span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>PCOND <span class="ot">&lt;-</span> <span class="dv">0</span>  <span class="co"># fraction of body in contact with substrate (fractional, 0-1)</span></span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>SAMODE <span class="ot">&lt;-</span> <span class="dv">0</span>  <span class="co"># if 1, uses bird skin surface area scaling from Walsberg</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co"># and King 1978. JEB Biology 76:185-189, if 2, uses mammal</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co"># and King 1978. JEB Biology 76:185–189, if 2, uses mammal</span></span>
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co"># surface area scaling from Stahl (1967) J. of App.</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Physiology, 453-460.</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Physiology, 453–460.</span></span>
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>ORIENT <span class="ot">&lt;-</span> <span class="dv">0</span>  <span class="co"># if 1, largest surface area normal to sun&#39;s ray&#39;s, if 2, largest surface parallel to sun&#39;s rays, if 0, average of normal/parallel posture</span></span>
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>Z <span class="ot">&lt;-</span> <span class="dv">20</span>  <span class="co"># zenith angle of the sun</span></span>
 <span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>ZEN <span class="ot">&lt;-</span> pi<span class="sc">/</span><span class="dv">180</span> <span class="sc">*</span> Z  <span class="co"># convert degrees to radians</span></span>
 <span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co"># call the subroutine</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>GEOM.out <span class="ot">&lt;-</span> <span class="fu">GEOM_ENDO</span>(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, </span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>GEOM.out <span class="ot">&lt;-</span> <span class="fu">GEOM_ENDO</span>(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT,</span>
 <span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    SHAPE_B, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT, ZEN)</span>
 <span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co"># output</span></span>
@@ -403,9 +612,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>R1 <span class="ot">&lt;-</span> GEOM.out[<span class="dv">21</span>]  <span class="co"># shape-specific core-skin radius in shortest dimension (m)</span></span>
 <span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>R2 <span class="ot">&lt;-</span> GEOM.out[<span class="dv">22</span>]  <span class="co"># shape-specific core-fur radius in shortest dimension (m)</span></span>
 <span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>GEOM.lab <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;VOL&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;MASFAT&quot;</span>, <span class="st">&quot;VOLFAT&quot;</span>, <span class="st">&quot;ALENTH&quot;</span>, <span class="st">&quot;AWIDTH&quot;</span>, </span>
-<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;AHEIT&quot;</span>, <span class="st">&quot;ATOT&quot;</span>, <span class="st">&quot;ASIL&quot;</span>, <span class="st">&quot;ASILN&quot;</span>, <span class="st">&quot;ASILP&quot;</span>, <span class="st">&quot;GMASS&quot;</span>, <span class="st">&quot;AREASKIN&quot;</span>, </span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;FLSHVL&quot;</span>, <span class="st">&quot;FATTHK&quot;</span>, <span class="st">&quot;ASEMAJ&quot;</span>, <span class="st">&quot;BSEMIN&quot;</span>, <span class="st">&quot;CSEMIN&quot;</span>, <span class="st">&quot;CONVSK&quot;</span>, </span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>GEOM.lab <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;VOL&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;MASFAT&quot;</span>, <span class="st">&quot;VOLFAT&quot;</span>, <span class="st">&quot;ALENTH&quot;</span>, <span class="st">&quot;AWIDTH&quot;</span>,</span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;AHEIT&quot;</span>, <span class="st">&quot;ATOT&quot;</span>, <span class="st">&quot;ASIL&quot;</span>, <span class="st">&quot;ASILN&quot;</span>, <span class="st">&quot;ASILP&quot;</span>, <span class="st">&quot;GMASS&quot;</span>, <span class="st">&quot;AREASKIN&quot;</span>,</span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;FLSHVL&quot;</span>, <span class="st">&quot;FATTHK&quot;</span>, <span class="st">&quot;ASEMAJ&quot;</span>, <span class="st">&quot;BSEMIN&quot;</span>, <span class="st">&quot;CSEMIN&quot;</span>, <span class="st">&quot;CONVSK&quot;</span>,</span>
 <span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;CONVAR&quot;</span>, <span class="st">&quot;R1&quot;</span>, <span class="st">&quot;R2&quot;</span>)</span>
 <span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">cbind</span>(GEOM.lab, <span class="fu">t</span>(GEOM.out)))</span></code></pre></div>
 <table>
@@ -510,24 +719,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (SHAPE <span class="sc">==</span> <span class="dv">4</span>) {</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ellipsoid</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(<span class="fu">c</span>(<span class="dv">0</span>, ASEMAJ <span class="sc">*</span> <span class="dv">2</span> <span class="sc">+</span> ZFUR <span class="sc">*</span> <span class="dv">2</span>), <span class="fu">c</span>(<span class="dv">0</span>, ASEMAJ <span class="sc">*</span> <span class="dv">2</span> <span class="sc">+</span> ZFUR <span class="sc">*</span> </span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="dv">2</span>), <span class="at">type =</span> <span class="st">&quot;n&quot;</span>, <span class="at">main =</span> <span class="st">&quot;ellipsoid, sagittal section&quot;</span>, </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(<span class="fu">c</span>(<span class="dv">0</span>, ASEMAJ <span class="sc">*</span> <span class="dv">2</span> <span class="sc">+</span> ZFUR <span class="sc">*</span> <span class="dv">2</span>), <span class="fu">c</span>(<span class="dv">0</span>, ASEMAJ <span class="sc">*</span> <span class="dv">2</span> <span class="sc">+</span> ZFUR <span class="sc">*</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="dv">2</span>), <span class="at">type =</span> <span class="st">&quot;n&quot;</span>, <span class="at">main =</span> <span class="st">&quot;ellipsoid, sagittal section&quot;</span>,</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab =</span> <span class="st">&quot;minor axis, m&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;major axis, m&quot;</span>, <span class="at">asp =</span> <span class="dv">1</span>)</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">draw.ellipse</span>(ASEMAJ <span class="sc">+</span> ZFUR, ASEMAJ <span class="sc">+</span> ZFUR, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>, </span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">draw.ellipse</span>(ASEMAJ <span class="sc">+</span> ZFUR, ASEMAJ <span class="sc">+</span> ZFUR, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>,</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">border =</span> <span class="st">&quot;black&quot;</span>, <span class="at">a =</span> ASEMAJ <span class="sc">+</span> ZFUR, <span class="at">b =</span> BSEMIN <span class="sc">+</span> ZFUR)</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">draw.ellipse</span>(ASEMAJ <span class="sc">+</span> ZFUR, ASEMAJ <span class="sc">+</span> ZFUR, <span class="at">col =</span> <span class="st">&quot;pink&quot;</span>, </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">draw.ellipse</span>(ASEMAJ <span class="sc">+</span> ZFUR, ASEMAJ <span class="sc">+</span> ZFUR, <span class="at">col =</span> <span class="st">&quot;pink&quot;</span>,</span>
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">border =</span> <span class="st">&quot;pink&quot;</span>, <span class="at">a =</span> ASEMAJ, <span class="at">b =</span> BSEMIN)</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">draw.ellipse</span>(ASEMAJ <span class="sc">+</span> ZFUR, ASEMAJ <span class="sc">+</span> ZFUR, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">border =</span> <span class="st">&quot;red&quot;</span>, </span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">draw.ellipse</span>(ASEMAJ <span class="sc">+</span> ZFUR, ASEMAJ <span class="sc">+</span> ZFUR, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">border =</span> <span class="st">&quot;red&quot;</span>,</span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">a =</span> ASEMAJ <span class="sc">-</span> FATTHK, <span class="at">b =</span> BSEMIN <span class="sc">-</span> FATTHK)</span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(<span class="fu">c</span>(<span class="dv">0</span>, ASEMAJ <span class="sc">*</span> <span class="dv">2</span> <span class="sc">+</span> ZFUR <span class="sc">*</span> <span class="dv">2</span>), <span class="fu">c</span>(<span class="dv">0</span>, ASEMAJ <span class="sc">*</span> <span class="dv">2</span> <span class="sc">+</span> ZFUR <span class="sc">*</span> </span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        <span class="dv">2</span>), <span class="at">type =</span> <span class="st">&quot;n&quot;</span>, <span class="at">main =</span> <span class="st">&quot;ellipsoid, transverse section&quot;</span>, </span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(<span class="fu">c</span>(<span class="dv">0</span>, ASEMAJ <span class="sc">*</span> <span class="dv">2</span> <span class="sc">+</span> ZFUR <span class="sc">*</span> <span class="dv">2</span>), <span class="fu">c</span>(<span class="dv">0</span>, ASEMAJ <span class="sc">*</span> <span class="dv">2</span> <span class="sc">+</span> ZFUR <span class="sc">*</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        <span class="dv">2</span>), <span class="at">type =</span> <span class="st">&quot;n&quot;</span>, <span class="at">main =</span> <span class="st">&quot;ellipsoid, transverse section&quot;</span>,</span>
 <span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab =</span> <span class="st">&quot;minor axis, m&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;minor axis, m&quot;</span>, <span class="at">asp =</span> <span class="dv">1</span>)</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">draw.ellipse</span>(ASEMAJ <span class="sc">+</span> ZFUR, ASEMAJ <span class="sc">+</span> ZFUR, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>, </span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">draw.ellipse</span>(ASEMAJ <span class="sc">+</span> ZFUR, ASEMAJ <span class="sc">+</span> ZFUR, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>,</span>
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">border =</span> <span class="st">&quot;black&quot;</span>, <span class="at">a =</span> BSEMIN <span class="sc">+</span> ZFUR, <span class="at">b =</span> CSEMIN <span class="sc">+</span> ZFUR)</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">draw.ellipse</span>(ASEMAJ <span class="sc">+</span> ZFUR, ASEMAJ <span class="sc">+</span> ZFUR, <span class="at">col =</span> <span class="st">&quot;pink&quot;</span>, </span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">draw.ellipse</span>(ASEMAJ <span class="sc">+</span> ZFUR, ASEMAJ <span class="sc">+</span> ZFUR, <span class="at">col =</span> <span class="st">&quot;pink&quot;</span>,</span>
 <span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">border =</span> <span class="st">&quot;pink&quot;</span>, <span class="at">a =</span> BSEMIN, <span class="at">b =</span> CSEMIN)</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">draw.ellipse</span>(ASEMAJ <span class="sc">+</span> ZFUR, ASEMAJ <span class="sc">+</span> ZFUR, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">border =</span> <span class="st">&quot;red&quot;</span>, </span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">draw.ellipse</span>(ASEMAJ <span class="sc">+</span> ZFUR, ASEMAJ <span class="sc">+</span> ZFUR, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">border =</span> <span class="st">&quot;red&quot;</span>,</span>
 <span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">a =</span> BSEMIN <span class="sc">-</span> FATTHK, <span class="at">b =</span> CSEMIN <span class="sc">-</span> FATTHK)</span>
 <span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
 <span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
@@ -535,7 +744,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="solar_endo" class="section level3">
 <h3>SOLAR_ENDO</h3>
-<p>Compute the solar radiation absorbed by different parts of the organism and its environment.</p>
+<p>Compute the solar radiation absorbed by different parts of the
+organism and its environment.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># environmental variables</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>QSOLR <span class="ot">&lt;-</span> <span class="dv">1000</span>  <span class="co"># solar radiation, horizontal plane (W/m2)</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>SHADE <span class="ot">&lt;-</span> <span class="dv">0</span>  <span class="co"># shade (%, 0-100)</span></span>
@@ -554,8 +764,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co"># solar radiation normal to sun&#39;s rays</span></span>
 <span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>ZEN <span class="ot">&lt;-</span> pi<span class="sc">/</span><span class="dv">180</span> <span class="sc">*</span> Z  <span class="co"># convert degrees to radians</span></span>
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (Z <span class="sc">&lt;</span> <span class="dv">90</span>) {</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># compute solar radiation on a surface normal to the direct</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># rays of the sun</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># compute solar radiation on a surface normal to the</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># direct rays of the sun</span></span>
 <span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    CZ <span class="ot">&lt;-</span> <span class="fu">cos</span>(ZEN)</span>
 <span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    QNORM <span class="ot">&lt;-</span> QSOLR<span class="sc">/</span>CZ</span>
 <span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
@@ -563,7 +773,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    QNORM <span class="ot">&lt;-</span> QSOLR</span>
 <span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>SOLAR.out <span class="ot">&lt;-</span> <span class="fu">SOLAR_ENDO</span>(AREA, ABSAND, ABSANV, ABSSB, ASIL, PDIF, </span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>SOLAR.out <span class="ot">&lt;-</span> <span class="fu">SOLAR_ENDO</span>(AREA, ABSAND, ABSANV, ABSSB, ASIL, PDIF,</span>
 <span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>    QNORM, SHADE, QSOLR, FASKY, FAVEG)</span>
 <span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>QSOLAR <span class="ot">&lt;-</span> SOLAR.out[<span class="dv">1</span>]  <span class="co"># total (global) solar radiation (W)</span></span>
@@ -574,7 +784,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>QDORSL <span class="ot">&lt;-</span> SOLAR.out[<span class="dv">6</span>]  <span class="co"># dorsal direct solar radiation (W)</span></span>
 <span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>QVENTR <span class="ot">&lt;-</span> SOLAR.out[<span class="dv">7</span>]  <span class="co"># ventral diffuse solar radiation (W)</span></span>
 <span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>SOLAR.lab <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;QSOLAR&quot;</span>, <span class="st">&quot;QSDIR&quot;</span>, <span class="st">&quot;QSSKY&quot;</span>, <span class="st">&quot;QSRSB&quot;</span>, <span class="st">&quot;QSDIFF&quot;</span>, </span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>SOLAR.lab <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;QSOLAR&quot;</span>, <span class="st">&quot;QSDIR&quot;</span>, <span class="st">&quot;QSSKY&quot;</span>, <span class="st">&quot;QSRSB&quot;</span>, <span class="st">&quot;QSDIFF&quot;</span>,</span>
 <span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;QDORSL&quot;</span>, <span class="st">&quot;QVENTR&quot;</span>)</span>
 <span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">cbind</span>(SOLAR.lab, <span class="fu">t</span>(SOLAR.out)))</span></code></pre></div>
 <table>
@@ -632,7 +842,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>BP <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">1</span>  <span class="co"># barometric pressure (Pa), negative means altitude is used</span></span>
 <span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co"># run subroutine</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>CONV.out <span class="ot">&lt;-</span> <span class="fu">CONV_ENDO</span>(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, </span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>CONV.out <span class="ot">&lt;-</span> <span class="fu">CONV_ENDO</span>(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST,</span>
 <span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    D, TFA, VEL, ZFUR, BP, ELEV)</span>
 <span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>QCONV <span class="ot">&lt;-</span> CONV.out[<span class="dv">1</span>]  <span class="co"># convective heat loss (W)</span></span>
@@ -650,7 +860,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>SC <span class="ot">&lt;-</span> CONV.out[<span class="dv">13</span>]  <span class="co"># Schmidt number (-)</span></span>
 <span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>BP <span class="ot">&lt;-</span> CONV.out[<span class="dv">14</span>]  <span class="co"># barometric pressure (Pa)</span></span>
 <span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>CONV.lab <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;QCONV&quot;</span>, <span class="st">&quot;HC&quot;</span>, <span class="st">&quot;HCFREE&quot;</span>, <span class="st">&quot;HCFOR&quot;</span>, <span class="st">&quot;HD&quot;</span>, <span class="st">&quot;HDFREE&quot;</span>, </span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>CONV.lab <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;QCONV&quot;</span>, <span class="st">&quot;HC&quot;</span>, <span class="st">&quot;HCFREE&quot;</span>, <span class="st">&quot;HCFOR&quot;</span>, <span class="st">&quot;HD&quot;</span>, <span class="st">&quot;HDFREE&quot;</span>,</span>
 <span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;HDFORC&quot;</span>, <span class="st">&quot;ANU&quot;</span>, <span class="st">&quot;RE&quot;</span>, <span class="st">&quot;GR&quot;</span>, <span class="st">&quot;PR&quot;</span>, <span class="st">&quot;RA&quot;</span>, <span class="st">&quot;SC&quot;</span>, <span class="st">&quot;BP&quot;</span>)</span>
 <span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">cbind</span>(CONV.lab, <span class="fu">t</span>(CONV.out)))</span></code></pre></div>
 <table>
@@ -663,15 +873,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <tbody>
 <tr class="odd">
 <td align="left">QCONV</td>
-<td align="left">-42.3303697396045</td>
+<td align="left">-42.3303689165106</td>
 </tr>
 <tr class="even">
 <td align="left">HC</td>
-<td align="left">13.8308624086326</td>
+<td align="left">13.830862139698</td>
 </tr>
 <tr class="odd">
 <td align="left">HCFREE</td>
-<td align="left">4.18906008479261</td>
+<td align="left">4.1890600584233</td>
 </tr>
 <tr class="even">
 <td align="left">HCFOR</td>
@@ -679,39 +889,39 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 <tr class="odd">
 <td align="left">HD</td>
-<td align="left">0.0166500419458664</td>
+<td align="left">0.0166500420492818</td>
 </tr>
 <tr class="even">
 <td align="left">HDFREE</td>
-<td align="left">0.00389858046772071</td>
+<td align="left">0.00389858053231886</td>
 </tr>
 <tr class="odd">
 <td align="left">HDFORC</td>
-<td align="left">0.0127514614781457</td>
+<td align="left">0.0127514615169629</td>
 </tr>
 <tr class="even">
 <td align="left">ANU</td>
-<td align="left">115.050184709447</td>
+<td align="left">115.050182725776</td>
 </tr>
 <tr class="odd">
 <td align="left">RE</td>
-<td align="left">14271.7036555494</td>
+<td align="left">14271.7032454331</td>
 </tr>
 <tr class="even">
 <td align="left">GR</td>
-<td align="left">14679651.4926261</td>
+<td align="left">14679650.6489478</td>
 </tr>
 <tr class="odd">
 <td align="left">PR</td>
-<td align="left">0.712515300549836</td>
+<td align="left">0.712515322862147</td>
 </tr>
 <tr class="even">
 <td align="left">RA</td>
-<td align="left">10459476.2952353</td>
+<td align="left">10459476.0216385</td>
 </tr>
 <tr class="odd">
 <td align="left">SC</td>
-<td align="left">0.595551257906283</td>
+<td align="left">0.595551256140649</td>
 </tr>
 <tr class="even">
 <td align="left">BP</td>
@@ -736,8 +946,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>ZFUR <span class="ot">&lt;-</span> ZFUR  <span class="co"># fur depth (m)</span></span>
 <span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>FURWET <span class="ot">&lt;-</span> <span class="dv">0</span>  <span class="co"># part of the fur surface that is wet (%)</span></span>
 <span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>SEVAP.out <span class="ot">&lt;-</span> <span class="fu">SEVAP_ENDO</span>(BP, TA, RELHUM, VEL, TC, TSKIN, ELEV, </span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    PCTWET, FLYHR, CONVSK, HD, HDFREE, PCTBAREVAP, PCTEYES, ZFUR, </span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>SEVAP.out <span class="ot">&lt;-</span> <span class="fu">SEVAP_ENDO</span>(BP, TA, RELHUM, VEL, TC, TSKIN, ELEV,</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    PCTWET, FLYHR, CONVSK, HD, HDFREE, PCTBAREVAP, PCTEYES, ZFUR,</span>
 <span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    FURWET, TFA, CONVAR)</span>
 <span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>QSEVAP <span class="ot">&lt;-</span> SEVAP.out[<span class="dv">1</span>]  <span class="co"># skin evaporative heat loss (W)</span></span>
@@ -748,7 +958,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>WTFUR <span class="ot">&lt;-</span> SEVAP.out[<span class="dv">6</span>]  <span class="co"># total fur evaporation (kg/s)</span></span>
 <span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>QFSEVAP <span class="ot">&lt;-</span> SEVAP.out[<span class="dv">7</span>]  <span class="co"># fur evaporative heat loss (W))</span></span>
 <span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>SEVAP.lab <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;QSEVAP&quot;</span>, <span class="st">&quot;WEYES&quot;</span>, <span class="st">&quot;WCUTHF&quot;</span>, <span class="st">&quot;WCUTF&quot;</span>, <span class="st">&quot;WCUT&quot;</span>, </span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>SEVAP.lab <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;QSEVAP&quot;</span>, <span class="st">&quot;WEYES&quot;</span>, <span class="st">&quot;WCUTHF&quot;</span>, <span class="st">&quot;WCUTF&quot;</span>, <span class="st">&quot;WCUT&quot;</span>,</span>
 <span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;WTFUR&quot;</span>, <span class="st">&quot;QFSEVAP&quot;</span>)</span>
 <span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">cbind</span>(SEVAP.lab, <span class="fu">t</span>(SEVAP.out)))</span></code></pre></div>
 <table>
@@ -761,11 +971,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <tbody>
 <tr class="odd">
 <td align="left">QSEVAP</td>
-<td align="left">9.01497449278671</td>
+<td align="left">9.01497464893484</td>
 </tr>
 <tr class="even">
 <td align="left">WEYES</td>
-<td align="left">4.23023290455338e-08</td>
+<td align="left">4.2302329345106e-08</td>
 </tr>
 <tr class="odd">
 <td align="left">WCUTHF</td>
@@ -773,11 +983,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 <tr class="even">
 <td align="left">WCUTF</td>
-<td align="left">3.63184136245377e-06</td>
+<td align="left">3.63184142579394e-06</td>
 </tr>
 <tr class="odd">
 <td align="left">WCUT</td>
-<td align="left">3.63184136245377e-06</td>
+<td align="left">3.63184142579394e-06</td>
 </tr>
 <tr class="even">
 <td align="left">WTFUR</td>
@@ -792,7 +1002,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="simulsol" class="section level3">
 <h3>SIMULSOL</h3>
-<p>Setup and the SIMULSOL algorithm to SIMULtaneously SOLve for skin temperature <span class="math inline">\(T_s\)</span> and the temperature of the fur/feather interface <span class="math inline">\(T_fa\)</span> given an environment, shape/posture and skin wetness. SIMULSOL is the core algorithm for computing the heat balance.</p>
+<p>Setup and the SIMULSOL algorithm to SIMULtaneously SOLve for skin
+temperature <span class="math inline">\(T_s\)</span> and the temperature
+of the fur/feather interface <span class="math inline">\(T_fa\)</span>
+given an environment, shape/posture and skin wetness. SIMULSOL is the
+core algorithm for computing the heat balance.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># environment</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>FLTYPE <span class="ot">&lt;-</span> <span class="dv">0</span>  <span class="co"># fluid type: 0 = air; 1 = fresh water; 2 = salt water</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>TAREF <span class="ot">&lt;-</span> TA  <span class="co"># reference air temperature (e.g. at 1.2 or 2m) (°C)</span></span>
@@ -840,154 +1054,160 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>DIFTOL <span class="ot">&lt;-</span> <span class="fl">0.001</span>  <span class="co"># tolerance for SIMULSOL</span></span>
 <span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a><span class="co"># vector to hold the SIMULSOL results for dorsal and ventral</span></span>
-<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a><span class="co"># side</span></span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a><span class="co"># vector to hold the SIMULSOL results for dorsal and</span></span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a><span class="co"># ventral side</span></span>
 <span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>SIMULSOL.out <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">data =</span> <span class="dv">0</span>, <span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">ncol =</span> <span class="dv">15</span>)</span>
 <span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a><span class="co"># repeat for each side, dorsal and ventral, of the animal</span></span>
 <span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (S <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) {</span>
 <span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculating solar intensity entering fur. This will depend</span></span>
-<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>    <span class="co"># on whether we are calculating the fur temperature for the</span></span>
-<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a>    <span class="co"># dorsal side or the ventral side. The dorsal side will have</span></span>
-<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>    <span class="co"># solar inputs from the direct beam hitting the silhouette</span></span>
-<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>    <span class="co"># area as well as diffuse solar scattered from the sky. The</span></span>
-<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ventral side will have diffuse solar scattered off the</span></span>
-<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>    <span class="co"># substrate.</span></span>
-<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Setting config factors and solar depending on whether the</span></span>
-<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a>    <span class="co"># dorsal side (S=1) or ventral side (S=2) is being estimated.</span></span>
-<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (QSOLAR <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (S <span class="sc">==</span> <span class="dv">1</span>) {</span>
-<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a>            <span class="co"># proportion of upward view that is sky</span></span>
-<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a>            FASKY <span class="ot">&lt;-</span> FASKYREF<span class="sc">/</span>(FASKYREF <span class="sc">+</span> FAVEGREF)</span>
-<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a>            <span class="co"># proportion of upward view that is vegetation (shade)</span></span>
-<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a>            FAVEG <span class="ot">&lt;-</span> FAVEGREF<span class="sc">/</span>(FASKYREF <span class="sc">+</span> FAVEGREF)</span>
-<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a>            FAGRD <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a>            FABUSH <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a>            QSLR <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> QSDIR <span class="sc">+</span> ((QSSKY<span class="sc">/</span>FASKYREF) <span class="sc">*</span> FASKY)  <span class="co"># direct x 2</span></span>
-<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a>            <span class="co"># because assuming sun in both directions, and un-adjusting</span></span>
-<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a>            <span class="co"># QSSKY for config factor imposed in SOLAR_ENDO and back to</span></span>
-<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a>            <span class="co"># new larger one in both directions doing ventral side</span></span>
-<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
-<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a>            FASKY <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a>            FAVEG <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a>            FAGRD <span class="ot">&lt;-</span> FAGRDREF<span class="sc">/</span>(FAGRDREF <span class="sc">+</span> FABUSHREF)</span>
-<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a>            FABUSH <span class="ot">&lt;-</span> FABUSHREF<span class="sc">/</span>(FAGRDREF <span class="sc">+</span> FABUSHREF)</span>
-<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a>            QSLR <span class="ot">&lt;-</span> (QVENTR<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">-</span> FASKYREF <span class="sc">-</span> FAVEGREF)) <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> </span>
-<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">2</span> <span class="sc">*</span> PCOND))  <span class="co"># un-adjust by </span></span>
-<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a>            <span class="co"># config factor imposed in SOLAR_ENDO to have it coming in</span></span>
-<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a>            <span class="co"># both directions, but also cutting down according to</span></span>
-<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a>            <span class="co"># fractional area conducting to ground (in both directions)</span></span>
-<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb11-90"><a href="#cb11-90" aria-hidden="true" tabindex="-1"></a>        QSLR <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb11-91"><a href="#cb11-91" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (S <span class="sc">==</span> <span class="dv">1</span>) {</span>
-<span id="cb11-92"><a href="#cb11-92" aria-hidden="true" tabindex="-1"></a>            FASKY <span class="ot">&lt;-</span> FASKYREF<span class="sc">/</span>(FASKYREF <span class="sc">+</span> FAVEGREF)</span>
-<span id="cb11-93"><a href="#cb11-93" aria-hidden="true" tabindex="-1"></a>            FAVEG <span class="ot">&lt;-</span> FAVEGREF<span class="sc">/</span>(FASKYREF <span class="sc">+</span> FAVEGREF)</span>
-<span id="cb11-94"><a href="#cb11-94" aria-hidden="true" tabindex="-1"></a>            FAGRD <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb11-95"><a href="#cb11-95" aria-hidden="true" tabindex="-1"></a>            FABUSH <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb11-96"><a href="#cb11-96" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
-<span id="cb11-97"><a href="#cb11-97" aria-hidden="true" tabindex="-1"></a>            FASKY <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb11-98"><a href="#cb11-98" aria-hidden="true" tabindex="-1"></a>            FAVEG <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb11-99"><a href="#cb11-99" aria-hidden="true" tabindex="-1"></a>            FAGRD <span class="ot">&lt;-</span> FAGRDREF<span class="sc">/</span>(FAGRDREF <span class="sc">+</span> FABUSHREF)</span>
-<span id="cb11-100"><a href="#cb11-100" aria-hidden="true" tabindex="-1"></a>            FABUSH <span class="ot">&lt;-</span> FABUSHREF<span class="sc">/</span>(FAGRDREF <span class="sc">+</span> FABUSHREF)</span>
-<span id="cb11-101"><a href="#cb11-101" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb11-102"><a href="#cb11-102" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb11-103"><a href="#cb11-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-104"><a href="#cb11-104" aria-hidden="true" tabindex="-1"></a>    <span class="co"># set fur depth and conductivity index for KEFARA, the</span></span>
-<span id="cb11-105"><a href="#cb11-105" aria-hidden="true" tabindex="-1"></a>    <span class="co"># conductivity, is the average (1), front/dorsal (2),</span></span>
-<span id="cb11-106"><a href="#cb11-106" aria-hidden="true" tabindex="-1"></a>    <span class="co"># back/ventral(3) of the body part</span></span>
-<span id="cb11-107"><a href="#cb11-107" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (QSOLR <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">|</span> ZZFUR[<span class="dv">2</span>] <span class="sc">!=</span> ZZFUR[<span class="dv">3</span>]) {</span>
-<span id="cb11-108"><a href="#cb11-108" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (S <span class="sc">==</span> <span class="dv">1</span>) {</span>
-<span id="cb11-109"><a href="#cb11-109" aria-hidden="true" tabindex="-1"></a>            ZL <span class="ot">&lt;-</span> ZZFUR[<span class="dv">2</span>]</span>
-<span id="cb11-110"><a href="#cb11-110" aria-hidden="true" tabindex="-1"></a>            KEFF <span class="ot">&lt;-</span> KEFARA[<span class="dv">2</span>]</span>
-<span id="cb11-111"><a href="#cb11-111" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
-<span id="cb11-112"><a href="#cb11-112" aria-hidden="true" tabindex="-1"></a>            ZL <span class="ot">&lt;-</span> ZZFUR[<span class="dv">3</span>]</span>
-<span id="cb11-113"><a href="#cb11-113" aria-hidden="true" tabindex="-1"></a>            KEFF <span class="ot">&lt;-</span> KEFARA[<span class="dv">3</span>]</span>
-<span id="cb11-114"><a href="#cb11-114" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb11-115"><a href="#cb11-115" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb11-116"><a href="#cb11-116" aria-hidden="true" tabindex="-1"></a>        ZL <span class="ot">&lt;-</span> ZZFUR[<span class="dv">1</span>]</span>
-<span id="cb11-117"><a href="#cb11-117" aria-hidden="true" tabindex="-1"></a>        KEFF <span class="ot">&lt;-</span> KEFARA[<span class="dv">1</span>]</span>
-<span id="cb11-118"><a href="#cb11-118" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb11-119"><a href="#cb11-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-120"><a href="#cb11-120" aria-hidden="true" tabindex="-1"></a>    RSKIN <span class="ot">&lt;-</span> R1  <span class="co"># body radius (including fat), m</span></span>
-<span id="cb11-121"><a href="#cb11-121" aria-hidden="true" tabindex="-1"></a>    RFLESH <span class="ot">&lt;-</span> R1 <span class="sc">-</span> FATTHK  <span class="co"># body radius flesh only (no fat), m</span></span>
-<span id="cb11-122"><a href="#cb11-122" aria-hidden="true" tabindex="-1"></a>    RFUR <span class="ot">&lt;-</span> R1 <span class="sc">+</span> ZL  <span class="co"># body radius including fur, m</span></span>
-<span id="cb11-123"><a href="#cb11-123" aria-hidden="true" tabindex="-1"></a>    D <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> RFUR  <span class="co"># diameter, m</span></span>
-<span id="cb11-124"><a href="#cb11-124" aria-hidden="true" tabindex="-1"></a>    RRAD <span class="ot">&lt;-</span> RSKIN <span class="sc">+</span> (XR <span class="sc">*</span> ZL)  <span class="co"># effective radiation radius, m</span></span>
-<span id="cb11-125"><a href="#cb11-125" aria-hidden="true" tabindex="-1"></a>    LEN <span class="ot">&lt;-</span> ALENTH  <span class="co"># length, m</span></span>
-<span id="cb11-126"><a href="#cb11-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-127"><a href="#cb11-127" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (SHAPE <span class="sc">!=</span> <span class="dv">4</span>) {</span>
-<span id="cb11-128"><a href="#cb11-128" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ! For cylinder and sphere geometries</span></span>
-<span id="cb11-129"><a href="#cb11-129" aria-hidden="true" tabindex="-1"></a>        RFURCMP <span class="ot">&lt;-</span> RSKIN <span class="sc">+</span> ZFURCOMP</span>
-<span id="cb11-130"><a href="#cb11-130" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb11-131"><a href="#cb11-131" aria-hidden="true" tabindex="-1"></a>        RFURCMP <span class="ot">&lt;-</span> RFUR  <span class="co">#! Note that this value is never used if conduction not being modeled,</span></span>
-<span id="cb11-132"><a href="#cb11-132" aria-hidden="true" tabindex="-1"></a>        <span class="co"># but need to have a value for the calculations</span></span>
-<span id="cb11-133"><a href="#cb11-133" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb11-134"><a href="#cb11-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-135"><a href="#cb11-135" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (SHAPE <span class="sc">==</span> <span class="dv">4</span>) {</span>
-<span id="cb11-136"><a href="#cb11-136" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ! For ellipsoid geometry</span></span>
-<span id="cb11-137"><a href="#cb11-137" aria-hidden="true" tabindex="-1"></a>        BLCMP <span class="ot">&lt;-</span> BSEMIN <span class="sc">+</span> ZFURCOMP</span>
-<span id="cb11-138"><a href="#cb11-138" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb11-139"><a href="#cb11-139" aria-hidden="true" tabindex="-1"></a>        BLCMP <span class="ot">&lt;-</span> RFUR  <span class="co">#! Note that this value is never used if conduction not being modeled, </span></span>
-<span id="cb11-140"><a href="#cb11-140" aria-hidden="true" tabindex="-1"></a>        <span class="co"># but need to have a value for the calculations</span></span>
-<span id="cb11-141"><a href="#cb11-141" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb11-142"><a href="#cb11-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-143"><a href="#cb11-143" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Correcting volume to account for subcutaneous fat</span></span>
-<span id="cb11-144"><a href="#cb11-144" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (SUBQFAT <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> FATTHK <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb11-145"><a href="#cb11-145" aria-hidden="true" tabindex="-1"></a>        VOL <span class="ot">&lt;-</span> FLSHVL</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculating solar intensity entering fur. This will</span></span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>    <span class="co"># depend on whether we are calculating the fur</span></span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a>    <span class="co"># temperature for the dorsal side or the ventral side.</span></span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The dorsal side will have solar inputs from the</span></span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>    <span class="co"># direct beam hitting the silhouette area as well as</span></span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a>    <span class="co"># diffuse solar scattered from the sky. The ventral</span></span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>    <span class="co"># side will have diffuse solar scattered off the</span></span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a>    <span class="co"># substrate.</span></span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Setting config factors and solar depending on whether</span></span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a>    <span class="co"># the dorsal side (S=1) or ventral side (S=2) is being</span></span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a>    <span class="co"># estimated.</span></span>
+<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (QSOLAR <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (S <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a>            <span class="co"># proportion of upward view that is sky</span></span>
+<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a>            FASKY <span class="ot">&lt;-</span> FASKYREF<span class="sc">/</span>(FASKYREF <span class="sc">+</span> FAVEGREF)</span>
+<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a>            <span class="co"># proportion of upward view that is vegetation</span></span>
+<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a>            <span class="co"># (shade)</span></span>
+<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a>            FAVEG <span class="ot">&lt;-</span> FAVEGREF<span class="sc">/</span>(FASKYREF <span class="sc">+</span> FAVEGREF)</span>
+<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a>            FAGRD <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a>            FABUSH <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a>            QSLR <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> QSDIR <span class="sc">+</span> ((QSSKY<span class="sc">/</span>FASKYREF) <span class="sc">*</span> FASKY)  <span class="co"># direct x 2</span></span>
+<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a>            <span class="co"># because assuming sun in both directions, and</span></span>
+<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a>            <span class="co"># un-adjusting QSSKY for config factor imposed</span></span>
+<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a>            <span class="co"># in SOLAR_ENDO and back to new larger one in</span></span>
+<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a>            <span class="co"># both directions doing ventral side</span></span>
+<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
+<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a>            FASKY <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a>            FAVEG <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a>            FAGRD <span class="ot">&lt;-</span> FAGRDREF<span class="sc">/</span>(FAGRDREF <span class="sc">+</span> FABUSHREF)</span>
+<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a>            FABUSH <span class="ot">&lt;-</span> FABUSHREF<span class="sc">/</span>(FAGRDREF <span class="sc">+</span> FABUSHREF)</span>
+<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a>            QSLR <span class="ot">&lt;-</span> (QVENTR<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">-</span> FASKYREF <span class="sc">-</span> FAVEGREF)) <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span></span>
+<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">2</span> <span class="sc">*</span> PCOND))  <span class="co"># un-adjust by </span></span>
+<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a>            <span class="co"># config factor imposed in SOLAR_ENDO to have</span></span>
+<span id="cb11-90"><a href="#cb11-90" aria-hidden="true" tabindex="-1"></a>            <span class="co"># it coming in both directions, but also</span></span>
+<span id="cb11-91"><a href="#cb11-91" aria-hidden="true" tabindex="-1"></a>            <span class="co"># cutting down according to fractional area</span></span>
+<span id="cb11-92"><a href="#cb11-92" aria-hidden="true" tabindex="-1"></a>            <span class="co"># conducting to ground (in both directions)</span></span>
+<span id="cb11-93"><a href="#cb11-93" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb11-94"><a href="#cb11-94" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb11-95"><a href="#cb11-95" aria-hidden="true" tabindex="-1"></a>        QSLR <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-96"><a href="#cb11-96" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (S <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb11-97"><a href="#cb11-97" aria-hidden="true" tabindex="-1"></a>            FASKY <span class="ot">&lt;-</span> FASKYREF<span class="sc">/</span>(FASKYREF <span class="sc">+</span> FAVEGREF)</span>
+<span id="cb11-98"><a href="#cb11-98" aria-hidden="true" tabindex="-1"></a>            FAVEG <span class="ot">&lt;-</span> FAVEGREF<span class="sc">/</span>(FASKYREF <span class="sc">+</span> FAVEGREF)</span>
+<span id="cb11-99"><a href="#cb11-99" aria-hidden="true" tabindex="-1"></a>            FAGRD <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-100"><a href="#cb11-100" aria-hidden="true" tabindex="-1"></a>            FABUSH <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-101"><a href="#cb11-101" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
+<span id="cb11-102"><a href="#cb11-102" aria-hidden="true" tabindex="-1"></a>            FASKY <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-103"><a href="#cb11-103" aria-hidden="true" tabindex="-1"></a>            FAVEG <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-104"><a href="#cb11-104" aria-hidden="true" tabindex="-1"></a>            FAGRD <span class="ot">&lt;-</span> FAGRDREF<span class="sc">/</span>(FAGRDREF <span class="sc">+</span> FABUSHREF)</span>
+<span id="cb11-105"><a href="#cb11-105" aria-hidden="true" tabindex="-1"></a>            FABUSH <span class="ot">&lt;-</span> FABUSHREF<span class="sc">/</span>(FAGRDREF <span class="sc">+</span> FABUSHREF)</span>
+<span id="cb11-106"><a href="#cb11-106" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb11-107"><a href="#cb11-107" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb11-108"><a href="#cb11-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-109"><a href="#cb11-109" aria-hidden="true" tabindex="-1"></a>    <span class="co"># set fur depth and conductivity index for KEFARA, the</span></span>
+<span id="cb11-110"><a href="#cb11-110" aria-hidden="true" tabindex="-1"></a>    <span class="co"># conductivity, is the average (1), front/dorsal (2),</span></span>
+<span id="cb11-111"><a href="#cb11-111" aria-hidden="true" tabindex="-1"></a>    <span class="co"># back/ventral(3) of the body part</span></span>
+<span id="cb11-112"><a href="#cb11-112" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (QSOLR <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">|</span> ZZFUR[<span class="dv">2</span>] <span class="sc">!=</span> ZZFUR[<span class="dv">3</span>]) {</span>
+<span id="cb11-113"><a href="#cb11-113" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (S <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb11-114"><a href="#cb11-114" aria-hidden="true" tabindex="-1"></a>            ZL <span class="ot">&lt;-</span> ZZFUR[<span class="dv">2</span>]</span>
+<span id="cb11-115"><a href="#cb11-115" aria-hidden="true" tabindex="-1"></a>            KEFF <span class="ot">&lt;-</span> KEFARA[<span class="dv">2</span>]</span>
+<span id="cb11-116"><a href="#cb11-116" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
+<span id="cb11-117"><a href="#cb11-117" aria-hidden="true" tabindex="-1"></a>            ZL <span class="ot">&lt;-</span> ZZFUR[<span class="dv">3</span>]</span>
+<span id="cb11-118"><a href="#cb11-118" aria-hidden="true" tabindex="-1"></a>            KEFF <span class="ot">&lt;-</span> KEFARA[<span class="dv">3</span>]</span>
+<span id="cb11-119"><a href="#cb11-119" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb11-120"><a href="#cb11-120" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb11-121"><a href="#cb11-121" aria-hidden="true" tabindex="-1"></a>        ZL <span class="ot">&lt;-</span> ZZFUR[<span class="dv">1</span>]</span>
+<span id="cb11-122"><a href="#cb11-122" aria-hidden="true" tabindex="-1"></a>        KEFF <span class="ot">&lt;-</span> KEFARA[<span class="dv">1</span>]</span>
+<span id="cb11-123"><a href="#cb11-123" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb11-124"><a href="#cb11-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-125"><a href="#cb11-125" aria-hidden="true" tabindex="-1"></a>    RSKIN <span class="ot">&lt;-</span> R1  <span class="co"># body radius (including fat), m</span></span>
+<span id="cb11-126"><a href="#cb11-126" aria-hidden="true" tabindex="-1"></a>    RFLESH <span class="ot">&lt;-</span> R1 <span class="sc">-</span> FATTHK  <span class="co"># body radius flesh only (no fat), m</span></span>
+<span id="cb11-127"><a href="#cb11-127" aria-hidden="true" tabindex="-1"></a>    RFUR <span class="ot">&lt;-</span> R1 <span class="sc">+</span> ZL  <span class="co"># body radius including fur, m</span></span>
+<span id="cb11-128"><a href="#cb11-128" aria-hidden="true" tabindex="-1"></a>    D <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> RFUR  <span class="co"># diameter, m</span></span>
+<span id="cb11-129"><a href="#cb11-129" aria-hidden="true" tabindex="-1"></a>    RRAD <span class="ot">&lt;-</span> RSKIN <span class="sc">+</span> (XR <span class="sc">*</span> ZL)  <span class="co"># effective radiation radius, m</span></span>
+<span id="cb11-130"><a href="#cb11-130" aria-hidden="true" tabindex="-1"></a>    LEN <span class="ot">&lt;-</span> ALENTH  <span class="co"># length, m</span></span>
+<span id="cb11-131"><a href="#cb11-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-132"><a href="#cb11-132" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (SHAPE <span class="sc">!=</span> <span class="dv">4</span>) {</span>
+<span id="cb11-133"><a href="#cb11-133" aria-hidden="true" tabindex="-1"></a>        <span class="co">#! For cylinder and sphere geometries</span></span>
+<span id="cb11-134"><a href="#cb11-134" aria-hidden="true" tabindex="-1"></a>        RFURCMP <span class="ot">&lt;-</span> RSKIN <span class="sc">+</span> ZFURCOMP</span>
+<span id="cb11-135"><a href="#cb11-135" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb11-136"><a href="#cb11-136" aria-hidden="true" tabindex="-1"></a>        RFURCMP <span class="ot">&lt;-</span> RFUR  <span class="co">#! Note that this value is never used if conduction not being modeled,</span></span>
+<span id="cb11-137"><a href="#cb11-137" aria-hidden="true" tabindex="-1"></a>        <span class="co"># but need to have a value for the calculations</span></span>
+<span id="cb11-138"><a href="#cb11-138" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb11-139"><a href="#cb11-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-140"><a href="#cb11-140" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (SHAPE <span class="sc">==</span> <span class="dv">4</span>) {</span>
+<span id="cb11-141"><a href="#cb11-141" aria-hidden="true" tabindex="-1"></a>        <span class="co">#! For ellipsoid geometry</span></span>
+<span id="cb11-142"><a href="#cb11-142" aria-hidden="true" tabindex="-1"></a>        BLCMP <span class="ot">&lt;-</span> BSEMIN <span class="sc">+</span> ZFURCOMP</span>
+<span id="cb11-143"><a href="#cb11-143" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb11-144"><a href="#cb11-144" aria-hidden="true" tabindex="-1"></a>        BLCMP <span class="ot">&lt;-</span> RFUR  <span class="co">#! Note that this value is never used if conduction not being modeled, </span></span>
+<span id="cb11-145"><a href="#cb11-145" aria-hidden="true" tabindex="-1"></a>        <span class="co"># but need to have a value for the calculations</span></span>
 <span id="cb11-146"><a href="#cb11-146" aria-hidden="true" tabindex="-1"></a>    }</span>
 <span id="cb11-147"><a href="#cb11-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-148"><a href="#cb11-148" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculating the &#39;Cd&#39; variable: Qcond = Cd(Tskin-Tsub),</span></span>
-<span id="cb11-149"><a href="#cb11-149" aria-hidden="true" tabindex="-1"></a>    <span class="co"># where Cd = Conduction area*ksub/subdepth</span></span>
-<span id="cb11-150"><a href="#cb11-150" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (S <span class="sc">==</span> <span class="dv">2</span>) {</span>
-<span id="cb11-151"><a href="#cb11-151" aria-hidden="true" tabindex="-1"></a>        AREACND <span class="ot">&lt;-</span> ATOT <span class="sc">*</span> (PCOND <span class="sc">*</span> <span class="dv">2</span>)</span>
-<span id="cb11-152"><a href="#cb11-152" aria-hidden="true" tabindex="-1"></a>        CD <span class="ot">&lt;-</span> (AREACND <span class="sc">*</span> KSUB)<span class="sc">/</span><span class="fl">0.025</span>  <span class="co"># assume conduction happens from 2.5 cm depth</span></span>
-<span id="cb11-153"><a href="#cb11-153" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb11-154"><a href="#cb11-154" aria-hidden="true" tabindex="-1"></a>        <span class="co"># doing dorsal side, no conduction. No need to adjust areas</span></span>
-<span id="cb11-155"><a href="#cb11-155" aria-hidden="true" tabindex="-1"></a>        <span class="co"># used for convection.</span></span>
-<span id="cb11-156"><a href="#cb11-156" aria-hidden="true" tabindex="-1"></a>        AREACND <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb11-157"><a href="#cb11-157" aria-hidden="true" tabindex="-1"></a>        CD <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb11-158"><a href="#cb11-158" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb11-159"><a href="#cb11-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-160"><a href="#cb11-160" aria-hidden="true" tabindex="-1"></a>    <span class="co"># package up inputs</span></span>
-<span id="cb11-161"><a href="#cb11-161" aria-hidden="true" tabindex="-1"></a>    FURVARS <span class="ot">&lt;-</span> <span class="fu">c</span>(LEN, ZFUR, FURTHRMK, KEFF, BETARA, FURTST, ZL, </span>
-<span id="cb11-162"><a href="#cb11-162" aria-hidden="true" tabindex="-1"></a>        LHAR[S <span class="sc">+</span> <span class="dv">1</span>], DHAR[S <span class="sc">+</span> <span class="dv">1</span>], RHOAR[S <span class="sc">+</span> <span class="dv">1</span>], REFLFR[S <span class="sc">+</span> <span class="dv">1</span>], </span>
-<span id="cb11-163"><a href="#cb11-163" aria-hidden="true" tabindex="-1"></a>        KHAIR, S)</span>
-<span id="cb11-164"><a href="#cb11-164" aria-hidden="true" tabindex="-1"></a>    GEOMVARS <span class="ot">&lt;-</span> <span class="fu">c</span>(SHAPE, SUBQFAT, CONVAR, VOL, D, CONVAR, CONVSK, </span>
-<span id="cb11-165"><a href="#cb11-165" aria-hidden="true" tabindex="-1"></a>        RFUR, RFLESH, RSKIN, XR, RRAD, ASEMAJ, BSEMIN, CSEMIN, </span>
-<span id="cb11-166"><a href="#cb11-166" aria-hidden="true" tabindex="-1"></a>        CD, PCOND, RFURCMP, BLCMP, KFURCMPRS)</span>
-<span id="cb11-167"><a href="#cb11-167" aria-hidden="true" tabindex="-1"></a>    ENVVARS <span class="ot">&lt;-</span> <span class="fu">c</span>(FLTYPE, TA, TS, TBUSH, TVEG, TLOWER, TSKY, TCONDSB, </span>
-<span id="cb11-168"><a href="#cb11-168" aria-hidden="true" tabindex="-1"></a>        RH, VEL, BP, ELEV, FASKY, FABUSH, FAVEG, FAGRD, QSLR)</span>
-<span id="cb11-169"><a href="#cb11-169" aria-hidden="true" tabindex="-1"></a>    TRAITS <span class="ot">&lt;-</span> <span class="fu">c</span>(TC, AK1, AK2, EMISAN, FATTHK, FLYHR, FURWET, </span>
-<span id="cb11-170"><a href="#cb11-170" aria-hidden="true" tabindex="-1"></a>        PCTBAREVAP, PCTEYES)</span>
-<span id="cb11-171"><a href="#cb11-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-172"><a href="#cb11-172" aria-hidden="true" tabindex="-1"></a>    <span class="co"># set IPT, the geometry assumed in SIMULSOL: 1 = cylinder, 2</span></span>
-<span id="cb11-173"><a href="#cb11-173" aria-hidden="true" tabindex="-1"></a>    <span class="co"># = sphere, 3 = ellipsoid</span></span>
-<span id="cb11-174"><a href="#cb11-174" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (SHAPE <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>)) {</span>
-<span id="cb11-175"><a href="#cb11-175" aria-hidden="true" tabindex="-1"></a>        IPT <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb11-176"><a href="#cb11-176" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb11-177"><a href="#cb11-177" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (SHAPE <span class="sc">==</span> <span class="dv">2</span>) {</span>
-<span id="cb11-178"><a href="#cb11-178" aria-hidden="true" tabindex="-1"></a>        IPT <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb11-179"><a href="#cb11-179" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb11-180"><a href="#cb11-180" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (SHAPE <span class="sc">==</span> <span class="dv">4</span>) {</span>
-<span id="cb11-181"><a href="#cb11-181" aria-hidden="true" tabindex="-1"></a>        IPT <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb11-148"><a href="#cb11-148" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Correcting volume to account for subcutaneous fat</span></span>
+<span id="cb11-149"><a href="#cb11-149" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (SUBQFAT <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> FATTHK <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb11-150"><a href="#cb11-150" aria-hidden="true" tabindex="-1"></a>        VOL <span class="ot">&lt;-</span> FLSHVL</span>
+<span id="cb11-151"><a href="#cb11-151" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb11-152"><a href="#cb11-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-153"><a href="#cb11-153" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculating the &#39;Cd&#39; variable: Qcond =</span></span>
+<span id="cb11-154"><a href="#cb11-154" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Cd(Tskin-Tsub), where Cd = Conduction</span></span>
+<span id="cb11-155"><a href="#cb11-155" aria-hidden="true" tabindex="-1"></a>    <span class="co"># area*ksub/subdepth</span></span>
+<span id="cb11-156"><a href="#cb11-156" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (S <span class="sc">==</span> <span class="dv">2</span>) {</span>
+<span id="cb11-157"><a href="#cb11-157" aria-hidden="true" tabindex="-1"></a>        AREACND <span class="ot">&lt;-</span> ATOT <span class="sc">*</span> (PCOND <span class="sc">*</span> <span class="dv">2</span>)</span>
+<span id="cb11-158"><a href="#cb11-158" aria-hidden="true" tabindex="-1"></a>        CD <span class="ot">&lt;-</span> (AREACND <span class="sc">*</span> KSUB)<span class="sc">/</span><span class="fl">0.025</span>  <span class="co"># assume conduction happens from 2.5 cm depth</span></span>
+<span id="cb11-159"><a href="#cb11-159" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb11-160"><a href="#cb11-160" aria-hidden="true" tabindex="-1"></a>        <span class="co"># doing dorsal side, no conduction. No need to</span></span>
+<span id="cb11-161"><a href="#cb11-161" aria-hidden="true" tabindex="-1"></a>        <span class="co"># adjust areas used for convection.</span></span>
+<span id="cb11-162"><a href="#cb11-162" aria-hidden="true" tabindex="-1"></a>        AREACND <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-163"><a href="#cb11-163" aria-hidden="true" tabindex="-1"></a>        CD <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-164"><a href="#cb11-164" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb11-165"><a href="#cb11-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-166"><a href="#cb11-166" aria-hidden="true" tabindex="-1"></a>    <span class="co"># package up inputs</span></span>
+<span id="cb11-167"><a href="#cb11-167" aria-hidden="true" tabindex="-1"></a>    FURVARS <span class="ot">&lt;-</span> <span class="fu">c</span>(LEN, ZFUR, FURTHRMK, KEFF, BETARA, FURTST, ZL,</span>
+<span id="cb11-168"><a href="#cb11-168" aria-hidden="true" tabindex="-1"></a>        LHAR[S <span class="sc">+</span> <span class="dv">1</span>], DHAR[S <span class="sc">+</span> <span class="dv">1</span>], RHOAR[S <span class="sc">+</span> <span class="dv">1</span>], REFLFR[S <span class="sc">+</span> <span class="dv">1</span>],</span>
+<span id="cb11-169"><a href="#cb11-169" aria-hidden="true" tabindex="-1"></a>        KHAIR, S)</span>
+<span id="cb11-170"><a href="#cb11-170" aria-hidden="true" tabindex="-1"></a>    GEOMVARS <span class="ot">&lt;-</span> <span class="fu">c</span>(SHAPE, SUBQFAT, CONVAR, VOL, D, CONVAR, CONVSK,</span>
+<span id="cb11-171"><a href="#cb11-171" aria-hidden="true" tabindex="-1"></a>        RFUR, RFLESH, RSKIN, XR, RRAD, ASEMAJ, BSEMIN, CSEMIN,</span>
+<span id="cb11-172"><a href="#cb11-172" aria-hidden="true" tabindex="-1"></a>        CD, PCOND, RFURCMP, BLCMP, KFURCMPRS)</span>
+<span id="cb11-173"><a href="#cb11-173" aria-hidden="true" tabindex="-1"></a>    ENVVARS <span class="ot">&lt;-</span> <span class="fu">c</span>(FLTYPE, TA, TS, TBUSH, TVEG, TLOWER, TSKY, TCONDSB,</span>
+<span id="cb11-174"><a href="#cb11-174" aria-hidden="true" tabindex="-1"></a>        RH, VEL, BP, ELEV, FASKY, FABUSH, FAVEG, FAGRD, QSLR)</span>
+<span id="cb11-175"><a href="#cb11-175" aria-hidden="true" tabindex="-1"></a>    TRAITS <span class="ot">&lt;-</span> <span class="fu">c</span>(TC, AK1, AK2, EMISAN, FATTHK, FLYHR, FURWET,</span>
+<span id="cb11-176"><a href="#cb11-176" aria-hidden="true" tabindex="-1"></a>        PCTBAREVAP, PCTEYES)</span>
+<span id="cb11-177"><a href="#cb11-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-178"><a href="#cb11-178" aria-hidden="true" tabindex="-1"></a>    <span class="co"># set IPT, the geometry assumed in SIMULSOL: 1 =</span></span>
+<span id="cb11-179"><a href="#cb11-179" aria-hidden="true" tabindex="-1"></a>    <span class="co"># cylinder, 2 = sphere, 3 = ellipsoid</span></span>
+<span id="cb11-180"><a href="#cb11-180" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (SHAPE <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>)) {</span>
+<span id="cb11-181"><a href="#cb11-181" aria-hidden="true" tabindex="-1"></a>        IPT <span class="ot">&lt;-</span> <span class="dv">1</span></span>
 <span id="cb11-182"><a href="#cb11-182" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb11-183"><a href="#cb11-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-184"><a href="#cb11-184" aria-hidden="true" tabindex="-1"></a>    <span class="co"># call SIMULSOL</span></span>
-<span id="cb11-185"><a href="#cb11-185" aria-hidden="true" tabindex="-1"></a>    SIMULSOL.out[S, ] <span class="ot">&lt;-</span> <span class="fu">SIMULSOL</span>(DIFTOL, IPT, FURVARS, GEOMVARS, </span>
-<span id="cb11-186"><a href="#cb11-186" aria-hidden="true" tabindex="-1"></a>        ENVVARS, TRAITS, TFA, PCTWET, TS)</span>
-<span id="cb11-187"><a href="#cb11-187" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb11-188"><a href="#cb11-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-189"><a href="#cb11-189" aria-hidden="true" tabindex="-1"></a>SIMULSOL.out <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), SIMULSOL.out)</span>
-<span id="cb11-190"><a href="#cb11-190" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(SIMULSOL.out) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;SIDE&quot;</span>, <span class="st">&quot;TFA&quot;</span>, <span class="st">&quot;TSKIN&quot;</span>, <span class="st">&quot;QCONV&quot;</span>, </span>
-<span id="cb11-191"><a href="#cb11-191" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;QCOND&quot;</span>, <span class="st">&quot;QGENNET&quot;</span>, <span class="st">&quot;QSEVAP&quot;</span>, <span class="st">&quot;QRAD&quot;</span>, <span class="st">&quot;QSLR&quot;</span>, <span class="st">&quot;QRSKY&quot;</span>, <span class="st">&quot;QRBSH&quot;</span>, </span>
-<span id="cb11-192"><a href="#cb11-192" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;QRVEG&quot;</span>, <span class="st">&quot;QRGRD&quot;</span>, <span class="st">&quot;QFSEVAP&quot;</span>, <span class="st">&quot;NTRY&quot;</span>, <span class="st">&quot;SUCCESS&quot;</span>)</span>
-<span id="cb11-193"><a href="#cb11-193" aria-hidden="true" tabindex="-1"></a>tSIMULSOL.out <span class="ot">&lt;-</span> <span class="fu">t</span>(SIMULSOL.out)</span>
-<span id="cb11-194"><a href="#cb11-194" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tSIMULSOL.out) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;DORSAL&quot;</span>, <span class="st">&quot;VENTRAL&quot;</span>)</span>
-<span id="cb11-195"><a href="#cb11-195" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(tSIMULSOL.out)</span></code></pre></div>
+<span id="cb11-183"><a href="#cb11-183" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (SHAPE <span class="sc">==</span> <span class="dv">2</span>) {</span>
+<span id="cb11-184"><a href="#cb11-184" aria-hidden="true" tabindex="-1"></a>        IPT <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb11-185"><a href="#cb11-185" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb11-186"><a href="#cb11-186" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (SHAPE <span class="sc">==</span> <span class="dv">4</span>) {</span>
+<span id="cb11-187"><a href="#cb11-187" aria-hidden="true" tabindex="-1"></a>        IPT <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb11-188"><a href="#cb11-188" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb11-189"><a href="#cb11-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-190"><a href="#cb11-190" aria-hidden="true" tabindex="-1"></a>    <span class="co"># call SIMULSOL</span></span>
+<span id="cb11-191"><a href="#cb11-191" aria-hidden="true" tabindex="-1"></a>    SIMULSOL.out[S, ] <span class="ot">&lt;-</span> <span class="fu">SIMULSOL</span>(DIFTOL, IPT, FURVARS, GEOMVARS,</span>
+<span id="cb11-192"><a href="#cb11-192" aria-hidden="true" tabindex="-1"></a>        ENVVARS, TRAITS, TFA, PCTWET, TS)</span>
+<span id="cb11-193"><a href="#cb11-193" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-194"><a href="#cb11-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-195"><a href="#cb11-195" aria-hidden="true" tabindex="-1"></a>SIMULSOL.out <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), SIMULSOL.out)</span>
+<span id="cb11-196"><a href="#cb11-196" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(SIMULSOL.out) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;SIDE&quot;</span>, <span class="st">&quot;TFA&quot;</span>, <span class="st">&quot;TSKIN&quot;</span>, <span class="st">&quot;QCONV&quot;</span>,</span>
+<span id="cb11-197"><a href="#cb11-197" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;QCOND&quot;</span>, <span class="st">&quot;QGENNET&quot;</span>, <span class="st">&quot;QSEVAP&quot;</span>, <span class="st">&quot;QRAD&quot;</span>, <span class="st">&quot;QSLR&quot;</span>, <span class="st">&quot;QRSKY&quot;</span>, <span class="st">&quot;QRBSH&quot;</span>,</span>
+<span id="cb11-198"><a href="#cb11-198" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;QRVEG&quot;</span>, <span class="st">&quot;QRGRD&quot;</span>, <span class="st">&quot;QFSEVAP&quot;</span>, <span class="st">&quot;NTRY&quot;</span>, <span class="st">&quot;SUCCESS&quot;</span>)</span>
+<span id="cb11-199"><a href="#cb11-199" aria-hidden="true" tabindex="-1"></a>tSIMULSOL.out <span class="ot">&lt;-</span> <span class="fu">t</span>(SIMULSOL.out)</span>
+<span id="cb11-200"><a href="#cb11-200" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tSIMULSOL.out) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;DORSAL&quot;</span>, <span class="st">&quot;VENTRAL&quot;</span>)</span>
+<span id="cb11-201"><a href="#cb11-201" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(tSIMULSOL.out)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -1005,7 +1225,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <tr class="even">
 <td align="left">TFA</td>
 <td align="right">39.482699</td>
-<td align="right">30.4086839</td>
+<td align="right">30.4086840</td>
 </tr>
 <tr class="odd">
 <td align="left">TSKIN</td>
@@ -1014,8 +1234,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 <tr class="even">
 <td align="left">QCONV</td>
-<td align="right">83.122683</td>
-<td align="right">44.1759448</td>
+<td align="right">83.122682</td>
+<td align="right">44.1759445</td>
 </tr>
 <tr class="odd">
 <td align="left">QCOND</td>
@@ -1025,7 +1245,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <tr class="even">
 <td align="left">QGENNET</td>
 <td align="right">-1.644885</td>
-<td align="right">4.5234311</td>
+<td align="right">4.5234310</td>
 </tr>
 <tr class="odd">
 <td align="left">QSEVAP</td>
@@ -1034,8 +1254,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 <tr class="even">
 <td align="left">QRAD</td>
-<td align="right">37.200454</td>
-<td align="right">18.9954080</td>
+<td align="right">37.200455</td>
+<td align="right">18.9954083</td>
 </tr>
 <tr class="odd">
 <td align="left">QSLR</td>
@@ -1044,7 +1264,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 <tr class="even">
 <td align="left">QRSKY</td>
-<td align="right">37.200454</td>
+<td align="right">37.200455</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="odd">
@@ -1060,7 +1280,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <tr class="odd">
 <td align="left">QRGRD</td>
 <td align="right">0.000000</td>
-<td align="right">18.9954080</td>
+<td align="right">18.9954083</td>
 </tr>
 <tr class="even">
 <td align="left">QFSEVAP</td>
@@ -1082,7 +1302,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="zbrent_endo-and-respfun" class="section level3">
 <h3>ZBRENT_ENDO and RESPFUN</h3>
-<p>Finally, find a value of QRESP (heat lost by respiration) to balance the heat budget by solving RESPFUN with ZBRENT.</p>
+<p>Finally, find a value of QRESP (heat lost by respiration) to balance
+the heat budget by solving RESPFUN with ZBRENT.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define basal metabolic rate</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>QBASAL <span class="ot">&lt;-</span> (<span class="dv">70</span> <span class="sc">*</span> AMASS<span class="sc">^</span><span class="fl">0.75</span>) <span class="sc">*</span> (<span class="fl">4.185</span><span class="sc">/</span>(<span class="dv">24</span> <span class="sc">*</span> <span class="fl">3.6</span>))  <span class="co"># heat generation (W), from Kleiber 1947</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>DELTAR <span class="ot">&lt;-</span> <span class="dv">0</span>  <span class="co"># offset between air temperature and breath (°C)</span></span>
@@ -1095,39 +1316,38 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co"># to 1 (carbs), with 0.8 typical for protein)</span></span>
 <span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>EXTREF <span class="ot">&lt;-</span> <span class="dv">20</span>  <span class="co"># O2 extraction efficiency (%)</span></span>
 <span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>RELXIT <span class="ot">&lt;-</span> <span class="dv">100</span>  <span class="co"># relative humidity of exhaled air (%)</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>TIMACT <span class="ot">&lt;-</span> <span class="dv">1</span>  <span class="co"># multiplier on metabolic rate for activity costs</span></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>PANT <span class="ot">&lt;-</span> <span class="dv">1</span>  <span class="co"># multiplier on breathing rate (-)</span></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Now compute a weighted mean heat generation for all the</span></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="co"># parts/components = (dorsal value *(FASKY+FAVEG))+(ventral</span></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="co"># value*FAGRD)</span></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>GEND <span class="ot">&lt;-</span> SIMULSOL.out[<span class="dv">1</span>, <span class="dv">6</span>]</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>GENV <span class="ot">&lt;-</span> SIMULSOL.out[<span class="dv">2</span>, <span class="dv">6</span>]</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>DMULT <span class="ot">&lt;-</span> FASKYREF <span class="sc">+</span> FAVEGREF</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>VMULT <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> DMULT  <span class="co"># Assume that reflectivity of veg below equals reflectivity of soil </span></span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="co"># so VMULT left as 1 - DMULT</span></span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> GEND <span class="sc">*</span> DMULT <span class="sc">+</span> GENV <span class="sc">*</span> VMULT  <span class="co"># weighted estimate of metabolic heat generation</span></span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a><span class="co"># lung temperature and temperature of exhaled air</span></span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>TS <span class="ot">&lt;-</span> (SIMULSOL.out[<span class="dv">1</span>, <span class="dv">2</span>] <span class="sc">+</span> SIMULSOL.out[<span class="dv">2</span>, <span class="dv">2</span>]) <span class="sc">*</span> <span class="fl">0.5</span></span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>TLUNG <span class="ot">&lt;-</span> (TC <span class="sc">+</span> TS) <span class="sc">*</span> <span class="fl">0.5</span>  <span class="co"># average of skin and core</span></span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>TAEXIT <span class="ot">&lt;-</span> <span class="fu">min</span>(TA <span class="sc">+</span> DELTAR, TLUNG)  <span class="co"># temperature of exhaled air, °C</span></span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>QMIN <span class="ot">&lt;-</span> QBASAL</span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>QM1 <span class="ot">&lt;-</span> X <span class="sc">-</span> (<span class="dv">5</span> <span class="sc">*</span> QMIN)</span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>QM2 <span class="ot">&lt;-</span> X <span class="sc">+</span> (<span class="dv">10</span> <span class="sc">*</span> QMIN)</span>
-<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>QSUM <span class="ot">&lt;-</span> X</span>
-<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>TOL <span class="ot">&lt;-</span> AMASS <span class="sc">*</span> <span class="fl">0.01</span></span>
-<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>ZBRENT.in <span class="ot">&lt;-</span> <span class="fu">c</span>(TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG, </span>
-<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>    GMASS, EXTREF, RH, RELXIT, TIMACT, TAEXIT, QSUM, PANT, R_PCO2)</span>
-<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a><span class="co"># call ZBRENT subroutine which calls RESPFUN</span></span>
-<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>ZBRENT.out <span class="ot">&lt;-</span> <span class="fu">ZBRENT_ENDO</span>(QM1, QM2, TOL, ZBRENT.in)</span>
-<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(ZBRENT.out) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;RESPFN&quot;</span>, <span class="st">&quot;QRESP&quot;</span>, <span class="st">&quot;GEVAP&quot;</span>, <span class="st">&quot;PCTO2&quot;</span>, </span>
-<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;PCTN2&quot;</span>, <span class="st">&quot;PCTCO2&quot;</span>, <span class="st">&quot;RESPGEN&quot;</span>, <span class="st">&quot;O2STP&quot;</span>, <span class="st">&quot;O2MOL1&quot;</span>, <span class="st">&quot;N2MOL1&quot;</span>, </span>
-<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;AIRML1&quot;</span>, <span class="st">&quot;O2MOL2&quot;</span>, <span class="st">&quot;N2MOL2&quot;</span>, <span class="st">&quot;AIRML2&quot;</span>, <span class="st">&quot;AIRVOL&quot;</span>)</span>
-<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>tZBRENT.out <span class="ot">&lt;-</span> <span class="fu">t</span>(ZBRENT.out)</span>
-<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tZBRENT.out) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;OUTPUT&quot;</span>)</span>
-<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(tZBRENT.out)</span></code></pre></div>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>PANT <span class="ot">&lt;-</span> <span class="dv">1</span>  <span class="co"># multiplier on breathing rate (-)</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Now compute a weighted mean heat generation for all the</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co"># parts/components = (dorsal value *(FASKY+FAVEG))+(ventral</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="co"># value*FAGRD)</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>GEND <span class="ot">&lt;-</span> SIMULSOL.out[<span class="dv">1</span>, <span class="dv">6</span>]</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>GENV <span class="ot">&lt;-</span> SIMULSOL.out[<span class="dv">2</span>, <span class="dv">6</span>]</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>DMULT <span class="ot">&lt;-</span> FASKYREF <span class="sc">+</span> FAVEGREF</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>VMULT <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> DMULT  <span class="co"># Assume that reflectivity of veg below equals reflectivity of soil </span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="co"># so VMULT left as 1 - DMULT</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> GEND <span class="sc">*</span> DMULT <span class="sc">+</span> GENV <span class="sc">*</span> VMULT  <span class="co"># weighted estimate of metabolic heat generation</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a><span class="co"># lung temperature and temperature of exhaled air</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>TS <span class="ot">&lt;-</span> (SIMULSOL.out[<span class="dv">1</span>, <span class="dv">2</span>] <span class="sc">+</span> SIMULSOL.out[<span class="dv">2</span>, <span class="dv">2</span>]) <span class="sc">*</span> <span class="fl">0.5</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>TLUNG <span class="ot">&lt;-</span> (TC <span class="sc">+</span> TS) <span class="sc">*</span> <span class="fl">0.5</span>  <span class="co"># average of skin and core</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>TAEXIT <span class="ot">&lt;-</span> <span class="fu">min</span>(TA <span class="sc">+</span> DELTAR, TLUNG)  <span class="co"># temperature of exhaled air, °C</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>QMIN <span class="ot">&lt;-</span> QBASAL</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>QM1 <span class="ot">&lt;-</span> X <span class="sc">-</span> (<span class="dv">5</span> <span class="sc">*</span> QMIN)</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>QM2 <span class="ot">&lt;-</span> X <span class="sc">+</span> (<span class="dv">10</span> <span class="sc">*</span> QMIN)</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>QSUM <span class="ot">&lt;-</span> X</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>TOL <span class="ot">&lt;-</span> AMASS <span class="sc">*</span> <span class="fl">0.01</span></span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>ZBRENT.in <span class="ot">&lt;-</span> <span class="fu">c</span>(TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG,</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    GMASS, EXTREF, RH, RELXIT, <span class="dv">1</span>, TAEXIT, QSUM, PANT, R_PCO2)</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a><span class="co"># call ZBRENT subroutine which calls RESPFUN</span></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>ZBRENT.out <span class="ot">&lt;-</span> <span class="fu">ZBRENT_ENDO</span>(QM1, QM2, TOL, ZBRENT.in)</span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(ZBRENT.out) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;RESPFN&quot;</span>, <span class="st">&quot;QRESP&quot;</span>, <span class="st">&quot;GEVAP&quot;</span>, <span class="st">&quot;PCTO2&quot;</span>,</span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;PCTN2&quot;</span>, <span class="st">&quot;PCTCO2&quot;</span>, <span class="st">&quot;RESPGEN&quot;</span>, <span class="st">&quot;O2STP&quot;</span>, <span class="st">&quot;O2MOL1&quot;</span>, <span class="st">&quot;N2MOL1&quot;</span>,</span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;AIRML1&quot;</span>, <span class="st">&quot;O2MOL2&quot;</span>, <span class="st">&quot;N2MOL2&quot;</span>, <span class="st">&quot;AIRML2&quot;</span>, <span class="st">&quot;AIRVOL&quot;</span>)</span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>tZBRENT.out <span class="ot">&lt;-</span> <span class="fu">t</span>(ZBRENT.out)</span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tZBRENT.out) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;OUTPUT&quot;</span>)</span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(tZBRENT.out)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -1162,7 +1382,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 <tr class="odd">
 <td align="left">RESPGEN</td>
-<td align="right">2.7426733</td>
+<td align="right">2.7426732</td>
 </tr>
 <tr class="even">
 <td align="left">O2STP</td>

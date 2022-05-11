@@ -431,7 +431,6 @@ RQ <- 0.80 # respiratory quotient (fractional, typically 0.7 (fats)
 # to 1 (carbs), with 0.8 typical for protein)
 EXTREF <- 20 # O2 extraction efficiency (%)
 RELXIT <- 100 # relative humidity of exhaled air (%)
-TIMACT <- 1 # multiplier on metabolic rate for activity costs
 PANT <- 1 # multiplier on breathing rate (-)
 
 # Now compute a weighted mean heat generation for all the parts/components = (dorsal value *(FASKY+FAVEG))+(ventral value*FAGRD)
@@ -451,7 +450,7 @@ QM1 <- X - (5 * QMIN)
 QM2 <- X + (10 * QMIN)
 QSUM <- X
 TOL <- AMASS * 0.01
-ZBRENT.in <- c(TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG, GMASS, EXTREF, RH, RELXIT, TIMACT, TAEXIT, QSUM, PANT, R_PCO2)
+ZBRENT.in <- c(TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG, GMASS, EXTREF, RH, RELXIT, 1, TAEXIT, QSUM, PANT, R_PCO2)
 
 # call ZBRENT subroutine which calls RESPFUN
 ZBRENT.out <- ZBRENT_ENDO(QM1, QM2, TOL, ZBRENT.in)

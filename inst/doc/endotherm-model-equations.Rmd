@@ -1534,7 +1534,6 @@ Walsberg, G.E. & King, J.E. (1978) The Relationship of the External Surface Area
 |$\dot{V}_{O_{2},stp}$|$\text{m}^3 \space \text{s}^{-1}$ |$\text{O2STP}$|oxygen consumption rate at standard temperature and pressure |
 |$\dot{V}_{O_2}$|$\text{m}^3 \space \text{s}^{-1}$ |$\text{VO2CON}$|oxygen consumption rate at the current air temperature and barometric pressure |
 |$W_{body}$|$\text{m}$|$\text{AWIDTH}$| body width (flesh plus fat)|
-|$X_{act}$|$\text{none, ratio}$|$\text{TIMACT}$|user-specified activity multiplier |
 |$X_{pant}$|$\text{none, ratio}$|$\text{PANT}$|multiplier to allow enhanced respiratory heat loss via panting for thermoregulation |
 |$X_{RQ}$|$\text{none, ratio}$|-| conversion factor for liters of oxygen per kilocalorie|
 |$x_{sub}$|$\text{m}$|-| depth in the substrate from which temperature is taken for conduction calculations (assumed to be 2.5 cm) |
