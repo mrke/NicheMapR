@@ -1,16 +1,16 @@
 Package: NicheMapR
 Type: Package
 Title: R implementation of Niche Mapper software for biophysical modelling
-Version: 3.1.0
+Version: 3.2.0
 Authors@R: person("Michael", "Kearney", email = "mrke@unimelb.edu.au", role = c("aut", "cre"))
 Maintainer: Michael Kearney <mrke@unimelb.edu.au>
 Description: This packages provides an interface to a suite of biophysical
     modelling algorithms including the Niche Mapper system.
 Depends:
-    R (>= 3.4.0)
+    R (>= 3.5.0)
 License: gpl-3.0
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Remotes: ilyamaclean/microclima
 Suggests:
     devtools,
@@ -23,6 +23,7 @@ Suggests:
     rutils,
     jsonlite,
     microclima,
+    mcera5,
     RNCEP,
     jpeg,
     png,
