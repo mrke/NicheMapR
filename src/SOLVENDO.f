@@ -57,6 +57,7 @@ C     USING endo_devel.R
 
       PI = ACOS(-1.0d0)
       ZBRENTout=0.
+      QRESP=0.
       QGEN=input(1)
       QBASAL=input(2)
       TA=input(3)
@@ -150,6 +151,34 @@ C     USING endo_devel.R
       TSKINMAX=TC ! initialise
       Q10mult=1. ! initialise
       PANT_COST = 0.D0 ! initialise
+      D=0.
+      AHEIT=0.
+      AK1_LAST=0.
+      ALENTH=0.
+      AREACND=0.
+      VOL=0.
+      VMULT=0.
+      TLUNG=0.
+      TC_LAST=0.
+      SHAPEB_LAST=0.
+      R2=0.
+      R1=0.
+      PCTWET_LAST=0.
+      PANT_LAST=0.
+      MASFAT=0.
+      KFURCMPRS=0.
+      FLSHVL=0.
+      FATTHK=0.
+      FAGRD=0.
+      DMULT=0.
+      CONVSK=0.
+      CONVAR=0.
+      AWIDTH=0.
+      ASILP=0.
+      ASILN=0.
+      AREASKIN=0.
+      AREACND=0.
+      KEFARA = (/0.,0.,0./)
       
       do while(QGEN < QBASAL)
 
@@ -217,8 +246,8 @@ C     USING endo_devel.R
         QNORM = QSOLR
        endif
 
-       ABSAND = 1 - REFLFR(2) !# solar absorptivity of dorsal fur (fractional, 0-1)
-       ABSANV = 1 - REFLFR(3) !# solar absorptivity of ventral fur (fractional, 0-1)
+       ABSAND = 1. - REFLFR(2) !# solar absorptivity of dorsal fur (fractional, 0-1)
+       ABSANV = 1. - REFLFR(3) !# solar absorptivity of ventral fur (fractional, 0-1)
 
 C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
        FAVEG = FSKREF*(SHADE/100.)
@@ -310,7 +339,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
 
         !# set fur depth and conductivity
         !# index for KEFARA, the conductivity, is the average (1), front/dorsal (2), back/ventral(3) of the body part
-        if((QSOLR.GT.0).OR.(ZZFUR(2).NE.ZZFUR(3)))THEN
+        if((QSOLR.GT.0).OR.(INT(ZZFUR(2)).NE.INT(ZZFUR(3))))THEN
          if(S == 1)THEN
           ZL = ZZFUR(2)
           KEFF = KEFARA(2)
@@ -328,13 +357,13 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         RFUR = R1 + ZL !# body radius including fur, m
         D = 2. * RFUR !# diameter, m
         RRAD = RSKIN + (XR * ZL) !# effective radiation radius, m
-        IF(SHAPE.NE.4)THEN ! For cylinder and sphere geometries
+        IF(INT(SHAPE).NE.4)THEN ! For cylinder and sphere geometries
           RFURCMP=RSKIN+ZFURCOMP
         ELSE
           RFURCMP=RFUR ! Note that this value is never used if conduction not being modeled, but need to have a value for the calculations
         ENDIF
 
-        IF(SHAPE.EQ.4)THEN  ! For ellipsoid geometry
+        IF(INT(SHAPE).EQ.4)THEN  ! For ellipsoid geometry
           BLCMP=BSEMIN+ZFURCOMP
          ELSE
           BLCMP=RFUR ! Note that this value is never used if conduction not being modeled, but need to have a value for the calculations
@@ -343,13 +372,13 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         LEN = ALENTH !# length, m
 
         !# Correcting volume to account for subcutaneous fat
-        if((SUBQFAT.EQ.1.).AND.(FATTHK.GT.0.0))THEN
+        if((INT(SUBQFAT).EQ.1).AND.(FATTHK.GT.0.0))THEN
          VOL = FLSHVL
         ENDIF
 
         !# Calculating the "Cd" variable: Qcond = Cd(Tskin-Tsub), where Cd = Conduction area*ksub/subdepth
         IF(S==2)THEN ! doing ventral side, add conduction
-         AREACND = ATOT * (PCOND * 2)
+         AREACND = ATOT * (PCOND * 2.)
          CD = (AREACND * KSUB) / 0.025 !# assume conduction happens from 2.5 cm depth
         ELSE  !# doing dorsal side, no conduction. No need to adjust areas used for convection. 
          AREACND = 0.
@@ -368,13 +397,13 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
      &   PCTEYES/)
 
         !# set IPT, the geometry assumed in SIMULSOL: 1 = cylinder, 2 = sphere, 3 = ellipsoid
-        if((SHAPE.eq.1.).or.(SHAPE.eq.3.))THEN
+        if((INT(SHAPE).eq.1).or.(INT(SHAPE).eq.3))THEN
          IPT = 1.
         ENDIF
-        if(SHAPE.eq.2.)THEN
+        if(INT(SHAPE).eq.2)THEN
          IPT = 2.
         ENDIF
-        If(SHAPE.eq.4.)THEN
+        If(INT(SHAPE).eq.4)THEN
          IPT = 3.
         ENDIF
 
@@ -408,7 +437,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
        TLUNG =(TC + TS) * 0.5 !# average of skin and core
        TAEXIT = min(TA + DELTAR, TLUNG) !# temperature of exhaled air, deg C
       
-       IF(RESPIRE.EQ.1.)THEN
+       IF(INT(RESPIRE).EQ.1)THEN
         !# now guess for metabolic rate that balances the heat budget while allowing metabolic rate
         !# to remain at or above QBASAL, via 'shooting method' ZBRENT
         QMIN = QBASAL
@@ -436,7 +465,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
        TC_LAST = TC
        PANT_LAST = PANT
        PCTWET_LAST = PCTWET
-       IF(THERMOREG.EQ.1)THEN
+       IF(INT(THERMOREG).EQ.1)THEN
         if(SHAPEB.lt.SHAPEB_MAX)THEN
          SHAPEB = SHAPEB + UNCURL
         else
@@ -454,14 +483,14 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
            Q10mult = Q10**((TC - TC_REF)/10.)
            if(PANT.lt.PANT_MAX)THEN
             PANT = PANT + PANT_INC
-            PANT_COST=((PANT-1D0)/(PANT_MAX-1D0)*(PANT_MULT-1)*QBASREF)
+            PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
             QBASAL = QBASREF * Q10mult + PANT_COST           
            else
             PANT = PANT_MAX
-            PANT_COST=((PANT-1D0)/(PANT_MAX-1D0)*(PANT_MULT-1)*QBASREF)
+            PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
             QBASAL = QBASREF * Q10mult + PANT_COST           
             PCTWET = PCTWET + PCTWET_INC
-            if((PCTWET.GT.PCTWET_MAX).OR.(PCTWET_INC.eq.0.))THEN
+            if((PCTWET.GT.PCTWET_MAX).OR.(INT(PCTWET_INC).eq.0))THEN
              PCTWET = PCTWET_MAX
              RETURN
             ENDIF
@@ -526,17 +555,17 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
 
       HTOVPR = 2.5012E+06 - 2.3787E+03 * TA
       SWEATGS = (SIMULSOLout(1,6) + SIMULSOLout(2,6)) * 0.5 
-     &  / HTOVPR * 1000
+     &  / HTOVPR * 1000.
       EVAPGS = ZBRENTout(3) + SWEATGS
 
       HTOVPR=2.5012E+06 - 2.3787E+03 * TA ! latent heat of vapourisation, W/kg/C
-      SWEATGS=(QSEVAPD + QSEVAPV) * 0.5 / HTOVPR * 1000 ! water lost from skin, g/s
+      SWEATGS=(QSEVAPD + QSEVAPV) * 0.5 / HTOVPR * 1000. ! water lost from skin, g/s
       EVAPGS=GEVAP + SWEATGS ! total evaporative water loss, g/s
       sigma=5.6697E-8
       QIR=QIRIN - QIROUT
-      QIROUTD=sigma * EMISAN * AREASKIN * (TSKCALCAVD + 273.15)**4
+      QIROUTD=sigma * EMISAN * AREASKIN * (TSKCALCAVD + 273.15)**4.
       QIRIND=QRADD * (-1.) + QIROUTD
-      QIROUTV=sigma * EMISAN * AREASKIN * (TSKCALCAVD + 273.15)**4
+      QIROUTV=sigma * EMISAN * AREASKIN * (TSKCALCAVD + 273.15)**4.
       QIRINV=QRADV * (-1.) + QIROUTV
 
       QSOL=QSLRD * DMULT + QSLRV * VMULT ! solar, W
@@ -562,7 +591,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
       !names(enbal)=c("QSOL", "QIRIN", "QGEN", "QEVAP", "QIROUT", "QCONV", "QCOND", "ENB", "NTRY", "SUCCESS")
 
       MASBAL=(/AIRVOL, O2STP, GEVAP, SWEATGS, O2MOL1, 
-     & O2MOL2, N2MOL1, N2MOL2, AIRML1, AIRML2/) * 3600
+     & O2MOL2, N2MOL1, N2MOL2, AIRML1, AIRML2/) * 3600.
       !names(masbal)=c("AIR_L", "O2_L", "H2OResp_g", "H2OCut_g", "O2_mol_in", "O2_mol_out", "N2_mol_in", "N2_mol_out", "AIR_mol_in", "AIR_mol_out")
 
       RETURN

@@ -309,15 +309,15 @@ minshade <- micro$minshade[1]
 maxshade <- micro$maxshade[1]
 
 # plotting above-ground conditions in minimum shade
-with(metout, {plot(TALOC ~ micro$dates, xlab = "Date and Time", ylab = "Air Temperature (Â°C)"
+with(metout, {plot(TALOC ~ micro$dates, xlab = "Date and Time", ylab = "Air Temperature (°C)"
 , type = "l", main = paste("air temperature, ", minshade, "\% shade",sep = ""))})
-with(metout, {points(TAREF ~ micro$dates, xlab = "Date and Time", ylab = "Air Temperature (Â°C)"
+with(metout, {points(TAREF ~ micro$dates, xlab = "Date and Time", ylab = "Air Temperature (°C)"
 , type = "l",lty = 2, col = 'blue')})
 with(metout, {plot(RHLOC ~ micro$dates, xlab = "Date and Time", ylab = "Relative Humidity (\%)"
 , type = "l",ylim = c(0, 100),main = paste("humidity, ",minshade, "\% shade",sep=""))})
 with(metout, {points(RH ~ micro$dates, xlab = "Date and Time", ylab = "Relative Humidity (\%)"
 , type = "l",col = 'blue',lty = 2, ylim = c(0, 100))})
-with(metout, {plot(TSKYC ~ micro$dates, xlab = "Date and Time", ylab = "Sky Temperature (Â°C)"
+with(metout, {plot(TSKYC ~ micro$dates, xlab = "Date and Time", ylab = "Sky Temperature (°C)"
 ,  type = "l", main = paste("sky temperature, ", minshade, "\% shade", sep=""))})
 with(metout, {plot(VREF ~ micro$dates, xlab = "Date and Time",  ylab = "Wind Speed (m/s)"
 ,  type = "l", main = "wind speed", col = 'blue',ylim = c(0, 15))})
@@ -331,34 +331,34 @@ with(metout, {plot(SOLR ~ micro$dates,xlab = "Date and Time", ylab = "Solar Radi
 # plotting soil temperature for minimum shade
 for(i in 1:10){
  if(i==1){
-   plot(soil[,i + 2] ~ micro$dates, xlab = "Date and Time", ylab = "Soil Temperature (Â°C)"
+   plot(soil[,i + 2] ~ micro$dates, xlab = "Date and Time", ylab = "Soil Temperature (°C)"
    ,col = i, type = "l", main = paste("soil temperature ", minshade, "\% shade", sep=""))
  }else{
    points(soil[,i + 2] ~ micro$dates, xlab = "Date and Time", ylab = "Soil Temperature
-    (Â°C)", col = i, type = "l")
+    (°C)", col = i, type = "l")
  }
 }
 
 # plotting above-ground conditions in maximum shade
-with(shadmet,{plot(TALOC ~ micro$dates,xlab = "Date and Time", ylab = "Air Temperature (Â°C)"
+with(shadmet,{plot(TALOC ~ micro$dates,xlab = "Date and Time", ylab = "Air Temperature (°C)"
 , type = "l", main = "air temperature, sun")})
-with(shadmet,{points(TAREF ~ micro$dates,xlab = "Date and Time", ylab = "Air Temperature (Â°C)"
+with(shadmet,{points(TAREF ~ micro$dates,xlab = "Date and Time", ylab = "Air Temperature (°C)"
 , type = "l", lty = 2, col = 'blue')})
 with(shadmet,{plot(RHLOC ~ micro$dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
 , type = "l", ylim = c(0, 100),main = "humidity, shade")})
 with(shadmet,{points(RH ~ micro$dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
 , type = "l", col = 'blue',lty = 2, ylim = c(0, 100))})
-with(shadmet,{plot(TSKYC ~ micro$dates,xlab = "Date and Time", ylab = "Sky Temperature (Â°C)",
+with(shadmet,{plot(TSKYC ~ micro$dates,xlab = "Date and Time", ylab = "Sky Temperature (°C)",
  type = "l", main = "sky temperature, shade")})
 
 # plotting soil temperature for maximum shade
 for(i in 1:10){
  if(i==1){
    plot(shadsoil[,i + 2] ~ micro$dates, xlab = "Date and Time", ylab = "Soil Temperature
-    (Â°C)", col = i, type = "l", main = paste("soil temperature ", maxshade, "\% shade", sep=""))
+    (°C)", col = i, type = "l", main = paste("soil temperature ", maxshade, "\% shade", sep=""))
  }else{
    points(shadsoil[,i + 2] ~ micro$dates, xlab = "Date and Time", ylab = "Soil Temperature
-    (Â°C)", col = i, type = "l")
+    (°C)", col = i, type = "l")
  }
 }
 }

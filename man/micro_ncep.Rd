@@ -324,11 +324,11 @@ soil <- cbind(dates,soil)
 soilmoist <- cbind(dates, soilmoist)
 
 # plotting above-ground conditions in minimum shade
-with(metout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Temperature (Â°C)"
+with(metout,{plot(TALOC ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
 , type = "l",main=paste("air and sky temperature",sep=""), ylim = c(-20, 60))})
-with(metout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Temperature (Â°C)"
+with(metout,{points(TAREF ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
 , type = "l",lty=2,col='blue')})
-with(metout,{points(TSKYC ~ dates,xlab = "Date and Time", ylab = "Temperature (Â°C)"
+with(metout,{points(TSKYC ~ dates,xlab = "Date and Time", ylab = "Temperature (°C)"
 ,  type = "l",col='light blue',main=paste("sky temperature",sep=""))})
 with(metout,{plot(RHLOC ~ dates,xlab = "Date and Time", ylab = "Relative Humidity (\%)"
 , type = "l",ylim=c(0,100),main=paste("humidity",sep=""))})
@@ -346,11 +346,11 @@ with(metout,{plot(SNOWDEP ~ dates,xlab = "Date and Time", ylab = "Snow Depth (cm
 # plotting soil temperature
 for(i in 1:10){
  if(i==1){
-   plot(soil[,i+3]~soil[,1],xlab = "Date and Time", ylab = "Soil Temperature (Â°C)"
+   plot(soil[,i+3]~soil[,1],xlab = "Date and Time", ylab = "Soil Temperature (°C)"
    ,col=i,type = "l",main=paste("soil temperature",sep=""))
  }else{
    points(soil[,i+3]~soil[,1],xlab = "Date and Time", ylab = "Soil Temperature
-    (Â°C)",col=i,type = "l")
+    (°C)",col=i,type = "l")
  }
 }
 

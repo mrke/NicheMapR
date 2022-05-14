@@ -404,6 +404,7 @@ endoR_devel <- function(
   #PANTSTEP <- 0
   # check if heat stressed already (to save computation)
   QGEN <- 0
+  QRESP <- 0
   TC_REF <- TC
   QBASREF <- QBASAL
 
