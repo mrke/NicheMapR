@@ -73,7 +73,7 @@ IRPROP.lab <- c("KEFARA mean", "KEFARA dorsal", "KEFARA ventral", "BETARA mean",
 kable(cbind(IRPROP.lab, IRPROP.out[1:26]))
 ```
 
-Example analysis of fur diameter on effective thermal conductivity of fur.
+Example analysis of fur diameter on effective thermal conductivity of fur. Note this does not include the radiative component of fur conductivity, which is calculated in SIMULSOL. Empirical measurements of fur thermal conductivity will include both the radiative and conductive aspects.
 
 ```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE}
 DHAIRs <- seq(0, 150, 2) # hair diameters (micrometers)
