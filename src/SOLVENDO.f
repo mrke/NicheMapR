@@ -43,7 +43,7 @@ C     USING endo_devel.R
       DOUBLE PRECISION TRAITS,TREG,TS,TSKCALCAVD,TSKCALCAVV,TSKINMAX
       DOUBLE PRECISION TSKY,TVEG,UNCURL,VEL,VMULT,VOL,VOLFAT,X,XR,Z
       DOUBLE PRECISION ZBRENTin,ZBRENTout,ZEN,ZFUR,ZFURCOMP,ZFURD,ZFURV
-      DOUBLE PRECISION ZL,RFURCMP,BLCMP
+      DOUBLE PRECISION ZL,RFURCMP,BLCMP,KFURD,KFURV
 
       DOUBLE PRECISION, DIMENSION(3) :: KEFARA,BETARA,B1ARA,DHAR,LHAR,
      & RHOAR,ZZFUR,REFLFR
@@ -51,7 +51,7 @@ C     USING endo_devel.R
       INTEGER S
     
       DIMENSION IRPROPout(26),GEOMout(25),CONVOUT(14),
-     & SOLARout(7),SIMULSOLout(2,15),SIMULOUT(15),FURVARS(15),
+     & SOLARout(7),SIMULSOLout(2,16),SIMULOUT(16),FURVARS(15),
      & GEOMVARS(20),TRAITS(9),ENVVARS(17),ZBRENTin(17),ZBRENTout(15),
      & INPUT(89),TREG(15),MORPH(20),ENBAL(10),MASBAL(10)
 
@@ -519,6 +519,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
       QFSEVAPD=SIMULSOLout(1, 13) ! fur evaporative heat loss, W
       NTRYD=SIMULSOLout(1, 14) ! solution attempts, #
       SUCCESSD=SIMULSOLout(1, 15) ! successful solution found? (0 no, 1 yes)
+      KFURD=SIMULSOLout(1, 16) ! successful solution found? (0 no, 1 yes)
 
       ! SIMULSOL output, ventral
       TFAV=SIMULSOLout(2, 1) ! temperature of feathers/fur-air interface, deg C
@@ -536,6 +537,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
       QFSEVAPV=SIMULSOLout(2, 13) ! fur evaporative heat loss, W
       NTRYV=SIMULSOLout(2, 14) ! solution attempts, #
       SUCCESSV=SIMULSOLout(2, 15) ! successful solution found? (0 no, 1 yes)
+      KFURV=SIMULSOLout(1, 16) ! successful solution found? (0 no, 1 yes)
 
       RESPFN=ZBRENTout(1) ! heat sum (should be near zero), W
       QRESP=ZBRENTout(2) ! respiratory heat loss, W
@@ -578,8 +580,8 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
 
       TREG=(/TC_LAST, TLUNG, TSKCALCAVD, TSKCALCAVV, TFAD, TFAV,  
      & SHAPEB_LAST, PANT_LAST, PCTWET_LAST, AK1_LAST, KEFARA(1),  
-     & KEFARA(2), KEFARA(3), KFURCMPRS, Q10mult/)
-      !names(treg)=c("TC", "TLUNG", "TSKIN_D", "TSKIN_V", "TFA_D", "TFA_V", "SHAPEB", "PANT", "PCTWET", "K_FLESH", "K_FUR", "K_FUR_D", "K_FUR_V", "K_COMPFUR", "Q10")
+     & KFURD, KFURV, KFURCMPRS, Q10mult/)
+      !names(treg)=c("TC", "TLUNG", "TSKIN_D", "TSKIN_V", "TFA_D", "TFA_V", "SHAPEB", "PANT", "PCTWET", "K_FLESH", "K_EFF", "K_FUR_D", "K_FUR_V", "K_COMPFUR", "Q10")
 
       MORPH=(/ATOT, VOL, D, MASFAT, FATTHK, FLSHVL, ALENTH, AWIDTH, 
      & AHEIT, R1, R2, ASIL, ASILN, ASILP, AREASKIN, CONVSK, CONVAR, 

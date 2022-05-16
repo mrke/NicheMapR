@@ -24,10 +24,10 @@ SIMULSOL <- function(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA,
     as.double(TFA),
     as.double(SKINW),
     as.double(TSKIN),
-    results=matrix(data = 0., nrow = 1, ncol = 15),
+    results=matrix(data = 0., nrow = 1, ncol = 16),
     PACKAGE = "NicheMapR")
 
-  results <- matrix(data = 0., nrow = 1, ncol = 15)
+  results <- matrix(data = 0., nrow = 1, ncol = 16)
 
   storage.mode(results)<-"double"
   results <- a$results
