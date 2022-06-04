@@ -523,7 +523,7 @@ endoR_devel <- function(
 
     ### SIMULSOL, simultaneous solution of heat balance
     # repeat for each side, dorsal and ventral, of the animal
-    SIMULSOL.out <- matrix(data = 0, nrow = 2, ncol = 15) # vector to hold the SIMULSOL results for dorsal and ventral side
+    SIMULSOL.out <- matrix(data = 0, nrow = 2, ncol = 16) # vector to hold the SIMULSOL results for dorsal and ventral side
 
     for(S in 1:2){
 

@@ -747,58 +747,60 @@ micro_era5 <- function(
       years <- as.numeric(unique(format(tme, "%Y")))
       longitude <- loc[1]
       latitude <- loc[2]
-      if(length(years)==1){
-        hourlydata <- mcera5::extract_clim(nc = paste0(spatial, '_', years, '.nc'), long = loc[1], lat = loc[2],
+      if(is.logical(hourlydata)){
+        if(length(years)==1){
+          hourlydata <- mcera5::extract_clim(nc = paste0(spatial, '_', years, '.nc'), long = loc[1], lat = loc[2],
                                              start_time = st_time,  end_time = en_time)
-      } else {
-        for(i in 1:length(years)){
-          if(i==1){
-            hourlydata <- mcera5::extract_clim(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
+        }else{
+          for(i in 1:length(years)){
+            if(i==1){
+              hourlydata <- mcera5::extract_clim(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
                                                  start_time = st_time,
                                                  end_time = as.Date(paste(years[i],'12','31', sep='-')))
-          }
-          if(i!=1 & i!=length(years)){
-            hourlydata.i <- mcera5::extract_clim(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
+            }
+            if(i!=1 & i!=length(years)){
+              hourlydata.i <- mcera5::extract_clim(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
                                                    start_time = as.Date(paste(years[i],'01','01', sep='-')),
                                                    end_time = as.Date(paste(years[i],'12','31', sep='-')))
-            hourlydata <- dplyr::bind_rows(hourlydata, hourlydata.i)
-          }
-          if(i==length(years)){
-            hourlydata.i <- mcera5::extract_clim(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
+              hourlydata <- dplyr::bind_rows(hourlydata, hourlydata.i)
+            }
+            if(i==length(years)){
+              hourlydata.i <- mcera5::extract_clim(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
                                                    start_time = as.Date(paste(years[i],'01','01', sep='-')),
                                                    end_time = en_time)
-            hourlydata <- dplyr::bind_rows(hourlydata, hourlydata.i)
+              hourlydata <- dplyr::bind_rows(hourlydata, hourlydata.i)
+            }
           }
         }
       }
-
       # gather daily precipitation
-      if(length(years)==1){
-        dailyprecip <- mcera5::extract_precip(nc = paste0(spatial, '_', years, '.nc'), long = loc[1], lat = loc[2],
-                                                     start_time = st_time,
-                                                     end_time = en_time)
-      } else {
-        for(i in 1:length(years)){
-          if(i==1){
-            dailyprecip <- mcera5::extract_precip(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
-                                                         start_time = st_time,
-                                                         end_time = as.Date(paste(years[i],'12','31', sep='-')))
-          }
-          if(i!=1 & i!=length(years)){
-            dailyprecip.i <- mcera5::extract_precip(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
-                                                           start_time = as.Date(paste(years[i],'01','01', sep='-')),
-                                                           end_time = as.Date(paste(years[i],'12','31', sep='-')))
-            dailyprecip <- c(dailyprecip, dailyprecip.i)
-          }
-          if(i==length(years)){
-            dailyprecip.i <- mcera5::extract_precip(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
-                                                           start_time = as.Date(paste(years[i],'01','01', sep='-')),
-                                                           end_time = en_time)
-            dailyprecip <- c(dailyprecip, dailyprecip.i)
+      if(is.logical(dailyprecip)){
+        if(length(years)==1){
+          dailyprecip <- mcera5::extract_precip(nc = paste0(spatial, '_', years, '.nc'), long = loc[1], lat = loc[2],
+                                                start_time = st_time,
+                                                end_time = en_time)
+        }else{
+          for(i in 1:length(years)){
+            if(i==1){
+              dailyprecip <- mcera5::extract_precip(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
+                                                    start_time = st_time,
+                                                    end_time = as.Date(paste(years[i],'12','31', sep='-')))
+            }
+            if(i!=1 & i!=length(years)){
+              dailyprecip.i <- mcera5::extract_precip(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
+                                                      start_time = as.Date(paste(years[i],'01','01', sep='-')),
+                                                      end_time = as.Date(paste(years[i],'12','31', sep='-')))
+              dailyprecip <- c(dailyprecip, dailyprecip.i)
+            }
+            if(i==length(years)){
+              dailyprecip.i <- mcera5::extract_precip(nc = paste0(spatial, '_', years[i], '.nc'), long = loc[1], lat = loc[2],
+                                                      start_time = as.Date(paste(years[i],'01','01', sep='-')),
+                                                      end_time = en_time)
+              dailyprecip <- c(dailyprecip, dailyprecip.i)
+            }
           }
         }
       }
-
       cat("computing radiation and elevation effects with package microclima \n")
       microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = as.data.frame(hourlydata), dailyprecip = dailyprecip, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = TRUE, difani = FALSE, weather.elev = weather.elev, cad.effects = cad.effects)
 
