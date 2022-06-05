@@ -8,6 +8,7 @@
 #' @param dem A digital elevation model used by microclima for micro-topographic effects, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
 #' @param dem2 A digital elevation model used by microclima for meso-climate calculations, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
 #' @param dem.res Requested resolution of the DEM from elevatr, m
+#' @param zmin minimum elevation of DEM for terrain calculations, m (may need to be made negative if below sea level)
 #' @param pixels Number of pixels along one edge of square requested of DEM requested from elevatr, #
 #' @param REFL Soil solar reflectance, decimal \%
 #' @param slope Slope in degrees (if NA, then derived from DEM with package microclima)
@@ -336,6 +337,7 @@ micro_era5 <- function(
   dem = NA,
   dem2 = dem,
   dem.res = 30,
+  zmin = 0,
   pixels = 100,
   nyears = as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1,
   REFL = 0.15,
@@ -802,7 +804,7 @@ micro_era5 <- function(
         }
       }
       cat("computing radiation and elevation effects with package microclima \n")
-      microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = as.data.frame(hourlydata), dailyprecip = dailyprecip, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = TRUE, difani = FALSE, weather.elev = weather.elev, cad.effects = cad.effects)
+      microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = as.data.frame(hourlydata), dailyprecip = dailyprecip, dem = dem, demmeso = dem2, albr = 0, resolution = 30, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = TRUE, difani = FALSE, weather.elev = weather.elev, cad.effects = cad.effects, zmin = zmin)
 
 
       hourlyradwind <- microclima.out$hourlyradwind
