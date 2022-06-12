@@ -577,7 +577,7 @@ ectotherm <- function(
   fluid = 0,
   alpha_sub = (1 - micro$REFL),
   DEP = micro$DEP,
-  KS = micro$KK,
+  KS = micro$KS,
   b = micro$BB,
   PE = micro$PE,
   metout = micro$metout,
