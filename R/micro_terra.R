@@ -751,7 +751,7 @@ micro_terra <- function(
     }
     library(ncdf4)
     var <- "tmax"
-    baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc")
+    baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
     nc <- nc_open(baseurlagg)
     lon <- ncvar_get(nc, "lon")
     lat <- ncvar_get(nc, "lat")
@@ -781,27 +781,27 @@ micro_terra <- function(
       TMAXX <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
       var <- 'tmin'
       message('extracting minimum air temperature data from TerraClimate \n')
-      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc")
+      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
       nc <- nc_open(baseurlagg)
       TMINN <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
       message('extracting precipitation data from TerraClimate \n')
       var <- 'ppt'
-      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc")
+      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
       nc <- nc_open(baseurlagg)
       RAINFALL <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
       message('extracting wind speed data from TerraClimate \n')
       var <- 'ws'
-      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc")
+      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
       nc <- nc_open(baseurlagg)
       WIND <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
       message('extracting vapour pressure deficit data from TerraClimate \n')
       var <- 'vpd'
-      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc")
+      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
       nc <- nc_open(baseurlagg)
       VPD <- as.numeric(ncvar_get(nc, varid = var,start = start, count))
       message('extracting solar radiation data from TerraClimate \n')
       var <- 'srad'
-      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc")
+      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
       nc <- nc_open(baseurlagg)
       SRAD <- as.numeric(ncvar_get(nc, varid = var,start = start, count))
       if(runmoist == 0){
@@ -810,7 +810,7 @@ micro_terra <- function(
         message("extracting soil moisture data from TerraClimate")
         #SoilMoist <- raster::extract(soilmoisture, x) / 1000 # this is originally in mm/m
         var <- 'soil'
-        baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc")
+        baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.#fillmismatchnc")
         nc <- nc_open(baseurlagg)
         SoilMoist <- as.numeric(ncvar_get(nc, varid = var,start = start, count)) / 1000 # this is originally in mm/m
       }
@@ -824,7 +824,7 @@ micro_terra <- function(
       count <- c(1, 1, -1)
       for(i in 1:length(yearlist)){
         var <- "tmax"
-        baseurlagg <- paste0(paste0("http:/", base, "_", var),"_", yearlist[i], ".nc")
+        baseurlagg <- paste0(paste0("http:/", base, "_", var),"_", yearlist[i], ".nc#fillmismatch")
         nc <- nc_open(baseurlagg)
         message(paste0('extracting plus ', scenario,' maximum air temperature data from TerraClimate for ', yearlist[i], '\n'))
         if(i == 1){
@@ -833,7 +833,7 @@ micro_terra <- function(
           TMAXX <- c(TMAXX, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
         }
         var <- "tmin"
-        baseurlagg <- paste0(paste0("http:/", base, "_", var),"_", yearlist[i], ".nc")
+        baseurlagg <- paste0(paste0("http:/", base, "_", var),"_", yearlist[i], ".nc#fillmismatch")
         nc <- nc_open(baseurlagg)
         message(paste0('extracting plus ', scenario,' minimum air temperature data from TerraClimate for ', yearlist[i], '\n'))
         if(i == 1){
@@ -842,7 +842,7 @@ micro_terra <- function(
           TMINN <- c(TMINN, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
         }
         var <- "ppt"
-        baseurlagg <- paste0(paste0("http:/", base, "_", var),"_", yearlist[i], ".nc")
+        baseurlagg <- paste0(paste0("http:/", base, "_", var),"_", yearlist[i], ".nc#fillmismatch")
         nc <- nc_open(baseurlagg)
         message(paste0('extracting plus ', scenario,' precipitation data from TerraClimate for ', yearlist[i], '\n'))
         if(i == 1){
@@ -851,7 +851,7 @@ micro_terra <- function(
           RAINFALL <- c(RAINFALL, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
         }
         var <- "vpd"
-        baseurlagg <- paste0(paste0("http:/", base, "_", var),"_", yearlist[i], ".nc")
+        baseurlagg <- paste0(paste0("http:/", base, "_", var),"_", yearlist[i], ".nc#fillmismatch")
         nc <- nc_open(baseurlagg)
         message(paste0('extracting plus ', scenario,' vapour pressure deficit data from TerraClimate for ', yearlist[i], '\n'))
         if(i == 1){
@@ -860,7 +860,7 @@ micro_terra <- function(
           VPD <- c(VPD, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
         }
         var <- "srad"
-        baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data_plus2C/TerraClimate_2c_", var),"_", yearlist[i], ".nc")
+        baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data_plus2C/TerraClimate_2c_", var),"_", yearlist[i], ".nc#fillmismatch")
         nc <- nc_open(baseurlagg)
         message(paste0('extracting plus ', scenario,' solar radiation data from TerraClimate for ', yearlist[i], '\n'))
         if(i == 1){
@@ -870,7 +870,7 @@ micro_terra <- function(
         }
         if(runmoist == 0){
           var <- "soil"
-          baseurlagg <- paste0(paste0("http:/", base, "_", var),"_", yearlist[i], ".nc")
+          baseurlagg <- paste0(paste0("http:/", base, "_", var),"_", yearlist[i], ".nc#fillmismatch")
           nc <- nc_open(baseurlagg)
           message(paste0('extracting plus ', scenario,' soil moisture data from TerraClimate for ', yearlist[i], '\n'))
           if(i == 1){
@@ -885,7 +885,7 @@ micro_terra <- function(
       count <- c(1, 1, length(timeindex))
       message('extracting wind speed data from TerraClimate \n')
       var <- 'ws'
-      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc")
+      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
       nc <- nc_open(baseurlagg)
       WIND <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
     }
