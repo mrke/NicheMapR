@@ -67,6 +67,7 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }else{
         TMAXX <- c(TMAXX, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       }
+      nc_close(nc)
       var <- 'tmin'
       message(paste0('extracting minimum air temperature data from TerraClimate for ', yearlist[i], '\n'))
       ncfile <- paste0(source, "/TerraClimate_", var,"_", yearlist[i], ".nc#fillmismatch")
@@ -76,6 +77,7 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }else{
         TMINN <- c(TMINN, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       }
+      nc_close(nc)
       var <- 'ppt'
       message(paste0('extracting precipitation data from TerraClimate for ', yearlist[i], '\n'))
       ncfile <- paste0(source, "/TerraClimate_", var,"_", yearlist[i], ".nc#fillmismatch")
@@ -85,6 +87,7 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }else{
         RAINFALL <- c(RAINFALL, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       }
+      nc_close(nc)
       var <- 'ws'
       message(paste0('extracting wind speed data from TerraClimate for ', yearlist[i], '\n'))
       ncfile <- paste0(source, "/TerraClimate_", var,"_", yearlist[i], ".nc#fillmismatch")
@@ -94,6 +97,7 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }else{
         WIND <- c(WIND, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       }
+      nc_close(nc)
       var <- 'vpd'
       message(paste0('extracting vapour pressure deficit data from TerraClimate for ', yearlist[i], '\n'))
       ncfile <- paste0(source, "/TerraClimate_", var,"_", yearlist[i], ".nc#fillmismatch")
@@ -103,6 +107,7 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }else{
         VPD <- c(VPD, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       }
+      nc_close(nc)
       var <- 'srad'
       message(paste0('extracting solar radiation data from TerraClimate for ', yearlist[i], '\n'))
       ncfile <- paste0(source, "/TerraClimate_", var,"_", yearlist[i], ".nc#fillmismatch")
@@ -121,6 +126,7 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }else{
         SoilMoist <- c(SoilMoist, as.numeric(ncvar_get(nc, varid = var, start = start, count))) / 1000 # this is originally in mm/m
       }
+      nc_close(nc)
     }
     output <- cbind(TMINN, TMAXX, RAINFALL, VPD, SRAD, SoilMoist, WIND)
   }else{
@@ -159,6 +165,7 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }else{
         TMAXX <- c(TMAXX, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       }
+      nc_close(nc)
       var <- "tmin"
       ncfile <- paste0(base, "_", var, "_", yearlist[i], ".nc#fillmismatch")
       nc <- nc_open(ncfile)
@@ -168,6 +175,7 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }else{
         TMINN <- c(TMINN, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       }
+      nc_close(nc)
       var <- "ppt"
       ncfile <- paste0(base, "_", var, "_", yearlist[i], ".nc#fillmismatch")
       nc <- nc_open(ncfile)
@@ -186,6 +194,7 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }else{
         VPD <- c(VPD, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       }
+      nc_close(nc)
       var <- "soil"
       ncfile <- paste0(base, "_", var, "_", yearlist[i], ".nc#fillmismatch")
       nc <- nc_open(ncfile)
@@ -195,6 +204,7 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }else{
         SoilMoist <- c(SoilMoist, as.numeric(ncvar_get(nc, varid = var, start = start, count)) / 1000)# this is originally in mm/m
       }
+      nc_close(nc)
       var <- "srad"
       base <- paste0(source, '_plus2C/TerraClimate_2c')
       ncfile <- paste0(base, "_", var, "_", yearlist[i], ".nc#fillmismatch")
@@ -205,6 +215,7 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }else{
         SRAD <- c(SRAD, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       }
+      nc_close(nc)
     }
     output <- cbind(TMINN, TMAXX, RAINFALL, VPD, SRAD, SoilMoist)
   }
