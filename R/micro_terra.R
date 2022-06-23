@@ -750,11 +750,32 @@ micro_terra <- function(
            call. = FALSE)
     }
     library(ncdf4)
+    require(utils)
+    retry <- function(expr, isError=function(x) "try-error" %in% class(x), maxErrors=50, sleep=1) {
+      attempts = 0
+      retval = try(eval(expr))
+      while (isError(retval)) {
+        attempts = attempts + 1
+        if (attempts >= maxErrors) {
+          msg = sprintf("retry: too many retries [[%s]]", capture.output(str(retval)))
+          futile.logger::flog.fatal(msg)
+          stop(msg)
+        } else {
+          msg = sprintf("retry: error in attempt %i/%i [[%s]]", attempts, maxErrors,
+                        capture.output(str(retval)))
+          futile.logger::flog.error(msg)
+          warning(msg)
+        }
+        if (sleep > 0) Sys.sleep(sleep)
+        retval = try(eval(expr))
+      }
+      return(retval)
+    }
     var <- "tmax"
     baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
-    nc <- nc_open(baseurlagg)
-    lon <- ncvar_get(nc, "lon")
-    lat <- ncvar_get(nc, "lat")
+    nc <- retry(nc_open(baseurlagg))
+    lon <- retry(ncvar_get(nc, "lon"))
+    lat <- retry(ncvar_get(nc, "lat"))
     flat <- match(abs(lat - x[2]) < 1/48, 1)
     latindex <- which(flat %in% 1)
     if(length(latindex) == 0){
@@ -767,7 +788,7 @@ micro_terra <- function(
       flon <- match(abs(lon - x[1]) < 1/47.9, 1)
       lonindex <- which(flon %in% 1)[1]
     }
-    time <- ncvar_get(nc, "time")
+    time <- retry(ncvar_get(nc, "time"))
     alldays <- head(seq(as.Date('1900-01-01'), as.Date(paste0(yfinish + 1,'-01-01')), 'days'), -1)
     days1900 <- seq(1:length(alldays))
     allmonths <- head(seq(as.Date('1900-02-01'), as.Date(paste0(yfinish + 1,'-02-01')), '1 month'), -1) - 1
@@ -778,37 +799,37 @@ micro_terra <- function(
     count <- c(1, 1, length(timeindex))
     if(scenario == 0){
       message('extracting maximum air temperature data from TerraClimate\n')
-      TMAXX <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
+      TMAXX <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       nc_close(nc)
       var <- 'tmin'
       message('extracting minimum air temperature data from TerraClimate \n')
       baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
-      nc <- nc_open(baseurlagg)
-      TMINN <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
+      nc <- retry(nc_open(baseurlagg))
+      TMINN <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       nc_close(nc)
       message('extracting precipitation data from TerraClimate \n')
       var <- 'ppt'
       baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
-      nc <- nc_open(baseurlagg)
-      RAINFALL <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
+      nc <- retry(nc_open(baseurlagg))
+      RAINFALL <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       nc_close(nc)
       message('extracting wind speed data from TerraClimate \n')
       var <- 'ws'
       baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
-      nc <- nc_open(baseurlagg)
-      WIND <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
+      nc <- retry(nc_open(baseurlagg))
+      WIND <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       nc_close(nc)
       message('extracting vapour pressure deficit data from TerraClimate \n')
       var <- 'vpd'
       baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
-      nc <- nc_open(baseurlagg)
-      VPD <- as.numeric(ncvar_get(nc, varid = var,start = start, count))
+      nc <- retry(nc_open(baseurlagg))
+      VPD <- retry(as.numeric(ncvar_get(nc, varid = var,start = start, count)))
       nc_close(nc)
       message('extracting solar radiation data from TerraClimate \n')
       var <- 'srad'
       baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
-      nc <- nc_open(baseurlagg)
-      SRAD <- as.numeric(ncvar_get(nc, varid = var,start = start, count))
+      nc <- retry(nc_open(baseurlagg))
+      SRAD <- retry(as.numeric(ncvar_get(nc, varid = var,start = start, count)))
       if(runmoist == 0){
         # extract soil moisture
         #soilmoisture <- suppressWarnings(raster::brick(paste(folder, "/soilw.mon.ltm.v2.nc", sep = "")))
@@ -816,8 +837,8 @@ micro_terra <- function(
         #SoilMoist <- raster::extract(soilmoisture, x) / 1000 # this is originally in mm/m
         var <- 'soil'
         baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.#fillmismatchnc")
-        nc <- nc_open(baseurlagg)
-        SoilMoist <- as.numeric(ncvar_get(nc, varid = var,start = start, count)) / 1000 # this is originally in mm/m
+        nc <- retry(nc_open(baseurlagg))
+        SoilMoist <- retry(as.numeric(ncvar_get(nc, varid = var,start = start, count))) / 1000 # this is originally in mm/m
         nc_close(nc)
       }
     }else{
@@ -831,63 +852,63 @@ micro_terra <- function(
       for(i in 1:length(yearlist)){
         var <- "tmax"
         baseurlagg <- paste0(paste0("http:/", base, "_", var),"_", yearlist[i], ".nc#fillmismatch")
-        nc <- nc_open(baseurlagg)
+        nc <- retry(nc_open(baseurlagg))
         message(paste0('extracting plus ', scenario,' maximum air temperature data from TerraClimate for ', yearlist[i], '\n'))
         if(i == 1){
-          TMAXX <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
+          TMAXX <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
         }else{
-          TMAXX <- c(TMAXX, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+          TMAXX <- c(TMAXX, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
         }
         nc_close(nc)
         var <- "tmin"
         baseurlagg <- paste0(paste0("http:/", base, "_", var),"_", yearlist[i], ".nc#fillmismatch")
-        nc <- nc_open(baseurlagg)
+        nc <- retry(nc_open(baseurlagg))
         message(paste0('extracting plus ', scenario,' minimum air temperature data from TerraClimate for ', yearlist[i], '\n'))
         if(i == 1){
-          TMINN <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
+          TMINN <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
         }else{
-          TMINN <- c(TMINN, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+          TMINN <- c(TMINN, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
         }
         nc_close(nc)
         var <- "ppt"
         baseurlagg <- paste0(paste0("http:/", base, "_", var),"_", yearlist[i], ".nc#fillmismatch")
-        nc <- nc_open(baseurlagg)
+        nc <- retry(nc_open(baseurlagg))
         message(paste0('extracting plus ', scenario,' precipitation data from TerraClimate for ', yearlist[i], '\n'))
         if(i == 1){
-          RAINFALL <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
+          RAINFALL <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
         }else{
-          RAINFALL <- c(RAINFALL, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+          RAINFALL <- c(RAINFALL, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
         }
         nc_close(nc)
         var <- "vpd"
         baseurlagg <- paste0(paste0("http:/", base, "_", var),"_", yearlist[i], ".nc#fillmismatch")
-        nc <- nc_open(baseurlagg)
+        nc <- retry(nc_open(baseurlagg))
         message(paste0('extracting plus ', scenario,' vapour pressure deficit data from TerraClimate for ', yearlist[i], '\n'))
         if(i == 1){
-          VPD <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
+          VPD <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
         }else{
-          VPD <- c(VPD, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+          VPD <- c(VPD, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
         }
         nc_close(nc)
         var <- "srad"
         baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data_plus2C/TerraClimate_2c_", var),"_", yearlist[i], ".nc#fillmismatch")
-        nc <- nc_open(baseurlagg)
+        nc <- retry(nc_open(baseurlagg))
         message(paste0('extracting plus ', scenario,' solar radiation data from TerraClimate for ', yearlist[i], '\n'))
         if(i == 1){
-          SRAD <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
+          SRAD <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
         }else{
-          SRAD <- c(SRAD, as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+          SRAD <- c(SRAD, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
         }
         nc_close(nc)
         if(runmoist == 0){
           var <- "soil"
           baseurlagg <- paste0(paste0("http:/", base, "_", var),"_", yearlist[i], ".nc#fillmismatch")
-          nc <- nc_open(baseurlagg)
+          nc <- retry(nc_open(baseurlagg))
           message(paste0('extracting plus ', scenario,' soil moisture data from TerraClimate for ', yearlist[i], '\n'))
           if(i == 1){
-            SoilMoist <- as.numeric(ncvar_get(nc, varid = var, start = start, count)) / 1000 # this is originally in mm/m
+            SoilMoist <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))) / 1000 # this is originally in mm/m
           }else{
-            SoilMoist <- c(SoilMoist, as.numeric(ncvar_get(nc, varid = var, start = start, count)) / 1000)# this is originally in mm/m
+            SoilMoist <- c(SoilMoist, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))) / 1000)# this is originally in mm/m
           }
           nc_close(nc)
         }
@@ -898,8 +919,8 @@ micro_terra <- function(
       message('extracting wind speed data from TerraClimate \n')
       var <- 'ws'
       baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
-      nc <- nc_open(baseurlagg)
-      WIND <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
+      nc <- retry(nc_open(baseurlagg))
+      WIND <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       nc_close(nc)
     }
 
