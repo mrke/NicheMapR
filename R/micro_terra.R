@@ -751,7 +751,7 @@ micro_terra <- function(
     }
     library(ncdf4)
     require(utils)
-    retry <- function(expr, isError=function(x) "try-error" %in% class(x), maxErrors=50, sleep=1) {
+    retry <- function(expr, isError=function(x) "try-error" %in% class(x), maxErrors=100, sleep=30) {
       attempts = 0
       retval = try(eval(expr))
       while (isError(retval)) {

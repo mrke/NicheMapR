@@ -25,7 +25,7 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
     stop('package "futile.logger" is required for this opendap extraction process. Please install it.')
   }
   require(utils)
-  retry <- function(expr, isError=function(x) "try-error" %in% class(x), maxErrors=50, sleep=1) {
+  retry <- function(expr, isError=function(x) "try-error" %in% class(x), maxErrors=100, sleep=30) {
     attempts = 0
     retval = try(eval(expr))
     while (isError(retval)) {
