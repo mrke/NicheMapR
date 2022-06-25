@@ -96,6 +96,7 @@
 #' \code{TAI}{ = 0, Vector of 111 values, one per wavelenght bin, for solar attenuation - used to overide GADS}\cr\cr
 #' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 #' \code{warm}{ = 0, warming offset vector, °C (negative values mean cooling). Can supply a single value or a vector the length of the number of days to be simulated.}\cr\cr
+#' \code{terra_source}{ = NA, specify location of terraclimate data, goes to the web by default}\cr\cr
 #' \code{scenario}{ = 0, TerraClimate climate change scenario, either 0, 2 or 4 °C warmer}\cr\cr
 #'
 #' \strong{ Soil moisture mode parameters:}
@@ -417,6 +418,7 @@ micro_terra <- function(
   snowcond = 0,
   intercept = max(maxshade) / 100 * 0.3,
   grasshade = 0,
+  terra_source = NA,
   scenario = 0
 ) {
 
@@ -771,8 +773,10 @@ micro_terra <- function(
       }
       return(retval)
     }
-    var <- "tmax"
-    baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
+    if(is.na(terra_source)){
+     var <- "tmax"
+     baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
+
     nc <- retry(nc_open(baseurlagg))
     lon <- retry(ncvar_get(nc, "lon"))
     lat <- retry(ncvar_get(nc, "lat"))
@@ -923,7 +927,39 @@ micro_terra <- function(
       WIND <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       nc_close(nc)
     }
-
+    }else{
+      alldays <- head(seq(as.Date('1900-01-01'), as.Date(paste0(yfinish + 1,'-01-01')), 'days'), -1)
+      days1900 <- seq(1:length(alldays))
+      allmonths <- head(seq(as.Date('1900-02-01'), as.Date(paste0(yfinish + 1,'-02-01')), '1 month'), -1) - 1
+      allmonth.days <- head(days1900[which(alldays %in% allmonths & alldays >= as.Date('1957-12-01'))], -1)
+      month.dates.to.do <- days1900[which(alldays %in% allmonths & alldays > as.Date(paste0(ystart - 1, '-12-01')) & alldays < as.Date(paste0(yfinish, '-12-31')))]
+      terra <- as.data.frame(get_terra(ystart = ystart, yfinish = yfinish, scenario = 0, source = terra_source))
+      TMINN <- terra$TMINN
+      TMAXX <- terra$TMAXX
+      RAINFALL <- terra$RAINFALL
+      VPD <- terra$VPD
+      SRAD <- terra$SRAD
+      SoilMoist <- terra$SoilMoist
+      WIND <- terra$WIND
+      if(scenario == 4){
+        terra_cc <- as.data.frame(get_terra(ystart = ystart, yfinish = yfinish, scenario = 4, source = terra_source))
+        TMINN <- terra_cc$TMINN
+        TMAXX <- terra_cc$TMAXX
+        RAINFALL <- terra_cc$RAINFALL
+        VPD <- terra_cc$VPD
+        SRAD <- terra_cc$SRAD
+        SoilMoist <- terra_cc$SoilMoist
+      }
+      if(scenario == 2){
+        terra_cc <- as.data.frame(get_terra(ystart = ystart, yfinish = yfinish, scenario = 2, source = terra_source))
+        TMINN <- terra_cc$TMINN
+        TMAXX <- terra_cc$TMAXX
+        RAINFALL <- terra_cc$RAINFALL
+        VPD <- terra_cc$VPD
+        SRAD <- terra_cc$SRAD
+        SoilMoist <- terra_cc$SoilMoist
+      }
+    }
     # load global climate files
     gcfolder<-paste(.libPaths()[1],"/gcfolder.rda",sep="")
     if(file.exists(gcfolder)==FALSE){
