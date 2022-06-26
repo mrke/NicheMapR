@@ -213,6 +213,7 @@
 #' \item{\code{n_V}{ = c(1, 1.8, 0.5, 0.15), chem. indices of C, O, H and N in structure}\cr}
 #' \item{\code{n_P}{ = c(1, 1.8, 0.5, 0.15), chem. indices of C, O, H and N in faeces}\cr}
 #' \item{\code{n_M_nitro}{ = c(1, 4/5, 3/5, 4/5), chem. indices of C, O, H and N in nitrogenous waste}\cr}
+#' \item{\code{h_N}{ = 384238, molar enthalpy of nitrogenous waste (combustion frame of reference) (J/mol), overridden if n_M_nitro specified as urea, uric acid or ammonia}\cr}
 #'}
 #' \strong{ Holometabolous insect DEB model parameters:}
 #' \itemize{
@@ -685,6 +686,7 @@ ectotherm <- function(
   n_V = c(1, 1.8,0.5,0.15),
   n_P = c(1, 1.8,0.5,0.15),
   n_M_nitro = c(1, 4 / 5, 3 / 5, 4 / 5),
+  h_N = 384238,
   metab_mode = 0,
   stages = 8,
   S_instar = rep(2.660, stages),

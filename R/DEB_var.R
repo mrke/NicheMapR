@@ -55,6 +55,7 @@
 #' @param n_P = c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in faeces
 #' @param fdry = 0.3, Dry mass fraction of food
 #' @param n_M_nitro = c(1,4/5,3/5,4/5), Chem. indices of C, O, H and N in nitrogenous waste
+#' @param h_N = 384238, molar enthalpy of nitrogenous waste (combustion frame of reference) (J/mol), overridden if n_M_nitro specified as urea, uric acid or ammonia
 #' @param stages = 3, how many life stages?
 #' @param stage = 0, Initial stage (0=embryo, for STD 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction, for ABP 1-(stages-1) = instars, stages = adult)
 #' @param S_instar = rep(1.6, stages), stress at instar n: L_n^2/ L_n-1^2 (-)
@@ -192,6 +193,7 @@ DEB_var<-function(
   n_V=c(1,1.8,0.5,0.15),
   n_P=c(1,1.8,0.5,0.15),
   n_M_nitro=c(1,4/5,3/5,4/5),
+  h_N = 384238,
   clutchsize=2,
   clutch_ab=c(0.085,0.7),
   batch=1,
