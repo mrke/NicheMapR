@@ -201,7 +201,7 @@
 #' \item{\code{d_V}{ = 0.3, Dry mass fraction of structure (0-1)}\cr}
 #' \item{\code{d_E}{ = 0.3, Dry mass fraction of reserve (0-1)}\cr}
 #' \item{\code{d_Egg}{ = 0.3, Dry mass fraction of egg (0-1)}\cr}
-#' \item{\code{stoich_mode}{ = 0, adjust chemical indices to chemical potentials (0) or vice versa (1)}\cr}
+#' \item{\code{stoich_mode}{ = 0, adjust chemical indices to chemical potentials (0) or vice versa (1) or leave as is (2)}\cr}
 #' \item{\code{mu_X}{ = 525000, Molar Gibbs energy (chemical potential) of food (J/mol)}\cr}
 #' \item{\code{mu_E}{ = 585000, Molar Gibbs energy (chemical potential) of reserve (J/mol)}\cr}
 #' \item{\code{mu_V}{ = 500000, Molar Gibbs energy (chemical potential) of structure (J/mol)}\cr}
@@ -1287,11 +1287,13 @@ ectotherm <- function(
       n_E[2] <- ((mu_E / 10 ^ 5) - 4.3842 * n_E[1] - (-1.8176) * n_E[3] - (0.0593) * n_E[4]) / 0.9823
       n_P[2] <- ((mu_P / 10 ^ 5) - 4.3842 * n_P[1] - (-1.8176) * n_P[3] - (0.0593) * n_P[4]) / 0.9823
     }else{
-      # match stated chemical potentials to H fraction in organics
-      mu_X <- (n_X[2] * 0.9823 + 4.3842 * n_X[1] + (-1.8176) * n_X[3] + (0.0593) * n_X[4]) * 10 ^ 5
-      mu_V <- (n_V[2] * 0.9823 + 4.3842 * n_V[1] + (-1.8176) * n_V[3] + (0.0593) * n_V[4]) * 10 ^ 5
-      mu_E <- (n_E[2] * 0.9823 + 4.3842 * n_E[1] + (-1.8176) * n_E[3] + (0.0593) * n_E[4]) * 10 ^ 5
-      mu_P <- (n_P[2] * 0.9823 + 4.3842 * n_P[1] + (-1.8176) * n_P[3] + (0.0593) * n_P[4]) * 10 ^ 5
+      if(stoich_mode == 1){
+        # match stated chemical potentials to H fraction in organics
+        mu_X <- (n_X[2] * 0.9823 + 4.3842 * n_X[1] + (-1.8176) * n_X[3] + (0.0593) * n_X[4]) * 10 ^ 5
+        mu_V <- (n_V[2] * 0.9823 + 4.3842 * n_V[1] + (-1.8176) * n_V[3] + (0.0593) * n_V[4]) * 10 ^ 5
+        mu_E <- (n_E[2] * 0.9823 + 4.3842 * n_E[1] + (-1.8176) * n_E[3] + (0.0593) * n_E[4]) * 10 ^ 5
+        mu_P <- (n_P[2] * 0.9823 + 4.3842 * n_P[1] + (-1.8176) * n_P[3] + (0.0593) * n_P[4]) * 10 ^ 5
+      }
     }
     # enthalpies (combustion frame)
     h_X <- 10^5 * (4.3284 * n_X[1] + 1.0994 * n_X[2] + (-2.0915) * n_X[3] + (-0.1510) * n_X[4]) #J mol^(-1)
