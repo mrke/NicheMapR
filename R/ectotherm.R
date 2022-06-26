@@ -1282,7 +1282,7 @@ ectotherm <- function(
 
     # DEB mass balance calculations
     E_m <- (p_M * z / kap) / v # maximum reserve density, J/cm3
-    if(stoich_mode == 1){
+    if(stoich_mode == 0){
       # match H fraction in organics to stated chemical potentials (needed later for heat production)
       n_X[2] <- ((mu_X / 10 ^ 5) - 4.3842 * n_X[1] - (-1.8176) * n_X[3] - (0.0593) * n_X[4]) / 0.9823
       n_V[2] <- ((mu_V / 10 ^ 5) - 4.3842 * n_V[1] - (-1.8176) * n_V[3] - (0.0593) * n_V[4]) / 0.9823
