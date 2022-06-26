@@ -3592,13 +3592,13 @@ C     (BUT DON'T CALL IF IT IS HOUR 25, TO AVOID HAVING AN EXTRA HOUR)
           WETFAECESFLUX=FAECES(IHOUR)/(1-PFEWAT)
          ENDIF
          IF(STAGE.EQ.0)THEN
-          H2O_BAL=0.
-          H2O_BALPAST=0.
-          H2O_BAL_HR=0.
-          PCTDESI=0.
+          !H2O_BAL=0.
+          !H2O_BALPAST=0.
+          !H2O_BAL_HR=0.
+          !PCTDESI=0.
           IF(DEB1.EQ.1)THEN
-           WEVAP=0.
-           WCUT=0.
+           !WEVAP=0.
+           !WCUT=0.
            WRESP=0.
            WEYES=0.
           ENDIF
