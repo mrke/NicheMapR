@@ -840,7 +840,7 @@ micro_terra <- function(
         message("extracting soil moisture data from TerraClimate")
         #SoilMoist <- raster::extract(soilmoisture, x) / 1000 # this is originally in mm/m
         var <- 'soil'
-        baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.#fillmismatchnc")
+        baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
         nc <- retry(nc_open(baseurlagg))
         SoilMoist <- retry(as.numeric(ncvar_get(nc, varid = var,start = start, count))) / 1000 # this is originally in mm/m
         nc_close(nc)
