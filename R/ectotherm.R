@@ -1337,7 +1337,7 @@ ectotherm <- function(
     w_N <- CHON %*% n_M_nitro
 
     # DEB model initial conditions
-    V_init_baby <- 3e-9 # initial struture, cm3
+    V_init_baby <- 3e-9 # initial structure, cm3
     E_init_baby <- E_0 / V_init_baby # initial reserve density, J/cm3
     E_baby_init <- E_init_baby #
     V_baby_init <- V_init_baby

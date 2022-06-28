@@ -735,7 +735,7 @@ DEB_euler<-function(
   GFAECES <- JOJp * w_P
   GNWASTE <- JMNWASTE * w_N
   wetgonad <- ((E_R / mu_E) * w_E) / d_Egg + ((E_B / mu_E) * w_E) / d_Egg
-  wetstorage <- ((V * E / mu_E) * w_E) / d_V
+  wetstorage <- ((V * E / mu_E) * w_E) / d_E
   wetgut <- ((E_s / mu_E) * w_E) / fdry
   wetmass <- V * andens_deb + wetgonad + wetstorage + wetgut
 
