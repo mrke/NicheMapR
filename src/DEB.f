@@ -942,7 +942,7 @@ C     & *ETA_PA))/3600./TCORR
       J_O = (/JOJX, JOJV, JOJE, JOJP/) ! eta_O * diag(p_ADG(2,:)); # mol/d, J_X, J_V, J_E, J_P in rows, A, D, G in cols
       J_M = (/JMCO2, JMH2O, JMO2, JMNWASTE/) ! - (n_M\n_O) * J_O;        # mol/d, J_C, J_H, J_O, J_N in rows, A, D, G in cols
       !DEBQMET(HOUR) = sum(-J_O * MU_O -J_M * MU_M)/3600./TCORR ! W 
-      DEBQMET(HOUR) = sum(-1 * J_O * h_O -J_M * h_M) / 3600 / TCORR ! W      
+      DEBQMET(HOUR) = sum(-1 * J_O * h_O -J_M * h_M) / 3600. / TCORR ! W      
 
       DRYFOOD(HOUR)=-1*JOJX*W_X ! DRY FOOD INTAKE (G)
       FAECES(HOUR)=JOJP*W_P ! FAECES PRODUCTION (G)
@@ -961,8 +961,8 @@ C     & *ETA_PA))/3600./TCORR
       ENDIF
       WETFOOD(HOUR) = ((E_S(HOUR)/MU_E)*W_E)/(1.-FOODWATERS(DAYCOUNT)) ! WET FOOD MASS (G)
       IF(STAGE.EQ.0)THEN
-       WETMASS(HOUR) = (V(HOUR)*ANDENS_DEB+(((V(HOUR)*ED(HOUR))/MU_E) ! TOTAL WET MASS (G)
-     & *W_E)/D_V)*D_V/EGGDRYFRAC ! ADJUST FOR POSSIBLE DIFFERENT INITAL EGG WATER CONTENT
+       WETMASS(HOUR) = V(HOUR)*ANDENS_DEB+WETSTORAGE(HOUR) ! TOTAL WET MASS (G)
+!     & *W_E)/D_V)*D_V/EGGDRYFRAC ! ADJUST FOR POSSIBLE DIFFERENT INITAL EGG WATER CONTENT
       ELSE
        WETMASS(HOUR) = V(HOUR)*ANDENS_DEB+WETGONAD(HOUR)+ ! TOTAL WET MASS (G)
      & WETSTORAGE(HOUR)+WETFOOD(HOUR)

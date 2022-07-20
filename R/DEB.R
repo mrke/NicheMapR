@@ -296,8 +296,8 @@ DEB<-function(
   n_O <- cbind(n_X, n_V, n_E, n_P) # matrix of composition of organics, i.e. food, structure, reserve and faeces
   CHON <- c(12, 1, 16, 14)
   wO <- CHON %*% n_O
-  w_V <- wO[2]
-  M_V <- d_V / w_V
+  w_V <- wO[2] # molar mass of structure
+  M_V <- d_V / w_V # cmoles structure per volume structure
   y_EX <- kap_X * mu_X / mu_E # yield of reserve on food
   y_XE <- 1 / y_EX # yield of food on reserve
   y_VE <- mu_E * M_V / E_G  # yield of structure on reserve

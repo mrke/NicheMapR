@@ -1195,7 +1195,7 @@ micro_ncep <- function(
       }
       TAIRhr <- TAIRhr + warm.hr
       sigma <- 5.67e-8 #Stefan-Boltzman, W/(m.K)
-      if(IRDhr == 2){
+      if(IRD == 2){
         IRDhr <- sigma * ((IRDhr / sigma) ^ (1 / 4) + warm.hr) ^ 4 # adjust downward radiation for altered 'sky temperature'
       }
     }
