@@ -100,7 +100,7 @@ C     Paul edit 9/12/19: adding alternative Campbell and Norman 1998 vertical ai
 C     CHECK FOR FREE CONVECTION (LAPSE) CONDITIONS
       IF(T1.GE.T3)GO TO 1000
       IF(T3.LE.MAXSURF)GO TO 1000
-      IF(ZEN .GE.MAXSURF)GO TO 1000
+      IF(ZEN .GE.90.)GO TO 1000
 
 C     NEGLECTING FREE CONV. CORRECTION (4%)FOR SEGMENTED PROFILES.
 
@@ -167,7 +167,7 @@ C     Use vertical temperature profile from Campbell and Norman 1998
       IF(NAIR.LE.0) RETURN
       DO 5 I=1,NAIR
 C      FILL OUT VEL. AND TEMP. PROFILES
-       IF((T1.GE.T3).or.(T3.LE.MAXSURF).or.(ZEN .GE. 81.))THEN
+       IF((T1.GE.T3).or.(T3.LE.MAXSURF).or.(ZEN .GE. 90.))THEN
         VV(I)=2.5*USTAR*dLOG(ZZ(I)/Z0+1)
        ELSE
         X1=PHI(ZZ(I))
