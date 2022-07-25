@@ -1100,6 +1100,12 @@ micro_ncep <- function(
         RAINFALL <- RAINFALL * RAIN_diff
       }
       RAINFALL[RAINFALL < 0.1] <- 0
+      if(rainhourly == 0){ # putting daily rainfall on midnight (account for local solar time)
+        midnight <- which(microclima.out$hourlydata$szenith[1:24] == max(microclima.out$hourlydata$szenith[1:24]))
+        midnights <- seq(midnight, length(RAINhr / 24) - 1, 24)
+        RAINhr[midnights] <- RAINFALL
+        rainhourly <- 1
+      }
       ZENhr2 <- ZENhr
       ZENhr2[ZENhr2!=90] <- 0
       dmaxmin <- function(x, fun) {
