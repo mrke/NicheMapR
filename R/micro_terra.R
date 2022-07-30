@@ -933,7 +933,7 @@ micro_terra <- function(
       allmonths <- head(seq(as.Date('1900-02-01'), as.Date(paste0(yfinish + 1,'-02-01')), '1 month'), -1) - 1
       allmonth.days <- head(days1900[which(alldays %in% allmonths & alldays >= as.Date('1957-12-01'))], -1)
       month.dates.to.do <- days1900[which(alldays %in% allmonths & alldays > as.Date(paste0(ystart - 1, '-12-01')) & alldays < as.Date(paste0(yfinish, '-12-31')))]
-      terra <- as.data.frame(get_terra(ystart = ystart, yfinish = yfinish, x = loc, scenario = 0, source = terra_source))
+      terra <- as.data.frame(get_terra(x = loc, ystart = ystart, yfinish = yfinish, scenario = 0, source = terra_source))
       TMINN <- terra$TMINN
       TMAXX <- terra$TMAXX
       RAINFALL <- terra$RAINFALL
@@ -942,7 +942,7 @@ micro_terra <- function(
       SoilMoist <- terra$SoilMoist
       WIND <- terra$WIND
       if(scenario == 4){
-        terra_cc <- as.data.frame(get_terra(ystart = ystart, yfinish = yfinish, scenario = 4, source = terra_source))
+        terra_cc <- as.data.frame(get_terra(x = loc, ystart = ystart, yfinish = yfinish, scenario = 4, source = terra_source))
         TMINN <- terra_cc$TMINN
         TMAXX <- terra_cc$TMAXX
         RAINFALL <- terra_cc$RAINFALL
@@ -951,7 +951,7 @@ micro_terra <- function(
         SoilMoist <- terra_cc$SoilMoist
       }
       if(scenario == 2){
-        terra_cc <- as.data.frame(get_terra(ystart = ystart, yfinish = yfinish, scenario = 2, source = terra_source))
+        terra_cc <- as.data.frame(get_terra(x = loc, ystart = ystart, yfinish = yfinish, scenario = 2, source = terra_source))
         TMINN <- terra_cc$TMINN
         TMAXX <- terra_cc$TMAXX
         RAINFALL <- terra_cc$RAINFALL
