@@ -1006,12 +1006,12 @@ micro_ncep <- function(
           return(sp_diff)
         }
 
-        terra <- as.data.frame(get_terra(ystart = ystart_terra, yfinish = yfinish_terra, source = terra_source))
+        terra <- as.data.frame(get_terra(x = loc, ystart = ystart_terra, yfinish = yfinish_terra, source = terra_source))
         if(scenario == 4){
-          terra_cc <- as.data.frame(get_terra(ystart = ystart_terra, yfinish = yfinish_terra, scenario = 4, source = terra_source))
+          terra_cc <- as.data.frame(get_terra(x = loc, ystart = ystart_terra, yfinish = yfinish_terra, scenario = 4, source = terra_source))
         }
         if(scenario == 2){
-          terra_cc <- as.data.frame(get_terra(ystart = ystart_terra, yfinish = yfinish_terra, scenario = 2, source = terra_source))
+          terra_cc <- as.data.frame(get_terra(x = loc, ystart = ystart_terra, yfinish = yfinish_terra, scenario = 2, source = terra_source))
         }
 
         tmin_diffs <- terra_cc$TMINN - terra$TMINN

@@ -447,7 +447,7 @@ micro_aust <- function(
       coordinates(xy) = ~x + y
       proj4string(xy) = "+init=epsg:4326"
       xy <- as.data.frame(spTransform(xy, crs(dem)))
-      elev <- extract(dem, xy)[1]
+      elev <- raster::extract(dem, xy)[1]
     }
     require(RNetCDF)
     ALTITUDES <- elev
@@ -879,11 +879,11 @@ micro_aust <- function(
           NArem <- grid[[1]]
           NArem <- Which(!is.na(NArem), cells = TRUE)
           dist <- distanceFromPoints(maxTst05[[1]], x)
-          distNA <- extract(dist, NArem)
+          distNA <- raster::extract(dist, NArem)
           cellsR <- cbind(distNA, NArem)
           distmin <- which.min(distNA)
           cellrep <- cellsR[distmin, 2]
-          diffs <- extract(maxTst05, cellrep)
+          diffs <- raster::extract(maxTst05, cellrep)
           diff1 <- (unlist(diffs[1]) + unlist(diffs[12])) / 2
         }
         diffs3 <- rep(c(diff1, diffs, diff1), nyears)
@@ -902,22 +902,22 @@ micro_aust <- function(
       # Max and Min Air Temps
       ccdir <- "/vlsci/VR0212/mrke"
       load(file = paste0(ccdir, "/Australia Climate Change/", scenario, "/", "maxTst05_", scenario, "_", year, ".Rda")) #maxTst05
-      diffs <- extract(maxTst05,  x)
+      diffs <- raster::extract(maxTst05,  x)
       TMAXX_diff <- getdiff(diffs, maxTst05)
       load(file = paste0(ccdir, "/Australia Climate Change/", scenario, "/", "minTst05_", scenario, "_", year, ".Rda")) #minTst05
-      diffs <- extract(minTst05, x)
+      diffs <- raster::extract(minTst05, x)
       TMINN_diff <- getdiff(diffs, minTst05)
       # RH
       load(file = paste0(ccdir,  "/Australia Climate Change/", scenario, "/", "RHst05_", scenario, "_", year, ".Rda")) #maxTst05
-      diffs <- extract(RHst05, x)
+      diffs <- raster::extract(RHst05, x)
       RH_diff <- getdiff(diffs, RHst05)
       # wind
       load(file = paste0(ccdir, "/Australia Climate Change/", scenario, "/", "PT_VELst05_", scenario, "_", year, ".Rda"))
-      diffs <- extract(PT_VELst05, x)
+      diffs <- raster::extract(PT_VELst05, x)
       WIND_diff <- getdiff(diffs, PT_VELst05)
       # SOLAR/CLOUD COVER
       load(file = paste0("c:/Spatial_Data/Australia Climate Change/", scenario, "/", "SOLCst05_", scenario, "_", year, ".Rda"))
-      diffs <- extract(SOLCst05, x)
+      diffs <- raster::extract(SOLCst05, x)
       SOLAR_diff <- getdiff(diffs, SOLCst05)
     }
 
@@ -1224,7 +1224,7 @@ micro_aust <- function(
           RAINFALL_sum <- RAINFALL_sum[order(as.Date(paste0("01-",RAINFALL_sum$Group.1), "%m-%Y")), 2]
 
           load(file = paste0("c:/Spatial_Data/Australia Climate Change/", scenario, "/", "RAINst05_", scenario, "_", year, ".Rda"))
-          diffs <- rep(extract(RAINst05, x), nyears)
+          diffs <- rep(raster::extract(RAINst05, x), nyears)
 
           if(is.na(diffs[1]) == TRUE){
             print("no data")
@@ -1232,11 +1232,11 @@ micro_aust <- function(
             NArem <-RAINst05[[1]] # don't need to re-do this within bioregion loop
             NArem <- Which(!is.na(NArem), cells = TRUE)
             dist <- distanceFromPoints(RAINst05[[1]], y)
-            distNA <- extract(dist, NArem)
+            distNA <- raster::extract(dist, NArem)
             cellsR <- cbind(distNA, NArem)
             distmin <- which.min(distNA)
             cellrep <- cellsR[distmin, 2]
-            diffs <- rep(extract(RAINst05, cellrep), nyears)
+            diffs <- rep(raster::extract(RAINst05, cellrep), nyears)
           }
 
           rainfall_new <- (RAINFALL_sum * diffs)
@@ -1245,7 +1245,7 @@ micro_aust <- function(
 
           ## Now extract predicted change in mm
           load(file = paste0("c:/Spatial_Data/Australia Climate Change/", scenario, "/" ,"RAINst05_mm_", scenario, "_", year, ".Rda"))
-          rainfall_change_mm <- rep(extract(RAINst05_mm, x), nyears)
+          rainfall_change_mm <- rep(raster::extract(RAINst05_mm, x), nyears)
 
           #########Now get predicted change in rainfall (could also get this from OzClim or ClimSim layer)#############
           Diff_prop <- rainfall_new/RAINFALL_sum # proportion change
@@ -1582,18 +1582,18 @@ micro_aust <- function(
           xy <- as.data.frame(spTransform(xy, crs(dem)))
           if (class(slope) == "logical") {
             slope <- terrain(dem, unit = "degrees")
-            slope <- extract(slope, xy)
+            slope <- raster::extract(slope, xy)
           }
           if (class(aspect) == "logical") {
             aspect <- terrain(dem, opt = "aspect", unit = "degrees")
-            aspect <- extract(aspect, xy)
+            aspect <- raster::extract(aspect, xy)
           }
           ha <- 0
           if(is.na(hori[1]) == "TRUE"){
             ha36 <- 0
             for (i in 0:35) {
               har <- horizonangle(dem, i * 10, res(dem)[1])
-              ha36[i + 1] <- atan(extract(har, xy)) * (180/pi)
+              ha36[i + 1] <- atan(raster::extract(har, xy)) * (180/pi)
             }
           }else{
             ha36 <- spline(x = hori, n = 36, method =  'periodic')$y

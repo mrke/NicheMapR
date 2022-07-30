@@ -642,8 +642,8 @@ micro_uk <- function(
 +ellps=airy +datum=OSGB36 +units=m +no_defs'
     sp <-  sp::spTransform(sp::SpatialPoints(x,proj4string=sp::CRS(wgs84)),sp::CRS(bng))
     x2 <- sp@coords
-    UKDEM <-extract(raster::raster(paste0(spatial,"/terr1000.tif")), x2)
-    ALTITUDES <- extract(raster::raster(paste0(spatial,"/terr50.tif")), x2)
+    UKDEM <-raster::extract(raster::raster(paste0(spatial,"/terr1000.tif")), x2)
+    ALTITUDES <- raster::extract(raster::raster(paste0(spatial,"/terr50.tif")), x2)
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-UKDEM}
     if(is.na(elev) == FALSE){ # check if user-specified elevation
       ALTITUDES <- elev

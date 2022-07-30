@@ -653,7 +653,7 @@ micro_usa <- function(
           start = start, count = count, unpack = TRUE)))
         RNetCDF::close.nc(nc)
       }else{
-        USADEM <- extract(raster::raster(paste0(spatial,"/metdata_elevationdata.nc")), x) # metres above sea level
+        USADEM <- raster::extract(raster::raster(paste0(spatial,"/metdata_elevationdata.nc")), x) # metres above sea level
       }
       if(save == 1){
         cat("saving DEM data for later \n")
@@ -665,7 +665,7 @@ micro_usa <- function(
       load('USADEM.Rda')
     }
 
-    ALTITUDES <- NA# extract(raster(paste0(spatial,"/terr50.tif")), x) # to do
+    ALTITUDES <- NA# raster::extract(raster(paste0(spatial,"/terr50.tif")), x) # to do
     if(is.na(elev) == FALSE){ALTITUDES <- elev} # check if user-specified elevation
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-USADEM}
     if(save != 2){

@@ -933,7 +933,7 @@ micro_terra <- function(
       allmonths <- head(seq(as.Date('1900-02-01'), as.Date(paste0(yfinish + 1,'-02-01')), '1 month'), -1) - 1
       allmonth.days <- head(days1900[which(alldays %in% allmonths & alldays >= as.Date('1957-12-01'))], -1)
       month.dates.to.do <- days1900[which(alldays %in% allmonths & alldays > as.Date(paste0(ystart - 1, '-12-01')) & alldays < as.Date(paste0(yfinish, '-12-31')))]
-      terra <- as.data.frame(get_terra(ystart = ystart, yfinish = yfinish, scenario = 0, source = terra_source))
+      terra <- as.data.frame(get_terra(ystart = ystart, yfinish = yfinish, x = loc, scenario = 0, source = terra_source))
       TMINN <- terra$TMINN
       TMAXX <- terra$TMAXX
       RAINFALL <- terra$RAINFALL
@@ -980,7 +980,7 @@ micro_terra <- function(
     #ALTT <- as.numeric(CLIMATE[, 1])
     library(dismo)
     elevation <- getData("worldclim", var = "alt", res = 2.5)
-    ALTT <- extract(elevation, x)
+    ALTT <- raster::extract(elevation, x)
     if(is.na(ALTT)){
       ALTT <- 0
     }
@@ -996,17 +996,17 @@ micro_terra <- function(
       coordinates(xy) = ~x + y
       proj4string(xy) = "+init=epsg:4326"
       xy <- as.data.frame(spTransform(xy, crs(dem)))
-      elev <- extract(dem, xy)[1]
+      elev <- raster::extract(dem, xy)[1]
       if(terrain == 1){
         cat('computing slope, aspect and horizon angles \n')
         slope <- terrain(dem, unit = "degrees")
-        slope <- extract(slope, xy)
+        slope <- raster::extract(slope, xy)
         aspect <- terrain(dem, opt = "aspect", unit = "degrees")
-        aspect <- extract(aspect, xy)
+        aspect <- raster::extract(aspect, xy)
         ha24 <- 0
         for (i in 0:23) {
           har <- horizonangle(dem, i * 10, res(dem)[1])
-          ha24[i + 1] <- atan(extract(har, xy)) * (180/pi)
+          ha24[i + 1] <- atan(raster::extract(har, xy)) * (180/pi)
         }
         hori <- ha24
       }
@@ -1332,17 +1332,17 @@ micro_terra <- function(
       xy <- as.data.frame(spTransform(xy, crs(dem)))
       if (class(slope) == "logical") {
         slope <- terrain(dem, unit = "degrees")
-        slope <- extract(slope, xy)
+        slope <- raster::extract(slope, xy)
       }
       if (class(aspect) == "logical") {
         aspect <- terrain(dem, opt = "aspect", unit = "degrees")
-        aspect <- extract(aspect, xy)
+        aspect <- raster::extract(aspect, xy)
       }
       ha <- 0
       ha36 <- 0
       for (i in 0:35) {
         har <- horizonangle(dem, i * 10, res(dem)[1])
-        ha36[i + 1] <- atan(extract(har, xy)) * (180/pi)
+        ha36[i + 1] <- atan(raster::extract(har, xy)) * (180/pi)
       }
       for (i in 1:length(hour.microclima)) {
         saz <- solazi(hour.microclima[i], lat, long, jd[i], merid = long)

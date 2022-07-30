@@ -861,8 +861,7 @@ ectotherm <- function(
     errors<-1
   }
   if(pantmax < 1){
-    message("error: pantmax should be greater than or equal to 1 \n")
-    errors<-1
+    message("warming: pantmax should be greater than or equal to 1 unless you want to simluate the effect of no respiratory water loss\n")
   }
   if(F_O2 < 0 | F_O2 > 100){
     message("error: F_O2 can only be from 0 to 100 \n")
