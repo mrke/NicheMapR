@@ -836,7 +836,7 @@ micro_era5 <- function(
         yearstodo <- seq(ystart, yfinish)
         nyears <- yfinish - ystart + 1
         if(yfinish > 2015){
-          ystart_terra <- 2015 - nyears
+          ystart_terra <- 2015 - nyears + 1
           yfinish_terra <- 2015
           message(paste0("terraclimate climate change scenarios are for 1985 to 2015 - using ", ystart, "-", yfinish), '\n')
         }else{
@@ -996,13 +996,18 @@ micro_era5 <- function(
       }
       WNhr <- hourlyradwind$windspeed
       WNhr[is.na(WNhr)] <- 0.1
-      RAINhr <- WNhr * 0 # using daily rain for now
+      if(rainhourly == 0){
+        RAINhr = rep(0, 24 * ndays)
+      }else{
+        RAINhr = rainhour
+      }
       PRESShr <- hourlydata$pressure
       RAINFALL <- dailyprecip
       if(scenario != 0){
         RAINFALL <- RAINFALL * RAIN_diff
       }
       RAINFALL[RAINFALL < 0.1] <- 0
+
       if(rainhourly == 0){ # putting daily rainfall on midnight (account for local solar time)
         midnight <- which(microclima.out$hourlydata$szenith[1:24] == max(microclima.out$hourlydata$szenith[1:24]))
         midnights <- seq(midnight, length(RAINhr / 24) - 1, 24)
@@ -1213,11 +1218,7 @@ micro_era5 <- function(
     AMINUT <- as.numeric(AMINUT)
     ALAT <-as.numeric(ALAT)
     hourly <- 1
-    if(rainhourly == 0){
-      RAINhr = rep(0, 24 * ndays)
-    }else{
-      RAINhr = rainhour
-    }
+
     TIMAXS <- c(1, 1, 0, 0)
     TIMINS <- c(0, 0, 1, 1)
     # microclimate input parameters list

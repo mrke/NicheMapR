@@ -935,7 +935,7 @@ micro_ncep <- function(
         yearstodo <- seq(ystart, yfinish)
         nyears <- yfinish - ystart + 1
         if(yfinish > 2015){
-          ystart_terra <- 2015 - nyears
+          ystart_terra <- 2015 - nyears + 1
           yfinish_terra <- 2015
           message(paste0("terraclimate climate change scenarios are for 1985 to 2015 - using ", ystart, "-", yfinish), '\n')
         }else{
@@ -1093,7 +1093,11 @@ micro_ncep <- function(
       }
       WNhr <- hourlyradwind$windspeed
       WNhr[is.na(WNhr)] <- 0.1
-      RAINhr <- WNhr * 0 # using daily rain for now
+      if(rainhourly == 0){
+        RAINhr = rep(0, 24 * ndays)
+      }else{
+        RAINhr = rainhour
+      }
       PRESShr <- hourlydata$pressure
       RAINFALL <- dailyprecip
       if(scenario != 0){
