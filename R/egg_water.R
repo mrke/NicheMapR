@@ -9,7 +9,7 @@
 #' @param t time intervals (s) at which output is required
 #' @param m_init = 5.8 / 1000, mass of freshly laid egg (kg)
 #' @param psi_e_init = -707, water potential of freshly laid egg (J/kg)
-#' @param A_tot = 16.46 / 10000, total surface area (m2)
+#' @param shape = 0.6, ratio of minor axes major axis of ellipsoid (-)
 #' @param f_air = 0.5, fraction of egg surface exposed to air
 #' @param K_e = 1.12 * 60 * 24 / 1e6 / (3600 * 24 * 10), hydraulic conductance of egg (kg m-2 s-1 (J/kg)-1), converted from original μg cm-2 min-1 bar-1
 #' @param spec_hyd = 0.5, water potential-specific hydration (cm3 cm-3 bar-1)
@@ -32,7 +32,7 @@
 #' # egg functional traits
 #' m_init <- 5.8 / 1000 # kg, mass of freshly laid egg
 #' psi_e_init <- -707 # J/kg, water potential of freshly laid egg
-#' A_tot <- 16.46 / 10000 # m2, total surface area
+#' shape <- 0.6, ratio of minor axes major axis of ellipsoid (-)
 #' f_air <- 0.5 # -, fraction of egg surface exposed to air
 #' K_e <- 1.12 * 60 * 24 / 1e6 / (3600 * 24 * 10) # kg m-2 s-1 (J/kg)-1, hydraulic conductance of egg
 #' spec_hyd <- 0.0304 / 100 # m3 m-3 (J/kg)-1, water potential-specific hydration, empirically determined from linear model
@@ -68,7 +68,7 @@
 #' PSIsoilf <- approxfun(t, rep(PSI_soil, length(t)), rule = 2) # J/kg, soil water potential
 #'
 #' # input parameters
-#' indata <- list(A_tot = A_tot, K_e = K_e, spec_hyd = spec_hyd, f_air = f_air, pct_wet = pct_wet, elev = elev, vel = vel, K_sat = K_sat, P_e = P_e, b = b)
+#' indata <- list(shape = shape, K_e = K_e, spec_hyd = spec_hyd, f_air = f_air, pct_wet = pct_wet, elev = elev, vel = vel, K_sat = K_sat, P_e = P_e, b = b)
 #'
 #' # solve
 #' egg_ode <- as.data.frame(deSolve::ode(y = c(m_init, psi_e_init), times = t, func = egg_water, parms = indata))
@@ -86,7 +86,21 @@ egg_water <- function(t, y, indata) {
     m <- as.numeric(y[1]) # kg, mass
     psi_e <- as.numeric(y[2]) # J/kg, water potential of egg
 
-    # derived parameters
+
+    # area calculation for ellipsoid
+    get_area <- function(a = 1, b = b, mass = mass){ # from GEOM.f in ectotherm model
+      ratio <- a / b
+      volume <- mass / 1e6 # cm3 to m3
+      b <- ((3 * volume) / (4 * 3.14159 * ratio)) ^ 0.333 # semi-minor axis 1
+      c <- b # semi-minor axis 2
+      a <- b * ratio # semi-major axis
+      # formula for surface area of an ellipsoid
+      Ecc <- sqrt(a ^ 2 - c ^ 2) / a # eccentricity
+      A_tot <- (2 * pi * b ^ 2 + 2 * pi * ((a * b) / Ecc) * asin(Ecc)) # m2
+    }
+
+    # calculate areas
+    A_tot <- get_area(b = shape, mass = m * 1000)
     A_e <- A_tot * f_air # m2, surface area exposed to air
     A_s <- A_tot * (1 - f_air) # m2, surface area in contact with soil
 
@@ -126,7 +140,10 @@ egg_water <- function(t, y, indata) {
 
       # vapour densities
       rho_H2O_air <- WETAIR(db = T_air, rh = RH)$vd # vapour density of air, kg/m3
-      rho_H2O_skin <- WETAIR(db = T_egg, rh = 100)$vd # vapour density of air, kg/m3
+      MW <- 0.018 # molar mass of water, kg/mol
+      R <- 8.314 # gas constant, J/mol/K
+      RH_egg <- exp(psi_e / (R / MW * (T_egg + 273.15))) * 100 # %, relative humidity
+      rho_H2O_skin <- WETAIR(db = T_egg, rh = RH_egg)$vd # vapour density of egg, kg/m3
 
       # area wet
       A_eff <- A_e * pct_wet / 100 # get effective wet area
@@ -141,7 +158,7 @@ egg_water <- function(t, y, indata) {
     RH <- RHsoilf(t) * 100 # %, relative humidity
     if(RH > 100){RH <- 100}
     if(RH < 0){RH <- 0}
-    m_a <- egg_evap(T_air, T_egg, RH, vel, elev, m, A_e, pct_wet) # kg/s, evapourative water exchange
+    m_a <- egg_evap(T_air, T_egg, RH, vel, elev, m, A_e, pct_wet) # kg/s, evaporative water exchange
 
     # liquid water exchange calculations
     psi_s <- min(0, PSIsoilf(t)) # interpolate water potential to current time, J/kg
