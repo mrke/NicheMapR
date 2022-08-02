@@ -43,6 +43,7 @@ DEB_const(
   d_V = 0.3,
   d_E = 0.3,
   d_Egg = 0.3,
+  stoich_mode = 0,
   mu_X = 525000,
   mu_E = 585000,
   mu_V = 5e+05,
@@ -54,6 +55,7 @@ DEB_const(
   n_V = c(1, 1.8, 0.5, 0.15),
   n_P = c(1, 1.8, 0.5, 0.15),
   n_M_nitro = c(1, 4/5, 3/5, 4/5),
+  h_N = 384238,
   clutchsize = 2,
   clutch_ab = c(0.085, 0.7),
   batch = 1,
@@ -159,6 +161,8 @@ DEB_const(
 
 \item{d_Egg}{= 0.3, Dry mass fraction of egg}
 
+\item{stoich_mode}{= 0, adjust chemical indices to chemical potentials (0) or vice versa (1), or leave as is (2)}
+
 \item{mu_X}{= 525000, Molar Gibbs energy (chemical potential) of food (J/mol)}
 
 \item{mu_E}{= 585000, Molar Gibbs energy (chemical potential) of reserve (J/mol)}
@@ -180,6 +184,8 @@ DEB_const(
 \item{n_P}{= c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in faeces}
 
 \item{n_M_nitro}{= c(1,4/5,3/5,4/5), Chem. indices of C, O, H and N in nitrogenous waste}
+
+\item{h_N}{= 384238, molar enthalpy of nitrogenous waste (combustion frame of reference) (J/mol), overridden if n_M_nitro specified as urea, uric acid or ammonia}
 
 \item{clutchsize}{= 2, Clutch size (#), overridden by \code{clutch_ab}}
 

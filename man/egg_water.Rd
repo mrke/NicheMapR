@@ -13,7 +13,7 @@ ode(y = c(m_init, psi_e_init), times = t, func = egg_water, parms = indata)
 
 \item{psi_e_init}{= -707, water potential of freshly laid egg (J/kg)}
 
-\item{A_tot}{= 16.46 / 10000, total surface area (m2)}
+\item{shape}{= 0.6, ratio of minor axes major axis of ellipsoid (-)}
 
 \item{f_air}{= 0.5, fraction of egg surface exposed to air}
 
@@ -60,7 +60,7 @@ library(NicheMapR)
 # egg functional traits
 m_init <- 5.8 / 1000 # kg, mass of freshly laid egg
 psi_e_init <- -707 # J/kg, water potential of freshly laid egg
-A_tot <- 16.46 / 10000 # m2, total surface area
+shape <- 0.6, ratio of minor axes major axis of ellipsoid (-)
 f_air <- 0.5 # -, fraction of egg surface exposed to air
 K_e <- 1.12 * 60 * 24 / 1e6 / (3600 * 24 * 10) # kg m-2 s-1 (J/kg)-1, hydraulic conductance of egg
 spec_hyd <- 0.0304 / 100 # m3 m-3 (J/kg)-1, water potential-specific hydration, empirically determined from linear model
@@ -96,7 +96,7 @@ RHsoilf <- approxfun(t, rep(RH_soil, length(t)), rule = 2) # fractional, relativ
 PSIsoilf <- approxfun(t, rep(PSI_soil, length(t)), rule = 2) # J/kg, soil water potential
 
 # input parameters
-indata <- list(A_tot = A_tot, K_e = K_e, spec_hyd = spec_hyd, f_air = f_air, pct_wet = pct_wet, elev = elev, vel = vel, K_sat = K_sat, P_e = P_e, b = b)
+indata <- list(shape = shape, K_e = K_e, spec_hyd = spec_hyd, f_air = f_air, pct_wet = pct_wet, elev = elev, vel = vel, K_sat = K_sat, P_e = P_e, b = b)
 
 # solve
 egg_ode <- as.data.frame(deSolve::ode(y = c(m_init, psi_e_init), times = t, func = egg_water, parms = indata))

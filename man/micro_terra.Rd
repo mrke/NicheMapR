@@ -137,6 +137,7 @@ by choosing the option 'run.gads<-1' (Fortran version, quicker but may crash on 
 \code{TAI}{ = 0, Vector of 111 values, one per wavelenght bin, for solar attenuation - used to overide GADS}\cr\cr
 \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 \code{warm}{ = 0, warming offset vector, °C (negative values mean cooling). Can supply a single value or a vector the length of the number of days to be simulated.}\cr\cr
+\code{terra_source}{ = NA, specify location of terraclimate data, goes to the web by default}\cr\cr
 \code{scenario}{ = 0, TerraClimate climate change scenario, either 0, 2 or 4 °C warmer}\cr\cr
 
 \strong{ Soil moisture mode parameters:}

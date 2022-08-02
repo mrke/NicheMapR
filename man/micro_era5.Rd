@@ -22,6 +22,8 @@ Usrhyt = 0.01, ...)
 
 \item{dem.res}{Requested resolution of the DEM from elevatr, m}
 
+\item{zmin}{minimum elevation of DEM for terrain calculations, m (may need to be made negative if below sea level)}
+
 \item{pixels}{Number of pixels along one edge of square requested of DEM requested from elevatr, #}
 
 \item{REFL}{Soil solar reflectance, decimal \%}
