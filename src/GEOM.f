@@ -118,6 +118,7 @@ C      ENDIF
 
 C     EGGS ARE ELLIPSOID
       IF((DEB1.EQ.1).AND.(STAGE.LT.1).AND.(VIVIPAROUS.EQ.0))THEN
+       PEYES=0.
        GEOMETRY=2
        A=((3./4.)*VOL/(PI*EGGSHP(2)*EGGSHP(3)))**(1./3.)
        B=A*EGGSHP(2)
