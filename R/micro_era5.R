@@ -920,6 +920,9 @@ micro_era5 <- function(
         precip_diffs <- terra_cc$RAINFALL / terra$RAINFALL
         srad_diffs <- terra_cc$SRAD / terra$SRAD
         vpd_diffs <- terra_cc$VPD / terra$VPD
+        srad_diffs[is.na(srad_diffs)] <- 1
+        vpd_diffs[is.na(vpd_diffs)] <- 1
+        precip_diffs[is.na(precip_diffs)] <- 1
 
         TMINN_diff <- getdiff(tmin_diffs)
         TMAXX_diff <- getdiff(tmax_diffs)
