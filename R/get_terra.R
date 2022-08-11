@@ -45,6 +45,25 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
     }
     return(retval)
   }
+  find.nearest <- function(varname, indata){
+    message(paste0('no data from TerraClimate for ', varname, ' at this site - searching for nearest pixel with data', '\n'))
+    counter <- 0
+    tryvec1 <- c(1, 0, -1, 0)
+    tryvec2 <- c(0, 1, 0, -1)
+    data.out <- matrix(data = NA, nrow = 4, ncol = 12)
+    while(is.na(max(indata))){
+      counter <- counter + 1
+      for(ii in 1:length(tryvec1)){
+        start <- c(lonindex + tryvec1[ii] * counter, latindex + tryvec2[ii] * counter, 1)
+        data.out[ii, 1:12] <- as.numeric(ncvar_get(nc, varid = varname, start = start, count))
+      }
+      good.row <- min(which(!is.na(data.out[, 1])))
+      if(good.row %in% c(1, 4)){
+        indata <- data.out[good.row, ]
+      }
+    }
+    return(indata)
+  }
   errors <- 0
   if(!(scenario %in% c(0, 2, 4))){
     message('ERROR: scenario must be either 0 (historical), 2 (plus 2) or 4 (plus 4) \n')
@@ -90,28 +109,14 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
         start <- c(lonindex, latindex, 1)
       }
       message(paste0('extracting maximum air temperature data from TerraClimate for ', yearlist[i], '\n'))
-      if(i == 1){
-        TMAXX <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
-      }else{
-        TMAXX <- c(TMAXX, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
+      TMAXX1 <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+      if(is.na(max(TMAXX1))){
+        TMAXX1 <- find.nearest(var, TMAXX1)
       }
-      if(is.na(max(TMAXX))){
-        message(paste0('no data from TerraClimate at this site - searching for nearest pixel with data', '\n'))
-        counter <- 0
-        tryvec1 <- c(1, 0, -1, 0)
-        tryvec2 <- c(0, 1, 0, -1)
-        TMAXXs <- matrix(data = NA, nrow = 4, ncol = 12)
-        while(is.na(max(TMAXX))){
-          counter <- counter + 1
-          for(ii in 1:length(tryvec1)){
-            start <- c(lonindex + tryvec1[ii] * counter, latindex + tryvec2[ii] * counter, 1)
-            TMAXXs[ii, 1:12] <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
-          }
-          good.row <- min(which(!is.na(TMAXXs[, 1])))
-          if(good.row %in% c(1, 4)){
-            TMAXX <- TMAXXs[good.row, ]
-          }
-        }
+      if(i == 1){
+        TMAXX <- TMAXX1
+      }else{
+        TMAXX <- c(TMAXX, TMAXX1)
       }
       nc_close(nc)
       var <- 'tmin'
@@ -122,10 +127,14 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
         ncfile <- paste0(source, "/TerraClimate_", var,"_", yearlist[i], ".nc")
       }
       nc <- retry(nc_open(ncfile))
+      TMINN1 <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+      if(is.na(max(TMINN1))){
+        TMINN1 <- find.nearest(var, TMINN1)
+      }
       if(i == 1){
-        TMINN <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+        TMINN <- TMINN1
       }else{
-        TMINN <- c(TMINN, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
+        TMINN <- c(TMINN, TMINN1)
       }
       nc_close(nc)
       var <- 'ppt'
@@ -136,10 +145,14 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
         ncfile <- paste0(source, "/TerraClimate_", var,"_", yearlist[i], ".nc")
       }
       nc <- retry(nc_open(ncfile))
+      RAINFALL1 <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+      if(is.na(max(RAINFALL1))){
+        RAINFALL1 <- find.nearest(var, RAINFALL1)
+      }
       if(i == 1){
-        RAINFALL <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+        RAINFALL <- RAINFALL1
       }else{
-        RAINFALL <- c(RAINFALL, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
+        RAINFALL <- c(RAINFALL, RAINFALL1)
       }
       nc_close(nc)
       var <- 'ws'
@@ -150,10 +163,14 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
         ncfile <- paste0(source, "/TerraClimate_", var,"_", yearlist[i], ".nc")
       }
       nc <- retry(nc_open(ncfile))
+      WIND1 <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+      if(is.na(max(WIND1))){
+        WIND1 <- find.nearest(var, WIND1)
+      }
       if(i == 1){
-        WIND <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+        WIND <- WIND1
       }else{
-        WIND <- c(WIND, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
+        WIND <- c(WIND, WIND1)
       }
       nc_close(nc)
       var <- 'vpd'
@@ -164,10 +181,14 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
         ncfile <- paste0(source, "/TerraClimate_", var,"_", yearlist[i], ".nc")
       }
       nc <- retry(nc_open(ncfile))
+      VPD1 <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+      if(is.na(max(VPD1))){
+        VPD1 <- find.nearest(var, VPD1)
+      }
       if(i == 1){
-        VPD <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+        VPD <- VPD1
       }else{
-        VPD <- c(VPD, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
+        VPD <- c(VPD, VPD1)
       }
       nc_close(nc)
       var <- 'srad'
@@ -178,11 +199,16 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
         ncfile <- paste0(source, "/TerraClimate_", var,"_", yearlist[i], ".nc")
       }
       nc <- retry(nc_open(ncfile))
-      if(i == 1){
-        SRAD <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
-      }else{
-        SRAD <- c(SRAD, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
+      SRAD1 <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+      if(is.na(max(SRAD1))){
+        SRAD1 <- find.nearest(var, SRAD1)
       }
+      if(i == 1){
+        SRAD <- SRAD1
+      }else{
+        SRAD <- c(SRAD, SRAD1)
+      }
+      nc_close(nc)
       var <- 'soil'
       message(paste0('extracting soil moisture data from TerraClimate for ', yearlist[i], '\n'))
       if(source == "http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data"){
@@ -191,10 +217,14 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
         ncfile <- paste0(source, "/TerraClimate_", var,"_", yearlist[i], ".nc")
       }
       nc <- retry(nc_open(ncfile))
+      SoilMoist1 <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))) / 1000 # this is originally in mm/m
+      if(is.na(max(SoilMoist1))){
+        SoilMoist1 <- find.nearest(var, SoilMoist1) / 1000 # this is originally in mm/m
+      }
       if(i == 1){
-        SoilMoist <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))) / 1000 # this is originally in mm/m
+        SoilMoist <- SoilMoist1
       }else{
-        SoilMoist <- c(SoilMoist, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))) / 1000 # this is originally in mm/m
+        SoilMoist <- c(SoilMoist, SoilMoist1)
       }
       nc_close(nc)
     }
@@ -234,28 +264,14 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }
 
       message(paste0('extracting plus ', scenario,' maximum air temperature data from TerraClimate for ', yearlist[i], '\n'))
-      if(i == 1){
-        TMAXX <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
-      }else{
-        TMAXX <- c(TMAXX, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
+      TMAXX1 <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+      if(is.na(max(TMAXX1))){
+        TMAXX1 <- find.nearest(var, TMAXX1)
       }
-      if(is.na(max(TMAXX))){
-        message(paste0('no data from TerraClimate at this site - searching for nearest pixel with data', '\n'))
-        counter <- 0
-        tryvec1 <- c(1, 0, -1, 0)
-        tryvec2 <- c(0, 1, 0, -1)
-        TMAXXs <- matrix(data = NA, nrow = 4, ncol = 12)
-        while(is.na(max(TMAXX))){
-          counter <- counter + 1
-          for(ii in 1:length(tryvec1)){
-            start <- c(lonindex + tryvec1[ii] * counter, latindex + tryvec2[ii] * counter, 1)
-            TMAXXs[ii, 1:12] <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
-          }
-          good.row <- min(which(!is.na(TMAXXs[, 1])))
-          if(good.row %in% c(1, 4)){
-            TMAXX <- TMAXXs[good.row, ]
-          }
-        }
+      if(i == 1){
+        TMAXX <- TMAXX1
+      }else{
+        TMAXX <- c(TMAXX, TMAXX1)
       }
       nc_close(nc)
       var <- "tmin"
@@ -266,10 +282,14 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }
       nc <- retry(nc_open(ncfile))
       message(paste0('extracting plus ', scenario,' minimum air temperature data from TerraClimate for ', yearlist[i], '\n'))
+      TMINN1 <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+      if(is.na(max(TMINN1))){
+        TMINN1 <- find.nearest(var, TMINN1)
+      }
       if(i == 1){
-        TMINN <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+        TMINN <- TMINN1
       }else{
-        TMINN <- c(TMINN, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
+        TMINN <- c(TMINN, TMINN1)
       }
       nc_close(nc)
       var <- "ppt"
@@ -280,10 +300,14 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }
       nc <- retry(nc_open(ncfile))
       message(paste0('extracting plus ', scenario,' precipitation data from TerraClimate for ', yearlist[i], '\n'))
+      RAINFALL1 <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+      if(is.na(max(RAINFALL1))){
+        RAINFALL1 <- find.nearest(var, RAINFALL1)
+      }
       if(i == 1){
-        RAINFALL <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+        RAINFALL <- RAINFALL1
       }else{
-        RAINFALL <- c(RAINFALL, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
+        RAINFALL <- c(RAINFALL, RAINFALL1)
       }
       var <- "vpd"
       if(source == "http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data"){
@@ -293,10 +317,14 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }
       nc <- retry(nc_open(ncfile))
       message(paste0('extracting plus ', scenario,' vapour pressure deficit data from TerraClimate for ', yearlist[i], '\n'))
+      VPD1 <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+      if(is.na(max(VPD1))){
+        VPD1 <- find.nearest(var, VPD1)
+      }
       if(i == 1){
-        VPD <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+        VPD <- VPD1
       }else{
-        VPD <- c(VPD, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
+        VPD <- c(VPD, VPD1)
       }
       nc_close(nc)
       var <- "soil"
@@ -307,10 +335,14 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }
       nc <- retry(nc_open(ncfile))
       message(paste0('extracting plus ', scenario,' soil moisture data from TerraClimate for ', yearlist[i], '\n'))
+      SoilMoist1 <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))) / 1000 # this is originally in mm/m
+      if(is.na(max(SoilMoist1))){
+        SoilMoist1 <- find.nearest(var, SoilMoist1) / 1000 # this is originally in mm/m
+      }
       if(i == 1){
-        SoilMoist <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))) / 1000 # this is originally in mm/m
+        SoilMoist <- SoilMoist1
       }else{
-        SoilMoist <- c(SoilMoist, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))) / 1000)# this is originally in mm/m
+        SoilMoist <- c(SoilMoist, SoilMoist1)
       }
       nc_close(nc)
       var <- "srad"
@@ -322,10 +354,14 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }
       nc <- retry(nc_open(ncfile))
       message(paste0('extracting plus ', scenario,' solar radiation data from TerraClimate for ', yearlist[i], '\n'))
+      SRAD1 <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+      if(is.na(max(SRAD1))){
+        SRAD1 <- find.nearest(var, SRAD1)
+      }
       if(i == 1){
-        SRAD <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+        SRAD <- SRAD1
       }else{
-        SRAD <- c(SRAD, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
+        SRAD <- c(SRAD, SRAD1)
       }
       nc_close(nc)
     }
