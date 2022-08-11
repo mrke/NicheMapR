@@ -1022,6 +1022,9 @@ micro_ncep <- function(
         srad_diffs[is.na(srad_diffs)] <- 1
         vpd_diffs[is.na(vpd_diffs)] <- 1
         precip_diffs[is.na(precip_diffs)] <- 1
+        srad_diffs[is.infinite(srad_diffs)] <- 1
+        vpd_diffs[is.infinite(vpd_diffs)] <- 1
+        precip_diffs[is.infinite(precip_diffs)] <- 1
 
         TMINN_diff <- getdiff(tmin_diffs)
         TMAXX_diff <- getdiff(tmax_diffs)
@@ -1029,10 +1032,11 @@ micro_ncep <- function(
         SOLAR_diff <- getdiff(srad_diffs)
         RAIN_diff <- getdiff(precip_diffs)
 
-        TMINN_diff <- rep(TMINN_diff, each=24)
-        TMAXX_diff <- rep(TMAXX_diff, each=24)
-        VPD_diff <- rep(VPD_diff, each=24)
-        SOLAR_diff <- rep(SOLAR_diff, each=24)
+        TMINN_diff <- rep(TMINN_diff, each=24)[1:length(TAIRhr)]
+        TMAXX_diff <- rep(TMAXX_diff, each=24)[1:length(TAIRhr)]
+        VPD_diff <- rep(VPD_diff, each=24)[1:length(TAIRhr)]
+        SOLAR_diff <- rep(SOLAR_diff, each=24)[1:length(TAIRhr)]
+
 
         # code to apply changes in min and max air temperature to hourly air temperature data
 
