@@ -95,6 +95,24 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }else{
         TMAXX <- c(TMAXX, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
       }
+      if(is.na(max(TMAXX))){
+        message(paste0('no data from TerraClimate at this site - searching for nearest pixel with data', '\n'))
+        counter <- 0
+        tryvec1 <- c(1, 0, -1, 0)
+        tryvec2 <- c(0, 1, 0, -1)
+        TMAXXs <- matrix(data = NA, nrow = 4, ncol = 12)
+        while(is.na(max(TMAXX))){
+          counter <- counter + 1
+          for(ii in 1:length(tryvec1)){
+            start <- c(lonindex + tryvec1[ii] * counter, latindex + tryvec2[ii] * counter, 1)
+            TMAXXs[ii, 1:12] <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
+          }
+          good.row <- min(which(!is.na(TMAXXs[, 1])))
+          if(good.row %in% c(1, 4)){
+            TMAXX <- TMAXXs[good.row, ]
+          }
+        }
+      }
       nc_close(nc)
       var <- 'tmin'
       message(paste0('extracting minimum air temperature data from TerraClimate for ', yearlist[i], '\n'))
@@ -220,6 +238,24 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
         TMAXX <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       }else{
         TMAXX <- c(TMAXX, retry(as.numeric(ncvar_get(nc, varid = var, start = start, count))))
+      }
+      if(is.na(max(TMAXX))){
+        message(paste0('no data from TerraClimate at this site - searching for nearest pixel with data', '\n'))
+        counter <- 0
+        tryvec1 <- c(1, 0, -1, 0)
+        tryvec2 <- c(0, 1, 0, -1)
+        TMAXXs <- matrix(data = NA, nrow = 4, ncol = 12)
+        while(is.na(max(TMAXX))){
+          counter <- counter + 1
+          for(ii in 1:length(tryvec1)){
+            start <- c(lonindex + tryvec1[ii] * counter, latindex + tryvec2[ii] * counter, 1)
+            TMAXXs[ii, 1:12] <- as.numeric(ncvar_get(nc, varid = var, start = start, count))
+          }
+          good.row <- min(which(!is.na(TMAXXs[, 1])))
+          if(good.row %in% c(1, 4)){
+            TMAXX <- TMAXXs[good.row, ]
+          }
+        }
       }
       nc_close(nc)
       var <- "tmin"
