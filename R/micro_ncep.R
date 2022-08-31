@@ -1101,9 +1101,9 @@ micro_ncep <- function(
       WNhr <- hourlyradwind$windspeed
       WNhr[is.na(WNhr)] <- 0.1
       if(rainhourly == 0){
-        RAINhr = rep(0, 24 * ndays)
+        RAINhr <- rep(0, 24 * ndays)
       }else{
-        RAINhr = rainhour
+        RAINhr <- rainhour
       }
       PRESShr <- hourlydata$pressure
       RAINFALL <- dailyprecip
@@ -1113,7 +1113,11 @@ micro_ncep <- function(
       RAINFALL[RAINFALL < 0.1] <- 0
       if(rainhourly == 0){ # putting daily rainfall on midnight (account for local solar time)
         midnight <- which(microclima.out$hourlydata$szenith[1:24] == max(microclima.out$hourlydata$szenith[1:24]))
-        midnights <- seq(midnight, length(RAINhr / 24) - 1, 24)
+        if(midnight < 24){
+         midnights <- seq(midnight, length(RAINhr / 24) - 1, 24)
+        }else{
+         midnights <- seq(midnight, length(RAINhr / 24), 24)
+        }
         RAINhr[midnights] <- RAINFALL
         rainhourly <- 1
       }
@@ -1321,11 +1325,7 @@ micro_ncep <- function(
     AMINUT <- as.numeric(AMINUT)
     ALAT <-as.numeric(ALAT)
     hourly <- 1
-    if(rainhourly == 0){
-      RAINhr = rep(0, 24 * ndays)
-    }else{
-      RAINhr = rainhour
-    }
+
     TIMAXS <- c(1, 1, 0, 0)
     TIMINS <- c(0, 0, 1, 1)
     # microclimate input parameters list
