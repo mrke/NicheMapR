@@ -1090,7 +1090,11 @@ micro_nz <- function(
         soilinit <- rep(avetemp, 20)
         spinup <- 1
       }else{
-        soilinit <- c(Soil_Init, rep(avetemp, 10))
+        if(snowmodel == 0){
+          soilinit <- c(Soil_Init, rep(avetemp, 10))
+        }else{
+          soilinit <- c(rep(avetemp, 8), Soil_Init[1:10], rep(avetemp, 2))
+        }
         spinup <- 0
       }
       tannul<-mean(unlist(ALLTEMPS))
