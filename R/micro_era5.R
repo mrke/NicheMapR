@@ -1127,7 +1127,7 @@ micro_era5 <- function(
     }else{
       rainoff.hr <- rainoff
     }
-    RAINhr <- RAINhr + rainoff
+    RAINhr <- RAINhr + rainoff.hr
     RAINhr[RAINhr < 0] <- 0
     ALLMINTEMPS <- TMINN
     ALLMAXTEMPS <- TMAXX
