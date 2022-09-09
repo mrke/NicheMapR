@@ -1017,7 +1017,11 @@ micro_era5 <- function(
 
       if(rainhourly == 0){ # putting daily rainfall on midnight (account for local solar time)
         midnight <- which(microclima.out$hourlydata$szenith[1:24] == max(microclima.out$hourlydata$szenith[1:24]))
-        midnights <- seq(midnight, length(RAINhr / 24) - 1, 24)
+        if(midnight < 24){
+          midnights <- seq(midnight, length(RAINhr / 24) - 1, 24)
+        }else{
+          midnights <- seq(midnight, length(RAINhr / 24), 24)
+        }
         RAINhr[midnights] <- RAINFALL
         rainhourly <- 1
       }
