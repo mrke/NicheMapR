@@ -62,7 +62,7 @@ ectotherm(Ww_g, shape, alpha_max, alpha_min, T_F_min, T_F_max, T_B_min, T_RB_min
 
 \item{pct_mouth}{= 5, \% of surface area taken up by open mouth, for computing panting water loss}
 
-\item{pantmax}{= 5, maximum multiplier on breathing rate, for respiratory water loss via panting}
+\item{pantmax}{= 5, maximum multiplier on breathing rate, for respiratory water loss via panting (value of 1 prevents panting)}
 
 \item{F_O2}{= 20, \% oxygen extraction efficiency, for respiratory water loss}
 
@@ -96,9 +96,13 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{minshades}{ = micro$minshade, Vector of daily minimum shade values - can be different to value used in microclimate model (e.g. to simulate sunspot tracking on a forest floor) (\%)}\cr}
 \item{\code{maxshades}{ = micro$maxshade, Vector of daily maximum shade values - can be different to value used in microclimate model (e.g. to simulate use of fine-scale shade in a generally unshaded habitat) (\%)}\cr}
 \item{\code{fluid}{ = 0, Fluid type 0=air, 1=water }\cr}
+\item{\code{O2gas}{ = 20.95, oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr}
+\item{\code{N2gas}{ = 79.02, nitrogen concetration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr}
+\item{\code{CO2gas}{ = 0.0412, carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr}
 \item{\code{alpha_sub}{ = 1 - micro$REFL, Vector of daily substrate reflectances (0-1)}\cr}
 \item{\code{epsilon_sub}{ = 1, Emissivity of substrate (0-1)}\cr}
 \item{\code{epsilon_sky}{ = 1, Emissivity of sky (0-1)}\cr}
+\item{\code{PDIF}{ = 0.1, Fraction of total solar radiation that is diffuse (0-1), will ultimately be made an optionally hourly vector}\cr}
 \item{\code{DEP}{ = micro$DEP, Depths available from the microclimate model simulation}\cr}
 \item{\code{KS}{ = micro$KS[seq(1, 19, 2)], Depth-specific saturated hydraulic conductivity (kg s/m3) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
 \item{\code{b}{ = micro$BB[seq(1, 19, 2)], Depth-specific Campbell's b parameter (-) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
@@ -131,8 +135,9 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{shape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
 \item{\code{fatosk}{ = 0.4, Configuration factor to sky (-) for infrared calculations}\cr}
 \item{\code{fatosb}{ = 0.4, Configuration factor to subsrate for infrared calculations}\cr}
-\item{\code{rinsul}{ = 0, Insulative fat layer thickness (m)}\cr}
+\item{\code{rinsul}{ = 0, Insulative fat layer thickness (not yet functional) (m)}\cr}
 \item{\code{pct_cond}{ = 10, Percentage of animal surface contacting the substrate (\%)}\cr}
+\item{\code{pct_touch}{ = 0, Percentage of animal surface area contacting another animal of same temperature (\%)}\cr}
 \item{\code{c_body}{ = 3073, Specific heat of flesh J/(kg-K)}\cr}
 \item{\code{k_flesh}{ = 0.5, Thermal conductivity of flesh (W/mC, range: 0.412-2.8)}\cr}
 \item{\code{rho_body}{ = 1000, Density of flesh (kg/m3)}\cr}
@@ -172,10 +177,11 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{gutfill}{ = 75, Gut fill (\%) at which satiation occurs - if greater than 100\%, animal always tries to forage}\cr}
 \item{\code{raindrink}{ = 0, Rainfall level at which rehydration from drinking occurs - if 0 animal can always drink}\cr}
 \item{\code{foodlim}{ = 1, Is the animal food limited - if 0 animal can always find food (useful for making different life stages dependent on soil moisture-based food estimates}\cr}
+\item{\code{RQ}{ = 0.8, respiratory quotient (0-1), computed from first principles if DEB model running}\cr}
 \item{\code{K_skin}{ = 2.8e-09, - Hydraulic conductivity of skin (kg/(m s (J/kg)) - drives liquid water exchange with substrate}\cr}
 \item{\code{spec_hyd_body}{ = 0.000304, Specific hydration of body (m3 / (m3 (J/kg))) - drives liquid water exchange with substrate if K_skin > 0 }\cr}
 \item{\code{psi_body}{ = -707, Water potential of body (J/kg) - drives liquid water exchange with substrate if K_skin > 0 and will also affect skin humidity for water vapour exchange}\cr}
-\item{\code{K_egg}{ = 2.8e-09, - Hydraulic conductivity of egg shell (kg/(m s (J/kg)) - drives liquid water exchange with substrate}\cr}
+\item{\code{K_egg}{ = 2.8e-09, Hydraulic conductivity of egg shell (kg/(m s (J/kg)) - drives liquid water exchange with substrate}\cr}
 \item{\code{spec_hyd_egg}{ = 0.000304, Specific hydration of egg (m3 / (m3 (J/kg))) - drives liquid water exchange with substrate if K_skin > 0 }\cr}
 \item{\code{psi_egg}{ = -707, Water potential of egg (J/kg) - drives liquid water exchange with substrate if K_skin > 0}\cr}
 }

@@ -35,7 +35,7 @@
 #' @param pct_wet = 0.2, \% of surface area acting as a free-water exchanger, for computing cutaneous water loss
 #' @param pct_eyes = 0.03, \% of surface area taken up by open eyes, for computing ocular water loss (only when active)
 #' @param pct_mouth = 5, \% of surface area taken up by open mouth, for computing panting water loss
-#' @param pantmax = 5, maximum multiplier on breathing rate, for respiratory water loss via panting
+#' @param pantmax = 5, maximum multiplier on breathing rate, for respiratory water loss via panting (value of 1 prevents panting)
 #' @param F_O2 = 20, \% oxygen extraction efficiency, for respiratory water loss
 #' @param delta_air = 0.1, Temperature difference (°C) between expired and inspired air, for computing respiratory water loss
 #' @usage ectotherm(Ww_g, shape, alpha_max, alpha_min, T_F_min, T_F_max, T_B_min, T_RB_min, CT_max, CT_min,
@@ -59,9 +59,13 @@
 #' \item{\code{minshades}{ = micro$minshade, Vector of daily minimum shade values - can be different to value used in microclimate model (e.g. to simulate sunspot tracking on a forest floor) (\%)}\cr}
 #' \item{\code{maxshades}{ = micro$maxshade, Vector of daily maximum shade values - can be different to value used in microclimate model (e.g. to simulate use of fine-scale shade in a generally unshaded habitat) (\%)}\cr}
 #' \item{\code{fluid}{ = 0, Fluid type 0=air, 1=water }\cr}
+#' \item{\code{O2gas}{ = 20.95, oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr}
+#' \item{\code{N2gas}{ = 79.02, nitrogen concetration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr}
+#' \item{\code{CO2gas}{ = 0.0412, carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr}
 #' \item{\code{alpha_sub}{ = 1 - micro$REFL, Vector of daily substrate reflectances (0-1)}\cr}
 #' \item{\code{epsilon_sub}{ = 1, Emissivity of substrate (0-1)}\cr}
 #' \item{\code{epsilon_sky}{ = 1, Emissivity of sky (0-1)}\cr}
+#' \item{\code{PDIF}{ = 0.1, Fraction of total solar radiation that is diffuse (0-1), will ultimately be made an optionally hourly vector}\cr}
 #' \item{\code{DEP}{ = micro$DEP, Depths available from the microclimate model simulation}\cr}
 #' \item{\code{KS}{ = micro$KS[seq(1, 19, 2)], Depth-specific saturated hydraulic conductivity (kg s/m3) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
 #' \item{\code{b}{ = micro$BB[seq(1, 19, 2)], Depth-specific Campbell's b parameter (-) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
@@ -94,8 +98,9 @@
 #' \item{\code{shape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
 #' \item{\code{fatosk}{ = 0.4, Configuration factor to sky (-) for infrared calculations}\cr}
 #' \item{\code{fatosb}{ = 0.4, Configuration factor to subsrate for infrared calculations}\cr}
-#' \item{\code{rinsul}{ = 0, Insulative fat layer thickness (m)}\cr}
+#' \item{\code{rinsul}{ = 0, Insulative fat layer thickness (not yet functional) (m)}\cr}
 #' \item{\code{pct_cond}{ = 10, Percentage of animal surface contacting the substrate (\%)}\cr}
+#' \item{\code{pct_touch}{ = 0, Percentage of animal surface area contacting another animal of same temperature (\%)}\cr}
 #' \item{\code{c_body}{ = 3073, Specific heat of flesh J/(kg-K)}\cr}
 #' \item{\code{k_flesh}{ = 0.5, Thermal conductivity of flesh (W/mC, range: 0.412-2.8)}\cr}
 #' \item{\code{rho_body}{ = 1000, Density of flesh (kg/m3)}\cr}
@@ -135,10 +140,11 @@
 #' \item{\code{gutfill}{ = 75, Gut fill (\%) at which satiation occurs - if greater than 100\%, animal always tries to forage}\cr}
 #' \item{\code{raindrink}{ = 0, Rainfall level at which rehydration from drinking occurs - if 0 animal can always drink}\cr}
 #' \item{\code{foodlim}{ = 1, Is the animal food limited - if 0 animal can always find food (useful for making different life stages dependent on soil moisture-based food estimates}\cr}
+#' \item{\code{RQ}{ = 0.8, respiratory quotient (0-1), computed from first principles if DEB model running}\cr}
 #' \item{\code{K_skin}{ = 2.8e-09, - Hydraulic conductivity of skin (kg/(m s (J/kg)) - drives liquid water exchange with substrate}\cr}
 #' \item{\code{spec_hyd_body}{ = 0.000304, Specific hydration of body (m3 / (m3 (J/kg))) - drives liquid water exchange with substrate if K_skin > 0 }\cr}
 #' \item{\code{psi_body}{ = -707, Water potential of body (J/kg) - drives liquid water exchange with substrate if K_skin > 0 and will also affect skin humidity for water vapour exchange}\cr}
-#' \item{\code{K_egg}{ = 2.8e-09, - Hydraulic conductivity of egg shell (kg/(m s (J/kg)) - drives liquid water exchange with substrate}\cr}
+#' \item{\code{K_egg}{ = 2.8e-09, Hydraulic conductivity of egg shell (kg/(m s (J/kg)) - drives liquid water exchange with substrate}\cr}
 #' \item{\code{spec_hyd_egg}{ = 0.000304, Specific hydration of egg (m3 / (m3 (J/kg))) - drives liquid water exchange with substrate if K_skin > 0 }\cr}
 #' \item{\code{psi_egg}{ = -707, Water potential of egg (J/kg) - drives liquid water exchange with substrate if K_skin > 0}\cr}
 #' }
@@ -561,6 +567,7 @@ ectotherm <- function(
   pantmax = 1,
   F_O2 = 20,
   delta_air = 0.1,
+  RQ = 0.8,
   K_skin = 2.8e-09,
   psi_body = -707,
   spec_hyd_body =0.000304,
@@ -577,7 +584,12 @@ ectotherm <- function(
   minshades = micro$minshade,
   maxshades = micro$maxshade,
   fluid = 0,
+  pct_touch = 0,
+  O2gas = 20.95,
+  CO2gas = 0.03,
+  N2gas = 79.02,
   alpha_sub = (1 - micro$REFL),
+  PDIF = 0.1,
   DEP = micro$DEP,
   KS = micro$KS,
   b = micro$BB,
@@ -860,8 +872,9 @@ ectotherm <- function(
     message("error: pct_mouth can only be from 0 to 100 \n")
     errors<-1
   }
-  if(pantmax < 1){
-    message("warning: pantmax should be greater than or equal to 1 unless you want to simluate the effect of no respiratory water loss\n")
+  if((pantmax < 0) | (pantmax > 0 & pantmax < 1)){
+    message("error: pantmax should be greater than or equal to 1, or zero if you want to simluate the effect of no respiratory water loss\n")
+    errors<-1
   }
   if(F_O2 < 0 | F_O2 > 100){
     message("error: F_O2 can only be from 0 to 100 \n")
@@ -1231,18 +1244,26 @@ ectotherm <- function(
     container <- 0
   }
   if(errors == 0){
-    # container/pond initial conditons
+
+    #initializing
+
+    DOYstart <- metout[1, 2] # starting day of year
+    DOY <- 1 # day of year at start
+    iyear <- 0 # initializing year counter
+    countday <- 1 # initializing day counter
+    # container/pond initial conditions
     contlast <- 0 # last container depth, cm
     templast <- 7 # last container temperature, deg C
 
-    iyear <- 0 # initializing year counter
-    countday <- 1 # initializing day counter
+    tannul <- as.numeric(mean(soil[, 12])) # annual mean temperature, deg C
+    tcinit <- metout[1, "TALOC"] # initial temperature for transient heat budget
+
+    # parameter name translations
+
+    lat <- latitude # latitude
 
     # habitat
     ALT <- elev # altitude (m)
-    OBJDIS <- 1.0 # currently unused - distance (m) from nearby object of different temp to sky and ground (e.g. warm rock, fire)
-    OBJL <- 0.0001 # currently unused - diameter (m) of nearby object of different temp to sky and ground (e.g. warm rock, fire)
-    PDIF <- 0.1 # proportion of sunlight that is diffuse (0-1), ultimately will make this as an optional vector from microclima
     EMISSK <- epsilon_sky # emissivity of the sky (0-1)
     EMISSB <- epsilon_sub # emissivity of the substrate (0-1)
     ABSSB <- alpha_sub # solar absorbtivity of the substrate (0-1)
@@ -1250,26 +1271,11 @@ ectotherm <- function(
     # animal properties
     Ww_kg <- Ww_g / 1000 # animal wet weight (kg)
     absan <- alpha_max # animal solar absorbtivity
-    RQ <- 0.8 # respiratory quotient
-
-    FATOBJ <- 0 # configuration factor to nearby object of different temp to sky and ground (e.g. warm rock, fire)
     SKINW <- pct_wet # skin wetness %
-    skint <- 0 # fraction of surface area touching object e.g. of another individual
-    O2gas <- 20.95 # % O2 in air
-    CO2gas <- 0.03 # % CO2 in air
-    N2gas <- 79.02 # % nitrogen in air
-    gas <- c(O2gas, CO2gas, N2gas) # gas vector
-    tcinit <- metout[1, "TALOC"] # initial temperature for transient heat budget
-    nodnum <- 10 # depth at which foraging occurs in fossorial species, probably not working properly, may not need it
-
-    SPARE4 <- 1 # spare input
-    SPARE2 <- 1 # spare input
-    SPARE3 <- 0 # spare input
     o2max <- F_O2 # O2 extraction efficiency
-    behav <- c(diurn, nocturn, crepus, rainact, burrow, shade_seek, climb, fossorial, SPARE3) # behaviour vector
-    DOY <- 1 # day of year at start
 
     # conversions from percent to proportion
+    skint <- pct_touch / 100
     PTUREA1 <- pct_H_N / 100
     PFEWAT1 <- pct_H_P / 100
     pct_H_X <- pct_H_X / 100
@@ -1279,8 +1285,7 @@ ectotherm <- function(
     water_stages[,4] <- water_stages[, 4] / 100
     water_stages[,5] <- water_stages[, 5] / 100
 
-    # DEB mass balance calculations
-    E_m <- (p_M * z / kap) / v # maximum reserve density, J/cm3
+    # DEB mass/stoichiometry and entropy/heat calculations
     if(stoich_mode == 0){
       # match H fraction in organics to stated chemical potentials (needed later for heat production)
       n_X[2] <- ((mu_X / 10 ^ 5) - 4.3842 * n_X[1] - (-1.8176) * n_X[3] - (0.0593) * n_X[4]) / 0.9823
@@ -1334,6 +1339,7 @@ ectotherm <- function(
     JM_JO <- -1 * n_M_inv %*% n_O
     eta_O <- matrix(c(y_XE / mu_E * -1, 0, 1 / mu_E, y_PE / mu_E, 0, 0, -1 / mu_E, 0, 0, y_VE / mu_E, -1 / mu_E, 0), nrow = 4)
     w_N <- CHON %*% n_M_nitro
+    E_m <- (p_M * z / kap) / v # maximum reserve density, J/cm3
 
     # DEB model initial conditions
     V_init_baby <- 3e-9 # initial structure, cm3
@@ -1358,22 +1364,26 @@ ectotherm <- function(
     }else{
       foodwaters <- pct_H_X
     }
-    lat <- latitude # latitude
-    DOYstart <- metout[1, 2] # starting day of year
-    tannul <- as.numeric(mean(soil[, 12])) # annual mean temperature, deg C
+
+    # unused /spare parameters
     tester <- 0 # unused
     microyear <- 1 # extraneous, not used
-    #K_skin <- (1.12 * 60 * 24 / 1e6) / (1000 * 3600 * 24 * 100 / 100 / 24) # kg/m/s/(J/kg) #g cm-2 h-1 bar-1 # was shade
-    #spec_hyd <- 0.0304 / 100 # m3 / (m3 J kg) # was minshd
-    #psi_body <- -7.07 * 100 # J / kg # was maxshd
-    #b <- rep(6.592933, 10)
-    #KS <- rep(0.0004439024, 10)
+    nodnum <- 10 # depth at which foraging occurs in fossorial species, probably not working properly, may not need it
+    OBJDIS <- 1.0 # currently unused - distance (m) from nearby object of different temp to sky and ground (e.g. warm rock, fire)
+    OBJL <- 0.0001 # currently unused - diameter (m) of nearby object of different temp to sky and ground (e.g. warm rock, fire)
+    FATOBJ <- 0 # configuration factor to nearby object of different temp to sky and ground (e.g. warm rock, fire)
+    SPARE4 <- 1 # spare input
+    SPARE2 <- 1 # spare input
+    SPARE3 <- 0 # spare input
+
+    # collate parameters
+    gas <- c(O2gas, CO2gas, N2gas) # gas vector
+    behav <- c(diurn, nocturn, crepus, rainact, burrow, shade_seek, climb, fossorial, SPARE3) # behaviour vector
     ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF, EMISSK, EMISSB, ABSSB, K_skin, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, SPARE4, tannul, nodnum, postur, psi_body, spec_hyd_body, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, arrhen_mode, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, pct_cond_egg, K_egg, psi_egg, spec_hyd_egg, b, KS, PE))
     debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, FoodWater1, f, s_G, K, X[1], metab_mode, stages, kap_V, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He, k_Ee, k_EV, mu_N, h_O, h_M[4])
     deblast <- c(iyear, countday, V_init, E_init, ES_init, cumrepro_init, q_init, hs_init, cumbatch_init, V_baby_init, E_baby_init, E_H_init, stage)
 
     # code to determine wet periods for activity in a pond
-
     if(wetmod==1){
       wet_thresh <- 10 * 24 # threshold pond duration
       wet_depth <- 100 # threshold pond depth (mm)

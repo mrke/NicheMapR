@@ -1,0 +1,297 @@
+#' CONV_ecto
+#'
+#' R version of Fortran CONV.f (ectotherm model) for calculating convective exchange and heat and mass transfer coefficients.
+#'
+#' @encoding UTF-8
+#' @param GEOMETRY organism shape, 0-5, 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom
+#' @param ATOT total body surface area (m2)
+#' @param AV ventral surface area (m2)
+#' @param AL animal characteristic dimension (length) (m)
+#' @param AT body surface area contacting another organism of same temperature (m2)
+#' @param BP air pressure (Pa)
+#' @param ALT elevation (m)
+#' @param TA air temperature (°C)
+#' @param VEL wind speed (m/s)
+#' @param FLTYPE fluid type, air (0) or water (1)
+#' @param TSKIN skin temperature (°C)
+#' @export
+CONV_ecto <- function(
+    GEOMETRY = 3,
+    ATOT = 0.01325006,
+    AV = 0.001325006,
+    AL = 0.03419952,
+    AT = 0,
+    BP = 101325,
+    ALT = 0,
+    TA = 20,
+    VEL = 1,
+    FLTYPE = 0,
+    TSKIN = 25){
+
+  # C     NICHEMAPR: SOFTWARE FOR BIOPHYSICAL MECHANISTIC NICHE MODELLING
+  #
+  # C     COPYRIGHT (C) 2018 MICHAEL R. KEARNEY AND WARREN P. PORTER
+  #
+  # C     THIS PROGRAM IS FREE SOFTWARE: YOU CAN REDISTRIBUTE IT AND/OR MODIFY
+  # C     IT UNDER THE TERMS OF THE GNU GENERAL PUBLIC LICENSE AS PUBLISHED BY
+  # C     THE FREE SOFTWARE FOUNDATION, EITHER VERSION 3 OF THE LICENSE, OR (AT
+  # C      YOUR OPTION) ANY LATER VERSION.
+  #
+  # C     THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT
+  # C     WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+  # C     MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. SEE THE GNU
+  # C     GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+  #
+  # C     YOU SHOULD HAVE RECEIVED A COPY OF THE GNU GENERAL PUBLIC LICENSE
+  # C     ALONG WITH THIS PROGRAM. IF NOT, SEE HTTP://WWW.GNU.ORG/LICENSES/.
+  #
+  # C     COMPUTES CONVECTIVE HEAT EXCHANGE
+  # C     ALL UNITS SI  (M,KG,S,C,K,J,PA)
+
+  # C     ALT = ALTITUDE
+  # C     ANU = NUSSELT NUMBER
+  # C     ATOT = TOTAL AREA
+  # C     BETA = COEFFICIENT OF THERMAL EXPANSION AT CONSTANT DENSITY (1/K)
+  # C     (USED IN GRASHOF NUMBER (1/FLUID TEMP (C), I.E. AIR OR WATER)
+  # C     BP = BAROMETRIC PRESSURE
+  # C     CP = SPECIFIC HEAT OF DRY AIR (J/KG-C)
+  # C     D = CHARACTERISTIC DIMENSION FOR CONVECTION
+  # C     DB = DRY BULB TEMPERATURE (C)
+  # C     DELTAT = TEMPERATURE DIFFERENCE
+  # C     DENSTY = DENSITY OF AIR
+  # C     DIFVPR = DIFFUSIVITY OF WATER VAPOR
+  # C     FLTYPE = FLUID TYPE (0.0 = AIR; 1.0 = WATER)
+  # C     G = ACCELERATION DUE TO GRAVITY
+  # C     GGROUP = GROUP OF GRASHOF VARIABLES
+  # C     GR = GRASHOF NUMBER
+  # C     GRRE2 = GRASHOF/REYNOLDS NUMBER SQUARED
+  # C     HC = HEAT TRANSFER COEFFICIENT
+  # C     HCFREE = HEAT TRANSFER COEFFICIENT, FREE CONVECTION
+  # C     HCFORC = HEAT TRANSFER COEFFICIENT, FORCED CONVECTION
+  # C     HD = MASS TRANSFER COEFFICIENT
+  # C     HDFREE = MASS TRANSFER COEFFICIENT, FREE CONVECTION
+  # C     HDFORC = MASS TRANSFER COEFFICIENT, FORCED CONVECTION
+  # C     HTOVPR = WATER VAPOR PRESSURE
+  # C     IGEOM = CHOOSER FOR CONVECTION EQUATIONS ACTUALLY USED
+  # C     GEOMETRY = NUMBER SPECIFYING GEOMETRY TO BE USED:
+  # C      0 = PLATE, 1 = CYLINDER, 2 = ELLIPSOID, 3 = LIZARD
+  # C      4 = FROG, 5 = USER SUPPLIED
+  # C     PATMOS = ATMOSPHERIC PRESSURE
+  # C     PR = PRANDTL NUMBER
+  # C     QCONV = HEAT LOSS BY CONVECTION
+  # C     RE = REYNOLD'S NUMBER
+  # C     SC = SCHMIDT NUMBER
+  # C     SH = SHERWOOD NUMBER
+  # C     TA = AIR TEMPERATURE (C)
+  # C     TCOEFF = TEMPERATURE COEFFICIENT OF EXPANSION OF AIR
+  # C     RAYLEI = RAYLEIGH NUMBER = GRASHOF-PRANDTL PRODUCT
+  # C     THCOND = THERMAL CONDUCTIVITY OF AIR
+  # C     VEL = AIR VELOCITY
+  # C     VISDYN = DYNAMIC VISCOSITY OF AIR
+  # C     VISKIN = KINEMATIC VISCOSITY OF AIR
+  # C     TSKIN = CURRENT GUESS OF OBJECT SURFACE TEMPERATURE
+
+  PI <- 3.14159265
+
+  ANUFRE <- 0
+  ANU <- 0
+
+  #C     SETTING THE CHARACTERISTIC DIMENSION FOR NUSSELT-REYNOLDS CORRELATIONS
+  D  <-  AL
+
+  BETA <- 1 /(TA + 273)
+  CP <- 1.0057E+3
+  G <- 9.80665
+
+  #C     CONVECTIVE AREA CALCULATION = TOTAL AREA - VENTRAL AREA IN CONTACT WITH SUBSTRATE
+  CONVAR <- ATOT - AV - AT
+
+
+  #C     USING ALTITUDE TO COMPUTE BP (SEE DRYAIR LISTING)
+  #C      BP=0.0
+  DB <- TA
+
+  #C     GET THERMAL PROPERTIES OF DRY AIR AT CURRENT TEMP AND PRESSURE
+  dryair.out <- DRYAIR(DB, BP, ALT)
+  PATMOS <- dryair.out$patmos
+  DENSTY <- dryair.out$densty
+  VISDYN <- dryair.out$visdyn
+  VISKIN <- dryair.out$viskin
+  DIFVPR <- dryair.out$difvpr
+  THCOND <- dryair.out$thcond
+  HTOVPR <- dryair.out$htovpr
+  TCOEFF <- dryair.out$tcoeff
+  GGROUP <- dryair.out$ggroup
+
+  #C     CHECKING TO SEE IF THE FLUID IS WATER, NOT AIR
+  if(FLTYPE == 1){
+    WATERPROP.out <- WATERPROP(TA)
+    CP <- WATERPROP.out$CP
+    DENSTY <- WATERPROP.out$DENSTY
+    THCOND <- WATERPROP.out$THCOND
+    VISDYN <- WATERPROP.out$VISDYN
+  }
+
+  #C     COMPUTING PRANDTL AND SCHMIDT NUMBERS
+  PR <- CP * VISDYN / THCOND
+  if(FLTYPE == 0){
+    #C      AIR
+    SC <- VISDYN / (DENSTY * DIFVPR)
+  }else{
+    #C      WATER; NO MEANING
+    SC <- 1
+  }
+
+  #C     SKIN/AIR TEMPERATURE DIFFERENCE
+  DELTAT <- TSKIN - TA
+  if(DELTAT == 0){
+    DELTAT <- 0.01
+  }
+
+  #C     COMPUTING GRASHOF NUMBER
+  GR <- ((DENSTY ^ 2) * BETA * G * (D ^ 3) * DELTAT) / (VISDYN ^ 2)
+  #C     CORRECTING IF NEGATIVE DELTAT
+  GR <- abs(GR)
+
+  #C     AVOIDING DIVIDE BY ZERO IN FREE VS FORCED RAYLEI
+  if(VEL <= 0){
+    VEL <- 0.0001
+  }
+
+  #C     REYNOLDS NUMBER
+  RE <- DENSTY * VEL * D / VISDYN
+
+  #C     CHOOSING FREE OR FORCED CONVECTION
+  #C     SIGNIFICANT FREE CONVECTION IF GR/RE ^ 2 .GE. 20.0
+  #C     KREITH (1965) P. 358
+  GRRE2 <- GR / (RE ^ 2)
+
+  #C     *********************  FREE CONVECTION  ********************
+  if(GEOMETRY == 0){
+    RAYLEI <- GR * PR
+    ANUFRE <- 0.55 * RAYLEI ^ 0.25
+  }
+
+  if((GEOMETRY == 1) | (GEOMETRY == 3) | (GEOMETRY == 5)){
+    #C      FREE CONVECTION OF A CYLINDER
+    #C      FROM P.334 KREITH (1965): MC ADAM'S 1954 RECOMMENDED COORDINATES
+    RAYLEI <- GR * PR
+    if(RAYLEI < 1.0E-05){
+      ANUFRE <- 0.4
+    }else{
+    if(RAYLEI < 0.1){
+      ANUFRE <- 0.976 * RAYLEI ^ 0.0784
+    }else{
+    if(RAYLEI <= 100){
+      ANUFRE <- 1.1173 * RAYLEI ^ 0.1344
+    }else{
+    if(RAYLEI < 10000.){
+      ANUFRE <- 0.7455 * RAYLEI ^ 0.2167
+    }else{
+    if(RAYLEI < 1.0E+09){
+      ANUFRE <- 0.5168 * RAYLEI ^ 0.2501
+    }else{
+    if(RAYLEI < 1.0E+12){
+      ANUFRE <- 0.5168 * RAYLEI ^ 0.2501
+    }}}}}}
+  }
+
+  if((GEOMETRY == 2) | (GEOMETRY == 4)){
+    #C      SPHERE FREE CONVECTION
+    #C      FROM P.413 BIRD ET AL (1960) TRANSPORT PHENOMENA)
+    RAYLEI <- (GR ^ (1 /4)) * (PR ^ (1 / 3))
+    ANUFRE <- 2 + 0.60 * RAYLEI
+    if(RAYLEI < 200){
+      #GO TO 20
+    }else{
+      message(paste0(RAYLEI, '(GR ^ 0.25) * (PR ^ 0.333) IS TOO LARGE FOR CORREL.'))
+    }
+  }
+
+  #C     FORCED CONVECTION FOR ANIMAL
+
+  if((GEOMETRY == 3) | (GEOMETRY == 4) | (GEOMETRY == 5)){
+    #C      CALCULATE FORCED CONVECTION FOR LIZARDS, FROGS OR TURTLES
+    PR2 <- 0.72
+    SC2 <- 0.60
+    if((GEOMETRY == 3) | (GEOMETRY == 5)){
+      ANU <- 0.35 * RE ^ 0.6
+      #C       FROM P. 216, EDE; AN INTRODUCTION TO HEAT TRANSFER. 1967
+    }
+    if(GEOMETRY == 4){
+      #C       ***********************FROG******************************
+      #C       C.R. TRACY'S LEOPARD FROGS - ECOL. MONOG. 1976 V. 46(3)
+      #C       CHECKING FOR OUT OF BOUNDS VALUES
+      if(RE < 80){
+        message(paste0(' RE, ',RE,',TOO SMALL FOR FROG ANCORR'))
+      }else{
+        if (RE > 40000){
+          message(paste0(' RE, ',RE,',TOO LARGE FOR FROG ANCORR'))
+        }
+      }
+      #C       COMPUTING NUSSELT AND SHERWOOD NUMBERS
+      if(RE <= 2000){
+        ANU <- 0.88 * RE ^ 0.5
+      }else{
+        ANU <- 0.258 * RE ^ 0.667
+      }
+    }
+  }
+
+  #C     CALCULATING THE FREE CONVECTION HEAT TRANSFER COEFFICIENT, HC  (NU=HC*D/KAIR)
+  HCFREE <- (ANUFRE * THCOND) / D
+
+  #C     CALCULATING THE SHERWOOD NUMBER FROM THE COLBURN ANALOGY
+  #C     (BIRD, STEWART & LIGHTFOOT, 1960. TRANSPORT PHENOMENA. WILEY.
+  SHFREE <- ANUFRE * (SC / PR) ^ (1 / 3)
+  #C     CALCULATING THE MASS TRANSFER COEFFICIENT FROM THE SHERWOOD NUMBER
+  HDFREE <- SHFREE * DIFVPR / D
+  #C     CALCULATING THE CONVECTIVE HEAT LOSS AT THE SKIN
+  QFREE <- HCFREE * CONVAR * (TSKIN - TA)
+
+  #C     *******************  FORCED CONVECTION  *********************
+  if(GEOMETRY == 0){
+    ANU <- 0.102 * RE ^ 0.675 * PR ^ (1 / 3)
+  }
+
+  if(GEOMETRY == 1){
+    #C      FORCED CONVECTION OF A CYLINDER
+    #C      ADJUSTING NU - RE CORRELATION FOR RE NUMBER (P. 260 MCADAMS,1954)
+    if(RE < 4){
+      ANU <- 0.891 * RE ^ 0.33
+    }else{
+    if(RE < 40){
+      ANU <- 0.821 * RE ^ 0.385
+    }else{
+    if(RE < 4000.){
+      ANU <- 0.615 * RE ^ 0.466
+    }else{
+    if(RE < 40000.){
+      ANU <- 0.174 * RE ^ 0.618
+    }else{
+    if(RE < 400000.){
+      ANU <- 0.0239 * RE ^ 0.805
+    }}}}}
+  }
+
+  if((GEOMETRY == 2) | (GEOMETRY == 4)){
+    #C      FORCED CONVECTION IN SPHERE
+    #C       ANU=0.34 * RE ^ 0.24 ! ORIGINAL RELATION
+    ANU <- 0.35 * RE ^ 0.6 # FROM McAdams, W.H. 1954. Heat Transmission. McGraw-Hill, New York, p.532
+  }
+
+  #C     FORCED CONVECTION FOR ANIMAL
+  #C  **************************************************************************
+  HCFORC <- ANU * THCOND / D # HEAT TRANFER COEFFICIENT
+  SHFORC <- ANU * (SC / PR) ^ (1 / 3) # SHERWOOD NUMBER
+  HDFORC <- SHFORC * DIFVPR / D # MASS TRANSFER COEFFICIENT
+  #C     USING BIRD, STEWART, & LIGHTFOOT'S MIXED CONVECTION FORMULA (P. 445, TRANSPORT PHENOMENA, 2002)
+  NUTOTAL <- (ANUFRE ^ 3 + ANU ^ 3) ^ (1 / 3)
+  HC <- NUTOTAL * (THCOND / D) # MIXED CONVECTION HEAT TRANSFER
+  QCONV <- HC * CONVAR * (TSKIN - TA) # TOTAL CONVECTIVE TRANSFER
+  #C     CALCULATING THE SHERWOOD NUMBERs FROM THE COLBURN ANALOGY
+  #C     (BIRD, STEWART & LIGHTFOOT, 1960. TRANSPORT PHENOMENA. WILEY.
+  SH <- NUTOTAL * (SC / PR) ^ (1 / 3) # SHERWOOD NUMBER
+  HD <- SH * DIFVPR / D # MASS TRANSFER COEFFICIENT
+  return(list(CONVAR = CONVAR, QCONV = QCONV, HC = HC, HD = HD, SH = SH, QFREE = QFREE, HCFREE = HCFREE, HCFORC = HCFORC, SHFREE = SHFREE, SHFORC = SHFORC, HDFREE = HDFREE, HDFORC = HDFORC))
+}

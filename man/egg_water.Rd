@@ -19,7 +19,7 @@ ode(y = c(m_init, psi_e_init), times = t, func = egg_water, parms = indata)
 
 \item{K_e}{= 1.12 * 60 * 24 / 1e6 / (3600 * 24 * 10), hydraulic conductance of egg (kg m-2 s-1 (J/kg)-1), converted from original μg cm-2 min-1 bar-1}
 
-\item{spec_hyd}{= 0.5, water potential-specific hydration (cm3 cm-3 bar-1)}
+\item{spec_hyd}{= 0.5, water potential-specific hydration (m3 m-3 (J/kg)-1)}
 
 \item{pct_wet}{= 0.24, percent of surface area acting as a free-water surface for evaporation (\%)}
 
@@ -27,7 +27,7 @@ ode(y = c(m_init, psi_e_init), times = t, func = egg_water, parms = indata)
 
 \item{b}{= 1.41005, Campbell's b parameter (-), derived from soil texture data via the function 'pedotransfer' and used to get soil hydraulic conductivity}
 
-\item{K_sat}{= 0.003733307, soil saturated hydraulic conductivity (m3 m-3 (J/kg)-1) derived from soil texture data via the function 'pedotransfer' and used to get soil hydraulic conductivity}
+\item{K_sat}{= 0.003733307, soil saturated hydraulic conductivity (kg m-1 s-1 (J/kg)-1) derived from soil texture data via the function 'pedotransfer' and used to get soil hydraulic conductivity}
 
 \item{elev}{= 0, elevation (m), needed for properties of air}
 
