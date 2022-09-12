@@ -258,7 +258,12 @@ C      ASSUME A SQUARE FOR THE MOMENT
        ENDIF
        R=ALENTH/2.
        AV=ATOT*PTCOND
-       AEFF=SKINW*(AREA-AV)
+       IF(PANT.GT.1)THEN
+        AEFF=(SKINW+PMOUTH)*(AREA-AV)
+       ELSE
+        AEFF=SKINW*(AREA-AV)
+       ENDIF
+       AT=AREA*SKINT
        GO TO 999
       ENDIF
 
@@ -272,6 +277,7 @@ C     CYLINDER
        ASILN=AWIDTH * ALENTH
        ASILP=PI*R1**2
        AV=AREA*PTCOND
+       AT=AREA*SKINT
        ATOT=AREA
        IF(PANT.GT.1)THEN
         AEFF=(SKINW+PMOUTH)*(AREA-AV)
@@ -291,6 +297,7 @@ C     ELLIPSOID
        P=1.6075
        AREA=(4.*PI*(((A**P*B**P+A**P*C**P+B**P*C**P))/3.)**(1/P))
        AV=AREA*PTCOND
+       AT=AREA*SKINT
        ATOT=AREA
        IF(PANT.GT.1)THEN
         AEFF=(SKINW+PMOUTH)*(AREA-AV)

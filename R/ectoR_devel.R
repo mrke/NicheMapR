@@ -97,9 +97,9 @@
 #' Ww_g <- 40
 #' shape <- 3
 #' alpha <- 0.85
-#' ectoR.out <- ectoR_devel(Ww_g = 40, # wet weight, g
-#'                          shape = 3, # using lizard geometry
-#'                          alpha = 0.85, # solar absorptivity
+#' ectoR.out <- ectoR_devel(Ww_g = Ww_g, # wet weight, g
+#'                          shape = shape, # using lizard geometry
+#'                          alpha = alpha, # solar absorptivity
 #'                          postur = 0, # average posture, half way between normal and parallel to sun
 #'                          TA = 20, # air temperature at lizard height, deg C
 #'                          TGRD = 40, # ground temperature, deg C
@@ -137,9 +137,9 @@
 #' # use ectoR_devel to compute body temperature in open without respiratory heat loss,
 #' # conduction, or metabolic heat gain
 #' TC <- unlist(lapply(1:length(TAs), function(x){ectoR_devel(
-#'   Ww_g = 40, # wet weight, g
-#'   shape = 3, # using lizard geometry
-#'   alpha = 0.85, # solar absorptivity
+#'   Ww_g = Ww_g, # wet weight, g
+#'   shape = shape, # using lizard geometry
+#'   alpha = alpha, # solar absorptivity
 #'   M_1 = 0, # turn of metabolic heat
 #'   postur = 0, # average posture, half way between normal and parallel to sun
 #'   pantmax = 0, # turn off respiratory heat exchange
@@ -158,10 +158,10 @@
 #' # run ectotherm model for a non-behaving animal without respiratory heat loss,
 #' # conduction or metabolic heat gain
 #' ecto <- ectotherm(
-#'   Ww_g = 40, # wet weight, g
-#'   shape = 3, # using lizard geometry
-#'   alpha_min = 0.85, # minimum solar absorptivity
-#'   alpha_max = 0.85, # maximum solar absorptivity
+#'   Ww_g = Ww_g, # wet weight, g
+#'   shape = shape, # using lizard geometry
+#'   alpha_min = alpha, # minimum solar absorptivity
+#'   alpha_max = alpha, # maximum solar absorptivity
 #'   M_1 = 0, # turn of metabolic heat
 #'   postur = 0, # average posture, half way between normal and parallel to sun
 #'   pantmax = 0, # turn off respiratory heat exchange

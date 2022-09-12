@@ -80,7 +80,12 @@ GEOM_ecto <- function(
     }
     R <- ALENTH / 2
     AV <- ATOT  * PTCOND
-    AEFF <- SKINW * (AREA - AV)
+    AT <- AREA * SKINT
+    if(PANT > 1){
+      AEFF <- (SKINW + PMOUTH) * (AREA - AV)
+    }else{
+      AEFF <- SKINW * (AREA - AV)
+    }
   }
 
   #C     CYLINDER
@@ -93,6 +98,7 @@ GEOM_ecto <- function(
     ASILN <- AWIDTH  *  ALENTH
     ASILP <- PI * R1 ^ 2
     AV <- AREA * PTCOND
+    AT <- AREA * SKINT
     ATOT <- AREA
     if(PANT > 1){
       AEFF <- (SKINW + PMOUTH) * (AREA - AV)
@@ -111,6 +117,7 @@ GEOM_ecto <- function(
     P <- 1.6075
     AREA <- (4 * PI * (((A ^ P * B ^ P + A ^ P * C ^ P + B ^ P * C ^ P)) / 3) ^ (1 / P))
     AV <- AREA * PTCOND
+    AT <- AREA * SKINT
     ATOT <- AREA
     if(PANT > 1){
       AEFF <- (SKINW + PMOUTH) * (AREA - AV)
