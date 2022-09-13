@@ -140,6 +140,7 @@ twolump<-function(t,y,indata){
     THCOND <- 0.02425 + (7.038 * 10 ^ -5 * Tair) # air thermal conductivity, W/(m.K)
     VISDYN <- (1.8325 * 10 ^ -5 * ((296.16 + 120) / ((Tair + 273.15) + 120))) * (((Tair + 273.15) / 296.16) ^ 1.5) # dynamic viscosity of air, kg/(m.s)
     VISKIN <- VISDYN / DENSTY
+    DIFVPR <- 2.26e-05 * (((Tair + 273.15) / 273.15) ^ 1.81) * (1e+05 / press)
 
     # geometry section ############################################################
     m <- Ww_g / 1000 # convert weight to kg  C<-m*c_body # thermal capacitance, J/K
@@ -221,6 +222,7 @@ twolump<-function(t,y,indata){
 
     Re <- DENSTY * vel * L / VISDYN # Reynolds number
     PR <- 1005.7 * VISDYN / THCOND # Prandlt number
+    SC <- VISDYN / (DENSTY * DIFVPR) # Schmidt number
 
     if (geom == 1) {
       #       FORCED CONVECTION OF A CYLINDER
