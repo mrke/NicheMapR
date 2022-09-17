@@ -318,11 +318,11 @@ ectoR_devel <- function(
 
     ZEN <- Z / 180 * pi
     AMASS <- Ww_g / 1000 # animal wet weight (kg)
-    PTCOND <- pct_cond / 100 # fraction of surface area conducting to the ground
     SKINW <- pct_wet / 100 # fractional skin wetness
     PEYES <- pct_eyes / 100 # fractional of surface area that is wet eyes
     PMOUTH <- pct_mouth / 100 # fraction of surface area that is wet mouth
     SKINT <- pct_touch / 100 # fraction of surface area that is touching another individual at the same temperature
+    PTCOND <- pct_cond / 100 # fraction of surface area conducting to the ground
     ALT <- elev # 'altitude' (m) (technically correct term is elevation)
     EMISSK <- epsilon_sky # emissivity of the sky (0-1)
     EMISSB <- epsilon_sub # emissivity of the substrate (0-1)

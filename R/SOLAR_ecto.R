@@ -8,7 +8,7 @@
 #' @param AV ventral area for solar exchange with substrate, m2
 #' @param AT total surface area touching another animal, m2
 #' @param ABSAN solar absorptivity of animal (fractional, 0-1)
-#' @param ABSSB proportion of solar radiation that is diffuse (fractional, 0-1)
+#' @param ABSSB solar absorptivity of substrate (fractional, 0-1)
 #' @param FATOSK radiation configuration factor to sky (fractional, 0-1)
 #' @param FATOBJ radiation configuration factor to ground (fractional, 0-1)
 #' @param ZEN solar zenith angle (radians)
@@ -22,7 +22,7 @@ SOLAR_ecto <- function(
     AV = 0.001325006,
     AT = 0,
     ABSAN = 0.85,
-    ABSSB = 0.2,
+    ABSSB = 0.8,
     FATOSK = 0.4,
     FATOSB = 0.4,
     FATOBJ = 0,
@@ -38,7 +38,7 @@ SOLAR_ecto <- function(
   # C     THIS PROGRAM IS FREE SOFTWARE: YOU CAN REDISTRIBUTE IT AND/OR MODIFY
   # C     IT UNDER THE TERMS OF THE GNU GENERAL PUBLIC LICENSE AS PUBLISHED BY
   # C     THE FREE SOFTWARE FOUNDATION, EITHER VERSION 3 OF THE LICENSE, OR (AT
-  #                                                                          C      YOUR OPTION) ANY LATER VERSION.
+  # C     YOUR OPTION) ANY LATER VERSION.
   #
   # C     THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT
   # C     WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
