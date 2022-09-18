@@ -11,7 +11,7 @@ SOLAR_ecto(
   AV = 0.001325006,
   AT = 0,
   ABSAN = 0.85,
-  ABSSB = 0.2,
+  ABSSB = 0.8,
   FATOSK = 0.4,
   FATOSB = 0.4,
   FATOBJ = 0,
@@ -33,7 +33,7 @@ SOLAR_ecto(
 
 \item{ABSAN}{solar absorptivity of animal (fractional, 0-1)}
 
-\item{ABSSB}{proportion of solar radiation that is diffuse (fractional, 0-1)}
+\item{ABSSB}{solar absorptivity of substrate (fractional, 0-1)}
 
 \item{FATOSK}{radiation configuration factor to sky (fractional, 0-1)}
 
