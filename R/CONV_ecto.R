@@ -208,36 +208,6 @@ CONV_ecto <- function(
     }
   }
 
-  #C     FORCED CONVECTION FOR ANIMAL
-
-  if((GEOMETRY == 3) | (GEOMETRY == 4) | (GEOMETRY == 5)){
-    #C      CALCULATE FORCED CONVECTION FOR LIZARDS, FROGS OR TURTLES
-    PR2 <- 0.72
-    SC2 <- 0.60
-    if((GEOMETRY == 3) | (GEOMETRY == 5)){
-      ANU <- 0.35 * RE ^ 0.6
-      #C       FROM P. 216, EDE; AN INTRODUCTION TO HEAT TRANSFER. 1967
-    }
-    if(GEOMETRY == 4){
-      #C       ***********************FROG******************************
-      #C       C.R. TRACY'S LEOPARD FROGS - ECOL. MONOG. 1976 V. 46(3)
-      #C       CHECKING FOR OUT OF BOUNDS VALUES
-      if(RE < 80){
-        message(paste0(' RE, ',RE,',TOO SMALL FOR FROG ANCORR'))
-      }else{
-        if (RE > 40000){
-          message(paste0(' RE, ',RE,',TOO LARGE FOR FROG ANCORR'))
-        }
-      }
-      #C       COMPUTING NUSSELT AND SHERWOOD NUMBERS
-      if(RE <= 2000){
-        ANU <- 0.88 * RE ^ 0.5
-      }else{
-        ANU <- 0.258 * RE ^ 0.667
-      }
-    }
-  }
-
   #C     CALCULATING THE FREE CONVECTION HEAT TRANSFER COEFFICIENT, HC  (NU=HC*D/KAIR)
   HCFREE <- (ANUFRE * THCOND) / D
 
@@ -274,14 +244,33 @@ CONV_ecto <- function(
     }}}}}
   }
 
-  if((GEOMETRY == 2) | (GEOMETRY == 4)){
+  if(GEOMETRY > 1){
     #C      FORCED CONVECTION IN SPHERE
     #C       ANU=0.34 * RE ^ 0.24 ! ORIGINAL RELATION
     ANU <- 0.35 * RE ^ 0.6 # FROM McAdams, W.H. 1954. Heat Transmission. McGraw-Hill, New York, p.532
   }
+  #C     FORCED CONVECTION FOR ANIMAL
+
+  # if(GEOMETRY == 4){
+  #   #C       ***********************FROG******************************
+  #   #C       C.R. TRACY'S LEOPARD FROGS - ECOL. MONOG. 1976 V. 46(3)
+  #   #C       CHECKING FOR OUT OF BOUNDS VALUES
+  #   if(RE < 80){
+  #     message(paste0(' RE, ',RE,',TOO SMALL FOR FROG ANCORR'))
+  #   }else{
+  #     if (RE > 40000){
+  #       message(paste0(' RE, ',RE,',TOO LARGE FOR FROG ANCORR'))
+  #     }
+  #   }
+  #   #C       COMPUTING NUSSELT AND SHERWOOD NUMBERS
+  #   if(RE <= 2000){
+  #     ANU <- 0.88 * RE ^ 0.5
+  #   }else{
+  #     ANU <- 0.258 * RE ^ 0.667
+  #   }
+  # }
 
   #C     FORCED CONVECTION FOR ANIMAL
-  #C  **************************************************************************
   HCFORC <- ANU * THCOND / D # HEAT TRANFER COEFFICIENT
   SHFORC <- ANU * (SC / PR) ^ (1 / 3) # SHERWOOD NUMBER
   HDFORC <- SHFORC * DIFVPR / D # MASS TRANSFER COEFFICIENT
