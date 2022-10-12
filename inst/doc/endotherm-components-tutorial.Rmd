@@ -73,7 +73,7 @@ IRPROP.lab <- c("KEFARA mean", "KEFARA dorsal", "KEFARA ventral", "BETARA mean",
 kable(cbind(IRPROP.lab, IRPROP.out[1:26]))
 ```
 
-Example analysis of fur diameter on effective thermal conductivity of fur.
+Example analysis of fur diameter on effective thermal conductivity of fur. Note this does not include the radiative component of fur conductivity, which is calculated in SIMULSOL. Empirical measurements of fur thermal conductivity will include both the radiative and conductive aspects.
 
 ```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE}
 DHAIRs <- seq(0, 150, 2) # hair diameters (micrometers)
@@ -349,7 +349,7 @@ TFA <- TA # current guess of fur/air interface temperature (deg C)
 DIFTOL <- 0.001 # tolerance for SIMULSOL
 
 # vector to hold the SIMULSOL results for dorsal and ventral side
-SIMULSOL.out <- matrix(data = 0, nrow = 2, ncol = 15) 
+SIMULSOL.out <- matrix(data = 0, nrow = 2, ncol = 16) 
 
 # repeat for each side, dorsal and ventral, of the animal
 for(S in 1:2){ 
@@ -475,7 +475,7 @@ for(S in 1:2){
 }
 
 SIMULSOL.out <- cbind(c(1,2), SIMULSOL.out)
-colnames(SIMULSOL.out) <- c("SIDE", "TFA", "TSKIN", "QCONV", "QCOND", "QGENNET", "QSEVAP", "QRAD", "QSLR", "QRSKY", "QRBSH", "QRVEG", "QRGRD", "QFSEVAP", "NTRY", "SUCCESS")
+colnames(SIMULSOL.out) <- c("SIDE", "TFA", "TSKIN", "QCONV", "QCOND", "QGENNET", "QSEVAP", "QRAD", "QSLR", "QRSKY", "QRBSH", "QRVEG", "QRGRD", "QFSEVAP", "NTRY", "SUCCESS", "KFUR")
 tSIMULSOL.out <- t(SIMULSOL.out)
 colnames(tSIMULSOL.out) <- c("DORSAL", "VENTRAL")
 kable(tSIMULSOL.out)

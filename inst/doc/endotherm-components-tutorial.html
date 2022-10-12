@@ -12,7 +12,7 @@
 
 <meta name="author" content="Michael Kearney" />
 
-<meta name="date" content="2022-05-11" />
+<meta name="date" content="2022-10-12" />
 
 <title>Endotherm Model Tutorial II: component functions</title>
 
@@ -335,7 +335,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Endotherm Model Tutorial II: component
 functions</h1>
 <h4 class="author">Michael Kearney</h4>
-<h4 class="date">2022-05-11</h4>
+<h4 class="date">2022-10-12</h4>
 
 
 
@@ -520,7 +520,10 @@ conduction and infrared radiation through the fur.</p>
 </tbody>
 </table>
 <p>Example analysis of fur diameter on effective thermal conductivity of
-fur.</p>
+fur. Note this does not include the radiative component of fur
+conductivity, which is calculated in SIMULSOL. Empirical measurements of
+fur thermal conductivity will include both the radiative and conductive
+aspects.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>DHAIRs <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">150</span>, <span class="dv">2</span>)  <span class="co"># hair diameters (micrometers)</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>KEFARAs <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(DHAIRs)) {</span>
@@ -873,15 +876,15 @@ organism and its environment.</p>
 <tbody>
 <tr class="odd">
 <td align="left">QCONV</td>
-<td align="left">-42.3303689165106</td>
+<td align="left">-42.330368639197</td>
 </tr>
 <tr class="even">
 <td align="left">HC</td>
-<td align="left">13.830862139698</td>
+<td align="left">13.8308620490897</td>
 </tr>
 <tr class="odd">
 <td align="left">HCFREE</td>
-<td align="left">4.1890600584233</td>
+<td align="left">4.18905907070396</td>
 </tr>
 <tr class="even">
 <td align="left">HCFOR</td>
@@ -889,11 +892,11 @@ organism and its environment.</p>
 </tr>
 <tr class="odd">
 <td align="left">HD</td>
-<td align="left">0.0166500420492818</td>
+<td align="left">0.0166500411300533</td>
 </tr>
 <tr class="even">
 <td align="left">HDFREE</td>
-<td align="left">0.00389858053231886</td>
+<td align="left">0.00389857961309036</td>
 </tr>
 <tr class="odd">
 <td align="left">HDFORC</td>
@@ -909,7 +912,7 @@ organism and its environment.</p>
 </tr>
 <tr class="even">
 <td align="left">GR</td>
-<td align="left">14679650.6489478</td>
+<td align="left">14679635.9692975</td>
 </tr>
 <tr class="odd">
 <td align="left">PR</td>
@@ -917,7 +920,7 @@ organism and its environment.</p>
 </tr>
 <tr class="even">
 <td align="left">RA</td>
-<td align="left">10459476.0216385</td>
+<td align="left">10459465.5621628</td>
 </tr>
 <tr class="odd">
 <td align="left">SC</td>
@@ -971,11 +974,11 @@ organism and its environment.</p>
 <tbody>
 <tr class="odd">
 <td align="left">QSEVAP</td>
-<td align="left">9.01497464893484</td>
+<td align="left">9.01497254207792</td>
 </tr>
 <tr class="even">
 <td align="left">WEYES</td>
-<td align="left">4.2302329345106e-08</td>
+<td align="left">4.2302327009646e-08</td>
 </tr>
 <tr class="odd">
 <td align="left">WCUTHF</td>
@@ -983,11 +986,11 @@ organism and its environment.</p>
 </tr>
 <tr class="even">
 <td align="left">WCUTF</td>
-<td align="left">3.63184142579394e-06</td>
+<td align="left">3.63184056945864e-06</td>
 </tr>
 <tr class="odd">
 <td align="left">WCUT</td>
-<td align="left">3.63184142579394e-06</td>
+<td align="left">3.63184056945864e-06</td>
 </tr>
 <tr class="even">
 <td align="left">WTFUR</td>
@@ -1056,7 +1059,7 @@ core algorithm for computing the heat balance.</p>
 <span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a><span class="co"># vector to hold the SIMULSOL results for dorsal and</span></span>
 <span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a><span class="co"># ventral side</span></span>
-<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>SIMULSOL.out <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">data =</span> <span class="dv">0</span>, <span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">ncol =</span> <span class="dv">15</span>)</span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>SIMULSOL.out <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">data =</span> <span class="dv">0</span>, <span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">ncol =</span> <span class="dv">16</span>)</span>
 <span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a><span class="co"># repeat for each side, dorsal and ventral, of the animal</span></span>
 <span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (S <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) {</span>
@@ -1204,7 +1207,7 @@ core algorithm for computing the heat balance.</p>
 <span id="cb11-195"><a href="#cb11-195" aria-hidden="true" tabindex="-1"></a>SIMULSOL.out <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), SIMULSOL.out)</span>
 <span id="cb11-196"><a href="#cb11-196" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(SIMULSOL.out) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;SIDE&quot;</span>, <span class="st">&quot;TFA&quot;</span>, <span class="st">&quot;TSKIN&quot;</span>, <span class="st">&quot;QCONV&quot;</span>,</span>
 <span id="cb11-197"><a href="#cb11-197" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;QCOND&quot;</span>, <span class="st">&quot;QGENNET&quot;</span>, <span class="st">&quot;QSEVAP&quot;</span>, <span class="st">&quot;QRAD&quot;</span>, <span class="st">&quot;QSLR&quot;</span>, <span class="st">&quot;QRSKY&quot;</span>, <span class="st">&quot;QRBSH&quot;</span>,</span>
-<span id="cb11-198"><a href="#cb11-198" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;QRVEG&quot;</span>, <span class="st">&quot;QRGRD&quot;</span>, <span class="st">&quot;QFSEVAP&quot;</span>, <span class="st">&quot;NTRY&quot;</span>, <span class="st">&quot;SUCCESS&quot;</span>)</span>
+<span id="cb11-198"><a href="#cb11-198" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;QRVEG&quot;</span>, <span class="st">&quot;QRGRD&quot;</span>, <span class="st">&quot;QFSEVAP&quot;</span>, <span class="st">&quot;NTRY&quot;</span>, <span class="st">&quot;SUCCESS&quot;</span>, <span class="st">&quot;KFUR&quot;</span>)</span>
 <span id="cb11-199"><a href="#cb11-199" aria-hidden="true" tabindex="-1"></a>tSIMULSOL.out <span class="ot">&lt;-</span> <span class="fu">t</span>(SIMULSOL.out)</span>
 <span id="cb11-200"><a href="#cb11-200" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tSIMULSOL.out) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;DORSAL&quot;</span>, <span class="st">&quot;VENTRAL&quot;</span>)</span>
 <span id="cb11-201"><a href="#cb11-201" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(tSIMULSOL.out)</span></code></pre></div>
@@ -1219,83 +1222,88 @@ core algorithm for computing the heat balance.</p>
 <tbody>
 <tr class="odd">
 <td align="left">SIDE</td>
-<td align="right">1.000000</td>
+<td align="right">1.0000000</td>
 <td align="right">2.0000000</td>
 </tr>
 <tr class="even">
 <td align="left">TFA</td>
-<td align="right">39.482699</td>
+<td align="right">39.4826994</td>
 <td align="right">30.4086840</td>
 </tr>
 <tr class="odd">
 <td align="left">TSKIN</td>
-<td align="right">37.833696</td>
+<td align="right">37.8336962</td>
 <td align="right">34.7073375</td>
 </tr>
 <tr class="even">
 <td align="left">QCONV</td>
-<td align="right">83.122682</td>
+<td align="right">83.1226823</td>
 <td align="right">44.1759445</td>
 </tr>
 <tr class="odd">
 <td align="left">QCOND</td>
-<td align="right">0.000000</td>
+<td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="even">
 <td align="left">QGENNET</td>
-<td align="right">-1.644885</td>
+<td align="right">-1.6448854</td>
 <td align="right">4.5234310</td>
 </tr>
 <tr class="odd">
 <td align="left">QSEVAP</td>
-<td align="right">0.142354</td>
+<td align="right">0.1423540</td>
 <td align="right">0.1150878</td>
 </tr>
 <tr class="even">
 <td align="left">QRAD</td>
-<td align="right">37.200455</td>
+<td align="right">37.2004547</td>
 <td align="right">18.9954083</td>
 </tr>
 <tr class="odd">
 <td align="left">QSLR</td>
-<td align="right">122.110376</td>
+<td align="right">122.1103763</td>
 <td align="right">58.7630095</td>
 </tr>
 <tr class="even">
 <td align="left">QRSKY</td>
-<td align="right">37.200455</td>
+<td align="right">37.2004547</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="odd">
 <td align="left">QRBSH</td>
-<td align="right">0.000000</td>
+<td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="even">
 <td align="left">QRVEG</td>
-<td align="right">0.000000</td>
+<td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="odd">
 <td align="left">QRGRD</td>
-<td align="right">0.000000</td>
+<td align="right">0.0000000</td>
 <td align="right">18.9954083</td>
 </tr>
 <tr class="even">
 <td align="left">QFSEVAP</td>
-<td align="right">0.000000</td>
+<td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="odd">
 <td align="left">NTRY</td>
-<td align="right">1.000000</td>
+<td align="right">1.0000000</td>
 <td align="right">1.0000000</td>
 </tr>
 <tr class="even">
 <td align="left">SUCCESS</td>
-<td align="right">1.000000</td>
 <td align="right">1.0000000</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">KFUR</td>
+<td align="right">0.0461079</td>
+<td align="right">0.0436035</td>
 </tr>
 </tbody>
 </table>

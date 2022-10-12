@@ -287,7 +287,7 @@ TFA <- TA # current guess of fur/air interface temperature (deg C)
 DIFTOL <- 0.001 # tolerance for SIMULSOL
 
 # vector to hold the SIMULSOL results for dorsal and ventral side
-SIMULSOL.out <- matrix(data = 0, nrow = 2, ncol = 15) 
+SIMULSOL.out <- matrix(data = 0, nrow = 2, ncol = 16) 
 
 # repeat for each side, dorsal and ventral, of the animal
 for(S in 1:2){ 
@@ -413,7 +413,7 @@ for(S in 1:2){
 }
 
 SIMULSOL.out <- cbind(c(1,2), SIMULSOL.out)
-colnames(SIMULSOL.out) <- c("SIDE", "TFA", "TSKIN", "QCONV", "QCOND", "QGENNET", "QSEVAP", "QRAD", "QSLR", "QRSKY", "QRBSH", "QRVEG", "QRGRD", "QFSEVAP", "NTRY", "SUCCESS")
+colnames(SIMULSOL.out) <- c("SIDE", "TFA", "TSKIN", "QCONV", "QCOND", "QGENNET", "QSEVAP", "QRAD", "QSLR", "QRSKY", "QRBSH", "QRVEG", "QRGRD", "QFSEVAP", "NTRY", "SUCCESS", "KFUR")
 tSIMULSOL.out <- t(SIMULSOL.out)
 colnames(tSIMULSOL.out) <- c("DORSAL", "VENTRAL")
 kable(tSIMULSOL.out)
