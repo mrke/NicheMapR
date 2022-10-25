@@ -10,7 +10,8 @@
 #' Modified to allow use with rasters 2 Aug 2018
 #' Modified to allow user-specified basal metabolic rates and Q10 effects 2 Aug 2018
 #' @param posture = 4.5, Shape, ratio of long to short axis of a prolate ellipsoid
-#' @param mass = 0.5, Body Mass (kg)
+#' @param mass = 0.5, Body mass (kg)
+#' @param density = 1000, Body density (kg/m3)
 #' @param coreT = 37, Core temperature (deg C)
 #' @param furdepth = 5, Fur depth (mm)
 #' @param furcond = 0.04, Conductivity of fur (W/Cm)
@@ -96,7 +97,7 @@
 #'with(endo,{points(Tcore ~ dates,xlab = "Date and Time",lty=2, type = "l")})
 #'with(endo,{plot(timetodeath ~ dates,xlab = "Date and Time", ylab = "Time to Death (h)"
 #', type = "l",main=paste("Time to Death by Desiccation",sep=""), ylim=c(0,24))})
-ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, furcond = 0.04,
+ellipsoid <- function(posture = 4.5, mass = 0.5, density = 1000, coreT = 37, furdepth = 5, furcond = 0.04,
   O2eff = 0.2, stress = 0.6, airT = 20, windspd = 1, rh = 50, Q10 = 3, basal = NA, basmult = 1) {
   posture[posture==1]<-1.01 # avoid divide by zero
   if(class(basal)=="logical"){ # this checks if basal is set to 'NA'
@@ -106,7 +107,7 @@ ellipsoid <- function(posture = 4.5, mass = 0.5, coreT = 37, furdepth = 5, furco
   a_coef <- 0.6
   b_coef <- 0.5
   sp_heat_air <- 1005.8
-  volume <- mass / 1000
+  volume <- mass / density
   b <- ((3 * volume) / (4 * 3.14159 * posture))^0.333
   c <- b
   a <- b * posture

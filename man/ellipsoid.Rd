@@ -7,6 +7,7 @@
 ellipsoid(
   posture = 4.5,
   mass = 0.5,
+  density = 1000,
   coreT = 37,
   furdepth = 5,
   furcond = 0.04,
@@ -23,7 +24,9 @@ ellipsoid(
 \arguments{
 \item{posture}{= 4.5, Shape, ratio of long to short axis of a prolate ellipsoid}
 
-\item{mass}{= 0.5, Body Mass (kg)}
+\item{mass}{= 0.5, Body mass (kg)}
+
+\item{density}{= 1000, Body density (kg/m3)}
 
 \item{coreT}{= 37, Core temperature (deg C)}
 

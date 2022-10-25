@@ -51,11 +51,21 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
     tryvec1 <- c(1, 0, -1, 0)
     tryvec2 <- c(0, 1, 0, -1)
     data.out <- matrix(data = NA, nrow = 4, ncol = 12)
+    lon <- retry(ncvar_get(nc, "lon"))
+    lat <- retry(ncvar_get(nc, "lat"))
     while(is.na(max(indata))){
       counter <- counter + 1
       for(ii in 1:length(tryvec1)){
         start <- c(lonindex + tryvec1[ii] * counter, latindex + tryvec2[ii] * counter, 1)
+        if(start[1] <= length(lon) & start[2] <= length(lat)){
+          #break
+        #}else{
         data.out[ii, 1:12] <- as.numeric(ncvar_get(nc, varid = varname, start = start, count))
+        }else{
+          #data.out[ii, 1:12] <- rep(Inf, 12)
+          message(paste0('no terraclimate data available at this site', '\n'))
+          stop()
+        }
       }
       good.row <- min(which(!is.na(data.out[, 1])))
       if(good.row %in% c(1, 4)){

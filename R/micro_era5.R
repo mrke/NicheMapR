@@ -908,13 +908,16 @@ micro_era5 <- function(
         }
 
         terra <- as.data.frame(get_terra(x = loc, ystart = ystart_terra, yfinish = yfinish_terra, source = terra_source))
+        if(is.infinite(max(terra))){
+          message("no TerraClimate data available", '\n')
+          stop()
+        }
         if(scenario == 4){
           terra_cc <- as.data.frame(get_terra(x = loc, ystart = ystart_terra, yfinish = yfinish_terra, scenario = 4, source = terra_source))
         }
         if(scenario == 2){
           terra_cc <- as.data.frame(get_terra(x = loc, ystart = ystart_terra, yfinish = yfinish_terra, scenario = 2, source = terra_source))
         }
-
         tmin_diffs <- terra_cc$TMINN - terra$TMINN
         tmax_diffs <- terra_cc$TMAXX - terra$TMAXX
         precip_diffs <- terra_cc$RAINFALL / terra$RAINFALL
