@@ -407,6 +407,7 @@ endoR_devel <- function(
   QRESP <- 0
   TC_REF <- TC
   QBASREF <- QBASAL
+  failed <- FALSE
 
   while(QGEN < QBASAL){
 
@@ -709,6 +710,7 @@ endoR_devel <- function(
               PCTWET <- PCTWET + PCTWET_INC
               if(PCTWET > PCTWET_MAX | PCTWET_INC == 0){
                 PCTWET <- PCTWET_MAX
+                failed <- TRUE
                 break
               }
             }
@@ -809,7 +811,7 @@ endoR_devel <- function(
   colnames(enbal) <- enbal.names
   colnames(masbal) <- masbal.names
 
-  if(max(treg) == 0){
+  if(failed){
     warning("A solution could not be found and panting/'sweating' options are exhausted; try allowing greater evaporation or allowing higher body maximum body temperature")
   }
   endo.out <- list(treg = treg, morph = morph, enbal = enbal, masbal = masbal)
