@@ -143,7 +143,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{rho_body}{ = 1000, Density of flesh (kg/m3)}\cr}
 \item{\code{epsilon}{ = 0.95, Emissivity of animal (0-1)}\cr}
 \item{\code{eggshape_a}{ = 1, Proportionality factor (-) for going from volume to area, keep this 1 (redundant parameter that should be removed)}\cr}
-\item{\code{eggshape_b}{ = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid }\cr}
+\item{\code{eggshape_b}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid }\cr}
 \item{\code{eggshape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
 \item{\code{eggmult }{ = 1 # multiply egg mass by clutch size for heat and water exchange calculations?}\cr}
 \item{\code{pct_cond_egg}{ = 50, Percentage of egg surface contacting the substrate (\%)}\cr}
