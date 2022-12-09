@@ -60,7 +60,7 @@ library(NicheMapR)
 # egg functional traits
 m_init <- 5.8 / 1000 # kg, mass of freshly laid egg
 psi_e_init <- -707 # J/kg, water potential of freshly laid egg
-shape <- 0.6, ratio of minor axes major axis of ellipsoid (-)
+shape <- 0.6 # -, ratio of minor axes major axis of ellipsoid (-)
 f_air <- 0.5 # -, fraction of egg surface exposed to air
 K_e <- 1.12 * 60 * 24 / 1e6 / (3600 * 24 * 10) # kg m-2 s-1 (J/kg)-1, hydraulic conductance of egg
 spec_hyd <- 0.0304 / 100 # m3 m-3 (J/kg)-1, water potential-specific hydration, empirically determined from linear model
