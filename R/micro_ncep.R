@@ -947,33 +947,32 @@ micro_ncep <- function(
         # diff spline function
         getdiff <- function(diffs){
           diff1 <- (unlist(diffs[1]) + unlist(diffs[length(diffs)])) / 2
-
           # generate list of days
           for(ys in 1:nyears){
             if(ys == 1){
               if(nyears == 1){
                 if(yearstodo[ys] %in% leapyears){
-                  day<-c(1, 15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5, 366)
+                  day<-c(1, 15.5, 45.5, 75.5, 106, 136.5, 167, 197.5, 228.5, 259, 289.5, 320, 350.5, 366)
                 }else{
                   day<-c(1, 15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5, 365)
                 }
               }else{
-              if(yearstodo[ys] %in% leapyears){
-                day<-c(1, 15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5)
-              }else{
-                day<-c(1, 15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5)
-              }
+                if(yearstodo[ys] %in% leapyears){
+                  day<-c(1, 15.5, 45.5, 75.5, 106, 136.5, 167, 197.5, 228.5, 259, 289.5, 320, 350.5)
+                }else{
+                  day<-c(1, 15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5)
+                }
               }
             }else{
               if(ys == nyears){
                 if(yearstodo[ys] %in% leapyears){
-                  day<-c(15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5, 366)
+                  day<-c(15.5, 45.5, 75.5, 106, 136.5, 167, 197.5, 228.5, 259, 289.5, 320, 350.5, 366)
                 }else{
                   day<-c(15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5, 365)
                 }
               }else{
                 if(yearstodo[ys] %in% leapyears){
-                  day<-c(15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5)
+                  day<-c(15.5, 45.5, 75.5, 106, 136.5, 167, 197.5, 228.5, 259, 289.5, 320, 350.5)
                 }else{
                   day<-c(15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5)
                 }
@@ -1001,7 +1000,8 @@ micro_ncep <- function(
 
           # interpolate monthly differences
           f <- approxfun(x = days_diffs$new_day, y = days_diffs$diffs)
-          xx <- seq(1, max(days2), 1)
+          nleap <- length(which(yearstodo %in% leapyears))
+          xx <- seq(1, max(days2) + nleap, 1)
           sp_diff <- f(xx)
           return(sp_diff)
         }
