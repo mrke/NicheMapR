@@ -948,6 +948,7 @@ micro_ncep <- function(
         getdiff <- function(diffs){
           diff1 <- (unlist(diffs[1]) + unlist(diffs[length(diffs)])) / 2
           # generate list of days
+          leapcount <- 0
           for(ys in 1:nyears){
             if(ys == 1){
               if(nyears == 1){
@@ -983,9 +984,10 @@ micro_ncep <- function(
               days <- day
             }else{
               if(yearstodo[ys] %in% leapyears){
-                days2 <- c(days2, (day + 366 * (ys - 1)))
+                leapcount <- leapcount + 1
+                days2 <- c(days2, (day + 366 * (ys - 1)) + leapcount)
               }else{
-                days2 <- c(days2, (day + 365 * (ys - 1)))
+                days2 <- c(days2, (day + 365 * (ys - 1)) + leapcount)
               }
               days <- c(days, day)
             }
@@ -1000,8 +1002,7 @@ micro_ncep <- function(
 
           # interpolate monthly differences
           f <- approxfun(x = days_diffs$new_day, y = days_diffs$diffs)
-          nleap <- length(which(yearstodo %in% leapyears))
-          xx <- seq(1, max(days2) + nleap, 1)
+          xx <- seq(1, max(days2), 1)
           sp_diff <- f(xx)
           return(sp_diff)
         }
