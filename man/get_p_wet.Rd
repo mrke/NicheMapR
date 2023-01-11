@@ -33,9 +33,9 @@ get_p_wet(cut.known = 1, E_tot = 0.344 / 60 / 1000, E_cut = 0.108 / 60 / 1000, T
 
 \item{fcond}{= 0.25, Fraction of total area area touching surfaces, dec\% (therefore no evaporation or convection)}
 
-\item{feye}{= 0.002, Fraction of total area area comprising the eye}
+\item{feye}{= 0.002, Fraction of total area area comprising both eyes}
 
-\item{eye_frac}{= 0.58, Fraction of time eye is open, dec\%}
+\item{eye_frac}{= 0.58, Fraction of time eye is open, 1 meaning both eyes fully open, dec\%}
 
 \item{T_b}{= 25, Core body temperature, °C}
 

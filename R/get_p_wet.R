@@ -18,7 +18,7 @@
 #' @param mass.g = 26.7, Wet mass of animal, g
 #' @param A_tot = 0.00894, Total surface area, m2
 #' @param fcond = 0.25, Fraction of total area area touching surfaces, dec\% (therefore no evaporation or convection)
-#' @param feye = 0.002, Fraction of total area area comprising the eye
+#' @param feye = 0.002, Fraction of total area area comprising both eyes
 #' @param eye_frac = 0.58, Fraction of time eye is open, 1 meaning both eyes fully open, dec\%
 #' @param T_b = 25, Core body temperature, °C
 #' @param T_s = 24.99, Skin (surface) temperature, °C
@@ -215,7 +215,7 @@ get_p_wet <- function(cut.known = 0,
 
   # ocular water loss
   if(eye.known  == 0){
-    E_eye <- (A_eye * eye_frac) * HD * (rho_H2O_skin - rho_H2O_air) * 1000 * 2# g/s, multiplied by 2 assuming two eyes
+    E_eye <- (A_eye * eye_frac) * HD * (rho_H2O_skin - rho_H2O_air) * 1000 # g/s, multiplied by 2 assuming two eyes
     E_cut <- E_cut - E_eye # subtract any ocular water loss from the estimate of cutaneous
   }
 
