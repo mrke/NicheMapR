@@ -19,7 +19,7 @@
 #' @param A_tot = 0.00894, Total surface area, m2
 #' @param fcond = 0.25, Fraction of total area area touching surfaces, dec\% (therefore no evaporation or convection)
 #' @param feye = 0.002, Fraction of total area area comprising the eye
-#' @param eye_frac = 0.58, Fraction of time eye is open, dec\%
+#' @param eye_frac = 0.58, Fraction of time eye is open, 1 meaning both eyes fully open, dec\%
 #' @param T_b = 25, Core body temperature, °C
 #' @param T_s = 24.99, Skin (surface) temperature, °C
 #' @param T_a = 24.98, Air temperature, °C
@@ -132,13 +132,13 @@ get_p_wet <- function(cut.known = 0,
   }else{
     # computing air mass flux from measured oxygen consumption rate
     V_TO2_STP <- V_O2_STP * T_corr_O2 # L/s O2, corrected to temperature of water loss rate measurement
-    V_O2 <- (V_TO2_STP * PO2_ref / 273.15) * ((T_b + 273.15) / PO2) # L/s O2 consumption at expermiental temperature and pressure
-    J_O2_con <- bp * V_O2 / (RGC * (T_b + 273.15)) # mol/s O2 consumed at expermiental temperature and pressur
+    V_O2 <- (V_TO2_STP * PO2_ref / 273.15) * ((T_b + 273.15) / PO2) # L/s O2 consumption at experimental temperature and pressure
+    J_O2_con <- bp * V_O2 / (RGC * (T_b + 273.15)) # mol/s O2 consumed at experimental temperature and pressure
     J_O2_in <- J_O2_con / (E_O2 / 100) # mol/s O2 actually flowing through lungs
     Airato <- (fN2 + fO2 + fCO2) / fO2 # air to oxygen ratio
     J_air_in <- J_O2_in * Airato * (fO2_ref / fO2) * (PO2_ref / PO2) # total moles of air at 1 (mol/s)
   }
-  #V_air = (J_air_in * RGC * (T_b + 273.15)) / PO2 # L/s, air flow through lungs (note dividing by PO2)
+  #V_air = (J_air_in * RGC * (T_b + 273.15)) / bp # L/s, air flow through lungs
 
   if(resp.known == 0){
     # compute molar flux of water into the lungs
@@ -215,7 +215,7 @@ get_p_wet <- function(cut.known = 0,
 
   # ocular water loss
   if(eye.known  == 0){
-    E_eye <- (A_eye * eye_frac) * HD * (rho_H2O_skin - rho_H2O_air) / 1000 # g/s
+    E_eye <- (A_eye * eye_frac) * HD * (rho_H2O_skin - rho_H2O_air) * 1000 * 2# g/s, multiplied by 2 assuming two eyes
     E_cut <- E_cut - E_eye # subtract any ocular water loss from the estimate of cutaneous
   }
 
