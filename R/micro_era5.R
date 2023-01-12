@@ -436,6 +436,9 @@ micro_era5 <- function(
   if(DEP[2]-DEP[1]<2){
     cat("warning, nodes might be too close near the surface, try a different spacing if the program is crashing \n")
   }
+  if(DEP[10] != 200){
+    cat("warning, last depth in soil should not be changed from 200 without good reason \n")
+  }
   if(is.numeric(loc[1])){
     if(loc[1]>180 | loc[2] > 90){
       cat("ERROR: Latitude or longitude (longlat) is out of bounds.
