@@ -784,6 +784,10 @@ ectotherm <- function(
   ndays <- length(rainfall) # get number of days of simulation
 
   # error trapping
+  if(micro$metout[1,2] != 0){
+    message("error: microclimate input must start at midnight (TIME = 0) - check your microclimate input \n")
+    errors<-1
+  }
   if(shape < 0 | shape > 5  | shape%%1 != 0){
     message("error: shape can only be an integer from 0 to 5 \n")
     errors<-1
