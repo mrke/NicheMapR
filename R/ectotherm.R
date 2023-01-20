@@ -784,7 +784,7 @@ ectotherm <- function(
   ndays <- length(rainfall) # get number of days of simulation
 
   # error trapping
-  if(micro$metout[1,2] != 0){
+  if(metout[1,2] != 0){
     message("error: microclimate input must start at midnight (TIME = 0) - check your microclimate input \n")
     errors<-1
   }
