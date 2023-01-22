@@ -238,10 +238,11 @@
 #' \item{\code{E_H_init}{ = 0, Initial maturity (J)}\cr}
 #' \item{\code{stage}{ = 0, Initial stage (STD model: 0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction, Insect models: 0=embryo, 1-(stages-1)=instar, with pupa as penultimate, stages=adult}\cr}
 #'}
-#' \strong{ Metabolic depression parameters:}
+#' \strong{ Metabolic depression and starvation parameters:}
 #' \itemize{
 #' \item{\code{aestivate}{ = 0, Does the animal aestivate/go into torpor? 1=yes, 0=no}\cr}
 #' \item{\code{depress}{ = 1, Fraction by which \code{p_M}, \code{k_J} and \code{v} are reduced during torpor}\cr}
+#' \item{\code{starvemode}{ = 1, Determines how reproduction buffer is used during starvation, where 0 means it is not used, 1 means it is used before structure is mobilised and 2 means it is used to maximise reserve density}\cr}
 #'}
 #' \strong{ Reproductive phenology model parameters:}
 #' \itemize{
@@ -713,6 +714,7 @@ ectotherm <- function(
   stage = 0,
   aestivate = 0,
   depress = 1,
+  starvemode = 1,
   clutchsize = 5,
   clutch_ab = c(0, 0),
   eggmult = 0,
@@ -1376,14 +1378,13 @@ ectotherm <- function(
     OBJDIS <- 1.0 # currently unused - distance (m) from nearby object of different temp to sky and ground (e.g. warm rock, fire)
     OBJL <- 0.0001 # currently unused - diameter (m) of nearby object of different temp to sky and ground (e.g. warm rock, fire)
     FATOBJ <- 0 # configuration factor to nearby object of different temp to sky and ground (e.g. warm rock, fire)
-    SPARE4 <- 1 # spare input
     SPARE2 <- 1 # spare input
     SPARE3 <- 0 # spare input
 
     # collate parameters
     gas <- c(O2gas, CO2gas, N2gas) # gas vector
     behav <- c(diurn, nocturn, crepus, rainact, burrow, shade_seek, climb, fossorial, SPARE3) # behaviour vector
-    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF, EMISSK, EMISSB, ABSSB, K_skin, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, SPARE4, tannul, nodnum, postur, psi_body, spec_hyd_body, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, arrhen_mode, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, pct_cond_egg, K_egg, psi_egg, spec_hyd_egg, b, KS, PE))
+    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF, EMISSK, EMISSB, ABSSB, K_skin, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, starvemode, tannul, nodnum, postur, psi_body, spec_hyd_body, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, arrhen_mode, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, pct_cond_egg, K_egg, psi_egg, spec_hyd_egg, b, KS, PE))
     debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, FoodWater1, f, s_G, K, X[1], metab_mode, stages, kap_V, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He, k_Ee, k_EV, mu_N, h_O, h_M[4])
     deblast <- c(iyear, countday, V_init, E_init, ES_init, cumrepro_init, q_init, hs_init, cumbatch_init, V_baby_init, E_baby_init, E_H_init, stage)
 

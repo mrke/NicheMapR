@@ -23,7 +23,7 @@ C     AN INSECT (HEMIMETABOLOUS)
 
       IMPLICIT NONE
 
-      INTEGER IPAR,N,METAB_MODE
+      INTEGER IPAR,N,METAB_MODE,STARVEMODE
 
       DOUBLE PRECISION A,ACTHR,B,BATCH,BATCHPREP,BREEDING,D_V,DB,DDEB,DE
       DOUBLE PRECISION DES,DH,DHS,DQ,DR,DS,DV,E,E_HB,E_HJ,E_HP,E_M,E_SC
@@ -67,6 +67,7 @@ C     AN INSECT (HEMIMETABOLOUS)
       F=RPAR(30)
       METAB_MODE=INT(RPAR(31))
       E_HJ=RPAR(32)
+      STARVEMODE=INT(RPAR(33))
       
       ! UNPACK VARIABLES
       A = Y(1)! TIME
@@ -195,15 +196,37 @@ C     AN INSECT (HEMIMETABOLOUS)
         ENDIF!END CHECK FOR WHETHER BATCH MODE IS OPERATING
        ENDIF!END CHECK FOR IMMATURE OR MATURE
        P_R = P_R - P_B ! TAKE FINALISED VALUE OF P_B FROM P_R
-
-       ! draw from reproduction and then batch buffers under starvation
-       if((dS.GT.0.).AND.(R.GT.dS))THEN
+       
+       IF(STARVEMODE.GT.0)THEN
+        ! draw from reproduction and then batch buffers under starvation to delay structure being mobilised
+        if((dS.GT.0.).AND.(R.GT.dS))THEN
          p_R = p_R - dS
          dS = 0.
-       ENDIF
-       if((dS.GT.0.).AND.(B.GT.dS))THEN
+        ENDIF
+        if((dS.GT.0.).AND.(B.GT.dS))THEN
          p_B = p_B - dS
          dS = 0.
+        ENDIF
+       ENDIF
+       
+       IF(STARVEMODE.EQ.2)THEN
+        ! draw from reproduction and then batch buffers under starvation to keep reserve density topped up
+        IF((H.GE.E_HP).AND.((E/E_M).LT.0.95))THEN
+         IF(DE.LT.0)THEN
+          IF(R.GT.(-1.*dE*V))THEN
+           p_R = p_R + dE * V
+           dE = 0.
+          ENDIF
+          IF(B.GT.(-1.*dE*V))THEN
+           p_B = p_B + dE * V
+           dE = 0.
+          ENDIF 
+         ELSE
+          dE = dE + (p_R + p_B) / V
+          p_R = 0.
+          p_B = 0.
+         ENDIF
+        ENDIF
        ENDIF
         DR = P_R
         DB = P_B * KAP_R
