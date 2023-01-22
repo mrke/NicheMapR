@@ -275,10 +275,11 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{E_H_init}{ = 0, Initial maturity (J)}\cr}
 \item{\code{stage}{ = 0, Initial stage (STD model: 0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction, Insect models: 0=embryo, 1-(stages-1)=instar, with pupa as penultimate, stages=adult}\cr}
 }
-\strong{ Metabolic depression parameters:}
+\strong{ Metabolic depression and starvation parameters:}
 \itemize{
 \item{\code{aestivate}{ = 0, Does the animal aestivate/go into torpor? 1=yes, 0=no}\cr}
 \item{\code{depress}{ = 1, Fraction by which \code{p_M}, \code{k_J} and \code{v} are reduced during torpor}\cr}
+\item{\code{starvemode}{ = 1, Determines how reproduction buffer is used during starvation, where 0 means it is not used, 1 means it is used before structure is mobilised and 2 means it is used to maximise reserve density}\cr}
 }
 \strong{ Reproductive phenology model parameters:}
 \itemize{
