@@ -651,8 +651,10 @@ C     END CHECK FOR IMMATURE OR MATURE
          STARVE = 0.
          STARVING = 0
         ENDIF
-        IF((STARVE.GT.0.).AND.(CUMREPRO_INIT.GT.STARVE))THEN
-         P_B = P_B - STARVE
+        IF((STARVE.GT.0.).AND.((CUMBATCH_INIT + CUMREPRO_INIT).GT.
+     &   STARVE))THEN
+         p_B = p_R + p_B - STARVE
+         p_R = 0.
          STARVE = 0.
          STARVING = 0
         ENDIF
@@ -662,8 +664,10 @@ C     END CHECK FOR IMMATURE OR MATURE
          STARVE = 0.
          STARVING = 0
         ENDIF
-        IF((STARVE.GT.0.).AND.(CUMBATCH(HOUR-1).GT.STARVE))THEN
-         P_B = P_B - STARVE
+        IF((STARVE.GT.0.).AND.((CUMREPRO(HOUR-1) + CUMBATCH(HOUR-1)).GT.
+     &   STARVE))THEN
+         p_B = p_R + p_B - STARVE
+         p_R = 0.
          STARVE = 0.
          STARVING = 0
         ENDIF
@@ -683,7 +687,12 @@ C     END CHECK FOR IMMATURE OR MATURE
           ED(HOUR) = E_PRES
          ENDIF 
         ELSE
-         DEDT = DEDT + (p_R + p_B) / V_PRES
+         IF(E_S_INIT.GT.P_A)THEN
+C         EQUATION 2.10 DEB3
+          DEDT = (P_R+P_B+P_A)/V_PRES-(E_PRES*VDOT)/L_PRES
+         ELSE
+          DEDT = (P_R+P_B+E_S_INIT)/V_PRES-(E_PRES*VDOT)/L_PRES
+         ENDIF
          ED(HOUR) = E_PRES + DEDT
          p_R = 0.
          p_B = 0.

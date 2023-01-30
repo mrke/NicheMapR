@@ -196,15 +196,16 @@ C     AN INSECT (HEMIMETABOLOUS)
         ENDIF!END CHECK FOR WHETHER BATCH MODE IS OPERATING
        ENDIF!END CHECK FOR IMMATURE OR MATURE
        P_R = P_R - P_B ! TAKE FINALISED VALUE OF P_B FROM P_R
-       
+
        IF(STARVEMODE.GT.0)THEN
         ! draw from reproduction and then batch buffers under starvation to delay structure being mobilised
-        if((dS.GT.0.).AND.(R.GT.dS))THEN
+        IF((dS.GT.0.).AND.(R.GE.ds))THEN
          p_R = p_R - dS
          dS = 0.
         ENDIF
-        if((dS.GT.0.).AND.(B.GT.dS))THEN
-         p_B = p_B - dS
+        IF((dS.GT.0.).AND.((B+R).GE.dS))THEN
+         p_B = p_R + p_B - dS
+         p_R = 0.
          dS = 0.
         ENDIF
        ENDIF
@@ -217,19 +218,26 @@ C     AN INSECT (HEMIMETABOLOUS)
            p_R = p_R + dE * V
            dE = 0.
           ENDIF
-          IF(B.GT.(-1.*dE*V))THEN
-           p_B = p_B + dE * V
+          IF(((B+R).GT.(-1.*dE*V)).AND.(DE.NE.0.))THEN
+           p_B = p_R + p_B + dE * V
+           p_R = 0.
            dE = 0.
           ENDIF 
          ELSE
-          dE = dE + (p_R + p_B) / V
+          IF(E_S.GT.P_A)THEN
+           DE = (p_R + p_B + P_A) / L**3. - (E * VDOT) / L
+          ELSE
+           DE = MAX(0., (p_R + p_B + E_S) / L**3.) - (E * VDOT) / L
+          ENDIF
           p_R = 0.
           p_B = 0.
          ENDIF
         ENDIF
        ENDIF
-        DR = P_R
-        DB = P_B * KAP_R
+       
+       DR = P_R
+       DB = P_B * KAP_R
+       
       ENDIF
       
       DDEB(1)=1.0D+00
