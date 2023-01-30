@@ -171,7 +171,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \itemize{
 \item{\code{pct_H_P}{ = 73, Water in faeces (product) (\%)}\cr}
 \item{\code{pct_H_N}{ = 0, Water in excreted nitrogenous waste (\%)}\cr}
-\item{\code{pct_H_X}{ = 82, Water content of food (\%)}\cr}
+\item{\code{pct_H_X}{ = 82, Water content of food (\%), single value or hourly vector}\cr}
 \item{\code{pct_H_R}{ = 15, Minimum tolerated dehydration (\% of wet mass) - prohibits foraging if greater than this}\cr}
 \item{\code{pct_H_death}{ = 35, Maximum tolerated dehydration (\% of wet mass) - causes death if greater than this}\cr}
 \item{\code{gutfill}{ = 75, Gut fill (\%) at which satiation occurs - if greater than 100\%, animal always tries to forage}\cr}
@@ -236,7 +236,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{f}{ = 1, functional response (-), usually kept at 1 because gut model controls food availability such that f=0 when gut empty}\cr}
 \item{\code{E_sm}{ = 350, Maximum structure-specific energy density of stomach (J/cm3)}\cr}
 \item{\code{K}{ = 1, Half saturation constant (J/cm2)}\cr}
-\item{\code{X}{ = 10, Food density (J/cm2)}\cr}
+\item{\code{X}{ = 10, Food density (J/cm2), single value or hourly vector}\cr}
 }
 \strong{ Composition-related axilliary DEB parameters:}
 \itemize{

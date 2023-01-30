@@ -134,7 +134,7 @@
 #' \itemize{
 #' \item{\code{pct_H_P}{ = 73, Water in faeces (product) (\%)}\cr}
 #' \item{\code{pct_H_N}{ = 0, Water in excreted nitrogenous waste (\%)}\cr}
-#' \item{\code{pct_H_X}{ = 82, Water content of food (\%)}\cr}
+#' \item{\code{pct_H_X}{ = 82, Water content of food (\%), single value or hourly vector}\cr}
 #' \item{\code{pct_H_R}{ = 15, Minimum tolerated dehydration (\% of wet mass) - prohibits foraging if greater than this}\cr}
 #' \item{\code{pct_H_death}{ = 35, Maximum tolerated dehydration (\% of wet mass) - causes death if greater than this}\cr}
 #' \item{\code{gutfill}{ = 75, Gut fill (\%) at which satiation occurs - if greater than 100\%, animal always tries to forage}\cr}
@@ -199,7 +199,7 @@
 #' \item{\code{f}{ = 1, functional response (-), usually kept at 1 because gut model controls food availability such that f=0 when gut empty}\cr}
 #' \item{\code{E_sm}{ = 350, Maximum structure-specific energy density of stomach (J/cm3)}\cr}
 #' \item{\code{K}{ = 1, Half saturation constant (J/cm2)}\cr}
-#' \item{\code{X}{ = 10, Food density (J/cm2)}\cr}
+#' \item{\code{X}{ = 10, Food density (J/cm2), single value or hourly vector}\cr}
 #'}
 #' \strong{ Composition-related axilliary DEB parameters:}
 #' \itemize{
@@ -1286,7 +1286,8 @@ ectotherm <- function(
     PFEWAT1 <- pct_H_P / 100
     pct_H_X <- pct_H_X / 100
     water_stages[, 5] <- water_stages[, 5] / 100 # pct_H_X
-    FoodWater1 <- pct_H_X[1]
+    #FoodWater1 <- pct_H_X[1]
+    debmodspare <- 1
     water_stages[,3] <- water_stages[, 3] / 100
     water_stages[,4] <- water_stages[, 4] / 100
     water_stages[,5] <- water_stages[, 5] / 100
@@ -1361,12 +1362,12 @@ ectotherm <- function(
 
     # food and food water levels
     if(length(X) == 1){ # no day-specific food levels given
-      foodlevels <- rep(X, nrow(metout) / 24)
+      foodlevels <- rep(X, nrow(metout))
     }else{
       foodlevels <- X
     }
     if(length(pct_H_X) == 1){ # no day-specific food water levels given
-      foodwaters <- rep(pct_H_X, nrow(metout) / 24)
+      foodwaters <- rep(pct_H_X, nrow(metout))
     }else{
       foodwaters <- pct_H_X
     }
@@ -1385,7 +1386,7 @@ ectotherm <- function(
     gas <- c(O2gas, CO2gas, N2gas) # gas vector
     behav <- c(diurn, nocturn, crepus, rainact, burrow, shade_seek, climb, fossorial, SPARE3) # behaviour vector
     ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF, EMISSK, EMISSB, ABSSB, K_skin, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, starvemode, tannul, nodnum, postur, psi_body, spec_hyd_body, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, arrhen_mode, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, pct_cond_egg, K_egg, psi_egg, spec_hyd_egg, b, KS, PE))
-    debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, FoodWater1, f, s_G, K, X[1], metab_mode, stages, kap_V, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He, k_Ee, k_EV, mu_N, h_O, h_M[4])
+    debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, debmodspare, f, s_G, K, X[1], metab_mode, stages, kap_V, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He, k_Ee, k_EV, mu_N, h_O, h_M[4])
     deblast <- c(iyear, countday, V_init, E_init, ES_init, cumrepro_init, q_init, hs_init, cumbatch_init, V_baby_init, E_baby_init, E_H_init, stage)
 
     # code to determine wet periods for activity in a pond
