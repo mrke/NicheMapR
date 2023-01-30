@@ -113,7 +113,7 @@ C     AN INSECT (HEMIMETABOLOUS)
       ELSE ! POST-EMBRYO
       
        ! structure and starvation
-       IF(V * RDOT < 0.)THEN
+       IF((V * RDOT < 0).AND.(STARVEMODE.GT.0))THEN
         DS = -1. * V * RDOT * MU_V * D_V / W_V ! J / T, STARVATION ENERGY TO BE SUBTRACTED FROM REPRODUCTION BUFFER IF NECESSARY
         DV = 0.
         IF((R + B) .LT. DS)THEN !# reproduction and batch buffer has run out so draw from structure

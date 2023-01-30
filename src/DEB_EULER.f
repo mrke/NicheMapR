@@ -441,7 +441,7 @@ C      USE EMBRYO EQUATION FOR LENGTH, FROM KOOIJMAN 2009 EQ. 2
         p_C=E_PRES*V_PRES*VDOT/L_PRES !# J / t, mobilisation rate
        ENDIF
        DVDT = V_PRES*R
-       IF(V_PRES*R.LT.0.)THEN
+       IF((V_PRES*R.LT.0.).AND.(STARVEMODE.GT.0))THEN
         STARVING=1
         STARVE=V_PRES*R*(-1.)*MU_V*D_V/W_V  !CM3 * G/CM3 (G) * MOL/G (MOL) * J/MOL (J)
         DVDT=0.
