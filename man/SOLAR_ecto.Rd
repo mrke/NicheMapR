@@ -41,6 +41,8 @@ SOLAR_ecto(
 
 \item{ZEN}{solar zenith angle (radians)}
 
+\item{QSOLR}{incident solar radiation, W.m2}
+
 \item{PDIF}{proportion of solar radiation that is diffuse (fractional, 0-1)}
 
 \item{SHADE}{shade (\%)}

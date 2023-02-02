@@ -12,6 +12,7 @@
 #' @param FATOSK radiation configuration factor to sky (fractional, 0-1)
 #' @param FATOBJ radiation configuration factor to ground (fractional, 0-1)
 #' @param ZEN solar zenith angle (radians)
+#' @param QSOLR incident solar radiation, W.m2
 #' @param PDIF proportion of solar radiation that is diffuse (fractional, 0-1)
 #' @param SHADE shade (\%)
 #' @param postur postural orientation to sun, 1 = perpendicular, 2 = parallel, 0 = half way between

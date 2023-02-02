@@ -91,7 +91,7 @@ CONV_ecto <- function(
   # C     VISKIN = KINEMATIC VISCOSITY OF AIR
   # C     TSKIN = CURRENT GUESS OF OBJECT SURFACE TEMPERATURE
 
-  PI <- 3.14159265
+  #PI <- 3.14159265
 
   ANUFRE <- 0
   ANU <- 0
@@ -113,15 +113,15 @@ CONV_ecto <- function(
 
   #C     GET THERMAL PROPERTIES OF DRY AIR AT CURRENT TEMP AND PRESSURE
   dryair.out <- DRYAIR(DB, BP, ALT)
-  PATMOS <- dryair.out$patmos
+  #PATMOS <- dryair.out$patmos
   DENSTY <- dryair.out$densty
   VISDYN <- dryair.out$visdyn
-  VISKIN <- dryair.out$viskin
+  #VISKIN <- dryair.out$viskin
   DIFVPR <- dryair.out$difvpr
   THCOND <- dryair.out$thcond
-  HTOVPR <- dryair.out$htovpr
-  TCOEFF <- dryair.out$tcoeff
-  GGROUP <- dryair.out$ggroup
+  #HTOVPR <- dryair.out$htovpr
+  #TCOEFF <- dryair.out$tcoeff
+  #GGROUP <- dryair.out$ggroup
 
   #C     CHECKING TO SEE IF THE FLUID IS WATER, NOT AIR
   if(FLTYPE == 1){
@@ -130,6 +130,7 @@ CONV_ecto <- function(
     DENSTY <- WATERPROP.out$DENSTY
     THCOND <- WATERPROP.out$THCOND
     VISDYN <- WATERPROP.out$VISDYN
+    BETA <- WATERPROP.out$BETA
   }
 
   #C     COMPUTING PRANDTL AND SCHMIDT NUMBERS
@@ -164,7 +165,7 @@ CONV_ecto <- function(
   #C     CHOOSING FREE OR FORCED CONVECTION
   #C     SIGNIFICANT FREE CONVECTION IF GR/RE ^ 2 .GE. 20.0
   #C     KREITH (1965) P. 358
-  GRRE2 <- GR / (RE ^ 2)
+  # GRRE2 <- GR / (RE ^ 2)
 
   #C     *********************  FREE CONVECTION  ********************
   if(GEOMETRY == 0){
