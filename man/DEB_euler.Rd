@@ -262,7 +262,7 @@ E_R Reproduction buffer energy, J
 
 E_B Reproduction batch energy, J
 
-q Ageing acceleration
+q Ageing acceleration, 1/time^2
 
 hs Hazard rate
 

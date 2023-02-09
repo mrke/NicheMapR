@@ -145,7 +145,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{eggshape_a}{ = 1, Proportionality factor (-) for going from volume to area, keep this 1 (redundant parameter that should be removed)}\cr}
 \item{\code{eggshape_b}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid }\cr}
 \item{\code{eggshape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
-\item{\code{eggmult }{ = 1 # multiply egg mass by clutch size for heat and water exchange calculations?}\cr}
+\item{\code{eggmult}{ = 1 # multiply egg mass by clutch size for heat and water exchange calculations?}\cr}
 \item{\code{pct_cond_egg}{ = 50, Percentage of egg surface contacting the substrate (\%)}\cr}
 }
 \strong{ Behavioural parameters:}
@@ -178,12 +178,14 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{raindrink}{ = 0, Rainfall level at which rehydration from drinking occurs - if 0 animal can always drink}\cr}
 \item{\code{foodlim}{ = 1, Is the animal food limited - if 0 animal can always find food (useful for making different life stages dependent on soil moisture-based food estimates}\cr}
 \item{\code{RQ}{ = 0.8, respiratory quotient (0-1), computed from first principles if DEB model running}\cr}
-\item{\code{K_skin}{ = 2.8e-09, - Hydraulic conductivity of skin (kg/(m s (J/kg)) - drives liquid water exchange with substrate}\cr}
+\item{\code{K_skin}{ = 0, - Hydraulic conductivity of skin (kg/(m s (J/kg)) - drives liquid water exchange with substrate}\cr}
 \item{\code{spec_hyd_body}{ = 0.000304, Specific hydration of body (m3 / (m3 (J/kg))) - drives liquid water exchange with substrate if K_skin > 0 }\cr}
 \item{\code{psi_body}{ = -707, Water potential of body (J/kg) - drives liquid water exchange with substrate if K_skin > 0 and will also affect skin humidity for water vapour exchange}\cr}
+\item{\code{H2Obal_init}{ = 0, Water balance of body (g) - initial water balance, where positive means excess water}\cr}
 \item{\code{K_egg}{ = 2.8e-09, Hydraulic conductivity of egg shell (kg/(m s (J/kg)) - drives liquid water exchange with substrate}\cr}
 \item{\code{spec_hyd_egg}{ = 0.000304, Specific hydration of egg (m3 / (m3 (J/kg))) - drives liquid water exchange with substrate if K_skin > 0 }\cr}
 \item{\code{psi_egg}{ = -707, Water potential of egg (J/kg) - drives liquid water exchange with substrate if K_skin > 0}\cr}
+\item{\code{liq_init}{ = Ww_g, Initial mass for egg liquid exchange (g) - total mass of egg which is used as the reference point}\cr}
 }
 \strong{ Dynamic Energy Budget (DEB) model parameters:}
 \itemize{
@@ -273,8 +275,19 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{V_init}{ = 3e-9, Initial structural volume (cm3)}\cr}
 \item{\code{E_init}{ = E_0/V_init, Initial reserve density (J/cm3)}\cr}
 \item{\code{E_H_init}{ = 0, Initial maturity (J)}\cr}
+\item{\code{E_S_init}{ = 0, Intial stomach energy (J)}\cr}
+\item{\code{E_R_init}{ = 0, Initial reproductive energy (J)}\cr}
+\item{\code{E_B_init}{ = 0, Initial reproduction batch energy (J)}\cr}
+\item{\code{q_init}{ = 1, Initial aging acceleration (1/t2)}\cr}
+\item{\code{hs_init}{ = 0, Initial hazard rate (1/t)}\cr}
+\item{\code{p_surv_init}{ = 1, Initial cumulative survival probability (1/t)}\cr}
+\item{\code{pregnant_init}{ = 0, Initial pregnancy state}\cr}
+\item{\code{V_baby_init}{ = 3e-9, Initial structural volume of baby (cm3)}\cr}
+\item{\code{E_baby_init}{ = E_0/V_baby_init, Initial reserve density of baby (J/cm3)}\cr}
+\item{\code{E_H_baby_init}{ = 0, Initial maturity of baby (J)}\cr}
 \item{\code{stage}{ = 0, Initial stage (STD model: 0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction, Insect models: 0=embryo, 1-(stages-1)=instar, with pupa as penultimate, stages=adult}\cr}
 }
+
 \strong{ Metabolic depression and starvation parameters:}
 \itemize{
 \item{\code{aestivate}{ = 0, Does the animal aestivate/go into torpor? 1=yes, 0=no}\cr}
@@ -440,22 +453,24 @@ debout variables:
 \item 11 WETGONAD - Wet mass of gonad (batch and reproduction buffers) (g)
 \item 12 WETGUT - Wet mass of food in gut (g)
 \item 13 PCT_DESIC - \% desiccated
-\item 14 CUMREPRO - Energy in reproduction buffer (J)
-\item 15 CUMBATCH - Energy in batch for egg production (J)
-\item 16 BREEDING - Breeding state (1=breeding, 0=not breeding)
-\item 17 PREGNANT - Pregnant? (only if viviparous) (0 or 1)
-\item 18 V_BABY - Structure of baby (cm3) (only if viviparous and pregnant)
-\item 19 E_BABY - Reserve density of baby (J/cm3) (only if viviparous and pregnant)
-\item 20 H_S - Hazard rate (1/h)
-\item 21 P_SURV - Survival probability due to joint influence of ageing and mortality rates
-\item 22 P_A - assimilation flux, J/h
-\item 23 P_C - mobilisation flux, J/h
-\item 24 P_M - maintenance flux, J/h
-\item 25 P_G - growth flux, J/h
-\item 26 P_D - dissipation flux, J/h
-\item 27 P_J - maturity maintenance flux, J/h
-\item 28 P_R - reproduction/maturation flux, J/h
-\item 29 P_D - egg flux, J/h
+\item 14 E_S - Energy in stomach (J)
+\item 15 E_R - Energy in reproduction buffer (J)
+\item 16 E_B - Energy in batch for egg production (J)
+\item 17 BREEDING - Breeding state (1=breeding, 0=not breeding)
+\item 18 PREGNANT - Pregnant? (only if viviparous) (0 or 1)
+\item 19 V_BABY - Structure of baby (cm3) (only if viviparous and pregnant)
+\item 20 E_BABY - Reserve density of baby (J/cm3) (only if viviparous and pregnant)
+\item 21 H_S - Hazard rate (1/h)
+\item 22 Q - Aging acceleration (1/h^2)
+\item 23 P_SURV - Survival probability due to joint influence of ageing and mortality rates
+\item 24 P_A - assimilation flux (J/h)
+\item 25 P_C - mobilisation flux (J/h)
+\item 26 P_M - maintenance flux (J/h)
+\item 27 P_G - growth flux (J/h)
+\item 28 P_D - dissipation flux (J/h)
+\item 29 P_J - maturity maintenance flux (J/h)
+\item 30 P_R - reproduction/maturation flux (J/h)
+\item 31 P_B - egg flux (J/h)
 }
 yearout variables:
 \itemize{
