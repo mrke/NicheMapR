@@ -92,7 +92,7 @@ C     SOLVING THE HEAT AND WATER BALANCES, GIVEN THE CHOSEN GEOMETRY
      
       DATA PI/3.14159265/
 
-      IF((DEB1.EQ.1).AND.(STAGE.LT.1).AND.(VIVIPAROUS.EQ.0).AND.
+      IF((DEB1.EQ.1).AND.(STAGE.LT.1).AND.
      & (EGGMULT.EQ.1))THEN
        AMASS=AMASS*CLUTCHSIZE
       ENDIF
@@ -100,10 +100,10 @@ C     SOLVING THE HEAT AND WATER BALANCES, GIVEN THE CHOSEN GEOMETRY
       VOL=AMASS/ANDENS
       R=((3./4.)*VOL/PI)**(1./3.)
       R1=R-RINSUL
-      D=2*R1
+      D=2.*R1
       AL=VOL**(1./3.) !JOHN MITCHELL'S CHARACTERISTIC DIMENSION FOR CONVECTION (1976)
       
-      IF((DEB1.EQ.1).AND.(STAGE.LT.1).AND.(VIVIPAROUS.EQ.0).AND.
+      IF((DEB1.EQ.1).AND.(STAGE.LT.1).AND.
      & (EGGMULT.EQ.1))THEN
        AMASS=AMASS/CLUTCHSIZE
       ENDIF
@@ -117,14 +117,14 @@ C       PTCOND=PTCOND_ORIG
 C      ENDIF
 
 C     EGGS ARE ELLIPSOID
-      IF((DEB1.EQ.1).AND.(STAGE.LT.1).AND.(VIVIPAROUS.EQ.0))THEN
+      IF((DEB1.EQ.1).AND.(STAGE.LT.1))THEN
        PEYES=0.
        GEOMETRY=2
        A=((3./4.)*VOL/(PI*EGGSHP(2)*EGGSHP(3)))**(1./3.)
        B=A*EGGSHP(2)
        C=A*EGGSHP(3)
        P=1.6075
-       AREA=(4.*PI*(((A**P*B**P+A**P*C**P+B**P*C**P))/3.)**(1/P))
+       AREA=(4.*PI*(((A**P*B**P+A**P*C**P+B**P*C**P))/3.)**(1./P))
        AV=AREA*EGGPTCOND
        ATOT=AREA
        AEFF=SKINW*(AREA-AV)
@@ -143,7 +143,7 @@ C     EGGS ARE ELLIPSOID
       IF((CONTH.GT.0.).AND.(POND.EQ.1))THEN !CONTAINER MODEL RUNNING
        R=CONTW/2./1000.
        R1=R-RINSUL
-       D=2*R1
+       D=2.*R1
        IF(CONTDEP.GT.CONTH)THEN !MAKE SURE CONTAINER DOESN'T OVERFILL
         CONTDEP=CONTH
        ENDIF
@@ -184,7 +184,7 @@ C       CONTAINER IS SITTING ON SURFACE SO SIDES ARE EXPOSED TOO
         ALENTH=CONTDEP/1000.
         ASILN=PI*R1**2.
         ASILP=AWIDTH*ALENTH
-        AV=PI*R1**2
+        AV=PI*R1**2.
         ATOT=AREA
         AT=AREA*SKINT
         IF((CONTDEP.LE.0.01).AND.(RAINFALL.EQ.0))THEN
@@ -227,7 +227,7 @@ C      WING MODEL RUNNING
         B=A*SHP(2)
         C=A*SHP(3)
         P=1.6075
-        AREA=(4*PI*(((A**P*B**P+A**P*C**P+B**P*C**P))/3.)**(1/P))
+        AREA=(4*PI*(((A**P*B**P+A**P*C**P+B**P*C**P))/3.)**(1./P))
         AV=AREA*PTCOND
         ATOT=AREA
         AEFF=SKINW*(AREA-AV)
@@ -271,11 +271,11 @@ C     CYLINDER
       IF(GEOMETRY.EQ.1)THEN
        R1=(VOL/(PI*SHP(2)*2.))**(1./3.)
        ALENTH=R1*SHP(2)
-       AREA=2*PI*R1**2+2*PI*R1*ALENTH
+       AREA=2.*PI*R1**2.+2.*PI*R1*ALENTH
        VOL=AMASS/ANDENS
        AWIDTH=2.*R1
-       ASILN=AWIDTH * ALENTH
-       ASILP=PI*R1**2
+       ASILN=AWIDTH*ALENTH
+       ASILP=PI*R1**2.
        AV=AREA*PTCOND
        AT=AREA*SKINT
        ATOT=AREA
@@ -295,7 +295,7 @@ C     ELLIPSOID
        B=A*SHP(2)
        C=A*SHP(3)
        P=1.6075
-       AREA=(4.*PI*(((A**P*B**P+A**P*C**P+B**P*C**P))/3.)**(1/P))
+       AREA=(4.*PI*(((A**P*B**P+A**P*C**P+B**P*C**P))/3.)**(1./P))
        AV=AREA*PTCOND
        AT=AREA*SKINT
        ATOT=AREA

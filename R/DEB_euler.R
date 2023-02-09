@@ -90,7 +90,7 @@
 #' @return E_s Stomach energy content, J
 #' @return E_R Reproduction buffer energy, J
 #' @return E_B Reproduction batch energy, J
-#' @return q Ageing acceleration
+#' @return q Ageing acceleration, 1/time^2
 #' @return hs Hazard rate
 #' @return length Physical length, cm
 #' @return wetmass Total wet mass, g

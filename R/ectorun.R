@@ -84,7 +84,7 @@ ectorun <- function(ecto) {
                 environ=matrix(data = 0, nrow = ndays * 24, ncol = 28),
                 enbal=matrix(data = 0, nrow = ndays * 24, ncol = 13),
                 masbal=matrix(data = 0, nrow = ndays * 24, ncol = 21),
-                debout=matrix(data = 0, nrow = ndays * 24, ncol = 29),
+                debout=matrix(data = 0, nrow = ndays * 24, ncol = 31),
                 yearout=matrix(data = 0, nrow = 1, ncol = 20),
                 yearsout=matrix(data = 0, nrow = ceiling(ndays / 365), ncol = 43),
                 PACKAGE = "NicheMapR"
@@ -93,7 +93,7 @@ ectorun <- function(ecto) {
   environ <- matrix(data = 0, nrow = 24 * ndays, ncol = 28)
   enbal <- matrix(data = 0, nrow = 24 * ndays, ncol = 13)
   masbal <- matrix(data = 0, nrow = 24 * ndays, ncol = 21)
-  debout <- matrix(data = 0, nrow = 24 * ndays, ncol = 29)
+  debout <- matrix(data = 0, nrow = 24 * ndays, ncol = 31)
   yearout <- matrix(data = 0, nrow = 1, ncol = 20)
   yearsout <- matrix(data = 0, nrow = ceiling(ndays / 365), ncol = 43)
 
@@ -116,7 +116,7 @@ ectorun <- function(ecto) {
   environ.names<-c("DOY", "YEAR", "DAY", "TIME", "TC", "SHADE", "SOLAR", "DEP", "ACT", "TA", "TSUB", "TSKY", "VEL", "RELHUM", "ZEN", "CONDEP", "WATERTEMP", "DAYLENGTH", "WINGANGLE", "WINGTEMP", "FLYING", "FLYTIME", "PO2WATER", "SALWATER", "ABSAN", "PTCOND", "POSTURE", "PANT")
   enbal.names<-c("DOY", "YEAR", "DAY", "TIME", "QSOL", "QIRIN", "QMET", "QEVAP", "QIROUT", "QCONV", "QCOND", "ENB", "NTRY")
   masbal.names<-c("DOY", "YEAR", "DAY", "TIME", "O2_ml", "CO2_ml", "NWASTE_g", "H2OFree_g", "H2OMet_g", "DryFood_g", "WetFood_g", "DryFaeces_g", "WetFaeces_G", "Urine_g", "H2OResp_g", "H2OCut_g", "H2OEye_g", "H2OBal_g", "H2OCumBal_g", "H2OLiq_g", "PSI_kPa")
-  debout.names<-c("DOY", "YEAR", "DAY", "TIME", "STAGE", "V", "E", "E_H", "L_W", "WETMASS", "WETGONAD", "WETGUT", "PCT_DESIC", "E_R", "E_B", "BREEDING", "PREGNANT", "V_BABY", "E_BABY", "H_S", "P_SURV", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
+  debout.names<-c("DOY", "YEAR", "DAY", "TIME", "STAGE", "V", "E", "E_H", "L_W", "WETMASS", "WETGONAD", "WETGUT", "PCT_DESIC", "E_S", "E_R", "E_B", "BREEDING", "PREGNANT", "V_BABY", "E_BABY", "H_S", "Q", "P_SURV", "p_A", "p_C", "p_M", "p_G", "p_D", "p_J", "p_R", "p_B")
   yearout.names<-c("DEVTIME", "BIRTHDAY", "BIRTHMASS", "MONMATURE", "MONREPRO", "LENREPRO", "FECUNDITY", "CLUTCHES", "ANNUALACT", "MINRESERVE", "LASTFOOD", "TOTFOOD", "MINTB", "MAXTB", "Pct_Des", "LifeSpan", "GenTime", "R0", "rmax", "Length")
   yearsout.names<-c("YEAR", "MaxStg", "MaxWgt", "MaxLen", "Tmax", "Tmin", "MinRes", "MaxDes", "MinShade", "MaxShade", "MinDep", "MaxDep", "Bsk", "Forage", "Dist", "Food", "Drink", "NWaste", "Faeces", "O2", "Clutch", "Fec", "CauseDeath", "tLay", "tEgg", "tStg1", "tStg2", "tStg3", "tStg4", "tStg5", "tStg6", "tStg7", "tStg8", "mStg1", "mStg2", "mStg3", "mStg4", "mStg5", "mStg6", "mStg7", "mStg8", "surviv", "deathstage")
 

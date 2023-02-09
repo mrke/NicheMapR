@@ -44,34 +44,34 @@ C     LENGTH OF BODY & WING (PARALLEL TO LONG AXIS OF BODY) = B
 C     WIDTH OF WING (FROM JUNCTION W BODY TO WING TIP) = C
       X=A/B
       Y=C/B
-      Z=X**2+Y**2-2.*X*Y*COS(ANGLE)
+      Z=X**2.+Y**2.-2.*X*Y*COS(ANGLE)
 
 C     CALCULATE F12 PARTS OF THE EQUATION FIRST
-      P=SIN(2*ANGLE)/4.
+      P=SIN(2.*ANGLE)/4.
       P1=X*Y*SIN(ANGLE)
-      P2=((PI/2.)-ANGLE)*(X**2+Y**2)
+      P2=((PI/2.)-ANGLE)*(X**2.+Y**2.)
       PP3=(X-Y*COS(ANGLE))/(Y*SIN(ANGLE))
-      P3=Y**2* ATAN(PP3)
-      P4=X**2*ATAN((Y-X*COS(ANGLE))/(X*SIN(ANGLE)))
+      P3=Y**2.* ATAN(PP3)
+      P4=X**2.*ATAN((Y-X*COS(ANGLE))/(X*SIN(ANGLE)))
       PALPHA=-P*(P1+P2+P3+P4)
 
 C     A TRIG EQUIVALENCE: SIN**2(ANGLE) = (0.5*(1.-COS(2*ANGLE)))
 C     A TRIG EQUIVALENCE: COS**2(ANGLE) = (0.5*(1.+COS(2*ANGLE)))
       P5A=(2./(0.5*(1.-COS(2*ANGLE)))-1.0)
-      LOG1=((1.+X**2)*(1.+Y**2))/(1+Z)
+      LOG1=((1.+X**2.)*(1.+Y**2.))/(1.+Z)
       P5B=LOG(LOG1)
       P5=P5A*P5B
-      LOG2=(Y**2*(1.+Z))/((1.+Y**2)*Z)
-      P6=Y**2 *LOG(LOG2)
-      LOG3=(X**2*(1.+X**2)**COS(2*ANGLE))/
+      LOG2=(Y**2.*(1.+Z))/((1.+Y**2.)*Z)
+      P6=Y**2.*LOG(LOG2)
+      LOG3=(X**2*(1.+X**2.)**COS(2.*ANGLE))/
      &(Z*(1.+Z)**COS(2*ANGLE))
-      P7=X**2 *LOG(LOG3)
+      P7=X**2.*LOG(LOG3)
       P8=((0.5*(1.-COS(2*ANGLE)))/4.)* (P5 + P6 + P7)
       P9=Y*ATAN(1./Y)
       P10=X*ATAN(1./X)
       P11=Z**0.5*ATAN(1./Z**0.5)
       PA=(SIN(ANGLE)*SIN(2.*ANGLE))/2.
-      SQRT1=1.+X**2*(0.5*(1.-COS(2*ANGLE)))
+      SQRT1=1.+X**2.*(0.5*(1.-COS(2.*ANGLE)))
       PB=X*SQRT(SQRT1)
       PC=ATAN((X*COS(ANGLE))/SQRT(SQRT1))
       ATAN1=(Y-X*COS(ANGLE))/SQRT(SQRT1)

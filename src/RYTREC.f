@@ -58,8 +58,8 @@ C     USING THE NOTATION FROM HOWELL
       H=X
       W=Y
 C     DEFINING SOME COMMON GROUPS
-      HSQ=H**2
-      WSQ=W**2
+      HSQ=H**2.
+      WSQ=W**2.
       H2=1.+HSQ
       W2=1.+WSQ
       HPW=HSQ+WSQ
@@ -67,9 +67,9 @@ C     DEFINING SOME COMMON GROUPS
 C     DEFINING SUBGROUPS OF THE GOVERNING EQUATION
       GRP1=1./(W*PI)
       GRP2=W*ATAN(1./W)+ H*ATAN(1./H)-SQRT(HPW)*ATAN(SQRT(1./HPW))
-      GRP3=(W2*H2)/(W2+H**2)
-      GRP4=(W**2 *(W2+H**2))/(W2*HPW)
-      GRP5=(H**2 *(H2+W**2))/(H2*HPW)
+      GRP3=(W2*H2)/(W2+H**2.)
+      GRP4=(W**2. *(W2+H**2.))/(W2*HPW)
+      GRP5=(H**2. *(H2+W**2.))/(H2*HPW)
 
 C     GOVERNING EQUATION
       F=GRP1*(GRP2 + 0.25*LOG(GRP3*(GRP4**WSQ)*(GRP5**HSQ)))

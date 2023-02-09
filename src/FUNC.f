@@ -34,12 +34,12 @@ C     SIN**2(ANGLE) = 0.5*(1.-COS(2*ANGLE)
 C     DEBUGGING INFO: ANGLE IN DEGREES
 
       DEGANGL = ANGLE*180./PI
-      FA = SQRT(1.0 + XI**2*(0.5*(1.-COS(2*ANGLE))))
+      FA = SQRT(1.0+XI**2.*(0.5*(1.-COS(2.*ANGLE))))
       FB1 = (X-XI*COS(ANGLE))
-      FB2 = SQRT(1.0+XI**2* (0.5*(1.-COS(2*ANGLE))))
+      FB2 = SQRT(1.0+XI**2*(0.5*(1.-COS(2.*ANGLE))))
       FB = ATAN(FB1/FB2)
       FC1 = XI*COS(ANGLE)
-      FC2 = SQRT(1.0+XI**2* (0.5*(1.-COS(2*ANGLE))))
+      FC2 = SQRT(1.0+XI**2.*(0.5*(1.-COS(2.*ANGLE))))
       FC=ATAN(FC1/FC2)
       ANS = FA * (FB + FC)
       FUNC = ANS

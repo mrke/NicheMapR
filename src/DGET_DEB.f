@@ -74,7 +74,7 @@ C     AN INSECT (HEMIMETABOLOUS)
       V = Y(2)! cm3, STRUCTURAL VOLUME
       E = Y(3)! J/cm3, RESERVE DENSITY
       H = Y(4)! J, MATURITY
-      E_S = MAX(0.,Y(5))! J, GUT ENERGY
+      E_S = MAX(0.0D0,Y(5))! J, GUT ENERGY
       S = Y(6)! J, STARVATION ENERGY
       Q = Y(7)! -, DAMAGE ENERGY
       HS = Y(8)! -, AGEING ENERGY
@@ -84,7 +84,7 @@ C     AN INSECT (HEMIMETABOLOUS)
       L = V ** (1./3.) ! CM, STRUCTURAL LENGTH
       V_M = L_M ** 3.
       E_SC = E / E_M                ! -, SCALED RESERVE DENSITY
-      RDOT = VDOT * (E_SC / L - (1 + L_T / L) / L_M) / (E_SC + G)
+      RDOT = VDOT * (E_SC / L - (1. + L_T / L) / L_M) / (E_SC + G)
       P_C = E * (VDOT / L - RDOT) * V ! J / T, MOBILISATION RATE, EQUATION 2.12 DEB3
       IF((METAB_MODE.EQ.1).AND.(H.GE.E_HJ))THEN
        RDOT = MIN(0.0D0, RDOT)
@@ -94,34 +94,34 @@ C     AN INSECT (HEMIMETABOLOUS)
       
       IF(H.LT.E_HB)THEN ! EMBRYO
        ! STRUCTURE
-       IF(WAITING.GT.0.)THEN
-        DV = 0.
+       IF(WAITING.GT.0.0D0)THEN
+        DV = 0.0D0
        ENDIF
-       dE = (- 1 *  E * VDOT) / L
-       dH = (1 - KAP) * P_C - K_J * H ! J/d, change in maturity        
+       dE = (-1.*E*VDOT) / L
+       dH = (1.-KAP) * P_C - K_J * H ! J/d, change in maturity        
        P_J = K_J * H 
        DH = (1. - KAP) * P_C - P_J
        P_R = (1.-KAP) * P_C-P_J
        P_B = 0.
        ! NO AGEING OR STOMACH IN EMBRYO
-       DS = 0.
-       DES = 0.
-       DQ = 0.
-       DHS = 0.
+       DS = 0.0D0
+       DES = 0.0D0
+       DQ = 0.0D0
+       DHS = 0.0D0
        DR = P_R
-       DB = 0.
+       DB = 0.0D0
       ELSE ! POST-EMBRYO
       
        ! structure and starvation
-       IF((V * RDOT < 0).AND.(STARVEMODE.GT.0))THEN
+       IF((V * RDOT < 0.0D0).AND.(STARVEMODE.GT.0.0D0))THEN
         DS = -1. * V * RDOT * MU_V * D_V / W_V ! J / T, STARVATION ENERGY TO BE SUBTRACTED FROM REPRODUCTION BUFFER IF NECESSARY
-        DV = 0.
+        DV = 0.0D0
         IF((R + B) .LT. DS)THEN !# reproduction and batch buffer has run out so draw from structure
          DV = V * RDOT
-         DS = 0.
+         DS = 0.0D0
         ENDIF
        ELSE
-        DS = 0.
+        DS = 0.0D0
        ENDIF
        
        ! assimilation
@@ -131,7 +131,7 @@ C     AN INSECT (HEMIMETABOLOUS)
        IF(E_S .GT. P_A)THEN
         DE = P_A / L**3. - (E * VDOT) / L
        ELSE
-        DE = MAX(0., E_S / L**3.) - (E * VDOT) / L
+        DE = MAX(0.0D0, E_S / L**3.) - (E * VDOT) / L
        ENDIF
        
        ! MATURATION
@@ -139,14 +139,14 @@ C     AN INSECT (HEMIMETABOLOUS)
        IF(H .LT. E_HP)THEN
         DH = (1. - KAP) * P_C - P_J
        ELSE
-        DH = 0.
+        DH = 0.0D0
        ENDIF 
        
        ! FEEDING
        IF(ACTHR .GT. 1.)THEN
         P_X = F * P_XM * ((X / K) / (1. + X / K)) * V ** (2. / 3.)! J/TIME, FOOD ENERGY INTAKE RATE
        ELSE
-        P_X = 0.
+        P_X = 0.0D0
        ENDIF
        DES = P_X - (P_AM / KAP_X) * V**(2. / 3.)! J/TIME, CHANGE IN STOMACH ENERGY        
 
@@ -169,18 +169,19 @@ C     AN INSECT (HEMIMETABOLOUS)
         P_R = (1.-KAP)*P_C-P_J
        ENDIF
       
-       IF((R.LE.0.).AND.(B.LE.0).AND.(S.GT.0.).AND.(P_R.LT.S))THEN
+       IF((R.LE.0.0D0).AND.(B.LE.0.0D0).AND.(S.GT.0.0D0).AND.
+     & (P_R.LT.S))THEN
         DV = -1. * ABS(P_R) * W_V / (MU_V * D_V)  ! SUBTRACT FROM STRUCTURE SINCE NOT ENOUGH FLOW TO REPRODUCTION TO PAY FOR SOMATIC MAINTENANCE
-        P_R = 0.
+        P_R = 0.0D0
        ENDIF
        IF((H .LT. E_HP) .OR. (PREGNANT.EQ.1.))THEN
-        P_B = 0.
+        P_B = 0.0D0
        ELSE
         IF(BATCH .EQ. 1.)THEN
           BATCHPREP = (KAP_R / LAMBDA) * ((1. - KAP) * (E_M * (VDOT * 
      &    V ** (2. / 3.) + K_M * V) / (1. + (1. / G))) - P_J)
          IF(BREEDING .LT. 1)THEN
-          P_B = 0.
+          P_B = 0.0D0
          ELSE
           !IF THE REPRO BUFFER IS LOWER THAN WHAT P_B WOULD BE (SEE BELOW), P_B IS P_R
           IF(R.LT.BATCHPREP)THEN
@@ -201,36 +202,36 @@ C     AN INSECT (HEMIMETABOLOUS)
         ! draw from reproduction and then batch buffers under starvation to delay structure being mobilised
         IF((dS.GT.0.).AND.(R.GE.ds))THEN
          p_R = p_R - dS
-         dS = 0.
+         dS = 0.0D0
         ENDIF
-        IF((dS.GT.0.).AND.((B+R).GE.dS))THEN
+        IF((dS.GT.0.0D0).AND.((B+R).GE.dS))THEN
          p_B = p_R + p_B - dS
-         p_R = 0.
-         dS = 0.
+         p_R = 0.0D0
+         dS = 0.0D0
         ENDIF
        ENDIF
        
        IF(STARVEMODE.EQ.2)THEN
         ! draw from reproduction and then batch buffers under starvation to keep reserve density topped up
         IF((H.GE.E_HP).AND.((E/E_M).LT.0.95))THEN
-         IF(DE.LT.0)THEN
+         IF(DE.LT.0.0D0)THEN
           IF(R.GT.(-1.*dE*V))THEN
            p_R = p_R + dE * V
-           dE = 0.
+           dE = 0.0D0
           ENDIF
-          IF(((B+R).GT.(-1.*dE*V)).AND.(DE.NE.0.))THEN
+          IF(((B+R).GT.(-1.*dE*V)).AND.(DE.NE.0.0D0))THEN
            p_B = p_R + p_B + dE * V
-           p_R = 0.
-           dE = 0.
+           p_R = 0.0D0
+           dE = 0.0D0
           ENDIF 
          ELSE
           IF(E_S.GT.P_A)THEN
            DE = (p_R + p_B + P_A) / L**3. - (E * VDOT) / L
           ELSE
-           DE = MAX(0., (p_R + p_B + E_S) / L**3.) - (E * VDOT) / L
+           DE = MAX(0.0D0, (p_R + p_B + E_S) / L**3.) - (E * VDOT) / L
           ENDIF
-          p_R = 0.
-          p_B = 0.
+          p_R = 0.0D0
+          p_B = 0.0D0
          ENDIF
         ENDIF
        ENDIF

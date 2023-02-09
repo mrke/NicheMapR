@@ -42,13 +42,13 @@ C     EQUATIONS TO COMPUTE LIQUID WATER EXCHANGE WITH SOIL FOR EGG OR SKIN
       PI=3.14159265
       
       IF(A_S.LE.0.)THEN
-       M_S=0.
+       M_S=0.0D+00
       ELSE
        K_S=K_SAT*(P_E/PSI_S)**(2.+3./B)                                ! equation 9.2 from Campbell and Norman 2001
        M_S=(PSI_S-PSI_E)/(1./(A_S*K_E)+1./((2.*PI*A_S)**(1./2.)*K_S))  ! DARCY'S LAW 
       ENDIF
       D_M=M_S-M_A                                                     ! KG/S, CHANGE IN MASS
-      D_PSI_E=D_M/(SPEC_HYD*M)                                        ! J/KG/S, change in egg water potential
+      D_PSI_E=D_M/(SPEC_HYD*M)                                        ! J/KG/S, CHANGE IN WATER POTENTIAL
 
       DMPSI(1)=1.0D+00
       DMPSI(2)=D_M

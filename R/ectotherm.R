@@ -141,9 +141,10 @@
 #' \item{\code{raindrink}{ = 0, Rainfall level at which rehydration from drinking occurs - if 0 animal can always drink}\cr}
 #' \item{\code{foodlim}{ = 1, Is the animal food limited - if 0 animal can always find food (useful for making different life stages dependent on soil moisture-based food estimates}\cr}
 #' \item{\code{RQ}{ = 0.8, respiratory quotient (0-1), computed from first principles if DEB model running}\cr}
-#' \item{\code{K_skin}{ = 2.8e-09, - Hydraulic conductivity of skin (kg/(m s (J/kg)) - drives liquid water exchange with substrate}\cr}
+#' \item{\code{K_skin}{ = 0, - Hydraulic conductivity of skin (kg/(m s (J/kg)) - drives liquid water exchange with substrate}\cr}
 #' \item{\code{spec_hyd_body}{ = 0.000304, Specific hydration of body (m3 / (m3 (J/kg))) - drives liquid water exchange with substrate if K_skin > 0 }\cr}
 #' \item{\code{psi_body}{ = -707, Water potential of body (J/kg) - drives liquid water exchange with substrate if K_skin > 0 and will also affect skin humidity for water vapour exchange}\cr}
+#' \item{\code{H2Obal_init}{ = 0, Water balance of body (g) - initial water balance, where positive means excess water}\cr}
 #' \item{\code{K_egg}{ = 2.8e-09, Hydraulic conductivity of egg shell (kg/(m s (J/kg)) - drives liquid water exchange with substrate}\cr}
 #' \item{\code{spec_hyd_egg}{ = 0.000304, Specific hydration of egg (m3 / (m3 (J/kg))) - drives liquid water exchange with substrate if K_skin > 0 }\cr}
 #' \item{\code{psi_egg}{ = -707, Water potential of egg (J/kg) - drives liquid water exchange with substrate if K_skin > 0}\cr}
@@ -236,8 +237,19 @@
 #' \item{\code{V_init}{ = 3e-9, Initial structural volume (cm3)}\cr}
 #' \item{\code{E_init}{ = E_0/V_init, Initial reserve density (J/cm3)}\cr}
 #' \item{\code{E_H_init}{ = 0, Initial maturity (J)}\cr}
+#' \item{\code{E_S_init}{ = 0, Intial stomach energy (J)}\cr}
+#' \item{\code{E_R_init}{ = 0, Initial reproductive energy (J)}\cr}
+#' \item{\code{E_B_init}{ = 0, Initial reproduction batch energy (J)}\cr}
+#' \item{\code{q_init}{ = 1, Initial aging acceleration (1/t2)}\cr}
+#' \item{\code{hs_init}{ = 0, Initial hazard rate (1/t)}\cr}
+#' \item{\code{p_surv_init}{ = 1, Initial cumulative survival probability (1/t)}\cr}
+#' \item{\code{pregnant_init}{ = 0, Initial pregnancy state}\cr}
+#' \item{\code{V_baby_init}{ = 3e-9, Initial structural volume of baby (cm3)}\cr}
+#' \item{\code{E_baby_init}{ = E_0/V_baby_init, Initial reserve density of baby (J/cm3)}\cr}
+#' \item{\code{E_H_baby_init}{ = 0, Initial maturity of baby (J)}\cr}
 #' \item{\code{stage}{ = 0, Initial stage (STD model: 0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction, Insect models: 0=embryo, 1-(stages-1)=instar, with pupa as penultimate, stages=adult}\cr}
 #'}
+#'
 #' \strong{ Metabolic depression and starvation parameters:}
 #' \itemize{
 #' \item{\code{aestivate}{ = 0, Does the animal aestivate/go into torpor? 1=yes, 0=no}\cr}
@@ -403,22 +415,24 @@
 #' \item 11 WETGONAD - Wet mass of gonad (batch and reproduction buffers) (g)
 #' \item 12 WETGUT - Wet mass of food in gut (g)
 #' \item 13 PCT_DESIC - \% desiccated
-#' \item 14 CUMREPRO - Energy in reproduction buffer (J)
-#' \item 15 CUMBATCH - Energy in batch for egg production (J)
-#' \item 16 BREEDING - Breeding state (1=breeding, 0=not breeding)
-#' \item 17 PREGNANT - Pregnant? (only if viviparous) (0 or 1)
-#' \item 18 V_BABY - Structure of baby (cm3) (only if viviparous and pregnant)
-#' \item 19 E_BABY - Reserve density of baby (J/cm3) (only if viviparous and pregnant)
-#' \item 20 H_S - Hazard rate (1/h)
-#' \item 21 P_SURV - Survival probability due to joint influence of ageing and mortality rates
-#' \item 22 P_A - assimilation flux, J/h
-#' \item 23 P_C - mobilisation flux, J/h
-#' \item 24 P_M - maintenance flux, J/h
-#' \item 25 P_G - growth flux, J/h
-#' \item 26 P_D - dissipation flux, J/h
-#' \item 27 P_J - maturity maintenance flux, J/h
-#' \item 28 P_R - reproduction/maturation flux, J/h
-#' \item 29 P_D - egg flux, J/h
+#' \item 14 E_S - Energy in stomach (J)
+#' \item 15 E_R - Energy in reproduction buffer (J)
+#' \item 16 E_B - Energy in batch for egg production (J)
+#' \item 17 BREEDING - Breeding state (1=breeding, 0=not breeding)
+#' \item 18 PREGNANT - Pregnant? (only if viviparous) (0 or 1)
+#' \item 19 V_BABY - Structure of baby (cm3) (only if viviparous and pregnant)
+#' \item 20 E_BABY - Reserve density of baby (J/cm3) (only if viviparous and pregnant)
+#' \item 21 H_S - Hazard rate (1/h)
+#' \item 22 Q - Aging acceleration (1/h^2)
+#' \item 23 P_SURV - Survival probability due to joint influence of ageing and mortality rates
+#' \item 24 P_A - assimilation flux (J/h)
+#' \item 25 P_C - mobilisation flux (J/h)
+#' \item 26 P_M - maintenance flux (J/h)
+#' \item 27 P_G - growth flux (J/h)
+#' \item 28 P_D - dissipation flux (J/h)
+#' \item 29 P_J - maturity maintenance flux (J/h)
+#' \item 30 P_R - reproduction/maturation flux (J/h)
+#' \item 31 P_B - egg flux (J/h)
 #'}
 #' yearout variables:
 #' \itemize{
@@ -569,10 +583,11 @@ ectotherm <- function(
   F_O2 = 20,
   delta_air = 0.1,
   RQ = 0.8,
-  K_skin = 2.8e-09,
+  K_skin = 0,
   psi_body = -707,
   spec_hyd_body =0.000304,
   K_egg = 2.8e-09,
+  H2Obal_init = 0,
   psi_egg = -707,
   spec_hyd_egg = 0.000304,
   nyears = micro$nyears,
@@ -710,7 +725,16 @@ ectotherm <- function(
   k_EV = 0.07077021 / 24,
   V_init = 3e-9,
   E_init = E_0 / V_init,
+  E_S_init = 0,
   E_H_init = 0,
+  E_R_init = 0,
+  E_B_init = 0,
+  q_init = 0,
+  hs_init = 0,
+  p_surv_init = 1,
+  V_baby_init = 3e-9,
+  E_baby_init = E_0 / V_baby_init,
+  E_H_baby_init = 0,
   stage = 0,
   aestivate = 0,
   depress = 1,
@@ -1284,7 +1308,7 @@ ectotherm <- function(
     skint <- pct_touch / 100
     PTUREA1 <- pct_H_N / 100
     PFEWAT1 <- pct_H_P / 100
-    pct_H_X <- pct_H_X / 100
+    p_H_X <- pct_H_X / 100
     water_stages[, 5] <- water_stages[, 5] / 100 # pct_H_X
     #FoodWater1 <- pct_H_X[1]
     debmodspare <- 1
@@ -1351,13 +1375,13 @@ ectotherm <- function(
     # DEB model initial conditions
     V_init_baby <- 3e-9 # initial structure, cm3
     E_init_baby <- E_0 / V_init_baby # initial reserve density, J/cm3
-    E_baby_init <- E_init_baby #
-    V_baby_init <- V_init_baby
-    ES_init <- 0 # intial stomach energy, J
-    cumrepro_init <- 0 # initial reproductive energy, J
-    cumbatch_init <- 0 #initial reproduction batch energy
-    q_init <- 0 # initial surivival probability
-    hs_init <- 0 # specific death probability, 1/t
+    #E_baby_init <- E_init_baby #
+    #V_baby_init <- V_init_baby
+    #ES_init <- 0 # intial stomach energy, J
+    #cumrepro_init <- 0 # initial reproductive energy, J
+    #cumbatch_init <- 0 #initial reproduction batch energy
+    #q_init <- 0 # initial surivival probability
+    #hs_init <- 0 # specific death probability, 1/t
     pregnant <- 0 # initial pregnancy state
 
     # food and food water levels
@@ -1366,10 +1390,10 @@ ectotherm <- function(
     }else{
       foodlevels <- X
     }
-    if(length(pct_H_X) == 1){ # no day-specific food water levels given
-      foodwaters <- rep(pct_H_X, nrow(metout))
+    if(length(p_H_X) == 1){ # no day-specific food water levels given
+      foodwaters <- rep(p_H_X, nrow(metout))
     }else{
-      foodwaters <- pct_H_X
+      foodwaters <- p_H_X
     }
 
     # unused /spare parameters
@@ -1379,15 +1403,15 @@ ectotherm <- function(
     OBJDIS <- 1.0 # currently unused - distance (m) from nearby object of different temp to sky and ground (e.g. warm rock, fire)
     OBJL <- 0.0001 # currently unused - diameter (m) of nearby object of different temp to sky and ground (e.g. warm rock, fire)
     FATOBJ <- 0 # configuration factor to nearby object of different temp to sky and ground (e.g. warm rock, fire)
-    SPARE2 <- 1 # spare input
+    #SPARE2 <- 1 # spare input
     SPARE3 <- 0 # spare input
 
     # collate parameters
     gas <- c(O2gas, CO2gas, N2gas) # gas vector
     behav <- c(diurn, nocturn, crepus, rainact, burrow, shade_seek, climb, fossorial, SPARE3) # behaviour vector
-    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF, EMISSK, EMISSB, ABSSB, K_skin, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, starvemode, tannul, nodnum, postur, psi_body, spec_hyd_body, CT_max, CT_min, behav, DOY, actrainthresh, viviparous, pregnant, conth, contw, contlast, arrhen_mode, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, pct_cond_egg, K_egg, psi_egg, spec_hyd_egg, b, KS, PE))
+    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF, EMISSK, EMISSB, ABSSB, K_skin, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, starvemode, tannul, nodnum, postur, psi_body, spec_hyd_body, CT_max, CT_min, behav, H2Obal_init, actrainthresh, viviparous, pregnant, conth, contw, contlast, arrhen_mode, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, microyear, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, pct_cond_egg, K_egg, psi_egg, spec_hyd_egg, b, KS, PE))
     debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, debmodspare, f, s_G, K, X[1], metab_mode, stages, kap_V, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He, k_Ee, k_EV, mu_N, h_O, h_M[4])
-    deblast <- c(iyear, countday, V_init, E_init, ES_init, cumrepro_init, q_init, hs_init, cumbatch_init, V_baby_init, E_baby_init, E_H_init, stage)
+    deblast <- c(iyear, countday, V_init, E_init, E_S_init, E_R_init, q_init, hs_init, E_B_init, V_baby_init, E_baby_init, E_H_init, stage, p_surv_init, E_H_baby_init)
 
     # code to determine wet periods for activity in a pond
     if(wetmod==1){

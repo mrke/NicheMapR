@@ -35,9 +35,9 @@ C     THEIR DIMENSIONS ARE A (LENGTH) AND B (WIDTH).
       Y=BPL/CPL
 
       GRP1=2./(PI*X*Y)
-      A=1+X**2
-      B=1+Y**2
-      SQRT1=SQRT((A*B)/(A+Y**2))
+      A=1.+X**2.
+      B=1.+Y**2.
+      SQRT1=SQRT((A*B)/(A+Y**2.))
       GRP2=LOG(SQRT1)
       GRP3=(Y*SQRT(A))*ATAN(Y/SQRT(A))
       GRP4=(X*(SQRT(B)))*ATAN(X/SQRT(B))
