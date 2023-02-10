@@ -207,6 +207,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{kap_R}{ = 0.95, Fraction of reproduction energy fixed in eggs}\cr}
 \item{\code{k_J}{ = 0.006498/24, Maturity maintenance rate coefficient (1/h)}\cr}
 \item{\code{E_Hb}{ = 866.6*z_mult^3, Maturity at birth (J)}\cr}
+\item{\code{E_Ho}{ = 866.6*z_mult^3, Maturity of embryo at oviposition (J)}\cr}
 \item{\code{E_Hj}{ = E_Hb*z_mult^3, Maturity at metamorphosis (if different to E_Hb, triggers metabolic acceleration) (J)}\cr}
 \item{\code{E_Hp}{ = 1.019e+04*z.mult^3, Maturity at puberty}\cr}
 \item{\code{E_He}{ = E_He*z_mult^3, Maturity at eclosion (J) (relevant only for holometabolous model)}\cr}
@@ -298,7 +299,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \itemize{
 \item{\code{clutchsize}{ = 5, Clutch size (#), overridden by \code{clutch_ab}}\cr}
 \item{\code{clutch_ab}{ = c(0,0), # paramters for relationship between length (cm) and clutch size: clutch size = a*SVL-b, make a and b zero if fixed clutch size}\cr}
-\item{\code{viviparous}{ = 1, Viviparous reproduction? 1=yes, 0=no (if yes, animal will be held in adult-sided female's body for duration of development and will experience her body temperature}\cr}
+\item{\code{viviparous}{ = 0, Viviparous reproduction? 0=no, 1=yes (if yes, animal will be held in adult-sided female's body for duration of development, set by E_Ho, and will experience her body temperature}\cr}
 \item{\code{minclutch}{ = 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate}\cr}
 \item{\code{batch}{ = 1, Invoke Pequerie et al.'s batch laying model?}\cr}
 \item{\code{photostart}{ = 3, Photoperiod response triggering ovulation, none (0), summer solstice (1), autumnal equinox (2), winter solstice (3), vernal equinox (4), specified daylength thresholds (5 - uses \code{daylengthstart} and \code{daylengthfinish})}\cr}
