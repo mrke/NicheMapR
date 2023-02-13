@@ -84,6 +84,7 @@ DEB(
   stage = 0,
   breeding = 0,
   Tb = 33,
+  starve_mode = 1,
   fdry = 0.3,
   L_b = 0.42,
   L_j = 1.376,
@@ -238,6 +239,8 @@ DEB(
 \item{breeding}{= 0}
 
 \item{Tb}{= 33}
+
+\item{starve_mode}{= 1, Determines how reproduction buffer is used during starvation, where 0 means it is not used, 1 means it is used before structure is mobilised and 2 means it is used to maximise reserve density}
 
 \item{fdry}{= 0.3, Dry mass fraction of food}
 

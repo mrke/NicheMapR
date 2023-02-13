@@ -71,6 +71,7 @@ DEB_var(
   E_R_init = 0,
   E_B_init = 0,
   stages = 7,
+  starve_mode = 1,
   fdry = 0.3,
   L_b = 0.07101934,
   L_j = 1.376,
@@ -212,6 +213,8 @@ DEB_var(
 \item{E_B_init}{= 0}
 
 \item{stages}{= 3, how many life stages?}
+
+\item{starve_mode}{= 1, Determines how reproduction buffer is used during starvation, where 0 means it is not used, 1 means it is used before structure is mobilised and 2 means it is used to maximise reserve density}
 
 \item{fdry}{= 0.3, Dry mass fraction of food}
 
