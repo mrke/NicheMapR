@@ -69,6 +69,7 @@
 #' @param VTMAX = 39, Voluntary thermal maximum, degrees C, controls whether repro event can occur at a given time
 #' @param arrhenius = matrix(data = matrix(data = c(rep(T_A,8),rep(T_AL,8),rep(T_AH,8),rep(T_L,8),rep(T_H,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A,T_AL,T_AH,T_L,T_H)
 #' @param arrhenius2 = matrix(data = matrix(data = c(rep(T_A2,8),rep(T_AL2,8),rep(T_AH2,8),rep(T_L2,8),rep(T_H2,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for maturity maintenance (causes 'Temperature Size Rule' effect) DEB model (T_A2,T_AL2,T_AH2,T_L2,T_H2)
+#' @param starve_mode = 1, Determines how reproduction buffer is used during starvation, where 0 means it is not used, 1 means it is used before structure is mobilised and 2 means it is used to maximise reserve density
 #' @param acthr = 1
 #' @param X = 11
 #' @param E_pres = 6011.93
@@ -229,6 +230,7 @@ DEB<-function(
   stage=0,
   breeding=0,
   Tb=33,
+  starve_mode=1,
   fdry=0.3,
   L_b=0.42,
   L_j=1.376,
@@ -368,7 +370,7 @@ DEB<-function(
                  X = X, K = K, E_Hp = E_Hp, E_Hb = E_Hb, E_Hj = E_Hj, s_G = s_G, h_a = h_aT,
                  batch = batch, kap_R = kap_R, lambda = lambda,
                  breeding = breeding, kap_X = kap_X, f = f, E_sm = E_sm, s_M = s_M,
-                 L_j = L_j, metab_mode = metab_mode)
+                 L_j = L_j, metab_mode = metab_mode, starve_mode=starve_mode)
 
   # function for solver (running for one time step)
   dget_DEB <- function(t, y, indata){
@@ -414,6 +416,7 @@ DEB<-function(
       }else{ # post-embryo
 
         # structure and starvation
+        if(starve_mode > 0){
         if(V * r < 0){
           dS <- V * r * -1 * mu_V * d_V / w_V # J / t, starvation energy to be subtracted from reproduction buffer if necessary
           dV <- 0
@@ -424,7 +427,10 @@ DEB<-function(
         }else{
           dS <- 0
         }
-
+        }else{
+          dV <- V * r
+          dS <- 0
+        }
         # assimilation
         p_A <- p_Am * f * L ^ 2
 
@@ -498,21 +504,50 @@ DEB<-function(
         }#end check for immature or mature
         p_R <- max(0, p_R - p_B) # take finalised value of p_B from p_R
 
-        # draw from reproduction and then batch buffers under starvation
-        if(dS > 0 & R > dS){
-         p_R <- p_R - dS
-         dS <- 0
+        if(starve_mode > 0){
+          # draw from reproduction and then batch buffers under starvation
+          if(dS > 0 & R >= dS){
+            p_R <- p_R - dS
+            dS <- 0
+          }
+          if(dS > 0 & (B + R) >= dS){
+            p_B <- p_R + p_B - dS
+            p_R <- 0
+            dS <- 0
+          }
         }
-        if(dS > 0 & B > dS){
-         p_B <- p_B - dS
-         dS <- 0
+
+        if(starve_mode == 2){
+          # draw from reproduction and then batch buffers under starvation to keep reserve density topped up
+          if((H >= E_Hp) & ((E / E_m) < 0.95)){
+            if(dE < 0){
+              if(R > (-1 * dE * V)){
+                p_R <- p_R + dE * V
+                dE <- 0
+              }
+              if(((B + R) > (-1 * dE * V)) & (dE != 0)){
+                p_B <- p_R + p_B + dE * V
+                p_R <- 0
+                dE <- 0
+              }
+            }else{
+              if(E_s > p_A){
+                dE <- (p_R + p_B + p_A) / L ^ 3 - (E * v) / L
+              }else{
+                dE <- max(0, (p_R + p_B + E_s) / L ^ 3) - (E * v) / L
+              }
+              p_R <- 0
+              p_B <- 0
+            }
+          }
         }
+
         #accumulate energy/matter in reproduction and batch buffers
         dR <- p_R
         dB <- p_B * kap_R
       }
 
-      y = list(c(dV, dE, dH, dEs, dS, dq, dhs, dR, dB))
+      y <- list(c(dV, dE, dH, dEs, dS, dq, dhs, dR, dB))
     })
   }
 

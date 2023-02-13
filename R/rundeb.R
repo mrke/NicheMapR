@@ -38,6 +38,7 @@
 #' start.stage <- 0 # stage in life cycle to start (0 = egg, 1 = juvenile, 2 = puberty)
 #' ndays <- 50 # number days to run the simulation for
 #' div <- 24 # time step divider (1 = days, 24 = hours, etc.) - keep small if using Euler method for integration
+#' starve_mode <- 1 # Determines how reproduction buffer is used during starvation, where 0 means it is not used, 1 means it is used before structure is mobilised and 2 means it is used to maximise reserve density
 #' Tbs <- rep(20, ndays * div) # deg C, body temperature
 #' starvetime <- 0 # length of low food period when simulating starvation
 #' X <- 100 # J/cm2 base food density
@@ -54,7 +55,7 @@
 #' mass.unit <- 'g'
 #' length.unit <- 'mm'
 #'
-#' deb <- rundeb(species = species, ndays = ndays, div = div, Tbs = Tbs,
+#' deb <- rundeb(species = species, ndays = ndays, div = div, starve_mode = starve.mode, Tbs = Tbs,
 #'               clutchsize = clutchsize, kap.mult = kap.mult, v.mult = v.mult,
 #'               p.M.mult = p.M.mult, Xs = Xs, z.mult = z.mult, E.0.mult = E.0.mult,
 #'               mass.unit = mass.unit, length.unit = length.unit, start.stage = start.stage,
@@ -72,6 +73,7 @@ rundeb <- function(
   S_instar = rep(1.618, stages),
   ndays = 50,
   div = 24,
+  starve_mode = 1,
   Tbs = rep(20, ndays*div),
   Xs = rep(100, ndays*div),
   E_sm = 350,
@@ -250,7 +252,8 @@ rundeb <- function(
                           metab_mode=metab_mode,
                           S_instar=S_instar,
                           stages=stages,
-                          age=age)
+                          age=age,
+                          starve_mode=starve_mode)
   }else{
     debout[1,]<-DEB(step=step,
                     z=z,
@@ -325,7 +328,8 @@ rundeb <- function(
                     metab_mode=metab_mode,
                     S_instar=S_instar,
                     stages=stages,
-                    age=age)
+                    age=age,
+                    starve_mode=starve_mode)
   }
 
   # run through all remaining time steps
@@ -416,7 +420,8 @@ rundeb <- function(
                               metab_mode=metab_mode,
                               S_instar=S_instar,
                               stages=stages,
-                              age=age)
+                              age=age,
+                              starve_mode=starve_mode)
       }else{
         debout[i,]<-DEB(step=step,
                         z=z,
@@ -492,7 +497,8 @@ rundeb <- function(
                         metab_mode=metab_mode,
                         S_instar=S_instar,
                         stages=stages,
-                        age=age)
+                        age=age,
+                        starve_mode=starve_mode)
       }
     }
   }

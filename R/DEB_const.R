@@ -64,6 +64,7 @@
 #' @param clutch_ab = c(0,0), paramters for relationship between length (cm) and clutch size: clutch size = a*L_w-b, make a and b zero if fixed clutch size
 #' @param minclutch = 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate
 #' @param batch = 1, Invoke Pequerie et al.'s batch laying model?
+#' @param starve_mode = 1, Determines how reproduction buffer is used during starvation, where 0 means it is not used, 1 means it is used before structure is mobilised and 2 means it is used to maximise reserve density
 #' @param lambda = 1/2
 #' @param acthr = 1
 #' @param X = 11
@@ -214,6 +215,7 @@ DEB_const<-function(
   E_B_init=0,
   stages=7,
   Tb=33,
+  starve_mode=1,
   fdry=0.3,
   L_b=0.07101934,
   L_j=1.376,
@@ -384,6 +386,7 @@ DEB_const<-function(
       }else{ # post-embryo
 
         # structure and starvation
+        if(starve_mode > 0){
         if(V * r < 0){
           dS <- V * r * -1 * mu_V * d_V / w_V # J / t, starvation energy to be subtracted from reproduction buffer if necessary
           dV <- 0
@@ -392,6 +395,10 @@ DEB_const<-function(
             dS <- 0
           }
         }else{
+          dS <- 0
+        }
+        }else{
+          dV <- V * r
           dS <- 0
         }
 
@@ -469,14 +476,42 @@ DEB_const<-function(
         }#end check for immature or mature
         p_R <- max(0, p_R - p_B) # take finalised value of p_B from p_R
 
-        # draw from reproduction and then batch buffers under starvation
-        if(dS > 0 & R > dS){
-          p_R <- p_R - dS
-          dS <- 0
+        if(starve_mode > 0){
+          # draw from reproduction and then batch buffers under starvation
+          if(dS > 0 & R >= dS){
+            p_R <- p_R - dS
+            dS <- 0
+          }
+          if(dS > 0 & (B + R) >= dS){
+            p_B <- p_R + p_B - dS
+            p_R <- 0
+            dS <- 0
+          }
         }
-        if(dS > 0 & B > dS){
-         p_B <- p_B - dS
-         dS <- 0
+
+        if(starve_mode == 2){
+          # draw from reproduction and then batch buffers under starvation to keep reserve density topped up
+          if((H >= E_Hp) & ((E / E_m) < 0.95)){
+            if(dE < 0){
+              if(R > (-1 * dE * V)){
+                p_R <- p_R + dE * V
+                dE <- 0
+              }
+              if(((B + R) > (-1 * dE * V)) & (dE != 0)){
+                p_B <- p_R + p_B + dE * V
+                p_R <- 0
+                dE <- 0
+              }
+            }else{
+              if(E_s > p_A){
+                dE <- (p_R + p_B + p_A) / L ^ 3 - (E * v) / L
+              }else{
+                dE <- max(0, (p_R + p_B + E_s) / L ^ 3) - (E * v) / L
+              }
+              p_R <- 0
+              p_B <- 0
+            }
+          }
         }
         #accumulate energy/matter in reproduction and batch buffers
         dR <- p_R

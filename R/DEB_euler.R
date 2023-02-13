@@ -68,6 +68,7 @@
 #' @param VTMAX = 39, Voluntary thermal maximum, degrees C, controls whether repro event can occur at a given time
 #' @param arrhenius = matrix(data = matrix(data = c(rep(T_A,8),rep(T_AL,8),rep(T_AH,8),rep(T_L,8),rep(T_H,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A,T_AL,T_AH,T_L,T_H)
 #' @param arrhenius2 = matrix(data = matrix(data = c(rep(T_A2,8),rep(T_AL2,8),rep(T_AH2,8),rep(T_L2,8),rep(T_H2,8)), nrow = 8, ncol = 5), nrow = 8, ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for maturity maintenance (causes 'Temperature Size Rule' effect) DEB model (T_A2,T_AL2,T_AH2,T_L2,T_H2)
+#' @param starve_mode = 1, Determines how reproduction buffer is used during starvation, where 0 means it is not used, 1 means it is used before structure is mobilised and 2 means it is used to maximise reserve density
 #' @param acthr = 1
 #' @param X = 11
 #' @param E_pres = E_0/3e-9
@@ -229,6 +230,7 @@ DEB_euler<-function(
   stage=0,
   breeding=0,
   Tb=33,
+  starve_mode=1,
   fdry=0.3,
   L_b=0.42,
   L_j=1.376,
@@ -496,15 +498,47 @@ DEB_euler<-function(
   }#end check for immature or mature
   p_R <- max(0, p_R - p_B) # take finalised value of p_B from p_R
 
-  # draw from reproduction and then batch buffers under starvation
-  if(starve > 0 & E_R > starve){
-    p_R <- p_R - starve
-    starve <- 0
+  if(starve_mode > 0){
+    # draw from reproduction and then batch buffers under starvation
+    if(starve > 0 & E_R >= starve){
+      p_R <- p_R - starve
+      starve <- 0
+    }
+    if(starve > 0 & (E_B + E_R) >= starve){
+      p_B <- p_R + p_B - starve
+      p_R <- 0
+      starve <- 0
+    }
   }
-  if(starve > 0 & E_B > starve){
-    p_B <- p_B - starve
-    starve <- 0
+  if(starve_mode == 2){
+    # draw from reproduction and then batch buffers under starvation to keep reserve density topped up
+    if((E_H_pres >= E_Hp) & ((E / E_m) < 0.95)){
+      if(dEdt < 0){
+        if(E_R > (-1 * dEdt * V)){
+          p_R <- p_R + dEdt * V
+          dEdt <- 0
+        }
+        if(((E_B + E_R) > (-1 * dEdt * V)) & (dEdt != 0)){
+          p_B <- p_R + p_B + dEdt * V
+          p_R <- 0
+          dEdt <- 0
+        }
+      }else{
+        if(E_s_pres > p_A){
+          dEdt <- (p_R + p_B + p_A) / L_pres ^ 3 - (E * vT) / L_pres
+        }else{
+          dEdt <- max(0, (p_R + p_B + E_s) / L_pres ^ 3) - (E * vT) / L_pres
+        }
+        E <- E_pres + dEdt
+        if(E < 0){ #make sure E doesn't go below zero
+          E <- 0
+        }
+        p_R <- 0
+        p_B <- 0
+      }
+    }
   }
+
 
   if(metab_mode == 1){ # APB (e.g. hemimetabolous insect
    if(E_H >= E_Hj){
