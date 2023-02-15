@@ -375,15 +375,17 @@ DEB_euler<-function(
       p_C <- E_pres * V_pres * vT / L_pres
     }
     dVdt <- V_pres * r
-    if(V_pres * r < 0){
-      starve <- V_pres * r * -1 * mu_V * d_V / w_V
-      dVdt <- 0
-      if(E_B + E_R < starve){ # reproduction and batch buffer has run out so draw from structure
-        dVdt <- V_pres * r
+    if(starve_mode > 1){
+      if(V_pres * r < 0){
+        starve <- V_pres * r * -1 * mu_V * d_V / w_V
+        dVdt <- 0
+        if(E_B + E_R < starve){ # reproduction and batch buffer has run out so draw from structure
+          dVdt <- V_pres * r
+          starve <- 0
+        }
+      }else{
         starve <- 0
       }
-    }else{
-      starve <- 0
     }
   }
 
@@ -401,10 +403,10 @@ DEB_euler<-function(
     E_temp <- ((E_pres * V_pres / p_AmT) + dUEdt) * p_AmT / (V_pres + dVdt)
     dEdt <- E_temp - E_pres
   }else{
-    if(E_s_pres > p_A){
+    if(E_s_pres * kap_X > p_A){
       dEdt <- p_A / L_pres ^ 3 - (E_pres * vT) / L_pres
     }else{
-      dEdt <- max(0, E_s_pres / V_pres) - (E_pres * vT) / L_pres
+      dEdt <- max(0, E_s_pres * kap_X / V_pres) - (E_pres * vT) / L_pres
     }
   }
 
@@ -524,10 +526,10 @@ DEB_euler<-function(
           dEdt <- 0
         }
       }else{
-        if(E_s_pres > p_A){
+        if(E_s_pres * kap_X > p_A){
           dEdt <- (p_R + p_B + p_A) / L_pres ^ 3 - (E * vT) / L_pres
         }else{
-          dEdt <- max(0, (p_R + p_B + E_s) / L_pres ^ 3) - (E * vT) / L_pres
+          dEdt <- max(0, (p_R + p_B + E_s * kap_X) / L_pres ^ 3) - (E * vT) / L_pres
         }
         E <- E_pres + dEdt
         if(E < 0){ #make sure E doesn't go below zero

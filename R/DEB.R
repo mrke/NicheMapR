@@ -427,18 +427,15 @@ DEB<-function(
         }else{
           dS <- 0
         }
-        }else{
-          dV <- V * r
-          dS <- 0
         }
         # assimilation
         p_A <- p_Am * f * L ^ 2
 
         # reserve
-        if(E_s > p_A){
+        if(E_s * kap_X > p_A){
           dE <- p_A / L ^ 3 - (E * v) / L
         }else{
-          dE <- max(0, E_s / L ^ 3) - (E * v) / L
+          dE <- max(0, E_s * kap_X / L ^ 3) - (E * v) / L
         }
 
         if(metab_mode == 1 & H >= E_Hj){
@@ -531,10 +528,10 @@ DEB<-function(
                 dE <- 0
               }
             }else{
-              if(E_s > p_A){
+              if(E_s * kap_X > p_A){
                 dE <- (p_R + p_B + p_A) / L ^ 3 - (E * v) / L
               }else{
-                dE <- max(0, (p_R + p_B + E_s) / L ^ 3) - (E * v) / L
+                dE <- max(0, (p_R + p_B + E_s * kap_X) / L ^ 3) - (E * v) / L
               }
               p_R <- 0
               p_B <- 0

@@ -384,27 +384,24 @@ DEB_var<-function(
         # structure and starvation
         if(starve_mode > 0){
           if(V * r < 0){
-          dS <- V * r * -1 * mu_V * d_V / w_V # J / t, starvation energy to be subtracted from reproduction buffer if necessary
-          dV <- 0
-          if(B + R < dS){ # reproduction and batch buffer has run out so draw from structure
-            dV <- V * r
+            dS <- V * r * -1 * mu_V * d_V / w_V # J / t, starvation energy to be subtracted from reproduction buffer if necessary
+            dV <- 0
+            if(B + R < dS){ # reproduction and batch buffer has run out so draw from structure
+              dV <- V * r
+              dS <- 0
+            }
+          }else{
             dS <- 0
           }
-        }else{
-          dS <- 0
-        }
-        }else{
-          dV <- V * r
-          dS <- 0
         }
         # assimilation
         p_A <- (p_Am * Tcorr * s_M) * f * L ^ 2
 
         # reserve
-        if(E_s > p_A){
+        if(E_s * kap_X > p_A){
           dE <- max(0, p_A / L ^ 3) - (E * (v * Tcorr * s_M)) / L
         }else{
-          dE <- max(0, E_s / L ^ 3) - (E * (v * Tcorr * s_M)) / L
+          dE <- max(0, E_s * kap_X / L ^ 3) - (E * (v * Tcorr * s_M)) / L
         }
 
         if(metab_mode == 1 & H >= E_Hj){
@@ -500,10 +497,10 @@ DEB_var<-function(
                 dE <- 0
               }
             }else{
-              if(E_s > p_A){
+              if(E_s * kap_X > p_A){
                 dE <- (p_R + p_B + p_A) / L ^ 3 - (E * v) / L
               }else{
-                dE <- max(0, (p_R + p_B + E_s) / L ^ 3) - (E * v) / L
+                dE <- max(0, (p_R + p_B + E_s * kap_X) / L ^ 3) - (E * v) / L
               }
               p_R <- 0
               p_B <- 0

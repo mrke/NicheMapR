@@ -128,10 +128,10 @@ C     AN INSECT (HEMIMETABOLOUS)
        P_A = P_AM * F * L ** 2.
        
        ! RESERVE
-       IF(E_S .GT. P_A)THEN
+       IF(E_S*kap_X .GT. P_A)THEN
         DE = P_A / L**3. - (E * VDOT) / L
        ELSE
-        DE = MAX(0.0D0, E_S / L**3.) - (E * VDOT) / L
+        DE = MAX(0.0D0, E_S*kap_X / L**3.) - (E * VDOT) / L
        ENDIF
        
        ! MATURATION
@@ -225,10 +225,10 @@ C     AN INSECT (HEMIMETABOLOUS)
            dE = 0.0D0
           ENDIF 
          ELSE
-          IF(E_S.GT.P_A)THEN
+          IF(E_S*KAP_X.GT.P_A)THEN
            DE = (p_R + p_B + P_A) / L**3. - (E * VDOT) / L
           ELSE
-           DE = MAX(0.0D0, (p_R + p_B + E_S) / L**3.) - (E * VDOT) / L
+           DE = MAX(0.0D0,(p_R+p_B+E_S*KAP_X)/L**3.)-(E*VDOT) / L
           ENDIF
           p_R = 0.0D0
           p_B = 0.0D0
