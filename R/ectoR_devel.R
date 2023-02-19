@@ -29,7 +29,7 @@
 #' @param QSOLR = 800, solar radiation, horizontal plane (W/m2)
 #' @param Z = 20, zenith angle of sun (degrees from overhead)
 #' @param SHADE = 0, shade level (\%)
-#' @usage ectotherm(Ww_g = 40, shape = 3, alpha = 0.85, postur = 0, TA = 20, TGRD = 40, TSKY = -5, VEL = 1, RH = 30, QSOLR = 800, Z = 20 ...)
+#' @usage ectoR_devel(Ww_g = 40, shape = 3, alpha = 0.85, postur = 0, TA = 20, TGRD = 40, TSKY = -5, VEL = 1, RH = 30, QSOLR = 800, Z = 20 ...)
 #' @details
 #' \strong{ Environmental inputs:}
 #'
