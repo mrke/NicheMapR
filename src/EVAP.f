@@ -1,4 +1,4 @@
-      SUBROUTINE EVAP(TSURF,TAIR,RELHUM,HD,QEVAP,SAT) 
+      SUBROUTINE EVAP(TSURF,TAIR,RELHUM,RHSURF,HD,QEVAP,SAT) 
 
 C     NicheMapR: software for biophysical mechanistic niche modelling
 
@@ -24,13 +24,13 @@ c     warning - this is all in SI units!
       double precision AIRVD,ALTT,BP,CP,DB,DENAIR,DP,E,EFFSUR,ESAT
       double precision HD,HTOVPR,MAXSHD,PSTD,PTWET,GWSURF
       double precision QEVAP,RH,RELHUM,RW,SABNEW,SHAYD,SURFVD
-      double precision TAIR,TSURF,TVIR
+      double precision TAIR,TSURF,TVIR,RHSURF
       double precision TVINC,VD,WATER,WB,WTRPOT,rainfall
       integer sat
 
       COMMON/GROUND/SHAYD,ALTT,MAXSHD,SABNEW,PTWET,rainfall
 C     CALCULATING SURFACE SATURATION VAPOR DENSITY
-      RH = 100.
+      RH = RHSURF
 C     CHECK FOR TOO LOW A SURFACE TEMPERATURE
       IF (TSURF .LT. -81.) THEN
        DB = -81.   

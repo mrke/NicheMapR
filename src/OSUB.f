@@ -60,7 +60,7 @@ C     VERSION 2 SEPT. 2000
      & cummelted,melted,snowfall,rainmelt,cpsnow,netsnow,hcap,meltheat,
      & layermass,xtrain,QFREZE,grasshade,MAXSURF,LAMBDA_E_D,CE
       double precision Thconduct,Density,Spheat,dew,Q_AIR,Q_STAR_AIR
-      DOUBLE PRECISION Q_STAR_SURF,S,SIGMA_Q,G,R_N,GAMMA,ZP
+      DOUBLE PRECISION Q_STAR_SURF,S,DELTA_Q,G,R_N,GAMMA,ZP
 
       integer maxsnode2,maxsnode3,maxcount,js,numrun,rainhourly,hourly
       INTEGER I,IEND,IFINAL,ILOCT,IOUT,IPRINT,ITEST,trouble
@@ -913,7 +913,7 @@ C       CHECK FOR OUTSIZE T(1)
         HC=max(ABS((QCONV*4.184/60.*10000.D0)/(T(1)-TAIR)),0.5D+0)
         HD=(HC/(CP*DENAIR))*(0.71/0.60)**0.666
         sat=2 ! setting for evap to simulate wet surface and return SI units
-        CALL EVAP(soiltemp(1),TAIR,RH,HD,QEVAP,SAT)
+        CALL EVAP(soiltemp(1),TAIR,RH,100.0D0,HD,QEVAP,SAT)
         if(soiltemp(1).gt.0)then
          HTOVPR=2500.8-2.36*soiltemp(1)+0.0016*soiltemp(1)**2-0.00006
      &*soiltemp(1)**3
@@ -927,7 +927,7 @@ c       evaporation potential, mm/s (kg/s)
          EP=0.0000001
         endif
         SAT=1
-        CALL EVAP(soiltemp(1),TAIR,RH,HD,QEVAP,SAT)
+        CALL EVAP(soiltemp(1),TAIR,RH,100.0D0,HD,QEVAP,SAT)
        else
         EP=0.0000001
        endif ! end check for snow cover - no evap if there is
@@ -1064,10 +1064,14 @@ C     EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
       CALL WETAIR (TAIR,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,
      &      CP,WTRPOT)
       Q_STAR_AIR=VD/DENAIR ! kg water / kg air, air saturated specific humidity
+      !CALL WETAIR (TAIR+1,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,
+      !&      CP,WTRPOT)
+      !Q_STAR_AIR2=VD/DENAIR ! kg water / kg air, air saturated specific humidity
       CALL WETAIR(soiltemp(1),WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,
      &      DENAIR,CP,WTRPOT) 
       Q_STAR_SURF=VD/DENAIR ! kg water / kg air, surface saturated specific humidity
       S=(Q_STAR_SURF-Q_STAR_AIR)/(soiltemp(1)-TAIR) ! kg water / kg air / K, slope of saturation curve, EQ.5 FROM GARRATT ET AL 1988
+      !S=Q_STAR_AIR2-Q_STAR_AIR ! kg water / kg air / K, slope of saturation curve, EQ.5 FROM GARRATT ET AL 1988
       if(soiltemp(1).gt.0)then
        HTOVPR=2500.8-2.36*soiltemp(1)+0.0016*soiltemp(1)**2-0.00006
      &*soiltemp(1)**3
@@ -1076,13 +1080,15 @@ C     EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
       endif
       HTOVPR=HTOVPR*1000.D0 ! J / kg, latent heat of vapourisation
       GAMMA=CP/HTOVPR ! kg water / kg air / K, psychometric constant
-      SIGMA_Q=Q_STAR_AIR-Q_AIR ! kg water / kg air, difference between saturated and actual specific humidity of air
+      DELTA_Q=Q_STAR_AIR-Q_AIR ! kg water / kg air, difference between saturated and actual specific humidity of air
       R_N=(SOLR+QRAD)*4.185*10000./60. ! W / m2, net radiation
+      RH = TAB('REL',TIME)
+      CALL EVAP(soiltemp(1),TAIR,RH,curhumid(1)*100.0D0,HD,QEVAP,1)
       G=(SOLR+QRAD+QCONV-QEVAP)*4.185*10000./60. ! W / m2, soil heat flux (negative at night)
       ZP=(RUFP/100.)/EXP(REAL(2.0)) ! m, 'analogous scaling length for property "p"', ln(z_0/z_p) = 2. in GARRATT ET AL 1988 p. 234
       CE=(0.4**2.)/(LOG((HGTP/100.)/(RUFP/100.))*LOG((HGTP/100.)/ZP)) ! -, bulk transfer coefficient, eq. A10 FROM GARRATT ET AL 1988
       LAMBDA_E_D=(S/(S+GAMMA))*(R_N-G)
-     & +(GAMMA/(S+GAMMA))*(DENAIR*HTOVPR*SIGMA_Q)*CE*VEL2M ! W, EQ. 6B FROM GARRATT ET AL 1988
+     & +(GAMMA/(S+GAMMA))*(DENAIR*HTOVPR*DELTA_Q)*CE*VEL2M ! W, EQ. 6B FROM GARRATT ET AL 1988
        DEW = -1.*LAMBDA_E_D/HTOVPR * 3600. ! kg / h / m2 = mm / h
       IF((DEW.LT.0.).or.(cursnow.gt.0))THEN
        DEW=0.
@@ -1098,7 +1104,7 @@ C	  TESTING FOR FROST
 
 C     END OF OUTPUT SETUP
 
-
+      
 
 c     SET UP LOCAL RELATIVE HUMIDITY
       CALL RELHUMID

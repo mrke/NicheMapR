@@ -515,7 +515,7 @@ C       CHECKING FOR DIVIDE BY ZERO
          ENDIF
          HC = max(ABS((QCONV*4.184/60.*10000)/(T(1)-TAIR)),0.5D+0)
          HD = (HC/(CP*DENAIR))*(0.71/0.60)**0.666
-         CALL EVAP(T(1),TAIR,RH,HD,QEVAP,SAT)
+         CALL EVAP(T(1),TAIR,RH,100.0D0,HD,QEVAP,SAT)
          if(runsnow.eq.1)then
           DTDT(1)=(QSOLAR+QRAD+QCOND+QCONV+QFREZE-QEVAP)/WC(j)
          else
