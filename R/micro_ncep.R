@@ -956,12 +956,14 @@ micro_ncep <- function(
             if(ys == 1){
               if(nyears == 1){
                 if(yearstodo[ys] %in% leapyears){
+                  leapcount <- leapcount + 1
                   day<-c(1, 15.5, 45.5, 75.5, 106, 136.5, 167, 197.5, 228.5, 259, 289.5, 320, 350.5, 366)
                 }else{
                   day<-c(1, 15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5, 365)
                 }
               }else{
                 if(yearstodo[ys] %in% leapyears){
+                  leapcount <- leapcount + 1
                   day<-c(1, 15.5, 45.5, 75.5, 106, 136.5, 167, 197.5, 228.5, 259, 289.5, 320, 350.5)
                 }else{
                   day<-c(1, 15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5)
@@ -970,12 +972,14 @@ micro_ncep <- function(
             }else{
               if(ys == nyears){
                 if(yearstodo[ys] %in% leapyears){
+                  leapcount <- leapcount + 1
                   day<-c(15.5, 45.5, 75.5, 106, 136.5, 167, 197.5, 228.5, 259, 289.5, 320, 350.5, 366)
                 }else{
                   day<-c(15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5, 365)
                 }
               }else{
                 if(yearstodo[ys] %in% leapyears){
+                  leapcount <- leapcount + 1
                   day<-c(15.5, 45.5, 75.5, 106, 136.5, 167, 197.5, 228.5, 259, 289.5, 320, 350.5)
                 }else{
                   day<-c(15.5, 45, 74.5, 105, 135.5, 166, 196.5, 227.5, 258, 288.5, 319, 349.5)
@@ -987,7 +991,6 @@ micro_ncep <- function(
               days <- day
             }else{
               if(yearstodo[ys] %in% leapyears){
-                leapcount <- leapcount + 1
                 days2 <- c(days2, (day + 366 * (ys - 1)) + leapcount)
               }else{
                 days2 <- c(days2, (day + 365 * (ys - 1)) + leapcount)
