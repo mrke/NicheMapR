@@ -147,7 +147,11 @@ C     AN INSECT (HEMIMETABOLOUS)
        ! FEEDING
        IF(ACTHR .GT. 1.)THEN
         IF(FOODMODE.EQ.1)THEN
-         P_X = MIN(FLOOR(X / (E_Sm * V))*X, X)
+         IF(X.GT.(E_Sm * V))THEN ! STOMACH NOT BIG ENOUGH
+          P_X = 0.
+         ELSE
+          P_X = X
+         ENDIF
         ELSE
          P_X = F * P_XM * ((X / K) / (1. + X / K)) * V ** (2. / 3.)! J/TIME, FOOD ENERGY INTAKE RATE
         ENDIF

@@ -1016,7 +1016,11 @@ C     J FOOD EATEN PER HOUR
       IF(E_H(HOUR).GE.E_HB)THEN
        IF(ACTHR(HOUR) .GT. 1.)THEN
         IF(FOODMODE.EQ.1)THEN
-        P_X = MIN(FLOOR(X_FOOD / (E_Sm * V(HOUR)))*X_FOOD, X_FOOD)
+         IF(X_FOOD.GT.(E_Sm * V(HOUR)))THEN ! STOMACH NOT BIG ENOUGH
+          P_X = 0.
+         ELSE
+          P_X = X_FOOD
+         ENDIF
         ELSE
          P_X=FUNCT*P_XM*((X_FOOD/HALFSAT)/(1.+X_FOOD/HALFSAT))*
      &  V(HOUR)**(2./3.)! J/TIME, FOOD ENERGY INTAKE RATE
