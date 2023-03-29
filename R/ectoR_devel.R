@@ -22,11 +22,11 @@
 #' @param psi_body = -7.07 * 100, water potential of body (J/kg) - affects skin humidity for water vapour exchange
 #' @param delta_air = 0.1, temperature difference (°C) between expired and inspired air, for computing respiratory water loss
 #' @param TA = 20, air temperature at local height (°C)
-#' @param TGRD = 40, ground temperature (°C)
+#' @param TGRD = 30, ground temperature (°C)
 #' @param TSKY = -5, sky temperature (°C)
 #' @param VEL = 1, wind speed (m/s)
 #' @param RH = 30, relative humidity (\%)
-#' @param QSOLR = 800, solar radiation, horizontal plane (W/m2)
+#' @param QSOLR = 1000, solar radiation, horizontal plane (W/m2)
 #' @param Z = 20, zenith angle of sun (degrees from overhead)
 #' @param SHADE = 0, shade level (\%)
 #' @usage ectoR_devel(Ww_g = 40, shape = 3, alpha = 0.85, postur = 0, TA = 20, TGRD = 40, TSKY = -5, VEL = 1, RH = 30, QSOLR = 800, Z = 20 ...)
@@ -38,7 +38,7 @@
 #' \item{\code{alpha_sub}{ = 0.8, solar absorptivity of substrate (fractional, 0-1)}\cr}
 #' \item{\code{fluid}{ = 0, fluid type: 0 = air; 1 = water}\cr}
 #' \item{\code{TSUBST}{ = TGRD, surface temperature for conduction (°C)}\cr}
-#' \item{\code{K_sub}{ = 2.79, substrate thermal conductivity (W/m°C)}\cr}
+#' \item{\code{K_sub}{ = 0.5, substrate thermal conductivity (W/m°C)}\cr}
 #' \item{\code{pres}{ = 101325, atmospheric pressure (Pa)}\cr}
 #' \item{\code{O2gas}{ = 20.95, oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr}
 #' \item{\code{N2gas}{ = 79.02, nitrogen concetration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr}
