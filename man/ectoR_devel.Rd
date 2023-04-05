@@ -5,7 +5,7 @@
 \alias{ectoR_devel}
 \title{Ectotherm heat budget model}
 \usage{
-ectotherm(Ww_g = 40, shape = 3, alpha = 0.85, postur = 0, TA = 20, TGRD = 40, TSKY = -5, VEL = 1, RH = 30, QSOLR = 800, Z = 20 ...)
+ectoR_devel(Ww_g = 40, shape = 3, alpha = 0.85, postur = 0, TA = 20, TGRD = 40, TSKY = -5, VEL = 1, RH = 30, QSOLR = 800, Z = 20 ...)
 }
 \arguments{
 \item{Ww_g}{= 40, Wet weight of animal (g), note this model is 'steady state' so no lags in heating/cooling due to mass}
@@ -42,13 +42,13 @@ ectotherm(Ww_g = 40, shape = 3, alpha = 0.85, postur = 0, TA = 20, TGRD = 40, TS
 
 \item{SHADE}{= 0, shade level (\%)}
 
-\item{QSOLR}{= 800, solar radiation, horizontal plane (W/m2)}
+\item{QSOLR}{= 1000, solar radiation, horizontal plane (W/m2)}
 
 \item{Z}{= 20, zenith angle of sun (degrees from overhead)}
 
 \item{TA}{= 20, air temperature at local height (°C)}
 
-\item{TGRD}{= 40, ground temperature (°C)}
+\item{TGRD}{= 30, ground temperature (°C)}
 
 \item{TSKY}{= -5, sky temperature (°C)}
 
@@ -69,7 +69,7 @@ versions of the NicheMapR ectotherm model.
 \item{\code{alpha_sub}{ = 0.8, solar absorptivity of substrate (fractional, 0-1)}\cr}
 \item{\code{fluid}{ = 0, fluid type: 0 = air; 1 = water}\cr}
 \item{\code{TSUBST}{ = TGRD, surface temperature for conduction (°C)}\cr}
-\item{\code{K_sub}{ = 2.79, substrate thermal conductivity (W/m°C)}\cr}
+\item{\code{K_sub}{ = 0.5, substrate thermal conductivity (W/m°C)}\cr}
 \item{\code{pres}{ = 101325, atmospheric pressure (Pa)}\cr}
 \item{\code{O2gas}{ = 20.95, oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr}
 \item{\code{N2gas}{ = 79.02, nitrogen concetration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr}

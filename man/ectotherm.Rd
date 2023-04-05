@@ -227,7 +227,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{T_A2}{ = 8817 Arhhenius temperature}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
 \item{\code{T_AL2}{ = 50000, Arrhenius temperature for decrease below lower boundary of tolerance range \code{T_L}}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
 \item{\code{T_AH2}{ = 90000, Arrhenius temperature for decrease above upper boundary of tolerance range \code{T_H}}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
-\item{\code{T_2L}{ = 6 + 273.15, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
+\item{\code{T_L2}{ = 6 + 273.15, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
 \item{\code{T_H2}{ = 33 + 273.15, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
 }
 \strong{ Compound/derived DEB parameters:}
@@ -239,7 +239,8 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{f}{ = 1, functional response (-), usually kept at 1 because gut model controls food availability such that f=0 when gut empty}\cr}
 \item{\code{E_sm}{ = 350, Maximum structure-specific energy density of stomach (J/cm3)}\cr}
 \item{\code{K}{ = 1, Half saturation constant (J/cm2)}\cr}
-\item{\code{X}{ = 10, Food density (J/cm2), single value or hourly vector}\cr}
+\item{\code{X}{ = 10, Food density (J/cm2) or total food available per hour (J), depending on the 'foodmode' option, single value or hourly vector}\cr}
+\item{\code{foodmode}{ = 0, 0 assumes X is food density as J/cm2, 1 treats food density as an absolute input to the stomach to simulate single-sized prey items for gape-limited predators}\cr}
 }
 \strong{ Composition-related axilliary DEB parameters:}
 \itemize{
@@ -427,7 +428,7 @@ masbal variables:
 \item 8 H2OFree_g - Water from food (g/h)
 \item 9 H2OMet_g - Metabolic water production (g/h)
 \item 10 DryFood_g - Dry food intake (g/h)
-\item 11 WetFood_g - Wet foood intake (g/h)
+\item 11 WetFood_g - Wet food intake (g/h)
 \item 12 DryFaeces_g - Dry faeces production (g/h)
 \item 13 WetFaeces_g - Wet faeces production (g/h)
 \item 14 Urine_g - Urine production (g/h)

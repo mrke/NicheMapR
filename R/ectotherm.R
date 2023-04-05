@@ -190,7 +190,7 @@
 #' \item{\code{T_A2}{ = 8817 Arhhenius temperature}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
 #' \item{\code{T_AL2}{ = 50000, Arrhenius temperature for decrease below lower boundary of tolerance range \code{T_L}}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
 #' \item{\code{T_AH2}{ = 90000, Arrhenius temperature for decrease above upper boundary of tolerance range \code{T_H}}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
-#' \item{\code{T_2L}{ = 6 + 273.15, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
+#' \item{\code{T_L2}{ = 6 + 273.15, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
 #' \item{\code{T_H2}{ = 33 + 273.15, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response}\cr} for maturity maintenance (causes 'Temperature Size Rule' effect)
 #'}
 #' \strong{ Compound/derived DEB parameters:}
