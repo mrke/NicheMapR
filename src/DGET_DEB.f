@@ -83,8 +83,8 @@ C     AN INSECT (HEMIMETABOLOUS)
       R = Y(9)! J, REPRODUCTION BUFFER ENERGY
       B = Y(10)! J, EGG BATCH ENERGY
 
-      L = V ** (1./3.) ! CM, STRUCTURAL LENGTH
-      V_M = L_M ** 3.
+      L = V**(1./3.) ! CM, STRUCTURAL LENGTH
+      V_M = L_M**3.
       E_SC = E / E_M                ! -, SCALED RESERVE DENSITY
       RDOT = VDOT * (E_SC / L - (1. + L_T / L) / L_M) / (E_SC + G)
       P_C = E * (VDOT / L - RDOT) * V ! J / T, MOBILISATION RATE, EQUATION 2.12 DEB3
@@ -99,11 +99,10 @@ C     AN INSECT (HEMIMETABOLOUS)
        IF(WAITING.GT.0.0D0)THEN
         DV = 0.0D0
        ENDIF
-       dE = (-1.*E*VDOT) / L
-       dH = (1.-KAP) * P_C - K_J * H ! J/d, change in maturity        
+       DE = (-1.*E*VDOT) / L
        P_J = K_J * H 
-       DH = (1. - KAP) * P_C - P_J
-       P_R = (1.-KAP) * P_C-P_J
+       DH = (1.-KAP) * P_C - P_J
+       P_R = (1.-KAP) * P_C - P_J
        P_B = 0.
        ! NO AGEING OR STOMACH IN EMBRYO
        DS = 0.0D0
@@ -137,7 +136,7 @@ C     AN INSECT (HEMIMETABOLOUS)
        ENDIF
        
        ! MATURATION
-       P_J = K_J * H  ! adding starvation costs to P_J so maturation time (immature) or reproduction (mature) can be sacrificed to pay somatic maintenance
+       P_J = K_J * H
        IF(H .LT. E_HP)THEN
         DH = (1. - KAP) * P_C - P_J
        ELSE
@@ -184,6 +183,7 @@ C     AN INSECT (HEMIMETABOLOUS)
         DV = -1. * ABS(P_R) * W_V / (MU_V * D_V)  ! SUBTRACT FROM STRUCTURE SINCE NOT ENOUGH FLOW TO REPRODUCTION TO PAY FOR SOMATIC MAINTENANCE
         P_R = 0.0D0
        ENDIF
+       
        IF((H .LT. E_HP) .OR. (PREGNANT.EQ.1.))THEN
         P_B = 0.0D0
        ELSE
@@ -212,6 +212,9 @@ C     AN INSECT (HEMIMETABOLOUS)
         ! draw from reproduction and then batch buffers under starvation to delay structure being mobilised
         IF((dS.GT.0.).AND.(R.GE.ds))THEN
          p_R = p_R - dS
+         IF(H.LT.E_HP)THEN ! TAKE BACK SOME OF THE MATURITY PREVIOUSLY DETERMINED
+          dH = dH - dS
+         ENDIF
          dS = 0.0D0
         ENDIF
         IF((dS.GT.0.0D0).AND.((B+R).GE.dS))THEN
