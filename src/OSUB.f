@@ -1064,32 +1064,29 @@ C     EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
       CALL WETAIR (TAIR,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,
      &      CP,WTRPOT)
       Q_STAR_AIR=VD/DENAIR ! kg water / kg air, air saturated specific humidity
-      !CALL WETAIR (TAIR+1,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,
-      !&      CP,WTRPOT)
-      !Q_STAR_AIR2=VD/DENAIR ! kg water / kg air, air saturated specific humidity
       CALL WETAIR(soiltemp(1),WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,
      &      DENAIR,CP,WTRPOT) 
       Q_STAR_SURF=VD/DENAIR ! kg water / kg air, surface saturated specific humidity
       S=(Q_STAR_SURF-Q_STAR_AIR)/(soiltemp(1)-TAIR) ! kg water / kg air / K, slope of saturation curve, EQ.5 FROM GARRATT ET AL 1988
-      !S=Q_STAR_AIR2-Q_STAR_AIR ! kg water / kg air / K, slope of saturation curve, EQ.5 FROM GARRATT ET AL 1988
       if(soiltemp(1).gt.0)then
-       HTOVPR=2500.8-2.36*soiltemp(1)+0.0016*soiltemp(1)**2-0.00006
-     &*soiltemp(1)**3
+       HTOVPR=2500.8-2.36*soiltemp(1)+0.0016*soiltemp(1)**2.-0.00006
+     &*soiltemp(1)**3.
       else
-       HTOVPR=2834.1-0.29*soiltemp(1)-0.004*soiltemp(1)**2
+       HTOVPR=2834.1-0.29*soiltemp(1)-0.004*soiltemp(1)**2.
       endif
       HTOVPR=HTOVPR*1000.D0 ! J / kg, latent heat of vapourisation
       GAMMA=CP/HTOVPR ! kg water / kg air / K, psychometric constant
       DELTA_Q=Q_STAR_AIR-Q_AIR ! kg water / kg air, difference between saturated and actual specific humidity of air
-      R_N=(SOLR+QRAD)*4.185*10000./60. ! W / m2, net radiation
+      R_N=(SOLR+QRAD)*4.185*10000./60. ! W / m2, net radiation (positive means gain, but note that in Monteith's formulation positive is a loss) 
       RH = TAB('REL',TIME)
       CALL EVAP(soiltemp(1),TAIR,RH,curhumid(1)*100.0D0,HD,QEVAP,1)
-      G=(SOLR+QRAD+QCONV-QEVAP)*4.185*10000./60. ! W / m2, soil heat flux (negative at night)
+      G=(SOLR+QRAD+QCONV-QEVAP)*4.185*10000./60. ! W / m2, soil heat flux (positive means gain, but note that in Monteith's formulation positive is a loss))
       ZP=(RUFP/100.)/EXP(REAL(2.0)) ! m, 'analogous scaling length for property "p"', ln(z_0/z_p) = 2. in GARRATT ET AL 1988 p. 234
       CE=(0.4**2.)/(LOG((HGTP/100.)/(RUFP/100.))*LOG((HGTP/100.)/ZP)) ! -, bulk transfer coefficient, eq. A10 FROM GARRATT ET AL 1988
       LAMBDA_E_D=(S/(S+GAMMA))*(R_N-G)
      & +(GAMMA/(S+GAMMA))*(DENAIR*HTOVPR*DELTA_Q)*CE*VEL2M ! W, EQ. 6B FROM GARRATT ET AL 1988
-       DEW = -1.*LAMBDA_E_D/HTOVPR * 3600. ! kg / h / m2 = mm / h
+      DEW = -1.*LAMBDA_E_D/HTOVPR * 3600. ! kg / h / m2 = mm / h
+C      DEW = -1.*OUT(101)*4.185*10000./60./HTOVPR * 3600.
       IF((DEW.LT.0.).or.(cursnow.gt.0))THEN
        DEW=0.
       ENDIF
@@ -1101,7 +1098,6 @@ C	  TESTING FOR FROST
       else
        FROST = 0.
       endif
-
 C     END OF OUTPUT SETUP
 
       
