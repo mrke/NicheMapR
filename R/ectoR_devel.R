@@ -485,7 +485,8 @@ ectoR_devel <- function(
                                        O2GAS = O2GAS,
                                        CO2GAS = CO2GAS,
                                        N2GAS = N2GAS,
-                                       x), lower = -50, upper = 100)$root
+                                       x,
+                                       CONV_ENHANCE = conv_enhance), lower = -50, upper = 100)$root
 
     # recalculate everything with known TC, to get all outputs (run FUN_ecto again)
 
