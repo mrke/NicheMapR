@@ -52,6 +52,7 @@
 #' \item{\code{shape_a}{ = 1, Proportionality factor (-) for going from volume to area, keep this 1 (redundant parameter that should be removed)}\cr}
 #' \item{\code{shape_b}{ = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid }\cr}
 #' \item{\code{shape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
+#' \item{\code{conv_enhance}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 https://doi.org/10.1016/S0006-3495(76)85711-6}\cr}
 #' \item{\code{fatosk}{ = 0.4, Configuration factor to sky (-) for infrared calculations}\cr}
 #' \item{\code{fatosb}{ = 0.4, Configuration factor to subsrate for infrared calculations}\cr}
 #' \item{\code{pct_cond}{ = 10, Percentage of animal surface contacting the substrate (\%)}\cr}
@@ -192,6 +193,7 @@ ectoR_devel <- function(
     shape_a = 1,
     shape_b = 3,
     shape_c = 2 / 3,
+    conv_enhance = 1,
     custom_shape = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
     pct_cond = 10,
     pct_touch = 0,
@@ -591,7 +593,8 @@ ectoR_devel <- function(
                           TA = TA,
                           VEL = VEL,
                           FLTYPE = FLTYPE,
-                          TSKIN = TSKIN)
+                          TSKIN = TSKIN,
+                          CONV_ENHANCE = conv_enhance)
     QCONV <- CONV.out$QCONV
     HD <- CONV.out$HD
     GEVAP <- RESP.out$GEVAP

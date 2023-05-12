@@ -426,7 +426,8 @@ micro_era5 <- function(
   hourlydata = NA,
   dailyprecip = NA,
   weather.elev = 'era5',
-  cad.effects = TRUE){ # end function parameters
+  cad.effects = TRUE,
+  dewrain = 0){ # end function parameters
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
@@ -1018,8 +1019,14 @@ micro_era5 <- function(
       }else{
         RAINhr = rainhour
       }
+      if(length(rainhourly) == length(tme)){ # an hourly rainfall vector has been provided
+        aggvec <- rep(1:(length(tme)/24), 24)
+        aggvec <- aggvec[order(aggvec)]
+        RAINFALL <- aggregate(rainhourly, by = aggvec, FUN = 'sum') # aggregate to daily totals
+      }else{
+        RAINFALL <- dailyprecip
+      }
       PRESShr <- hourlydata$pressure
-      RAINFALL <- dailyprecip
       if(scenario != 0){
         RAINFALL <- RAINFALL * RAIN_diff
       }
@@ -1247,7 +1254,7 @@ micro_era5 <- function(
     TIMAXS <- c(1, 1, 0, 0)
     TIMINS <- c(0, 0, 1, 1)
     # microclimate input parameters list
-    microinput<-c(ndays, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept, grasshade, solonly, ZH, D0, TIMAXS, TIMINS, spinup)
+    microinput<-c(ndays, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept, grasshade, solonly, ZH, D0, TIMAXS, TIMINS, spinup, dewrain)
 
     if(length(LAI) < ndays){
       LAI<-rep(LAI[1], ndays)

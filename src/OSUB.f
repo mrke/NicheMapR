@@ -69,7 +69,7 @@ C     VERSION 2 SEPT. 2000
       INTEGER I91,I92,I93,I94,I95,I96,runmoist,evenrain,step,timestep
       INTEGER I97,I98,I99,I100,I101,I102,I103,I104,I105,I106,I107
       INTEGER errout,maxerr,errcount
-      INTEGER IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART
+      INTEGER IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART,DEWRAIN
 
       INTEGER methour,IRmode,microdaily,runshade,k,lamb,cnd
 
@@ -117,6 +117,7 @@ C     PERCENT GROUND SHADE & ELEVATION (M) TO METOUT
       COMMON/GROUND/SHAYD,ALTT,MAXSHD,SABNEW,PTWET,rainfall
       COMMON/LOCLHUM/RHLOCL
       COMMON/VIEWFACT/VIEWF
+      COMMON/DEWRAINFALL/DEWRAIN
       COMMON/SOYFILS/DENDAY,SPDAY,TKDAY
       COMMON/SOYVAR2/Thconduct,Density,Spheat
       common/prevtime/lastime,temp,lastsurf
@@ -256,10 +257,16 @@ C       SETTING THIS MONTH'S PERCENT OF SURFACE WITH FREE WATER/SNOW ON IT
        PTWET=PCTWET(DOY)
        rainfall=RAIN(DOY)
       endif
+    
       if(int(rainhourly).eq.1)then
-       methour=0
-       methour=(int(SIOUT(1)/60)+1)+24*(DOY-1)
        rainfall=rainhr(int(TIME/60.+1+25*(DOY-1)))
+      endif
+c	  add dew and frost from previous hour to this hour's rainfall
+      methour=0
+      methour=(int(SIOUT(1)/60)+1)+24*(DOY-1)
+      if((dewrain.eq.1).and.(methour.gt.1).and.
+     &  ((metout(methour-1,15)+metout(methour-1,16)).gt.0.0001))then
+       rainfall=rainfall+metout(methour-1,15)+metout(methour-1,16)
       endif
       if(microdaily.eq.1)then
        if(DOY.gt.1)then
@@ -1067,7 +1074,7 @@ C     EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
       CALL WETAIR(soiltemp(1),WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,
      &      DENAIR,CP,WTRPOT) 
       Q_STAR_SURF=VD/DENAIR ! kg water / kg air, surface saturated specific humidity
-      S=(Q_STAR_SURF-Q_STAR_AIR)/(soiltemp(1)-TAIR) ! kg water / kg air / K, slope of saturation curve, EQ.5 FROM GARRATT ET AL 1988
+      S=(Q_STAR_SURF-Q_STAR_AIR)/(soiltemp(1)-TAIR) ! kg water / kg air / K, slope of saturation curve, EQ.5 FROM GARRATT & SEGAL 1988
       if(soiltemp(1).gt.0)then
        HTOVPR=2500.8-2.36*soiltemp(1)+0.0016*soiltemp(1)**2.-0.00006
      &*soiltemp(1)**3.
@@ -1082,9 +1089,9 @@ C     EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
       CALL EVAP(soiltemp(1),TAIR,RH,curhumid(1)*100.0D0,HD,QEVAP,1)
       G=(SOLR+QRAD+QCONV-QEVAP)*4.185*10000./60. ! W / m2, soil heat flux (positive means gain, but note that in Monteith's formulation positive is a loss))
       ZP=(RUFP/100.)/EXP(REAL(2.0)) ! m, 'analogous scaling length for property "p"', ln(z_0/z_p) = 2. in GARRATT ET AL 1988 p. 234
-      CE=(0.4**2.)/(LOG((HGTP/100.)/(RUFP/100.))*LOG((HGTP/100.)/ZP)) ! -, bulk transfer coefficient, eq. A10 FROM GARRATT ET AL 1988
+      CE=(0.4**2.)/(LOG((HGTP/100.)/(RUFP/100.))*LOG((HGTP/100.)/ZP)) ! -, bulk transfer coefficient, eq. A10 FROM GARRATT & SEGAL 1988
       LAMBDA_E_D=(S/(S+GAMMA))*(R_N-G)
-     & +(GAMMA/(S+GAMMA))*(DENAIR*HTOVPR*DELTA_Q)*CE*VEL2M ! W, EQ. 6B FROM GARRATT ET AL 1988
+     & +(GAMMA/(S+GAMMA))*(DENAIR*HTOVPR*DELTA_Q)*CE*VEL2M ! W, EQ. 6B FROM GARRATT & SEGAL 1988
       DEW = -1.*LAMBDA_E_D/HTOVPR * 3600. ! kg / h / m2 = mm / h
 C      DEW = -1.*OUT(101)*4.185*10000./60./HTOVPR * 3600.
       IF((DEW.LT.0.).or.(cursnow.gt.0))THEN
@@ -1645,7 +1652,7 @@ C      INCREMENT MONTH/TIME INTERVAL COUNTER
       lastime=time
       lastsurf=max(maxval(abs(out(14:22))),abs(out(4)))
   154 FORMAT(1F4.0,A,1F7.2,A,F6.2,A,F6.2,A,F6.2,A,F6.2,A,F7.3,A,F7.3,A,
-     &F6.2,A,F6.2,A,F6.2,A,1F6.2,A,1F7.2,A,1F7.2,A,1F2.0,A,1F2.0,A,F7.2,
+     &F6.2,A,F6.2,A,F6.2,A,1F6.2,A,1F7.2,A,1F7.2,A,1F7.3,A,1F7.3,A,F7.2,
      &A,F7.2,A,F7.3)
   157 FORMAT(1F4.0,A,1F7.2,A,F7.2,A,F7.2,A,F7.2,A,F7.2,A,F7.2,A,F7.2,A
      & ,F7.2,A,F7.2,A,F7.2,A,F7.2)
