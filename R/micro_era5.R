@@ -427,7 +427,8 @@ micro_era5 <- function(
   dailyprecip = NA,
   weather.elev = 'era5',
   cad.effects = TRUE,
-  dewrain = 0){ # end function parameters
+  dewrain = 0,
+  moiststep = 360){ # end function parameters
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
@@ -986,7 +987,7 @@ micro_era5 <- function(
       if(scenario != 0){
         SOLRhr <- SOLRhr * SOLAR_diff
       }
-      SOLRhr <- hourlyradwind$swrad / 0.0036
+      #SOLRhr <- hourlyradwind$swrad / 0.0036
       SOLRhr[SOLRhr < 0] <- 0
       SOLRhr <- zoo::na.approx(SOLRhr)
       cloudhr <- hourlydata$cloudcover
@@ -1254,7 +1255,7 @@ micro_era5 <- function(
     TIMAXS <- c(1, 1, 0, 0)
     TIMINS <- c(0, 0, 1, 1)
     # microclimate input parameters list
-    microinput<-c(ndays, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept, grasshade, solonly, ZH, D0, TIMAXS, TIMINS, spinup, dewrain)
+    microinput<-c(ndays, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept, grasshade, solonly, ZH, D0, TIMAXS, TIMINS, spinup, dewrain, moiststep)
 
     if(length(LAI) < ndays){
       LAI<-rep(LAI[1], ndays)

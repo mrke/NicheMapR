@@ -21,6 +21,7 @@
 #' @param deblast Initial DEB state
 #' @param foodwaters Food water content (add units)
 #' @param foodlevels Food levels (add units)
+#' @param SKINW skin wetness (%)
 #' @param wetlandTemps Temperature of water body
 #' @param wetlandDepths Depth of water body
 #' @param GLMtemps General Lake Model water temperatures
@@ -80,6 +81,7 @@ ectorun <- function(ecto) {
                 as.double(ecto$nutri_stages),
                 as.double(ecto$minshades),
                 as.double(ecto$maxshades),
+                as.double(ecto$SKINW),
                 as.double(ecto$S_instar),
                 environ=matrix(data = 0, nrow = ndays * 24, ncol = 28),
                 enbal=matrix(data = 0, nrow = ndays * 24, ncol = 13),

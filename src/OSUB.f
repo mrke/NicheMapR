@@ -68,7 +68,7 @@ C     VERSION 2 SEPT. 2000
       INTEGER I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,slipped,sat
       INTEGER I91,I92,I93,I94,I95,I96,runmoist,evenrain,step,timestep
       INTEGER I97,I98,I99,I100,I101,I102,I103,I104,I105,I106,I107
-      INTEGER errout,maxerr,errcount
+      INTEGER errout,maxerr,errcount,timestep2
       INTEGER IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART,DEWRAIN
 
       INTEGER methour,IRmode,microdaily,runshade,k,lamb,cnd
@@ -117,7 +117,7 @@ C     PERCENT GROUND SHADE & ELEVATION (M) TO METOUT
       COMMON/GROUND/SHAYD,ALTT,MAXSHD,SABNEW,PTWET,rainfall
       COMMON/LOCLHUM/RHLOCL
       COMMON/VIEWFACT/VIEWF
-      COMMON/DEWRAINFALL/DEWRAIN
+      COMMON/DEWRAINFALL/DEWRAIN,TIMESTEP
       COMMON/SOYFILS/DENDAY,SPDAY,TKDAY
       COMMON/SOYVAR2/Thconduct,Density,Spheat
       common/prevtime/lastime,temp,lastsurf
@@ -265,7 +265,7 @@ c	  add dew and frost from previous hour to this hour's rainfall
       methour=0
       methour=(int(SIOUT(1)/60)+1)+24*(DOY-1)
       if((dewrain.eq.1).and.(methour.gt.1).and.
-     &  ((metout(methour-1,15)+metout(methour-1,16)).gt.0.0001))then
+     &  ((metout(methour-1,15)+metout(methour-1,16)).gt.(0.1/24.)))then
        rainfall=rainfall+metout(methour-1,15)+metout(methour-1,16)
       endif
       if(microdaily.eq.1)then
@@ -956,11 +956,15 @@ c       evaporation potential, mm/s (kg/s)
        wccfinal=0.D0
        curmoist=oldmoist
        condep=oldcondep
-       timestep=3600/10
-       step=int(3600/timestep)
+       timestep2=3600/10
+       step=int(3600/timestep2)
+       if(condep.gt.0.)then
+        timestep2=timestep
+        step=int(3600/timestep2)
+       endif
        do 222 i=1,step
         call infil(rhlocl/100.,curmoist2,EP,soiltemp,dep(4:13),surflux
-     &,wcc,curhumid2,curpot2,timestep,altt,
+     &,wcc,curhumid2,curpot2,timestep2,altt,
      &rww,pc,rl,sp,r1,im,maxcount,leafpot,curroot2,trans2)
         if(wcc.lt.0)then
          wcc=0
@@ -984,7 +988,7 @@ c       evaporation potential, mm/s (kg/s)
         wccfinal=wccfinal+wcc
         condep=condep-WCC-surflux
         if(snowout.lt.1D-8)then
-         ptwet=surflux/(ep*real(timestep,8))*100.D0
+         ptwet=surflux/(ep*real(timestep2,8))*100.D0
         endif
         if(condep.lt.0.D0)then
          condep=0.D0

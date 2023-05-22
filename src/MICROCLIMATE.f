@@ -120,6 +120,7 @@ c     OSUB outputs the microclimate calculations.
       INTEGER IALT,IEND,IEP,IPINT,ISTART,IUV,NOSCAT,IDA,IDAYST,julstnd
       INTEGER microdaily,DOYF,DOYS,DOYF2,DOYS2,runmoist,evenrain,runsnow
       INTEGER errcount,HOURLY,rainhourly,IRmode,solonly,spinup,dewrain
+      INTEGER timestep
 
       CHARACTER(80) LABL1,LABL2,LABL3
       CHARACTER(3) IBLK,INAME,SYMBOL
@@ -127,7 +128,7 @@ c     OSUB outputs the microclimate calculations.
       CHARACTER(12) FNAME
 
       DIMENSION snownode(10),snode(10),qphase(10)
-      DIMENSION microinput1(72)
+      DIMENSION microinput1(73)
       DIMENSION soilprop(10,5),soilprop1(10,5),moist(10)
       DIMENSION DEPS(21),curmoist2(18)
       DIMENSION TIMINS(4),TIMAXS(4)
@@ -203,7 +204,7 @@ c    Variable soil properties data from Iomet1
       common/errormsg/errout,maxerr,errcount
       COMMON/onlysol/solonly
       COMMON/MAXTEMP/MAXSURF
-      COMMON/DEWRAINFALL/DEWRAIN
+      COMMON/DEWRAINFALL/DEWRAIN,TIMESTEP
 
       DATA IBLK/'   '/
       DATA IFINAL/1/
@@ -477,6 +478,7 @@ c    WRITE(I2,*)i,' ',j,' ',Thconds(i,j),' ',Thconds1(i,j)
       timins(4)=microinput1(70)
       spinup=int(microinput1(71))
       dewrain=int(microinput1(72))
+      timestep=int(microinput1(73))
       do 908 i=1,IDA
       julday(i)=julday1(i)
       LAIs(i)=LAI1(i)
