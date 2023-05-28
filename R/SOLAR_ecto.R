@@ -16,6 +16,7 @@
 #' @param PDIF proportion of solar radiation that is diffuse (fractional, 0-1)
 #' @param SHADE shade (\%)
 #' @param postur postural orientation to sun, 1 = perpendicular, 2 = parallel, 0 = half way between
+#' @param LIVE is the organism able to track the sun?, 1 = yes, 0 = no
 #' @export
 SOLAR_ecto <- function(
     ATOT = 0.01325006,
@@ -31,7 +32,8 @@ SOLAR_ecto <- function(
     QSOLR = 1000,
     PDIF = 0.1,
     SHADE = 0,
-    postur = 1){
+    postur = 1,
+    LIVE = 1){
   # C     NICHEMAPR: SOFTWARE FOR BIOPHYSICAL MECHANISTIC NICHE MODELLING
   #
   # C     COPYRIGHT (C) 2018 MICHAEL R. KEARNEY AND WARREN P. PORTER
@@ -58,10 +60,14 @@ SOLAR_ecto <- function(
   #C     DIRECT BEAM COMPONENT
   if(ZENITH < 90){
     #C      DIRECT BEAM (NORMAL TO THE DIRECT BEAM)
-    QNORM <- (QSOLR / cos(ZEN))
-    if(postur != 1){
+    if(LIVE == 0){ # DON'T MAKE IT ADJUST POSTURE, IT'S DEAD!
       QNORM <- QSOLR
+    }else{
+      QNORM <- (QSOLR / cos(ZEN))
     }
+    #if(postur != 1){
+    #  QNORM <- QSOLR
+    #}
     if(QNORM > 1367){
       #C       MAKING SURE THAT LOW SUN ANGLES DON'T LEAD TO SOLAR VALUES
       #C       GREATER THAN THE SOLAR CONSTANT

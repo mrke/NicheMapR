@@ -1307,6 +1307,9 @@ ectotherm <- function(
     EMISSK <- epsilon_sky # emissivity of the sky (0-1)
     EMISSB <- epsilon_sub # emissivity of the substrate (0-1)
     ABSSB <- alpha_sub # solar absorbtivity of the substrate (0-1)
+    if(length(PDIF) != ndays * 24){
+      PDIF <- rep(PDIF[1], ndays * 24)
+    }
 
     # animal properties
     Ww_kg <- Ww_g / 1000 # animal wet weight (kg)
@@ -1420,7 +1423,7 @@ ectotherm <- function(
     # collate parameters
     gas <- c(O2gas, CO2gas, N2gas) # gas vector
     behav <- c(diurn, nocturn, crepus, rainact, burrow, shade_seek, climb, fossorial, SPARE3) # behaviour vector
-    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF, EMISSK, EMISSB, ABSSB, K_skin, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW[1], pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, starvemode, tannul, nodnum, postur, psi_body, spec_hyd_body, CT_max, CT_min, behav, H2Obal_init, actrainthresh, viviparous, pregnant, conth, contw, contlast, arrhen_mode, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, liq_init, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, pct_cond_egg, K_egg, psi_egg, spec_hyd_egg, b, KS, PE, foodmode, conv_enhance))
+    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF[1], EMISSK, EMISSB, ABSSB, K_skin, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, SKINW[1], pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, starvemode, tannul, nodnum, postur, psi_body, spec_hyd_body, CT_max, CT_min, behav, H2Obal_init, actrainthresh, viviparous, pregnant, conth, contw, contlast, arrhen_mode, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, liq_init, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, pct_cond_egg, K_egg, psi_egg, spec_hyd_egg, b, KS, PE, foodmode, conv_enhance))
     debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, E_Ho, f, s_G, K, X[1], metab_mode, stages, kap_V, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He, k_Ee, k_EV, mu_N, h_O, h_M[4], maxclutch)
     deblast <- c(iyear, countday, V_init, E_init, E_S_init, E_R_init, q_init, hs_init, E_B_init, V_baby_init, E_baby_init, E_H_init, stage, p_surv_init, E_H_baby_init)
 
@@ -1481,6 +1484,7 @@ ectotherm <- function(
       write.csv(minshades, file = "ecto csv input/Minshades.csv")
       write.csv(maxshades, file = "ecto csv input/Maxshades.csv")
       write.csv(SKINW, file = "ecto csv input/pctwets.csv")
+      write.csv(PDIF, file = "ecto csv input/pdifs.csv")
       write.csv(S_instar, file = "ecto csv input/S_instar.csv")
       write.table(metout[(seq(1, ndays * 24)), ], file = "ecto csv input/metout.csv", sep = ",", row.names = FALSE)
       write.table(shadmet[(seq(1, ndays * 24)), ], file = "ecto csv input/shadmet.csv", sep = ",", row.names = FALSE)
@@ -1496,7 +1500,7 @@ ectotherm <- function(
       write.table(shadtcond[(seq(1, ndays * 24)), ], file = "ecto csv input/shadtcond.csv", sep = ",", row.names = FALSE)
     }
     # final input list
-    ecto <- list(ndays = ndays, nstages = stages, ectoinput = ectoinput, metout = metout[, 1:18], shadmet = shadmet[, 1:18], soil = soil, shadsoil = shadsoil, soilmoist = soilmoist, shadmoist = shadmoist, soilpot = soilpot, shadpot = shadpot, humid = humid, shadhumid = shadhumid, tcond = tcond, shadtcond = shadtcond, DEP = DEP, rainfall = rainfall, rainhr = rainhr, preshr = preshr, iyear = iyear, countday = countday, debmod = debmod, deblast = deblast, foodwaters = foodwaters, foodlevels = foodlevels, wetlandTemps = wetlandTemps, wetlandDepths = wetlandDepths, GLMtemps = GLMtemps, GLMO2s = GLMO2s, GLMsalts = GLMsalts, GLMpHs = GLMpHs, GLMfoods = GLMfoods, arrhenius = arrhenius, arrhenius2 = arrhenius2, thermal_stages = thermal_stages, behav_stages = behav_stages, water_stages = water_stages, nutri_stages = nutri_stages, minshades = minshades, maxshades = maxshades, SKINW = SKINW, S_instar = S_instar)
+    ecto <- list(ndays = ndays, nstages = stages, ectoinput = ectoinput, metout = metout[, 1:18], shadmet = shadmet[, 1:18], soil = soil, shadsoil = shadsoil, soilmoist = soilmoist, shadmoist = shadmoist, soilpot = soilpot, shadpot = shadpot, humid = humid, shadhumid = shadhumid, tcond = tcond, shadtcond = shadtcond, DEP = DEP, rainfall = rainfall, rainhr = rainhr, preshr = preshr, iyear = iyear, countday = countday, debmod = debmod, deblast = deblast, foodwaters = foodwaters, foodlevels = foodlevels, wetlandTemps = wetlandTemps, wetlandDepths = wetlandDepths, GLMtemps = GLMtemps, GLMO2s = GLMO2s, GLMsalts = GLMsalts, GLMpHs = GLMpHs, GLMfoods = GLMfoods, arrhenius = arrhenius, arrhenius2 = arrhenius2, thermal_stages = thermal_stages, behav_stages = behav_stages, water_stages = water_stages, nutri_stages = nutri_stages, minshades = minshades, maxshades = maxshades, SKINW = SKINW, PDIF = PDIF, S_instar = S_instar)
 
     message('running ectotherm model ... \n')
 
