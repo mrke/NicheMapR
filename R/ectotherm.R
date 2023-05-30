@@ -35,8 +35,8 @@
 #' @param pct_wet = 0.1, \% of surface area acting as a free-water exchanger (hourly vector or single value), for computing cutaneous water loss
 #' @param pct_eyes = 0.03, \% of surface area taken up by open eyes, for computing ocular water loss (only when active)
 #' @param pct_mouth = 5, \% of surface area taken up by open mouth, for computing panting water loss
-#' @param g_vs_ab = 0, \% leaf vapour conductance, abaxial (top of leaf), mol/m2/s, used if leaf = 1
-#' @param g_vs_ad = 0.3, \% leaf vapour conductance, adaxial (bottom of leaf), mol/m2/s
+#' @param g_vs_ab = 0, \% leaf vapour conductance, abaxial (bottom of leaf), mol/m2/s, used if leaf = 1
+#' @param g_vs_ad = 0.3, \% leaf vapour conductance, adaxial (top of leaf), mol/m2/s
 #' @param pantmax = 5, maximum multiplier on breathing rate, for respiratory water loss via panting (value of 1 prevents panting)
 #' @param F_O2 = 20, \% oxygen extraction efficiency, for respiratory water loss
 #' @param delta_air = 0.1, Temperature difference (°C) between expired and inspired air, for computing respiratory water loss

@@ -22,8 +22,8 @@
 #' @param foodwaters Food water content (add units)
 #' @param foodlevels Food levels (add units)
 #' @param SKINW Hourly skin wetness (%)
-#' @param g_vs_ab leaf vapour conductance, abaxial (top of leaf), mol/m2/s
-#' @param g_vs_ad leaf vapour conductance, adaxial (bottom of leaf), mol/m2/s
+#' @param g_vs_ab leaf vapour conductance, abaxial (bottom of leaf), mol/m2/s
+#' @param g_vs_ad leaf vapour conductance, adaxial (top of leaf), mol/m2/s
 #' @param PDIF Hourly diffuse fraction of solar radiation (-)
 #' @param wetlandTemps Temperature of water body
 #' @param wetlandDepths Depth of water body
