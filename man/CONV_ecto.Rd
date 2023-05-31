@@ -16,7 +16,8 @@ CONV_ecto(
   TA = 20,
   VEL = 1,
   FLTYPE = 0,
-  TSKIN = 25
+  TSKIN = 25,
+  CONV_ENHANCE = 1
 )
 }
 \arguments{
@@ -41,6 +42,8 @@ CONV_ecto(
 \item{FLTYPE}{fluid type, air (0) or water (1)}
 
 \item{TSKIN}{skin temperature (°C)}
+
+\item{CONV_ENHANCE}{convective enhancement factor (-)}
 }
 \description{
 R version of Fortran CONV.f (ectotherm model) for calculating convective exchange and heat and mass transfer coefficients.

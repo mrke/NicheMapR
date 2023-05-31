@@ -19,7 +19,8 @@ SOLAR_ecto(
   QSOLR = 1000,
   PDIF = 0.1,
   SHADE = 0,
-  postur = 1
+  postur = 1,
+  LIVE = 1
 )
 }
 \arguments{
@@ -48,6 +49,8 @@ SOLAR_ecto(
 \item{SHADE}{shade (\%)}
 
 \item{postur}{postural orientation to sun, 1 = perpendicular, 2 = parallel, 0 = half way between}
+
+\item{LIVE}{is the organism able to track the sun?, 1 = yes, 0 = no}
 }
 \description{
 R version of Fortran SOLAR.f (ectotherm model) for calculating absorbed solar radiation.

@@ -21,6 +21,9 @@
 #' @param N2gas = 79.02, \% nitrogen in air
 #' @param psi_body = -7.07 * 100, water potential of body (J/kg) - affects skin humidity for water vapour exchange
 #' @param delta_air = 0.1, temperature difference (°C) between expired and inspired air, for computing respiratory water loss
+#' @param leaf = 0, use vapour conductance for evaporation (leaf mode = 1, non-leaf mode = 0)
+#' @param g_vs_ab = 0.3, leaf vapour conductance, abaxial (bottom of leaf), mol/m2/s
+#' @param g_vs_ad = 0, leaf vapour conductance, adaxial (top of leaf), mol/m2/s
 #' @param TA = 20, air temperature at local height (°C)
 #' @param TGRD = 30, ground temperature (°C)
 #' @param TSKY = -5, sky temperature (°C)
@@ -210,6 +213,9 @@ ectoR_devel <- function(
     F_O2 = 20,
     RQ = 0.8,
     delta_air = 0.1,
+    leaf = 0,
+    g_vs_ab = 0.3,
+    g_vs_ad = 0,
     elev = 0,
     alpha_sub = 0.2,
     epsilon_sub = 1,
@@ -350,6 +356,9 @@ ectoR_devel <- function(
     SUBTK <- K_sub # substrate thermal conductivity (W/mK)
     DELTAR <- delta_air # temperature difference between inspired and expired air
     CUSTOMGEOM <- custom_shape # parameters for customised geometry
+    LEAF <- leaf
+    G_VS_AB <- g_vs_ab
+    G_VS_AD <- g_vs_ad
 
     # unused parameters
     FATOBJ <- 0 # configuration factor to nearby object of different temp to sky and ground (e.g. warm rock, fire), not yet used
@@ -610,6 +619,9 @@ ectoR_devel <- function(
                             ATOT = ATOT,
                             HD = HD,
                             PEYES = PEYES,
+                            LEAF = LEAF,
+                            G_VS_AB = G_VS_AB,
+                            G_VS_AD = G_VS_AD,
                             TA = TA,
                             RELHUM = RELHUM,
                             VEL = VEL,

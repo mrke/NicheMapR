@@ -11,6 +11,9 @@
 #' @param ATOT total body surface area (m2)
 #' @param HD mass transfer coefficient calculated with CONV_ecto (m/s)
 #' @param PEYES proportion of total surface area that is 'wet' eye (fractional, 0-1)
+#' @param LEAF use vapour conductance for evaporation (leaf mode = 1, non-leaf mode = 0)
+#' @param G_VS_AB leaf vapour conductance, abaxial (bottom of leaf), mol/m2/s
+#' @param G_VS_AD leaf vapour conductance, adaxial (top of leaf), mol/m2/s
 #' @param TA air temperature (°C)
 #' @param RELHUM relative humidity (\%)
 #' @param VEL wind speed (m/s)
@@ -26,6 +29,9 @@ SEVAP_ecto <- function(
     ATOT = 0.01325006,
     HD = 0.02522706,
     PEYES = 0.03 / 100,
+    LEAF = 0,
+    G_VS_AB = 0.3,
+    G_VS_AD = 0,
     TA = 20,
     RELHUM = 50,
     VEL = 0.1,
@@ -58,6 +64,7 @@ SEVAP_ecto <- function(
   XTRY <- TC
   MW <- 0.018 #! molar mass of water, kg/mol
   RG <- 8.314 #! gas constant, J/mol/K
+  V_m <- 44.6 #! molar volume of air, mol/m3
   #C     CALCULATING SKIN SURFACE SATURATION VAPOR DENSITY
   #C      RH = 100.
   RH <- exp(PSI_BODY / (RG / MW * (TSKIN + 273.15))) * 100 #
@@ -75,22 +82,29 @@ SEVAP_ecto <- function(
 
   WETAIR.out <- WETAIR(DB, WB, RH, DP, BP)
   VDSURF <- WETAIR.out$vd
-
+  ESURF <- E
   #C     AIR VAPOR DENSITY
   RH <- RELHUM
   DB <- TAIR
 
   WETAIR.out <- WETAIR(DB, WB, RH, DP, BP)
   VDAIR <- WETAIR.out$vd
+  EAIR <- E
 
   WEYES <- HD * PEYES * ATOT * (VDSURF - VDAIR)
 
   WRESP <- GEVAP / 1000
 
-  if(WEYES > 0){
-    WCUT <- (AEFF - PEYES * ATOT * SKINW) * HD * (VDSURF - VDAIR)
+  if(LEAF == 1){
+    G_VA <- HD*V_M #!BOUNDARY CONDUCTANCE, mol/m2/s
+    G_V <- (0.5 * G_VS_AB * G_VA) / (G_VS_AB + G_VA) + (0.5 * G_VS_AD * G_VA) / (G_VS_AD + G_VA) #! vapour conductance, mol/m2/s
+    WCUT <- MW * G_V * (ESURF - EAIR) / BP * CONVAR #! kg/s
   }else{
-    WCUT <- AEFF * HD * (VDSURF - VDAIR)
+    if(WEYES > 0){
+      WCUT <- (AEFF - PEYES * ATOT * SKINW) * HD * (VDSURF - VDAIR)
+    }else{
+      WCUT <- AEFF * HD * (VDSURF - VDAIR)
+    }
   }
   WATER <- WEYES + WRESP + WCUT
   #C     END OF COMPUTING AEFF FOR SURFACE OR NOT

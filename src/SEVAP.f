@@ -75,7 +75,7 @@ C     SURFACE AND THE AIR, EACH AT THEIR OWN TEMPERATURE.
       TAIR=TA
       V=VEL
       XTRY=TC
-      MW = 0.018 ! molar mass of water, kg/mol
+      MW = 0.018015 ! molar mass of water, kg/mol
       RG = 8.314 ! gas constant, J/mol/K
       V_m = 44.6 ! molar volume of air, mol/m3
 C     CALCULATING SKIN SURFACE SATURATION VAPOR DENSITY
@@ -103,7 +103,6 @@ C     PATMOS=PSTD*((1.-(.0065*ALT/288.))**(1./.190284))
      * WTRPOT)
       VDSURF=VD
       ESURF=E
-      ESATSURF=ESAT
       
 C     AIR VAPOR DENSITY
       RH=RELHUM
@@ -139,7 +138,7 @@ C      INANIMATE
         G_VA=HD*V_M !BOUNDARY CONDUCTANCE, mol/m2/s
         G_V=(0.5*g_vs_ab*g_va)/(g_vs_ab+g_va)+(0.5*g_vs_ad*g_va)/
      &  (g_vs_ad+g_va) ! vapour conductance, mol/m2/s 
-        WCUT=0.018015*G_V*(ESATSURF - EAIR)/BP*CONVAR ! kg/s
+        WCUT=MW*G_V*(ESURF - EAIR)/BP*CONVAR ! kg/s
        ENDIF
        WATER=WCUT
        GO TO 10

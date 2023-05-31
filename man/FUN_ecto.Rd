@@ -19,6 +19,7 @@ FUN_ecto(
   ASEMAJR = ASEMAJR,
   BSEMINR = BSEMINR,
   CSEMINR = CSEMINR,
+  CONV_ENHANCE = CONV_ENHANCE,
   M_1 = M_1,
   M_2 = M_2,
   M_3 = M_3,
@@ -80,6 +81,8 @@ FUN_ecto(
 \item{BSEMINR}{length of semi-minor radius 1 for ellipsoid (m)}
 
 \item{CSEMINR}{length of semi-minor radius 1 for ellipsoid (m)}
+
+\item{CONV_ENHANCE}{convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 https://doi.org/10.1016/S0006-3495(76)85711-6}
 
 \item{M_1}{metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb), in ml O2 / h, default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231}
 

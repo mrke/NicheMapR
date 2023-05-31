@@ -34,6 +34,12 @@ ectoR_devel(Ww_g = 40, shape = 3, alpha = 0.85, postur = 0, TA = 20, TGRD = 40, 
 
 \item{delta_air}{= 0.1, temperature difference (°C) between expired and inspired air, for computing respiratory water loss}
 
+\item{leaf}{= 0, use vapour conductance for evaporation (leaf mode = 1, non-leaf mode = 0)}
+
+\item{g_vs_ab}{= 0.3, leaf vapour conductance, abaxial (bottom of leaf), mol/m2/s}
+
+\item{g_vs_ad}{= 0, leaf vapour conductance, adaxial (top of leaf), mol/m2/s}
+
 \item{O2gas}{= 20.95, \% O2 in air}
 
 \item{CO2gas}{= 0.03, \% CO2 in air}
@@ -83,6 +89,7 @@ versions of the NicheMapR ectotherm model.
 \item{\code{shape_a}{ = 1, Proportionality factor (-) for going from volume to area, keep this 1 (redundant parameter that should be removed)}\cr}
 \item{\code{shape_b}{ = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid }\cr}
 \item{\code{shape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
+\item{\code{conv_enhance}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 https://doi.org/10.1016/S0006-3495(76)85711-6}\cr}
 \item{\code{fatosk}{ = 0.4, Configuration factor to sky (-) for infrared calculations}\cr}
 \item{\code{fatosb}{ = 0.4, Configuration factor to subsrate for infrared calculations}\cr}
 \item{\code{pct_cond}{ = 10, Percentage of animal surface contacting the substrate (\%)}\cr}

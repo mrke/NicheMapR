@@ -56,11 +56,15 @@ ectotherm(Ww_g, shape, alpha_max, alpha_min, T_F_min, T_F_max, T_B_min, T_RB_min
 
 \item{M_3}{= 0.038, Metabolic rate parameter 3}
 
-\item{pct_wet}{= 0.2, \% of surface area acting as a free-water exchanger, for computing cutaneous water loss}
+\item{pct_wet}{= 0.1, \% of surface area acting as a free-water exchanger (hourly vector or single value), for computing cutaneous water loss}
 
 \item{pct_eyes}{= 0.03, \% of surface area taken up by open eyes, for computing ocular water loss (only when active)}
 
 \item{pct_mouth}{= 5, \% of surface area taken up by open mouth, for computing panting water loss}
+
+\item{g_vs_ab}{= 0, \% leaf vapour conductance, abaxial (bottom of leaf), mol/m2/s, used if leaf = 1}
+
+\item{g_vs_ad}{= 0.3, \% leaf vapour conductance, adaxial (top of leaf), mol/m2/s}
 
 \item{pantmax}{= 5, maximum multiplier on breathing rate, for respiratory water loss via panting (value of 1 prevents panting)}
 
@@ -84,6 +88,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{nyears}{ = micro$nyears, Number of years the simulation runs for - must be consistent with dimensions of environmental input data}\cr}
 \item{\code{enberr}{ = 0.01, Factor by which the mass is multiplied to obtain a tolerance level for the heat budget solution}\cr}
 \item{\code{live}{ = 1, Live (metabolism/behaviour) or dead animal?}\cr}
+\item{\code{leaf}{ = 0, Simulate leaf using stomatal conductance (1), pct_wet (2), or don't simulate leaf (0)?}\cr}
 \item{\code{transient}{ = 0, Run a transient (i.e. include heat storage) simulation (1=yes, 0=no)? No behaviour yet - assums full sun}\cr}
 \item{\code{delta_shade}{ = 3, Percent shade increment step, 0-100\%, allowing different thermoregulatory precision (smaller values increase run time)}\cr}
 \item{\code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1 = yes, 0 = no}\cr}
@@ -133,6 +138,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{shape_a}{ = 1, Proportionality factor (-) for going from volume to area, keep this 1 (redundant parameter that should be removed)}\cr}
 \item{\code{shape_b}{ = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid }\cr}
 \item{\code{shape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
+\item{\code{conv_enhance}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 https://doi.org/10.1016/S0006-3495(76)85711-6}\cr}
 \item{\code{fatosk}{ = 0.4, Configuration factor to sky (-) for infrared calculations}\cr}
 \item{\code{fatosb}{ = 0.4, Configuration factor to subsrate for infrared calculations}\cr}
 \item{\code{rinsul}{ = 0, Insulative fat layer thickness (not yet functional) (m)}\cr}
@@ -302,6 +308,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{clutch_ab}{ = c(0,0), # paramters for relationship between length (cm) and clutch size: clutch size = a*SVL-b, make a and b zero if fixed clutch size}\cr}
 \item{\code{viviparous}{ = 0, Viviparous reproduction? 0=no, 1=yes (if yes, animal will be held in adult-sided female's body for duration of development, set by E_Ho, and will experience her body temperature}\cr}
 \item{\code{minclutch}{ = 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate}\cr}
+\item{\code{maxclutch}{ = 0, Maximum clutch size to cap clutch size predicted by \code{clutch_ab} - if zero, will not operate}\cr}
 \item{\code{batch}{ = 1, Invoke Pequerie et al.'s batch laying model?}\cr}
 \item{\code{photostart}{ = 3, Photoperiod response triggering ovulation, none (0), summer solstice (1), autumnal equinox (2), winter solstice (3), vernal equinox (4), specified daylength thresholds (5 - uses \code{daylengthstart} and \code{daylengthfinish})}\cr}
 \item{\code{photofinish}{ = 1, Photoperiod terminating ovulation, none (0), summer solstice (1), autumnal equinox (2), winter solstice (3), vernal equinox (4), specified daylength thresholds (5 - uses \code{daylengthstart} and \code{daylengthfinish})}\cr}
@@ -348,7 +355,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \itemize{
 \item{\code{thermal_stages}{ = matrix(data = c(rep(CT_min, stages), rep(CT_max, stages), rep(T_F_min, stages), rep(T_F_max, stages), rep(T_B_min, stages), rep(T_pref, stages)),  nrow = stages,  ncol = 6), Stage specific thermal thresholds (CT_min, CT_max, T_F_min, T_F_max, T_B_min, T_pref)}\cr}
 \item{\code{behav_stages}{ = matrix(data = c(rep(diurn, stages), rep(nocturn, stages), rep(crepus, stages), rep(burrow, stages), rep(shdburrow, stages), rep(mindepth, stages), rep(maxdepth, stages), rep(shade_seek, stages), rep(climb, stages), rep(fossorial, stages), rep(rainact, stages), rep(actrainthresh, stages), rep(act_breed, stages), rep(flyer, stages), rep(aquabask, stages)), nrow = stages, ncol = 15), Stage specific behaviour diurn, nocturn, crepus, burrow, shdburrow, mindepth, maxdepth, shade_seek, climb, fossorial, rainact, actrainthresh, act_breed, flyer, aquabask)}\cr}
-\item{\code{water_stages}{ = matrix(data = c(rep(pct_wet, stages), rep(F_O2, stages), rep(pct_H_P, stages), rep(pct_H_N, stages), rep(pct_H_X, stages), rep(pct_H_R, stages), rep(raindrink, stages), rep(gutfill, stages)),  nrow = stages,  ncol = 8), Stage-specific water budget parameters (pct_wet, F_O2, pct_H_P, pct_H_N, pct_H_X, pct_H_R, raindrink, gutfill)}\cr}
+\item{\code{water_stages}{ = matrix(data = c(rep(pct_wet[1], stages), rep(F_O2, stages), rep(pct_H_P, stages), rep(pct_H_N, stages), rep(pct_H_X, stages), rep(pct_H_R, stages), rep(raindrink, stages), rep(gutfill, stages)),  nrow = stages,  ncol = 8), Stage-specific water budget parameters (pct_wet[1], F_O2, pct_H_P, pct_H_N, pct_H_X, pct_H_R, raindrink, gutfill)}\cr}
 \item{\code{nutri_stages}{ = matrix(data = c(rep(foodlim, stages), rep(0, stages)),  nrow = stages,  ncol = 1),  Stage-specific nutritional parameters (foodlim)}\cr}
 \item{\code{arrhenius}{ = matrix(data = matrix(data = c(rep(T_A, stages), rep(T_AL, stages), rep(T_AH, stages), rep(T_L, stages), rep(T_H, stages)),  nrow = stages,  ncol = 5),  nrow = stages,  ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A, T_AL, T_AH, T_L, T_H)}\cr}
 \item{\code{arrhenius2}{ = matrix(data = matrix(data = c(rep(T_A2, stages), rep(T_AL2, stages), rep(T_AH2, stages), rep(T_L2, stages), rep(T_H2, stages)),  nrow = stages,  ncol = 5),  nrow = stages,  ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A, T_AL, T_AH, T_L, T_H) for maturity maintenance (causes 'Temperature Size Rule' effect)}\cr}

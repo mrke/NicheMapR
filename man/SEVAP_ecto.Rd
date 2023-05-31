@@ -15,6 +15,9 @@ SEVAP_ecto(
   ATOT = 0.01325006,
   HD = 0.02522706,
   PEYES = 0.03/100,
+  LEAF = 0,
+  G_VS_AB = 0.3,
+  G_VS_AD = 0,
   TA = 20,
   RELHUM = 50,
   VEL = 0.1,
@@ -39,6 +42,12 @@ SEVAP_ecto(
 \item{HD}{mass transfer coefficient calculated with CONV_ecto (m/s)}
 
 \item{PEYES}{proportion of total surface area that is 'wet' eye (fractional, 0-1)}
+
+\item{LEAF}{use vapour conductance for evaporation (leaf mode = 1, non-leaf mode = 0)}
+
+\item{G_VS_AB}{leaf vapour conductance, abaxial (bottom of leaf), mol/m2/s}
+
+\item{G_VS_AD}{leaf vapour conductance, adaxial (top of leaf), mol/m2/s}
 
 \item{TA}{air temperature (°C)}
 
