@@ -55,6 +55,8 @@ onelump(t, Tc_init, Ww_g, geom, Tair, Trad, vel, Qsol, Zen, ...)
 
 \item{pdif}{= 0.1, proportion of solar energy that is diffuse (rather than direct beam)}
 
+\item{fluid}{= 0, fluid type, air (0) or water (1)}
+
 \item{press}{= 101325, air pressure (Pa)}
 }
 \value{

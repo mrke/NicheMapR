@@ -258,7 +258,7 @@ plant and shadplant variables:
 \item  5-14 RPOT0cm ... - root water potential (J/kg = kPa = bar/100), at each of the 10 specified depths
 }
 
-if snow model is run i.e. parameter lamb = 1\cr
+if snow model is run i.e. parameter snowmodel = 1\cr
 sunsnow and shdsnow variables:
 \itemize{
 \item  1 DOY - day-of-year

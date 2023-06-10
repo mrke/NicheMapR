@@ -22,6 +22,7 @@
 #' @param fatosb = 0.4, configuration factor to substrate for infrared calculations
 #' @param alpha_sub = 0.2, substrate solar reflectivity, decimal percent
 #' @param pdif = 0.1, proportion of solar energy that is diffuse (rather than direct beam)
+#' @param fluid = 0, fluid type, air (0) or water (1)
 #' @param Tair = 30, air temperature (°C)
 #' @param Trad = 30, radiant temperature (°C), averaging ground and sky
 #' @param vel = 0.1, wind speed (m/s)
@@ -98,7 +99,7 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
   q = 0, c_body = 3073, emis = 0.95, rho_body = 932, alpha = 0.85,
   shape_coefs = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
   shape_b = 1/5, shape_c = 1/5, posture = 'n', orient = 1, fatosk = 0.4, fatosb = 0.4,
-  alpha_sub = 0.8, pdif = 0.1, press = 101325){
+  alpha_sub = 0.8, pdif = 0.1, fluid = 0, press = 101325){
 
   sigma <- 5.67e-8 #Stefan-Boltzman, W/(m.K)
   Zenith <- Zen * pi / 180 # zenith angle in radians
@@ -106,12 +107,19 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
   Tskin <- Tc + 0.1
   vel[vel < 0.1] <- 0.1 # don't let wind speed go too low
   S2 <- 0.0001 # shape factor, arbitrary initialization, because not defined except for ellipsoid
-  DENSTY <- press / (287.04 * (Tair + 273.15)) # air density, kg/m3
-  THCOND <- 0.02425 + (7.038 * 10 ^ -5 * Tair) # air thermal conductivity, W/(m.K)
-  VISDYN <- (1.8325 * 10 ^ -5 * ((296.16 + 120) / ((Tair + 273.15) + 120))) * (((Tair + 273.15) / 296.16) ^ 1.5) # dynamic viscosity of air, kg/(m.s)
+  if(fluid == 0){
+    DENSTY <- press / (287.04 * (Tair + 273.15)) # air density, kg/m3
+    THCOND <- 0.02425 + (7.038 * 10 ^ -5 * Tair) # air thermal conductivity, W/(m.K)
+    VISDYN <- (1.8325 * 10 ^ -5 * ((296.16 + 120) / ((Tair + 273.15) + 120))) * (((Tair + 273.15) / 296.16) ^ 1.5) # dynamic viscosity of air, kg/(m.s)
+    DIFVPR <- 2.26e-05 * (((Tair + 273.15) / 273.15) ^ 1.81) * (1e+05 / press)
+  }else{
+    WATERPROP.out <- WATERPROP(Tair)
+    DENSTY <- WATERPROP.out$DENSTY
+    THCOND <- WATERPROP.out$THCOND
+    VISDYN <- WATERPROP.out$VISDYN
+    DIFVPR <- 0
+  }
   VISKIN <- VISDYN / DENSTY
-  DIFVPR <- 2.26e-05 * (((Tair + 273.15) / 273.15) ^ 1.81) * (1e+05 / press)
-
   # geometry section ############################################################
   m <- Ww_g / 1000 # convert weight to kg
   C <- m * c_body # thermal capacitance, J/K
@@ -228,7 +236,11 @@ onelump<-function(t = seq(1, 3600, 60), Tc_init = 5, Ww_g = 500,
 
   Re <- DENSTY * vel * L / VISDYN # Reynolds number
   PR <- 1005.7 * VISDYN / THCOND # Prandlt number
-  SC <- VISDYN / (DENSTY * DIFVPR) # Schmidt number
+  if(fluid == 0){
+    SC <- VISDYN / (DENSTY * DIFVPR) # Schmidt number
+  }else{
+    SC <- 1
+  }
 
   if (geom == 0) {
     NUfor <- 0.102 * Re ^ 0.675 * PR ^ (1. / 3.)
