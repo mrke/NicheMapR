@@ -136,8 +136,8 @@ C      INANIMATE
         WCUT=AEFF*HD*(VDSURF-VDAIR)
        ELSE
         G_VA=HD*V_M !BOUNDARY CONDUCTANCE, mol/m2/s
-        G_V=(0.5*g_vs_ab*g_va)/(g_vs_ab+g_va)+(0.5*g_vs_ad*g_va)/
-     &  (g_vs_ad+g_va) ! vapour conductance, mol/m2/s 
+        G_V=(0.5*g_vs_ab*g_va)/(g_vs_ab+g_va)+
+     &  (0.5*g_vs_ad*g_va)/(g_vs_ad+g_va) ! vapour conductance, mol/m2/s 
         WCUT=MW*G_V*(ESURF - EAIR)/BP*CONVAR ! kg/s
        ENDIF
        WATER=WCUT

@@ -21,11 +21,11 @@
 #' @param deblast Initial DEB state
 #' @param foodwaters Food water content (add units)
 #' @param foodlevels Food levels (add units)
-#' @param SKINW Hourly skin wetness (%)
-#' @param g_vs_ab leaf vapour conductance, abaxial (bottom of leaf), mol/m2/s
-#' @param g_vs_ad leaf vapour conductance, adaxial (top of leaf), mol/m2/s
-#' @param PDIF Hourly diffuse fraction of solar radiation (-)
-#' @param wetlandTemps Temperature of water body
+#' @param SKINW Hourly skin wetness, \%
+#' @param g_vs_ab leaf vapour conductance, abaxial (bottom of leaf), mol m-2 s-1
+#' @param g_vs_ad leaf vapour conductance, adaxial (top of leaf), mol m-2 s-1
+#' @param PDIF Hourly diffuse fraction of solar radiation, -
+#' @param wetlandTemps Temperature of water body, deg C
 #' @param wetlandDepths Depth of water body
 #' @param GLMtemps General Lake Model water temperatures
 #' @param GLMO2s General Lake Model water O2 partial pressures
@@ -86,7 +86,7 @@ ectorun <- function(ecto) {
                 as.double(ecto$maxshades),
                 as.double(ecto$SKINW),
                 as.double(ecto$g_vs_ab),
-                as.double(ecto$g_vs_ab),
+                as.double(ecto$g_vs_ad),
                 as.double(ecto$PDIF),
                 as.double(ecto$S_instar),
                 environ=matrix(data = 0, nrow = ndays * 24, ncol = 28),

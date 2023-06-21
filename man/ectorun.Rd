@@ -47,15 +47,15 @@ ectorun(ecto)
 
 \item{foodlevels}{Food levels (add units)}
 
-\item{SKINW}{Hourly skin wetness (%)}
+\item{SKINW}{Hourly skin wetness, \%}
 
-\item{g_vs_ab}{leaf vapour conductance, abaxial (bottom of leaf), mol/m2/s}
+\item{g_vs_ab}{leaf vapour conductance, abaxial (bottom of leaf), mol m-2 s-1}
 
-\item{g_vs_ad}{leaf vapour conductance, adaxial (top of leaf), mol/m2/s}
+\item{g_vs_ad}{leaf vapour conductance, adaxial (top of leaf), mol m-2 s-1}
 
-\item{PDIF}{Hourly diffuse fraction of solar radiation (-)}
+\item{PDIF}{Hourly diffuse fraction of solar radiation, -}
 
-\item{wetlandTemps}{Temperature of water body}
+\item{wetlandTemps}{Temperature of water body, deg C}
 
 \item{wetlandDepths}{Depth of water body}
 
