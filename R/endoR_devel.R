@@ -127,7 +127,7 @@
 #' \item 8 PANT - breathing rate multiplier (-)
 #' \item 9 SKINWET - part of the skin surface that is wet (\%)
 #' \item 10 K_FLESH - thermal conductivity of flesh (W/m°C)
-#' \item 11 K_FUR - thermal conductivity of flesh (W/m°C)
+#' \item 11 K_FUR - thermal conductivity of fur (W/m°C)
 #' \item 12 K_FUR_D - thermal conductivity of dorsal fur (W/m°C)
 #' \item 13 K_FUR_V - thermal conductivity of ventral fur (W/m°C)
 #' \item 14 K_COMPFUR - thermal conductivity of compressed fur (W/m°C)
