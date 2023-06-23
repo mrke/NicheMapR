@@ -82,14 +82,14 @@ SEVAP_ecto <- function(
 
   WETAIR.out <- WETAIR(DB, WB, RH, DP, BP)
   VDSURF <- WETAIR.out$vd
-  ESURF <- E
+  ESURF <- WETAIR.out$e
   #C     AIR VAPOR DENSITY
   RH <- RELHUM
   DB <- TAIR
 
   WETAIR.out <- WETAIR(DB, WB, RH, DP, BP)
   VDAIR <- WETAIR.out$vd
-  EAIR <- E
+  EAIR <- WETAIR.out$e
 
   WEYES <- HD * PEYES * ATOT * (VDSURF - VDAIR)
 
