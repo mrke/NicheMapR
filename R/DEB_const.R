@@ -1275,7 +1275,7 @@ DEB_const<-function(
   J_M <- c(JMCO2, JMH2O, JMO2, JMNWASTE) # - (n_M\n_O) * J_O;        # mol/d, J_C, J_H, J_O, J_N in rows, A, D, G in cols
 
   # compute heat production
-  p_T <- sum(-1 * J_O * h_O -J_M * h_M) / (3600 * 24) * step
+  p_T <- sum(-1 * J_O * h_O -J_M * h_M) / (3600 * 24) / step
   DEBQMETW <- p_T
 
   GDRYFOOD <- -1 * JOJx * w_X

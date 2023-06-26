@@ -37,7 +37,7 @@
 #' @param pct_mouth = 5, \% of surface area taken up by open mouth, for computing panting water loss
 #' @param g_vs_ab = 0, \% leaf vapour conductance, abaxial (bottom of leaf), mol/m2/s, used if leaf = 1
 #' @param g_vs_ad = 0.3, \% leaf vapour conductance, adaxial (top of leaf), mol/m2/s
-#' @param pantmax = 5, maximum multiplier on breathing rate, for respiratory water loss via panting (value of 1 prevents panting)
+#' @param pantmax = 1, maximum multiplier on breathing rate, for respiratory water loss via panting (value of 1 prevents panting)
 #' @param F_O2 = 20, \% oxygen extraction efficiency, for respiratory water loss
 #' @param delta_air = 0.1, Temperature difference (°C) between expired and inspired air, for computing respiratory water loss
 #' @usage ectotherm(Ww_g, shape, alpha_max, alpha_min, T_F_min, T_F_max, T_B_min, T_RB_min, CT_max, CT_min,

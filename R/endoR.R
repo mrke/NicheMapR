@@ -30,6 +30,7 @@
 #' \code{THERMOREG}{ = 1, thermoregulate? (1 = yes, 0 = no)}\cr\cr
 #' \code{RESPIRE}{ = 1, respiration? (1 = yes, 0 = no)}\cr\cr
 #' \code{WRITE_INPUT}{ = 0, write input to csv (1 = yes)}\cr\cr
+#' \code{TREGMODE}{ = 1, 1 = raise core then pant then sweat, 2 = raise core and pant simultaneously, then sweat}\cr\cr
 #'
 #' \strong{ Environment:}\cr\cr
 #' \code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr
@@ -58,7 +59,8 @@
 #' \code{PANT}{ = 1, multiplier on breathing rate to simulate panting (-)}\cr\cr
 #' \code{PANT_INC}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
 #' \code{PANT_MULT}{ = 1.05, multiplier on basal metabolic rate at maximum panting level (-)}\cr\cr
-#' \code{PANT_MAX}{ = 10, # maximum breathing rate multiplier to simulate panting (-)}\cr\cr
+#' \code{PANT_MAX}{ = 10, maximum breathing rate multiplier to simulate panting (-)}\cr\cr
+#' \code{PZFUR}{ = 0, incremental fractional reduction in ZFUR from piloerect state (-) (a value greater than zero triggers piloerection response)}\cr\cr
 #'
 #' \strong{ General morphology:}\cr\cr
 #' \code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr
@@ -353,6 +355,7 @@ endoR <- function(
   RQ = 0.80, # respiratory quotient (fractional, 0-1)
   EXTREF = 20, # O2 extraction efficiency (%)
   PANT_MAX = 5, # maximum breathing rate multiplier to simulate panting (-)
+  PZFUR = 0, # # incremental fractional reduction in ZFUR from piloerect state (-) (a value greater than zero triggers piloerection response)
   Q10 = 2, # Q10 factor for adjusting BMR for TC
 
   # initial conditions
@@ -363,6 +366,7 @@ endoR <- function(
   DIFTOL = 0.001, # tolerance for SIMULSOL
   THERMOREG = 1, # invoke thermoregulatory response
   RESPIRE = 1, # compute respiration and associated heat loss
+  TREGMODE = 1, # 1 = raise core then pant then sweat, 2 = raise core and pant simultaneously, then sweat}\cr\cr
   WRITE_INPUT = 0
 ){
   errors <- 0
@@ -390,6 +394,10 @@ endoR <- function(
     if(PANT_INC == 0){
       PANT_MAX <- PANT # can't pant, so panting level set to current value
     }
+    if(PZFUR < 0){
+      message("warning: PZFUR acts only to reduce insulation depth so taking the absolute value \n")
+      PZFUR <- abs(PZFUR)
+    }
     if(PCTWET_INC == 0){
       PCTWET_MAX <- PCTWET # can't sweat, so max maximum skin wetness equal to current value
     }
@@ -408,9 +416,7 @@ endoR <- function(
     TVEG <- TA
     NESTYP <- 0 # not yet used
     RoNEST <- 0 # not yet used
-    BLANK <- 0 # spare input
-    BLANK2 <- 1 # spare input
-    SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, RESPIRE, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, PVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, PCTWET, TSKY, TVEG, TAREF, DELTAR, RQ, BLANK2, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AK1_MAX, AK1_INC, TC_MAX, TC_INC, TC_REF, Q10, QBASREF, PANT_MAX, PCTWET_MAX, PCTWET_INC, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, BLANK, ZFURCOMP, PANT_INC, ORIENT, SHAPE_C, XR, PANT_MULT, KSUB, THERMOREG)
+    SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, RESPIRE, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, PVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, PCTWET, TSKY, TVEG, TAREF, DELTAR, RQ, TREGMODE, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AK1_MAX, AK1_INC, TC_MAX, TC_INC, TC_REF, Q10, QBASREF, PANT_MAX, PCTWET_MAX, PCTWET_INC, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, PZFUR, ZFURCOMP, PANT_INC, ORIENT, SHAPE_C, XR, PANT_MULT, KSUB, THERMOREG)
     if(WRITE_INPUT == 1){
       write.csv(SOLVENDO.input, file = "SOLVENDO.input.csv")
     }

@@ -66,7 +66,7 @@ ectotherm(Ww_g, shape, alpha_max, alpha_min, T_F_min, T_F_max, T_B_min, T_RB_min
 
 \item{g_vs_ad}{= 0.3, \% leaf vapour conductance, adaxial (top of leaf), mol/m2/s}
 
-\item{pantmax}{= 5, maximum multiplier on breathing rate, for respiratory water loss via panting (value of 1 prevents panting)}
+\item{pantmax}{= 1, maximum multiplier on breathing rate, for respiratory water loss via panting (value of 1 prevents panting)}
 
 \item{F_O2}{= 20, \% oxygen extraction efficiency, for respiratory water loss}
 

@@ -4,9 +4,9 @@ C     MODIFY THIS ACCORDINGLY AFTER DEVELOPING A ROUTINE FOR THERMOREGULATION
 C     USING endo_devel.R
 
       subroutine SOLVENDO(INPUT,TREG,MORPH,ENBAL,MASBAL)
-     
+
       implicit none
-      
+
       DOUBLE PRECISION ABSAND,ABSANV,ABSSB,AHEIT,AIRML1,AIRML2,AIRVOL
       DOUBLE PRECISION AK1,AK1_INC,AK1_LAST,AK1_MAX,AK2,ALENTH,AMASS
       DOUBLE PRECISION ANDENS,ANU,AREACND,AREASKIN,ASEMAJ,ASIL,ASILN
@@ -23,7 +23,7 @@ C     USING endo_devel.R
       DOUBLE PRECISION N2MOL1,N2MOL2,NESTYP,NTRYD,NTRYV,O2GAS,O2MOL1
       DOUBLE PRECISION O2MOL2,O2STP,ORIENT,PANT,PANT_COST,PANT_INC
       DOUBLE PRECISION PANT_LAST,PANT_MAX,PANT_MULT,PCOND,PCTBAREVAP
-      DOUBLE PRECISION PCTCO2,PCTDIF,PCTEYES,PCTN2,PCTO2,PCTWET
+      DOUBLE PRECISION PCTCO2,PCTDIF,PCTEYES,PCTN2,PCTO2,PCTWET,BLCMP
       DOUBLE PRECISION PCTWET_INC,PCTWET_LAST,PCTWET_MAX,PI,PR,PVEN,Q10
       DOUBLE PRECISION Q10mult,QBASAL,QBASREF,QCOND,QCONDD,QCONDV,QCONV
       DOUBLE PRECISION QCONVD,QCONVV,QDORSL,QEVAP,QFSEVAPD,QFSEVAPV,QGEN
@@ -43,17 +43,17 @@ C     USING endo_devel.R
       DOUBLE PRECISION TRAITS,TREG,TS,TSKCALCAVD,TSKCALCAVV,TSKINMAX
       DOUBLE PRECISION TSKY,TVEG,UNCURL,VEL,VMULT,VOL,VOLFAT,X,XR,Z
       DOUBLE PRECISION ZBRENTin,ZBRENTout,ZEN,ZFUR,ZFURCOMP,ZFURD,ZFURV
-      DOUBLE PRECISION ZL,RFURCMP,BLCMP,KFURD,KFURV
+      DOUBLE PRECISION ZL,RFURCMP,KFURD,KFURV,PZFUR,ZFURD_REF,ZFURV_REF
 
       DOUBLE PRECISION, DIMENSION(3) :: KEFARA,BETARA,B1ARA,DHAR,LHAR,
      & RHOAR,ZZFUR,REFLFR
-     
-      INTEGER S
-    
+
+      INTEGER S,TREGMODE
+
       DIMENSION IRPROPout(26),GEOMout(25),CONVOUT(14),
      & SOLARout(7),SIMULSOLout(2,16),SIMULOUT(16),FURVARS(15),
      & GEOMVARS(20),TRAITS(9),ENVVARS(17),ZBRENTin(17),ZBRENTout(15),
-     & INPUT(89),TREG(15),MORPH(20),ENBAL(10),MASBAL(10)
+     & INPUT(89),TREG(17),MORPH(20),ENBAL(10),MASBAL(10)
 
       PI = ACOS(-1.0d0)
       ZBRENTout=0.
@@ -114,7 +114,8 @@ C     USING endo_devel.R
       TAREF=input(54)
       DELTAR=input(55)
       RQ=input(56)
-!      TIMACT=input(57)
+      !TIMACT=input(57)
+      TREGMODE=INT(input(57))
       O2GAS=input(58)
       N2GAS=input(59)
       CO2GAS=input(60)
@@ -138,7 +139,7 @@ C     USING endo_devel.R
       SUBQFAT=input(78)
       FATPCT=input(79)
       PCOND=input(80)
-      MAXPCOND = input(81) ! SPARE-NOT USED
+      PZFUR = input(81)
       ZFURCOMP = input(82)
       PANT_INC=input(83)
       ORIENT=input(84)
@@ -147,7 +148,7 @@ C     USING endo_devel.R
       PANT_MULT=input(87)
       KSUB=input(88)
       THERMOREG=input(89)
-      
+
       TSKINMAX=TC ! initialise
       Q10mult=1. ! initialise
       PANT_COST = 0.D0 ! initialise
@@ -179,7 +180,14 @@ C     USING endo_devel.R
       AREASKIN=0.
       AREACND=0.
       KEFARA = (/0.,0.,0./)
+      ZFURD_REF=ZFURD
+      ZFURV_REF=ZFURV
+      IF(PZFUR.GT.0.)THEN
+       ZFURD=LHAIRD
+       ZFURV=LHAIRV
+      ENDIF
       
+
       do while(QGEN < QBASAL)
 
        !### IRPROP, infrared radiation properties of fur
@@ -187,7 +195,7 @@ C     USING endo_devel.R
        !# call the IR properties subroutine
        CALL IRPROP((0.7*TFA+0.3*TS),DHAIRD,DHAIRV,LHAIRD,LHAIRV,ZFURD,
      & ZFURV,RHOD,RHOV,REFLD,REFLV,ZFURCOMP,PVEN,KHAIR,IRPROPout)
-      
+
        !# output
        KEFARA = IRPROPout(1:3) !# effective thermal conductivity of fur array, mean, dorsal, ventral (W/mK)
        BETARA = IRPROPout(4:6) !# term involved in computing optical thickess (1/mK2)
@@ -199,7 +207,7 @@ C     USING endo_devel.R
        REFLFR = IRPROPout(22:24) !# fur reflectivity array, mean, dorsal, ventral (fractional, 0-1)
        FURTST = IRPROPout(25) !# test of presence of fur (length x diamater x density x depth) (-)
        KFURCMPRS = IRPROPout(26) ! # effective thermal conductivity of compressed ventral fur (W/mK)
-       
+
        !### GEOM, geometry
 
        !# input
@@ -210,7 +218,7 @@ C     USING endo_devel.R
        !# call the subroutine
        CALL GEOM_ENDO(AMASS,ANDENS,FATPCT,SHAPE,ZFUR,SUBQFAT,SHAPEB,
      &  SHAPEC,DHARA,RHOARA,PCOND,SAMODE,ORIENT,Z,GEOMout)
- 
+
        !# output
        VOL = GEOMout(1) !# volume, m3
        D = GEOMout(2) !# characteristic dimension for convection, m
@@ -234,7 +242,7 @@ C     USING endo_devel.R
        CONVAR = GEOMout(20) !# area for convection (total area minus ventral area, as determined by PCOND), m2
        R1 = GEOMout(21) !# shape-specific core-skin radius in shortest dimension, m
        R2 = GEOMout(22) !# shape-specific core-fur/feather interface radius in shortest dimension, m
-       
+
        !### SOLAR, solar radiation
 
        !# solar radiation normal to sun's rays
@@ -254,7 +262,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
        FASKY = FSKREF - FAVEG
        FAGRD = FGDREF
 
-       CALL SOLAR_ENDO(ATOT, ABSAND, ABSANV, ABSSB, ASIL, PCTDIF, 
+       CALL SOLAR_ENDO(ATOT, ABSAND, ABSANV, ABSSB, ASIL, PCTDIF,
      &  QNORM, SHADE, QSOLR, FASKY, FAVEG, SOLARout)
 
        QSOLAR = SOLARout(1) !# total (global) solar radiation (W) QSOLAR,QSDIR,QSSKY,QSRSB,QSDIFF,QDORSL,QVENTR
@@ -272,7 +280,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
        TENV = TA !# fluid temperature (deg C)
 
        !# run subroutine
-       CALL CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, 
+       CALL CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA,
      &  VEL, ZFUR, BP, ELEV, CONVout)
 
        QCONV = CONVout(1) !# convective heat loss (W)
@@ -289,7 +297,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
        RA = CONVout(12) !# Rayleigh number (-)
        SC = CONVout(13) !# Schmidt number (-)
        BP = CONVout(14) !# barometric pressure (Pa)
- 
+
        !# reference configuration factors
        FABUSHREF = FABUSH !# nearby bush
        FASKYREF = FASKY !# sky
@@ -303,9 +311,9 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         !# set infrared environment
         TVEG = TAREF !# assume vegetation casting shade is at reference (e.g. 1.2m or 2m) air temperature (deg C)
         TLOWER = TGRD
-        !# Calculating solar intensity entering fur. This will depend on whether we are calculating the fur 
-        !# temperature for the dorsal side or the ventral side. The dorsal side will have solar inputs from 
-        !# the direct beam hitting the silhouette area as well as diffuse solar scattered from the sky. 
+        !# Calculating solar intensity entering fur. This will depend on whether we are calculating the fur
+        !# temperature for the dorsal side or the ventral side. The dorsal side will have solar inputs from
+        !# the direct beam hitting the silhouette area as well as diffuse solar scattered from the sky.
         !# The ventral side will have diffuse solar scattered off the substrate.
         !# Resetting config factors and solar depending on whether the dorsal side (S=1) or ventral side (S=2) is being estimated.
         IF(QSOLAR.GT.0.0)THEN
@@ -314,7 +322,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
           FAVEG = FAVEGREF/(FASKYREF+FAVEGREF) ! proportion of upward view that is vegetation (shade)
           FAGRD = 0.0
           FABUSH = 0.0
-          QSLR = 2.*QSDIR+((QSSKY/FASKYREF)*FASKY) ! direct x 2 because assuming sun in both directions, and unadjusting QSSKY for config factor imposed in SOLAR_ENDO and back to new larger one in both directions 
+          QSLR = 2.*QSDIR+((QSSKY/FASKYREF)*FASKY) ! direct x 2 because assuming sun in both directions, and unadjusting QSSKY for config factor imposed in SOLAR_ENDO and back to new larger one in both directions
          else
           FASKY = 0.0
           FAVEG = 0.0
@@ -380,7 +388,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         IF(S==2)THEN ! doing ventral side, add conduction
          AREACND = ATOT * (PCOND * 2.)
          CD = (AREACND * KSUB) / 0.025 !# assume conduction happens from 2.5 cm depth
-        ELSE  !# doing dorsal side, no conduction. No need to adjust areas used for convection. 
+        ELSE  !# doing dorsal side, no conduction. No need to adjust areas used for convection.
          AREACND = 0.
          CD = 0.
         ENDIF
@@ -412,9 +420,9 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
      &   TFA, PCTWET, TS, SIMULOUT)
         SIMULSOLout(S,:) = SIMULOUT
 1      CONTINUE
-      
+
        TSKINMAX=max(SIMULSOLout(1,2), SIMULSOLout(2,2))
-      
+
        !### ZBRENT and RESPFUN
 
        !# Now compute a weighted mean heat generation for all the parts/components = (dorsal value *(FASKY+FAVEG))+(ventral value*FAGRD)
@@ -424,7 +432,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
        VMULT = 1. - DMULT !# assume that reflectivity of veg below equals reflectivity of soil so VMULT left as 1 - DMULT
        X = GEND * DMULT + GENV * VMULT !# weighted estimate of metabolic heat generation
        QSUM = X
-       
+
        !# reset configuration factors
        FABUSH = FABUSHREF !# nearby bush
        FASKY = FASKYREF !# sky
@@ -436,7 +444,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
        TFA = (SIMULSOLout(1, 1) + SIMULSOLout(2, 1)) * 0.5
        TLUNG =(TC + TS) * 0.5 !# average of skin and core
        TAEXIT = min(TA + DELTAR, TLUNG) !# temperature of exhaled air, deg C
-      
+
        IF(INT(RESPIRE).EQ.1)THEN
         !# now guess for metabolic rate that balances the heat budget while allowing metabolic rate
         !# to remain at or above QBASAL, via 'shooting method' ZBRENT
@@ -452,7 +460,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         TOL = AMASS * 0.01
         ZBRENTin = (/TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG,
      &   GMASS, EXTREF, RH, RELXIT, 1.D0, TAEXIT, QSUM, PANT, RP_CO2/)
-      
+
         !# call ZBRENT subroutine which calls RESPFUN
         CALL ZBRENT_ENDO(QM1, QM2, TOL, ZBRENTin, ZBRENTout)
         !colnames(ZBRENTout) = c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")
@@ -466,33 +474,45 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
        PANT_LAST = PANT
        PCTWET_LAST = PCTWET
        IF(INT(THERMOREG).EQ.1)THEN
-        if(SHAPEB.lt.SHAPEB_MAX)THEN
-         SHAPEB = SHAPEB + UNCURL
-        else
-         SHAPEB = SHAPEB_MAX
-         if(AK1.lt.AK1_MAX)THEN
-          AK1 = AK1 + AK1_INC
+        IF((ZFURD.GT.ZFURD_REF).AND.(ZFURV.GT.ZFURV_REF))THEN
+         ZFURD = max(ZFURD_REF, ZFURD - PZFUR*LHAIRD)
+         ZFURV = max(ZFURV_REF, ZFURV - PZFUR*LHAIRV)
+        ELSE
+         ZFURD = ZFURD_REF
+         ZFURV = ZFURV_REF
+         if(SHAPEB.lt.SHAPEB_MAX)THEN
+          SHAPEB = SHAPEB + UNCURL
          else
-          AK1 = AK1_MAX
-          if(TC.lt.TC_MAX)THEN
-           TC = TC + TC_INC
-           Q10mult = Q10**((TC - TC_REF)/10.)
-           QBASAL = QBASREF * Q10mult
+          SHAPEB = SHAPEB_MAX
+          if(AK1.lt.AK1_MAX)THEN
+           AK1 = AK1 + AK1_INC
           else
-           TC = TC_MAX
-           Q10mult = Q10**((TC - TC_REF)/10.)
-           if(PANT.lt.PANT_MAX)THEN
-            PANT = PANT + PANT_INC
-            PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
-            QBASAL = QBASREF * Q10mult + PANT_COST           
+           AK1 = AK1_MAX
+           if(TC.lt.TC_MAX)THEN
+            TC = TC + TC_INC
+            Q10mult = Q10**((TC - TC_REF)/10.)
+            QBASAL = QBASREF * Q10mult
+            if((TREGMODE.EQ.2).AND.(PANT.lt.PANT_MAX))THEN
+             PANT = PANT + PANT_INC
+             PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
+             QBASAL = QBASREF * Q10mult + PANT_COST
+            endif
            else
-            PANT = PANT_MAX
-            PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
-            QBASAL = QBASREF * Q10mult + PANT_COST           
-            PCTWET = PCTWET + PCTWET_INC
-            if((PCTWET.GT.PCTWET_MAX).OR.(PCTWET_INC.LE.0.))THEN
-             PCTWET = PCTWET_MAX
-             RETURN
+            TC = TC_MAX
+            Q10mult = Q10**((TC - TC_REF)/10.)
+            if(PANT.lt.PANT_MAX)THEN
+             PANT = PANT + PANT_INC
+             PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
+             QBASAL = QBASREF * Q10mult + PANT_COST
+            else
+             PANT = PANT_MAX
+             PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
+             QBASAL = QBASREF * Q10mult + PANT_COST
+             PCTWET = PCTWET + PCTWET_INC
+             if((PCTWET.GT.PCTWET_MAX).OR.(PCTWET_INC.LE.0.))THEN
+              PCTWET = PCTWET_MAX
+              RETURN
+             ENDIF
             ENDIF
            ENDIF
           ENDIF
@@ -502,7 +522,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         GO TO 111
        ENDIF
       END DO
-111   CONTINUE      
+111   CONTINUE
       ! SIMULSOL output, dorsal
       TFAD=SIMULSOLout(1, 1) ! temperature of feathers/fur-air interface, deg C
       TSKCALCAVD=SIMULSOLout(1, 2) ! average skin temperature, deg C
@@ -556,7 +576,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
       AIRVOL=ZBRENTout(15) ! air out at STP (L/s)
 
       HTOVPR = 2.5012E+06 - 2.3787E+03 * TA
-      SWEATGS = (SIMULSOLout(1,6) + SIMULSOLout(2,6)) * 0.5 
+      SWEATGS = (SIMULSOLout(1,6) + SIMULSOLout(2,6)) * 0.5
      &  / HTOVPR * 1000.
       EVAPGS = ZBRENTout(3) + SWEATGS
 
@@ -572,27 +592,27 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
 
       QSOL=QSLRD * DMULT + QSLRV * VMULT ! solar, W
       QIRIN=QIRIND * DMULT + QIRINV * VMULT ! infrared in, W
-      QEVAP=QSEVAPD * DMULT + QSEVAPV * VMULT + QFSEVAPD * DMULT + 
+      QEVAP=QSEVAPD * DMULT + QSEVAPV * VMULT + QFSEVAPD * DMULT +
      & QFSEVAPV * VMULT + QRESP ! evaporation, W
       QIROUT=QIROUTD * DMULT + QIROUTV * VMULT ! infrared out, W
       QCONV=QCONVD * DMULT + QCONVV * VMULT ! convection, W
       QCOND=QCONDD * DMULT + QCONDV * VMULT ! conduction, W
 
-      TREG=(/TC_LAST, TLUNG, TSKCALCAVD, TSKCALCAVV, TFAD, TFAV,  
-     & SHAPEB_LAST, PANT_LAST, PCTWET_LAST, AK1_LAST, KEFARA(1),  
-     & KFURD, KFURV, KFURCMPRS, Q10mult/)
-      !names(treg)=c("TC", "TLUNG", "TSKIN_D", "TSKIN_V", "TFA_D", "TFA_V", "SHAPEB", "PANT", "PCTWET", "K_FLESH", "K_EFF", "K_FUR_D", "K_FUR_V", "K_COMPFUR", "Q10")
+      TREG=(/TC_LAST, TLUNG, TSKCALCAVD, TSKCALCAVV, TFAD, TFAV,
+     & SHAPEB_LAST, PANT_LAST, PCTWET_LAST, AK1_LAST, KEFARA(1),
+     & KFURD, KFURV, KFURCMPRS, ZFURD, ZFURV, Q10mult/)
+      !names(treg)=c("TC", "TLUNG", "TSKIN_D", "TSKIN_V", "TFA_D", "TFA_V", "SHAPEB", "PANT", "PCTWET", "K_FLESH", "K_EFF", "K_FUR_D", "K_FUR_V", "K_COMPFUR", "ZFUR_D", "ZFUR_V", "Q10")
 
-      MORPH=(/ATOT, VOL, D, MASFAT, FATTHK, FLSHVL, ALENTH, AWIDTH, 
-     & AHEIT, R1, R2, ASIL, ASILN, ASILP, AREASKIN, CONVSK, CONVAR, 
+      MORPH=(/ATOT, VOL, D, MASFAT, FATTHK, FLSHVL, ALENTH, AWIDTH,
+     & AHEIT, R1, R2, ASIL, ASILN, ASILP, AREASKIN, CONVSK, CONVAR,
      & AREACND/2., FASKY, FAGRD/)
       !names(morph)=c("AREA", "VOLUME", "CHAR_DIM", "MASS_FAT", "FAT_THICK", "FLESH_VOL", "LENGHT", "WIDTH", "HEIGHT", "DIAM_FLESH", "DIAM_FUR", "AREA_SIL", "AREA_SILN", "AREA_ASILP", "AREA_SKIN", "AREA_SKIN_EVAP", "AREA_CONV", "F_SKY", "F_GROUND")
-      
-      ENBAL=(/QSOL, QIRIN, QGEN, QEVAP, QIROUT, QCONV, QCOND, RESPFN, 
+
+      ENBAL=(/QSOL, QIRIN, QGEN, QEVAP, QIROUT, QCONV, QCOND, RESPFN,
      & max(NTRYD, NTRYV), min(SUCCESSD, SUCCESSV)/)
       !names(enbal)=c("QSOL", "QIRIN", "QGEN", "QEVAP", "QIROUT", "QCONV", "QCOND", "ENB", "NTRY", "SUCCESS")
 
-      MASBAL=(/AIRVOL, O2STP, GEVAP, SWEATGS, O2MOL1, 
+      MASBAL=(/AIRVOL, O2STP, GEVAP, SWEATGS, O2MOL1,
      & O2MOL2, N2MOL1, N2MOL2, AIRML1, AIRML2/) * 3600.
       !names(masbal)=c("AIR_L", "O2_L", "H2OResp_g", "H2OCut_g", "O2_mol_in", "O2_mol_out", "N2_mol_in", "N2_mol_out", "AIR_mol_in", "AIR_mol_out")
 

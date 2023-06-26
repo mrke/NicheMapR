@@ -53,6 +53,7 @@ third raise core temperature, fourth pant and fifth sweat.
 \code{THERMOREG}{ = 1, thermoregulate? (1 = yes, 0 = no)}\cr\cr
 \code{RESPIRE}{ = 1, respiration? (1 = yes, 0 = no)}\cr\cr
 \code{WRITE_INPUT}{ = 0, write input to csv (1 = yes)}\cr\cr
+\code{TREGMODE}{ = 1, 1 = raise core then pant then sweat, 2 = raise core and pant simultaneously, then sweat}\cr\cr
 
 \strong{ Environment:}\cr\cr
 \code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr
@@ -81,7 +82,8 @@ third raise core temperature, fourth pant and fifth sweat.
 \code{PANT}{ = 1, multiplier on breathing rate to simulate panting (-)}\cr\cr
 \code{PANT_INC}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
 \code{PANT_MULT}{ = 1.05, multiplier on basal metabolic rate at maximum panting level (-)}\cr\cr
-\code{PANT_MAX}{ = 10, # maximum breathing rate multiplier to simulate panting (-)}\cr\cr
+\code{PANT_MAX}{ = 10, maximum breathing rate multiplier to simulate panting (-)}\cr\cr
+\code{PZFUR}{ = 0, incremental fractional reduction in ZFUR from piloerect state (-) (a value greater than zero triggers piloerection response)}\cr\cr
 
 \strong{ General morphology:}\cr\cr
 \code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr
