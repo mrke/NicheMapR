@@ -264,9 +264,10 @@ C       SETTING THIS MONTH'S PERCENT OF SURFACE WITH FREE WATER/SNOW ON IT
 c	  add dew and frost from previous hour to this hour's rainfall
       methour=0
       methour=(int(SIOUT(1)/60)+1)+24*(DOY-1)
-      if((dewrain.eq.1).and.(methour.gt.1).and.
-     &  ((metout(methour-1,15)+metout(methour-1,16)).gt.(0.1/24.)))then
+      if((dewrain.eq.1).and.(methour.gt.1))then
+       if((metout(methour-1,15)+metout(methour-1,16)).gt.(0.1/24.))then
        rainfall=rainfall+metout(methour-1,15)+metout(methour-1,16)
+       endif
       endif
       if(microdaily.eq.1)then
        if(DOY.gt.1)then
