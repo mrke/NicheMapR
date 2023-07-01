@@ -262,13 +262,13 @@ C       SETTING THIS MONTH'S PERCENT OF SURFACE WITH FREE WATER/SNOW ON IT
        rainfall=rainhr(int(TIME/60.+1+25*(DOY-1)))
       endif
 c	  add dew and frost from previous hour to this hour's rainfall
-      methour=0
-      methour=(int(SIOUT(1)/60)+1)+24*(DOY-1)
-      if((dewrain.eq.1).and.(methour.gt.1))then
-       if((metout(methour-1,15)+metout(methour-1,16)).gt.(0.1/24.))then
-       rainfall=rainfall+metout(methour-1,15)+metout(methour-1,16)
-       endif
-      endif
+C     methour=0
+C     methour=(int(SIOUT(1)/60)+1)+24*(DOY-1)
+C     if((dewrain.eq.1).and.(methour.gt.1))then
+C      if((metout(methour-1,15)+metout(methour-1,16)).gt.(0.1/24.))then
+C      rainfall=rainfall+metout(methour-1,15)+metout(methour-1,16)
+C      endif
+C     endif
       if(microdaily.eq.1)then
        if(DOY.gt.1)then
         ND=1
@@ -963,7 +963,7 @@ c       evaporation potential, mm/s (kg/s)
      &,wcc,curhumid2,curpot2,timestep,altt,
      &rww,pc,rl,sp,r1,im,maxcount,leafpot,curroot2,trans2)
         if(wcc.lt.0)then
-         wcc=0
+         wcc=0.
         endif
         if(surflux.lt.0)then
          surflux=0.D0
@@ -1055,7 +1055,7 @@ c     NOTE: difference between this model and Garratt & Segal is that QCONV +VE 
       if(RH.gt.100.)then
        RH= 100.
       endif
-      CALL MICRO(HGTP,RUFP,ZH,D0,TAIR,soiltemp(1),VELR,QCONV,AMOL,
+      CALL MICRO(HGTP,RUFP,ZH,D0,TAIR,soiltemp(1),VEL2M,QCONV,AMOL,
      &NAIR,ZZ,VV,T,ZENR)
       WB = 0.
       DP = 999.
@@ -1075,7 +1075,7 @@ C     EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
      &      DENAIR,CP,WTRPOT) 
       Q_STAR_SURF=VD/DENAIR ! kg water / kg air, surface saturated specific humidity
       S=(Q_STAR_SURF-Q_STAR_AIR)/(soiltemp(1)-TAIR) ! kg water / kg air / K, slope of saturation curve, EQ.5 FROM GARRATT & SEGAL 1988
-      if(soiltemp(1).gt.0)then
+      if(soiltemp(1).gt.0.)then
        HTOVPR=2500.8-2.36*soiltemp(1)+0.0016*soiltemp(1)**2.-0.00006
      &*soiltemp(1)**3.
       else

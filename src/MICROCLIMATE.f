@@ -666,7 +666,7 @@ C     USE UNIT I13 FOR above ground micromet OUTPUT when % shade = 100.
       write(I12,111) "JULDAY",",","TIME",",","TALOC",",","TAREF",",","RH
      &LOC",",","RH",",","VLOC",",","VREF",",","SNOWMELT",",","POOLDEP"
      &,",","PCTWET",",","ZEN",",","SOLR",",","TSKYC",",","DEW",","
-     &,"FROST",",","SNOWFALL",",","SNOWDEP"",","SNOWDENS"
+     &,"FROST",",","SNOWFALL",",","SNOWDEP",",","SNOWDENS"
 C     USE UNIT 14 FOR HOUR, SOIL DEPTH & SOIL TEMPERATURE OUTPUT when % shade = 100.
       OPEN (I11, FILE = 'shadsoil.csv')
       write(I11,112) "JULDAY",",","TIME",",","DEP1",",","DEP2",","
