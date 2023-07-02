@@ -54,7 +54,10 @@ leaf temperature (°C)
 Campbell & Norman's (1998) leaf temperature calculation based on their equation 14.1
 solved using R's root-finding function 'uniroot'. Uses the functions SOLAR_ecto and
 RADIN_ecto to calculate incoming radiation based on TGRD, TSKY, QSOLR, Z and PDIF.
-Michael Kearney developed this R function and its subfunction leaf_bal and example in July 2023.
+The ectotherm function (and ectoR_devel) can also be used to calculate leaf temperature
+and is faster and more general (e.g. can simulate different shapes) than the Campbell
+& Norman function. Both methods are demonstrated in the example for this function.
+Michael Kearney developed this R function and its sub-function leaf_bal and example in July 2023.
 Campbell, G. S., & Norman, J. M. (1998). Environmental Biophysics. Springer.
 }
 \examples{
@@ -78,9 +81,10 @@ RHs <- metout$RHLOC # relative humidity from microclimate model, \%
 QSOLRs <- metout$SOLR # total horizontal plane solar radiation from microclimate model, W/m2
 Zs <- metout$ZEN # solar zenith angle, degrees
 PDIFs <- micro$diffuse_frac # use variable diffuse fraction
-#' conv_enhance <- 1.4 # outdoor convective enhancement factor, Mitchell 1976
+epsilon_sky <- 1 # emissivity has already been incorporated in calculation of TSKYs
+alpha_S <- 1 - micro$REF # substrate solar absorptivity
 
-# leaf functional traits
+# leaf functional traits required for the heat and water budget
 Ww_g <- 1 # wet weight, g
 shape <- 2 # 0=plate, 1=cylinder, 2=ellipsoid
 g_vs_ab <- 0.3 # leaf vapour conductance, abaxial (bottom of leaf), mol/m2/s
@@ -109,16 +113,6 @@ GEOM.out <- GEOM_ecto(AMASS = Ww_g / 1000, GEOMETRY = shape, SHP = c(1, shape_b,
 w <- GEOM.out$AL / 0.7 # leaf width, m
 A <- GEOM.out$AREA # total leaf surface area, m2
 A_sil <- (GEOM.out$ASILN + GEOM.out$ASILP) / 2 # leaf silhoette area to direct solar radiation, m2
-
-TAs <- metout$TALOC
-TGRDs <- soil$D0cm
-TSKYs <- metout$TSKYC
-VELs <- metout$VLOC
-RHs <- metout$RHLOC
-QSOLRs <- metout$SOLR
-Zs <- metout$ZEN
-epsilon_sky <- 1 # emissivity has already been incorporated in calculation of TSKYs
-alpha_S <- 1 - micro$REF # substrate solar absorptivity
 
 # Campbell and Norman Calculation
 T_leaf_CN <- unlist(lapply(1:length(TAs), function(x){leaf_temperature(
