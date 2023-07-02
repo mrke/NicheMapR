@@ -98,7 +98,7 @@ SEVAP_ecto <- function(
   if(LEAF == 1){
     G_VA <- HD*V_M #!BOUNDARY CONDUCTANCE, mol/m2/s
     G_V <- (0.5 * G_VS_AB * G_VA) / (G_VS_AB + G_VA) + (0.5 * G_VS_AD * G_VA) / (G_VS_AD + G_VA) #! vapour conductance, mol/m2/s
-    WCUT <- MW * G_V * (ESURF - EAIR) / BP * CONVAR #! kg/s
+    WCUT <- MW * G_V * (ESURF - EAIR) / BP * ATOT #! kg/s
   }else{
     if(WEYES > 0){
       WCUT <- (AEFF - PEYES * ATOT * SKINW) * HD * (VDSURF - VDAIR)
