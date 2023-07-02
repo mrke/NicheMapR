@@ -64,7 +64,7 @@ SEVAP_ecto <- function(
   XTRY <- TC
   MW <- 0.018 #! molar mass of water, kg/mol
   RG <- 8.314 #! gas constant, J/mol/K
-  V_m <- 44.6 #! molar volume of air, mol/m3
+  V_M <- 44.6 #! molar volume of air, mol/m3
   #C     CALCULATING SKIN SURFACE SATURATION VAPOR DENSITY
   #C      RH = 100.
   RH <- exp(PSI_BODY / (RG / MW * (TSKIN + 273.15))) * 100 #
