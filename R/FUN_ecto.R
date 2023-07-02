@@ -35,6 +35,9 @@
 #' @param EMISSB emissivity of substrate (fractional, 0-1)
 #' @param EMISSK emissivity of sky (fractional, 0-1)
 #' @param FLTYPE fluid type, air (0) or water (1)
+#' @param LEAF use vapour conductance for evaporation (leaf mode = 1, non-leaf mode = 0)
+#' @param G_VS_AB leaf vapour conductance, abaxial (bottom of leaf), mol/m2/s
+#' @param G_VS_AD leaf vapour conductance, adaxial (top of leaf), mol/m2/s
 #' @param TA air temperature (°C)
 #' @param TSKY sky temperature (°C)
 #' @param TSUBST substrate temperature (driving conduction) (°C)
@@ -75,6 +78,9 @@ FUN_ecto <- function(AMASS = AMASS,
                      SKINW = SKINW,
                      AEFF = AEFF,
                      PEYES = PEYES,
+                     LEAF = LEAF,
+                     G_VS_AB = G_VS_AB,
+                     G_VS_AD = G_VS_AD,
                      FATOSK = FATOSK,
                      FATOSB = FATOSB,
                      FATOBJ = FATOBJ,
@@ -282,7 +288,9 @@ FUN_ecto <- function(AMASS = AMASS,
                           ATOT = ATOT,
                           HD = HD,
                           PEYES = PEYES,
-                          TA = TA,
+                          LEAF = LEAF,
+                          G_VS_AB = G_VS_AB,
+                          G_VS_AD = G_VS_AD,                          TA = TA,
                           RELHUM = RELHUM,
                           VEL = VEL,
                           BP = BP)

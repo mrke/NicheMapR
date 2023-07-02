@@ -31,6 +31,9 @@ FUN_ecto(
   SKINW = SKINW,
   AEFF = AEFF,
   PEYES = PEYES,
+  LEAF = LEAF,
+  G_VS_AB = G_VS_AB,
+  G_VS_AD = G_VS_AD,
   FATOSK = FATOSK,
   FATOSB = FATOSB,
   FATOBJ = FATOBJ,
@@ -105,6 +108,12 @@ FUN_ecto(
 \item{AEFF}{effective area acting as a free-water exchanger, drives cutaneous evaporation (m2)}
 
 \item{PEYES}{proportion of total surface area that is 'wet' eye (fractional, 0-1)}
+
+\item{LEAF}{use vapour conductance for evaporation (leaf mode = 1, non-leaf mode = 0)}
+
+\item{G_VS_AB}{leaf vapour conductance, abaxial (bottom of leaf), mol/m2/s}
+
+\item{G_VS_AD}{leaf vapour conductance, adaxial (top of leaf), mol/m2/s}
 
 \item{FATOSK}{configuration factor to sky (-)}
 
