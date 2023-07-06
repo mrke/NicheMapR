@@ -242,7 +242,6 @@ C      WING MODEL RUNNING
 
 C     FLAT PLATE
       IF(GEOMETRY.EQ.0)THEN
-C      ASSUME A SQUARE FOR THE MOMENT
        AHEIT=(VOL/(SHP(2)*SHP(3)))**(1./3.)
        AWIDTH=AHEIT*SHP(2)
        ALENTH= AHEIT*SHP(3)
@@ -313,6 +312,7 @@ C     ELLIPSOID
        ASEMAJR=A
        BSEMINR=B
        CSEMINR=C
+       AL=MIN(A,C,VOL**(1./3.))! assuming B is for height if it's a flattend shape like a leaf
        GO TO 999
       ENDIF
 

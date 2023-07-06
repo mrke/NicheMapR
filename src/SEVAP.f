@@ -146,10 +146,17 @@ C      INANIMATE
 C      ANIMATE, CALCULATE BELOW
       ENDIF
 
-      IF(WEYES.GT.0.)THEN
-       WCUT=(AEFF-PEYES*ATOT*SKINW)*HD*(VDSURF-VDAIR)
+      IF(LEAF.EQ.1)THEN
+        G_VA=HD*V_M !BOUNDARY CONDUCTANCE, mol/m2/s
+        G_V=(0.5*g_vs_ab*g_va)/(g_vs_ab+g_va)+
+     &  (0.5*g_vs_ad*g_va)/(g_vs_ad+g_va) ! vapour conductance, mol/m2/s 
+        WCUT=MW*G_V*(ESURF - EAIR)/BP*CONVAR ! kg/s
       ELSE
-       WCUT=AEFF*HD*(VDSURF-VDAIR)
+       IF(WEYES.GT.0.)THEN
+        WCUT=(AEFF-PEYES*ATOT*SKINW)*HD*(VDSURF-VDAIR)
+       ELSE
+        WCUT=AEFF*HD*(VDSURF-VDAIR)
+       ENDIF
       ENDIF
       WATER=WEYES+WRESP+WCUT
 C     END OF COMPUTING AEFF FOR SURFACE OR NOT

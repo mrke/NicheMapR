@@ -165,6 +165,8 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{soilnode}{ = 4, Soil node (1-10, corresponding to values in \code{DEP}) at which eggs are laid (overridden if \code{amphibreed}=1)}\cr}
 \item{\code{eggshade}{ = 0, are eggs laid in shade? 0=no, 1=yes}\cr}
 \item{\code{aquabask}{ = 0, If aquatic, does it bask? 0=no, stay at water temp, 1=yes, when not hungry, 2=all the time}\cr}
+\item{\code{g_vs_ab_max}{ = 0, \% max leaf vapour conductance, abaxial (bottom of leaf), mol/m2/s, used if leaf = 1}\cr}
+\item{\code{g_vs_ad_max}{ = 0.3, \% max leaf vapour conductance, adaxial (top of leaf), mol/m2/s}\cr}
 }
 \strong{ Thermal physiological parameters:}
 
@@ -406,6 +408,8 @@ environ variables:
 \item 25 ABSAN - solar absorptivity (fractional)
 \item 26 PCOND - proportion of animal's surface in contact with ground (fractional)
 \item 27 POSTURE - postural orientation (1=perpendicular to sun, 2=parallel, 0=in-between)
+\item 28 PANT - panting level
+\item 29 PCTWET - skin wetness or stomatal openness (/%)
 }
 enbal variables:
 \itemize{

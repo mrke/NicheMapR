@@ -139,7 +139,7 @@ T_leaf_CN <- unlist(lapply(1:length(TAs), function(x){leaf_temperature(
 )})) # run leaf_temperature across environments
 
 month <- 1 # choose a month to plot
-sub <- which(floor(dates) == month)
+sub <- which(floor(dates) + 1 == month)
 T_air_2m <- metout$TAREF
 T_air_1cm <- metout$TALOC
 plot(T_air_1cm[sub], type = 'l', col = 'blue', ylab = 'temperature, deg C', xlab = 'hour of day', ylim = c(15, 50))
