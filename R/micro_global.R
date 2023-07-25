@@ -1202,13 +1202,6 @@ micro_global <- function(
     }
     #########################################################################################
 
-    # Next four parameters are segmented velocity profiles due to bushes, rocks etc. on the surface
-    #IF NO EXPERIMENTAL WIND PROFILE DATA SET ALL THESE TO ZERO! (then roughness height is based on the parameter RUF)
-    Z01 <- 0 # Top (1st) segment roughness height(m)
-    Z02 <- 0 # 2nd segment roughness height(m)
-    ZH1 <- 0 # Top of (1st) segment, height above surface(m)
-    ZH2 <- 0 # 2nd segment, height above surface(m)
-
     # hourly option set to 0, so make empty vectors
     hourly<-0
     rainhourly<-0
