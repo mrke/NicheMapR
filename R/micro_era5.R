@@ -1128,10 +1128,10 @@ micro_era5 <- function(
     } #end check if running gads
 
     if(max(abs(warm)) != 0){
-      # impose uniform temperature change
-      TMAXX <- TMAXX + warm
-      TMINN <- TMINN + warm
       if(length(warm) == length(TMAXX)){
+       # impose uniform temperature change
+       TMAXX <- TMAXX + warm
+       TMINN <- TMINN + warm
        warm.hr <- rep(warm, each = 24)
       }else{
        warm.hr <- warm
