@@ -930,6 +930,7 @@ micro_global <- function(
       RAINFALL2<-as.data.frame(cbind(RAINFALL1,sort))
       #RAINFALL2<-RAINFALL2[order(RAINFALL2$V2,RAINFALL2$V3),] # this line scatters the rainy days evenly across each month - snow predictions better if it is commented out so get rainy days all in a row within the month
       RAINFALL<-rep(as.double(RAINFALL2$RAINFALL1),nyears)
+      RAINFALL[is.na(RAINFALL)] <- 0
       if(TMINN[1]<snowtemp){
         RAINFALL[1]<-0 # this is needed in some cases to allow the integrator to get started
       }

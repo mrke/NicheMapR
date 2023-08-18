@@ -521,6 +521,8 @@ C     INITIALISATIONS AND PARAMETER SETTINGS
       H_M(1:4)=0.0D0
       emissk_ref=0.95
       emissb_ref=0.95
+      PANT=1.0D+00
+      POSTURE=POSTUR
       
       TC_OLD=TC
       L_J=0.1

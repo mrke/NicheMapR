@@ -1437,7 +1437,12 @@ ectotherm <- function(
     OBJL <- 0.0001 # currently unused - diameter (m) of nearby object of different temp to sky and ground (e.g. warm rock, fire)
     FATOBJ <- 0 # configuration factor to nearby object of different temp to sky and ground (e.g. warm rock, fire)
     SPARE3 <- 0 # spare input
-
+    if(leaf == 0){ # zero stomatal conductances so that SKINW is not changed to stomatal openness in ectotherm models
+      g_vs_ab <- g_vs_ab * 0
+      g_vs_ad <- g_vs_ab
+      g_vs_ad_max <- g_vs_ab
+      g_vs_ab_max <- g_vs_ab
+    }
     # collate parameters
     gas <- c(O2gas, CO2gas, N2gas) # gas vector
     behav <- c(diurn, nocturn, crepus, rainact, burrow, shade_seek, climb, fossorial, SPARE3) # behaviour vector
