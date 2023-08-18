@@ -1309,7 +1309,7 @@ micro_terra <- function(
       }
     }#end check doing daily sims
     RAINFALL <- RAINFALL3
-    RAINFALL[is.na(RAINFALL)] <- 0
+    RAINFALL[!is.finite(RAINFALL)] <- 0
 
     SOLRhr<-rep(0,24*ndays)
 
