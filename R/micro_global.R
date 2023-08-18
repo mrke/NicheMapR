@@ -912,11 +912,19 @@ micro_global <- function(
             if(k==1){
               RAINFALL1[m]<-RAINFALL[i]*rainfrac*rainmult # if first day of month, make user-specified fraction of monthly rainfall fall on first day
             }else{
-              RAINFALL1[m]<-(RAINFALL[i]*(1-rainfrac)*rainmult)/RAINYDAYS[i] # make remaining rain fall evenly over the remaining number of rainy days for the month, starting at the beginning of the month
+              if(RAINYDAYS[i]>0){
+                RAINFALL1[m]<-(RAINFALL[i]*(1-rainfrac)*rainmult)/RAINYDAYS[i] # make remaining rain fall evenly over the remaining number of rainy days for the month, starting at the beginning of the month
+              }else{
+                RAINFALL1[m]<-0
+              }
             }
           }else{
             if(rainfrac==0){
-              RAINFALL1[m]<-(RAINFALL[i]*rainmult)/RAINYDAYS[i]
+              if(RAINYDAYS[i]>0){
+                RAINFALL1[m]<-(RAINFALL[i]*rainmult)/RAINYDAYS[i]
+              }else{
+                RAINFALL1[m]<-0
+              }
             }else{
               RAINFALL1[m]<-0
             }
