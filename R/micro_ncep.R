@@ -1135,7 +1135,9 @@ micro_ncep <- function(
         }else{
          midnights <- seq(midnight, length(RAINhr / 24), 24)
         }
-        RAINhr[midnights] <- RAINFALL
+        RAINhr[midnights+1] <- RAINFALL/3
+        RAINhr[midnights] <- RAINFALL/3
+        RAINhr[midnights-1] <- RAINFALL/3
         rainhourly <- 1
       }
       ZENhr2 <- ZENhr
@@ -1197,6 +1199,7 @@ micro_ncep <- function(
       load('ZENhr.Rda')
       load('IRDhr.Rda')
       load('microclima.out.Rda')
+      rainhourly <- 1
     }
     slope <- 0 # already corrected for by microclima
     azmuth <- 0 # already corrected for by microclima
