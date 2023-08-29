@@ -131,7 +131,9 @@
 #' \item 12 K_FUR_D - thermal conductivity of dorsal fur (W/m°C)
 #' \item 13 K_FUR_V - thermal conductivity of ventral fur (W/m°C)
 #' \item 14 K_COMPFUR - thermal conductivity of compressed fur (W/m°C)
-#' \item 15 Q10 - Q10 multiplier on metabolic rate (-)
+#' \item 15 Z_FUR_D - depth of dorsal fur (due to pilo/ptiloerection) of fur, m
+#' \item 16 Z_FUR_V - depth of ventral fur (due to pilo/ptiloerection) of fur, m
+#' \item 17 Q10 - Q10 multiplier on metabolic rate (-)
 #' }
 #' morph variables (morphological traits):
 #' \itemize{
