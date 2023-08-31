@@ -49,6 +49,7 @@
 #' @details
 #' \strong{ Parameters controlling how the model runs:}\cr\cr
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
+#' \code{clearsky}{ = 0, Run for clear skies (1) or with observed cloud cover (0)}\cr\cr
 #' \code{run.gads}{ = 1, Use the Global Aerosol Database? 1=yes (Fortran version), 2=yes (R version), 0=no}\cr\cr
 #' \code{IR}{ = 0, Clear-sky longwave radiation computed using Campbell and Norman (1998) eq. 10.10 (includes humidity) (0) or Swinbank formula (1) or from NCEP data (2)}\cr\cr
 #' \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
@@ -337,6 +338,7 @@ micro_ncep <- function(
   ZH1 = 0,
   ZH2 = 0,
   runshade = 1,
+  clearsky = 0,
   run.gads = 1,
   solonly = 0,
   Soil_Init = NA,
@@ -1156,6 +1158,34 @@ micro_ncep <- function(
       WNMINN <- dmaxmin(WNhr, min)
       PRESS <- dmaxmin(PRESShr, min)
 
+      if(clearsky == 1){
+        cat("running micro_global to get clear sky solar \n")
+        micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, timeinterval = 365, solonly = 1)
+        clearskyrad <- micro_clearsky$metout[, c(1, 13)]
+        leapyears <- seq(1900, 2060, 4)
+        ystart <- as.numeric(substr(dstart, 7, 10))
+        yfinish <- as.numeric(substr(dfinish, 7, 10))
+        datestimes <- seq(as.POSIXct(paste0(ystart, '-01-01 00:00:00')), as.POSIXct(paste0(yfinish, '-12-31 23:00:00')), by = 'hours')
+        for(year in ystart:yfinish){
+          clear <- clearskyrad[, 2]
+          if(year %in% leapyears){
+            clear <- c(clear[1:1416], clear[1417:(1416 + 24)], clear[(1417 + 1):length(clear)])
+          }
+          if(year == ystart){
+            SOLRhr <- clear
+          }else{
+            SOLRhr <- c(SOLRhr, clear)
+          }
+        }
+        tzoff <- 12-which(ZENhr[1:24] ==min(ZENhr[1:24]))+1
+        if(tzoff != 12){
+          if(tzoff > 12){
+            SOLRhr <- c(SOLRhr[(length(SOLRhr)-tzoff+1):(length(SOLRhr))], SOLRhr[1:(length(SOLRhr)-tzoff)])
+          }else{
+            SOLRhr <- c(SOLRhr[(tzoff+1):length(SOLRhr)], SOLRhr[1:tzoff])
+          }
+        }
+      }
       if(save == 1){
         cat("saving met data for later \n")
         save(CCMAXX, file = 'CCMAXX.Rda')
