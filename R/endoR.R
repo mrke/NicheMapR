@@ -60,7 +60,7 @@
 #' \code{PANT_INC}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
 #' \code{PANT_MULT}{ = 1.05, multiplier on basal metabolic rate at maximum panting level (-)}\cr\cr
 #' \code{PANT_MAX}{ = 10, maximum breathing rate multiplier to simulate panting (-)}\cr\cr
-#' \code{PZFUR}{ = 0, incremental fractional reduction in ZFUR from piloerect state (-) (a value greater than zero triggers piloerection response)}\cr\cr
+#' \code{PZFUR}{ = 1, incremental fractional reduction in ZFUR from piloerect state (-) (a value greater than zero triggers piloerection response)}\cr\cr
 #'
 #' \strong{ General morphology:}\cr\cr
 #' \code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr
@@ -78,8 +78,8 @@
 #' \code{DHAIRV}{ = 30E-06, hair diameter, ventral (m)}\cr\cr
 #' \code{LHAIRD}{ = 23.9E-03, hair length, dorsal (m)}\cr\cr
 #' \code{LHAIRV}{ = 23.9E-03, hair length, ventral (m)}\cr\cr
-#' \code{ZFURD_MAX}{ = LHAIRD, max fur depth, dorsal (m)}\cr\cr
-#' \code{ZFURV_MAX}{ = LHAIRV, max fur depth, ventral (m)}\cr\cr
+#' \code{ZFURD_MAX}{ = ZFURD, max fur depth, dorsal (m)}\cr\cr
+#' \code{ZFURV_MAX}{ = ZFURV, max fur depth, ventral (m)}\cr\cr
 #' \code{RHOD}{ = 3000E+04, hair density, dorsal (1/m2)}\cr\cr
 #' \code{RHOV}{ = 3000E+04, hair density, ventral (1/m2)}\cr\cr
 #' \code{REFLD}{ = 0.2, fur reflectivity dorsal (fractional, 0-1)}\cr\cr
@@ -323,8 +323,8 @@ endoR <- function(
   DHAIRV = 30E-06, # hair diameter, ventral (m)
   LHAIRD = 23.9E-03, # hair length, dorsal (m)
   LHAIRV = 23.9E-03, # hair length, ventral (m)
-  ZFURD_MAX = LHAIRD, # max fur depth, dorsal (m)
-  ZFURV_MAX = LHAIRV, # max fur depth, ventral (m)
+  ZFURD_MAX = ZFURD, # max fur depth, dorsal (m)
+  ZFURV_MAX = ZFURV, # max fur depth, ventral (m)
   ZFURD = 2E-03, # fur depth, dorsal (m)
   ZFURV = 2E-03, # fur depth, ventral (m)
   RHOD = 3000E+04, # hair density, dorsal (1/m2)
@@ -362,7 +362,7 @@ endoR <- function(
   RQ = 0.80, # respiratory quotient (fractional, 0-1)
   EXTREF = 20, # O2 extraction efficiency (%)
   PANT_MAX = 5, # maximum breathing rate multiplier to simulate panting (-)
-  PZFUR = 0, # # incremental fractional reduction in ZFUR from piloerect state (-) (a value greater than zero triggers piloerection response)
+  PZFUR = 1, # # incremental fractional reduction in ZFUR from piloerect state (-) (a value greater than zero triggers piloerection response)
   Q10 = 2, # Q10 factor for adjusting BMR for TC
   TC_MIN = 19, # minimum core temperature during torpor (TREGMODE = 0)
 

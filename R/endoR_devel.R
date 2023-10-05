@@ -813,6 +813,10 @@ endoR_devel <- function(
 
   if(failed){
     warning("A solution could not be found and panting/'sweating' options are exhausted; try allowing greater evaporation or allowing higher body maximum body temperature")
+    treg <- treg * 0
+    morph <- morph * 0
+    masbal <- masbal * 0
+    enbal <- enbal * 0
   }
   endo.out <- list(treg = treg, morph = morph, enbal = enbal, masbal = masbal)
   return(endo.out)
