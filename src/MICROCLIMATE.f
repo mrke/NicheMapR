@@ -128,7 +128,7 @@ c     OSUB outputs the microclimate calculations.
       CHARACTER(12) FNAME
 
       DIMENSION snownode(10),snode(10),qphase(10)
-      DIMENSION microinput1(73)
+      DIMENSION microinput1(74)
       DIMENSION soilprop(10,5),soilprop1(10,5),moist(10)
       DIMENSION DEPS(21),curmoist2(18)
       DIMENSION TIMINS(4),TIMAXS(4)
@@ -211,7 +211,7 @@ c    Variable soil properties data from Iomet1
 
       DATA MINUTES/0,60,120,180,240,300,360,420,480,540,600,660,720,780
      &    ,840,900,960,1020,1080,1140,1200,1260,1320,1380,1440/
-      MAXSURF = 95.
+C      MAXSURF = 95.
 C     SIG=.8126D-10     1
 C     RCS=.5            2
 C     STC=.05
@@ -479,6 +479,7 @@ c    WRITE(I2,*)i,' ',j,' ',Thconds(i,j),' ',Thconds1(i,j)
       spinup=int(microinput1(71))
       dewrain=int(microinput1(72))
       timestep=int(microinput1(73))
+      maxsurf=microinput1(74)
       do 908 i=1,IDA
       julday(i)=julday1(i)
       LAIs(i)=LAI1(i)
@@ -774,13 +775,17 @@ c      Assign depth values to soil depth array as specified in BLKDATA.FOR.  NOT
 300   CONTINUE
 
 C    DEFINE AIR HEIGHTS (cm)
-      AIRDP(1) = 200.
+      AIRDP(1) = PAR(5)!200.
 c    AirDP(2) now provided by user  6/27/98
       AIRDP(2) = Usrhyt
-      if(RUF.gt.0.5)then
-      AIRDP(3) = RUF+.5
+      if((RUF.gt.0.5).AND.((RUF+0.5).LT.USRHYT))then
+       AIRDP(3) = RUF+.5
       else
-      AIRDP(3) = 0.5
+       if((RUF+0.5).LT.USRHYT)THEN
+       AIRDP(3) = USRHYT-0.1!0.5
+       ELSE
+       AIRDP(3) = 0.5
+       ENDIF
       endif
 
 C    SETTING UP THE NODE NUMBERS AND VALUES FOR THE DEP ARRAY

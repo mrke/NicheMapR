@@ -408,7 +408,8 @@ micro_global <- function(
   windfac = 1,
   snowcond = 0,
   intercept = max(maxshade) / 100 * 0.3,
-  grasshade = 0
+  grasshade = 0,
+  maxsurf = 95
 ) {
 
   SoilMoist <- SoilMoist_Init
@@ -542,14 +543,8 @@ micro_global <- function(
         Please enter a correct value (> 0.00).", '\n')
     errors<-1
   }
-  if(Usrhyt<RUF){
-    message("ERROR: Reference height (Usrhyt) smaller than roughness height (RUF).
-        Please use a larger height above the surface.", '\n')
-    errors<-1
-  }
-  if(Usrhyt<0.005 | Usrhyt>Refhyt){
-    message("ERROR: Reference height (Usrhyt) is out of bounds.
-        Please enter a correct value (0.005 - Refhyt).", '\n')
+  if(Usrhyt>Refhyt){
+    message("ERROR: Reference height is less than local height (Usrhyt) \n")
     errors<-1
   }
   if(CMH2O<0.5 | CMH2O>2){
@@ -1215,7 +1210,7 @@ micro_global <- function(
     ZENhr<-rep(-1,24*ndays)
     IRDhr<-rep(-1,24*ndays)
     # microclimate input parameters list
-    microinput<-c(ndays,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade,solonly,ZH,D0,TIMAXS,TIMINS,spinup,0, 360)
+    microinput<-c(ndays,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade,solonly,ZH,D0,TIMAXS,TIMINS,spinup,0, 360,maxsurf)
 
     if(length(LAI)<ndays){
       LAI<-rep(LAI[1],ndays)
