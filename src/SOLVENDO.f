@@ -482,12 +482,16 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         TC = TC - TC_INC
         Q10mult = Q10**((TC - TC_REF)/10.)
         QBASAL = QBASREF * Q10mult
-       ELSE
-        GO TO 111
+       ENDIF
+       IF((ZBRENTout(1)/ZBRENTout(7)).LT.-0.05)THEN
+        QGEN=0.
+        GO TO 222 ! NEED TO SOLVE FOR METABOLIC RATE
        ENDIF
       END DO
       
-      ELSE ! NON TOPROR MODE
+      ENDIF
+      ! NON TOPROR MODE
+222   CONTINUE
       do while(QGEN < QBASAL)
 
        !### IRPROP, infrared radiation properties of fur
@@ -822,7 +826,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         GO TO 111
        ENDIF
       END DO
-      ENDIF
+!      ENDIF
 111   CONTINUE
       ! SIMULSOL output, dorsal
       TFAD=SIMULSOLout(1, 1) ! temperature of feathers/fur-air interface, deg C
