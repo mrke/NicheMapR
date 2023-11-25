@@ -480,6 +480,11 @@ micro_nz <- function(
         Please enter a smaller value.", '\n')
     errors<-1
   }
+  if(D0 > 0 & D0 < Usrhyt){
+    cat("ERROR: The zero plane displacement height (D0) must be lower than the local height (Usrhyt).
+        Please enter a smaller value.", '\n')
+    errors<-1
+  }
   if(DEP[1]!=0){
     cat("ERROR: First soil node (DEP[1]) must = 0 cm.
         Please correct", '\n')

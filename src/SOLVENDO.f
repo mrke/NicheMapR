@@ -483,7 +483,8 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         Q10mult = Q10**((TC - TC_REF)/10.)
         QBASAL = QBASREF * Q10mult
        ENDIF
-       IF((ZBRENTout(1)/ZBRENTout(7)).LT.-0.05)THEN
+       IF((ZBRENTout(1)/ZBRENTout(7)).LT.-0.05)THEN!.AND.
+c     &  (TC.LE.(TC_MIN+TC_INC)))THEN
         QGEN=0.
         GO TO 222 ! NEED TO SOLVE FOR METABOLIC RATE
        ENDIF
