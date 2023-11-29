@@ -268,7 +268,7 @@
 #' \strong{ Reproductive phenology model parameters:}
 #' \itemize{
 #' \item{\code{clutchsize}{ = 5, Clutch size (#), overridden by \code{clutch_ab}}\cr}
-#' \item{\code{clutch_ab}{ = c(0,0), # paramters for relationship between length (cm) and clutch size: clutch size = a*SVL-b, make a and b zero if fixed clutch size}\cr}
+#' \item{\code{clutch_ab}{ = c(0,0), # paramters for relationship between length (cm) and clutch size: clutch size = a*SVL+b, make a and b zero if fixed clutch size}\cr}
 #' \item{\code{viviparous}{ = 0, Viviparous reproduction? 0=no, 1=yes (if yes, animal will be held in adult-sided female's body for duration of development, set by E_Ho, and will experience her body temperature}\cr}
 #' \item{\code{minclutch}{ = 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate}\cr}
 #' \item{\code{maxclutch}{ = 0, Maximum clutch size to cap clutch size predicted by \code{clutch_ab} - if zero, will not operate}\cr}

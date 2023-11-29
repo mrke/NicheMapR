@@ -146,7 +146,7 @@ C     AN INSECT (HEMIMETABOLOUS)
        ! FEEDING
        IF(ACTHR .GT. 1.)THEN
         IF(FOODMODE.EQ.1)THEN
-         IF(X.GT.(E_Sm * V))THEN ! STOMACH NOT BIG ENOUGH
+         IF(X.GT.(E_Sm * V - E_S))THEN ! STOMACH NOT BIG ENOUGH
           P_X = 0.
          ELSE
           P_X = X
