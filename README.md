@@ -3,6 +3,12 @@ R implementation of Niche Mapper software for biophysical modelling
 
 Copyright (C) 2018  Michael R. Kearney and Warren P. Porter
 
+Installation from github:
+library(devtools)
+install_github('mrke/NicheMapR')
+
+See also https://mrke.github.io/getting_started/
+
 Citations: 
 
 Kearney, M. R., & Porter, W. P. (2017). 
