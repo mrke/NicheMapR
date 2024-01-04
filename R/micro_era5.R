@@ -811,7 +811,28 @@ micro_era5 <- function(
         }
       }
       cat("computing radiation and elevation effects with package microclima \n")
-      microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = as.data.frame(hourlydata), dailyprecip = dailyprecip, dem = dem, demmeso = dem2, albr = 0, resolution = 30, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = TRUE, difani = FALSE, weather.elev = weather.elev, cad.effects = cad.effects, zmin = zmin)
+      microclima.out <- microclima::microclimaforNMR(lat = longlat[2],
+                                                     long = longlat[1],
+                                                     dstart = dstart,
+                                                     dfinish = dfinish,
+                                                     l = mean(microclima.LAI),
+                                                     x = LOR,
+                                                     coastal = coastal,
+                                                     hourlydata = as.data.frame(hourlydata),
+                                                     dailyprecip = dailyprecip,
+                                                     dem = dem,
+                                                     demmeso = dem2,
+                                                     albr = 0,
+                                                     resolution = 30,
+                                                     slope = slope,
+                                                     aspect = aspect,
+                                                     windthresh = 4.5,
+                                                     emthresh = 0.78,
+                                                     reanalysis2 = TRUE,
+                                                     difani = FALSE,
+                                                     weather.elev = weather.elev,
+                                                     cad.effects = cad.effects,
+                                                     zmin = zmin)
 
 
       hourlyradwind <- microclima.out$hourlyradwind

@@ -71,7 +71,7 @@ metout <- as.data.frame(micro$metout) # microclimate aboveground conditions
 soil <- as.data.frame(micro$soil) # soil temperature
 
 # obtain relevant microclimate conditions
-P_a <- 101325*((1-(0.0065*micro$elev/288))^(1/0.190284)) # hourlydata$pressure
+P_a <- get_pressure(micro$elev/288) # hourlydata$pressure
 PRESSs <- rep(P_a, nrow(metout)) # atmospheric pressure, Pa
 TAs <- metout$TALOC # air temperature at leaf height from microclimate model, deg C
 TGRDs <- soil$D0cm # ground temperature from microclimate model, deg C
