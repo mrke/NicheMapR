@@ -43,8 +43,10 @@
 #' @param orient = 1, does the object orient toward the sun? (0,1)
 #' @param fatosk = 0.4, solar configuration factor to sky (-)
 #' @param fatosb = 0.4, solar configuration factor to substrate (-)
+#' @param dyn_q = 0, dynamic metabolic heat generation as a function of temperature, based on approxfun called qf (1) or constant based on parameter q (0)
 #' @param alpha_sub = 0.2, substrate solar reflectivity, decimal percent
 #' @param pdif = 0.1, proportion of solar energy that is diffuse (rather than direct beam)
+#' @param fluid = 0, fluid type, air (0) or water (1)
 #' @param shade = 90, maximum shade level (\%)
 #' @param metout = metout, aboveground minimum shade microclimate output table from NicheMapR's microclimate model
 #' @param shadmet = shadmet, metout, aboveground maximum shademicroclimate output table from NicheMapR's microclimate model
@@ -237,6 +239,8 @@ trans_behav <- function(Tc_init = rep(20, 60),
                         orient = 1,
                         fatosk = 0.4,
                         fatosb = 0.4,
+                        dyn_q = 0,
+                        fluid = 0,
                         alpha_sub = 0.2,
                         pdif = 0.1,
                         shade = 90,
@@ -405,14 +409,14 @@ trans_behav <- function(Tc_init = rep(20, 60),
   if (lump == 1) {
     indata <- list(alpha = alpha, emis = emis, alpha_sub = alpha_sub, press = press, Ww_g = Ww_g, c_body = c_body, rho_body = rho_body,
                    q = q, k_flesh = k_flesh, geom = geom, posture = posture, orient = orient, shape_b = shape_b, shape_c = shape_c,
-                   shape_coefs = shape_coefs, pdif = pdif, fatosk = fatosk, fatosb = fatosb, Tairf = Tairf, velf = velf,
+                   shape_coefs = shape_coefs, pdif = pdif, fatosk = fatosk, fatosb = fatosb, fluid = fluid, dyn_q = dyn_q, Tairf = Tairf, velf = velf,
                    Qsolf = Qsolf, Tradf = Tradf, Zenf = Zenf)
     indata$c_body = 0.1  #specific heat of flesh, J/(kg.C)
   }
   if (lump == 2) {
     indata <- list(Ww_g = Ww_g, x_shell = x_shell, geom = geom, k_inner = k_inner, k_outer = k_outer, q = q,
                    c_body_inner = c_body_inner, c_body_outer = c_body_outer, emis = emis, rho_body_body = rho_body_body, alpha = alpha, shape_coefs = shape_coefs,
-                   shape_b = shape_b, shape_c = shape_c, posture = posture, orient = orient, fatosk = fatosk, fatosb = fatosb,
+                   shape_b = shape_b, shape_c = shape_c, posture = posture, orient = orient, fatosk = fatosk, fatosb = fatosb, fluid = fluid, dyn_q = dyn_q,
                    alpha_sub = alpha_sub, pdif = pdif, press = press)
     indata$c_body_inner = 0.1  #specific heat of flesh, J/(kg.C)
     indata$c_body_outer = 0.1  #specific heat of flesh, J/(kg.C)

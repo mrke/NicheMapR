@@ -34,6 +34,8 @@ trans_behav(
   orient = 1,
   fatosk = 0.4,
   fatosb = 0.4,
+  dyn_q = 0,
+  fluid = 0,
   alpha_sub = 0.2,
   pdif = 0.1,
   shade = 90,
@@ -100,6 +102,10 @@ trans_behav(
 \item{fatosk}{= 0.4, solar configuration factor to sky (-)}
 
 \item{fatosb}{= 0.4, solar configuration factor to substrate (-)}
+
+\item{dyn_q}{= 0, dynamic metabolic heat generation as a function of temperature, based on approxfun called qf (1) or constant based on parameter q (0)}
+
+\item{fluid}{= 0, fluid type, air (0) or water (1)}
 
 \item{alpha_sub}{= 0.2, substrate solar reflectivity, decimal percent}
 

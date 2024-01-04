@@ -19,7 +19,10 @@ c     You should have received a copy of the GNU General Public License
 c     along with this program. If not, see http://www.gnu.org/licenses/.
 
 C     Computes water infiltration and redistribution with evaporation, from
-c     a bare soil surface, based on program 9.1 of Campbell 1985
+C     a bare soil surface, based on program 9.1 of Campbell 1985. Equation and
+C     page numbers refer to Campbell, G. S. (1985). Soil Physics with Basic: 
+C     Transport Models for Soil-Plant Systems. Elsevier.
+ 
 
       double precision A,B,C,F,P,Z,V,DP,W,WN,K,CP,WS,B1,N,N1
       double precision WD,GR,IM,SE,H,JV,DJ,PP,EP,MW,T,R,DV
@@ -36,10 +39,10 @@ c     a bare soil surface, based on program 9.1 of Campbell 1985
       DIMENSION A(19),B(19),C(19),F(19),P(19),Z(19),V(19),DP(19),W(19)
       DIMENSION WN(19),K(19),CP(19),H(19),JV(19),DJ(19),temp(10)
      &,moistt(18),T(19),depth(10),humid(18),potent(18),PE(19),
-     &KS(19),BB(19),PP(19),B1(19),N(19),N1(19),WS(19),DV(19),rootpot(18)
+     &KS(19),BB(19),PP(19),B1(19),N(19),N1(19),WS(19),rootpot(18)
       DIMENSION RR(19),L(19),E(19),RS(19),PR(19),BZ(19),BD(19),DD(19)
       common/campbell/PE,KS,BB,BD,L,LAI,DD
-
+      
 c     P matric potential J/kg
 c     Z depth nodes
 c     W water content m3/m3
@@ -59,9 +62,9 @@ c     R1=0.001 ! root radius, m
 c     IM=0.000001 ! maximum overall mass balance error allowed, kg
 
       PI=3.14159
-      MW=0.018 ! molar mass of water, kg/mol
-      R=8.310001 ! gas constant, J/mol/K
-      GR=9.8 !gravitational constant m/s/s
+      MW=0.01801528 ! molar mass of water, kg/mol
+      R=8.3143 ! gas constant, J/mol/K
+      GR=9.81 !gravitational constant m/s/s
      
       A(1:19)=0
       B=A
@@ -81,25 +84,24 @@ c     IM=0.000001 ! maximum overall mass balance error allowed, kg
       B1=A
       N=A
       WS=A
-      DV=A
       RR=A
       E=A
       RS=A
       PR=A
       BZ=A
       E=A
-      M=18
+      M=18 ! 10 user-specified depths, adding an extra depth between each of these, but not including the boundary condition depth at node 19
 
       PE=ABS(PE)*(-1) !air entry potential J/kg
       PP=PE !initial water potential J/kg
       PP=ABS(PP)*(-1)
-      WS=1-BD/DD !saturation water content m3/m3, assuming max density of 2.6 Mg/m3
-      Z(M+1)=2 ! depth to lower boundary, m
+      WS=1-BD/DD !saturation water content m3/m3
+      Z(M+1)=depth(10)/100. ! depth to lower boundary, m
       WD=1000. ! density of water kg/m3
-      DV=0.000024 ! binary diffusion coefficient
+      DV=0.000024 ! binary diffusion coefficient for water vapour, m^2/s
   
       B1=1/BB
-      N=2+3/BB
+      N=2+3/BB ! vector per soil layer of exponents in equation to obtain hydraulic conductivity from saturated hydraulic conductivity, saturated water content and soil water content
       N1=1-N
 
 c     prep for wetair call      
@@ -109,12 +111,12 @@ c     prep for wetair call
       BP=PSTD*((1.-(0.0065*ALTT/288.))**(1./0.190284))      
 
       j=2
-      do 121 I=3,18
+      do 121 I=3,18 ! add in extra nodes between the 10 soil depths specified by the user for soil temperature calcs
        if(MOD(I, 2).ne.0)then
-        Z(I)=depth(j)/100
+        Z(I)=depth(j)/100.
         j=j+1
        else
-        Z(I)=Z(I-1)+(depth(J)/100-Z(I-1))/2
+        Z(I)=Z(I-1)+(depth(J)/100.-Z(I-1))/2
        endif
 121   continue
       j=1
@@ -135,10 +137,10 @@ c     prep for wetair call
 c     # setting initial water content, m3/m3
       do 2 I=2,M
        WN(I)=moistt(i-1)
-       P(I)=PE(I)*(WS(I)/WN(I))**BB(I)
-       H(I)=exp(MW*P(I)/(R*T(I-1)))
-       K(I)=KS(I)*(PE(I)/P(I))**N(I)
-       W(I)=WN(I)
+       P(I)=PE(I)*(WS(I)/WN(I))**BB(I) ! matric water potential, EQ5.9
+       H(I)=exp(MW*P(I)/(R*T(I-1))) ! fractional humidity, EQ5.14
+       K(I)=KS(I)*(PE(I)/P(I))**N(I) ! hydraulic conductivity, EQ6.14
+       W(I)=WN(I) ! water content
 2     continue
 
       do 22 I=2,M
@@ -146,8 +148,8 @@ c     # setting initial water content, m3/m3
 22    continue
       
 c     # lower boundary condition set to saturated (stays constant)
-      P(M+1)=PE(M)*(WS(M+1)/WS(M+1))**BB(M) ! potential
-      H(M+1)=1. ! humidity
+      P(M+1)=PE(M)*(WS(M+1)/WS(M+1))**BB(M) ! water potential
+      H(M+1)=1. ! fractional humidity
       W(M+1)=WS(M+1) ! water content
       WN(M+1)=WS(M+1) ! water content
       Z(1)=-1D10 ! depth at node 1, m
@@ -157,8 +159,8 @@ c     # lower boundary condition set to saturated (stays constant)
 c     initialize root water uptake variables
       do 98 I=2,M
        if(L(I).gt.0.)then
-        RR(I)=2*RW/(L(I)*(Z(I+1)-Z(I-1))) ! root resistance
-        BZ(I)=(1-M)*LOG(PI*R1*R1*L(I))/(2*PI*L(I)*(Z(I+1)-Z(I-1)))
+        RR(I)=RW/(L(I)*(Z(I+1)-Z(I-1))/2.) ! root resistance
+        BZ(I)=(1-M)*LOG(PI*R1*R1*L(I))/(4.*PI*L(I)*(Z(I+1)-Z(I-1))/2.)
        else
         RR(I)=1D+20 ! root resistance
         BZ(I)=0.D0
@@ -169,29 +171,31 @@ c     initialize root water uptake variables
       K(1)=0
 
 c     evapotranspiration
-      EP=exp(-0.82*LAI)*ET ! partition potential evaporation from potential evapotranspiration
-      TP=ET-EP ! now get potenital transpiration
+      EP=exp(-0.82*LAI)*ET ! partition potential evaporation from potential evapotranspiration, EQ12.30
+      TP=ET-EP ! now get potential transpiration
 
 c     plant water uptake
-      PB=0.D0 ! weighted mean soil water potential, J/kg
-      RB=0.D0 ! weighted mean root soil root resistance, m4 /(s kg)
+      PB=0.D0 ! weighted mean soil water potential, psi_bar, J/kg
+      RB=0.D0 ! weighted mean root-soil resistance, R_bar, m4 /(s kg)
       PL=0.D0 ! leaf water potential, J/kg
       do 99 i=2,M
-       RS(I)=BZ(I)/K(I) ! soil resistance
-       PB=PB+P(I)/(RR(I)+RS(I))
-       RB=RB+1/(RS(I)+RR(I))
+       RS(I)=BZ(I)/K(I) ! soil resistance, simplification of EQ11.14, assuming conductivity constant in the rhizosphere
+       PB=PB+P(I)/(RS(I)+RR(I)) ! summing over layers
+       RB=RB+1/(RS(I)+RR(I)) ! summing over layers
 99    continue
-      PB=PB/RB
-      RB=1/RB
+      PB=PB/RB ! final step in evaluating psi_bar, first term on right in EQ11.18
+      RB=1/RB ! denominator of first and second terms on right in EQ11.18
       maxcount=500
       count=0
+
+c     begin Newton-Raphson procedure to estimate leaf water potential
 2080  continue
       IF(PL.gt.PB)then
-       PL=PB-TP*(RL+RB)
+       PL=PB-TP*(RB+RL) ! variation on EQ11.18
       ENDIF
-      XP=(PL/PC)**SP
-      SL=TP*(RL+RB)*SP*XP/(PL*(1+XP)*(1+XP))-1.
-      FF=PB-PL-TP*(RL+RB)/(1+XP)
+      XP=(PL/PC)**SP ! part of EQ12.28 determining stomatal closure
+      SL=TP*(RB+RL)*SP*XP/(PL*(1+XP)*(1+XP))-1. ! derivative of stomatal function
+      FF=PB-PL-TP*(RB+RL)/(1+XP) ! transpiration mass balance (variation on EQ11.18)
       PL=PL-FF/SL
       count=count+1
       if((ABS(FF).gt.10).and.(count.lt.maxcount))then
@@ -199,39 +203,39 @@ c     plant water uptake
       endif
       TR=TP/(1+XP)
       do 100 I=2,M
-       E(I)=(P(I)-PL-RL*TR)/(RR(I)+RS(I)) ! root water uptake
+       E(I)=(P(I)-PL-RL*TR)/(RR(I)+RS(I)) ! root water uptake, EQ11.15
 100   continue
       count=0
       
 c     start of convergence loop ########################################
-11    SE=0
       maxcount=500
+      RH100 = 100.
+11    SE=0
       count=count+1
       do 3 I=2,M
-       K(I)=KS(I)*(PE(I)/P(I))**N(I) ! conductivities for each node
+       K(I)=KS(I)*(PE(I)/P(I))**N(I) ! hydraulic conductivities for each node, EQ6.14
 3     continue
-      JV(1)=EP*(H(2)-HA)/(1-HA)
-      DJ(1)=EP*MW*H(2)/(R*T(I-1)*(1-HA))
+      JV(1)=EP*(H(2)-HA)/(1-HA) ! vapour flux at soil surface, EQ9.14
+      DJ(1)=EP*MW*H(2)/(R*T(I-1)*(1-HA)) ! derivative of vapour flux at soil surface, combination of EQ9.14 and EQ5.14
       do 4 I=2,M
-       RH100 = 100.
-       DB = T(I)-273.15
+       DB = T(I)-273.15 ! back to deg C from Kelvin for call to wetair
        CALL WETAIR(DB,WB,RH100,DPP,BP,ECUR,ESAT,VD,RWW,TVIR,
-     & TVINC,DENAIR,CPP,WTRPOT)    
-       VP = VD ! VP is vapour density
-       KV=0.66*DV(I)*VP*(WS(I)-(WN(I)+WN(I+1))/2)/(Z(I+1)-Z(I))
-       JV(I)=KV*(H(I+1)-H(I))
-       DJ(I)=MW*H(I)*KV/(R*T(I-1))
-       CP(I)=-1*V(I)*WN(I)/(BB(I)*P(I)*DT)
+     & TVINC,DENAIR,CPP,WTRPOT) ! getting saturated vapour density for current temperature    
+       VP = VD ! VP is vapour density = c'_v in EQ9.7
+       KV=0.66*DV*VP*(WS(I)-(WN(I)+WN(I+1))/2)/(Z(I+1)-Z(I)) ! vapour conductivity, EQ9.7, assuming epsilon(psi_g) = b*psi_g^m (eq. 3.10) where b = 0.66 and m = 1 (p.99)
+       JV(I)=KV*(H(I+1)-H(I)) ! fluxes of vapour within soil, EQ9.14
+       DJ(I)=MW*H(I)*KV/(R*T(I-1)) ! derivatives of vapour fluxes within soil, combination of EQ9.14 and EQ5.14
+       CP(I)=-1*V(I)*WN(I)/(BB(I)*P(I)*DT) ! hydraulic capacity = capacitance, d_theta/d_psi
 c      # Jacobian components
-       A(I)=-1*K(I-1)/(Z(I)-Z(I-1))+GR*N(I)*K(I-1)/P(I-1)
-       C(I)=-1*K(I+1)/(Z(I+1)-Z(I))
+       A(I)=-1*K(I-1)/(Z(I)-Z(I-1))+GR*N(I)*K(I-1)/P(I-1)! sub-diagonal element in tridagonal matrix
+       C(I)=-1*K(I+1)/(Z(I+1)-Z(I))! super-diagonal element in tridagonal matrix
        B(I)=K(I)/(Z(I)-Z(I-1))+K(I)/(Z(I+1)-Z(I))+CP(I)-GR*N(I)*K(I)/
-     & P(I)+DJ(I-1)+DJ(I)
-c      # mass balance
+     & P(I)+DJ(I-1)+DJ(I) ! diagonal element in tridagonal matrix
+c      # mass balance including vapour fluxes and root water uptake
        F(I)=((P(I)*K(I)-P(I-1)*K(I-1))/(Z(I)-Z(I-1))-(P(I+1)*K(I+1)-P(I)
      & *K(I))/(Z(I+1)-Z(I)))/N1(I)+V(I)*(WN(I)-W(I))/DT-GR*(K(I-
-     &1)-K(I))+JV(I-1)-JV(I)+E(I)
-       SE=SE+abs(F(I))
+     &1)-K(I))+JV(I-1)-JV(I)+E(I) ! version of equation 8.28 that additionally conatins vapour fluxes and root water uptake
+       SE=SE+abs(F(I)) ! total mass balance error
 4     continue
 
 c     # Thomas algorithm (Gauss elimination)
@@ -244,14 +248,14 @@ c     # Thomas algorithm (Gauss elimination)
        B(I+1)=B(I+1)-A(I+1)*C(I)
        F(I+1)=F(I+1)-A(I+1)*F(I)
 5     continue
-      DP(M)=F(M)/B(M)
-      P(M)=P(M)-DP(M)
+      DP(M)=F(M)/B(M) ! change in potential in an interation step, J/kg/s
+      P(M)=P(M)-DP(M) ! matric potential J/kg
       if(P(M).gt.PE(M))then
        P(M)=PE(M)
       endif
 
-      do 6 I=(M-1),2,-1
-       DP(I)=F(I)-C(I)*DP(I+1)
+      do 6 I=(M-1),2,-1 
+       DP(I)=F(I)-C(I)*DP(I+1) ! change in potential in an interation step, J/kg/s
        P(I)=P(I)-DP(I) ! matric potential J/kg
 c     # check that water potential doesn't become too large
        if(P(I).gt.PE(I))then
@@ -263,7 +267,7 @@ c     # new water balance at end of the time step
       do 7 I=2,M
        WN(I)=max(WS(I)*(PE(I)/P(I))**B1(I),1.D-7)! cap minimum water content
        P(I)=PE(I)*(WS(I)/WN(I))**BB(I)! recompute water potential after capping water content to prevent instabilities
-       H(I)=EXP(MW*P(I)/(R*T(I-1)))
+       H(I)=EXP(MW*P(I)/(R*T(I-1))) ! recompute fractional humidity
 7     continue
       H(M+1)=H(M)
 

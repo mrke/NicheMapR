@@ -28,7 +28,8 @@ Suggests:
     jpeg,
     png,
     Hmisc,
-    plotrix
+    plotrix,
+    plantecophys
 Imports:
     ncdf4,
     RNetCDF,

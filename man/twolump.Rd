@@ -49,7 +49,7 @@ ode(y = c(Tc_init, Tsk_init, Ts_init), times = time, func = twolump, parms = ind
 
 \item{fatosb}{= 0.4, Configuration factor to substrate for infrared calculations (-)}
 
-\item{dyn_Q}{= 0, dynamic metabolic heat generation as a function of temperature, based on approxfun called qf (1) or constant based on parameter q (0)}
+\item{dyn_q}{= 0, dynamic metabolic heat generation as a function of temperature, based on approxfun called qf (1) or constant based on parameter q (0)}
 
 \item{alpha_sub}{= 0.2, substrate solar reflectivity, decimal percent}
 

@@ -307,10 +307,11 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \strong{ Reproductive phenology model parameters:}
 \itemize{
 \item{\code{clutchsize}{ = 5, Clutch size (#), overridden by \code{clutch_ab}}\cr}
-\item{\code{clutch_ab}{ = c(0,0), # paramters for relationship between length (cm) and clutch size: clutch size = a*SVL-b, make a and b zero if fixed clutch size}\cr}
+\item{\code{clutch_ab}{ = c(0,0), # paramters for relationship between length (cm) and clutch size: clutch size = a*SVL+b, make a and b zero if fixed clutch size}\cr}
 \item{\code{viviparous}{ = 0, Viviparous reproduction? 0=no, 1=yes (if yes, animal will be held in adult-sided female's body for duration of development, set by E_Ho, and will experience her body temperature}\cr}
 \item{\code{minclutch}{ = 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate}\cr}
 \item{\code{maxclutch}{ = 0, Maximum clutch size to cap clutch size predicted by \code{clutch_ab} - if zero, will not operate}\cr}
+\item{\code{cond_clutch}{ = 0, clutch size proportional to (1) or independent (0) of body condition}\cr}
 \item{\code{batch}{ = 1, Invoke Pequerie et al.'s batch laying model?}\cr}
 \item{\code{photostart}{ = 3, Photoperiod response triggering ovulation, none (0), summer solstice (1), autumnal equinox (2), winter solstice (3), vernal equinox (4), specified daylength thresholds (5 - uses \code{daylengthstart} and \code{daylengthfinish})}\cr}
 \item{\code{photofinish}{ = 1, Photoperiod terminating ovulation, none (0), summer solstice (1), autumnal equinox (2), winter solstice (3), vernal equinox (4), specified daylength thresholds (5 - uses \code{daylengthstart} and \code{daylengthfinish})}\cr}

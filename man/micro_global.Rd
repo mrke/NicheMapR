@@ -87,7 +87,7 @@ set of surface climate over global land areas. Climate Research 21:1-25"
 It also optionally uses a global monthly soil moisture estimate from NOAA CPC Soil Moisture http://140.172.38.100/psd/thredds/catalog/Datasets/cpcsoil/catalog.html
 Aerosol attenuation can also be computed based on the Global Aerosol Data Set (GADS)
 Koepke, P., M. Hess, I. Schult, and E. P. Shettle. 1997. Global Aerosol Data Set. Max-Planck-Institut for Meteorologie, Hamburg
-by choosing the option 'run.gads<-1' (Fortran version, quicker but may crash on some systems) or 'run.gads<-2' (R version)
+by choosing the option 'run.gads <- 1' (Fortran version, quicker but may crash on some systems) or 'run.gads <- 2' (R version)
 }
 \details{
 \itemize{
@@ -145,7 +145,7 @@ by choosing the option 'run.gads<-1' (Fortran version, quicker but may crash on 
 \code{PE}{ = rep(1.1,19), Air entry potential (J/kg) (19 values descending through soil for specified soil nodes in parameter}
 \code{DEP}
 { and points half way between)}\cr\cr
-\code{KS}{ = rep(0.0037,19), Saturated conductivity, (kg s/m3) (19 values descending through soil for specified soil nodes in parameter}
+\code{KS}{ = rep(0.0037,19), Saturated conductivity, (kg s/m^3) (19 values descending through soil for specified soil nodes in parameter}
 \code{DEP}
 { and points half way between)}\cr\cr
 \code{BB}{ = rep(4.5,19), Campbell's soil 'b' parameter (-) (19 values descending through soil for specified soil nodes in parameter}
@@ -159,8 +159,8 @@ by choosing the option 'run.gads<-1' (Fortran version, quicker but may crash on 
 \code{SoilMoist_Init}{ = c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3), initial soil water content at each soil node, m3/m3}\cr\cr
 \code{L}{ = c(0,0,8.2,8.0,7.8,7.4,7.1,6.4,5.8,4.8,4.0,1.8,0.9,0.6,0.8,0.4,0.4,0,0)*10000, root density (m/m3), (19 values descending through soil for specified soil nodes in parameter}\cr\cr
 \code{R1}{ = 0.001, root radius, m}\cr\cr
-\code{RW}{ = 2.5e+10, resistance per unit length of root, m3 kg-1 s-1}\cr\cr
-\code{RL}{ = 2e+6, resistance per unit length of leaf, m3 kg-1 s-1}\cr\cr
+\code{RW}{ = 2.5e+10, resistance per unit length of root, m^4 kg-1 s-1}\cr\cr
+\code{RL}{ = 2e+6, resistance per unit length of leaf, m^4 kg-1 s-1}\cr\cr
 \code{PC}{ = -1500, critical leaf water potential for stomatal closure, J kg-1}\cr\cr
 \code{SP}{ = 10, stability parameter for stomatal closure equation, -}\cr\cr
 \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
@@ -330,7 +330,7 @@ with(metout, {plot(SOLR ~ micro$dates,xlab = "Date and Time", ylab = "Solar Radi
 
 # plotting soil temperature for minimum shade
 for(i in 1:10){
- if(i==1){
+ if(i == 1){
    plot(soil[,i + 2] ~ micro$dates, xlab = "Date and Time", ylab = "Soil Temperature (°C)"
    ,col = i, type = "l", main = paste("soil temperature ", minshade, "\% shade", sep=""))
  }else{
@@ -353,7 +353,7 @@ with(shadmet,{plot(TSKYC ~ micro$dates,xlab = "Date and Time", ylab = "Sky Tempe
 
 # plotting soil temperature for maximum shade
 for(i in 1:10){
- if(i==1){
+ if(i == 1){
    plot(shadsoil[,i + 2] ~ micro$dates, xlab = "Date and Time", ylab = "Soil Temperature
     (°C)", col = i, type = "l", main = paste("soil temperature ", maxshade, "\% shade", sep=""))
  }else{

@@ -25,7 +25,7 @@
 #' @param orient = 1, does the object orient toward the sun? (0,1)
 #' @param fatosk = 0.4, Configuration factor to sky for infrared calculations (-)
 #' @param fatosb = 0.4, Configuration factor to substrate for infrared calculations (-)
-#' @param dyn_Q = 0, dynamic metabolic heat generation as a function of temperature, based on approxfun called qf (1) or constant based on parameter q (0)
+#' @param dyn_q = 0, dynamic metabolic heat generation as a function of temperature, based on approxfun called qf (1) or constant based on parameter q (0)
 #' @param alpha_sub = 0.2, substrate solar reflectivity, decimal percent
 #' @param pdif = 0.1, proportion of solar energy that is diffuse (rather than direct beam)
 #' @param fluid = 0, fluid type, air (0) or water (1)

@@ -195,7 +195,6 @@ c    Variable soil properties data from Iomet1
       common/soimoist2/rww,pc,rl,sp,r1,im
       common/write/writecsv
       common/snowmod/runsnow,trouble
-      common/dep/depp
       COMMON/SOILND/NON
       common/hour/hourly,rainhourly
       COMMON/LAMBDA/DRLAM,DRRLAM,SRLAM,LAMB
