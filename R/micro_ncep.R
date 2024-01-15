@@ -539,6 +539,11 @@ micro_ncep <- function(
         Please enter a correct value (> 0.00).", '\n')
     errors<-1
   }
+  if(Usrhyt<RUF){
+    message("ERROR: Reference height (Usrhyt) smaller than roughness height (RUF).
+        Please use a larger height above the surface.", '\n')
+    errors <- 1
+  }
   if(Usrhyt>Refhyt){
     message("ERROR: Reference height is less than local height (Usrhyt) \n")
     errors<-1

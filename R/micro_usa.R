@@ -530,13 +530,18 @@ micro_usa <- function(
         Please enter a correct value (0.05 - 1.00).", '\n')
     errors<-1
   }
+  if(ERR < 0){
+    message("ERROR: Error bound (ERR) is too small.
+        Please enter a correct value (> 0.00).", '\n')
+    errors <- 1
+  }
+  if(Usrhyt < RUF){
+    message("ERROR: Reference height (Usrhyt) smaller than roughness height (RUF).
+        Please use a larger height above the surface.", '\n')
+    errors <- 1
+  }
   if(Usrhyt>Refhyt){
     message("ERROR: Reference height is less than local height (Usrhyt) \n")
-    errors<-1
-  }
-  if(Usrhyt<0.005 | Usrhyt>Refhyt){
-    cat("ERROR: Local height (Usrhyt) is out of bounds.
-        Please enter a correct value (0.005 - Refhyt).", '\n')
     errors<-1
   }
   if(CMH2O<0.5 | CMH2O>2){
