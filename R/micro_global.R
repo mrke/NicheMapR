@@ -655,24 +655,25 @@ micro_global <- function(
     }
     if(is.na(elev) & elevatr == 1){
       require(microclima)
-      require(raster)
+      require(terra)
       cat('downloading DEM via package elevatr \n')
       dem <- microclima::get_dem(lat = loc[2], long = loc[1]) # mercator equal area projection
-      xy <- data.frame(x = loc[1], y = loc[2])
-      coordinates(xy) = ~x + y
-      proj4string(xy) = "+init=epsg:4326"
-      xy <- as.data.frame(spTransform(xy, crs(dem)))
-      elev <- raster::extract(dem, xy)[1]
+      dem_terra <- terra::rast(dem)
+      xy = data.frame(lon = loc[1], lat = loc[2]) |>
+        sf::st_as_sf(coords = c("lon", "lat"))
+      xy <- sf::st_set_crs(xy, "EPSG:4326")
+      xy <- sf::st_transform(xy, sf::st_crs(dem_terra))
+      elev <- terra::extract(dem_terra, xy)[,2]
       if(terrain == 1){
         cat('computing slope, aspect and horizon angles \n')
-        slope <- terrain(dem, unit = "degrees")
-        slope <- raster::extract(slope, xy)
-        aspect <- terrain(dem, opt = "aspect", unit = "degrees")
-        aspect <- raster::extract(aspect, xy)
+        slope <- terra::terrain(dem_terra, v = "slope", unit = "degrees")
+        slope <- terra::extract(slope, xy)[,2]
+        aspect <- terra::terrain(dem_terra, v = "aspect", unit = "degrees")
+        aspect <- terra::extract(aspect, xy)[,2]
         ha24 <- 0
         for (i in 0:23) {
-          har <- horizonangle(dem, i * 10, res(dem)[1])
-          ha24[i + 1] <- atan(raster::extract(har, xy)) * (180/pi)
+          har <- microclima::horizonangle(dem, i * 10, terra::res(dem)[1])
+          ha24[i + 1] <- atan(terra::extract(har, xy)) * (180/pi)
         }
         hori <- ha24
       }
@@ -750,8 +751,8 @@ micro_global <- function(
     }else{
       load(gcfolder)
     }
-    if (!requireNamespace("raster", quietly = TRUE)) {
-      stop("package 'raster' is needed. Please install it.",
+    if (!requireNamespace("terra", quietly = TRUE)) {
+      stop("package 'terra' is needed. Please install it.",
            call. = FALSE)
     }
     if (!requireNamespace("ncdf4", quietly = TRUE)) {
@@ -760,9 +761,9 @@ micro_global <- function(
     }
 
     message('extracting climate data \n')
-    global_climate <- raster::brick(paste0(folder, "/global_climate.nc"))
-    CLIMATE <- raster::extract(global_climate, x)
-    ALTT <- as.numeric(CLIMATE[, 1])
+    global_climate <- terra::rast(paste0(folder, "/global_climate.nc"))
+    CLIMATE <- t(terra::extract(global_climate, x))
+    ALTT <- as.numeric(CLIMATE[1])
 
     delta_elev <- 0
     if(is.na(elev) == FALSE){ # check if user-specified elevation
@@ -771,12 +772,12 @@ micro_global <- function(
     }
     adiab_corr_max <- delta_elev * lapse_max
     adiab_corr_min <- delta_elev * lapse_min
-    RAINFALL <- CLIMATE[, 2:13]
+    RAINFALL <- CLIMATE[2:13]
     if(is.na(RAINFALL[1])){
       cat("no climate data for this site, using dummy data so solar is still produced \n")
-      CLIMATE <- raster::extract(global_climate, cbind(140, -35))
+      CLIMATE <- t(terra::extract(global_climate, cbind(140, -35)))
       CLIMATE[2:97] <- 0
-      ALTT<-as.numeric(CLIMATE[, 1])
+      ALTT<-as.numeric(CLIMATE[1])
       delta_elev <- 0
       if(is.na(elev) == FALSE){ # check if user-specified elevation
         delta_elev <- ALTT - elev # get delta for lapse rate correction
@@ -784,46 +785,46 @@ micro_global <- function(
       }
       adiab_corr_max <- delta_elev * lapse_max
       adiab_corr_min <- delta_elev * lapse_min
-      RAINFALL <- CLIMATE[, 2:13] * 0
+      RAINFALL <- CLIMATE[2:13] * 0
       #stop()
     }
-    RAINYDAYS <- CLIMATE[, 14:25] / 10
-    WNMAXX <- CLIMATE[, 26:37] / 10 * windfac
+    RAINYDAYS <- CLIMATE[14:25] / 10
+    WNMAXX <- CLIMATE[26:37] / 10 * windfac
     WNMINN <- WNMAXX * 0.1 # impose diurnal cycle
-    TMINN <- CLIMATE[, 38:49] / 10
-    TMAXX <- CLIMATE[, 50:61] / 10
+    TMINN <- CLIMATE[38:49] / 10
+    TMAXX <- CLIMATE[50:61] / 10
     TMAXX <- TMAXX + adiab_corr_max
     TMINN <- TMINN + adiab_corr_min
     ALLMINTEMPS <- TMINN
     ALLMAXTEMPS <- TMAXX
     ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
-    RHMINN <- CLIMATE[, 62:73] / 10
-    RHMAXX <- CLIMATE[, 74:85] / 10
+    RHMINN <- CLIMATE[62:73] / 10
+    RHMAXX <- CLIMATE[74:85] / 10
     # correct for potential change in RH with elevation-corrected Tair
     es <- WETAIR(db = TMAXX, rh = 100)$esat
-    e <- WETAIR(db = CLIMATE[, 50:61] / 10, rh = CLIMATE[, 62:73] / 10)$e
+    e <- WETAIR(db = CLIMATE[50:61] / 10, rh = CLIMATE[62:73] / 10)$e
     RHMINN <- (e / es) * 100
     RHMINN[RHMINN>100] <- 100
     RHMINN[RHMINN<0] <- 0.01
     es <- WETAIR(db = TMINN, rh = 100)$esat
-    e <- WETAIR(db = CLIMATE[, 38:49] / 10, rh = CLIMATE[, 74:85] / 10)$e
+    e <- WETAIR(db = CLIMATE[38:49] / 10, rh = CLIMATE[74:85] / 10)$e
     RHMAXX <- (e / es) * 100
     RHMAXX[RHMAXX>100] <- 100
     RHMAXX[RHMAXX<0] <- 0.01
-    CCMINN <- CLIMATE[, 86:97] / 10
+    CCMINN <- CLIMATE[86:97] / 10
     if(clearsky == 1){
       CCMINN <- CCMINN * 0
     }
     CCMAXX <- CCMINN
     if(runmoist == 0){
       # extract soil moisture
-      soilmoisture <- suppressWarnings(raster::brick(paste(folder, "/soilw.mon.ltm.v2.nc", sep = "")))
+      soilmoisture <- suppressWarnings(terra::rast(paste(folder, "/soilw.mon.ltm.v2.nc", sep = "")))
       message("extracting soil moisture data")
-      SoilMoist <- raster::extract(soilmoisture, x) / 1000 # this is originally in mm/m
+      SoilMoist <- t(terra::extract(soilmoisture, x)) / 1000 # this is originally in mm/m
     }
     if(is.na(max(SoilMoist, ALTT, CLIMATE)) == TRUE){
       message("Sorry, there is no environmental data for this location")
-      SoilMoist <- raster::extract(soilmoisture, cbind(140, -35)) / 1000 # this is originally in mm/m
+      SoilMoist <- t(terra::extract(soilmoisture, cbind(140, -35))) / 1000 # this is originally in mm/m
     }
 
     # correct for fact that wind is measured at 10 m height
@@ -995,24 +996,29 @@ micro_global <- function(
       if(!is.raster(dem)){
         dem <- microclima::get_dem(r = NA, lat = lat, long = long, resolution = 100, zmin = -20)
       }
-      require(raster)
-      xy <- data.frame(x = long, y = lat)
-      coordinates(xy) = ~x + y
-      proj4string(xy) = "+init=epsg:4326"
-      xy <- as.data.frame(spTransform(xy, crs(dem)))
+      require(terra)
+      dem_terra <- terra::rast(dem)
+      xy = data.frame(lon = loc[1], lat = loc[2]) |>
+        sf::st_as_sf(coords = c("lon", "lat"))
+      xy <- sf::st_set_crs(xy, "EPSG:4326")
+      xy <- sf::st_transform(xy, sf::st_crs(dem_terra))
+      #xy <- data.frame(x = long, y = lat)
+      #coordinates(xy) = ~x + y
+      #proj4string(xy) = "+init=epsg:4326"
+      #xy <- as.data.frame(spTransform(xy, crs(dem)))
       if (class(slope) == "logical") {
-        slope <- terrain(dem, unit = "degrees")
-        slope <- raster::extract(slope, xy)
+        slope <- terra::terrain(dem, v = "slope", unit = "degrees")
+        slope <- terra::extract(slope, xy)
       }
       if (class(aspect) == "logical") {
-        aspect <- terrain(dem, opt = "aspect", unit = "degrees")
-        aspect <- raster::extract(aspect, xy)
+        aspect <- terrain(dem, v = "aspect", unit = "degrees")
+        aspect <- terra::extract(aspect, xy)
       }
       ha <- 0
       ha36 <- 0
       for (i in 0:35) {
         har <- horizonangle(dem, i * 10, res(dem)[1])
-        ha36[i + 1] <- atan(raster::extract(har, xy)) * (180/pi)
+        ha36[i + 1] <- atan(terra::extract(har, xy)) * (180/pi)
       }
       for (i in 1:length(hour.microclima)) {
         saz <- solazi(hour.microclima[i], lat, long, jd[i], merid = long)
@@ -1078,8 +1084,8 @@ micro_global <- function(
       dp[nd] <- dp[max(sel)]
       odni[nd] <- odni[max(sel)]
       odif[nd] <- odif[max(sel)]
-      if (!require("raster", quietly = TRUE)) {
-        stop("package 'raster' is needed. Please install it.",
+      if (!require("terra", quietly = TRUE)) {
+        stop("package 'terra' is needed. Please install it.",
              call. = FALSE)
       }
       dp <- na.approx(dp, na.rm = F)

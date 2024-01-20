@@ -587,8 +587,8 @@ micro_usa <- function(
     idayst <- 1 # start day
 
     ################## location and terrain #################################
-    if (!require("raster", quietly = TRUE)) {
-      stop("package 'raster' is needed. Please install it.",
+    if (!require("terra", quietly = TRUE)) {
+      stop("package 'terra' is needed. Please install it.",
         call. = FALSE)
     }
     if (!require("RNetCDF", quietly = TRUE)) {
@@ -598,7 +598,7 @@ micro_usa <- function(
     longlat <- loc
     x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
 
-    require("raster")
+    require("terra")
     require("RNetCDF")
 
     # get the local timezone reference longitude
@@ -661,7 +661,7 @@ micro_usa <- function(
           start = start, count = count, unpack = TRUE)))
         RNetCDF::close.nc(nc)
       }else{
-        USADEM <- raster::extract(raster::raster(paste0(spatial,"/metdata_elevationdata.nc")), x) # metres above sea level
+        USADEM <- terra::extract(terra::rast(paste0(spatial,"/metdata_elevationdata.nc")), x) # metres above sea level
       }
       if(save == 1){
         cat("saving DEM data for later \n")
@@ -673,7 +673,7 @@ micro_usa <- function(
       load('USADEM.Rda')
     }
 
-    ALTITUDES <- NA# raster::extract(raster(paste0(spatial,"/terr50.tif")), x) # to do
+    ALTITUDES <- NA# terra::extract(rast(paste0(spatial,"/terr50.tif")), x) # to do
     if(is.na(elev) == FALSE){ALTITUDES <- elev} # check if user-specified elevation
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-USADEM}
     if(save != 2){
@@ -1097,7 +1097,7 @@ micro_usa <- function(
         if(length(TMAXX)<365){
           tannulrun<-rep((sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2),length(TMAXX))
         }else{
-          tannulrun<-raster::movingFun(avetemp,n=365,fun=mean,type='to')
+          tannulrun<-terra::roll(avetemp,n=365,fun=mean,type='to')
           yearone<-rep((sum(TMAXX[1:365])+sum(TMINN[1:365]))/(365*2),365)
           tannulrun[1:365]<-yearone
         }

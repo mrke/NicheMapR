@@ -633,8 +633,8 @@ micro_era5 <- function(
     idayst <- 1 # start day
 
     ################## location and terrain #################################
-    if (!require("raster", quietly = TRUE)) {
-      stop("package 'raster' is needed. Please install it.",
+    if (!require("terra", quietly = TRUE)) {
+      stop("package 'terra' is needed. Please install it.",
            call. = FALSE)
     }
     if (!require("mcera5", quietly = TRUE)) {
@@ -649,7 +649,7 @@ micro_era5 <- function(
       stop("package 'microclima' is needed. Please install it via command: devtools::install_github('ilyamaclean/microclima').",
            call. = FALSE)
     }
-    require("raster")
+    require("terra")
     require("mcera5")
     require("RNetCDF")
     require("microclima")
@@ -673,7 +673,7 @@ micro_era5 <- function(
     }
     if(save != 2 & class(dem)[1] != "RasterLayer"){
       cat('downloading DEM via package elevatr \n')
-      dem <- microclima::get_dem(lat = lat, long = long, resolution = dem.res, xdims = pixels, ydims = pixels) # mercator equal area projection
+      dem <- terra::rast(microclima::get_dem(lat = lat, long = long, resolution = dem.res, xdims = pixels, ydims = pixels)) # mercator equal area projection
     }
     if(save == 1){
       save(dem, file = 'dem.Rda')
@@ -1263,7 +1263,7 @@ micro_era5 <- function(
         if(length(TMAXX) < 365){
           deepsoil <- rep((sum(TMAXX) + sum(TMINN)) / (length(TMAXX) * 2), length(TMAXX))
         }else{
-          deepsoil <- raster::movingFun(avetemp, n = 365, fun = mean, type = 'to')
+          deepsoil <- terra::roll(avetemp, n = 365, fun = mean, type = 'to')
           yearone <- rep((sum(TMAXX[1:365]) + sum(TMINN[1:365])) / (365 * 2), 365)
           deepsoil[1:365] <- yearone
         }

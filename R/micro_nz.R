@@ -644,8 +644,8 @@ micro_nz <- function(
     curyear<-as.numeric(format(dates,"%Y"))
 
     ################## location and terrain #################################
-    if (!requireNamespace("raster", quietly = TRUE)) {
-      stop("package 'raster' is needed. Please install it.",
+    if (!requireNamespace("terra", quietly = TRUE)) {
+      stop("package 'terra' is needed. Please install it.",
         call. = FALSE)
     }
     if (!requireNamespace("ncdf4", quietly = TRUE)) {
@@ -656,7 +656,7 @@ micro_nz <- function(
     longlat <- loc
     x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
 
-    library(raster)
+    library(terra)
     library(proj4)
     library(ncdf4)
 
@@ -690,8 +690,8 @@ micro_nz <- function(
 
     soilprop<-cbind(0,0)
 
-    r1<-raster(paste(spatial,'/nz_geo3_km.asc',sep=""))
-    NZDEM<-raster::extract(r1,x)*1000
+    r1<-terra::rast(paste(spatial,'/nz_geo3_km.asc',sep=""))
+    NZDEM<-terra::extract(r1,x)*1000
 
     if(is.na(elev) == FALSE){ # check if user-specified elevation
       ALTITUDES <- elev
@@ -801,11 +801,11 @@ micro_nz <- function(
           NArem<-grid[[1]]
           NArem<-Which(!is.na(NArem), cells=TRUE)
           dist<-distanceFromPoints(maxTst05[[1]],x)
-          distNA<-raster::extract(dist,NArem)
+          distNA<-terra::extract(dist,NArem)
           cellsR<-cbind(distNA,NArem)
           distmin<-which.min(distNA)
           cellrep<-cellsR[distmin,2]
-          diffs<-raster::extract(maxTst05,cellrep)
+          diffs<-terra::extract(maxTst05,cellrep)
           diff1<-(unlist(diffs[1])+unlist(diffs[12]))/2
         }
         diffs3=rep(c(diff1,diffs,diff1),nyears)
@@ -826,7 +826,7 @@ micro_nz <- function(
 
       TMEAN<-stack(paste(spatial,"/CC/TMEAN_",year,"_",scenario,".nc",sep="")) # air temperature shift
 
-      diffs<-raster::extract(TMEAN,x)
+      diffs<-terra::extract(TMEAN,x)
       TMAXX_diff <- getdiff(diffs,TMEAN)
       TMINN_diff <- TMAXX_diff
 
@@ -839,7 +839,7 @@ micro_nz <- function(
 
       AH<-stack(paste0(spatial,"/CC/AHCC_SUM.nc"),paste0(spatial,"/CC/AHCC_AUT.nc"),paste0(spatial,"/CC/AHCC_WIN.nc"),paste0(spatial,"/CC/AHCC_SPR.nc"))
 
-      diffs<-raster::extract(AH,x) # extract seasonal values
+      diffs<-terra::extract(AH,x) # extract seasonal values
       diff1<-(diffs[1]+diffs[4])/2 # get mean of first and last
       diffs3=c(diff1,diffs,diff1) # make vector of 6, with the start and end being the mean of the first and last
       day<-c(15, 46, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349) # middle day of each month
@@ -1015,7 +1015,7 @@ micro_nz <- function(
         RAINFALL_sum<-RAINFALL_sum[order(as.Date(paste("01-",RAINFALL_sum$Group.1,sep=""),"%m-%Y")),2]
 
         RAIN<-stack(paste(spatial,"/CC/RAIN_",year,"_",scenario,".nc",sep="")) # rainfall shift
-        diffs<-rep(raster::extract(RAIN,x),nyears)
+        diffs<-rep(terra::extract(RAIN,x),nyears)
 
         rainfall_new<-(RAINFALL_sum+RAINFALL_sum*(diffs/100))
 
@@ -1119,7 +1119,7 @@ micro_nz <- function(
         if(length(TMAXX)<365){
           tannulrun<-rep((sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2),length(TMAXX))
         }else{
-          tannulrun<-raster::movingFun(avetemp,n=365,fun=mean,type='to')
+          tannulrun<-terra::roll(avetemp,n=365,fun=mean,type='to')
           yearone<-rep((sum(TMAXX[1:365])+sum(TMINN[1:365]))/(365*2),365)
           tannulrun[1:365]<-yearone
         }

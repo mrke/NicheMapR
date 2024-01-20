@@ -20,9 +20,8 @@ crudat2raster <- function(file=file,loc=loc){
   file.remove(paste(loc,"data.txt",sep=""))
 
   # empty grid -need to make it from -180 to 180
-  library(raster)
-  gridout <- raster(ncol=header$n_cols, nrow=header$n_rows, xmn=header$xmin-180, xmx=header$xmax-180, ymn=header$ymin, ymx=header$ymax)
-  cru.raster=stack(replicate(header$n_months,gridout))
+  gridout <- terra::rast(ncol=header$n_cols, nrow=header$n_rows, xmin=header$xmin-180, xmax=header$xmax-180, ymin=header$ymin, ymax=header$ymax)
+  cru.raster=terra::rast(replicate(header$n_months,gridout))
 
   longs=seq(header$xmin,header$xmax,header$grd_sz) # sequence of longitudes (0-360)
   lats=rev(seq(header$ymin,header$ymax,header$grd_sz)) # sequence of lats (need to reverse them)
@@ -33,7 +32,7 @@ crudat2raster <- function(file=file,loc=loc){
     longlats[longlats[,1]>180,1]<-(longlats[longlats[,1]>180,1]-360) # turn longitudes > 180 into negative values going from -180 down to 0
     x<-cbind(longlats[1],longlats[2],grid) # list of co-ordinates plus values
     x<-x[x[,3]!=-9999,] # get rid of no data
-    cru.raster[[i]] <- rasterize(cbind(x[,1],x[,2]), gridout, x[,3]) # rasterize!
+    cru.raster[[i]] <- terra::rasterize(cbind(x[,1],x[,2]), gridout, x[,3]) # rasterize!
   }
   rm(data2)
   return(list(cru.raster=cru.raster,header=header))

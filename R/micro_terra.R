@@ -751,8 +751,8 @@ micro_terra <- function(
       }
     }
 
-    if (!requireNamespace("raster", quietly = TRUE)) {
-      stop("package 'raster' is needed. Please install it.",
+    if (!requireNamespace("terra", quietly = TRUE)) {
+      stop("package 'terra' is needed. Please install it.",
            call. = FALSE)
     }
     if (!requireNamespace("ncdf4", quietly = TRUE)) {
@@ -844,9 +844,9 @@ micro_terra <- function(
       SRAD <- retry(as.numeric(ncvar_get(nc, varid = var,start = start, count)))
       if(runmoist == 0){
         # extract soil moisture
-        #soilmoisture <- suppressWarnings(raster::brick(paste(folder, "/soilw.mon.ltm.v2.nc", sep = "")))
+        #soilmoisture <- suppressWarnings(terra::rast(paste(folder, "/soilw.mon.ltm.v2.nc", sep = "")))
         message("extracting soil moisture data from TerraClimate")
-        #SoilMoist <- raster::extract(soilmoisture, x) / 1000 # this is originally in mm/m
+        #SoilMoist <- terra::extract(soilmoisture, x) / 1000 # this is originally in mm/m
         var <- 'soil'
         baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
         nc <- retry(nc_open(baseurlagg))
@@ -983,12 +983,12 @@ micro_terra <- function(
     }
 
 
-    global_climate <- raster::brick(paste0(folder, "/global_climate.nc"))
-    CLIMATE <- raster::extract(global_climate, x)
+    global_climate <- terra::rast(paste0(folder, "/global_climate.nc"))
+    CLIMATE <- terra::extract(global_climate, x)
     #ALTT <- as.numeric(CLIMATE[, 1])
     library(dismo)
     elevation <- getData("worldclim", var = "alt", res = 2.5)
-    ALTT <- raster::extract(elevation, x)
+    ALTT <- terra::extract(elevation, x)
     if(is.na(ALTT)){
       ALTT <- 0
     }
@@ -997,24 +997,25 @@ micro_terra <- function(
     }
     if(is.na(elev) & elevatr == 1){
       require(microclima)
-      require(raster)
+      require(terra)
       cat('downloading DEM via package elevatr \n')
       dem <- microclima::get_dem(lat = loc[2], long = loc[1]) # mercator equal area projection
-      xy <- data.frame(x = loc[1], y = loc[2])
-      coordinates(xy) = ~x + y
-      proj4string(xy) = "+init=epsg:4326"
-      xy <- as.data.frame(spTransform(xy, crs(dem)))
-      elev <- raster::extract(dem, xy)[1]
+      dem_terra <- terra::rast(dem)
+      xy = data.frame(lon = loc[1], lat = loc[2]) |>
+        sf::st_as_sf(coords = c("lon", "lat"))
+      xy <- sf::st_set_crs(xy, "EPSG:4326")
+      xy <- sf::st_transform(xy, sf::st_crs(dem_terra))
+      elev <- terra::extract(dem_terra, xy)[,2]
       if(terrain == 1){
         cat('computing slope, aspect and horizon angles \n')
-        slope <- terrain(dem, unit = "degrees")
-        slope <- raster::extract(slope, xy)
-        aspect <- terrain(dem, opt = "aspect", unit = "degrees")
-        aspect <- raster::extract(aspect, xy)
+        slope <- terra::terrain(dem_terra, v = "slope", unit = "degrees")
+        slope <- terra::extract(slope, xy)[,2]
+        aspect <- terra::terrain(dem_terra, v = "aspect", unit = "degrees")
+        aspect <- terra::extract(aspect, xy)[,2]
         ha24 <- 0
         for (i in 0:23) {
           har <- horizonangle(dem, i * 10, res(dem)[1])
-          ha24[i + 1] <- atan(raster::extract(har, xy)) * (180/pi)
+          ha24[i + 1] <- atan(terra::extract(har, xy)) * (180/pi)
         }
         hori <- ha24
       }
@@ -1027,7 +1028,7 @@ micro_terra <- function(
     dbrow <- 1
     if(is.na(max(SoilMoist, ALTT, TMAXX)) == TRUE){
       message("Sorry, there is no environmental data for this location")
-      SoilMoist <- raster::extract(soilmoisture, cbind(140, -35)) / 1000 # this is originally in mm/m
+      SoilMoist <- terra::extract(soilmoisture, cbind(140, -35)) / 1000 # this is originally in mm/m
     }
     delta_elev <- 0
     if(is.na(elev) == FALSE){ # check if user-specified elevation
@@ -1039,7 +1040,7 @@ micro_terra <- function(
 
     if(is.na(RAINFALL[1])){
       cat("no climate data for this site, using dummy data so solar is still produced \n")
-      CLIMATE <- raster::extract(global_climate, cbind(140, -35))
+      CLIMATE <- terra::extract(global_climate, cbind(140, -35))
       CLIMATE[2:97] <- 0
       ALTT<-as.numeric(CLIMATE[, 1])
       delta_elev <- 0
@@ -1227,7 +1228,7 @@ micro_terra <- function(
           deepsoil <-rep(avetemp, length(TMAXX))
         }else{
           avetemp <- rowMeans(cbind(TMAXX, TMINN), na.rm=TRUE)
-          deepsoil <- raster::movingFun(avetemp, n = 12, fun = mean, type = 'to')
+          deepsoil <- terra::roll(avetemp, n = 12, fun = mean, type = 'to')
           yearone <- rep((sum(TMAXX[1:12]) + sum(TMINN[1:12])) / (12 * 2), 12)
           deepsoil[1:12] <- yearone
         }
@@ -1244,7 +1245,7 @@ micro_terra <- function(
           if(length(TMAXX) < 365){
             deepsoil <- rep((sum(TMAXX) + sum(TMINN)) / (length(TMAXX) * 2), length(TMAXX))
           }else{
-            deepsoil <- raster::movingFun(avetemp, n = 365, fun = mean, type = 'to')
+            deepsoil <- terra::roll(avetemp, n = 365, fun = mean, type = 'to')
             yearone <- rep((sum(TMAXX[1:365]) + sum(TMINN[1:365])) / (365 * 2), 365)
             deepsoil[1:365] <- yearone
           }
@@ -1339,23 +1340,29 @@ micro_terra <- function(
       if(!is.raster(dem)){
         dem <- microclima::get_dem(r = NA, lat = lat, long = long, resolution = 100, zmin = -20)
       }
-      xy <- data.frame(x = long, y = lat)
-      coordinates(xy) = ~x + y
-      proj4string(xy) = "+init=epsg:4326"
-      xy <- as.data.frame(spTransform(xy, crs(dem)))
+      require(terra)
+      dem_terra <- terra::rast(dem)
+      xy = data.frame(lon = loc[1], lat = loc[2]) |>
+        sf::st_as_sf(coords = c("lon", "lat"))
+      xy <- sf::st_set_crs(xy, "EPSG:4326")
+      xy <- sf::st_transform(xy, sf::st_crs(dem_terra))
+      #xy <- data.frame(x = long, y = lat)
+      #coordinates(xy) = ~x + y
+      #proj4string(xy) = "+init=epsg:4326"
+      #xy <- as.data.frame(spTransform(xy, crs(dem)))
       if (class(slope) == "logical") {
-        slope <- terrain(dem, unit = "degrees")
-        slope <- raster::extract(slope, xy)
+        slope <- terra::terrain(dem, v = "slope", unit = "degrees")
+        slope <- terra::extract(slope, xy)
       }
       if (class(aspect) == "logical") {
-        aspect <- terrain(dem, opt = "aspect", unit = "degrees")
-        aspect <- raster::extract(aspect, xy)
+        aspect <- terrain(dem, v = "aspect", unit = "degrees")
+        aspect <- terra::extract(aspect, xy)
       }
       ha <- 0
       ha36 <- 0
       for (i in 0:35) {
         har <- horizonangle(dem, i * 10, res(dem)[1])
-        ha36[i + 1] <- atan(raster::extract(har, xy)) * (180/pi)
+        ha36[i + 1] <- atan(terra::extract(har, xy)) * (180/pi)
       }
       for (i in 1:length(hour.microclima)) {
         saz <- solazi(hour.microclima[i], lat, long, jd[i], merid = long)
@@ -1419,8 +1426,8 @@ micro_terra <- function(
       dp[nd] <- dp[max(sel)]
       odni[nd] <- odni[max(sel)]
       odif[nd] <- odif[max(sel)]
-      if (!require("raster", quietly = TRUE)) {
-        stop("package 'raster' is needed. Please install it.",
+      if (!require("terra", quietly = TRUE)) {
+        stop("package 'terra' is needed. Please install it.",
              call. = FALSE)
       }
       dp <- na.approx(dp, na.rm = F)

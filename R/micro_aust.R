@@ -440,15 +440,19 @@ micro_aust <- function(
   if(opendap == 1){
     if(is.na(elev)){
       require(microclima)
-      require(raster)
+      require(terra)
       cat('downloading DEM via package elevatr \n')
       dem <- microclima::get_dem(lat = loc[2], long = loc[1]) # mercator equal area projection
-      dem <- microclima::get_dem(lat = loc[2], long = loc[1]) # mercator equal area projection
-      xy <- data.frame(x = loc[1], y = loc[2])
-      coordinates(xy) = ~x + y
-      proj4string(xy) = "+init=epsg:4326"
-      xy <- as.data.frame(spTransform(xy, crs(dem)))
-      elev <- raster::extract(dem, xy)[1]
+      dem_terra <- terra::rast(dem)
+      xy = data.frame(lon = loc[1], lat = loc[2]) |>
+        sf::st_as_sf(coords = c("lon", "lat"))
+      xy <- sf::st_set_crs(xy, "EPSG:4326")
+      xy <- sf::st_transform(xy, sf::st_crs(dem_terra))
+      elev <- terra::extract(dem_terra, xy)[,2]
+      #xy <- data.frame(x = loc[1], y = loc[2])
+      #coordinates(xy) = ~x + y
+      #proj4string(xy) = "+init=epsg:4326"
+      #xy <- as.data.frame(spTransform(xy, crs(dem)))
     }
     require(RNetCDF)
     ALTITUDES <- elev
@@ -720,12 +724,12 @@ micro_aust <- function(
       static_soil <- paste0(spatial, "static_soil.nc")
       emissivities <- paste0(spatial, "aus_emissivities.nc")
       # read data in from netcdf file
-      static_soil_data <- raster::brick(static_soil)
-      static_soil_vars <- raster::extract(static_soil_data, x)
+      static_soil_data <- terra::rast(static_soil)
+      static_soil_vars <- terra::extract(static_soil_data, x)
       labels <- c('albedo', 'FAPAR1', 'FAPAR2', 'FAPAR3', 'FAPAR4', 'FAPAR5', 'FAPAR6', 'FAPAR7', 'FAPAR8', 'FAPAR9', 'FAPAR10', 'FAPAR11', 'FAPAR12', 'volwater_Upper', 'volwater_lower', 'thick_upper', 'thick_lower', 'code')
       colnames(static_soil_vars) <- labels
-      emissivities_data <- raster::brick(emissivities)
-      SLES2 <- raster::extract(emissivities_data, x)
+      emissivities_data <- terra::rast(emissivities)
+      SLES2 <- terra::extract(emissivities_data, x)
 
       # read in other soil related files for working out lumped soil type and properties
       # such as clay % for getting water potential
@@ -746,8 +750,8 @@ micro_aust <- function(
         static_soil <- paste0(spatial, "static_soil.nc")
         emissivities <- paste0(spatial, "aus_emissivities.nc")
         # read data in from netcdf file
-        static_soil_data <- raster::brick(static_soil)
-        static_soil_vars <- raster::extract(static_soil_data, x)
+        static_soil_data <- terra::rast(static_soil)
+        static_soil_vars <- terra::extract(static_soil_data, x)
         labels <- c('albedo', 'FAPAR1', 'FAPAR2', 'FAPAR3', 'FAPAR4', 'FAPAR5', 'FAPAR6', 'FAPAR7', 'FAPAR8', 'FAPAR9', 'FAPAR10', 'FAPAR11', 'FAPAR12', 'volwater_Upper', 'volwater_lower', 'thick_upper', 'thick_lower', 'code')
         colnames(static_soil_vars) <- labels
       }
@@ -757,19 +761,19 @@ micro_aust <- function(
       e <- extent(x[1] - 0.05, x[1] + 0.05, x[2] - 0.05, x[2] + 0.05)
       for(i in 1:24){
         horifile <- paste0(spatial,'horizon', i, '.tif')
-        horiz <- raster::crop(raster::raster(horifile), e)
+        horiz <- terra::crop(terra::rast(horifile), e)
         if(i == 1){
           horizons_data <- horiz
         }else{
-          horizons_data <- raster::stack(horizons_data, horiz)
+          horizons_data <- terra::rast(horizons_data, horiz)
         }
       }
-      HORIZONS <- t(raster::extract(horizons_data, x))
-      elev1 <- crop(raster::raster(paste0(spatial,'elev.tif')), e)
-      slope1 <- crop(raster::raster(paste0(spatial,'slope.tif')), e)
-      aspect1 <- crop(raster::raster(paste0(spatial,'aspect.tif')), e)
-      elevslpasp <- raster::stack(elev1, slope1, aspect1)
-      ELEVSLPASP <- raster::extract(elevslpasp, x)
+      HORIZONS <- t(terra::extract(horizons_data, x))
+      elev1 <- crop(terra::rast(paste0(spatial,'elev.tif')), e)
+      slope1 <- crop(terra::rast(paste0(spatial,'slope.tif')), e)
+      aspect1 <- crop(terra::rast(paste0(spatial,'aspect.tif')), e)
+      elevslpasp <- terra::rast(elev1, slope1, aspect1)
+      ELEVSLPASP <- terra::extract(elevslpasp, x)
       ELEVSLPASP <- as.matrix((ifelse(is.na(ELEVSLPASP), 0, ELEVSLPASP)))
       ALTITUDES <- ELEVSLPASP[, 1]
       SLOPES <- ELEVSLPASP[, 2]
@@ -779,25 +783,25 @@ micro_aust <- function(
       HORIZONS <- (ifelse(is.na(HORIZONS), 0, HORIZONS)) / 10 # get rid of na and get back to floating point
       HORIZONS <- data.frame(HORIZONS)
       VIEWF_all <- 1 - rowSums(sin(t(HORIZONS) * pi / 180)) / length(t(HORIZONS)) # convert horizon angles to radians and calc view factor(s)
-      r1 <- raster::raster(f1)
-      r2 <- raster::raster(f2)
-      r3 <- raster::raster(f3)
-      dbrow <- raster::extract(r1, x)
-      AUSDEM <- raster::extract(r2, x)
-      AGG <- raster::extract(r3, x)
+      r1 <- terra::rast(f1)
+      r2 <- terra::rast(f2)
+      r3 <- terra::rast(f3)
+      dbrow <- terra::extract(r1, x)
+      AUSDEM <- terra::extract(r2, x)
+      AGG <- terra::extract(r3, x)
     }else{
       if(opendap == 0){
-        r1 <- raster::raster(f1)
-        r2 <- raster::raster(f2)
-        r3 <- raster::raster(f3)
-        r4 <- raster::raster(f4)
-        dbrow <- raster::extract(r1, x)
-        AUSDEM <- raster::extract(r2, x)
-        AGG <- raster::extract(r3, x)
+        r1 <- terra::rast(f1)
+        r2 <- terra::rast(f2)
+        r3 <- terra::rast(f3)
+        r4 <- terra::rast(f4)
+        dbrow <- terra::extract(r1, x)
+        AUSDEM <- terra::extract(r2, x)
+        AGG <- terra::extract(r3, x)
         if(is.na(elev) == FALSE){ # check if user-specified elevation
           ALTITUDES <- elev # use user-specified elevation
         }else{
-          ALTITUDES <- raster::extract(r4, x) # get elevation from fine res DEM
+          ALTITUDES <- terra::extract(r4, x) # get elevation from fine res DEM
         }
       }
       HORIZONS <- hori
@@ -887,11 +891,11 @@ micro_aust <- function(
           NArem <- grid[[1]]
           NArem <- Which(!is.na(NArem), cells = TRUE)
           dist <- distanceFromPoints(maxTst05[[1]], x)
-          distNA <- raster::extract(dist, NArem)
+          distNA <- terra::extract(dist, NArem)
           cellsR <- cbind(distNA, NArem)
           distmin <- which.min(distNA)
           cellrep <- cellsR[distmin, 2]
-          diffs <- raster::extract(maxTst05, cellrep)
+          diffs <- terra::extract(maxTst05, cellrep)
           diff1 <- (unlist(diffs[1]) + unlist(diffs[12])) / 2
         }
         diffs3 <- rep(c(diff1, diffs, diff1), nyears)
@@ -910,22 +914,22 @@ micro_aust <- function(
       # Max and Min Air Temps
       ccdir <- "/vlsci/VR0212/mrke"
       load(file = paste0(ccdir, "/Australia Climate Change/", scenario, "/", "maxTst05_", scenario, "_", year, ".Rda")) #maxTst05
-      diffs <- raster::extract(maxTst05,  x)
+      diffs <- terra::extract(maxTst05,  x)
       TMAXX_diff <- getdiff(diffs, maxTst05)
       load(file = paste0(ccdir, "/Australia Climate Change/", scenario, "/", "minTst05_", scenario, "_", year, ".Rda")) #minTst05
-      diffs <- raster::extract(minTst05, x)
+      diffs <- terra::extract(minTst05, x)
       TMINN_diff <- getdiff(diffs, minTst05)
       # RH
       load(file = paste0(ccdir,  "/Australia Climate Change/", scenario, "/", "RHst05_", scenario, "_", year, ".Rda")) #maxTst05
-      diffs <- raster::extract(RHst05, x)
+      diffs <- terra::extract(RHst05, x)
       RH_diff <- getdiff(diffs, RHst05)
       # wind
       load(file = paste0(ccdir, "/Australia Climate Change/", scenario, "/", "PT_VELst05_", scenario, "_", year, ".Rda"))
-      diffs <- raster::extract(PT_VELst05, x)
+      diffs <- terra::extract(PT_VELst05, x)
       WIND_diff <- getdiff(diffs, PT_VELst05)
       # SOLAR/CLOUD COVER
       load(file = paste0("c:/Spatial_Data/Australia Climate Change/", scenario, "/", "SOLCst05_", scenario, "_", year, ".Rda"))
-      diffs <- raster::extract(SOLCst05, x)
+      diffs <- terra::extract(SOLCst05, x)
       SOLAR_diff <- getdiff(diffs, SOLCst05)
     }
 
@@ -1232,7 +1236,7 @@ micro_aust <- function(
           RAINFALL_sum <- RAINFALL_sum[order(as.Date(paste0("01-",RAINFALL_sum$Group.1), "%m-%Y")), 2]
 
           load(file = paste0("c:/Spatial_Data/Australia Climate Change/", scenario, "/", "RAINst05_", scenario, "_", year, ".Rda"))
-          diffs <- rep(raster::extract(RAINst05, x), nyears)
+          diffs <- rep(terra::extract(RAINst05, x), nyears)
 
           if(is.na(diffs[1]) == TRUE){
             print("no data")
@@ -1240,11 +1244,11 @@ micro_aust <- function(
             NArem <-RAINst05[[1]] # don't need to re-do this within bioregion loop
             NArem <- Which(!is.na(NArem), cells = TRUE)
             dist <- distanceFromPoints(RAINst05[[1]], y)
-            distNA <- raster::extract(dist, NArem)
+            distNA <- terra::extract(dist, NArem)
             cellsR <- cbind(distNA, NArem)
             distmin <- which.min(distNA)
             cellrep <- cellsR[distmin, 2]
-            diffs <- rep(raster::extract(RAINst05, cellrep), nyears)
+            diffs <- rep(terra::extract(RAINst05, cellrep), nyears)
           }
 
           rainfall_new <- (RAINFALL_sum * diffs)
@@ -1253,7 +1257,7 @@ micro_aust <- function(
 
           ## Now extract predicted change in mm
           load(file = paste0("c:/Spatial_Data/Australia Climate Change/", scenario, "/" ,"RAINst05_mm_", scenario, "_", year, ".Rda"))
-          rainfall_change_mm <- rep(raster::extract(RAINst05_mm, x), nyears)
+          rainfall_change_mm <- rep(terra::extract(RAINst05_mm, x), nyears)
 
           #########Now get predicted change in rainfall (could also get this from OzClim or ClimSim layer)#############
           Diff_prop <- rainfall_new/RAINFALL_sum # proportion change
@@ -1562,7 +1566,7 @@ micro_aust <- function(
           if(length(TMAXX) < 365){
             tannulrun <- rep((sum(TMAXX) + sum(TMINN)) / (length(TMAXX) * 2), length(TMAXX))
           }else{
-            tannulrun <- raster::movingFun(avetemp, n = 365, fun = mean, type = 'to')
+            tannulrun <- terra::roll(avetemp, n = 365, fun = mean, type = 'to')
             yearone <- rep((sum(TMAXX[1:365]) + sum(TMINN[1:365])) / (365 * 2), 365)
             tannulrun[1:365] <- yearone
             # SST
@@ -1588,24 +1592,30 @@ micro_aust <- function(
           hour.microclima <- as.numeric(format(tt, "%H")) + timediff-floor(timediff)
           jd <- julday(as.numeric(format(tt, "%Y")), as.numeric(format(tt, "%m")), as.numeric(format(tt, "%d")))
           dem <- microclima::get_dem(r = NA, lat = lat, long = long, resolution = 100, zmin = -20)
-          xy <- data.frame(x = long, y = lat)
-          coordinates(xy) = ~x + y
-          proj4string(xy) = "+init=epsg:4326"
-          xy <- as.data.frame(spTransform(xy, crs(dem)))
+          require(terra)
+          dem_terra <- terra::rast(dem)
+          xy = data.frame(lon = loc[1], lat = loc[2]) |>
+            sf::st_as_sf(coords = c("lon", "lat"))
+          xy <- sf::st_set_crs(xy, "EPSG:4326")
+          xy <- sf::st_transform(xy, sf::st_crs(dem_terra))
+          #xy <- data.frame(x = long, y = lat)
+          #coordinates(xy) = ~x + y
+          #proj4string(xy) = "+init=epsg:4326"
+          #xy <- as.data.frame(spTransform(xy, crs(dem)))
           if (class(slope) == "logical") {
-            slope <- terrain(dem, unit = "degrees")
-            slope <- raster::extract(slope, xy)
+            slope <- terra::terrain(dem, v = "slope", unit = "degrees")
+            slope <- terra::extract(slope, xy)
           }
           if (class(aspect) == "logical") {
-            aspect <- terrain(dem, opt = "aspect", unit = "degrees")
-            aspect <- raster::extract(aspect, xy)
+            aspect <- terrain(dem, v = "aspect", unit = "degrees")
+            aspect <- terra::extract(aspect, xy)
           }
           ha <- 0
           if(is.na(hori[1]) == "TRUE"){
             ha36 <- 0
             for (i in 0:35) {
               har <- horizonangle(dem, i * 10, res(dem)[1])
-              ha36[i + 1] <- atan(raster::extract(har, xy)) * (180/pi)
+              ha36[i + 1] <- atan(terra::extract(har, xy)) * (180/pi)
             }
           }else{
             ha36 <- spline(x = hori, n = 36, method =  'periodic')$y
@@ -1657,8 +1667,8 @@ micro_aust <- function(
           dp[nd] <- dp[max(sel)]
           odni[nd] <- odni[max(sel)]
           odif[nd] <- odif[max(sel)]
-          if (!require("raster", quietly = TRUE)) {
-            stop("package 'raster' is needed. Please install it.",
+          if (!require("terra", quietly = TRUE)) {
+            stop("package 'terra' is needed. Please install it.",
                  call. = FALSE)
           }
           dp <- na.approx(dp, na.rm = F)

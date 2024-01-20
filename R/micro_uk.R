@@ -603,8 +603,8 @@ micro_uk <- function(
     curyear<-as.numeric(format(dates,"%Y"))
 
     ################## location and terrain #################################
-    if (!requireNamespace("raster", quietly = TRUE)) {
-      stop("package 'raster' is needed. Please install it.",
+    if (!requireNamespace("terra", quietly = TRUE)) {
+      stop("package 'terra' is needed. Please install it.",
         call. = FALSE)
     }
     if (!requireNamespace("ncdf4", quietly = TRUE)) {
@@ -618,7 +618,7 @@ micro_uk <- function(
     longlat <- loc
     x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
 
-    requireNamespace("raster")
+    requireNamespace("terra")
     requireNamespace("ncdf4")
     # get the local timezone reference longitude
     if(timezone==1){ # this now requires registration
@@ -650,8 +650,8 @@ micro_uk <- function(
 +ellps=airy +datum=OSGB36 +units=m +no_defs'
     sp <-  sp::spTransform(sp::SpatialPoints(x,proj4string=sp::CRS(wgs84)),sp::CRS(bng))
     x2 <- sp@coords
-    UKDEM <-raster::extract(raster::raster(paste0(spatial,"/terr1000.tif")), x2)
-    ALTITUDES <- raster::extract(raster::raster(paste0(spatial,"/terr50.tif")), x2)
+    UKDEM <-terra::extract(terra::rast(paste0(spatial,"/terr1000.tif")), x2)
+    ALTITUDES <- terra::extract(terra::rast(paste0(spatial,"/terr50.tif")), x2)
     if(is.na(ALTITUDES)==TRUE){ALTITUDES<-UKDEM}
     if(is.na(elev) == FALSE){ # check if user-specified elevation
       ALTITUDES <- elev
@@ -1095,7 +1095,7 @@ micro_uk <- function(
         if(length(TMAXX)<365){
           tannulrun<-rep((sum(TMAXX)+sum(TMINN))/(length(TMAXX)*2),length(TMAXX))
         }else{
-          tannulrun<-raster::movingFun(avetemp,n=365,fun=mean,type='to')
+          tannulrun<-terra::roll(avetemp,n=365,fun=mean,type='to')
           yearone<-rep((sum(TMAXX[1:365])+sum(TMINN[1:365]))/(365*2),365)
           tannulrun[1:365]<-yearone
         }

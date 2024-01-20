@@ -24,7 +24,7 @@ folder=paste(folder,"/",sep="")
 }
 
 library(R.utils)
-library(raster)
+library(terra)
 library(ncdf4)
 
 # soil moisture
@@ -32,8 +32,8 @@ soilmoist.file<-"http://www.esrl.noaa.gov/psd/thredds/fileServer/Datasets/cpcsoi
 destin<-paste(folder,"soilw.mon.ltm.v2.nc",sep="")
 download.file(soilmoist.file, destin, mode="wb")
 cat('soilw.mon.ltm.v2.nc \n',sep="")
-gridout <- raster(ncol=2160, nrow=1080, xmn=-180, xmx=180, ymn=-90, ymx=90)
-soilmoist0.5deg=stack(paste(folder,"soilw.mon.ltm.v2.nc",sep=""))
+gridout <- terra::rast(ncol=2160, nrow=1080, xmin=-180, xmax=180, ymin=-90, ymax=90)
+soilmoist0.5deg=terra::rast(paste(folder,"soilw.mon.ltm.v2.nc",sep=""))
 cat('interpolating soilw.mon.ltm.v2.nc from 0.5 deg to 10 min\n',sep="")
 soilmoist.10min=resample(rotate(soilmoist0.5deg), gridout)
 rm(soilmoist0.5deg)
@@ -57,8 +57,8 @@ vars=c('elv','pre','rd0','wnd','tmp','dtr','reh')
 
 # download and unzip all the data, construct rasters
 
-gridout <- raster(ncol=2160, nrow=1080, xmn=-180, xmx=180, ymn=-90, ymx=90)
-global_climate=stack(replicate(97,gridout))
+gridout <- terra::rast(ncol=2160, nrow=1080, xmin=-180, xmax=180, ymin=-90, ymax=90)
+global_climate=terra::rast(replicate(97,gridout))
 cat('downloading and decompressing the data')
 for(i in 1:length(vars)){
   destin<-paste(folder,destfile1,vars[i],destfile2,sep="")
@@ -72,18 +72,21 @@ for(i in 1:length(vars)){
   data<-read.table(paste(folder,destfile1,vars[i],".dat",sep=""))
   x<-cbind(data[,2],data[,1]) # list of co-ordinates
   if(i==1){ # elevation, just one colum
-    global_climate[[1]] <- round(rasterize(x, gridout, data[,3])*1000,0) # convert to m, round off
+    global_climate[[1]] <- round(terra::rasterize(x, gridout, data[,3])*1000,0) # convert to m, round off
     cat(paste(vars[i],' done \n',sep=""))
   }else{
     for(j in 1:12){
       if(i==2 | i==3){
-      global_climate[[1+(i-2)*12+j]] <- round(raster::rasterize(x, gridout, data[,2+j]),0)
+      global_climate[[1+(i-2)*12+j]] <- round(terra::rasterize(x, gridout, data[,2+j]),0)
       }else{
-       global_climate[[1+(i-2)*12+j]] <- round(raster::rasterize(x, gridout, data[,2+j])*10,0)
+       global_climate[[1+(i-2)*12+j]] <- round(terra::rasterize(x, gridout, data[,2+j])*10,0)
       }
       cat(paste(vars[i],' month ',j,' done \n',sep=""))
     }
   }
+  gc()
+  rm(data)
+  rm(x)
 }
 
 meantemps=global_climate[[38:49]] #save mean temps
@@ -94,6 +97,7 @@ meanhums=global_climate[[62:73]] #save mean hums
 for(i in 1:12){
   global_climate[[37+i]] = round((meantemps[[i]] - meandtrs[[i]]/2),0)
   global_climate[[49+i]] = round((meantemps[[i]] + meandtrs[[i]]/2),0)
+  gc()
 }
 
 # construct max/min relative humidities at new tmin/tmax values from vapour pressure at mean temperature/humidity
@@ -114,7 +118,8 @@ for(i in 1:12){
 # cloud cover
 
 # download 0.5 degree data
-cld<-"http://www.ipcc-data.org/download_data/obs/ccld6190.zip" # Mean cloud cover
+#cld<-"http://www.ipcc-data.org/download_data/obs/ccld6190.zip" # Mean cloud cover
+cld<-"https://www.ipcc-data.org/download_data/obs/ccld6190.zip" # Mean cloud cover
 destin<-paste(folder,"ccld6190.zip",sep="")
 download.file(cld, destin, mode="wb")
 cat('ccld6190.zip downloaded \n')
@@ -126,19 +131,20 @@ monthly.cld=crucloud$cru.raster
 header=crucloud$header
 # now resample down to 10 min and put in global_climate stack
 one=(global_climate[[1]]+10000)/(global_climate[[1]]+10000)
-gridout <- raster(ncol=2160, nrow=1080, xmn=-180, xmx=180, ymn=-90, ymx=90)
+gridout <- terra::rast(ncol=2160, nrow=1080, xmin=-180, xmax=180, ymin=-90, ymax=90)
 for(i in 1:header$n_months){
-  global_climate[[85+i]]=round(resample(monthly.cld[[i]], gridout)*one*10,0)
+  global_climate[[85+i]]=round(terra::resample(monthly.cld[[i]], gridout)*one*10,0)
 }
-
-for(i in 1:12){
-  soilmoist.10min[[i]]=round(soilmoist.10min[[i]]*one,0)
-}
-
 
 cat(paste("writing global_climate.nc to ",folder))
 writeRaster(global_climate,paste(folder, "global_climate.nc",sep=""), datatype='INT2S',overwrite=TRUE)
 rm(global_climate)
+
+for(i in 1:12){
+  soilmoist.10min[[i]]=round(soilmoist.10min[[i]]*one,0)
+  gc()
+}
+
 cat(paste("writing soilw.mon.ltm.v2.nc to ",folder))
 writeRaster(soilmoist.10min,paste(folder, "soilw.mon.ltm.v2.nc",sep=""), datatype='INT2S',overwrite=TRUE)
 rm(soilmoist.10min)
@@ -148,7 +154,7 @@ file.remove(paste(folder,files[grep(pattern = ".dat",files)],sep=""))
 
 # cat("extracting climate data", '\n')
 # global_climate=brick(paste(folder,"global_climate.nc")
-# CLIMATE <- raster::extract(global_climate,cbind(141,-34))
+# CLIMATE <- terra::extract(global_climate,cbind(141,-34))
 # ALTT<-as.numeric(CLIMATE[,1]) # convert from km to m
 # RAINFALL <- CLIMATE[,2:13]
 # RAINYDAYS <- CLIMATE[,14:25]/10
@@ -164,7 +170,7 @@ file.remove(paste(folder,files[grep(pattern = ".dat",files)],sep=""))
 # CCMINN <- CLIMATE[,86:97]/10
 # CCMAXX<-CCMINN
 #
-# global_climate_old<-raster::brick(paste("c:/global climate/","/global_climate.nc",sep=""))
+# global_climate_old<-terra::rast(paste("c:/global climate/","/global_climate.nc",sep=""))
 # for(i in 1:12){
 #   plot((100-global_climate[[48+i]])-monthly2[[i]]*one,zlim=c(-75,75),main=i)
 # }
