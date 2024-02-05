@@ -913,7 +913,7 @@ micro_ncep <- function(
           hourlydata <- microclima::hourlyNCEP(ncepdata = NA, lat, long, tme, reanalysis) # interpolated to hourly
         }
         cat("computing radiation and elevation effects with package microclima \n")
-        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = dailyprecip, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE, weather.elev = weather.elev, cad.effects = cad.effects)
+        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = dailyprecip, dem = dem1, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE, weather.elev = weather.elev, cad.effects = cad.effects)
         dailyprecip <- microclima.out$dailyprecip
       }
       hourlyradwind <- microclima.out$hourlyradwind
