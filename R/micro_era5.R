@@ -673,7 +673,8 @@ micro_era5 <- function(
     }
     if(save != 2 & class(dem)[1] != "RasterLayer"){
       cat('downloading DEM via package elevatr \n')
-      dem <- terra::rast(microclima::get_dem(lat = lat, long = long, resolution = dem.res, xdims = pixels, ydims = pixels)) # mercator equal area projection
+      dem1 <- microclima::get_dem(lat = lat, long = long, resolution = dem.res, xdims = pixels, ydims = pixels) # mercator equal area projection
+      dem <- terra::rast(dem1) # mercator equal area projection
     }
     if(save == 1){
       save(dem, file = 'dem.Rda')
@@ -825,7 +826,7 @@ micro_era5 <- function(
                                                      coastal = coastal,
                                                      hourlydata = as.data.frame(hourlydata),
                                                      dailyprecip = dailyprecip,
-                                                     dem = dem,
+                                                     dem = dem1,
                                                      demmeso = dem2,
                                                      albr = 0,
                                                      resolution = 30,
