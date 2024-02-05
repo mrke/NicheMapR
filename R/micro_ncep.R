@@ -654,8 +654,7 @@ micro_ncep <- function(
     }
     if(save != 2 & class(dem)[1] != "RasterLayer"){
       cat('downloading DEM via package elevatr \n')
-      dem1 <- microclima::get_dem(lat = lat, long = long, resolution = dem.res, xdims = pixels, ydims = pixels) # mercator equal area projection
-      dem <- terra::rast(dem1) # mercator equal area projection
+      dem <- microclima::get_dem(lat = lat, long = long, resolution = dem.res, xdims = pixels, ydims = pixels) # mercator equal area projection
     }
     if(save == 1){
       save(dem, file = 'dem.Rda')
@@ -897,10 +896,10 @@ micro_ncep <- function(
           ncepdata <- data.frame(obs_time = obs_time, Tk, Tkmin, Tkmax, sh, pr, wu, wv, dlw, ulw, dsw, tcdc) # 6-hourly ncep for chosen period plus a day added either side for interpolation
           hourlydata <- microclima::hourlyNCEP(ncepdata = ncepdata, lat, long, tme, reanalysis) # interpolated to hourly
           cat("computing radiation and elevation effects with package microclima \n")
-          microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem1, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE, weather.elev = weather.elev, cad.effects = cad.effects)
+          microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = prate, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE, weather.elev = weather.elev, cad.effects = cad.effects)
         }else{
           cat("computing radiation and elevation effects with package microclima \n")
-          microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = NA, dem = dem1, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE, weather.elev = weather.elev, cad.effects = cad.effects)
+          microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = NA, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE, weather.elev = weather.elev, cad.effects = cad.effects)
         }
         if(class(dailyprecip) == "logical"){
           dailyprecip <- microclima.out$dailyprecip[-c(1:4)] # remove extra 4 values from start
@@ -913,7 +912,7 @@ micro_ncep <- function(
           hourlydata <- microclima::hourlyNCEP(ncepdata = NA, lat, long, tme, reanalysis) # interpolated to hourly
         }
         cat("computing radiation and elevation effects with package microclima \n")
-        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = dailyprecip, dem = dem1, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE, weather.elev = weather.elev, cad.effects = cad.effects)
+        microclima.out <- microclima::microclimaforNMR(lat = longlat[2], long = longlat[1], dstart = dstart, dfinish = dfinish, l = mean(microclima.LAI), x = LOR, coastal = coastal, hourlydata = hourlydata, dailyprecip = dailyprecip, dem = dem, demmeso = dem2, albr = 0, resolution = 30, zmin = 0, slope = slope, aspect = aspect, windthresh = 4.5, emthresh = 0.78, reanalysis2 = reanalysis, difani = FALSE, weather.elev = weather.elev, cad.effects = cad.effects)
         dailyprecip <- microclima.out$dailyprecip
       }
       hourlyradwind <- microclima.out$hourlyradwind
