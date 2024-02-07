@@ -269,7 +269,7 @@ C     FLAT PLATE
 C     CYLINDER
       IF(GEOMETRY.EQ.1)THEN
        R1=(VOL/(PI*SHP(2)*2.))**(1./3.)
-       ALENTH=R1*SHP(2)
+       ALENTH=R1*SHP(2)*2.
        AREA=2.*PI*R1**2.+2.*PI*R1*ALENTH
        VOL=AMASS/ANDENS
        AWIDTH=2.*R1
