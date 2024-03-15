@@ -157,7 +157,7 @@ by choosing the option 'run.gads <- 1' (Fortran version, quicker but may crash o
 \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
 \code{evenrain}{ = 0, Spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)}\cr\cr
 \code{SoilMoist_Init}{ = c(0.1,0.12,0.15,0.2,0.25,0.3,0.3,0.3,0.3,0.3), initial soil water content at each soil node, m3/m3}\cr\cr
-\code{L}{ = c(0,0,8.2,8.0,7.8,7.4,7.1,6.4,5.8,4.8,4.0,1.8,0.9,0.6,0.8,0.4,0.4,0,0)*10000, root density (m/m3), (19 values descending through soil for specified soil nodes in parameter}\cr\cr
+\code{L}{ = c(0,0,8.2,8.0,7.8,7.4,7.1,6.4,5.8,4.8,4.0,1.8,0.9,0.6,0.8,0.4,0.4,0,0)*10000, root density (m/m^3), (19 values descending through soil for specified soil nodes in parameter}\cr\cr
 \code{R1}{ = 0.001, root radius, m}\cr\cr
 \code{RW}{ = 2.5e+10, resistance per unit length of root, m^3 kg-1 s-1}\cr\cr
 \code{RL}{ = 2e+6, resistance per unit length of leaf, m^3 kg-1 s-1}\cr\cr

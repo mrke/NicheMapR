@@ -186,11 +186,11 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{raindrink}{ = 0, Rainfall level at which rehydration from drinking occurs - if 0 animal can always drink}\cr}
 \item{\code{foodlim}{ = 1, Is the animal food limited - if 0 animal can always find food (useful for making different life stages dependent on soil moisture-based food estimates}\cr}
 \item{\code{RQ}{ = 0.8, respiratory quotient (0-1), computed from first principles if DEB model running}\cr}
-\item{\code{K_skin}{ = 0, - Hydraulic conductivity of skin (kg/(m s (J/kg)) - drives liquid water exchange with substrate}\cr}
+\item{\code{K_skin}{ = 0, - Hydraulic conductance of skin (kg/(m2 s (J/kg)) - drives liquid water exchange with substrate}\cr}
 \item{\code{spec_hyd_body}{ = 0.000304, Specific hydration of body (m3 / (m3 (J/kg))) - drives liquid water exchange with substrate if K_skin > 0 }\cr}
 \item{\code{psi_body}{ = -707, Water potential of body (J/kg) - drives liquid water exchange with substrate if K_skin > 0 and will also affect skin humidity for water vapour exchange}\cr}
 \item{\code{H2Obal_init}{ = 0, Water balance of body (g) - initial water balance, where positive means excess water}\cr}
-\item{\code{K_egg}{ = 2.8e-09, Hydraulic conductivity of egg shell (kg/(m s (J/kg)) - drives liquid water exchange with substrate}\cr}
+\item{\code{K_egg}{ = 2.8e-09, Hydraulic conductance of egg shell (kg/(m2 s (J/kg)) - drives liquid water exchange with substrate}\cr}
 \item{\code{spec_hyd_egg}{ = 0.000304, Specific hydration of egg (m3 / (m3 (J/kg))) - drives liquid water exchange with substrate if K_skin > 0 }\cr}
 \item{\code{psi_egg}{ = -707, Water potential of egg (J/kg) - drives liquid water exchange with substrate if K_skin > 0}\cr}
 \item{\code{liq_init}{ = Ww_g, Initial mass for egg liquid exchange (g) - total mass of egg which is used as the reference point}\cr}
