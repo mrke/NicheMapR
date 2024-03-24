@@ -43,11 +43,11 @@ microclimate <- function(micro) {
     message("ERROR: SLES has the wrong number of inputs \n")
     errors <- 1
   }
-  if(length(micro$D) != 10){
+  if(length(micro$DEP) != 10){
     message("ERROR: DEP has the wrong number of inputs \n")
     errors <- 1
   }
-  if(nrow(micro$moists) != doynum * 24){
+  if(nrow(micro$moists) != 10 | ncol(micro$moists) != doynum){
     message("ERROR: moists has the wrong number of inputs \n")
     errors <- 1
   }
@@ -233,6 +233,7 @@ microclimate <- function(micro) {
                 drlam=matrix(data = 0, nrow = 24 * doynum, ncol = 113),
                 drrlam=matrix(data = 0, nrow = 24 * doynum, ncol = 113),
                 srlam=matrix(data = 0, nrow = 24 * doynum, ncol = 113), PACKAGE = "NicheMapR")
+  }
   metout <- matrix(data = 0, nrow = 24 * doynum, ncol = 19)
   shadmet <- matrix(data = 0, nrow = 24 * doynum, ncol = 19)
   soil <- matrix(data = 0, nrow = 24 * doynum, ncol = 12)
@@ -337,5 +338,4 @@ microclimate <- function(micro) {
   colnames(drrlam) <- drlam.colnames
   colnames(srlam) <- drlam.colnames
   return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, plant = plant, shadplant = shadplant,  sunsnow=sunsnow, shdsnow=shdsnow, tcond=tcond, shadtcond=shadtcond, specheat=specheat, shadspecheat=shadspecheat, densit=densit, shaddensit=shaddensit, drlam=drlam, drrlam=drrlam, srlam=srlam))
-  } # end of input length check
 }
