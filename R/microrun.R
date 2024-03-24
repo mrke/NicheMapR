@@ -26,6 +26,148 @@
 #' @export
 microclimate <- function(micro) {
   doynum<-micro$microinput[1]
+  errors <- 0
+  if(length(micro$microinput) != 74){
+    message("ERROR: microinput has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(MINSHADES) != doynum){
+    message("ERROR: MINSHADES has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(MAXSHADES) != doynum){
+    message("ERROR: MAXSHADES has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(SLES) != doynum){
+    message("ERROR: SLES has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(D) != 10){
+    message("ERROR: DEP has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(nrow(moists) != doynum * 24){
+    message("ERROR: moists has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(RHMINN) != doynum){
+    message("ERROR: RHMINN has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(RHMAXX) != doynum){
+    message("ERROR: RHMAXX has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(CCMINN) != doynum){
+    message("ERROR: CCMINN has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(CCMAXX) != doynum){
+    message("ERROR: CCMAXX has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(WNMINN) != doynum){
+    message("ERROR: WNMINN has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(WNMAXX) != doynum){
+    message("ERROR: WNMAXX has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(TMINN) != doynum){
+    message("ERROR: TMINN has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(TMAXX) != doynum){
+    message("ERROR: TMAXX has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(REFLS) != doynum){
+    message("ERROR: REFLS has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(PCTWET) != doynum){
+    message("ERROR: PCTWET has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(RAINFALL) != doynum){
+    message("ERROR: RAINFALL has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(tannulrun) != doynum){
+    message("ERROR: tannulrun has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(LAI) != doynum){
+    message("ERROR: LAI has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(nrow(tides) != doynum * 24){
+    message("ERROR: tides has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(TAIRhr) != doynum * 24){
+    message("ERROR: TAIRhr has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(RHhr) != doynum * 24){
+    message("ERROR: RHhr has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(WNhr) != doynum * 24){
+    message("ERROR: WNhr has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(CLDhr) != doynum * 24){
+    message("ERROR: CLDhr has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(SOLRhr) != doynum * 24){
+    message("ERROR: SOLRhr has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(RAINhr) != doynum * 24){
+    message("ERROR: RAINhr has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(ZENhr) != doynum * 24){
+    message("ERROR: ZENhr has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(IRDhr) != doynum * 24){
+    message("ERROR: IRDhr has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(PE) != 19){
+    message("ERROR: PE has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(BB) != 19){
+    message("ERROR: BB has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(KS) != 19){
+    message("ERROR: KS has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(BD) != 19){
+    message("ERROR: BD has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(DD) != 19){
+    message("ERROR: DD has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(L) != 19){
+    message("ERROR: L has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(length(hori) != 24){
+    message("ERROR: hori has the wrong number of inputs \n")
+    errors <- 1
+  }
+  if(errors == 0){
   a <- .Fortran("microclimate",
                 as.integer(doynum),
                 as.double(micro$microinput),
@@ -195,4 +337,5 @@ microclimate <- function(micro) {
   colnames(drrlam) <- drlam.colnames
   colnames(srlam) <- drlam.colnames
   return (list(metout=metout, soil=soil, shadmet=shadmet, shadsoil=shadsoil, soilmoist=soilmoist, shadmoist=shadmoist, humid=humid, shadhumid=shadhumid, soilpot=soilpot, shadpot=shadpot, plant = plant, shadplant = shadplant,  sunsnow=sunsnow, shdsnow=shdsnow, tcond=tcond, shadtcond=shadtcond, specheat=specheat, shadspecheat=shadspecheat, densit=densit, shaddensit=shaddensit, drlam=drlam, drrlam=drrlam, srlam=srlam))
+  } # end of input length check
 }
