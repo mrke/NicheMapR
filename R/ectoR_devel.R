@@ -208,7 +208,7 @@ ectoR_devel <- function(
     pct_wet = 0.1,
     pct_eyes = 0,
     pct_mouth = 0,
-    psi_body = -700,
+    psi_body = -707,
     pantmax = 1,
     F_O2 = 20,
     RQ = 0.8,
@@ -417,7 +417,11 @@ ectoR_devel <- function(
     if(postur == 0){
       ASIL <- (ASILN + ASILP) / 2
     }
-
+    if(postur == 1){
+      LIVE <- 1
+    }else{
+      LIVE <- 0
+    }
     # compute solar load
     SOLAR.out <- SOLAR_ecto(ATOT = AREA,
                             ASIL = ASIL,
@@ -432,7 +436,8 @@ ectoR_devel <- function(
                             QSOLR = QSOLR,
                             PDIF = PDIF,
                             SHADE = SHADE,
-                            postur = postur)
+                            postur = postur,
+                            LIVE = LIVE)
     QSOLAR <- SOLAR.out$QSOLAR
 
     # compute infrared radiation in

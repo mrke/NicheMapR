@@ -20,7 +20,7 @@
 #' @export
 SOLAR_ecto <- function(
     ATOT = 0.01325006,
-    ASIL= 0.004718043,
+    ASIL = 0.004718043,
     AV = 0.001325006,
     AT = 0,
     ABSAN = 0.85,
