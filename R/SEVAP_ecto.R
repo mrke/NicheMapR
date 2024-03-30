@@ -64,7 +64,7 @@ SEVAP_ecto <- function(
   XTRY <- TC
   MW <- 0.018 #! molar mass of water, kg/mol
   RG <- 8.314 #! gas constant, J/mol/K
-  V_M <- 44.6 #! molar volume of air, mol/m3
+  V_M_STP <- 44.6 #! molar volume of air at STP, mol/m3
   #C     CALCULATING SKIN SURFACE SATURATION VAPOR DENSITY
   #C      RH = 100.
   RH <- exp(PSI_BODY / (RG / MW * (TSKIN + 273.15))) * 100 #
@@ -79,6 +79,7 @@ SEVAP_ecto <- function(
   #C     PATMOS=PSTD*((1.-(.0065*ALT/288.))**(1./.190284))
   PATMOS <- BP
   BP <- PATMOS
+  V_M <- V_M_STP * (BP / PSTD) * (273.15 / TC) # EQ 3.3 Campbell Norman 1998
 
   WETAIR.out <- WETAIR(DB, WB, RH, DP, BP)
   VDSURF <- WETAIR.out$vd
@@ -94,7 +95,7 @@ SEVAP_ecto <- function(
   WEYES <- HD * PEYES * ATOT * (VDSURF - VDAIR)
 
   WRESP <- GEVAP / 1000
-
+  G_V <- 0 # need an output below even if this is not being computed
   if(LEAF == 1){
     G_VA <- HD*V_M #!BOUNDARY CONDUCTANCE, mol/m2/s
     G_V <- (0.5 * G_VS_AB * G_VA) / (G_VS_AB + G_VA) + (0.5 * G_VS_AD * G_VA) / (G_VS_AD + G_VA) #! vapour conductance, mol/m2/s
@@ -120,5 +121,5 @@ SEVAP_ecto <- function(
   WCUT <- WCUT * 1000
   WEVAP <- WATER * 1000
 
-  return(list(QSEVAP = QSEVAP, WEVAP = WEVAP, WRESP = WRESP, WCUT = WCUT, WEYES = WEYES))
+  return(list(QSEVAP = QSEVAP, WEVAP = WEVAP, WRESP = WRESP, WCUT = WCUT, WEYES = WEYES, G_V = G_V))
 }
