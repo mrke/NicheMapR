@@ -48,7 +48,7 @@
 #' \itemize{
 #' \item{\code{nyears}{ = micro$nyears, Number of years the simulation runs for - must be consistent with dimensions of environmental input data}\cr}
 #' \item{\code{enberr}{ = 0.01, Factor by which the mass is multiplied to obtain a tolerance level for the heat budget solution}\cr}
-#' \item{\code{live}{ = 1, Live (metabolism/behaviour) or dead animal?}\cr}
+#' \item{\code{live}{ = 1, 0 (no behavior or metabolism), 1 (full behaviour) or 2 (full behaviour other than orienting to the sun)?}\cr}
 #' \item{\code{leaf}{ = 0, Simulate leaf using stomatal conductance (1), pct_wet (2), or don't simulate leaf (0)?}\cr}
 #' \item{\code{transient}{ = 0, Run a transient (i.e. include heat storage) simulation (1=yes, 0=no)? No behaviour yet - assums full sun}\cr}
 #' \item{\code{delta_shade}{ = 3, Percent shade increment step, 0-100\%, allowing different thermoregulatory precision (smaller values increase run time)}\cr}
@@ -942,8 +942,8 @@ ectotherm <- function(
     message("error: enberr must be greater than 0 \n")
     errors<-1
   }
-  if(!live %in% c(0,1)){
-    message("error: live must be 0 or 1 \n")
+  if(!live %in% c(0,1,2)){
+    message("error: live must be 0 (no behavior or metabolism), 1 (full behaviour) or 2 (full behaviour other than orienting to the sun) \n")
     errors<-1
   }
   if(!write_input %in% c(0,1,2)){

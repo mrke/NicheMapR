@@ -255,7 +255,7 @@ C     CHECKING FOR FLUID TYPE
       IF (FLUID .EQ. 0.00) THEN
 C      AIR
        CALL CONV
-       IF(LIVE.EQ.1)THEN
+       IF(LIVE.NE.0)THEN
         CALL RESP
        ENDIF
        CALL SEVAP

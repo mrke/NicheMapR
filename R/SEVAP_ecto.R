@@ -64,7 +64,7 @@ SEVAP_ecto <- function(
   XTRY <- TC
   MW <- 0.018 #! molar mass of water, kg/mol
   RG <- 8.314 #! gas constant, J/mol/K
-  V_M_STP <- 44.6 #! molar volume of air at STP, mol/m3
+  V_M_STP <- 44.6 #! molar density of air at STP, mol/m3
   #C     CALCULATING SKIN SURFACE SATURATION VAPOR DENSITY
   #C      RH = 100.
   RH <- exp(PSI_BODY / (RG / MW * (TSKIN + 273.15))) * 100 #
@@ -79,7 +79,7 @@ SEVAP_ecto <- function(
   #C     PATMOS=PSTD*((1.-(.0065*ALT/288.))**(1./.190284))
   PATMOS <- BP
   BP <- PATMOS
-  V_M <- V_M_STP * (BP / PSTD) * (273.15 / TC) # EQ 3.3 Campbell Norman 1998
+  V_M <- V_M_STP * (BP / PSTD) * (273.15 / (TC + 273.15)) # EQ 3.3 Campbell Norman 1998
 
   WETAIR.out <- WETAIR(DB, WB, RH, DP, BP)
   VDSURF <- WETAIR.out$vd
