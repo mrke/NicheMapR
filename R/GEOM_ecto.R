@@ -133,6 +133,7 @@ GEOM_ecto <- function(
     ASEMAJR <- A
     BSEMINR <- B
     CSEMINR <- C
+    AL <- min(A, C, VOL ^ (1 / 3)) # assuming B is for height if it's a flattend shape like a leaf
   }
 
   #C     LIZARD

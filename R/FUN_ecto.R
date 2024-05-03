@@ -15,7 +15,7 @@
 #' @param RINSUL depth of insulation (m) (not yet used)
 #' @param ASEMAJR length of semi-major radius for ellipsoid (m)
 #' @param BSEMINR length of semi-minor radius 1 for ellipsoid (m)
-#' @param CSEMINR length of semi-minor radius 1 for ellipsoid (m)
+#' @param CSEMINR length of semi-minor radius 2 for ellipsoid (m)
 #' @param CONV_ENHANCE convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 https://doi.org/10.1016/S0006-3495(76)85711-6
 #' @param M_1 metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb), in ml O2 / h, default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231
 #' @param M_2 metabolic rate parameter 2
