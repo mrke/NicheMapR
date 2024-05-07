@@ -28,6 +28,7 @@
 #' @param PRESS = 101325, atmospheric pressure, Pa
 #' @param PDIF = 0.15, proportion of solar radiation that is diffuse, -
 #' @param conv_enhance = 1.4, outdoor convective enhancement factor, Mitchell 1976
+#' @param heliotropic = 0, orient towards sun (1) or not (0)
 #' @return leaf temperature (°C)
 #' @usage leaf_temperature(w = 0.1, A = 0.01, A_sil = 0.005, alpha_L = 0.5, alpha_S = 0.85, g_vs_ab = 0.15, g_vs_ad = 0.15, TA = 30, TGRD = 60, TSKY = 10, VEL = 2, RH = 20, QSOLR = 1000, Z = 0, PDIF = 15)
 #' @examples
@@ -121,7 +122,7 @@
 #' # model settings
 #' live <- 0 # don't simulate behaviour or respiration
 #' leaf <- 1 # use the stomatal conductance formulation for evaporation
-#' postur <- 0 # no postural behaviour
+#' postur <- 3 # no heliotropy
 #'
 #' ecto <- ectotherm(leaf = leaf,
 #'                   pct_wet = 0,
@@ -168,13 +169,14 @@ leaf_temperature <- function(w = 0.1, # leaf width, m
                    Z = 0, # solar zenith angle, degrees
                    PRESS = 101325, # atmospheric pressure, Pa
                    PDIF = 0.15, # proportion of solar radiation that is diffuse, -
-                   conv_enhance = 1.4 # outdoor convective enhancement factor, Mitchell 1976
+                   conv_enhance = 1.4, # outdoor convective enhancement factor, Mitchell 1976
+                   heliotropic = 0 # orient towards the sun?
 ){
 
   # constants
   sigma <- 5.67e-8 # Stefan-Boltzmann constant, W/m2/K
   ZEN <- Z * pi / 180
-  Q_sol <- SOLAR_ecto(ATOT = A, ASIL = A_sil, AV = 0, AT = 0, ABSAN = alpha_L, ABSSB = alpha_S, FATOSK = 0.5, FATOSB = 0.5, FATOBJ = 0, ZEN = ZEN, QSOLR = QSOLR, PDIF = PDIF, SHADE = 0, postur = 0, LIVE = 0)$QSOLAR
+  Q_sol <- SOLAR_ecto(ATOT = A, ASIL = A_sil, AV = 0, AT = 0, ABSAN = alpha_L, ABSSB = alpha_S, FATOSK = 0.5, FATOSB = 0.5, FATOBJ = 0, ZEN = ZEN, QSOLR = QSOLR, PDIF = PDIF, SHADE = 0, LIVE = heliotropic)$QSOLAR
   #Q_sol <- 0.5 * A * QSOLR * alpha_L * (1 + (1 - alpha_S))
   Q_IR <- RADIN_ecto(TSKY = TSKY, TGRD = TGRD, ATOT = A, AV = 0, AT = 0, FATOSK = 0.5, FATOSB = 0.5, FATOBJ = 0, EMISAN = epsilon_L, EMISSB = epsilon_sub, EMISSK = epsilon_sky)
   #Q_IR <- 0.5 * A * sigma * epsilon_sub * epsilon_L * (TGRD + 273.15) ^ 4 + 0.5 * A * sigma * epsilon_L * epsilon_sky * (TSKY + 273.15) ^ 4

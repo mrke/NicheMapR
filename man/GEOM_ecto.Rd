@@ -8,6 +8,7 @@
 GEOM_ecto(
   AMASS = 0.04,
   GEOMETRY = 3,
+  ORIENT = 0,
   SHP = c(1, 3, 2/3),
   CUSTOMGEOM = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
   ANDENS = 1000,
@@ -23,6 +24,8 @@ GEOM_ecto(
 \item{AMASS}{body mass, kg}
 
 \item{GEOMETRY}{organism shape, 0-5, 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom}
+
+\item{ORIENT}{orientation of shape relevant to shapes 0, 1 & 2, 0 means plate lying flat, cylinder lengthwise, prolate ellipsoid, 1 means plate on edge, cylinder upright, oblate spheroid and ellipsoid}
 
 \item{SHP}{vector of ratios of dimensions of long to short axes of linear dimensions}
 

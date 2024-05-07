@@ -99,6 +99,7 @@
 #' \item{\code{shape_a}{ = 1, Proportionality factor (-) for going from volume to area, keep this 1 (redundant parameter that should be removed)}\cr}
 #' \item{\code{shape_b}{ = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid }\cr}
 #' \item{\code{shape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
+#' \item{\code{orient}{ = 0, orientation of shape relevant to shapes 0, 1 & 2, 0 means plate lying flat, cylinder lengthwise, prolate ellipsoid, 1 means plate on edge, cylinder upright, oblate spheroid and ellipsoid}\cr}
 #' \item{\code{conv_enhance}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 https://doi.org/10.1016/S0006-3495(76)85711-6}\cr}
 #' \item{\code{fatosk}{ = 0.4, Configuration factor to sky (-) for infrared calculations}\cr}
 #' \item{\code{fatosb}{ = 0.4, Configuration factor to subsrate for infrared calculations}\cr}
@@ -118,7 +119,7 @@
 #' \strong{ Behavioural parameters:}
 #'
 #' \itemize{
-#' \item{\code{postur}{ = 1, postural orientation to sun, 1 = perpendicular, 2 = parallel, 0 = half way between, relevant if live = 0}\cr}
+#' \item{\code{postur}{ = 1, postural orientation to sun, 1 = perpendicular, 2 = parallel, 0 = half way between (relevant if live = 0), 3 = normal silhouette area but not tracking sun}\cr}
 #' \item{\code{warmsig}{ = 0, Warming signal for emergence? °C/h (if in burrow deeper than node 2, change in burrow temp must be exceed warmsig)}\cr}
 #' \item{\code{fossorial}{ = 0, Fossorial activity? 1=yes, 0=no (this option hasn't been properly implemented)}\cr}
 #' \item{\code{rainact}{ = 0, Activity is limited by rainfall? 1=yes, 0=no, threshold rainfall for activity set by \code{actrainthresh}}\cr}
@@ -651,6 +652,7 @@ ectotherm <- function(
   shape_a = 1,
   shape_b = 3,
   shape_c = 2 / 3,
+  orient = 0,
   conv_enhance = 1,
   eggshape_a = 1,
   eggshape_b = 2 / 3,
@@ -886,8 +888,8 @@ ectotherm <- function(
     message("error: burrow must be 0 or 1 \n")
     errors<-1
   }
-  if(!postur %in% c(0,1,2)){
-    message("error: postur must be 0, 1 or 2 \n")
+  if(!postur %in% c(0,1,2,3)){
+    message("error: postur must be 0, 1, 2 or 3 \n")
     errors<-1
   }
   if(!climb %in% c(0,1)){
@@ -1438,7 +1440,7 @@ ectotherm <- function(
     OBJDIS <- 1.0 # currently unused - distance (m) from nearby object of different temp to sky and ground (e.g. warm rock, fire)
     OBJL <- 0.0001 # currently unused - diameter (m) of nearby object of different temp to sky and ground (e.g. warm rock, fire)
     FATOBJ <- 0 # configuration factor to nearby object of different temp to sky and ground (e.g. warm rock, fire)
-    SPARE3 <- 0 # spare input
+    #SPARE3 <- 0 # spare input
     if(leaf == 0){ # zero stomatal conductances so that SKINW is not changed to stomatal openness in ectotherm models
       g_vs_ab <- g_vs_ab * 0
       g_vs_ad <- g_vs_ab
@@ -1447,7 +1449,7 @@ ectotherm <- function(
     }
     # collate parameters
     gas <- c(O2gas, CO2gas, N2gas) # gas vector
-    behav <- c(diurn, nocturn, crepus, rainact, burrow, shade_seek, climb, fossorial, SPARE3) # behaviour vector
+    behav <- c(diurn, nocturn, crepus, rainact, burrow, shade_seek, climb, fossorial, orient) # behaviour vector
     ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF[1], EMISSK, EMISSB, ABSSB, K_skin, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, leaf, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, starvemode, tannul, nodnum, postur, psi_body, spec_hyd_body, CT_max, CT_min, behav, H2Obal_init, actrainthresh, viviparous, pregnant, conth, contw, contlast, arrhen_mode, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, liq_init, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, pct_cond_egg, K_egg, psi_egg, spec_hyd_egg, b, KS, PE, foodmode, conv_enhance, g_vs_ab_max, g_vs_ad_max, cond_clutch))
     debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, E_Ho, f, s_G, K, X[1], metab_mode, stages, kap_V, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He, k_Ee, k_EV, mu_N, h_O, h_M[4], maxclutch)
     deblast <- c(iyear, countday, V_init, E_init, E_S_init, E_R_init, q_init, hs_init, E_B_init, V_baby_init, E_baby_init, E_H_init, stage, p_surv_init, E_H_baby_init)

@@ -55,6 +55,7 @@
 #' \item{\code{shape_a}{ = 1, Proportionality factor (-) for going from volume to area, keep this 1 (redundant parameter that should be removed)}\cr}
 #' \item{\code{shape_b}{ = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid }\cr}
 #' \item{\code{shape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
+#' \item{\code{orient}{ = 0, orientation of shape relevant to shapes 0, 1 & 2, 0 means plate lying flat, cylinder lengthwise, prolate ellipsoid, 1 means plate on edge, cylinder upright, oblate spheroid and ellipsoid}\cr}
 #' \item{\code{conv_enhance}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 https://doi.org/10.1016/S0006-3495(76)85711-6}\cr}
 #' \item{\code{fatosk}{ = 0.4, Configuration factor to sky (-) for infrared calculations}\cr}
 #' \item{\code{fatosb}{ = 0.4, Configuration factor to subsrate for infrared calculations}\cr}
@@ -63,7 +64,7 @@
 #' \item{\code{k_flesh}{ = 0.5, Thermal conductivity of flesh (W/mC, range: 0.412-2.8)}\cr}
 #' \item{\code{rho_body}{ = 1000, Density of flesh (kg/m3)}\cr}
 #' \item{\code{epsilon}{ = 0.95, Emissivity of animal (0-1)}\cr}
-#' \item{\code{postur}{ = 1, postural orientation to sun, 1 = perpendicular, 2 = parallel, 0 = half way between (foraging)}\cr}
+#' \item{\code{postur}{ = 1, postural orientation to sun, 1 = perpendicular, 2 = parallel, 0 = half way between (foraging), 3 = perpendicular but not behaviourally orienting}\cr}
 #'}
 #' \strong{Outputs:}
 #'
@@ -201,6 +202,7 @@ ectoR_devel <- function(
     pct_cond = 10,
     pct_touch = 0,
     postur = 1,
+    orient = 0,
     k_flesh = 0.5,
     M_1 = 0.013,
     M_2 = 0.8,
@@ -247,6 +249,10 @@ ectoR_devel <- function(
   }
   if(alpha < 0 | alpha > 1){
     message("error: alpha can only be from 0 to 1 \n")
+    errors<-1
+  }
+  if(!(orient %in% c(0, 1))){
+    message("error: orient can only be 0 or 1 \n")
     errors<-1
   }
   if(pct_wet < 0 | pct_wet > 100){
@@ -359,6 +365,7 @@ ectoR_devel <- function(
     LEAF <- leaf
     G_VS_AB <- g_vs_ab
     G_VS_AD <- g_vs_ad
+    ORIENT <- orient
 
     # unused parameters
     FATOBJ <- 0 # configuration factor to nearby object of different temp to sky and ground (e.g. warm rock, fire), not yet used
@@ -383,6 +390,7 @@ ectoR_devel <- function(
     # call GEOM_ecto to get lengths, areas and volume
     GEOM.out <- GEOM_ecto(AMASS = AMASS,
                           GEOMETRY = GEOMETRY,
+                          ORIENT = ORIENT,
                           SHP = SHP,
                           CUSTOMGEOM = CUSTOMGEOM,
                           ANDENS = ANDENS,
@@ -408,7 +416,7 @@ ectoR_devel <- function(
     CSEMINR <- GEOM.out$CSEMINR
 
     # set silhouette area
-    if(postur == 1){
+    if(postur == 1 | postur == 3){
       ASIL <- ASILN
     }
     if(postur == 2){
@@ -422,6 +430,7 @@ ectoR_devel <- function(
     }else{
       LIVE <- 0
     }
+
     # compute solar load
     SOLAR.out <- SOLAR_ecto(ATOT = AREA,
                             ASIL = ASIL,
@@ -436,7 +445,6 @@ ectoR_devel <- function(
                             QSOLR = QSOLR,
                             PDIF = PDIF,
                             SHADE = SHADE,
-                            postur = postur,
                             LIVE = LIVE)
     QSOLAR <- SOLAR.out$QSOLAR
 

@@ -46,6 +46,8 @@ leaf_temperature(w = 0.1, A = 0.01, A_sil = 0.005, alpha_L = 0.5, alpha_S = 0.85
 \item{PDIF}{= 0.15, proportion of solar radiation that is diffuse, -}
 
 \item{conv_enhance}{= 1.4, outdoor convective enhancement factor, Mitchell 1976}
+
+\item{heliotropic}{= 0, orient towards sun (1) or not (0)}
 }
 \value{
 leaf temperature (°C)
@@ -151,7 +153,7 @@ points(T_leaf_CN[sub], type = 'l')
 # model settings
 live <- 0 # don't simulate behaviour or respiration
 leaf <- 1 # use the stomatal conductance formulation for evaporation
-postur <- 0 # no postural behaviour
+postur <- 3 # no heliotropy
 
 ecto <- ectotherm(leaf = leaf,
                   pct_wet = 0,

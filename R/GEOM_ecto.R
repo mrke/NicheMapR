@@ -5,6 +5,7 @@
 #' @encoding UTF-8
 #' @param AMASS body mass, kg
 #' @param GEOMETRY organism shape, 0-5, 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom
+#' @param ORIENT orientation of shape relevant to shapes 0, 1 & 2, 0 means plate lying flat, cylinder lengthwise, prolate ellipsoid, 1 means plate on edge, cylinder upright, oblate spheroid and ellipsoid
 #' @param SHP vector of ratios of dimensions of long to short axes of linear dimensions
 #' @param CUSTOMGEOM custom shape coefficients. Operates if shape=5, and consists of 4 pairs of values representing the parameters a and b of a relationship AREA=a*mass^b, where AREA is in cm2 and mass is in g. The first pair are a and b for total surface area, then a and b for ventral area, then for sillhouette area normal to the sun, then sillhouette area perpendicular to the sun
 #' @param ANDENS animal density (kg/m3)
@@ -18,6 +19,7 @@
 GEOM_ecto <- function(
     AMASS = 0.04,
     GEOMETRY = 3,
+    ORIENT = 0,
     SHP = c(1, 3, 2 / 3),
     CUSTOMGEOM = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
     ANDENS = 1000,
@@ -70,8 +72,13 @@ GEOM_ecto <- function(
     ALENTH <-  AHEIT*SHP[3]
     ATOT <- ALENTH * AWIDTH * 2 + ALENTH * AHEIT * 2 + AWIDTH * AHEIT * 2
     AREA <- ATOT
-    ASILN <- ALENTH * AWIDTH
-    ASILP <- AWIDTH * AHEIT
+    if(ORIENT == 0){
+      ASILN <- ALENTH * AWIDTH
+      ASILP <- AWIDTH * AHEIT
+    }else{
+      ASILN <- AWIDTH * AHEIT
+      ASILP <- LENTH * AWIDTH
+    }
     AL <- AHEIT
     if(AWIDTH <= ALENTH){
       AL <- AWIDTH
@@ -95,8 +102,13 @@ GEOM_ecto <- function(
     AREA <- 2 * PI * R1 ^ 2 + 2 * PI * R1 * ALENTH
     VOL <- AMASS / ANDENS
     AWIDTH <- 2 * R1
-    ASILN <- AWIDTH  *  ALENTH
-    ASILP <- PI * R1 ^ 2
+    if(ORIENT == 0){
+      ASILN <- AWIDTH * ALENTH
+      ASILP <- PI * R1 ^ 2
+    }else{
+      ASILN <- PI * R1 ^ 2
+      ASILP <- AWIDTH * ALENTH
+    }
     AV <- AREA * PTCOND
     AT <- AREA * SKINT
     ATOT <- AREA
@@ -124,9 +136,10 @@ GEOM_ecto <- function(
     }else{
       AEFF <- SKINW * (AREA - AV)
     }
-    ASILN <- PI * A * C
-    ASILP <- PI * B * C
-    if(ASILN < ASILP){
+    if(ORIENT == 0){
+      ASILN <- PI * A * C
+      ASILP <- PI * B * C
+    }else{
       ASILN <- PI * B * C
       ASILP <- PI * A * C
     }

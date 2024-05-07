@@ -83,7 +83,7 @@ FUN_ecto(
 
 \item{BSEMINR}{length of semi-minor radius 1 for ellipsoid (m)}
 
-\item{CSEMINR}{length of semi-minor radius 1 for ellipsoid (m)}
+\item{CSEMINR}{length of semi-minor radius 2 for ellipsoid (m)}
 
 \item{CONV_ENHANCE}{convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 https://doi.org/10.1016/S0006-3495(76)85711-6}
 

@@ -32,7 +32,6 @@ SOLAR_ecto <- function(
     QSOLR = 1000,
     PDIF = 0.1,
     SHADE = 0,
-    postur = 1,
     LIVE = 1){
   # C     NICHEMAPR: SOFTWARE FOR BIOPHYSICAL MECHANISTIC NICHE MODELLING
   #
@@ -65,9 +64,6 @@ SOLAR_ecto <- function(
     }else{
       QNORM <- (QSOLR / cos(ZEN))
     }
-    #if(postur != 1){
-    #  QNORM <- QSOLR
-    #}
     if(QNORM > 1367){
       #C       MAKING SURE THAT LOW SUN ANGLES DON'T LEAD TO SOLAR VALUES
       #C       GREATER THAN THE SOLAR CONSTANT
