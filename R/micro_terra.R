@@ -984,7 +984,7 @@ micro_terra <- function(
 
 
     global_climate <- terra::rast(paste0(folder, "/global_climate.nc"))
-    CLIMATE <- as.numeric(terra::extract(global_climate, x))
+    CLIMATE <- t(as.numeric(terra::extract(global_climate, x)))
     #ALTT <- as.numeric(CLIMATE[, 1])
     library(dismo)
     elevation <- getData("worldclim", var = "alt", res = 2.5)
