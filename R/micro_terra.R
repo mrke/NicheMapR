@@ -1088,7 +1088,7 @@ micro_terra <- function(
 
     dates2 <- head(seq(as.Date(paste0(ystart, '-01-01')), as.Date(paste0(yfinish + 1, '-01-01')), by = "days"), -1)
     dates <- head(seq(as.POSIXct(paste0("01/01/", ystart), format = "%d/%m/%Y", tz = 'Etc/GMT+10'), as.POSIXct(paste0("01/01/", yfinish + 1), format = "%d/%m/%Y ", tz = 'Etc/GMT+10'), by = 'hours'), -1)
-    ndays <- length(dates2)
+    #ndays <- length(dates2)
 
     clearskymean <- aggregate(clearskymean, by = list(format(dates, '%Y-%m')), FUN = mean)[, 2]
 
