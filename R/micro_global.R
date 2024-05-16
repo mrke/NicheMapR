@@ -954,28 +954,6 @@ micro_global <- function(
     hourly <- 0
     if(microclima > 0 & timeinterval %in% c(12, 365)){
 
-      # function to assist with interpolated data in leap years
-      leapfix <- function(indata, yearlist, mult = 1){
-        leapyears <- seq(1900, 2060, 4)
-        for(j in 1:length(yearlist)){
-          if(yearlist[j] %in% leapyears){# add day for leap year if needed
-            if(mult == 1){
-              data <- c(indata[1:59], indata[59], indata[60:365])
-            }else{
-              data <- c(indata[1:(59 * mult)], indata[(58*mult+1):(59 * mult)], indata[(59 * mult + 1):(365 * mult)])
-            }
-          }else{
-            data <- indata
-          }
-          if(j == 1){
-            alldata <- data
-          }else{
-            alldata <- c(alldata, data)
-          }
-        }
-        return(alldata)
-      }
-
       cat('using microclima and elevatr to adjust solar for topographic and vegetation effects \n')
       if (!require("microclima", quietly = TRUE)) {
         stop("package 'microclima' is needed. Please install it.",

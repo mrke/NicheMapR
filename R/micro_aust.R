@@ -156,6 +156,7 @@
 #' \code{minshade}{ - minimum shade for each day of simulation (\%)}\cr\cr
 #' \code{maxshade}{ - maximum shade for each day of simulation (\%)}\cr\cr
 #' \code{DEP}{ - vector of depths used (cm)}\cr\cr
+#' \code{diffuse_frac}{ - vector of hourly values of the fraction of total solar radiation that is diffuse (-), computed by microclima if microclima > 0}\cr\cr
 #'
 #' metout/shadmet variables:
 #' \itemize{
@@ -411,28 +412,6 @@ micro_aust <- function(
   grasshade = 0,
   maxsurf = 95
 ) {
-
-  # function to assist with interpolated data in leap years
-  leapfix <- function(indata, yearlist, mult = 1){
-    leapyears <- seq(1900, 2060, 4)
-    for(j in 1:length(yearlist)){
-      if(yearlist[j] %in% leapyears){# add day for leap year if needed
-        if(mult == 1){
-          data <- c(indata[1:59], indata[59], indata[60:365])
-        }else{
-          data <- c(indata[1:(59 * mult)], indata[(58*mult+1):(59 * mult)], indata[(59 * mult + 1):(365 * mult)])
-        }
-      }else{
-        data <- indata
-      }
-      if(j == 1){
-        alldata <- data
-      }else{
-        alldata <- c(alldata, data)
-      }
-    }
-    return(alldata)
-  }
 
   if(opendap == 0){
     require(RMySQL)
@@ -1683,11 +1662,16 @@ micro_aust <- function(
           h_dif <- h_dp * afd * 4.87/0.0036
           h_dni[si == 0] <- 0
           h_dif[is.na(h_dif)] <- 0
+          diffuse_frac_all <- h_dif / (h_dni + h_dif) # calculated diffuse fraction
+          diffuse_frac_all[is.na(diffuse_frac_all)] <- 1
+          diffuse_frac <- diffuse_frac_all
           radwind2 <- .shortwave.ts(h_dni * 0.0036, h_dif * 0.0036, jd, hour.microclima, lat, long, slope, aspect, ha = ha, svv = 1, x = microclima.LOR, l = mean(microclima.LAI), albr = 0, merid = long, dst = 0, difani = FALSE)
           #microclima.out$hourlyradwind <- radwind2
           SOLRhr <- radwind2$swrad / 0.0036
           VIEWF <- 1 # accounted for already in microclima cals
           hori <- rep(0, 24) # accounted for already in microclima calcs
+        }else{
+          diffuse_frac <- NA
         }
 
         if(opendap == 0){
@@ -1939,13 +1923,13 @@ micro_aust <- function(
           drrlam <- as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
           srlam <- as.data.frame(microut$srlam) # retrieve scattered solar irradiance
           if(snowmodel == 1){
-            return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, sunsnow = sunsnow, shdsnow = shdsnow, plant = plant, shadplant = shadplant, tcond = tcond, shadtcond = shadtcond, specheat = specheat, shadspecheat = shadspecheat, densit = densit, shaddensit = shaddensit, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = c(x[1],x[2]),nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, drlam = drlam, drrlam = drrlam, srlam = srlam, dates = dates, dates2 = dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS))
+            return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, sunsnow = sunsnow, shdsnow = shdsnow, plant = plant, shadplant = shadplant, tcond = tcond, shadtcond = shadtcond, specheat = specheat, shadspecheat = shadspecheat, densit = densit, shaddensit = shaddensit, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = c(x[1],x[2]),nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, drlam = drlam, drrlam = drrlam, srlam = srlam, dates = dates, dates2 = dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS, diffuse_frac = diffuse_frac))
           }else{
-            return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, plant = plant, shadplant = shadplant, tcond = tcond, shadtcond = shadtcond, specheat = specheat, shadspecheat = shadspecheat, densit = densit, shaddensit = shaddensit, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = c(x[1],x[2]),nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, drlam = drlam, drrlam = drrlam, srlam = srlam, dates = dates, dates2 = dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS))
+            return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, plant = plant, shadplant = shadplant, tcond = tcond, shadtcond = shadtcond, specheat = specheat, shadspecheat = shadspecheat, densit = densit, shaddensit = shaddensit, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = c(x[1],x[2]),nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, drlam = drlam, drrlam = drrlam, srlam = srlam, dates = dates, dates2 = dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS, diffuse_frac = diffuse_frac))
           }
         }else{
           if(snowmodel == 1){
-            return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, sunsnow = sunsnow, shdsnow = shdsnow, plant = plant, shadplant = shadplant, tcond = tcond, shadtcond = shadtcond, specheat = specheat, shadspecheat = shadspecheat, densit = densit, shaddensit = shaddensit, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = c(x[1],x[2]),nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, dates = dates, dates2 = dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS))
+            return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, sunsnow = sunsnow, shdsnow = shdsnow, plant = plant, shadplant = shadplant, tcond = tcond, shadtcond = shadtcond, specheat = specheat, shadspecheat = shadspecheat, densit = densit, shaddensit = shaddensit, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = c(x[1],x[2]),nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, dates = dates, dates2 = dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS, diffuse_frac = diffuse_frac))
           }else{
             return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, plant = plant, shadplant = shadplant, tcond = tcond, shadtcond = shadtcond, specheat = specheat, shadspecheat = shadspecheat, densit = densit, shaddensit = shaddensit, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = c(x[1],x[2]),nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, dates = dates, dates2 = dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS))
           }

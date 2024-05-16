@@ -196,6 +196,7 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{minshade}{ - minimum shade for each day of simulation (\%)}\cr\cr
 \code{maxshade}{ - maximum shade for each day of simulation (\%)}\cr\cr
 \code{DEP}{ - vector of depths used (cm)}\cr\cr
+\code{diffuse_frac}{ - vector of hourly values of the fraction of total solar radiation that is diffuse (-), computed by microclima if microclima > 0}\cr\cr
 
 metout/shadmet variables:
 \itemize{

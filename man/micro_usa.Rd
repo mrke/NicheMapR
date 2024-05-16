@@ -89,6 +89,7 @@ An implementation of the NicheMapR microclimate model that uses the GRIDMET dail
 \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
 \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
 \code{Soil_Init}{ = NA, initial soil temperature at each soil node, °C (if NA, will use the mean air temperature to initialise)}\cr\cr
+\code{microclima}{ = 0, Use microclima and elevatr package to adjust solar radiation for terrain? 1 = yes, 0 = no}\cr\cr
 \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
@@ -160,6 +161,8 @@ An implementation of the NicheMapR microclimate model that uses the GRIDMET dail
 \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
 \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
 \code{LAI}{ = 0.1, leaf area index (can be a single value or a vector of daily values), used to partition traspiration/evaporation from PET}\cr\cr
+\code{microclima.LAI}{ = 0, leaf area index, used by package microclima for radiation calcs}\cr\cr
+\code{microclima.LOR}{ = 1, leaf orientation for package microclima radiation calcs}\cr\cr
 
 \strong{ Snow mode parameters:}
 
@@ -194,6 +197,7 @@ An implementation of the NicheMapR microclimate model that uses the GRIDMET dail
 \code{minshade}{ - minimum shade for each day of simulation (\%)}\cr\cr
 \code{maxshade}{ - maximum shade for each day of simulation (\%)}\cr\cr
 \code{DEP}{ - vector of depths used (cm)}\cr\cr
+\code{diffuse_frac}{ - vector of hourly values of the fraction of total solar radiation that is diffuse (-), computed by microclima if microclima > 0}\cr\cr
 
 metout/shadmet variables:
 \itemize{

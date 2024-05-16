@@ -423,28 +423,6 @@ micro_terra <- function(
   maxsurf = 95
 ) {
 
-  # function to assist with interpolated data in leap years
-  leapfix <- function(indata, yearlist, mult = 1){
-    leapyears <- seq(1900, 2060, 4)
-    for(j in 1:length(yearlist)){
-      if(yearlist[j] %in% leapyears){# add day for leap year if needed
-        if(mult == 1){
-          data <- c(indata[1:59], indata[59], indata[60:365])
-        }else{
-          data <- c(indata[1:(59 * mult)], indata[(58*mult+1):(59 * mult)], indata[(59 * mult + 1):(365 * mult)])
-        }
-      }else{
-        data <- indata
-      }
-      if(j == 1){
-        alldata <- data
-      }else{
-        alldata <- c(alldata, data)
-      }
-    }
-    return(alldata)
-  }
-
   errors <- 0
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
