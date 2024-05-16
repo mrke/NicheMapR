@@ -1058,7 +1058,7 @@ C     TRANSITION BETWEEN STAGES FOR INSECT
          IF(ER.GE.L_THRESH)THEN
           STAGE=STAGE+1.0D0 ! PUPATION
           E_H(HOUR)=0.
-          VPUP(HOUR)=1E-4**3.
+          VPUP(HOUR)=1D-4**3.
           ER=ER*V(HOUR)/VPUP(HOUR)
           ED(HOUR)=ED(HOUR)*V(HOUR)/VPUP(HOUR)
           E_M2=ED(HOUR)*VPUP(HOUR)
