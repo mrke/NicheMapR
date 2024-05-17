@@ -1111,7 +1111,6 @@ micro_usa <- function(
       }
 
       if(microclima == 1){
-        hourly <- 2
         cat('using microclima and elevatr to adjust solar for topographic and vegetation effects \n')
         if (!require("microclima", quietly = TRUE)) {
           stop("package 'microclima' is needed. Please install it.",

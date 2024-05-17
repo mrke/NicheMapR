@@ -35,6 +35,7 @@
 #' \code{DIFTOL}{ = 0.001, error tolerance for SIMULSOL (°C)}\cr\cr
 #' \code{THERMOREG}{ = 1, thermoregulate? (1 = yes, 0 = no)}\cr\cr
 #' \code{RESPIRE}{ = 1, respiration? (1 = yes, 0 = no)}\cr\cr
+#' \code{CONV_ENHANCE}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 https://doi.org/10.1016/S0006-3495(76)85711-6}\cr}
 #'
 #' \strong{ Environment:}\cr\cr
 #' \code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr
@@ -365,6 +366,7 @@ endoR_devel <- function(
   TFA = TA, # fur/air interface temperature (°C)
 
   # other model settings
+  CONV_ENHANCE = 1, # convective enhancement factor for turbulent conditions, typically 1.4
   DIFTOL = 0.001, # tolerance for SIMULSOL
   THERMOREG = 1, # invoke thermoregulatory response
   RESPIRE = 1 # compute respiration and associated heat loss
@@ -499,7 +501,7 @@ endoR_devel <- function(
     TENV <- TA # fluid temperature (°C)
 
     # run subroutine
-    CONV.out <- CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV)
+    CONV.out <- CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV, CONV_ENHANCE)
 
     QCONV <- CONV.out[1] # convective heat loss (W)
     HC <- CONV.out[2] # combined convection coefficient

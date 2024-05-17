@@ -44,7 +44,7 @@ C     USING endo_devel.R
       DOUBLE PRECISION TSKY,TVEG,UNCURL,VEL,VMULT,VOL,VOLFAT,X,XR,Z
       DOUBLE PRECISION ZBRENTin,ZBRENTout,ZEN,ZFUR,ZFURCOMP,ZFURD,ZFURV
       DOUBLE PRECISION ZL,RFURCMP,KFURD,KFURV,PZFUR,ZFURD_REF,ZFURV_REF
-      DOUBLE PRECISION ZFURD_MAX,ZFURV_MAX,TC_MIN
+      DOUBLE PRECISION ZFURD_MAX,ZFURV_MAX,TC_MIN,CONV_ENHANCE
 
       DOUBLE PRECISION, DIMENSION(3) :: KEFARA,BETARA,B1ARA,DHAR,LHAR,
      & RHOAR,ZZFUR,REFLFR
@@ -54,7 +54,7 @@ C     USING endo_devel.R
       DIMENSION IRPROPout(26),GEOMout(25),CONVOUT(14),
      & SOLARout(7),SIMULSOLout(2,16),SIMULOUT(16),FURVARS(15),
      & GEOMVARS(20),TRAITS(9),ENVVARS(17),ZBRENTin(17),ZBRENTout(15),
-     & INPUT(92),TREG(17),MORPH(20),ENBAL(10),MASBAL(10)
+     & INPUT(93),TREG(17),MORPH(20),ENBAL(10),MASBAL(10)
 
       PI = ACOS(-1.0d0)
       ZBRENTout=0.
@@ -141,7 +141,7 @@ C     USING endo_devel.R
       FATPCT=input(79)
       PCOND=input(80)
       PZFUR = input(81)
-      ZFURCOMP = input(82)
+      ZFURCOMP=input(82)
       PANT_INC=input(83)
       ORIENT=input(84)
       SHAPEC=input(85)
@@ -152,6 +152,7 @@ C     USING endo_devel.R
       ZFURD_MAX=input(90)
       ZFURV_MAX=input(91)
       TC_MIN=input(92)
+      CONV_ENHANCE=input(93)
       
       TSKINMAX=TC ! initialise
       Q10mult=1. ! initialise
@@ -286,7 +287,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
 
        !# run subroutine
        CALL CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA,
-     &  VEL, ZFUR, BP, ELEV, CONVout)
+     &  VEL, ZFUR, BP, ELEV, CONV_ENHANCE, CONVout)
 
        QCONV = CONVout(1) !# convective heat loss (W)
        HC = CONVout(2) !# combined convection coefficient
@@ -586,7 +587,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
 
        !# run subroutine
        CALL CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA,
-     &  VEL, ZFUR, BP, ELEV, CONVout)
+     &  VEL, ZFUR, BP, ELEV, CONV_ENHANCE, CONVout)
 
        QCONV = CONVout(1) !# convective heat loss (W)
        HC = CONVout(2) !# combined convection coefficient
