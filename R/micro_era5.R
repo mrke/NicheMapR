@@ -668,10 +668,10 @@ micro_era5 <- function(
     lat <- as.numeric(longlat[2])
     long <- as.numeric(longlat[1])
     loc <- c(long, lat)
-    if(class(dem)[1] == "RasterLayer"){
+    if(class(dem)[1] == "SpatRaster"){
       cat('using DEM provided to function call \n')
     }
-    if(save != 2 & class(dem)[1] != "RasterLayer"){
+    if(save != 2 & class(dem)[1] != "SpatRaster"){
       cat('downloading DEM via package elevatr \n')
       dem <- microclima::get_dem(lat = lat, long = long, resolution = dem.res, xdims = pixels, ydims = pixels) # mercator equal area projection
     }
