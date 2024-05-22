@@ -593,7 +593,7 @@ micro_era5 <- function(
   # end error trapping
 
   if(errors==0){ # continue
-    max.date <- as.POSIXct(paste0("01/", format(Sys.time(), "%m/%Y")), format = "%d/%m/%Y", tz = "UTC") - 54 * 3600
+    max.date <- as.Date(paste0("01/", format(Sys.time(), "%m/%Y")), format = "%d/%m/%Y", tz = "UTC")
     if(as.Date(dfinish, format = "%d/%m/%Y") > max.date){
       message(paste0("Cannot simulate past ", max.date, "; reducing timespan accordingly \n"))
       dfinish <- as.character(as.Date(max.date, format = "%Y/%m/%d"))
