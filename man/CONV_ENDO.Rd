@@ -5,7 +5,21 @@
 \alias{CONV_ENDO}
 \title{CONV_ENDO}
 \usage{
-CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV)
+CONV_ENDO(
+  TS,
+  TENV,
+  SHAPE,
+  SURFAR,
+  FLTYPE,
+  FURTST,
+  D,
+  TFA,
+  VEL,
+  ZFUR,
+  BP,
+  ELEV,
+  CONV_ENHANCE
+)
 }
 \arguments{
 \item{TS}{skin temperature (°C)}
@@ -31,6 +45,8 @@ CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV)
 \item{BP}{barometric pressure (Pa), negative means altitude is used}
 
 \item{ELEV}{elevation (m)}
+
+\item{CONV_ENHANCE}{convective enhancement factor (-)}
 }
 \description{
 R wrapper for Fortran binary of CONV_ENDO (endotherm model)
