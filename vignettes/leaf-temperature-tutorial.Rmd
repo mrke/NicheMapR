@@ -4,7 +4,7 @@ author: "Michael Kearney"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Leaf Temperature Simulations}
+  %\VignetteIndexEntry{Leaf Temperature Tutorial}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 urlcolor: blue    
