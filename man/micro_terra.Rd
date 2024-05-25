@@ -301,7 +301,9 @@ drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar)
 }
 }
 \examples{
-micro <- micro_terra() # run the model with default location (Madison, Wisconsin) from 2000 to 2015 and settings
+library(geodata)
+elevation <- geodata::worldclim_global(var = 'elev', res = 2.5, path=tempdir()) # download DEM in advance (needed for lapse rate correction - automatically downloaded otherwise)
+micro <- micro_terra(elevation=elevation) # run the model with default location (Madison, Wisconsin) from 2000 to 2015 and settings
 
 metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 shadmet <- as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade

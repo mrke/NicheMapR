@@ -259,7 +259,9 @@
 #' \item  3-113 290, ..., 4000 - irradiance (W/(m2 nm)) at each of 111 wavelengths from 290 to 4000 nm
 #' }
 #' @examples
-#'micro <- micro_terra() # run the model with default location (Madison, Wisconsin) from 2000 to 2015 and settings
+#'library(geodata)
+#'elevation <- geodata::worldclim_global(var = 'elev', res = 2.5, path=tempdir()) # download DEM in advance (needed for lapse rate correction - automatically downloaded otherwise)
+#'micro <- micro_terra(elevation=elevation) # run the model with default location (Madison, Wisconsin) from 2000 to 2015 and settings
 #'
 #'metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #'shadmet <- as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
@@ -329,6 +331,7 @@ micro_terra <- function(
   ystart = 2000,
   yfinish = 2015,
   timeinterval = 12,
+  elevation = NA,
   nyears = yfinish - ystart + 1,
   REFL = 0.15,
   elev = NA,
@@ -964,8 +967,16 @@ micro_terra <- function(
     global_climate <- terra::rast(paste0(folder, "/global_climate.nc"))
     CLIMATE <- t(as.numeric(terra::extract(global_climate, x)))
     #ALTT <- as.numeric(CLIMATE[, 1])
-    library(geodata)
-    elevation <- geodata::worldclim_global(var = 'elev', res = 2.5, path = '.')
+    if(class(elevation)[1] == "SpatRaster"){
+      cat('using elevation DEM provided to function call \n')
+    }else{
+      if (!requireNamespace("geodata", quietly = TRUE)) {
+        stop("package 'geodata' is needed. Please install it.",
+             call. = FALSE)
+      }
+      library(geodata)
+      elevation <- geodata::worldclim_global(var = 'elev', res = 2.5, path=tempdir())
+    }
     ALTT <- as.numeric(terra::extract(elevation, x))
     if(is.na(ALTT)){
       ALTT <- 0
@@ -1250,8 +1261,8 @@ micro_terra <- function(
         m<-1
         b<-0
         for (i in 1:12){ #begin loop through 12 months of year
-          ndays=daymon2[i]
-          for (k in 1:ndays){
+          ndays2=daymon2[i]
+          for (k in 1:ndays2){
             b<-b+1
             sort[m,1]<-i
             sort[m,2]<-b
