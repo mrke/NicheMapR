@@ -15,6 +15,7 @@ Remotes: ilyamaclean/microclima
 Suggests:
     devtools,
     geonames,
+    geodata,
     knitr,
     lattice,
     rmarkdown,

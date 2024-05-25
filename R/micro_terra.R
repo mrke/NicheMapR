@@ -964,8 +964,8 @@ micro_terra <- function(
     global_climate <- terra::rast(paste0(folder, "/global_climate.nc"))
     CLIMATE <- t(as.numeric(terra::extract(global_climate, x)))
     #ALTT <- as.numeric(CLIMATE[, 1])
-    library(dismo)
-    elevation <- getData("worldclim", var = "alt", res = 2.5)
+    library(geodata)
+    elevation <- geodata::worldclim_global(var = 'elev', res = 2.5, path = '.')
     ALTT <- as.numeric(terra::extract(elevation, x))
     if(is.na(ALTT)){
       ALTT <- 0
