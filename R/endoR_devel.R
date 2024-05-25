@@ -35,7 +35,7 @@
 #' \code{DIFTOL}{ = 0.001, error tolerance for SIMULSOL (°C)}\cr\cr
 #' \code{THERMOREG}{ = 1, thermoregulate? (1 = yes, 0 = no)}\cr\cr
 #' \code{RESPIRE}{ = 1, respiration? (1 = yes, 0 = no)}\cr\cr
-#' \code{CONV_ENHANCE}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 https://doi.org/10.1016/S0006-3495(76)85711-6}\cr}
+#' \code{CONV_ENHANCE}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 10.1016/S0006-3495(76)85711-6}\cr\cr
 #'
 #' \strong{ Environment:}\cr\cr
 #' \code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr
@@ -64,7 +64,7 @@
 #' \code{PANT}{ = 1, multiplier on breathing rate to simulate panting (-)}\cr\cr
 #' \code{PANT_INC}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
 #' \code{PANT_MULT}{ = 1.05, multiplier on basal metabolic rate at maximum panting level (-)}\cr\cr
-#' \code{PANT_MAX}{ = 10, # maximum breathing rate multiplier to simulate panting (-)}\cr\cr
+#' \code{PANT_MAX}{ = 10, maximum breathing rate multiplier to simulate panting (-)}\cr\cr
 #'
 #' \strong{ General morphology:}\cr\cr
 #' \code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr
@@ -126,7 +126,7 @@
 #' \item 6 TFA_V - ventral fur-air interface temperature (°C)
 #' \item 7 SHAPE_B - current ratio between long and short axis due to postural change (-)
 #' \item 8 PANT - breathing rate multiplier (-)
-#' \item 9 SKINWET - part of the skin surface that is wet (\%)
+#' \item 9 PCTWET - part of the skin surface that is wet (\%)
 #' \item 10 K_FLESH - thermal conductivity of flesh (W/m°C)
 #' \item 11 K_FUR - thermal conductivity of fur (W/m°C)
 #' \item 12 K_FUR_D - thermal conductivity of dorsal fur (W/m°C)
@@ -280,10 +280,10 @@ endoR_devel <- function(
   KSUB = 2.79, # substrate thermal conductivity (W/m°C)
   TBUSH = TA, # bush temperature (°C)
   BP = -1, # Pa, negative means elevation is used
-  O2GAS = 20.95, # oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
-  N2GAS = 79.02, # nitrogen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
-  CO2GAS = 0.0412, # carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
-  R_PCO2 = CO2GAS / 100, # reference atmospheric dioxide concentration of air (proportion), to allow for anthropogenic change (\%)}\cr\cr
+  O2GAS = 20.95, # oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)
+  N2GAS = 79.02, # nitrogen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)
+  CO2GAS = 0.0412, # carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}
+  R_PCO2 = CO2GAS / 100, # reference atmospheric dioxide concentration of air (proportion), to allow for anthropogenic change (\%)
   PDIF = 0.15, # proportion of solar radiation that is diffuse (fractional, 0-1)
 
   # BEHAVIOUR
@@ -298,7 +298,7 @@ endoR_devel <- function(
   AK1_MAX = 2.8, # maximum flesh conductivity (W/mK)
   PANT = 1, # multiplier on breathing rate to simulate panting (-)
   PANT_INC = 0.1, # increment for multiplier on breathing rate to simulate panting (-)
-  PANT_MULT = 1.05, # multiplier on basal metabolic rate at maximum panting level (-)}\cr\cr
+  PANT_MULT = 1.05, # multiplier on basal metabolic rate at maximum panting level (-)
 
   # MORPHOLOGY
 

@@ -52,7 +52,7 @@ third raise core temperature, fourth pant and fifth sweat.
 \code{DIFTOL}{ = 0.001, error tolerance for SIMULSOL (°C)}\cr\cr
 \code{THERMOREG}{ = 1, thermoregulate? (1 = yes, 0 = no)}\cr\cr
 \code{RESPIRE}{ = 1, respiration? (1 = yes, 0 = no)}\cr\cr
-\code{CONV_ENHANCE}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 https://doi.org/10.1016/S0006-3495(76)85711-6}\cr}
+\code{CONV_ENHANCE}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 10.1016/S0006-3495(76)85711-6}\cr\cr
 \code{WRITE_INPUT}{ = 0, write input to csv (1 = yes)}\cr\cr
 \code{TREGMODE}{ = 1, 1 = raise core then pant then sweat, 2 = raise core and pant simultaneously, then sweat}\cr\cr
 
@@ -131,7 +131,7 @@ third raise core temperature, fourth pant and fifth sweat.
 \code{RQ}{ = 0.80, # respiratory quotient (fractional, 0-1)}\cr\cr
 \code{EXTREF}{ = 20, # O2 extraction efficiency (\%)}\cr\cr
 \code{Q10}{ = 2, # Q10 factor for adjusting BMR for TC}\cr\cr
-\code{TC_MIN}{ = 19, # minimum core temperature during torpor (TREGMODE = 0)
+\code{TC_MIN}{ = 19, # minimum core temperature during torpor (TREGMODE = 0)}\cr\cr
 
 \strong{ Initial conditions:}\cr\cr
 \code{TS}{ = TC - 3, # initial skin temperature (°C)}\cr\cr
@@ -151,7 +151,7 @@ treg variables (thermoregulatory response):
 \item 8 PANT - breathing rate multiplier (-)
 \item 9 PCTWET - part of the skin surface that is wet (\%)
 \item 10 K_FLESH - thermal conductivity of flesh (W/m°C)
-\item 11 K_FUR - thermal conductivity of flesh (W/m°C)
+\item 11 K_FUR - thermal conductivity of fur (W/m°C)
 \item 12 K_FUR_D - thermal conductivity of dorsal fur (W/m°C)
 \item 13 K_FUR_V - thermal conductivity of ventral fur (W/m°C)
 \item 14 K_COMPFUR - thermal conductivity of compressed fur (W/m°C)

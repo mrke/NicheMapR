@@ -1,4 +1,4 @@
-## ---- echo = FALSE, warning = FALSE, message = FALSE--------------------------
+## ----echo = FALSE, warning = FALSE, message = FALSE---------------------------
 knitr::opts_chunk$set(
  eval = TRUE, tidy.opts=list(width.cutoff=60), tidy=TRUE  
 )
@@ -69,13 +69,13 @@ $st$|stored
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ---- echo=FALSE, out.width = "40%", fig.align="center", fig.cap = "A cross section system diagram for heat flow in an animal", fig.pos='!h'----
+## ----echo=FALSE, out.width = "40%", fig.align="center", fig.cap = "A cross section system diagram for heat flow in an animal", fig.pos='!h'----
 include_graphics("Lizard_System_Diagram1.jpg")
 
-## ---- echo=FALSE, out.width = "70%", fig.align="center", fig.cap = "An equivalent thermal circuit diagram for the system diagram in Figure 1. This assumes a point source of heat at the centre and a slab approximation of the geometry", fig.pos='!h'----
+## ----echo=FALSE, out.width = "70%", fig.align="center", fig.cap = "An equivalent thermal circuit diagram for the system diagram in Figure 1. This assumes a point source of heat at the centre and a slab approximation of the geometry", fig.pos='!h'----
 include_graphics("Lizard_System_Diagram2.jpg")
 
-## ---- echo=FALSE, fig.cap = "The ratio of internal and external resistance (Biot number) for desert iguana-shaped lizards of different body mass at 0.45 m/s wind speed, 24 °C air and radiant temperature, 26 °C skin temperature, and flesh thermal conductivity of 0.5 W/mC."----
+## ----echo=FALSE, fig.cap = "The ratio of internal and external resistance (Biot number) for desert iguana-shaped lizards of different body mass at 0.45 m/s wind speed, 24 °C air and radiant temperature, 26 °C skin temperature, and flesh thermal conductivity of 0.5 W/mC."----
 masses <- seq(40, 5000, 100) # sequence of wet masses (g)
 Tair <- 24 # deg C
 vel <- 0.45 # m/s
@@ -149,9 +149,9 @@ for(i in 1:length(masses)){
 plot(Biot ~ masses, ylab = 'Biot number', xlab = 'mass (g)', ylim = c(0, .25))
 abline(h=0.1)
 
-## ---- echo=FALSE, out.width = "40%", fig.align="center", fig.cap = "A one-lump model of heat loss assuming a point (line) source of heat in the centre of the cylindrical geometry", fig.pos='!h'----
+## ----echo=FALSE, out.width = "40%", fig.align="center", fig.cap = "A one-lump model of heat loss assuming a point (line) source of heat in the centre of the cylindrical geometry", fig.pos='!h'----
 include_graphics("Lizard_System_Diagram3.jpg")
 
-## ---- echo=FALSE, out.width = "40%", fig.align="center", fig.cap = "A one lump model of heat exchange assuming distributed metabolic heat generation", fig.pos='!h'----
+## ----echo=FALSE, out.width = "40%", fig.align="center", fig.cap = "A one lump model of heat exchange assuming distributed metabolic heat generation", fig.pos='!h'----
 include_graphics("Bat_System_Diagram.jpg")
 

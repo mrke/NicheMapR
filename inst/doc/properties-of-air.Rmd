@@ -1104,10 +1104,10 @@ In the calculations below, the maximum humidity for January is calculated by obt
 
 ```{r, results='asis', fig.width=7, fig.height=8, warning=FALSE, message=FALSE}
 library(NicheMapR) # load the NicheMapR package
-library(raster) # package for working with rasters
+library(terra) # package for working with rasters
 library(ncdf4) # package for dealing with netcdf files (a kind of layered raster)
 # read the global_climate dataset
-global_climate<-brick(paste("c:/globalclimate/global_climate.nc",sep="")) 
+global_climate<-rast(paste("c:/globalclimate/global_climate.nc",sep="")) 
  # 38th layer of global_climate is min January air temperature*10
 Tair_min_january=global_climate[[38]]/10
 # 50th layer of global_climate is max January air temperature*10

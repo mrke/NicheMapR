@@ -46,7 +46,7 @@ The output table **environ** looks like this (some columns of the first 13 hrs a
 
 ```{r, echo=FALSE, results='asis', message=FALSE, warnings=FALSE}
 knitr::kable(head(ecto$environ[,c(4:15,25)], 13), digits = 2)
-knitr::kable(head(ecto$environ[,c(26:27)], 13), digits = 2)
+knitr::kable(head(ecto$environ[,c(26:29)], 13), digits = 2)
 ```
 
 and includes the following variables (among others):
@@ -66,6 +66,8 @@ and includes the following variables (among others):
 * **ABSAN** - solar absorptivity (fractional)
 * **PCOND** - proportion of animal's surface in contact with ground (fractional)
 * **POSTURE** - postural orientation (1=perpendicular to sun, 2=parallel, 0=in-between)
+* **PANT** - panting multiplier (>1 means panting)
+* **PCTWET** - percent of the skin that is wet (0-100%)
 
 The model has considered, for each hour of the day, where the organism could be in its habitat conditional on the behavioural options set. The default simulation is for the Eastern Water Skink, *Eulamprus quoyii*, which is diurnal (`diurn = 1`, `nocturn = 0`, `crepus = 0`). So, for the nighttime and twilight hours, the animal is assumed to be underground (`burrow = 1`). 
 
@@ -349,6 +351,8 @@ n.NC <- 1
 n.NH <- 4/5
 n.NO <- 3/5
 n.NN <- 4/5
+
+del.M <- 0.21957 # this is currently not in allstat for some reason
 
 # morph, behav and water loss
 pct_wet <- 0.2    # % of surface area acting as a free-water exchanger

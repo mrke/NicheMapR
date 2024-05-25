@@ -63,8 +63,8 @@ and show, for each day of the year and for each hour of the day, a series of abo
 1. ZEN - zenith angle of sun (degrees - 90&deg; = below the horizon)
 1. SOLR - solar radiation (W/m2)
 1. TSKYC - sky radiant temperature (&deg;C)
-1. DEW - dew presence (0 or 1)
-1. FROST - frost presence (0 or 1)
+1. DEW - dew formation (mm)
+1. FROST - frost formation (mm)
 1. SNOWFALL - snow predicted to have fallen (mm)
 1. SNOWDEP - predicted snow depth (cm)
 
@@ -153,7 +153,7 @@ with(subset(soil,DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15
 
 Another important influence on microclimatic conditions is the substrate type. The substrate solar reflectivity can be changed with the parameter ```REFL`` and the emissivity with the parameter ```SLE``` (both range from 0-1).
 
-Soil thermal properties are also importance. Soil comprises a mixture of minerals, air and water. The density (Mg/m3), thermal conductivity (W/mK) and specific heat capacity (J/kg-K) of the mineral component are specified by the parameters ```Density```, ```Thcond``` and ```SpecHeat```, respectively. The bulk density determines the proportion of the soil volume that is air, parameter ```BulkDensity``` (Mg/m3). The overall soil conductivity, specific heat and density values are then adjusted for bulk density and soil moisture (see below), as well as for soil temperature, using themethods described in Campbell et al. (1994, equations 8, 9) and Campbell and Norman (Campbell & Norman 1998, equations 8.13, 8.17, 8.20 and data in Tables 8.2 and 9.1). All these properites can be specified separately for each soil node in the model. 
+Soil thermal properties are also importance. Soil comprises a mixture of minerals, air and water. The density (Mg/m3), thermal conductivity (W/mK) and specific heat capacity (J/kg-K) of the mineral component are specified by the parameters ```Density```, ```Thcond``` and ```SpecHeat```, respectively. The bulk density determines the proportion of the soil volume that is air, parameter ```BulkDensity``` (Mg/m3). The overall soil conductivity, specific heat and density values are then adjusted for bulk density and soil moisture (see below), as well as for soil temperature, using themethods described in Campbell et al. (1994, equations 8, 9) and Campbell and Norman (Campbell & Norman 1998, equations 8.13, 8.17, 8.20 and data in Tables 8.2 and 9.1). All these properties can be specified separately for each soil node in the model. 
 
 The default values are typical for soil minerals as described in Campbell and Norman (1998) Table 8.2, but  an 'A-horizon' layer for the first node, reflecting properties of organic matter, is also simulated (see Kearney et al. 2014). This can be turned off by specifying `cap = 0`. 
 

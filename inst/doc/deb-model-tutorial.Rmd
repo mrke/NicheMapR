@@ -174,7 +174,7 @@ tabl <- "
 *Parameter*                         |	*Parameter Symbol*    |	*Unit*
 ----------------------------------- | --------------------- | ------------------
 max surface-specific assimilation rate | $\\{\\dot{p}_{Am}\\}$ | $J\\:cm^{-2}\\:d^{-1}$
-energy conductance                  | $\\dot{v}$            | $d^{-1}$
+energy conductance                  | $\\dot{v}$            | $cm\\:d^{-1}$
 allocation fraction to soma         | $\\kappa$             | -
 volume-specific somatic maintenance cost | $[\\dot{p}_{M}]$ | $J\\:cm^{-3}\\:d^{-1}$
 volume-specific cost for structure         | $[E_g]$               | $J\\:cm^{-3}$
@@ -367,6 +367,8 @@ n.NC <- 1
 n.NH <- 4/5
 n.NO <- 3/5
 n.NN <- 4/5
+
+del.M <- 0.21957 # this is currently not in allstat for some reason
 ```
 
 Next, as described previously in the [Introduction to the NicheMapR ectotherm model](ectotherm-model-tutorial.html) vignette, we need to define the morphological, behavioural and physiological parameters for the biophysical models of heat and water exchange.

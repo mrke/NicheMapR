@@ -1,9 +1,9 @@
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 knitr::opts_chunk$set(
  eval = TRUE, tidy.opts=list(width.cutoff=60), tidy=TRUE  
 )
 
-## ---- warning=FALSE-----------------------------------------------------------
+## ----warning=FALSE------------------------------------------------------------
 library(NicheMapR)
 library(knitr)
 library(plotrix)
@@ -47,7 +47,7 @@ KFURCMPRS <- IRPROP.out[26] # effective thermal conductivity of compressed ventr
 IRPROP.lab <- c("KEFARA mean", "KEFARA dorsal", "KEFARA ventral", "BETARA mean", "BETARA dorsal", "BETARA ventral", "B1ARA mean", "B1ARA dorsal", "B1ARA ventral", "DHAR mean", "DHAR dorsal", "DHAR ventral", "LHAR mean", "LHAR dorsal", "LHAR ventral", "RHOAR mean", "RHOAR dorsal", "RHOAR ventral", "ZZFUR mean", "ZZFUR dorsal", "ZZFUR ventral", "REFLFR mean", "REFLFR dorsal", "REFLFR ventral", "FURTST", "KFURCMPRS")
 kable(cbind(IRPROP.lab, IRPROP.out[1:26]))
 
-## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
+## ----fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
 DHAIRs <- seq(0, 150, 2) # hair diameters (micrometers)
 KEFARAs <- NULL
 for(i in 1:length(DHAIRs)){
@@ -55,7 +55,7 @@ for(i in 1:length(DHAIRs)){
 }
 plot(KEFARAs ~ DHAIRs, type = 'p', pch = 16, ylab = 'effective fur conductivity, W K-1 m-1', xlab = 'hair diameter, um')
 
-## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
+## ----fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
 RHOs <- seq(0, 50000, 500) # hair densities (1/cm2)
 KEFARAs <- NULL
 for(i in 1:length(RHOs)){
@@ -63,7 +63,7 @@ for(i in 1:length(RHOs)){
 }
 plot(KEFARAs ~ RHOs, type = 'p', pch = 16, ylab = 'effective fur conductivity, W K-1 m-1', xlab = 'hair density, 1/cm2')
 
-## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
+## ----fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
 ZFURs <- seq(0, 50, 1) # hair depths (mm)
 KEFARAs <- NULL
 for(i in 1:length(ZFURs)){
@@ -124,7 +124,7 @@ R2 <- GEOM.out[22] # shape-specific core-fur radius in shortest dimension (m)
 GEOM.lab <- c("VOL", "D", "MASFAT", "VOLFAT", "ALENTH", "AWIDTH", "AHEIT", "ATOT", "ASIL", "ASILN", "ASILP", "GMASS", "AREASKIN", "FLSHVL", "FATTHK", "ASEMAJ", "BSEMIN", "CSEMIN", "CONVSK", "CONVAR", "R1", "R2")
 kable(cbind(GEOM.lab, t(GEOM.out)))
 
-## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
+## ----fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE----
 if(SHAPE == 4){ #ellipsoid
 par(mfrow=c(1,2))
 plot(c(0,ASEMAJ*2+ZFUR*2), c(0,ASEMAJ*2+ZFUR*2), type="n", main="ellipsoid, sagittal section", ylab = 'minor axis, m', xlab = 'major axis, m', asp=1)
@@ -185,13 +185,14 @@ TFA <- 10 # fur/air interface temperature (°C)
 SHAPE <- 4 # shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid
 SURFAR <- CONVAR # surface area for convection, m2 (from GEOM)
 FLTYPE <- 0 # FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER
+CONV_ENHANCE <- 1.4 # convective enhancement factor (-)
 FURTST <- FURTST # test of fur presence (-) from IRPROP 
 VEL <- 1 # wind speed (m/s)
 ELEV <- 0 # elevation (m)
 BP <- -1 # barometric pressure (Pa), negative means altitude is used
 
 # run subroutine
-CONV.out <- CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV)
+CONV.out <- CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV, CONV_ENHANCE)
 
 QCONV <- CONV.out[1] # convective heat loss (W)
 HC <- CONV.out[2] # combined convection coefficient (W/m2 C)
@@ -393,7 +394,7 @@ for(S in 1:2){
   
   # package up inputs
   FURVARS <- c(LEN,ZFUR,FURTHRMK,KEFF,BETARA,FURTST,ZL,LHAR[S+1],DHAR[S+1],RHOAR[S+1],REFLFR[S+1],KHAIR,S)
-  GEOMVARS <- c(SHAPE,SUBQFAT,CONVAR,VOL,D,CONVAR,CONVSK,RFUR,RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD,PCOND,RFURCMP,BLCMP,KFURCMPRS)
+  GEOMVARS <- c(SHAPE,SUBQFAT,CONVAR,VOL,D,CONVAR,CONVSK,RFUR,RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD,PCOND,RFURCMP,BLCMP,KFURCMPRS,CONV_ENHANCE)
   ENVVARS <- c(FLTYPE,TA,TS,TBUSH,TVEG,TLOWER,TSKY,TCONDSB,RH,VEL,BP,ELEV,FASKY,FABUSH,FAVEG,FAGRD,QSLR)
   TRAITS <- c(TC,AK1,AK2,EMISAN,FATTHK,FLYHR,FURWET,PCTBAREVAP,PCTEYES)
   

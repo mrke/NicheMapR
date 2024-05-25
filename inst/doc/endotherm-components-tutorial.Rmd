@@ -237,13 +237,14 @@ TFA <- 10 # fur/air interface temperature (°C)
 SHAPE <- 4 # shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid
 SURFAR <- CONVAR # surface area for convection, m2 (from GEOM)
 FLTYPE <- 0 # FLUID TYPE: 0 = AIR; 1 = FRESH WATER; 2 = SALT WATER
+CONV_ENHANCE <- 1.4 # convective enhancement factor (-)
 FURTST <- FURTST # test of fur presence (-) from IRPROP 
 VEL <- 1 # wind speed (m/s)
 ELEV <- 0 # elevation (m)
 BP <- -1 # barometric pressure (Pa), negative means altitude is used
 
 # run subroutine
-CONV.out <- CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV)
+CONV.out <- CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV, CONV_ENHANCE)
 
 QCONV <- CONV.out[1] # convective heat loss (W)
 HC <- CONV.out[2] # combined convection coefficient (W/m2 C)
@@ -455,7 +456,7 @@ for(S in 1:2){
   
   # package up inputs
   FURVARS <- c(LEN,ZFUR,FURTHRMK,KEFF,BETARA,FURTST,ZL,LHAR[S+1],DHAR[S+1],RHOAR[S+1],REFLFR[S+1],KHAIR,S)
-  GEOMVARS <- c(SHAPE,SUBQFAT,CONVAR,VOL,D,CONVAR,CONVSK,RFUR,RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD,PCOND,RFURCMP,BLCMP,KFURCMPRS)
+  GEOMVARS <- c(SHAPE,SUBQFAT,CONVAR,VOL,D,CONVAR,CONVSK,RFUR,RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD,PCOND,RFURCMP,BLCMP,KFURCMPRS,CONV_ENHANCE)
   ENVVARS <- c(FLTYPE,TA,TS,TBUSH,TVEG,TLOWER,TSKY,TCONDSB,RH,VEL,BP,ELEV,FASKY,FABUSH,FAVEG,FAGRD,QSLR)
   TRAITS <- c(TC,AK1,AK2,EMISAN,FATTHK,FLYHR,FURWET,PCTBAREVAP,PCTEYES)
   

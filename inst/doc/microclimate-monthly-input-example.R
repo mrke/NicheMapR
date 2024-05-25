@@ -1,4 +1,4 @@
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 knitr::opts_chunk$set(
  eval = TRUE
 )
@@ -150,6 +150,9 @@ SoilMoist_Init <- rep(0.2, 10) # initial soil water content for each node, m3/m3
 moists <- matrix(nrow = 10, ncol = doynum, data = 0) # set up an empty vector for soil moisture values through time
 moists[1:10, ] <- SoilMoist_Init # insert inital soil moisture
 spinup <- 1 # repeat first day 3 times for steady state
+dewrain <- 0 # don't feed dew back into soil as rain
+moiststep <- 360 # how many steps within the hour is soil moisture solved over
+maxsurf <- 95 # what is the maximum allowable soil surface temp (for stability purposes), deg C
 
 ## -----------------------------------------------------------------------------
 snowtemp <- 1.5 # temperature at which precipitation falls as snow (used for snow model)
@@ -168,7 +171,7 @@ tides <- matrix(data = 0, nrow = 24 * doynum, ncol = 3) # matrix for tides
 
 ## -----------------------------------------------------------------------------
 # input parameter vector
-microinput<-c(doynum, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept, grasshade, solonly, ZH, D0, TIMAXS, TIMINS, spinup)
+microinput<-c(doynum, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept, grasshade, solonly, ZH, D0, TIMAXS, TIMINS, spinup, dewrain, moiststep, maxsurf)
 
 # Final input list - all these variables are expected by the input argument of the Fortran microclimate subroutine
 micro<-list(microinput = microinput, tides = tides, doy = doy, SLES = SLES, DEP = DEP, Nodes = Nodes, MAXSHADES = MAXSHADES, MINSHADES = MINSHADES, TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN, CCMAXX = CCMAXX, CCMINN = CCMINN, WNMAXX = WNMAXX, WNMINN = WNMINN, TAIRhr = TAIRhr, RHhr = RHhr, WNhr = WNhr, CLDhr = CLDhr, SOLRhr = SOLRhr, RAINhr = RAINhr, ZENhr = ZENhr, IRDhr = IRDhr, REFLS = REFLS, PCTWET = PCTWET, soilinit = soilinit, hori = hori, TAI = TAI, soilprops = soilprops, moists = moists, RAINFALL = RAINFALL, tannulrun = tannulrun, PE = PE, KS = KS, BB = BB, BD = BD, DD = DD, L = L, LAI = LAI)
@@ -188,7 +191,7 @@ shadhumid <- as.data.frame(microut$shadhumid[1:(doynum * 24), ]) # retrieve soil
 soilpot <- as.data.frame(microut$soilpot[1:(doynum * 24), ]) # retrieve soil water potential, minimum shade
 shadpot <- as.data.frame(microut$shadpot[1:(doynum * 24), ]) # retrieve soil water potential, maximum shade
 
-## ---- fig.width = 7, fig.height = 6-------------------------------------------
+## ----fig.width = 7, fig.height = 6--------------------------------------------
 # append dates
 days <- rep(seq(1, 12), 24)
 days <- days[order(days)]

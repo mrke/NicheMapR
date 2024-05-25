@@ -352,6 +352,8 @@ n.NH <- 4/5
 n.NO <- 3/5
 n.NN <- 4/5
 
+del.M <- 0.21957 # this is currently not in allstat for some reason
+
 # morph, behav and water loss
 pct_wet <- 0.2    # % of surface area acting as a free-water exchanger
 alpha_max <- 0.85 # maximum solar absorptivity

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Warren P. Porter, Paul D. Mathewson &amp; Michael R. Kearney" />
 
-<meta name="date" content="2022-10-12" />
+<meta name="date" content="2024-05-25" />
 
 <title>Endotherm Model Tutorial I: theory, equations and subroutines</title>
 
@@ -31,13 +31,13 @@ document.addEventListener('DOMContentLoaded', function(e) {
 </script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
 
 
 
@@ -241,7 +241,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 equations and subroutines</h1>
 <h4 class="author">Warren P. Porter, Paul D. Mathewson &amp; Michael R.
 Kearney</h4>
-<h4 class="date">2022-10-12</h4>
+<h4 class="date">2024-05-25</h4>
 
 
 
@@ -2150,8 +2150,8 @@ k_{sub}}{x_{sub}}\)</span> used to simplify equation notation</td>
 \text{m}^{-1} \space {^\circ \text{C}}^{-1}\)</span></td>
 <td align="left"><span class="math inline">\(\text{CD}\)</span></td>
 <td align="left">constant <span class="math inline">\(\left(\frac{k_{f,cmp}}{\ln\left(\frac{R_{fa,cmp}}{R_s}\right)}
-PCOND + \frac{k_f}{\ln\left(\frac{R_{fa}}{R_s} \right)} \left(1 - PCOND
-\right) \right)\)</span> used to simplify equation notation</td>
+PCOND  +  \frac{k_f}{\ln\left(\frac{R_{fa}}{R_s} \right)} \left(1 -
+PCOND \right) \right)\)</span> used to simplify equation notation</td>
 </tr>
 <tr class="even">
 <td align="left"><span class="math inline">\(C_{d2}\)</span></td>
@@ -2240,7 +2240,7 @@ simplify equation notation</td>
 <td align="left"><span class="math inline">\(\text{W} \space
 \text{m}^{-1}\)</span></td>
 <td align="left"><span class="math inline">\(\text{DV2}\)</span></td>
-<td align="left">constant <span class="math inline">\(\left[\frac{Q_{evap} R^2_g C_{d1}}{4 k_g V_g} +
+<td align="left">constant <span class="math inline">\(\left[\frac{Q_{evap} R^2_g C_{d1}}{4 k_g V_g}  +
 \frac{Q_{evap} R^2_g C_{d1}}{2 k_i
 V_g}\ln\left(\frac{R_{s}}{R_g}\right)\right]\)</span> used to simplify
 equation notation</td>

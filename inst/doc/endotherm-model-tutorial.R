@@ -1,9 +1,9 @@
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 knitr::opts_chunk$set(
  eval = TRUE, tidy.opts=list(width.cutoff=60), tidy=TRUE  
 )
 
-## ---- message=FALSE, warnings=FALSE-------------------------------------------
+## ----message=FALSE, warnings=FALSE--------------------------------------------
 library(NicheMapR)
 library(knitr)
 
@@ -14,7 +14,7 @@ morph <- as.data.frame(endo.out$morph)
 enbal <- as.data.frame(endo.out$enbal)
 masbal <- as.data.frame(endo.out$masbal)
 
-## ---- echo=FALSE, message=FALSE, warnings=FALSE-------------------------------
+## ----echo=FALSE, message=FALSE, warnings=FALSE--------------------------------
 treg.lab <- c("core temperature (°C)", "lung temperature (°C)", "dorsal skin temperature (°C)", "ventral skin temperature (°C)", "dorsal fur/feather-air interface temperature (°C)", "ventral fur-air interface temperature (°C)", "current ratio between long and short axis due to postural change (-)", "breathing rate multiplier (-)", "part of the skin surface that is wet (%)", "thermal conductivity of flesh (W/mC)", "effective thermal conductivity of fur/feathers (W/mC)", "thermal conductivity of dorsal fur/feathers (W/mC)", "thermal conductivity of ventral fur/feathers (W/mC)", "thermal conductivity of compressed fur/feathers (W/mC)", "Q10 multiplier on metabolic rate (-)")
 
 morph.lab <- c("total outer surface area (m2)", "total volume (m3)","characteristic dimension for convection (m)", "fat mass (kg)", "thickness of fat layer (m)", "flesh volume (m3)", "length (m)", "width (m)", "height (m)", "diameter, core to skin (m)", "diameter, core to fur/feathers (m)", "silhouette area (m2)", "silhouette area normal to sun's rays (m2)", "silhouette area parallel to sun's rays (m2)", "total skin area (m2)", "skin area available for evaporation (m2)", "area for convection (m2)", "area for conduction (m2)", "configuration factor to sky (-)", "configuration factor to ground (-)")
@@ -28,7 +28,7 @@ kable(cbind(t(round(morph, 4)), morph.lab), col.names = c("value", "description 
 kable(cbind(t(round(enbal, 4)), enbal.lab), col.names = c("value", "description and units"), caption = 'enbal')
 kable(cbind(t(round(masbal, 4)), masbal.lab), col.names = c("value", "description and units"), caption = 'masbal')
 
-## ---- fig.width=10, fig.height=7, fig.show = "hold", message=FALSE, warnings=FALSE----
+## ----fig.width=10, fig.height=7, fig.show = "hold", message=FALSE, warnings=FALSE----
 library(NicheMapR)
 # environment
 TAs <- seq(0, 50, 1) # air temperature (°C)
@@ -138,7 +138,7 @@ plot(masbal$AIR_L * 1000 / 60 ~ TAs, ylim = c(0, 250),  lty = 1, xlim = c(-5, 50
 legend(x = 0, y = 250, legend = c("observed", "predicted"), col = c("red", "black"), lty = c(NA, 1), bty = "n", pch = c(16, NA))
 points(Weathers1976Fig5$breaths_min * (13.2 * AMASS ^ 1.08) * ((Weathers1976Fig5$Tair + 273.15) / 273.15) ~ Weathers1976Fig5$Tair, col = 2, pch = 16) # tidal volume allometry from Lasiewski, R. C., and W. A. Calder. 1971, correcting volume according to PV = nRT equation, where V_2 = T_2 * V_1 / T_2, and T_1 is at STP, so 0 °C
 
-## ---- fig.width=10, fig.height=7, fig.show = "hold", message=FALSE, warnings=FALSE----
+## ----fig.width=10, fig.height=7, fig.show = "hold", message=FALSE, warnings=FALSE----
 library(NicheMapR)
 loc <- c(131.05, -22.75)
 Usrhyt <- 0.07

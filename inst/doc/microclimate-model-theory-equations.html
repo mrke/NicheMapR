@@ -12,7 +12,7 @@
 
 <meta name="author" content="Michael Kearney &amp; Warren P. Porter" />
 
-<meta name="date" content="2022-10-12" />
+<meta name="date" content="2024-05-25" />
 
 <title>Underlying theory and equations of the NicheMapR microclimate model</title>
 
@@ -31,13 +31,13 @@ document.addEventListener('DOMContentLoaded', function(e) {
 </script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
 
 
 
@@ -240,7 +240,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Underlying theory and equations of the
 NicheMapR microclimate model</h1>
 <h4 class="author">Michael Kearney &amp; Warren P. Porter</h4>
-<h4 class="date">2022-10-12</h4>
+<h4 class="date">2024-05-25</h4>
 
 
 
@@ -664,7 +664,7 @@ MICROSEGMT computes a three segment velocity and temperature profile
 based on user-specified, experimentally determined values for roughness
 heights <span class="math inline">\(z_{0,1}\)</span> and <span class="math inline">\(z_{0,2}\)</span> at two segment heights <span class="math inline">\(z_1\)</span> and <span class="math inline">\(z_2\)</span>.</p>
 <p>The MICRO subroutine first checks for free convection (lapse)
-conditions. The wind speed at the new local height <span class="math inline">\(u_{loc} = 2.5 u^* \ln (\frac{ z_{loc} }{ z_0 } +
+conditions. The wind speed at the new local height <span class="math inline">\(u_{loc} = 2.5 u^*  \ln (\frac{ z_{loc} }{ z_0 } +
 1)\)</span>, where the friction velocity <span class="math inline">\(u^*
 = \frac{0.4u }{ \ln (\frac{z }{ z_0} + 1)}\)</span>, with <span class="math inline">\(u\)</span> the wind speed at reference height
 <span class="math inline">\(z\)</span> and 0.4 being the von Karman
@@ -768,7 +768,7 @@ R T_{air})\)</span> where <span class="math inline">\(R =
 8.31434\)</span> and <span class="math inline">\(T_{air}\)</span> is in
 Kelvin, the specific heat <span class="math inline">\(c_p =
 \frac{1004.84 + r_w 1846.40}{1.0 + r_w}\)</span> where the mixing ratio
-<span class="math inline">\(r_w = \frac{(0.62197(1.0053e)}{P -
+<span class="math inline">\(r_w  = \frac{(0.62197(1.0053e)}{P -
 1.0053e}\)</span>, the density of air <span class="math inline">\(\rho_{air} = 0.0034838 \frac{P }{ 0.999
 T_v}\)</span> where the virtual temperature <span class="math inline">\(T_v = T_{air} ((1.0 + r_w/ \frac{18.016 }{
 28.966}) / (1.0 + r_w))\)</span> and <span class="math inline">\(T_{air}\)</span> is in Kelvin, and some additional
@@ -779,7 +779,7 @@ reference height to the local height. EVAP uses DRYAIR and WETAIR to
 compute the vapour density at 100% relative humidity and at the current
 humidity, and then determines evaporation from the surface according to
 the equation <span class="math inline">\(m_{evap} = \frac{P_{wet}}{100}
-h_d (v_{d,surf} - v_{d,air})\)</span>, where <span class="math inline">\(P_{wet}\)</span> is the % of the unit surface area
+h_d (v_{d,surf}  - v_{d,air})\)</span>, where <span class="math inline">\(P_{wet}\)</span> is the % of the unit surface area
 that is acting as a free water surface.</p>
 <p>The mass transfer coefficient <span class="math inline">\(h_d =
 \frac{h_c}{c_p \rho_{air}} \left( \frac{0.71}{0.60}
@@ -827,11 +827,10 @@ algorithm with Runge Kutta starting, with the ODE for the surface <span class="m
 Q_{conv} - Q_{evap} }{C_{s,1}}\)</span> and the subsequent ODEs <span class="math inline">\(\frac{dT_{s,i}}{dt} = \frac{ K_{s,i-1} (T_{s,i-1}
 - T_{s,i})+K_{s,i} T_{s,i+1}-T_{s,i})}{C_{s,i}}\)</span> where for a
 given node <span class="math inline">\(i\)</span> the heat capacity
-<span class="math inline">\(C_i= \rho_{s,i} c_{s,i} \frac{
-z_{i+1}-z_{i-1}}{2}\)</span> , and <span class="math inline">\(K_{s,i}=
-k_{s,i} (z_{i+1}-z_i)\)</span> where <span class="math inline">\(k_{s,i}\)</span> is the thermal conductivity. The
-computation of the terms <span class="math inline">\(Q_{solar}\)</span>,
-<span class="math inline">\(Q_{IR}\)</span>, <span class="math inline">\(Q_{conv}\)</span> and <span class="math inline">\(Q_{evap}\)</span> have been described earlier in
+<span class="math inline">\(C_i= \rho_{s,i} c_{s,i}  \frac{
+z_{i+1}-z_{i-1}}{2}\)</span> , and <span class="math inline">\(K_{s,i}=  k_{s,i} (z_{i+1}-z_i)\)</span> where
+<span class="math inline">\(k_{s,i}\)</span> is the thermal
+conductivity. The computation of the terms <span class="math inline">\(Q_{solar}\)</span>, <span class="math inline">\(Q_{IR}\)</span>, <span class="math inline">\(Q_{conv}\)</span> and <span class="math inline">\(Q_{evap}\)</span> have been described earlier in
 this document.</p>
 <p>In the NicheMapR microclimate model, 10 soil nodes are specified,
 including the surface. The spacing is under the control of the user but

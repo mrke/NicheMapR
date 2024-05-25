@@ -1,25 +1,25 @@
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 knitr::opts_chunk$set(
  eval = TRUE
 )
 
-## ---- message=FALSE, warnings=FALSE-------------------------------------------
+## ----message=FALSE, warnings=FALSE--------------------------------------------
 library(NicheMapR)
 longlat <- c(146.77, -19.29) # Townsville, northern Australia
 micro <- micro_global(loc = longlat)
 ecto <- ectotherm() # uses default settings (the Eastern Water Skink)
 
-## ---- echo=FALSE, results='asis', message=FALSE, warnings=FALSE---------------
+## ----echo=FALSE, results='asis', message=FALSE, warnings=FALSE----------------
 knitr::kable(head(ecto$environ[,c(4:15,25)], 13), digits = 2)
-knitr::kable(head(ecto$environ[,c(26:27)], 13), digits = 2)
+knitr::kable(head(ecto$environ[,c(26:29)], 13), digits = 2)
 
-## ---- echo=FALSE, results='asis', message=FALSE, warnings=FALSE---------------
+## ----echo=FALSE, results='asis', message=FALSE, warnings=FALSE----------------
 knitr::kable(head(ecto$enbal, 13), digits = 2)
 
-## ---- echo=FALSE, results='asis', message=FALSE, warnings=FALSE---------------
+## ----echo=FALSE, results='asis', message=FALSE, warnings=FALSE----------------
 knitr::kable(head(ecto$masbal[,c(1:5, 15:17)], 12))
 
-## ---- warning=FALSE, message=FALSE--------------------------------------------
+## ----warning=FALSE, message=FALSE---------------------------------------------
 Ww_g <- 40        # wet weight of animal (g)
 pct_wet <- 0.2    # % of surface area acting as a free-water exchanger
 alpha_min <-0.85  # minimum solar absorbtivity (dec %)
@@ -43,7 +43,7 @@ diurn <- 1        # diurnal activity
 minshades <- rep(0, 12)   # min available shade?
 maxshades <- micro$maxshade # max available shade?
 
-## ---- warning=FALSE, message=FALSE--------------------------------------------
+## ----warning=FALSE, message=FALSE---------------------------------------------
 ecto <- ectotherm(Ww_g = Ww_g, alpha_max = alpha_max, alpha_min = alpha_min, shape = shape, pct_wet = pct_wet, T_F_max = T_F_max, T_F_min = T_F_min, T_B_min = T_B_min, T_RB_min = T_RB_min, CT_max = CT_max, CT_min = CT_min, T_pref = T_pref, mindepth = mindepth, maxdepth = maxdepth, shade_seek = shade_seek, burrow = burrow, climb = climb, minshades = minshades, nocturn = nocturn, diurn = diurn, crepus = crepus, maxshades = maxshades)
 
 # retrieve output
@@ -64,7 +64,7 @@ environ <- cbind(dates,environ)
 masbal <- cbind(dates,masbal)
 enbal <- cbind(dates,enbal)
 
-## ---- fig.width=7, fig.height=7, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 90%**"----
+## ----fig.width=7, fig.height=7, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 90%**"----
 with(environ, plot(TC ~ dates, ylab = "", xlab="month of year", col = 'black', xlim = c(-0.25, 12), ylim = c(-20, 40), type = "l", yaxt = 'n'))
 with(environ, points(ACT * 2 + 7 ~ dates, type = "p", pch = 16, col = "orange"))
 with(environ, points(SHADE / 10 - 6 ~ dates, type = "l", col = "dark green"))
@@ -85,7 +85,7 @@ abline(h = -10, lty = 2, col = 'grey')
 mtext(text = c('body temperature (°C)', 'activity', 'shade (%)', 'depth (cm)'), side = 2, line = 2.5, at = c(30, 9, 0, -15))
 text(0.1, c(ecto$T_F_max + 1, ecto$T_F_min + 1), c('T_F_max', 'T_F_min'), col = c('red', 'blue'), cex = 0.75)
 
-## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Annual activity window for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 90%**"----
+## ----fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Annual activity window for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 90%**"----
 # seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)
 forage <- subset(environ, ACT == 2) # get foraging hours
 bask <- subset(environ, ACT == 1) # get basking hours
@@ -95,7 +95,7 @@ with(night, plot(TIME ~ DOY, ylab = "Hour of Day", xlab = "Day of Year", pch = 1
 with(forage, points(TIME ~ DOY, pch = 15, cex = 2, col = 'orange')) # foraging Tbs
 with(bask, points(TIME ~ DOY, pch = 15, cex = 2, col = 'light blue')) # basking Tbs
 
-## ---- echo=FALSE, fig.width=7, fig.height=7, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"----
+## ----echo=FALSE, fig.width=7, fig.height=7, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"----
 micro <- micro_global(loc = longlat, maxshade = 10)
 maxshades <- micro$maxshade
 
@@ -138,7 +138,7 @@ abline(h = -10, lty = 2, col = 'grey')
 mtext(text = c('body temperature (°C)', 'activity', 'shade (%)', 'depth (cm)'), side = 2, line = 2.5, at = c(30, 9, 0, -15))
 text(0.1, c(ecto$T_F_max + 1, ecto$T_F_min + 1), c('T_F_max', 'T_F_min'), col = c('red', 'blue'), cex = 0.75)
 
-## ---- fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Annual activity window for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"----
+## ----fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Annual activity window for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"----
 forage<-subset(environ,ACT==2)
 bask<-subset(environ,ACT==1)
 night<-subset(environ,Solar==0)
@@ -149,7 +149,7 @@ with(night,plot(TIME ~ DOY,ylab="Hour of Day",xlab="Day of Year",pch=15,cex=2,co
 with(forage,points(TIME~DOY,pch=15,cex=2,col='orange')) # foraging Tbs
 with(bask,points(TIME~DOY,pch=15,cex=2,col='light blue')) # basking Tbs
 
-## ---- warning=FALSE, message=FALSE, echo=FALSE, fig.width=8, fig.height=5-----
+## ----warning=FALSE, message=FALSE, echo=FALSE, fig.width=8, fig.height=5------
 rm(list=ls())
 longlat <- c(146.77, -19.29) # Townsville, northern Australia
 nyear <- 5
@@ -193,6 +193,8 @@ n.NC <- 1
 n.NH <- 4/5
 n.NO <- 3/5
 n.NN <- 4/5
+
+del.M <- 0.21957 # this is currently not in allstat for some reason
 
 # morph, behav and water loss
 pct_wet <- 0.2    # % of surface area acting as a free-water exchanger

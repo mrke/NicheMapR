@@ -49,7 +49,7 @@
 #' \item{\code{nyears}{ = micro$nyears, Number of years the simulation runs for - must be consistent with dimensions of environmental input data}\cr}
 #' \item{\code{enberr}{ = 0.01, Factor by which the mass is multiplied to obtain a tolerance level for the heat budget solution}\cr}
 #' \item{\code{live}{ = 1, 0 (no behavior or metabolism), 1 (full behaviour) or 2 (full behaviour other than orienting to the sun)?}\cr}
-#' \item{\code{leaf}{ = 0, Simulate leaf using stomatal conductance (1), pct_wet (2), or don't simulate leaf (0)?}\cr}
+#' \item{\code{leaf}{ = 0, Simulate leaf using given stomatal conductance (1), regulating stomatal openness (to g_vs_xx_max) to avoid overheating (2), or don't simulate leaf (0)?}\cr}
 #' \item{\code{transient}{ = 0, Run a transient (i.e. include heat storage) simulation (1=yes, 0=no)? No behaviour yet - assums full sun}\cr}
 #' \item{\code{delta_shade}{ = 3, Percent shade increment step, 0-100\%, allowing different thermoregulatory precision (smaller values increase run time)}\cr}
 #' \item{\code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1 = yes, 0 = no}\cr}
@@ -100,7 +100,7 @@
 #' \item{\code{shape_b}{ = 3, Proportionality factor (-) for going from volume to area, represents ratio of width:height for a plate, length:diameter for cylinder, b axis:a axis for ellipsoid }\cr}
 #' \item{\code{shape_c}{ = 0.6666666667, Proportionality factor (-) for going from volume to area, represents ratio of length:height for a plate, c axis:a axis for ellipsoid}\cr}
 #' \item{\code{orient}{ = 0, orientation of shape relevant to shapes 0, 1 & 2, 0 means plate lying flat, cylinder lengthwise, prolate ellipsoid, 1 means plate on edge, cylinder upright, oblate spheroid and ellipsoid}\cr}
-#' \item{\code{conv_enhance}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnels, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 https://doi.org/10.1016/S0006-3495(76)85711-6}\cr}
+#' \item{\code{conv_enhance}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnels, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 10.1016/S0006-3495(76)85711-6}\cr}
 #' \item{\code{fatosk}{ = 0.4, Configuration factor to sky (-) for infrared calculations}\cr}
 #' \item{\code{fatosb}{ = 0.4, Configuration factor to subsrate for infrared calculations}\cr}
 #' \item{\code{rinsul}{ = 0, Insulative fat layer thickness (not yet functional) (m)}\cr}

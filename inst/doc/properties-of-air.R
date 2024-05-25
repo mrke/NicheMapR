@@ -1,4 +1,4 @@
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 knitr::opts_chunk$set(
  eval = TRUE
 )
@@ -743,12 +743,12 @@ grid(lty=1,col=1)
 points(tairs,DRYAIR(db=tairs)$emtmax,type='l',ylim=c(0.7E-5,1.2E-5),ylab=ylab, xlab=xlab,cex.lab=1.25,cex.axis=1.25,lwd=2)
 plotrix::boxed.labels(0, 0.9E-5,expression(paste(italic(lambda)[m]," = ",2.897*10^{3}/(italic(t)+273.15))),cex=1.25,bg="white",border=NA) 
 
-## ---- results='asis', fig.width=7, fig.height=8, warning=FALSE, message=FALSE----
+## ----results='asis', fig.width=7, fig.height=8, warning=FALSE, message=FALSE----
 library(NicheMapR) # load the NicheMapR package
-library(raster) # package for working with rasters
+library(terra) # package for working with rasters
 library(ncdf4) # package for dealing with netcdf files (a kind of layered raster)
 # read the global_climate dataset
-global_climate<-brick(paste("c:/globalclimate/global_climate.nc",sep="")) 
+global_climate<-rast(paste("c:/globalclimate/global_climate.nc",sep="")) 
  # 38th layer of global_climate is min January air temperature*10
 Tair_min_january=global_climate[[38]]/10
 # 50th layer of global_climate is max January air temperature*10

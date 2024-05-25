@@ -1,4 +1,4 @@
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 knitr::opts_chunk$set(
   eval = TRUE
 )
@@ -92,12 +92,12 @@ plot(seq(1, ndays) / div, debout$GFAECES * 1000, type = 'l', xlab = 'Age (days)'
 abline(v = which(debout$E_H > E.Hb)[1] / div, lty = 2, col = 'grey')
 abline(v = which(debout$E_H > E.Hp)[1] / div, lty = 2, col = 'grey')
 
-## ---- echo=FALSE, message=FALSE, warnings=FALSE, results='asis'---------------
+## ----echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----------------
 tabl <- "
 *Parameter*                         |	*Parameter Symbol*    |	*Unit*
 ----------------------------------- | --------------------- | ------------------
 max surface-specific assimilation rate | $\\{\\dot{p}_{Am}\\}$ | $J\\:cm^{-2}\\:d^{-1}$
-energy conductance                  | $\\dot{v}$            | $d^{-1}$
+energy conductance                  | $\\dot{v}$            | $cm\\:d^{-1}$
 allocation fraction to soma         | $\\kappa$             | -
 volume-specific somatic maintenance cost | $[\\dot{p}_{M}]$ | $J\\:cm^{-3}\\:d^{-1}$
 volume-specific cost for structure         | $[E_g]$               | $J\\:cm^{-3}$
@@ -108,7 +108,7 @@ Table: **Table 1. Minimal required core parameters of the standard DEB model.**
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ---- echo=FALSE, message=FALSE, warnings=FALSE, results='asis'---------------
+## ----echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----------------
 tabl <- "
 *Parameter*                         |	*Parameter Symbol*    |	*Unit*
 ----------------------------------- | --------------------- | ------------------
@@ -123,7 +123,7 @@ Table: **Table 2. Parameters required to model aging and the thermal response (o
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ---- echo=FALSE, message=FALSE, warnings=FALSE, results='asis'---------------
+## ----echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----------------
 tabl <- "
 *Parameter*                         |	*Parameter Symbol*    |	*Unit*
 ----------------------------------- | --------------------- | ------------------
@@ -137,7 +137,7 @@ Table: **Table 3. Parameters required to convert structure, reserve and reproduc
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ---- echo=FALSE, message=FALSE, warnings=FALSE, results='asis'---------------
+## ----echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----------------
 tabl <- "
 *Parameter*                         |	*Parameter Symbol*    |	*Unit*
 ----------------------------------- | --------------------- | ------------------
@@ -150,13 +150,13 @@ Table: Table 4. **Parameters required to compute food-density-specific feeding r
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  install.packages('R.matlab')
 #  library(R.matlab)
 #  allStat <- readMat('allStat.mat') # this will take a few minutes
 #  save(allStat, file = 'allstat.Rda') # save it as an R data file for faster future loading
 
-## ---- warning=FALSE, message=FALSE, eval=TRUE---------------------------------
+## ----warning=FALSE, message=FALSE, eval=TRUE----------------------------------
 library(knitr) # this packages has a function for producing formatted tables.
 load('allStat.Rda')
 
@@ -167,7 +167,7 @@ kable(head(allDEB.species))
 Nspecies <- length(allStat$allStat)
 Nspecies
 
-## ---- warning=FALSE, message=FALSE, eval=TRUE---------------------------------
+## ----warning=FALSE, message=FALSE, eval=TRUE----------------------------------
 species <- "Eulamprus.quoyii"
 species.slot <- which(allDEB.species == species)
 par.names <- unlist(labels(allStat$allStat[[species.slot]]))
@@ -196,12 +196,12 @@ start.stage <- 1 # stage in life cycle to start (0 = egg, 1 = juvenile, 2 = pube
 
 deb <- rundeb(species = species, ndays = ndays, div = div, Tbs = Tbs, clutchsize = clutchsize, Xs = Xs, mass.unit = mass.unit, length.unit = length.unit, start.stage = start.stage, E_sm = E_sm, plot = plot)
 
-## ---- warning=FALSE, message=FALSE, eval=TRUE---------------------------------
+## ----warning=FALSE, message=FALSE, eval=TRUE----------------------------------
 longlat <- c(146.77, -19.29) # Townsville, northern Australia
 nyear <- 5
 micro <- micro_global(loc = longlat, timeinterval = 365, nyear = nyear)
 
-## ---- warning=FALSE, message=FALSE, eval=TRUE---------------------------------
+## ----warning=FALSE, message=FALSE, eval=TRUE----------------------------------
 load('allstat.Rda') # load the allstat file
 
 species <- "Eulamprus.quoyii"
@@ -242,7 +242,9 @@ n.NH <- 4/5
 n.NO <- 3/5
 n.NN <- 4/5
 
-## ---- warning=FALSE, message=FALSE, eval=TRUE---------------------------------
+del.M <- 0.21957 # this is currently not in allstat for some reason
+
+## ----warning=FALSE, message=FALSE, eval=TRUE----------------------------------
 # morph, behav and water loss
 pct_wet <- 0.2    # % of surface area acting as a free-water exchanger
 alpha_max <- 0.85 # maximum solar absorptivity
@@ -265,7 +267,7 @@ nocturn <- 0      # nocturnal activity
 crepus <- 0       # crepuscular activity
 diurn <- 1        # diurnal activity
 
-## ---- warning=FALSE, message=FALSE, eval=TRUE---------------------------------
+## ----warning=FALSE, message=FALSE, eval=TRUE----------------------------------
 # DEB initial state
 
 # egg
@@ -286,14 +288,14 @@ stage <- 0
 # E_H_init <- E.Hp+2
 # stage <- 2
 
-## ---- warning=FALSE, message=FALSE, eval=TRUE---------------------------------
+## ----warning=FALSE, message=FALSE, eval=TRUE----------------------------------
 # reproduction parameters
 viviparous <- 1 # live bearing (1) or egg laying (0)
 clutchsize <- 5 # how many eggs per clutch?
 photostart <- 3 # winter solstice is the start of the reproduction cycle
 photofinish <- 2 # autumnal equinox is the end of the reproduction cycle
 
-## ---- warning=FALSE, message=FALSE, eval=TRUE---------------------------------
+## ----warning=FALSE, message=FALSE, eval=TRUE----------------------------------
 # run the ectotherm model
 ecto<-ectotherm(DEB=1,
                 viviparous=viviparous,
@@ -371,17 +373,17 @@ debout <- as.data.frame(ecto$debout) # DEB model outputs
 yearout <- as.data.frame(ecto$yearout) # whole life cycle summary
 yearsout <- as.data.frame(ecto$yearsout) # annual summaries
 
-## ---- echo=FALSE, results='asis', message=FALSE, warnings=FALSE---------------
+## ----echo=FALSE, results='asis', message=FALSE, warnings=FALSE----------------
 knitr::kable(tail(masbal[, c(1:9)], 12))
 knitr::kable(tail(masbal[, c(10:15)], 12))
 knitr::kable(tail(masbal[, c(16:19)], 12))
 
-## ---- echo=FALSE, results='asis', message=FALSE, warnings=FALSE---------------
+## ----echo=FALSE, results='asis', message=FALSE, warnings=FALSE----------------
 knitr::kable(tail(debout[, c(1:10)], 12))
 knitr::kable(tail(debout[, c(11:16)], 12))
 knitr::kable(tail(debout[, c(17:21)], 12))
 
-## ---- warning=FALSE, message=FALSE, eval=TRUE, fig.width=8, fig.height=5, fig.cap="DEB model prediction of wet weight through time of the lizard *Eulamprus quoyii* growing under constant *ad libitum* under field conditions in Townsville, Queensland Australia, partitioning total biomass mass into structure, reserve, reproduction buffer and gut contents."----
+## ----warning=FALSE, message=FALSE, eval=TRUE, fig.width=8, fig.height=5, fig.cap="DEB model prediction of wet weight through time of the lizard *Eulamprus quoyii* growing under constant *ad libitum* under field conditions in Townsville, Queensland Australia, partitioning total biomass mass into structure, reserve, reproduction buffer and gut contents."----
 par(mfrow = c(1,1))
 plot(seq(1, ndays * 24) / 24, debout$WETMASS, type = 'l', xlab = 'date', 
      ylab = paste0('wet mass (g)'), col = 'pink', lwd = 2, 
@@ -403,13 +405,13 @@ text((which(debout$E_H > E.Hp)[1] - which(debout$E_H > E.Hp)[1] * .5) / 24 ,
 text(which(debout$E_H > E.Hp)[1] * 1.2 / 24, max(debout$WETMASS) * 1,
      labels = "adult", cex = 0.85)
 
-## ---- echo=FALSE, results='asis', message=FALSE, warnings=FALSE---------------
+## ----echo=FALSE, results='asis', message=FALSE, warnings=FALSE----------------
 knitr::kable(yearsout[, c(1:7)])
 knitr::kable(yearsout[, c(8:14)])
 knitr::kable(yearsout[, c(15:22)])
 knitr::kable(yearsout[, c(23:28, 34:36, 42:43)])
 
-## ---- echo=FALSE, results='asis', message=FALSE, warnings=FALSE---------------
+## ----echo=FALSE, results='asis', message=FALSE, warnings=FALSE----------------
 knitr::kable(yearout[, c(1:7)])
 knitr::kable(yearout[, c(8:14)])
 knitr::kable(yearout[, c(15:20)])

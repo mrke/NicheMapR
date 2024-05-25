@@ -367,6 +367,8 @@ n.NC <- 1
 n.NH <- 4/5
 n.NO <- 3/5
 n.NN <- 4/5
+
+del.M <- 0.21957 # this is currently not in allstat for some reason
 ```
 
 Next, as described previously in the [Introduction to the NicheMapR ectotherm model](ectotherm-model-tutorial.html) vignette, we need to define the morphological, behavioural and physiological parameters for the biophysical models of heat and water exchange.

@@ -9,8 +9,8 @@ get_terra(
   x = c(-5.3, 50.13),
   ystart = 1985,
   yfinish = 2015,
- 
-    source = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data"
+  source =
+    "http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data"
 )
 }
 \arguments{
