@@ -1,13 +1,12 @@
 ---
-title: Campbell 1985 infiltration and Soil Plant Atmosphere Continuum (SPAC) model
-  as implemented in the microclimate model of NicheMapR
+title: "Campbell 1985 infiltration and Soil Plant Atmosphere Continuum (SPAC) model"
 author: "Michael Kearney"
 date: "`r Sys.Date()`"
-output:
-  pdf_document: default
-  html_document:
-    df_print: paged
-urlcolor: blue    
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Campbell_SPAC_infiltration}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 editor_options:
   chunk_output_type: console
 ---
