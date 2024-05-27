@@ -1,0 +1,355 @@
+---
+title: Campbell 1985 infiltration and Soil Plant Atmosphere Continuum (SPAC) model
+  as implemented in the microclimate model of NicheMapR
+author: "Michael Kearney"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+urlcolor: blue    
+editor_options:
+  chunk_output_type: console
+---
+
+```{r, echo = FALSE, warning=FALSE}
+knitr::opts_chunk$set(
+ eval = TRUE, tidy.opts=list(width.cutoff=60), tidy=TRUE  
+)
+library(knitr)
+```
+
+## Campell's Soil Plant Atmosphere Continuum (SPAC) model
+
+Campbell (1985) developed an algorithm to compute soil water balance as a function of infiltration and evapotranspiration, including a full SPAC as a function of soil properties. Here I summarise the theory and equations from Campbell (1985) as implemented in the microclimate model of NicheMapR. 
+
+Note that this model and its implementation in NicheMapR allows soil hydraulic (and thermal) properties to vary with depth. Soil hydraulic properties are specified by user input parameter vectors 'KS', 'PE', 'BB', 'BD' for each depth (specified in user input 'DEP'). These parameters can be obtained from table 9.1 of Campbell and Norman (1998), object 'CampNormTbl9_1' in NicheMapR, or from soil texture data via the NicheMapR function 'pedotransfer' or extracted from the [soilgrids](https://www.isric.org/explore/soilgrids) database by setting user input 'soilgrids=1'. The default parameters are for a loam as defined in 'CampNormTbl9_1'. 
+
+The SPAC setup is illustrated in Figure 1 with the overall driving equation for transpiration $E$ ($\mathrm{kg\ m^{-2}\ s^{-1}}$) being:
+
+\begin{align}
+\tag{1}
+E = (\psi_{xL} - \psi_{L}) / R_L = (\psi_{xr} - \psi_{xL}) / R_x = (\psi_{xr} - \psi_{r}) / R_r = (\psi_{s} - \psi_{r}) / R_s
+\end{align}
+
+where $R$ is resistance ($\mathrm{m^4\ s^{-1}\ kg^{-1}}$), $\psi$ is water potential ($\mathrm{J\ kg^{-1}}$), $x$ is xylem, $L$ is leaf, $r$ is root and $s$ is soil.
+
+```{r, echo=FALSE, out.width = "60%", fig.align="center", fig.cap = "Figure 1. A resistance (R) / water potential (psi) analog of the Soil Plant Atmosphere Continuum (SPAC) from the soil (s) through the root (r), xylem (x) and leaf (L), driving evaporation (E).", fig.pos='!h'}
+include_graphics("SPAC.jpg")
+```
+
+For the soil temperature calculations (discussed  [here](https://mrke.github.io/NicheMapR/inst/doc/microclimate-model-theory-equations)), the soil is broken up into 10 nodes (specified in user input 'DEP') but for the soil water balance an additional node is added in between these 10 nodes for a total of 19 nodes. The 19th node (10th soil temperature node) acts as a boundary condition (typically 2m depth) and is assumed to be saturated with water.
+
+Each iteration, after the soil temperature has been calculated for that hour, the infiltration model is called (Fortran subroutine 'INFIL.f'). The code executes in the following manner:
+
+1. initialise water potential and hydraulic conductivity
+2. initialise the root water uptake variables;
+3. partition potential evapotranspiration into potential evaporation and transpiration;
+4. compute plant water uptake;
+5. calculate actual transpiration rate and water extraction by roots from each soil layer;
+6. solve for the mass balance of water in the soil.
+
+Each of these steps is explained in detail below.
+
+### Initialisation of soil water content profile
+
+The water potential $\psi$ ($\mathrm{J\ kg^{-1}}$) and hydraulic conductivity $k$ ($\mathrm{kg\ s\ m^{-3}}$) of each node $i$ is initialised from the previous hour's calculation of volumetric soil moisture, $\theta$ ($\mathrm{m^3\ m^{-3}}$), as:
+
+\begin{align}
+\tag{2}
+\psi_i = \psi_{e,i} (\theta_i/\theta_{s,i})^{-b_i}
+\end{align}
+
+\begin{align}
+\tag{3}
+k_i = k_{s,i} (\psi_{e,i} / \psi_i)^n
+\end{align}
+
+where $\psi_{e}$ is the air entry potential specified in the user input vector 'PE', $\theta_{s} = 1 - \rho_{b}/\rho_{s}$ is the saturation water content per layer of soil with $\rho_{b}$ the bulk density ($\mathrm{Mg\ m^{-3}}$) of the soil (user input vector 'BD'), $\rho_{s}$ the mineral density of the soil layer (user input vecetor 'DD'), $n$ is $2+3/b_i$ and $b$ is Campbell's dimensionless 'b' parameter (user input vector 'BB').
+
+The bulk density $\times$ volume per unit area ($\mathrm{kg\ m^{-2}}$) at each node is computed as:
+\begin{align}
+\tag{4}
+v_i = \rho_{H_2O}\Delta z
+\end{align}
+
+where $\rho_{H_2O}$ is the density of water (assumed to be 1000 $\mathrm{kg\  m^{-3}}$) and $\Delta z$ is the depth of the layer ($\mathrm{m}$).
+
+### Initialisation of root water uptake variables
+
+The root resistances are initialised by looping through each depth from the second node to the second last node, checking if there are roots present (from user input vector 'L') and, if so, computing the root resistance based on the following equation:
+
+\begin{align}
+\tag{5}
+R_{r,i} = R_w / L_i \Delta z
+\end{align}
+
+where $R_w$ (input parameter 'RW', $\mathrm{m^3\ s^{-1}\ kg^{-1}}$) is the resistance per unit length of root (a user-specified parameter) and $L$ is the density of the root system (user input vector 'L', $\mathrm{m\ m^{-3}}$). If there are no roots in a given layer, the root resistance is made arbitrarily large.
+
+Water uptake rate $E$ from each soil layer can be calculated as:
+
+\begin{align}
+\tag{6}
+E_i = (k_{r,i} \psi_{r,i} - k_{s,i} \psi_{s,i})/B_{z,i}
+\end{align}
+
+where $k_s$ and $k_r$ are the soil and root hydraulic conductances, respectively, and $B_z$ is calculated as:
+
+\begin{align}
+\tag{7}
+B_{z,i} = (1-n) ln(\pi r_1^2 L_i)/(4 \pi L_i \Delta z).
+\end{align}
+
+These calculations assume cylindrical roots.
+
+### Partitioning evaporation potential
+
+The soil heat budget calculation computes the evaporative heat loss $Q_{evap}$ as part of the surface heat budget. This value is multiplied by the latent heat of vapourisation and passed to the infiltration subroutine as a mass flux of total evapotranspiration $E_T$ ($\mathrm{kg\ m^{-2}\ s^{-1}}$) where it is partitioned into potential evaporation $E_P$ on the assumption that the ratio of $E_P / E_T = e^{-0.82 LAI}$, where LAI is the leaf area index (user input 'LAI') (Campbell, 1985). This calculation assumes that  the ratio of transpiration to evapotranspiration is the same as the ratio of radiation intercepted by the leaves to the total incident radiation. Thus:
+
+\begin{align}
+\tag{8}
+E_P = e^{-0.82 LAI} E_T
+\end{align}
+
+and potential transpiration can be computed as:
+
+\begin{align}
+\tag{9}
+T_P = E_T - E_P.
+\end{align}
+
+### Plant water uptake
+
+The transpiration rate must be the sum of the water extraction rates at each layer in the soil, $E = \sum E_i$ thus:
+
+\begin{align}
+\tag{10}
+E = \sum(\psi_{s,i} - \psi_{xr,i})/(R_{s,i} + R_{r,i}).
+\end{align}
+
+Figure 2 shows an electrical analog of the root-soil system. If axial resistances are assumed to be small in comparison to the other resistances, equation 10 can be solved for $\psi_{xr}$:
+
+\begin{align}
+\tag{11}
+\psi_{xr} = \frac{-E + \sum[\psi_{s,i}/(R_{s,i} + R_{r,i})]}{\sum[1/(R_{s,i} + R_{r,i})]}.
+\end{align}
+
+```{r, echo=FALSE, out.width = "40%", fig.align="center", fig.cap = "Figure 2. A resistance/potential analog of the root-soil system, including major lateral roots.", fig.pos='!h'}
+include_graphics("SPAC_figure2.jpg")
+```
+
+The algorithm makes this simplifying assumption about axial resistances as well as the assumption that soil hydraulic conductivity is constant in the rhizosphere (based on the observation that soil resistance is rarely large enough to have a significant effect on the overall resistance). Thus, root resistance at each layer is computed as:
+
+\begin{align}
+\tag{12}
+R_{s,i} = B_{z,i} / k_i.
+\end{align}
+
+A weighted mean of the soil water potential $\bar\psi_s$ is evaluated as:
+
+\begin{align}
+\tag{13}
+\bar\psi_s= \frac{\sum[\psi_{s,i}/(R_{s,i}+R_{r,i})]}{\sum[1/(R_{s,i} + R_{r,i})]}.
+\end{align}
+
+The denominator of this equation can be considered as the weighted mean root-soil resistance $\bar{R}_s$. Stem resistances are considered to be negligible and not modelled explicitly. The leaf water potential $\psi_L$ is then:
+
+\begin{align*}
+\tag{14}
+\psi_L &= \psi_{xr} - E R_L \\
+&= \frac{\sum[\psi_{s,i}/(R_{s,i}+R_{r,i})]}{\sum[1/(R_{s,i} + R_{r,i})]} - \frac{E}{\sum[1/(R_{s,i} + R_{r,i})]} - ER_L \\
+&= \bar\psi_s - E\left(\bar{R}_s - R_L\right).
+\end{align*}
+
+Note that when $E = 0$, $\psi_L$ equals $\bar{\psi}_s$, i.e., leaf water potential equilibrates to the weighted mean soil water potential.
+
+### Calculate actual transpiration rate and water extraction by roots
+
+Once leaf water potential, weighted mean soil water potential and weighted mean root-soil resistance have been calculated, the actual transpiration rate is computed from the potential transpiration rate and water uptake rate. This calculation assumes that transpiration rate is inversely related to stomatal resistance which, in turn, varies with leaf water potential. The algorithm iteratively searches for values of stomatal resistance and leaf water potential that balance water supply and demand, using the Newton-Raphson method.
+
+Leaf water potential can be modelled to affect stomatal resistance by the following empirical equation:
+
+\begin{align}
+\tag{15}
+r_{vs}=r^0_{vs}[1+(\psi_L/\psi_c)^n] 
+\end{align}
+
+where $r^0_{vs}$ is the stomatal resistance with no water stress and $\psi_c$ is the critical leaf water potential (user input 'PC') at which stomatal resistance reaches twice its minimum value. The exponent $n$ (user input 'SP') is an empirical constant called the stability parameter which has been found to range from between ~3 to as high as 20. If boundary layer resistances of leaves are negligibly small, evaporation rate can be computed from potential evaporation rate $E_P$ as:
+
+\begin{align}
+\tag{16}
+E=E_P/(\psi_L/\psi_c)^n.
+\end{align}
+
+The Newton-Raphson procedure to balance supply and demand is as follows:
+
+1. check if $\psi_L$ is greater than $\bar{\psi}_s$ and, if so (which is physically impossible), adjust it so that $\psi_L = \bar{\psi}_s - T_P (R_L + \bar{R}_s)$;
+2. compute the tangent (derivative) of the stomatal closure function at the current guess of $\psi_L$: 
+\begin{align}
+\tag{17}
+S_L = \frac{T_P(R_L+\bar{R}_s) n X_{\psi}}{\psi_L(1+X_{\psi})^2}-1,
+\end{align}
+where $X_{\psi}=(\psi_L/\psi_c)^n$;
+3. compute mass balance at the current guess of $\psi_L$, which should be zero (the root being sought): 
+\begin{align}
+\tag{18}
+F=\bar{\psi}_s-\psi_L-T_P(R_L+\bar{R}_s)/(1+X_{\psi});
+\end{align}
+4. obtain new estimate of $\psi_L$ at the intercept of the tangent line with the x axis $psi_L=\psi_L-\Delta \psi_L/S_L$;
+5. check if $\Delta\psi_L$ is greater than 10 and, if so, go back to step 1;
+6. otherwise, the solution has been found so compute actual transpiration $T_R=T_P/(1+X_{\psi})$;
+7. finally, compute water extracted by roots from each soil layer as: 
+\begin{align}
+\tag{19}
+E_i=(\psi_{s,i}-\psi_L-R_L\ T_R)/(R_{r,i}+R_{s,i}).
+\end{align}
+
+### Solve for the mass balance of water in the soil
+
+The soil water balance is then solved with the Newton-Raphson method and the Thomas Algorithm (Gauss elimination) for the simultaneous balances of all layers in the soil (Fig. 3). The calculation takes account of liquid flow, gravitational flow, vapour flow and root water extraction. Because the calculation involves simultaneous equations, the approach requires the construction of the Jacobian matrix, described below.
+
+```{r, echo=FALSE, out.width = "40%", fig.align="center", fig.cap = "Figure 3. Potentials (psi), conductances (k), fluxes (f) and source/sinks (U) at each depth node (z).", fig.pos='!h'}
+include_graphics("SPAC_figure3.jpg")
+```
+
+The mass balance for a given node is:
+
+\begin{align}
+\tag{20}
+F=f_{i-1}-f_i + U_{i-1} - U_i +\frac{\rho_w(\theta^{j+1}_i-\theta^j_i)(z_{i+1}-z_{i-1})}{2\Delta t}
+\end{align}
+
+with $f_i$, $U_i$ and $\theta_i$ all being non-linear functions of $\psi_i$, and the target value of each $F_i$ to achieve mass conservation is 0. The $U$ terms include gravitational fluxes $gk_i$ as well as the vapour fluxes $J_{v,i}$ and water extraction by the roots $E_i$ as calculated via Eq. 19. Given that $f_i = \frac{-(k_{i+1}\psi_{i+1} - k_i\psi_i)}{(1-n)(z_{i+1}-z_i)}$,
+
+\begin{align}
+\tag{21}
+F=\frac{k_i\psi_i-k_{i-1}\psi_{i-1}}{(1-n)(z_i-z_{i-1})}-\frac{k_{i+1}\psi_{i+1}-k_i\psi_i}{(1-n)(z_{i+1}-z_i)}+g(k_{i-1}-k_i)+J_{v,i-1}-J_{v,i}+E_i+\frac{\rho_w(\theta^{j+1}_i-\theta^j_i)(z_{i+1}-z_{i-1})}{2\Delta t}.
+\end{align}
+
+where the $k$s are hydraulic conductivities calculated per node at the most recent iteration:
+
+\begin{align}
+\tag{22}
+k_i=k_{s,i}(\psi_{e,i}/\psi_i)^{n_i},
+\end{align}
+
+making the solution of the backwards difference kind.
+
+The vapour flux at the surface is calculated as:
+
+\begin{align}
+\tag{23}
+J_{v,1}=E_P*(h_2-h_a)/(1-h_a)
+\end{align}
+
+where $h_a$ is the fractional atmospheric relative humidity.
+
+Below the surface it is:
+
+\begin{align}
+\tag{24}
+J_{v,i}=k_v(h_{i+1}-h_i)
+\end{align}
+
+where the vapour conductivity computed as:
+
+\begin{align}
+\tag{25}
+k_v=D_v c'_v b\phi_g^m \Delta z
+\end{align}
+
+where $D_v$ is the vapour diffusivity in the soil, set at 2.4e-5 ($\mathrm{m^2\ s^{-1}}$), $c'_v$ is the saturation vapour density (calculated using the WETAIR function of NicheMapR, embedded in the microclimate model), $b$ = 0.66 and $m$ = 1. The pore space $\phi_g = \theta_{s,i}-(\theta^j_i-\theta^{j+1}_i)/2$, $j$ is time (and $j+1$ is the future, i.e., final state being predicted), and $\Delta z = z_{i+1}-z_i$. 
+
+The rate of change in vapour flux at the surface is:
+
+\begin{align}
+\tag{26}
+\Delta J_{v,1}=\frac{E_P M_w h_2}{1-h_a}
+\end{align}
+
+and below the surface is:
+
+\begin{align}
+\tag{27}
+\Delta J_{v,i}=\frac{M_w h_i k_V}{R T_{i-1}}.
+\end{align}
+
+From the relations $\theta = \theta_s(\psi_e/\psi_m)^{1/b}$ (Eq. 2) and  $\Delta\theta/\Delta \psi_m=(1/b)\theta_s(\psi_e/\psi_m)^{1/b}$, the soil hydraulic capacity at each node, $\Delta\theta / \Delta\psi$ is computed as:
+
+\begin{align}
+\tag{28}
+C_i=\frac{-v_i\theta_i}{b_i\psi_i\Delta t}.
+\end{align}
+
+The Jacobian matrix takes the form of a tridiagonal matrix and is set up as follows (just showing three nodes):
+
+\begin{align}
+\tag{29}
+\begin{pmatrix}
+  \partial F_1/\partial \psi_1 & \partial F_1/\partial \psi_2 & 0 \\
+  \partial F_2/\partial \psi_1 & \partial F_2/\partial \psi_2 & \partial F_2/\partial \psi_3 \\
+  0 & \partial F_3/\partial \psi_2 & \partial F_3/\partial \psi_3 
+\end{pmatrix}
+\begin{pmatrix}
+  \psi_1^{p+1} - \psi_1^p \\
+  \psi_2^{p+1} - \psi_2^p \\
+  \psi_3^{p+1} - \psi_3^p 
+\end{pmatrix}
+=
+\begin{pmatrix}
+  F_1 \\
+  F_2 \\
+  F_3 
+\end{pmatrix}
+\end{align}
+
+where the partial derivatives of each $F$ with respect to the change in water potential in its own soil layer $\partial F_i/\partial \psi_i$ (diagonal of the matrix), the layer above $\partial F_i/\partial \psi_{i+1}$ (super-diagonal) and the layer below $\partial F_i/\partial \psi_{i-1}$ (sub-diagonal) must be defined (first matrix in Eq. 29).
+
+These are as follows:
+
+\begin{align}
+\tag{30}
+B_{jac,i} =\partial F_i/\partial \psi_i=\frac{k_i}{z_i-z_{i-1}}+\frac{k_i}{z_{i+1}-z_i}+\frac{\rho_w(z_{i+1}-z_{i-1})\theta_i}{2b\psi_i\Delta t}-\frac{ngk_i}{\psi_i}+\Delta J_{v,i-1}+\Delta J_{v,i}
+\end{align}
+
+\begin{align}
+\tag{31}
+C_{jac,i} =\partial F_i/\partial \psi_{i-1}=\frac{-k_{i-1}}{z_i-z_{i-1}}+\frac{ngk_i}{\psi_i}
+\end{align}
+
+\begin{align}
+\tag{32}
+A_{jac,i} =\partial F_i/\partial \psi_{i+1}=\frac{-k_{i+1}}{z_{i+1}-z_i}
+\end{align}
+
+As the Newton-Raphson iteration proceeds, the values of water potential at step $p$, $\psi_i^p$, are used as input and solved for the values to be used in the next step, $\psi_i^{p+1}$, with the error term (difference of $F$ from zero) summed across all soil layers.
+
+The tridiagonal (=Thomas) algorithm, a simplified form of Gauss elimination, is then applied where, for each layer other than the penultimate depth:
+
+$$C_{jac,i} = C_{jac,i} / B_{jac,i}$$ (set to 0 if < 1e-8)
+$$F_i = F_i / B_{jac,i}$$
+
+$$B_{jac,i+1} = B_{jac,i+1}-A_{jac,i+1}C_{jac,i}$$
+$$F_{i+1} = F_{i+1}-A_{jac,i+1}F_{jac,i}$$
+The new water potentials are then computed for then next iteration (step $p+1$) where, for the penultimate node $m$
+
+$$\Delta\psi_m=F_m/B_{jac,m}$$
+$$\psi_m = \psi_m-\Delta\psi_m$$
+capping $\psi_m$ at no greater than the air entry potential $\psi_e$.
+Then, moving up to the surface:
+
+$$\Delta\psi_i=F_i-C_{jac,i}\ \Delta\psi_{i+1}$$
+$$\psi_i = \psi_i-\Delta\psi_i$$
+ensuring that if $\psi_i>\psi_e$, it is recomputed as
+$$(\psi_i+\Delta\psi_i+\psi_e)/2$$
+The new volumetric water contents at each layer are then computed as $\theta_i=\theta_s(\psi_e/\psi_i)^{1/b}$, capping them at a lower bound of 1e-7 to prevent instabilities, recomputing the $\psi$ values and fractional humidities $h$.
+
+This whole procedure is repeated until the error reaches the error tolerance (specified by user input 'IM').
+
+The behaviour of the model is such that when soil water potential is uniform, water is extracted in proportion to the rooting densities. But, as the soil dries in those layers with high root densities, such that water is being taken up from layers with fewer roots, the mean soil water potential, $\bar\psi_s$, decreases despite some roots still experiencing moist soil. The result is that plant water potential drops, causing stomatal closure and decreasing transpiration (and hence decreasing photosynthesis). 
+
+## References
+
+Campbell, G. S. (1985). Soil Physics with Basic: Transport Models for Soil-Plant Systems. Elsevier.
+
+Campbell, G. S., & Norman, J. M. (1998). Environmental Biophysics. Springer.
