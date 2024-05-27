@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Michael Kearney" />
+
+<meta name="date" content="2024-05-25" />
+
+<title>Endotherm Model Tutorial III: example simulations</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Endotherm Model Tutorial III: example
+simulations</h1>
+<h4 class="author">Michael Kearney</h4>
+<h4 class="date">2024-05-25</h4>
+
+
+
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p>This document shows how to use the <code>endoR.R</code> function of
+NicheMapR to compute endotherm heat and mass balances. This function
+collates all the different steps in <a href="endotherm-components-tutorial.html">Endotherm Components
+Tutorial</a> into a single function, ‘endoR’, that can be applied to
+vectors of data. The latter calls a FORTRAN routine call ‘SOLVENDO’
+(high speed calculation). An R equivalent of this, ‘endoR_devel’ (~ 9x
+slower), can be used for the development of algorithms for
+organism-specific sequences of thermoregulatory responses and then, if
+faster processing is required, a version of SOLVENDO can be modified
+accordingly. All the underlying theory, equations and subroutines are
+described in <a href="endotherm-model-equations.html">Endotherm Theory
+Tutorial</a>.</p>
+</div>
+<div id="single-calculation-example" class="section level2">
+<h2>Single calculation example</h2>
+<p>Here is how you run the calculation with all default values,
+specifying a local air temperature of 0 <span class="math inline">\(^{\circ}\text{C}\)</span>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(NicheMapR)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>endo.out <span class="ot">&lt;-</span> <span class="fu">endoR</span>(<span class="at">TA =</span> <span class="dv">0</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>treg <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(endo.out<span class="sc">$</span>treg)</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>morph <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(endo.out<span class="sc">$</span>morph)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>enbal <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(endo.out<span class="sc">$</span>enbal)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>masbal <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(endo.out<span class="sc">$</span>masbal)</span></code></pre></div>
+<pre><code>## Warning in cbind(t(round(treg, 4)), treg.lab): number of rows of result is not
+## a multiple of vector length (arg 2)</code></pre>
+<table>
+<caption>treg</caption>
+<colgroup>
+<col width="11%" />
+<col width="9%" />
+<col width="79%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">value</th>
+<th align="left">description and units</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">TC</td>
+<td align="left">37</td>
+<td align="left">core temperature (°C)</td>
+</tr>
+<tr class="even">
+<td align="left">TLUNG</td>
+<td align="left">28.5659</td>
+<td align="left">lung temperature (°C)</td>
+</tr>
+<tr class="odd">
+<td align="left">TSKIN_D</td>
+<td align="left">20.1168</td>
+<td align="left">dorsal skin temperature (°C)</td>
+</tr>
+<tr class="even">
+<td align="left">TSKIN_V</td>
+<td align="left">20.1466</td>
+<td align="left">ventral skin temperature (°C)</td>
+</tr>
+<tr class="odd">
+<td align="left">TFA_D</td>
+<td align="left">13.3719</td>
+<td align="left">dorsal fur/feather-air interface temperature (°C)</td>
+</tr>
+<tr class="even">
+<td align="left">TFA_V</td>
+<td align="left">13.3515</td>
+<td align="left">ventral fur-air interface temperature (°C)</td>
+</tr>
+<tr class="odd">
+<td align="left">SHAPE_B</td>
+<td align="left">1.1</td>
+<td align="left">current ratio between long and short axis due to
+postural change (-)</td>
+</tr>
+<tr class="even">
+<td align="left">PANT</td>
+<td align="left">1</td>
+<td align="left">breathing rate multiplier (-)</td>
+</tr>
+<tr class="odd">
+<td align="left">PCTWET</td>
+<td align="left">0.5</td>
+<td align="left">part of the skin surface that is wet (%)</td>
+</tr>
+<tr class="even">
+<td align="left">K_FLESH</td>
+<td align="left">0.9</td>
+<td align="left">thermal conductivity of flesh (W/mC)</td>
+</tr>
+<tr class="odd">
+<td align="left">K_FUR_EFF</td>
+<td align="left">0.034</td>
+<td align="left">effective thermal conductivity of fur/feathers
+(W/mC)</td>
+</tr>
+<tr class="even">
+<td align="left">K_FUR_D</td>
+<td align="left">0.0379</td>
+<td align="left">thermal conductivity of dorsal fur/feathers (W/mC)</td>
+</tr>
+<tr class="odd">
+<td align="left">K_FUR_V</td>
+<td align="left">0.0379</td>
+<td align="left">thermal conductivity of ventral fur/feathers
+(W/mC)</td>
+</tr>
+<tr class="even">
+<td align="left">K_COMPFUR</td>
+<td align="left">0.034</td>
+<td align="left">thermal conductivity of compressed fur/feathers
+(W/mC)</td>
+</tr>
+<tr class="odd">
+<td align="left">Z_FUR_D</td>
+<td align="left">0.002</td>
+<td align="left">Q10 multiplier on metabolic rate (-)</td>
+</tr>
+<tr class="even">
+<td align="left">Z_FUR_V</td>
+<td align="left">0.002</td>
+<td align="left">core temperature (°C)</td>
+</tr>
+<tr class="odd">
+<td align="left">Q10</td>
+<td align="left">1</td>
+<td align="left">lung temperature (°C)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>morph</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">value</th>
+<th align="left">description and units</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">AREA</td>
+<td align="left">0.7956</td>
+<td align="left">total outer surface area (m2)</td>
+</tr>
+<tr class="even">
+<td align="left">VOLUME</td>
+<td align="left">0.065</td>
+<td align="left">total volume (m3)</td>
+</tr>
+<tr class="odd">
+<td align="left">CHAR_DIM</td>
+<td align="left">0.4873</td>
+<td align="left">characteristic dimension for convection (m)</td>
+</tr>
+<tr class="even">
+<td align="left">MASS_FAT</td>
+<td align="left">13</td>
+<td align="left">fat mass (kg)</td>
+</tr>
+<tr class="odd">
+<td align="left">FAT_THICK</td>
+<td align="left">0</td>
+<td align="left">thickness of fat layer (m)</td>
+</tr>
+<tr class="even">
+<td align="left">FLESH_VOL</td>
+<td align="left">0.065</td>
+<td align="left">flesh volume (m3)</td>
+</tr>
+<tr class="odd">
+<td align="left">LENGTH</td>
+<td align="left">0.5316</td>
+<td align="left">length (m)</td>
+</tr>
+<tr class="even">
+<td align="left">WIDTH</td>
+<td align="left">0.4833</td>
+<td align="left">width (m)</td>
+</tr>
+<tr class="odd">
+<td align="left">HEIGHT</td>
+<td align="left">0.4833</td>
+<td align="left">height (m)</td>
+</tr>
+<tr class="even">
+<td align="left">DIAM_FLESH</td>
+<td align="left">0.2416</td>
+<td align="left">diameter, core to skin (m)</td>
+</tr>
+<tr class="odd">
+<td align="left">DIAM_FUR</td>
+<td align="left">0.2436</td>
+<td align="left">diameter, core to fur/feathers (m)</td>
+</tr>
+<tr class="even">
+<td align="left">AREA_SIL</td>
+<td align="left">0.1957</td>
+<td align="left">silhouette area (m2)</td>
+</tr>
+<tr class="odd">
+<td align="left">AREA_SILN</td>
+<td align="left">0.205</td>
+<td align="left">silhouette area normal to sun’s rays (m2)</td>
+</tr>
+<tr class="even">
+<td align="left">AREA_ASILP</td>
+<td align="left">0.1865</td>
+<td align="left">silhouette area parallel to sun’s rays (m2)</td>
+</tr>
+<tr class="odd">
+<td align="left">AREA_SKIN</td>
+<td align="left">0.783</td>
+<td align="left">total skin area (m2)</td>
+</tr>
+<tr class="even">
+<td align="left">AREA_SKIN_EVAP</td>
+<td align="left">0.7664</td>
+<td align="left">skin area available for evaporation (m2)</td>
+</tr>
+<tr class="odd">
+<td align="left">AREA_CONV</td>
+<td align="left">0.7956</td>
+<td align="left">area for convection (m2)</td>
+</tr>
+<tr class="even">
+<td align="left">AREA_COND</td>
+<td align="left">0</td>
+<td align="left">area for conduction (m2)</td>
+</tr>
+<tr class="odd">
+<td align="left">F_SKY</td>
+<td align="left">0.5</td>
+<td align="left">configuration factor to sky (-)</td>
+</tr>
+<tr class="even">
+<td align="left">F_GROUND</td>
+<td align="left">0.5</td>
+<td align="left">configuration factor to ground (-)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>enbal</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">value</th>
+<th align="left">description and units</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">QSOL</td>
+<td align="left">0</td>
+<td align="left">solar radiation absorbed (W)</td>
+</tr>
+<tr class="even">
+<td align="left">QIRIN</td>
+<td align="left">272.8725</td>
+<td align="left">longwave (infra-red) radiation absorbed (W)</td>
+</tr>
+<tr class="odd">
+<td align="left">QGEN</td>
+<td align="left">101.95</td>
+<td align="left">metabolic heat generation (W)</td>
+</tr>
+<tr class="even">
+<td align="left">QEVAP</td>
+<td align="left">6.7566</td>
+<td align="left">evaporation (W)</td>
+</tr>
+<tr class="odd">
+<td align="left">QIROUT</td>
+<td align="left">325.176</td>
+<td align="left">longwave (infra-red) radiation lost (W)</td>
+</tr>
+<tr class="even">
+<td align="left">QCONV</td>
+<td align="left">42.7205</td>
+<td align="left">convection (W)</td>
+</tr>
+<tr class="odd">
+<td align="left">QCOND</td>
+<td align="left">0</td>
+<td align="left">conduction (W)</td>
+</tr>
+<tr class="even">
+<td align="left">ENB</td>
+<td align="left">0.1693</td>
+<td align="left">energy balance (W)</td>
+</tr>
+<tr class="odd">
+<td align="left">NTRY</td>
+<td align="left">1</td>
+<td align="left">iterations required for a solution (-)</td>
+</tr>
+<tr class="even">
+<td align="left">SUCCESS</td>
+<td align="left">1</td>
+<td align="left">was a solution found (0=no, 1=yes)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>masbal</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">value</th>
+<th align="left">description and units</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">AIR_L</td>
+<td align="left">465.2182</td>
+<td align="left">breating rate (L/h)</td>
+</tr>
+<tr class="even">
+<td align="left">O2_L</td>
+<td align="left">19.4886</td>
+<td align="left">oxgyen consumption rate (L/h)</td>
+</tr>
+<tr class="odd">
+<td align="left">H2OResp_g</td>
+<td align="left">2.1321</td>
+<td align="left">respiratory water loss (g/h)</td>
+</tr>
+<tr class="even">
+<td align="left">H2OCut_g</td>
+<td align="left">0.7503</td>
+<td align="left">cutaneous water loss (g/h)</td>
+</tr>
+<tr class="odd">
+<td align="left">O2_mol_in</td>
+<td align="left">4.3474</td>
+<td align="left">oxygen inhaled (mol/h)</td>
+</tr>
+<tr class="even">
+<td align="left">O2_mol_out</td>
+<td align="left">3.4779</td>
+<td align="left">oxygen expelled (mol/h)</td>
+</tr>
+<tr class="odd">
+<td align="left">N2_mol_in</td>
+<td align="left">16.4066</td>
+<td align="left">nitrogen inhaled (mol/h)</td>
+</tr>
+<tr class="even">
+<td align="left">N2_mol_out</td>
+<td align="left">16.4066</td>
+<td align="left">nitrogen expelled (mol/h)</td>
+</tr>
+<tr class="odd">
+<td align="left">AIR_mol_in</td>
+<td align="left">20.7557</td>
+<td align="left">air inhaled (mol/h)</td>
+</tr>
+<tr class="even">
+<td align="left">AIR_mol_out</td>
+<td align="left">20.5818</td>
+<td align="left">air expelled (mol/h)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="metabolic-chamber-example" class="section level2">
+<h2>Metabolic chamber example</h2>
+<p>Now try a sequence of air temperatures for a specified core
+temperature, mass, fur/feather depth and base skin wetness, with the
+option to sweat at 0.25 % increments to cool down if needed. Note that
+the default settings make the environment a black-body one (all surface
+and air temperatures the same) with low (5%) relative humidity and low
+wind speed (0.1 m/s), as is often the case in metabolic chamber
+experiments. This example uses parameters for the Australian budgerigar
+<em>Melopsittacus undulatus</em> and compares it against data from
+Weathers &amp; Schoenbaechler (1976).</p>
+<p>Weathers, W.W. &amp; Schoenbaechler, D.C. (1976) Regulation of body
+temperature in the Budgerygah, Melopsittacus undulatus. Australian
+Journal of Zoology, 24, 39–47.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(NicheMapR)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co"># environment</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>TAs <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">50</span>, <span class="dv">1</span>)  <span class="co"># air temperature (°C)</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>VEL <span class="ot">&lt;-</span> <span class="fl">0.1</span>  <span class="co"># wind speed (m/s)</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>vd <span class="ot">&lt;-</span> <span class="fu">WETAIR</span>(<span class="at">rh =</span> <span class="dv">30</span>, <span class="at">db =</span> <span class="dv">40</span>)<span class="sc">$</span>vd  <span class="co"># Weathers and Schoenbaechler had 16.7 mm Hg </span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co"># above 40 °C = 30% RH at 40 °C</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>vd_sat <span class="ot">&lt;-</span> <span class="fu">WETAIR</span>(<span class="at">rh =</span> <span class="dv">100</span>, <span class="at">db =</span> TAs)<span class="sc">$</span>vd  <span class="co"># Weathers and Schoenbaechler had 16.7 mm Hg </span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co"># above 40 °C = 30% RH at 40 °C</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>exp_rh <span class="ot">&lt;-</span> vd<span class="sc">/</span>vd_sat <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>exp_rh[exp_rh <span class="sc">&gt;</span> <span class="dv">100</span>] <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>exp_rh[TAs <span class="sc">&lt;</span> <span class="dv">30</span>] <span class="ot">&lt;-</span> <span class="dv">15</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>hum <span class="ot">&lt;-</span> exp_rh</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co"># core temperature</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>TC <span class="ot">&lt;-</span> <span class="dv">38</span>  <span class="co"># core temperature (°C)</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>TC_MAX <span class="ot">&lt;-</span> <span class="dv">43</span>  <span class="co"># maximum core temperature (°C)</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>TC_INC <span class="ot">&lt;-</span> <span class="fl">0.25</span>  <span class="co"># increment by which TC is elevated (°C)</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co"># size and shape</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>AMASS <span class="ot">&lt;-</span> <span class="fl">0.0337</span>  <span class="co"># mass (kg)</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>SHAPE_B <span class="ot">&lt;-</span> <span class="fl">1.1</span>  <span class="co"># start off near to a sphere (-)</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>SHAPE_B_MAX <span class="ot">&lt;-</span> <span class="dv">5</span>  <span class="co"># maximum ratio of length to width/depth</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>UNCURL <span class="ot">&lt;-</span> <span class="fl">0.1</span>  <span class="co"># allows the animal to uncurl to SHAPE_B_MAX, the value being the increment </span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co"># SHAPE_B is increased per iteration</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>SHAPE <span class="ot">&lt;-</span> <span class="dv">4</span>  <span class="co"># use ellipsoid geometry</span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a>SAMODE <span class="ot">&lt;-</span> <span class="dv">1</span>  <span class="co"># use bird surface area relations (2 is mammal, 0 is based on shape specified </span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co"># in GEOM)</span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co"># feather properties</span></span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a>DHAIRD <span class="ot">&lt;-</span> <span class="fl">3e-05</span>  <span class="co"># hair diameter, dorsal (m)</span></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a>DHAIRV <span class="ot">&lt;-</span> <span class="fl">3e-05</span>  <span class="co"># hair diameter, ventral (m)</span></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a>LHAIRD <span class="ot">&lt;-</span> <span class="fl">0.0231</span>  <span class="co"># hair length, dorsal (m)</span></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a>LHAIRV <span class="ot">&lt;-</span> <span class="fl">0.0227</span>  <span class="co"># hair length, ventral (m)</span></span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a>ZFURD <span class="ot">&lt;-</span> <span class="fl">0.0059</span>  <span class="co"># fur depth, dorsal (m)</span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a>ZFURV <span class="ot">&lt;-</span> <span class="fl">0.0057</span>  <span class="co"># fur depth, ventral (m)</span></span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a>RHOD <span class="ot">&lt;-</span> <span class="fl">5e+07</span>  <span class="co"># hair density, dorsal (1/m2)</span></span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a>RHOV <span class="ot">&lt;-</span> <span class="fl">5e+07</span>  <span class="co"># hair density, ventral (1/m2)</span></span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a>REFLD <span class="ot">&lt;-</span> <span class="fl">0.248</span>  <span class="co"># fur reflectivity dorsal (fractional, 0-1)</span></span>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a>REFLV <span class="ot">&lt;-</span> <span class="fl">0.351</span>  <span class="co"># fur reflectivity ventral (fractional, 0-1)</span></span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a></span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a><span class="co"># physiological responses</span></span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a>PCTWET <span class="ot">&lt;-</span> <span class="fl">0.5</span>  <span class="co"># base skin wetness (%)</span></span>
+<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a>PCTWET_MAX <span class="ot">&lt;-</span> <span class="dv">5</span>  <span class="co"># maximum skin wetness (%)</span></span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a>PCTWET_INC <span class="ot">&lt;-</span> <span class="fl">0.25</span>  <span class="co"># intervals by which skin wetness is increased (%)</span></span>
+<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a>Q10s <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">length</span>(TAs))</span>
+<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a>Q10s[TAs <span class="sc">&gt;=</span> TC_MAX] <span class="ot">&lt;-</span> <span class="dv">2</span>  <span class="co"># assuming Q10 effect kicks in only after air temp rises above TC_MAX</span></span>
+<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a>QBASAL <span class="ot">&lt;-</span> <span class="dv">10</span><span class="sc">^</span>(<span class="sc">-</span><span class="fl">1.461</span> <span class="sc">+</span> <span class="fl">0.669</span> <span class="sc">*</span> <span class="fu">log10</span>(AMASS <span class="sc">*</span> <span class="dv">1000</span>))  <span class="co"># basal heat generation (W)</span></span>
+<span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a>DELTAR <span class="ot">&lt;-</span> <span class="dv">5</span>  <span class="co"># offset between air temperature and breath (°C)</span></span>
+<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a>EXTREF <span class="ot">&lt;-</span> <span class="dv">25</span>  <span class="co"># O2 extraction efficiency (%)</span></span>
+<span id="cb3-50"><a href="#cb3-50" tabindex="-1"></a>PANT_INC <span class="ot">&lt;-</span> <span class="fl">0.1</span>  <span class="co"># turns on panting, the value being the increment by which the panting multiplier</span></span>
+<span id="cb3-51"><a href="#cb3-51" tabindex="-1"></a><span class="co"># is increased up to the maximum value, PANT_MAX</span></span>
+<span id="cb3-52"><a href="#cb3-52" tabindex="-1"></a>PANT_MAX <span class="ot">&lt;-</span> <span class="dv">15</span>  <span class="co"># maximum panting rate - multiplier on air flow through the lungs above </span></span>
+<span id="cb3-53"><a href="#cb3-53" tabindex="-1"></a><span class="co"># that determined by metabolic rate</span></span>
+<span id="cb3-54"><a href="#cb3-54" tabindex="-1"></a>PANT_MULT <span class="ot">&lt;-</span> <span class="dv">1</span>  <span class="co"># multiplier on basal metabolic rate at maximum panting level</span></span>
+<span id="cb3-55"><a href="#cb3-55" tabindex="-1"></a></span>
+<span id="cb3-56"><a href="#cb3-56" tabindex="-1"></a>ptm <span class="ot">&lt;-</span> <span class="fu">proc.time</span>()  <span class="co"># start timing</span></span>
+<span id="cb3-57"><a href="#cb3-57" tabindex="-1"></a>endo.out <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(TAs), <span class="cf">function</span>(x) {</span>
+<span id="cb3-58"><a href="#cb3-58" tabindex="-1"></a>    <span class="fu">endoR</span>(<span class="at">TA =</span> TAs[x], <span class="at">VEL =</span> VEL, <span class="at">TC =</span> TC, <span class="at">TC_MAX =</span> TC_MAX, <span class="at">RH =</span> hum[x],</span>
+<span id="cb3-59"><a href="#cb3-59" tabindex="-1"></a>        <span class="at">AMASS =</span> AMASS, <span class="at">SHAPE =</span> SHAPE, <span class="at">SHAPE_B =</span> SHAPE_B, <span class="at">SHAPE_B_MAX =</span> SHAPE_B_MAX,</span>
+<span id="cb3-60"><a href="#cb3-60" tabindex="-1"></a>        <span class="at">PCTWET =</span> PCTWET, <span class="at">PCTWET_INC =</span> PCTWET_INC, <span class="at">PCTWET_MAX =</span> PCTWET_MAX,</span>
+<span id="cb3-61"><a href="#cb3-61" tabindex="-1"></a>        <span class="at">Q10 =</span> Q10s[x], <span class="at">QBASAL =</span> QBASAL, <span class="at">DELTAR =</span> DELTAR, <span class="at">DHAIRD =</span> DHAIRD,</span>
+<span id="cb3-62"><a href="#cb3-62" tabindex="-1"></a>        <span class="at">DHAIRV =</span> DHAIRV, <span class="at">LHAIRD =</span> LHAIRD, <span class="at">LHAIRV =</span> LHAIRV, <span class="at">ZFURD =</span> ZFURD,</span>
+<span id="cb3-63"><a href="#cb3-63" tabindex="-1"></a>        <span class="at">ZFURV =</span> ZFURV, <span class="at">RHOD =</span> RHOD, <span class="at">RHOV =</span> RHOV, <span class="at">REFLD =</span> REFLD,</span>
+<span id="cb3-64"><a href="#cb3-64" tabindex="-1"></a>        <span class="at">TC_INC =</span> TC_INC, <span class="at">PANT_INC =</span> PANT_INC, <span class="at">PANT_MAX =</span> PANT_MAX,</span>
+<span id="cb3-65"><a href="#cb3-65" tabindex="-1"></a>        <span class="at">EXTREF =</span> EXTREF, <span class="at">UNCURL =</span> UNCURL, <span class="at">SAMODE =</span> SAMODE, <span class="at">PANT_MULT =</span> PANT_MULT)</span>
+<span id="cb3-66"><a href="#cb3-66" tabindex="-1"></a>})  <span class="co"># run endoR across environments</span></span>
+<span id="cb3-67"><a href="#cb3-67" tabindex="-1"></a><span class="fu">proc.time</span>() <span class="sc">-</span> ptm  <span class="co"># stop timing</span></span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##     0.1     0.0     0.1</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># extract the output</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>endo.out1 <span class="ot">&lt;-</span> <span class="fu">do.call</span>(<span class="st">&quot;rbind&quot;</span>, <span class="fu">lapply</span>(endo.out, data.frame))</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># thermoregulation output</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>treg <span class="ot">&lt;-</span> endo.out1[, <span class="fu">grep</span>(<span class="at">pattern =</span> <span class="st">&quot;treg&quot;</span>, <span class="fu">colnames</span>(endo.out1))]</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="fu">colnames</span>(treg) <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="fu">colnames</span>(treg), <span class="at">pattern =</span> <span class="st">&quot;treg.&quot;</span>, <span class="at">replacement =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co"># morphometric output</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>morph <span class="ot">&lt;-</span> endo.out1[, <span class="fu">grep</span>(<span class="at">pattern =</span> <span class="st">&quot;morph&quot;</span>, <span class="fu">colnames</span>(endo.out1))]</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="fu">colnames</span>(morph) <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="fu">colnames</span>(morph), <span class="at">pattern =</span> <span class="st">&quot;morph.&quot;</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>    <span class="at">replacement =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co"># heat balance</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>enbal <span class="ot">&lt;-</span> endo.out1[, <span class="fu">grep</span>(<span class="at">pattern =</span> <span class="st">&quot;enbal&quot;</span>, <span class="fu">colnames</span>(endo.out1))]</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="fu">colnames</span>(enbal) <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="fu">colnames</span>(enbal), <span class="at">pattern =</span> <span class="st">&quot;enbal.&quot;</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>    <span class="at">replacement =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co"># mass aspects</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>masbal <span class="ot">&lt;-</span> endo.out1[, <span class="fu">grep</span>(<span class="at">pattern =</span> <span class="st">&quot;masbal&quot;</span>, <span class="fu">colnames</span>(endo.out1))]</span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="fu">colnames</span>(masbal) <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="fu">colnames</span>(masbal), <span class="at">pattern =</span> <span class="st">&quot;masbal.&quot;</span>,</span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>    <span class="at">replacement =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>QGEN <span class="ot">&lt;-</span> enbal<span class="sc">$</span>QGEN  <span class="co"># metabolic rate (W)</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>H2O <span class="ot">&lt;-</span> masbal<span class="sc">$</span>H2OResp_g <span class="sc">+</span> masbal<span class="sc">$</span>H2OCut_g  <span class="co"># g/h water evaporated</span></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a>TFA_D <span class="ot">&lt;-</span> treg<span class="sc">$</span>TFA_D  <span class="co"># dorsal fur surface temperature</span></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a>TFA_V <span class="ot">&lt;-</span> treg<span class="sc">$</span>TFA_V  <span class="co"># ventral fur surface temperature</span></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a>TskinD <span class="ot">&lt;-</span> treg<span class="sc">$</span>TSKIN_D  <span class="co"># dorsal skin temperature</span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a>TskinV <span class="ot">&lt;-</span> treg<span class="sc">$</span>TSKIN_V  <span class="co"># ventral skin temperature</span></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a>TCs <span class="ot">&lt;-</span> treg<span class="sc">$</span>TC  <span class="co"># core temperature</span></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a></span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a><span class="fu">par</span>(<span class="at">oma =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">3</span>, <span class="fl">1.5</span>, <span class="dv">1</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mgp =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a><span class="fu">plot</span>(QGEN <span class="sc">~</span> TAs, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;metabolic rate, W&quot;</span>, <span class="at">xlab =</span> <span class="fu">expression</span>(<span class="st">&quot;air temperature, &quot;</span> <span class="sc">*</span></span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a>    <span class="er">~</span>degree <span class="sc">*</span> C <span class="sc">*</span> <span class="st">&quot;&quot;</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">1.2</span>))</span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a><span class="fu">points</span>(Weathers1976Fig1<span class="sc">$</span>Tair, Weathers1976Fig1<span class="sc">$</span>mlO2gh <span class="sc">*</span> <span class="fl">20.1</span><span class="sc">/</span><span class="dv">3600</span> <span class="sc">*</span></span>
+<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a>    (AMASS <span class="sc">*</span> <span class="dv">1000</span>), <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">col =</span> <span class="dv">2</span>)</span>
+<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x =</span> <span class="dv">30</span>, <span class="at">y =</span> <span class="fl">1.2</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;observed&quot;</span>, <span class="st">&quot;predicted&quot;</span>),</span>
+<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a>    <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;black&quot;</span>), <span class="at">lty =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">1</span>), <span class="at">bty =</span> <span class="st">&quot;n&quot;</span>, <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">16</span>,</span>
+<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a>        <span class="cn">NA</span>))</span>
+<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a><span class="fu">plot</span>(H2O <span class="sc">~</span> TAs, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;water loss, g/h&quot;</span>, <span class="at">xlab =</span> <span class="fu">expression</span>(<span class="st">&quot;air temperature, &quot;</span> <span class="sc">*</span></span>
+<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a>    <span class="er">~</span>degree <span class="sc">*</span> C <span class="sc">*</span> <span class="st">&quot;&quot;</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">1.5</span>))</span>
+<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a><span class="fu">points</span>(masbal<span class="sc">$</span>H2OResp_g <span class="sc">~</span> TAs, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a><span class="fu">points</span>(masbal<span class="sc">$</span>H2OCut_g <span class="sc">~</span> TAs, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>)</span>
+<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x =</span> <span class="dv">3</span>, <span class="at">y =</span> <span class="fl">1.5</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;total (obs)&quot;</span>, <span class="st">&quot;total (pred)&quot;</span>,</span>
+<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a>    <span class="st">&quot;respiratory&quot;</span>, <span class="st">&quot;cutaneous&quot;</span>), <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="st">&quot;black&quot;</span>,</span>
+<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a>    <span class="st">&quot;blue&quot;</span>), <span class="at">lty =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>), <span class="at">bty =</span> <span class="st">&quot;n&quot;</span>, <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">16</span>, <span class="cn">NA</span>,</span>
+<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a>    <span class="cn">NA</span>, <span class="cn">NA</span>))</span>
+<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a><span class="fu">points</span>(Weathers1976Fig3<span class="sc">$</span>Tair, Weathers1976Fig3<span class="sc">$</span>mgH2Ogh <span class="sc">*</span> AMASS,</span>
+<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a>    <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">col =</span> <span class="dv">2</span>)</span>
+<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a><span class="fu">plot</span>(TFA_D <span class="sc">~</span> TAs, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">ylab =</span> <span class="fu">expression</span>(<span class="st">&quot;feather, skin and core temperature, &quot;</span> <span class="sc">*</span></span>
+<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a>    <span class="er">~</span>degree <span class="sc">*</span> C <span class="sc">*</span> <span class="st">&quot;&quot;</span>), <span class="at">xlab =</span> <span class="fu">expression</span>(<span class="st">&quot;air temperature, &quot;</span> <span class="sc">*</span></span>
+<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a>    <span class="er">~</span>degree <span class="sc">*</span> C <span class="sc">*</span> <span class="st">&quot;&quot;</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">50</span>))</span>
+<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a><span class="fu">points</span>(TFA_V <span class="sc">~</span> TAs, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a><span class="fu">points</span>(TskinD <span class="sc">~</span> TAs, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;orange&quot;</span>)</span>
+<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a><span class="fu">points</span>(TskinV <span class="sc">~</span> TAs, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;orange&quot;</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a><span class="fu">points</span>(TCs <span class="sc">~</span> TAs, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>)</span>
+<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x =</span> <span class="dv">30</span>, <span class="at">y =</span> <span class="dv">33</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;core (obs)&quot;</span>, <span class="st">&quot;core (pred)&quot;</span>,</span>
+<span id="cb5-60"><a href="#cb5-60" tabindex="-1"></a>    <span class="st">&quot;skin dorsal&quot;</span>, <span class="st">&quot;skin ventral&quot;</span>, <span class="st">&quot;feathers dorsal&quot;</span>, <span class="st">&quot;feathers ventral&quot;</span>),</span>
+<span id="cb5-61"><a href="#cb5-61" tabindex="-1"></a>    <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;orange&quot;</span>, <span class="st">&quot;orange&quot;</span>, <span class="st">&quot;grey&quot;</span>, <span class="st">&quot;grey&quot;</span>),</span>
+<span id="cb5-62"><a href="#cb5-62" tabindex="-1"></a>    <span class="at">lty =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>), <span class="at">bty =</span> <span class="st">&quot;n&quot;</span>, <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">16</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,</span>
+<span id="cb5-63"><a href="#cb5-63" tabindex="-1"></a>        <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>))</span>
+<span id="cb5-64"><a href="#cb5-64" tabindex="-1"></a><span class="fu">points</span>(Weathers1976Fig2<span class="sc">$</span>Tair, Weathers1976Fig2<span class="sc">$</span>Tb, <span class="at">pch =</span> <span class="dv">16</span>,</span>
+<span id="cb5-65"><a href="#cb5-65" tabindex="-1"></a>    <span class="at">col =</span> <span class="dv">2</span>)</span>
+<span id="cb5-66"><a href="#cb5-66" tabindex="-1"></a><span class="fu">plot</span>(masbal<span class="sc">$</span>AIR_L <span class="sc">*</span> <span class="dv">1000</span><span class="sc">/</span><span class="dv">60</span> <span class="sc">~</span> TAs, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">250</span>), <span class="at">lty =</span> <span class="dv">1</span>,</span>
+<span id="cb5-67"><a href="#cb5-67" tabindex="-1"></a>    <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">50</span>), <span class="at">ylab =</span> <span class="st">&quot;ml air / min&quot;</span>, <span class="at">xlab =</span> <span class="fu">expression</span>(<span class="st">&quot;air temperature, &quot;</span> <span class="sc">*</span></span>
+<span id="cb5-68"><a href="#cb5-68" tabindex="-1"></a>        <span class="er">~</span>degree <span class="sc">*</span> C <span class="sc">*</span> <span class="st">&quot;&quot;</span>), <span class="at">type =</span> <span class="st">&quot;l&quot;</span>)</span>
+<span id="cb5-69"><a href="#cb5-69" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x =</span> <span class="dv">0</span>, <span class="at">y =</span> <span class="dv">250</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;observed&quot;</span>, <span class="st">&quot;predicted&quot;</span>), <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>,</span>
+<span id="cb5-70"><a href="#cb5-70" tabindex="-1"></a>    <span class="st">&quot;black&quot;</span>), <span class="at">lty =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">1</span>), <span class="at">bty =</span> <span class="st">&quot;n&quot;</span>, <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">16</span>, <span class="cn">NA</span>))</span>
+<span id="cb5-71"><a href="#cb5-71" tabindex="-1"></a><span class="fu">points</span>(Weathers1976Fig5<span class="sc">$</span>breaths_min <span class="sc">*</span> (<span class="fl">13.2</span> <span class="sc">*</span> AMASS<span class="sc">^</span><span class="fl">1.08</span>) <span class="sc">*</span> ((Weathers1976Fig5<span class="sc">$</span>Tair <span class="sc">+</span></span>
+<span id="cb5-72"><a href="#cb5-72" tabindex="-1"></a>    <span class="fl">273.15</span>)<span class="sc">/</span><span class="fl">273.15</span>) <span class="sc">~</span> Weathers1976Fig5<span class="sc">$</span>Tair, <span class="at">col =</span> <span class="dv">2</span>, <span class="at">pch =</span> <span class="dv">16</span>)  <span class="co"># tidal volume allometry from Lasiewski, R. C., and W. A. Calder. 1971, correcting volume according to PV = nRT equation, where V_2 = T_2 * V_1 / T_2, and T_1 is at STP, so 0 °C</span></span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="microclimate-model-integration-example" class="section level2">
+<h2>Microclimate model integration example</h2>
+<p>In this final example, the microclimate model is run for a location
+in central Australia, under unshaded conditions, and the then the
+relevant outputs are sent into the endotherm model along with the same
+animal parameters as above.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">library</span>(NicheMapR)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>loc <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">131.05</span>, <span class="sc">-</span><span class="fl">22.75</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>Usrhyt <span class="ot">&lt;-</span> <span class="fl">0.07</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>maxshade <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>micro <span class="ot">&lt;-</span> <span class="fu">micro_global</span>(<span class="at">loc =</span> loc, <span class="at">Usrhyt =</span> Usrhyt, <span class="at">maxshade =</span> maxshade)</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>metout <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(micro<span class="sc">$</span>metout)  <span class="co"># unshaded above-ground conditions</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>soil <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(micro<span class="sc">$</span>soil)  <span class="co"># unshaded below-ground soil temperatures</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>shadmet <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(micro<span class="sc">$</span>shadmet)  <span class="co"># shaded above-ground conditions</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>shadsoil <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(micro<span class="sc">$</span>shadsoil)  <span class="co"># shaded below-ground soil temperatures</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>dates <span class="ot">&lt;-</span> micro<span class="sc">$</span>dates</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>TAs <span class="ot">&lt;-</span> metout<span class="sc">$</span>TALOC  <span class="co"># air temperatures at height of animal (°C)</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>TAREFs <span class="ot">&lt;-</span> metout<span class="sc">$</span>TAREF  <span class="co"># air temperatures at reference height (°C)</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>TSKYs <span class="ot">&lt;-</span> metout<span class="sc">$</span>TSKYC  <span class="co"># sky temperatures (°C)</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>TGRDs <span class="ot">&lt;-</span> soil<span class="sc">$</span>D0cm  <span class="co"># surface temperatures (°C)</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>VELs <span class="ot">&lt;-</span> metout<span class="sc">$</span>VLOC  <span class="co"># wind speeds at animal height (m/s)</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>RHs <span class="ot">&lt;-</span> metout<span class="sc">$</span>RHLOC  <span class="co"># relative humidity at animal height (%)</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>QSOLRs <span class="ot">&lt;-</span> metout<span class="sc">$</span>SOLR  <span class="co"># solar radiation (W/m2)</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>Zs <span class="ot">&lt;-</span> metout<span class="sc">$</span>ZEN  <span class="co"># zenith angle of the sun (degrees)</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>ELEV <span class="ot">&lt;-</span> micro<span class="sc">$</span>elev  <span class="co"># elevation (m)</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>ABSSB <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> micro<span class="sc">$</span>REFL  <span class="co"># substrate solar absorptivity (%)</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co"># core temperature</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>TC <span class="ot">&lt;-</span> <span class="dv">38</span>  <span class="co"># core temperature (°C)</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>TC_MAX <span class="ot">&lt;-</span> <span class="dv">43</span>  <span class="co"># maximum core temperature (°C)</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>TC_INC <span class="ot">&lt;-</span> <span class="fl">0.25</span>  <span class="co"># increment by which TC is elevated (°C)</span></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a><span class="co"># size and shape</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>AMASS <span class="ot">&lt;-</span> <span class="fl">0.0337</span>  <span class="co"># mass (kg)</span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>SHAPE <span class="ot">&lt;-</span> <span class="dv">4</span>  <span class="co"># use ellipsoid geometry</span></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>SHAPE_B <span class="ot">&lt;-</span> <span class="fl">1.1</span>  <span class="co"># start off near to a sphere (-)</span></span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>SHAPE_B_MAX <span class="ot">&lt;-</span> <span class="dv">5</span>  <span class="co"># maximum ratio of length to width/depth</span></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>UNCURL <span class="ot">&lt;-</span> <span class="fl">0.1</span>  <span class="co"># allows the animal to uncurl to SHAPE_B_MAX, the value being the increment </span></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a><span class="co"># SHAPE_B is increased per iteration</span></span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a></span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a><span class="co"># feather properties</span></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a>DHAIRD <span class="ot">&lt;-</span> <span class="fl">3e-05</span>  <span class="co"># hair diameter, dorsal (m)</span></span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a>DHAIRV <span class="ot">&lt;-</span> <span class="fl">3e-05</span>  <span class="co"># hair diameter, ventral (m)</span></span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a>LHAIRD <span class="ot">&lt;-</span> <span class="fl">0.0231</span>  <span class="co"># hair length, dorsal (m)</span></span>
+<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a>LHAIRV <span class="ot">&lt;-</span> <span class="fl">0.0227</span>  <span class="co"># hair length, ventral (m)</span></span>
+<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a>ZFURD <span class="ot">&lt;-</span> <span class="fl">0.0059</span>  <span class="co"># fur depth, dorsal (m)</span></span>
+<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a>ZFURV <span class="ot">&lt;-</span> <span class="fl">0.0057</span>  <span class="co"># fur depth, ventral (m)</span></span>
+<span id="cb6-44"><a href="#cb6-44" tabindex="-1"></a>RHOD <span class="ot">&lt;-</span> <span class="fl">5e+07</span>  <span class="co"># hair density, dorsal (1/m2)</span></span>
+<span id="cb6-45"><a href="#cb6-45" tabindex="-1"></a>RHOV <span class="ot">&lt;-</span> <span class="fl">5e+07</span>  <span class="co"># hair density, ventral (1/m2)</span></span>
+<span id="cb6-46"><a href="#cb6-46" tabindex="-1"></a>REFLD <span class="ot">&lt;-</span> <span class="fl">0.248</span>  <span class="co"># fur reflectivity dorsal (fractional, 0-1)</span></span>
+<span id="cb6-47"><a href="#cb6-47" tabindex="-1"></a>REFLV <span class="ot">&lt;-</span> <span class="fl">0.351</span>  <span class="co"># fur reflectivity ventral (fractional, 0-1)</span></span>
+<span id="cb6-48"><a href="#cb6-48" tabindex="-1"></a></span>
+<span id="cb6-49"><a href="#cb6-49" tabindex="-1"></a><span class="co"># physiological responses</span></span>
+<span id="cb6-50"><a href="#cb6-50" tabindex="-1"></a>PCTWET <span class="ot">&lt;-</span> <span class="fl">0.1</span>  <span class="co"># base skin wetness (%)</span></span>
+<span id="cb6-51"><a href="#cb6-51" tabindex="-1"></a>PCTWET_MAX <span class="ot">&lt;-</span> <span class="fl">0.1</span>  <span class="co"># maximum skin wetness (%)</span></span>
+<span id="cb6-52"><a href="#cb6-52" tabindex="-1"></a>PCTWET_INC <span class="ot">&lt;-</span> <span class="fl">0.25</span>  <span class="co"># intervals by which skin wetness is increased (%)</span></span>
+<span id="cb6-53"><a href="#cb6-53" tabindex="-1"></a>Q10 <span class="ot">&lt;-</span> <span class="dv">1</span>  <span class="co"># Q10 effect of body temperature on metabolic rate (-)</span></span>
+<span id="cb6-54"><a href="#cb6-54" tabindex="-1"></a>QBASAL <span class="ot">&lt;-</span> <span class="dv">10</span><span class="sc">^</span>(<span class="sc">-</span><span class="fl">1.461</span> <span class="sc">+</span> <span class="fl">0.669</span> <span class="sc">*</span> <span class="fu">log10</span>(AMASS <span class="sc">*</span> <span class="dv">1000</span>))  <span class="co"># basal heat generation (W)</span></span>
+<span id="cb6-55"><a href="#cb6-55" tabindex="-1"></a>DELTAR <span class="ot">&lt;-</span> <span class="dv">5</span>  <span class="co"># offset between air temperature and breath (°C)</span></span>
+<span id="cb6-56"><a href="#cb6-56" tabindex="-1"></a>EXTREF <span class="ot">&lt;-</span> <span class="dv">25</span>  <span class="co"># O2 extraction efficiency (%)</span></span>
+<span id="cb6-57"><a href="#cb6-57" tabindex="-1"></a>PANT_INC <span class="ot">&lt;-</span> <span class="fl">0.1</span>  <span class="co"># turns on panting, the value being the increment by which the panting </span></span>
+<span id="cb6-58"><a href="#cb6-58" tabindex="-1"></a><span class="co"># multiplier is increased up to the maximum value, PANT_MAX</span></span>
+<span id="cb6-59"><a href="#cb6-59" tabindex="-1"></a>PANT_MAX <span class="ot">&lt;-</span> <span class="dv">15</span>  <span class="co"># maximum panting rate - multiplier on air flow through the lungs above </span></span>
+<span id="cb6-60"><a href="#cb6-60" tabindex="-1"></a><span class="co"># that determined by metabolic rate</span></span>
+<span id="cb6-61"><a href="#cb6-61" tabindex="-1"></a>PANT_MULT <span class="ot">&lt;-</span> <span class="dv">1</span>  <span class="co"># multiplier on basal metabolic rate at maximum panting level</span></span>
+<span id="cb6-62"><a href="#cb6-62" tabindex="-1"></a></span>
+<span id="cb6-63"><a href="#cb6-63" tabindex="-1"></a><span class="co"># run the model</span></span>
+<span id="cb6-64"><a href="#cb6-64" tabindex="-1"></a>ptm <span class="ot">&lt;-</span> <span class="fu">proc.time</span>()  <span class="co"># start timing</span></span>
+<span id="cb6-65"><a href="#cb6-65" tabindex="-1"></a>endo.out <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(TAs), <span class="cf">function</span>(x) {</span>
+<span id="cb6-66"><a href="#cb6-66" tabindex="-1"></a>    <span class="fu">endoR</span>(<span class="at">TA =</span> TAs[x], <span class="at">TAREF =</span> TAREFs[x], <span class="at">TSKY =</span> TSKYs[x], <span class="at">TGRD =</span> TGRDs[x],</span>
+<span id="cb6-67"><a href="#cb6-67" tabindex="-1"></a>        <span class="at">VEL =</span> VELs[x], <span class="at">RH =</span> RHs[x], <span class="at">QSOLR =</span> QSOLRs[x], <span class="at">Z =</span> Zs[x],</span>
+<span id="cb6-68"><a href="#cb6-68" tabindex="-1"></a>        <span class="at">ELEV =</span> ELEV, <span class="at">ABSSB =</span> ABSSB, <span class="at">TC =</span> TC, <span class="at">TC_MAX =</span> TC_MAX,</span>
+<span id="cb6-69"><a href="#cb6-69" tabindex="-1"></a>        <span class="at">AMASS =</span> AMASS, <span class="at">SHAPE =</span> SHAPE, <span class="at">SHAPE_B =</span> SHAPE_B, <span class="at">SHAPE_B_MAX =</span> SHAPE_B_MAX,</span>
+<span id="cb6-70"><a href="#cb6-70" tabindex="-1"></a>        <span class="at">PCTWET =</span> PCTWET, <span class="at">PCTWET_INC =</span> PCTWET_INC, <span class="at">Q10 =</span> Q10,</span>
+<span id="cb6-71"><a href="#cb6-71" tabindex="-1"></a>        <span class="at">QBASAL =</span> QBASAL, <span class="at">DELTAR =</span> DELTAR, <span class="at">DHAIRD =</span> DHAIRD, <span class="at">DHAIRV =</span> DHAIRV,</span>
+<span id="cb6-72"><a href="#cb6-72" tabindex="-1"></a>        <span class="at">LHAIRD =</span> LHAIRD, <span class="at">LHAIRV =</span> LHAIRV, <span class="at">ZFURD =</span> ZFURD, <span class="at">ZFURV =</span> ZFURV,</span>
+<span id="cb6-73"><a href="#cb6-73" tabindex="-1"></a>        <span class="at">RHOD =</span> RHOD, <span class="at">RHOV =</span> RHOV, <span class="at">REFLD =</span> REFLD, <span class="at">TC_INC =</span> TC_INC,</span>
+<span id="cb6-74"><a href="#cb6-74" tabindex="-1"></a>        <span class="at">PANT_INC =</span> PANT_INC, <span class="at">PANT_MAX =</span> PANT_MAX, <span class="at">EXTREF =</span> EXTREF,</span>
+<span id="cb6-75"><a href="#cb6-75" tabindex="-1"></a>        <span class="at">UNCURL =</span> UNCURL, <span class="at">SAMODE =</span> SAMODE, <span class="at">SHADE =</span> <span class="dv">0</span>, <span class="at">PANT_MULT =</span> PANT_MULT)</span>
+<span id="cb6-76"><a href="#cb6-76" tabindex="-1"></a>})</span>
+<span id="cb6-77"><a href="#cb6-77" tabindex="-1"></a><span class="fu">proc.time</span>() <span class="sc">-</span> ptm  <span class="co"># end timing</span></span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##    0.47    0.00    0.47</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># extract the output</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>endo.out1 <span class="ot">&lt;-</span> <span class="fu">do.call</span>(<span class="st">&quot;rbind&quot;</span>, <span class="fu">lapply</span>(endo.out, data.frame))</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># thermoregulation output</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>treg <span class="ot">&lt;-</span> endo.out1[, <span class="fu">grep</span>(<span class="at">pattern =</span> <span class="st">&quot;treg&quot;</span>, <span class="fu">colnames</span>(endo.out1))]</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="fu">colnames</span>(treg) <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="fu">colnames</span>(treg), <span class="at">pattern =</span> <span class="st">&quot;treg.&quot;</span>, <span class="at">replacement =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co"># morphometric output</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>morph <span class="ot">&lt;-</span> endo.out1[, <span class="fu">grep</span>(<span class="at">pattern =</span> <span class="st">&quot;morph&quot;</span>, <span class="fu">colnames</span>(endo.out1))]</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="fu">colnames</span>(morph) <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="fu">colnames</span>(morph), <span class="at">pattern =</span> <span class="st">&quot;morph.&quot;</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>    <span class="at">replacement =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co"># heat balance</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>enbal <span class="ot">&lt;-</span> endo.out1[, <span class="fu">grep</span>(<span class="at">pattern =</span> <span class="st">&quot;enbal&quot;</span>, <span class="fu">colnames</span>(endo.out1))]</span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="fu">colnames</span>(enbal) <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="fu">colnames</span>(enbal), <span class="at">pattern =</span> <span class="st">&quot;enbal.&quot;</span>,</span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>    <span class="at">replacement =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co"># mass aspects</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>masbal <span class="ot">&lt;-</span> endo.out1[, <span class="fu">grep</span>(<span class="at">pattern =</span> <span class="st">&quot;masbal&quot;</span>, <span class="fu">colnames</span>(endo.out1))]</span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="fu">colnames</span>(masbal) <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="fu">colnames</span>(masbal), <span class="at">pattern =</span> <span class="st">&quot;masbal.&quot;</span>,</span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>    <span class="at">replacement =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co"># extract variables for plotting</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a>QGEN <span class="ot">&lt;-</span> enbal<span class="sc">$</span>QGEN  <span class="co"># metabolic rate (W)</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a>H2O <span class="ot">&lt;-</span> masbal<span class="sc">$</span>H2OResp_g <span class="sc">+</span> masbal<span class="sc">$</span>H2OCut_g  <span class="co"># g/h water evaporated</span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a>TFA_D <span class="ot">&lt;-</span> treg<span class="sc">$</span>TFA_D  <span class="co"># dorsal fur surface temperature</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>TFA_V <span class="ot">&lt;-</span> treg<span class="sc">$</span>TFA_V  <span class="co"># ventral fur surface temperature</span></span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a>TskinD <span class="ot">&lt;-</span> treg<span class="sc">$</span>TSKIN_D  <span class="co"># dorsal skin temperature</span></span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a>TskinV <span class="ot">&lt;-</span> treg<span class="sc">$</span>TSKIN_V  <span class="co"># ventral skin temperature</span></span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a>TCs <span class="ot">&lt;-</span> treg<span class="sc">$</span>TC  <span class="co"># core temperature</span></span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a>SkinW <span class="ot">&lt;-</span> treg<span class="sc">$</span>SKINWET  <span class="co"># skin wetness (%)</span></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a>Pant <span class="ot">&lt;-</span> treg<span class="sc">$</span>PANT  <span class="co"># panting multiplier (-)</span></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a></span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="co"># plot the results</span></span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a><span class="fu">par</span>(<span class="at">oma =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">3</span>, <span class="fl">1.5</span>, <span class="dv">1</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span>
+<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mgp =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a><span class="fu">plot</span>(QGEN <span class="sc">~</span> dates, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;metabolic rate, W&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;time&quot;</span>,</span>
+<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a>    <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, QBASAL <span class="sc">*</span> <span class="dv">5</span>))</span>
+<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a><span class="fu">plot</span>(H2O <span class="sc">~</span> dates, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;water loss, g / h&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;time&quot;</span>,</span>
+<span id="cb8-42"><a href="#cb8-42" tabindex="-1"></a>    <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">2</span>))</span>
+<span id="cb8-43"><a href="#cb8-43" tabindex="-1"></a><span class="fu">points</span>(masbal<span class="sc">$</span>H2OResp_g <span class="sc">~</span> dates, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb8-44"><a href="#cb8-44" tabindex="-1"></a><span class="fu">points</span>(masbal<span class="sc">$</span>H2OCut_g <span class="sc">~</span> dates, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>)</span>
+<span id="cb8-45"><a href="#cb8-45" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x =</span> <span class="dv">4</span>, <span class="at">y =</span> <span class="dv">2</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;total&quot;</span>, <span class="st">&quot;respiratory&quot;</span>, <span class="st">&quot;cutaneous&quot;</span>),</span>
+<span id="cb8-46"><a href="#cb8-46" tabindex="-1"></a>    <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="st">&quot;blue&quot;</span>), <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>), <span class="at">bty =</span> <span class="st">&quot;n&quot;</span>)</span>
+<span id="cb8-47"><a href="#cb8-47" tabindex="-1"></a><span class="fu">plot</span>(TFA_D <span class="sc">~</span> dates, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;temperature, °C&quot;</span>,</span>
+<span id="cb8-48"><a href="#cb8-48" tabindex="-1"></a>    <span class="at">xlab =</span> <span class="st">&quot;time&quot;</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">60</span>))</span>
+<span id="cb8-49"><a href="#cb8-49" tabindex="-1"></a><span class="fu">points</span>(TFA_V <span class="sc">~</span> dates, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb8-50"><a href="#cb8-50" tabindex="-1"></a><span class="fu">points</span>(TskinD <span class="sc">~</span> dates, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;orange&quot;</span>)</span>
+<span id="cb8-51"><a href="#cb8-51" tabindex="-1"></a><span class="fu">points</span>(TskinV <span class="sc">~</span> dates, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;orange&quot;</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb8-52"><a href="#cb8-52" tabindex="-1"></a><span class="fu">points</span>(TCs <span class="sc">~</span> dates, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>)</span>
+<span id="cb8-53"><a href="#cb8-53" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x =</span> <span class="dv">1</span>, <span class="at">y =</span> <span class="dv">65</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;core&quot;</span>, <span class="st">&quot;skin dorsal&quot;</span>, <span class="st">&quot;skin ventral&quot;</span>,</span>
+<span id="cb8-54"><a href="#cb8-54" tabindex="-1"></a>    <span class="st">&quot;feathers dorsal&quot;</span>, <span class="st">&quot;feathers ventral&quot;</span>), <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;orange&quot;</span>,</span>
+<span id="cb8-55"><a href="#cb8-55" tabindex="-1"></a>    <span class="st">&quot;orange&quot;</span>, <span class="st">&quot;grey&quot;</span>, <span class="st">&quot;grey&quot;</span>), <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>), <span class="at">bty =</span> <span class="st">&quot;n&quot;</span>,</span>
+<span id="cb8-56"><a href="#cb8-56" tabindex="-1"></a>    <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb8-57"><a href="#cb8-57" tabindex="-1"></a><span class="fu">plot</span>((H2O<span class="sc">/</span>(AMASS <span class="sc">*</span> <span class="dv">1000</span>)) <span class="sc">*</span> <span class="dv">100</span> <span class="sc">~</span> dates, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;H2O loss, % body mass / h&quot;</span>,</span>
+<span id="cb8-58"><a href="#cb8-58" tabindex="-1"></a>    <span class="at">xlab =</span> <span class="st">&quot;time&quot;</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>))</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
