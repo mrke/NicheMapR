@@ -663,17 +663,17 @@ micro_global <- function(
         sf::st_as_sf(coords = c("lon", "lat"))
       xy <- sf::st_set_crs(xy, "EPSG:4326")
       xy <- sf::st_transform(xy, sf::st_crs(dem_terra))
-      elev <- as.numeric(terra::extract(dem_terra, xy)[,2])
+      elev <- as.numeric(terra::extract(dem_terra, xy)[, 2])
       if(terrain == 1){
         cat('computing slope, aspect and horizon angles \n')
         slope <- terra::terrain(dem_terra, v = "slope", unit = "degrees")
-        slope <- as.numeric(terra::extract(slope, xy)[,2])
+        slope <- as.numeric(terra::extract(slope, xy)[, 2])
         aspect <- terra::terrain(dem_terra, v = "aspect", unit = "degrees")
-        aspect <- as.numeric(terra::extract(aspect, xy)[,2])
+        aspect <- as.numeric(terra::extract(aspect, xy)[, 2])
         ha24 <- 0
         for (i in 0:23) {
           har <- microclima::horizonangle(dem, i * 10, terra::res(dem)[1])
-          ha24[i + 1] <- atan(as.numeric(terra::extract(har, xy))) * (180/pi)
+          ha24[i + 1] <- atan(as.numeric(terra::extract(har, xy)[, 2])) * (180/pi)
         }
         hori <- ha24
       }
