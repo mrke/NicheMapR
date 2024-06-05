@@ -279,7 +279,7 @@ endoR <- function(
   # other environmental variables
   FLTYPE = 0, # fluid type: 0 = air; 1 = fresh water; 2 = salt water
   TCONDSB = TGRD, # surface temperature for conduction (°C)
-  KSUB = 2.79, # Substrate thermal conductivity (W/m°C)
+  KSUB = 2.79, # substrate thermal conductivity (W/m°C)
   TBUSH = TA, # bush temperature (°C)
   BP = -1, # Pa, negative means elevation is used
   O2GAS = 20.95, # oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)

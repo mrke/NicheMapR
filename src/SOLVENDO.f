@@ -353,7 +353,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
 
         !# set fur depth and conductivity
         !# index for KEFARA, the conductivity, is the average (1), front/dorsal (2), back/ventral(3) of the body part
-        if((QSOLR.GT.0).OR.(INT(ZZFUR(2)).NE.INT(ZZFUR(3))))THEN
+        if((QSOLR.GT.0).OR.(ZZFUR(2).NE.ZZFUR(3)))THEN
          if(S == 1)THEN
           ZL = ZZFUR(2)
           KEFF = KEFARA(2)
@@ -653,7 +653,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
 
         !# set fur depth and conductivity
         !# index for KEFARA, the conductivity, is the average (1), front/dorsal (2), back/ventral(3) of the body part
-        if((QSOLR.GT.0).OR.(INT(ZZFUR(2)).NE.INT(ZZFUR(3))))THEN
+        if((QSOLR.GT.0).OR.(ZZFUR(2).NE.ZZFUR(3)))THEN
          if(S == 1)THEN
           ZL = ZZFUR(2)
           KEFF = KEFARA(2)

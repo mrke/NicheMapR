@@ -416,7 +416,7 @@ endoR_devel <- function(
     ### IRPROP, infrared radiation properties of fur
 
     # call the IR properties subroutine
-    IRPROP.out <- IRPROP((0.7 * TS + 0.3 * TFA), DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, ZFURCOMP, PVEN, KHAIR)
+    IRPROP.out <- IRPROP((0.7 * TFA + 0.3 * TS), DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, ZFURCOMP, PVEN, KHAIR)
 
     # output
     KEFARA <- IRPROP.out[1:3] # effective thermal conductivity of fur array, mean, dorsal, ventral (W/mK)
