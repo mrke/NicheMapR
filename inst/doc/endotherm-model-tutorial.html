@@ -800,7 +800,7 @@ Journal of Zoology, 24, 39–47.</p>
 <span id="cb3-66"><a href="#cb3-66" tabindex="-1"></a>})  <span class="co"># run endoR across environments</span></span>
 <span id="cb3-67"><a href="#cb3-67" tabindex="-1"></a><span class="fu">proc.time</span>() <span class="sc">-</span> ptm  <span class="co"># stop timing</span></span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##     0.1     0.0     0.1</code></pre>
+##    0.24    0.02    0.25</code></pre>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># extract the output</span></span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>endo.out1 <span class="ot">&lt;-</span> <span class="fu">do.call</span>(<span class="st">&quot;rbind&quot;</span>, <span class="fu">lapply</span>(endo.out, data.frame))</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
@@ -959,7 +959,7 @@ animal parameters as above.</p>
 <span id="cb6-76"><a href="#cb6-76" tabindex="-1"></a>})</span>
 <span id="cb6-77"><a href="#cb6-77" tabindex="-1"></a><span class="fu">proc.time</span>() <span class="sc">-</span> ptm  <span class="co"># end timing</span></span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.47    0.00    0.47</code></pre>
+##    1.05    0.00    1.05</code></pre>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># extract the output</span></span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>endo.out1 <span class="ot">&lt;-</span> <span class="fu">do.call</span>(<span class="st">&quot;rbind&quot;</span>, <span class="fu">lapply</span>(endo.out, data.frame))</span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
