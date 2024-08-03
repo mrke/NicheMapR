@@ -49,12 +49,12 @@ C     USING endo_devel.R
       DOUBLE PRECISION, DIMENSION(3) :: KEFARA,BETARA,B1ARA,DHAR,LHAR,
      & RHOAR,ZZFUR,REFLFR
 
-      INTEGER S,TREGMODE
+      INTEGER S,TREGMODE,TORPOR
 
       DIMENSION IRPROPout(26),GEOMout(25),CONVOUT(14),
      & SOLARout(7),SIMULSOLout(2,16),SIMULOUT(16),FURVARS(15),
      & GEOMVARS(21),TRAITS(9),ENVVARS(17),ZBRENTin(17),ZBRENTout(15),
-     & INPUT(93),TREG(17),MORPH(20),ENBAL(10),MASBAL(10)
+     & INPUT(94),TREG(17),MORPH(20),ENBAL(10),MASBAL(10)
 
       PI = ACOS(-1.0d0)
       ZBRENTout=0.
@@ -153,6 +153,7 @@ C     USING endo_devel.R
       ZFURV_MAX=input(91)
       TC_MIN=input(92)
       CONV_ENHANCE=input(93)
+      TORPOR=INT(input(94))
       
       TSKINMAX=TC ! initialise
       Q10mult=1. ! initialise
@@ -192,7 +193,7 @@ C     USING endo_devel.R
        ZFURV=ZFURV_MAX
       ENDIF
       
-      IF(TREGMODE.EQ.0)THEN ! TORPOR MODE
+      IF((TREGMODE.EQ.0).OR.(TORPOR.EQ.1))THEN ! TORPOR MODE
 
 
       do while((QGEN > QBASAL).AND.(TC > TC_MIN))

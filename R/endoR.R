@@ -32,6 +32,7 @@
 #' \code{CONV_ENHANCE}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 10.1016/S0006-3495(76)85711-6}\cr\cr
 #' \code{WRITE_INPUT}{ = 0, write input to csv (1 = yes)}\cr\cr
 #' \code{TREGMODE}{ = 1, 1 = raise core then pant then sweat, 2 = raise core and pant simultaneously, then sweat}\cr\cr
+#' \code{TORPOR}{ = 0, 1 = go into torpor (decrease TC to TC_MIN) if possible}\cr\cr
 #'
 #' \strong{ Environment:}\cr\cr
 #' \code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr
@@ -108,7 +109,7 @@
 #' \code{RQ}{ = 0.80, # respiratory quotient (fractional, 0-1)}\cr\cr
 #' \code{EXTREF}{ = 20, # O2 extraction efficiency (\%)}\cr\cr
 #' \code{Q10}{ = 2, # Q10 factor for adjusting BMR for TC}\cr\cr
-#' \code{TC_MIN}{ = 19, # minimum core temperature during torpor (TREGMODE = 0)}\cr\cr
+#' \code{TC_MIN}{ = 19, # minimum core temperature during torpor (TORPOR = 1)}\cr\cr
 #'
 #' \strong{ Initial conditions:}\cr\cr
 #' \code{TS}{ = TC - 3, # initial skin temperature (°C)}\cr\cr
@@ -365,7 +366,7 @@ endoR <- function(
   PANT_MAX = 5, # maximum breathing rate multiplier to simulate panting (-)
   PZFUR = 1, # # incremental fractional reduction in ZFUR from piloerect state (-) (a value greater than zero triggers piloerection response)
   Q10 = 2, # Q10 factor for adjusting BMR for TC
-  TC_MIN = 19, # minimum core temperature during torpor (TREGMODE = 0)
+  TC_MIN = 19, # minimum core temperature during torpor (TORPOR = 1)
 
   # initial conditions
   TS = TC - 3, # skin temperature (°C)
@@ -376,7 +377,8 @@ endoR <- function(
   DIFTOL = 0.001, # tolerance for SIMULSOL
   THERMOREG = 1, # invoke thermoregulatory response
   RESPIRE = 1, # compute respiration and associated heat loss
-  TREGMODE = 1, # 0 = torpor, 1 = raise core then pant then sweat, 2 = raise core and pant simultaneously, then sweat
+  TREGMODE = 1, # 1 = raise core then pant then sweat, 2 = raise core and pant simultaneously, then sweat
+  TORPOR = 0, # go into torpor if possible (drop TC down to TC_MIN)
   WRITE_INPUT = 0
 ){
   errors <- 0
@@ -426,13 +428,13 @@ endoR <- function(
     TVEG <- TA
     NESTYP <- 0 # not yet used
     RoNEST <- 0 # not yet used
-    if(TREGMODE == 0){
+    if(TORPOR == 0){
       # must to this for torpor
       QGEN <- QBASREF + 1
       Q10mult <- Q10^((TC - TC_REF)/10)
       QBASAL <- QBASREF * Q10mult
     }
-    SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, RESPIRE, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, PVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, PCTWET, TSKY, TVEG, TAREF, DELTAR, RQ, TREGMODE, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AK1_MAX, AK1_INC, TC_MAX, TC_INC, TC_REF, Q10, QBASREF, PANT_MAX, PCTWET_MAX, PCTWET_INC, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, PZFUR, ZFURCOMP, PANT_INC, ORIENT, SHAPE_C, XR, PANT_MULT, KSUB, THERMOREG, ZFURD_MAX, ZFURV_MAX, TC_MIN, CONV_ENHANCE)
+    SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, RESPIRE, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, PVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, PCTWET, TSKY, TVEG, TAREF, DELTAR, RQ, TREGMODE, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AK1_MAX, AK1_INC, TC_MAX, TC_INC, TC_REF, Q10, QBASREF, PANT_MAX, PCTWET_MAX, PCTWET_INC, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, PZFUR, ZFURCOMP, PANT_INC, ORIENT, SHAPE_C, XR, PANT_MULT, KSUB, THERMOREG, ZFURD_MAX, ZFURV_MAX, TC_MIN, CONV_ENHANCE, TORPOR)
     if(WRITE_INPUT == 1){
       write.csv(SOLVENDO.input, file = "SOLVENDO.input.csv")
     }
