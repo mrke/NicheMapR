@@ -638,7 +638,6 @@ micro_silo <- function(
         xy = data.frame(lon = loc[1], lat = loc[2]) |>
           sf::st_as_sf(coords = c("lon", "lat"))
         xy <- sf::st_set_crs(xy, "EPSG:4326")
-        xy <- sf::st_transform(xy, sf::st_crs(dem_terra))
         elev <- as.numeric(terra::extract(dem, xy)[,2])
       }
       if(save == 1){
@@ -772,13 +771,15 @@ micro_silo <- function(
       countday <- endday-startday+1
       cut <- as.numeric(days[1] - as.POSIXct(paste0('01/01/', ystart), format = "%d/%m/%Y") + 1)
       allclearsky <- allclearsky[cut:(cut+countday-1)]
+      WNMINN <- WNMINN[cut:(cut+countday-1)]
+      WNMAXX <- WNMAXX[cut:(cut+countday-1)]
       #delta.radiation <- radiation - allclearsky
       #delta.radiation2 <- cbind(allclearsky, delta.radiation)
       #delta.radiation2 <- delta.radiation2[delta.radiation2[, 2] > 0, ]
       #rad.correct <- 1# + median(delta.radiation2[, 2] / delta.radiation2[, 1])
       #plot(allclearsky * rad.correct, type = 'l')
       #points(radiation, type = 'h', col = 2)
-      cloud <- (1 - radiation / (allclearsky  * rad.correct)) * 100
+      cloud <- (1 - radiation / allclearsky) * 100
       cloud[cloud<0]<-0
       cloud[cloud>100]<-100
       if(clearsky == 1){
@@ -797,8 +798,8 @@ micro_silo <- function(
         save(CCMINN, file = 'CCMINN.Rda')
         save(WNMINN, file = 'WNMINN.Rda')
         save(WNMAXX, file = 'WNMAXX.Rda')
-        save(tmax, file = 'Tmax.Rda')
-        save(tmin, file = 'Tmin.Rda')
+        save(Tmax, file = 'Tmax.Rda')
+        save(Tmin, file = 'Tmin.Rda')
         save(rhmax, file = 'rhmax.Rda')
         save(rhmin, file = 'rhin.Rda')
         save(rain, file = 'rain.Rda')
@@ -877,18 +878,18 @@ micro_silo <- function(
       } #end check if running gads
 
       if(adiab_cor==1){
-        TMAXX<-as.matrix(tmax+adiab_corr_max)
-        TMINN<-as.matrix(tmin+adiab_corr_min)
+        TMAXX<-as.matrix(Tmax+adiab_corr_max)
+        TMINN<-as.matrix(Tmin+adiab_corr_min)
       }else{
-        TMAXX<-as.matrix(tmax)
-        TMINN<-as.matrix(tmin)
+        TMAXX<-as.matrix(Tmax)
+        TMINN<-as.matrix(Tmin)
       }
       if(warm != 0){
         # impose uniform temperature change
         TMAXX<-TMAXX+warm
         TMINN<-TMINN+warm
       }
-      RAINFALL<-Rain+rainoff
+      RAINFALL<-rain+rainoff
       RAINFALL[RAINFALL < 0] <- 0
 
       # correct for potential change in RH with elevation-corrected Tair
@@ -989,7 +990,7 @@ micro_silo <- function(
         jd <- julday(as.numeric(format(tt, "%Y")), as.numeric(format(tt, "%m")), as.numeric(format(tt, "%d")))
         dem <- microclima::get_dem(r = NA, lat = lat, long = long, resolution = 100, zmin = -20)
         require(terra)
-        dem_terra <- terra::rast(dem)
+        dem_terra <- dem
         xy = data.frame(lon = loc[1], lat = loc[2]) |>
           sf::st_as_sf(coords = c("lon", "lat"))
         xy <- sf::st_set_crs(xy, "EPSG:4326")
