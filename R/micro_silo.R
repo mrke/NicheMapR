@@ -5,6 +5,9 @@
 #' @param loc Longitude and latitude (decimal degrees)
 #' @param dstart First day to run, date in format "d/m/Y" e.g. "01/01/2016"
 #' @param dfinish Last day to run, date in format "d/m/Y" e.g. "31/12/2016"
+#' @param dem A digital elevation model produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
+#' @param dem.res Requested resolution of the DEM from elevatr, m
+#' @param pixels Number of pixels along one edge of square requested of DEM requested from elevatr, #
 #' @param REFL Soil solar reflectance, decimal \%
 #' @param elev Elevation, if to be user specified (m)
 #' @param slope Slope in degrees
@@ -159,6 +162,7 @@
 #' \code{DEP}{ - vector of depths used (cm)}\cr\cr
 #' \code{diffuse_frac}{ - vector of hourly values of the fraction of total solar radiation that is diffuse (-), computed by microclima if microclima > 0}\cr\cr
 #' \code{SILO.data}{ - SILO data extracted from web or read in from file}\cr\cr
+#' \code{dem}{ - digital elevation model used to get elevation and terrain features}\cr\cr
 #'
 #' metout/shadmet variables:
 #' \itemize{
@@ -315,6 +319,9 @@ micro_silo <- function(
   loc = c(135.00, -27.50),
   dstart = "01/01/2016",
   dfinish = "31/12/2017",
+  dem = NA,
+  dem.res = 30,
+  pixels = 100,
   nyears = as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1,
   REFL = 0.15,
   elev = NA,
@@ -622,12 +629,18 @@ micro_silo <- function(
       stop("package 'httr' is needed. Please install it.",
            call. = FALSE)
     }
+    if (!require("lutz", quietly = TRUE)) {
+      stop("package 'lutz' is needed. Please install it.",
+           call. = FALSE)
+    }
+
     longlat <- loc
     x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
 
     require("terra")
     require("RNetCDF")
     require("httr")
+    require("lutz")
 
     # get the local timezone reference longitude
     if(timezone==1){ # this now requires registration
@@ -646,26 +659,30 @@ micro_silo <- function(
     ALMINT <- (abs(x[1])-ALONG)*60
     azmuth<-aspect
 
-    if(save != 2){
-      if(is.na(elev)){
-        require(microclima)
-        require(terra)
-        cat('downloading DEM via package elevatr \n')
-        dem <- microclima::get_dem(lat = loc[2], long = loc[1]) # mercator equal area projection
-        xy = data.frame(lon = loc[1], lat = loc[2]) |>
-          sf::st_as_sf(coords = c("lon", "lat"))
-        xy <- sf::st_set_crs(xy, "EPSG:4326")
-        elev <- as.numeric(terra::extract(dem, xy)[,2])
-      }
-      if(save == 1){
-        cat("saving DEM data for later \n")
-        save(dem, file = 'dem.Rda')
-      }
+    if(class(dem)[1] == "SpatRaster"){
+      cat('using DEM provided to function call \n')
     }
+    if(save != 2 & class(dem)[1] != "SpatRaster"){
+      require(microclima)
+      require(terra)
+      cat('downloading DEM via package elevatr \n')
+      dem <- microclima::get_dem(lat = loc[2], long = loc[1], resolution = dem.res, xdims = pixels, ydims = pixels) # mercator equal area projection
+    }
+    if(save == 1){
+      save(dem, file = 'dem.Rda')
+    }
+    if(save == 2){
+      load('dem.Rda')
+    }
+
     if(save == 2){
       cat("loading DEM data from previous run \n")
       load('dem.Rda')
     }
+    xy = data.frame(lon = loc[1], lat = loc[2]) |>
+      sf::st_as_sf(coords = c("lon", "lat"))
+    xy <- sf::st_set_crs(xy, "EPSG:4326")
+    elev <- as.numeric(terra::extract(dem, xy)[,2])
 
     ALTITUDES <- NA
     if(is.na(elev) == FALSE){ALTITUDES <- elev} # check if user-specified elevation
@@ -1280,22 +1297,23 @@ micro_silo <- function(
       if(max(metout[,1] == 0)){
         cat("ERROR: the model crashed - try a different error tolerance (ERR) or a different spacing in DEP", '\n')
       }
-      dates <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", tz = 'America/Los_Angeles'), as.POSIXct(dfinish, format = "%d/%m/%Y", tz = 'America/Los_Angeles')+23*3600, by = 'hours')[1:(length(TMAXX) * 24)]
-      dates2 <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", tz = 'America/Los_Angeles'), as.POSIXct(dfinish, format = "%d/%m/%Y", tz = 'America/Los_Angeles'), by = 'days')[1:(length(TMAXX))]
+      tz <- tz_lookup_coords(longlat[2], longlat[1], method = "fast")
+      dates <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", tz = tz), as.POSIXct(dfinish, format = "%d/%m/%Y", tz = tz)+23*3600, by = 'hours')[1:(length(TMAXX) * 24)]
+      dates2 <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", tz = tz), as.POSIXct(dfinish, format = "%d/%m/%Y", tz = tz), by = 'days')[1:(length(TMAXX))]
       if(lamb == 1){
         drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
         drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
         srlam<-as.data.frame(microut$srlam) # retrieve scattered solar irradiance
         if(snowmodel == 1){
-          return(list(SILO.data=SILO.data,soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlamd,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS, diffuse_frac = diffuse_frac))
+          return(list(SILO.data=SILO.data,soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlamd,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS, diffuse_frac = diffuse_frac, dem = dem))
         }else{
-          return(list(SILO.data=SILO.data,soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS, diffuse_frac = diffuse_frac))
+          return(list(SILO.data=SILO.data,soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS, diffuse_frac = diffuse_frac, dem = dem))
         }
       }else{
         if(snowmodel == 1){
-          return(list(SILO.data=SILO.data,soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS, diffuse_frac = diffuse_frac))
+          return(list(SILO.data=SILO.data,soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS, diffuse_frac = diffuse_frac, dem = dem))
         }else{
-          return(list(SILO.data=SILO.data,soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS, diffuse_frac = diffuse_frac))
+          return(list(SILO.data=SILO.data,soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS, diffuse_frac = diffuse_frac, dem = dem))
         }
       }
     } # end of check for na sites

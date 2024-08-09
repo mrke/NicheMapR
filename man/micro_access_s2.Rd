@@ -16,6 +16,12 @@ Usrhyt = 0.01, ...)
 
 \item{dfinish}{Last day to run, date in format "d/m/Y" e.g. "31/12/2016"}
 
+\item{dem}{A digital elevation model produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)}
+
+\item{dem.res}{Requested resolution of the DEM from elevatr, m}
+
+\item{pixels}{Number of pixels along one edge of square requested of DEM requested from elevatr, #}
+
 \item{ensemble}{Forecast ensemble to use}
 
 \item{REFL}{Soil solar reflectance, decimal \%}
@@ -200,6 +206,7 @@ An implementation of the NicheMapR microclimate model that uses the ACCESS-S2 da
 \code{maxshade}{ - maximum shade for each day of simulation (\%)}\cr\cr
 \code{DEP}{ - vector of depths used (cm)}\cr\cr
 \code{diffuse_frac}{ - vector of hourly values of the fraction of total solar radiation that is diffuse (-), computed by microclima if microclima > 0}\cr\cr
+\code{dem}{ - digital elevation model used to get elevation and terrain features}\cr\cr
 
 metout/shadmet variables:
 \itemize{

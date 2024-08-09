@@ -16,6 +16,12 @@ Usrhyt = 0.01, ...)
 
 \item{dfinish}{Last day to run, date in format "d/m/Y" e.g. "31/12/2016"}
 
+\item{dem}{A digital elevation model produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)}
+
+\item{dem.res}{Requested resolution of the DEM from elevatr, m}
+
+\item{pixels}{Number of pixels along one edge of square requested of DEM requested from elevatr, #}
+
 \item{REFL}{Soil solar reflectance, decimal \%}
 
 \item{elev}{Elevation, if to be user specified (m)}
@@ -199,6 +205,7 @@ An implementation of the NicheMapR microclimate model that uses the SILO daily w
 \code{DEP}{ - vector of depths used (cm)}\cr\cr
 \code{diffuse_frac}{ - vector of hourly values of the fraction of total solar radiation that is diffuse (-), computed by microclima if microclima > 0}\cr\cr
 \code{SILO.data}{ - SILO data extracted from web or read in from file}\cr\cr
+\code{dem}{ - digital elevation model used to get elevation and terrain features}\cr\cr
 
 metout/shadmet variables:
 \itemize{
