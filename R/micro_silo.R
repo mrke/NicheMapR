@@ -618,11 +618,16 @@ micro_silo <- function(
       stop("package 'RNetCDF' is needed. Please install it.",
         call. = FALSE)
     }
+    if (!require("httr", quietly = TRUE)) {
+      stop("package 'httr' is needed. Please install it.",
+           call. = FALSE)
+    }
     longlat <- loc
     x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
 
     require("terra")
     require("RNetCDF")
+    require("httr")
 
     # get the local timezone reference longitude
     if(timezone==1){ # this now requires registration
