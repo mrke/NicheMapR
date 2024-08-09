@@ -1,10 +1,11 @@
-#' USA implementation of the microclimate model.
+#' ACCESS-S2 seasonal forecast implementation of the microclimate model.
 #'
-#' An implementation of the NicheMapR microclimate model that uses the GRIDMET daily weather database http://www.climatologylab.org/gridmet.html, and specifically uses the following variables: pr, rmax, rmin, srad, tmmn, tmmx, vs. Also uses the following DEM "metdata_elevationdata.nc".
+#' An implementation of the NicheMapR microclimate model that uses the ACCESS-S2 daily seasonal weather forecast and specifically uses the following variables: rain, tmax, tmin, rain, vpr, radn.
 #' @encoding UTF-8
 #' @param loc Longitude and latitude (decimal degrees)
 #' @param dstart First day to run, date in format "d/m/Y" e.g. "01/01/2016"
 #' @param dfinish Last day to run, date in format "d/m/Y" e.g. "31/12/2016"
+#' @param ensemble Forecast ensemble to use
 #' @param REFL Soil solar reflectance, decimal \%
 #' @param elev Elevation, if to be user specified (m)
 #' @param slope Slope in degrees
@@ -55,8 +56,8 @@
 #' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 #' \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
 #' \code{warm}{ = 0, warming offset vector, °C (negative values mean cooling). Can supply a single value or a vector the length of the number of days to be simulated.}\cr\cr
-#' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
-#' \code{opendap}{ = 1, query met grids via opendap}\cr\cr
+#' \code{spatial}{ = "C:/Users/mrke/OneDrive - The University of Melbourne/Documents/Spatial_Data/ACCESS-S2/20240701_", choose location of ACCESS-S2 data and specify the prefix}\cr\cr
+#' \code{access_sw}{ = "C:/Users/mrke/OneDrive - The University of Melbourne/Documents/Spatial_Data/", choose location of spatial data}\cr\cr
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
@@ -253,9 +254,10 @@
 #' }
 #' @examples
 #' library(NicheMapR)
-#' dstart <- "01/01/2016"
-#' dfinish <- "31/12/2017"
-#' micro<-micro_usa(dstart = dstart, dfinish = dfinish) # run the model at the default location (Madison, Wisconsin) for 2016 to 2017 using opendap
+#' dstart <- "01/07/2024"
+#' dfinish <- "31/12/2024"
+#' ensemble <- 1
+#' micro<-micro_access_s2(dstart = dstart, dfinish = dfinish, ensemble = ensemble) # run the model at the default location
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
@@ -310,10 +312,11 @@
 #'     (%)", col = i, type = "l")
 #'  }
 #' }
-micro_usa <- function(
-  loc = c(-89.40123, 43.07305),
-  dstart = "01/01/2016",
-  dfinish = "31/12/2017",
+micro_access_s2 <- function(
+  loc = c(147.7189, -31.8350),
+  dstart = "01/07/2024",
+  dfinish = "31/12/2024",
+  ensemble = 1,
   nyears = as.numeric(substr(dfinish, 7, 10)) - as.numeric(substr(dstart, 7, 10)) + 1,
   REFL = 0.15,
   elev = NA,
@@ -341,7 +344,8 @@ micro_usa <- function(
   windfac = 1,
   adiab_cor = 1,
   warm = 0,
-  spatial = "P:",
+  access_s2 = "C:/Users/mrke/OneDrive - The University of Melbourne/Documents/Spatial_Data/ACCESS-S2/20240701_",
+  spatial = "C:/Users/mrke/OneDrive - The University of Melbourne/Documents/Spatial_Data/",
   ERR = 1.5,
   RUF = 0.004,
   ZH = 0,
@@ -582,6 +586,9 @@ micro_usa <- function(
     errors<-1
   }
   # end error trapping
+  ystart <- as.numeric(substr(dstart, 7, 10))
+  yfinish <- as.numeric(substr(dfinish, 7, 10))
+  yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
 
   if(errors==0){ # continue
 
@@ -626,63 +633,33 @@ micro_usa <- function(
     azmuth<-aspect
 
     if(save != 2){
-      #GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]]
-      if(opendap == 1){
-        if(!require(futile.logger, quietly = TRUE)){
-         stop('package "futile.logger" is required for this opendap extraction process. Please install it.')
-        }
-        require(utils)
-        retry <- function(expr, isError=function(x) "try-error" %in% class(x), maxErrors=50, sleep=1) {
-          attempts = 0
-          retval = try(eval(expr))
-          while (isError(retval)) {
-            attempts = attempts + 1
-            if (attempts >= maxErrors) {
-              msg = sprintf("retry: too many retries [[%s]]", capture.output(str(retval)))
-              futile.logger::flog.fatal(msg)
-              stop(msg)
-            } else {
-              msg = sprintf("retry: error in attempt %i/%i [[%s]]", attempts, maxErrors,
-                capture.output(str(retval)))
-              futile.logger::flog.error(msg)
-              warning(msg)
-            }
-            if (sleep > 0) Sys.sleep(sleep)
-            retval = try(eval(expr))
-          }
-          return(retval)
-        }
-
-        cat("extracting elevation via opendaps \n")
-        baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/MET/"
-        nc <- RNetCDF::open.nc(paste0(baseurl, "/elev/metdata_elevationdata.nc"))
-        lon <- RNetCDF::var.get.nc(nc, "lon", unpack = TRUE)
-        lat <- RNetCDF::var.get.nc(nc, "lat", unpack = TRUE)
-        flat=match(abs(lat-x[2])<1/48,1)
-        latindex=which(flat %in% 1)
-        flon=match(abs(lon-x[1])<1/48,1)
-        lonindex=which(flon %in% 1)
-        start <- c(lonindex, latindex, 1)
-        count <- c(1, 1, NA)
-        USADEM <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "elevation",
-          start = start, count = count, unpack = TRUE)))
-        RNetCDF::close.nc(nc)
-      }else{
-        USADEM <- as.numeric(terra::extract(terra::rast(paste0(spatial,"/metdata_elevationdata.nc")), x)) # metres above sea level
+      if(is.na(elev)){
+        require(microclima)
+        require(terra)
+        cat('downloading DEM via package elevatr \n')
+        dem <- microclima::get_dem(lat = loc[2], long = loc[1]) # mercator equal area projection
+        xy = data.frame(lon = loc[1], lat = loc[2]) |>
+          sf::st_as_sf(coords = c("lon", "lat"))
+        xy <- sf::st_set_crs(xy, "EPSG:4326")
+        elev <- as.numeric(terra::extract(dem, xy)[,2])
       }
       if(save == 1){
         cat("saving DEM data for later \n")
-        save(USADEM, file = 'USADEM.Rda')
+        save(dem, file = 'dem.Rda')
       }
     }
     if(save == 2){
       cat("loading DEM data from previous run \n")
-      load('USADEM.Rda')
+      load('dem.Rda')
     }
+    # from micro_aust
+    f2 <- paste0(spatial, "ausdem_shift1.tif")
+    r2 <- terra::rast(f2)
+    AUSDEM <- as.numeric(terra::extract(r2, x))
 
-    ALTITUDES <- NA# as.numeric(terra::extract(rast(paste0(spatial,"/terr50.tif")), x)) # to do
+    ALTITUDES <- NA
     if(is.na(elev) == FALSE){ALTITUDES <- elev} # check if user-specified elevation
-    if(is.na(ALTITUDES)==TRUE){ALTITUDES<-USADEM}
+    if(is.na(ALTITUDES)==TRUE){ALTITUDES<-AUSDEM}
     if(save != 2){
       if(soilgrids == 1){
         cat('extracting soil texture data from SoilGrids \n')
@@ -724,220 +701,130 @@ micro_usa <- function(
       save(KS, file = 'KS.Rda')
       save(BulkDensity, file = 'BulkDensity.Rda')
     }
-    #if(terrain==1){ # to do
-      # cat("extracting terrain data \n")
-      # # now extract terrain data from elevslpasphori.nc
-      # # get UTM from dec degrees, NZTM
-      # HORIZONS <- elevslpasphori[4:27]
-      # SLOPES <- elevslpasphori[2]
-      # AZMUTHS <- elevslpasphori[3]
-      # # the horizons have been arranged so that they go from 0 degrees azimuth (north) clockwise - r.horizon starts
-      # # in the east and goes counter clockwise!
-      # HORIZONS <- (ifelse(is.na(HORIZONS),0,HORIZONS))/10 # get rid of na and get back to floating point
-      # HORIZONS <- data.frame(HORIZONS)
-    #}else{
+
       HORIZONS <- hori
       HORIZONS <- data.frame(HORIZONS)
       VIEWF_all <- 1-sum(sin(as.data.frame(hori)*pi/180))/length(hori) # convert horizon angles to radians and calc view factor(s)
       SLOPES<-rep(slope,length(x[,1]))
       AZMUTHS<-rep(aspect,length(x[,1]))
-    #}
+
     hori<-HORIZONS
     row.names(hori)<-NULL
     hori<-as.numeric(as.matrix(hori))
     VIEWF<-VIEWF_all
 
     # setting up for temperature correction using lapse rate given difference between 9sec DEM value and 0.05 deg value
-    delta_elev = USADEM - ALTITUDES
+    delta_elev = AUSDEM - ALTITUDES
     adiab_corr_max <- delta_elev * lapse_max
     adiab_corr_min <- delta_elev * lapse_min
     if(save != 2){
-      if(opendap == 1){
-        cat("extracting weather data \n")
-        dates<-Sys.time()-60*60*24
-        curyear<-as.numeric(format(dates,"%Y"))
-        days <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900"), by = 'days')
-        alldays <- seq(as.POSIXct("01/01/1900", format = "%d/%m/%Y", origin = "01/01/1900"), Sys.time()-60*60*24, by = 'days')
-        startday <- which(as.character(format(alldays, "%d/%m/%Y")) == format(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), "%d/%m/%Y"))
-        endday <- which(as.character(format(alldays, "%d/%m/%Y")) == format(as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900"), "%d/%m/%Y"))
-        countday <- endday-startday+1
-        baseurl <- "http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_met_"
-        cat(paste0("reading weather input for ", dstart, " to ", dfinish, " \n"))
-        cat(paste0("tmin weather input \n"))
-        nc <- RNetCDF::open.nc(paste0(baseurl, "tmmn_1979_CurrentYear_CONUS.nc#fillmismatch"))
-        day <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "day", unpack = TRUE)))
-        lon <- RNetCDF::var.get.nc(nc, "lon", unpack = TRUE)
-        lat <- RNetCDF::var.get.nc(nc, "lat", unpack = TRUE)
-        flat <- match(abs(lat-x[2])<1/48,1)
-        latindex <- which(flat %in% 1)
-        flon <- match(abs(lon-x[1])<1/48,1)
-        lonindex <- which(flon %in% 1)
-        start <- c(lonindex, latindex, which(day == startday) - 1)
-        count <- c(1, 1, countday)
-        Tmin <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_minimum_temperature", start = start, count = count, unpack = TRUE))) - 273.15
-        RNetCDF::close.nc(nc)
-        cat(paste0("tmax weather input \n"))
-        nc <- RNetCDF::open.nc(paste0(baseurl, "tmmx_1979_CurrentYear_CONUS.nc#fillmismatch"))
-        Tmax <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_maximum_temperature", start = start, count = count, unpack = TRUE))) - 273.15
-        RNetCDF::close.nc(nc)
-        cat(paste0("rhmin weather input \n"))
-        nc <- RNetCDF::open.nc(paste0(baseurl, "rmin_1979_CurrentYear_CONUS.nc#fillmismatch"))
-        rhmin <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_minimum_relative_humidity", start = start, count = count, unpack = TRUE)))
-        RNetCDF::close.nc(nc)
-        cat(paste0("rhmax weather input \n"))
-        nc <- RNetCDF::open.nc(paste0(baseurl, "rmax_1979_CurrentYear_CONUS.nc#fillmismatch"))
-        rhmax <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_maximum_relative_humidity", start = start, count = count, unpack = TRUE)))
-        RNetCDF::close.nc(nc)
-        cat(paste0("rain weather input \n"))
-        nc <- RNetCDF::open.nc(paste0(baseurl, "pr_1979_CurrentYear_CONUS.nc#fillmismatch"))
-        Rain <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "precipitation_amount", start = start, count = count, unpack = TRUE)))
-        RNetCDF::close.nc(nc)
-        cat(paste0("solar weather input \n"))
-        nc <- RNetCDF::open.nc(paste0(baseurl, "srad_1979_CurrentYear_CONUS.nc#fillmismatch"))
-        solar <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_mean_shortwave_radiation_at_surface", start = start, count = count, unpack = TRUE)))
-        RNetCDF::close.nc(nc)
-        cat(paste0("wind weather input \n"))
-        nc <- RNetCDF::open.nc(paste0(baseurl, "vs_1979_CurrentYear_CONUS.nc#fillmismatch"))
-        Wind <- retry(as.numeric(RNetCDF::var.get.nc(nc, variable = "daily_mean_wind_speed", start = start, count = count, unpack = TRUE)))
-        RNetCDF::close.nc(nc)
-      }else{
-        cat("extracting weather data \n")
-        nc <- RNetCDF::open.nc(paste(spatial, "/tmmx_", yearlist[1], ".nc",
-          sep = ""))
-        lon <- matrix(RNetCDF::var.get.nc(nc, "lon", unpack = TRUE))
-        lat <- matrix(RNetCDF::var.get.nc(nc, "lat", unpack = TRUE))
-        lon_1 <- as.numeric(longlat[1])
-        lat_1 <- as.numeric(longlat[2])
-        dist1 <- abs(lon - lon_1)
-        index1 <- which.min(dist1)
-        dist2 <- abs(lat - lat_1)
-        index2 <- which.min(dist2)
-        start <- c(index2, index1, 1)
-        count <- c(1, 1, NA)
-        for (j in 1:nyears) {
-          if (j == 1) {
-            cat(paste("reading weather input for ", yearlist[j],
-              " \n", sep = ""))
-            nc <- RNetCDF::open.nc(paste(spatial, "/tmmn_", yearlist[j],
-              ".nc", sep = ""))
-            tmin <- as.numeric(RNetCDF::var.get.nc(nc, variable = "air_temperature",
-              start = start, count = count, unpack = TRUE))
-            RNetCDF::close.nc(nc)
-            nc <- RNetCDF::open.nc(paste(spatial, "/tmmx_", yearlist[j],
-              ".nc", sep = ""))
-            tmax <- as.numeric(RNetCDF::var.get.nc(nc, variable = "air_temperature",
-              start = start, count = count, unpack = TRUE))
-            RNetCDF::close.nc(nc)
-            nc <- RNetCDF::open.nc(paste(spatial, "/rmin_", yearlist[j],
-              ".nc", sep = ""))
-            rhmin <- as.numeric(RNetCDF::var.get.nc(nc, variable = "relative_humidity",
-              start = start, count = count, unpack = TRUE))
-            RNetCDF::close.nc(nc)
-            nc <- RNetCDF::open.nc(paste(spatial, "/rmax_", yearlist[j],
-              ".nc", sep = ""))
-            rhmax <- as.numeric(RNetCDF::var.get.nc(nc, variable = "relative_humidity",
-              start = start, count = count, unpack = TRUE))
-            RNetCDF::close.nc(nc)
-            nc <- RNetCDF::open.nc(paste(spatial, "/pr_", yearlist[j],
-              ".nc", sep = ""))
-            Rain <- as.numeric(RNetCDF::var.get.nc(nc, variable = "precipitation_amount",
-              start = start, count = count, unpack = TRUE))
-            RNetCDF::close.nc(nc)
-            nc <- RNetCDF::open.nc(paste(spatial, "/srad_", yearlist[j],
-              ".nc", sep = ""))
-            solar <- as.numeric(RNetCDF::var.get.nc(nc, variable = "surface_downwelling_shortwave_flux_in_air",
-              start = start, count = count, unpack = TRUE))
-            RNetCDF::close.nc(nc)
-            nc <- RNetCDF::open.nc(paste(spatial, "/vs_", yearlist[j],
-              ".nc", sep = ""))
-            Wind <- as.numeric(RNetCDF::var.get.nc(nc, variable = "wind_speed",
-              start = start, count = count, unpack = TRUE))
-            RNetCDF::close.nc(nc)
-            Tmax <- tmax - 273.15
-            Tmin <- tmin - 273.15
-          } else {
-            cat(paste("reading weather input for ", yearlist[j],
-              " \n", sep = ""))
-            nc <- RNetCDF::open.nc(paste(spatial, "/tmmn_", yearlist[j],
-              ".nc", sep = ""))
-            tmin <- as.numeric(RNetCDF::var.get.nc(nc, variable = "air_temperature",
-              start = start, count = count, unpack = TRUE))
-            RNetCDF::close.nc(nc)
-            nc <- RNetCDF::open.nc(paste(spatial, "/tmmx_", yearlist[j],
-              ".nc", sep = ""))
-            tmax <- as.numeric(RNetCDF::var.get.nc(nc, variable = "air_temperature",
-              start = start, count = count, unpack = TRUE))
-            RNetCDF::close.nc(nc)
-            nc <- RNetCDF::open.nc(paste(spatial, "/rmin_", yearlist[j],
-              ".nc", sep = ""))
-            rhmin <- c(rhmin, as.numeric(RNetCDF::var.get.nc(nc, variable = "relative_humidity",
-              start = start, count = count, unpack = TRUE)))
-            RNetCDF::close.nc(nc)
-            nc <- RNetCDF::open.nc(paste(spatial, "/rmax_", yearlist[j],
-              ".nc", sep = ""))
-            rhmax <- c(rhmax, as.numeric(RNetCDF::var.get.nc(nc, variable = "relative_humidity",
-              start = start, count = count, unpack = TRUE)))
-            RNetCDF::close.nc(nc)
-            nc <- RNetCDF::open.nc(paste(spatial, "/pr_", yearlist[j],
-              ".nc", sep = ""))
-            Rain <- c(Rain, as.numeric(RNetCDF::var.get.nc(nc, variable = "precipitation_amount",
-              start = start, count = count, unpack = TRUE)))
-            RNetCDF::close.nc(nc)
-            nc <- RNetCDF::open.nc(paste(spatial, "/srad_", yearlist[j],
-              ".nc", sep = ""))
-            solar <- c(solar, as.numeric(RNetCDF::var.get.nc(nc, variable = "surface_downwelling_shortwave_flux_in_air",
-              start = start, count = count, unpack = TRUE)))
-            RNetCDF::close.nc(nc)
-            nc <- RNetCDF::open.nc(paste(spatial, "/vs_", yearlist[j],
-              ".nc", sep = ""))
-            Wind <- c(Wind, as.numeric(RNetCDF::var.get.nc(nc, variable = "wind_speed",
-              start = start, count = count, unpack = TRUE)))
-            RNetCDF::close.nc(nc)
-            Tmax <- c(Tmax, tmax - 273.15)
-            Tmin <- c(Tmin, tmin - 273.15)
-          }
-        }
-      }
+      nc <- RNetCDF::open.nc(paste0(access_s2, "tmax.nc"))
+      #RNetCDF::print.nc(nc)
+      lon <- RNetCDF::var.get.nc(nc, "lon", unpack = TRUE)
+      lat <- RNetCDF::var.get.nc(nc, "lat", unpack = TRUE)
+      time <- RNetCDF::var.get.nc(nc, "time", unpack = TRUE) # Days since 1970-01-01
+      dates <- as.Date(time)
+      flat=match(abs(lat-x[2])<1/40,1)
+      latindex=which(flat %in% 1)
+      flon=match(abs(lon-x[1])<1/40,1)
+      lonindex=which(flon %in% 1)
+      time.start <- which(format(dates, "%d/%m/%Y") == dstart)
+      time.finish <- which(format(dates, "%d/%m/%Y") == dfinish)
+      time.length <- time.finish - time.start + 1
+      start <- c(lonindex, latindex, time.start, ensemble)
+      count <- c(1, 1, time.length, 1)
+      Tmax <- as.numeric(RNetCDF::var.get.nc(nc, variable = "tmax", start = start, count = count, unpack = TRUE))
+      #plot(tmax, type = 'l')
+      RNetCDF::close.nc(nc)
+      nc <- RNetCDF::open.nc(paste0(spatial, "/ACCESS-S2/20240701_tmin.nc"))
+      Tmin <- as.numeric(RNetCDF::var.get.nc(nc, variable = "tmin", start = start, count = count, unpack = TRUE))
+      #plot(tmax, type = 'l', col = 'red', ylim = c(-10, 55))
+      #points(tmin, type = 'l', col = 'blue')
+      RNetCDF::close.nc(nc)
+      nc <- RNetCDF::open.nc(paste0(spatial, "/ACCESS-S2/20240701_rain.nc"))
+      Rain <- as.numeric(RNetCDF::var.get.nc(nc, variable = "rain", start = start, count = count, unpack = TRUE))
+      #plot(rain, type = 'h', col = 'blue')
+      RNetCDF::close.nc(nc)
+      nc <- RNetCDF::open.nc(paste0(spatial, "/ACCESS-S2/20240701_vapr.nc"))
+      vapr <- as.numeric(RNetCDF::var.get.nc(nc, variable = "vapr", start = start, count = count, unpack = TRUE))
+      #plot(vapr, type = 'l', col = 'blue')
+      RNetCDF::close.nc(nc)
+      nc <- RNetCDF::open.nc(paste0(spatial, "/ACCESS-S2/20240701_radn.nc"))
+      radn <- as.numeric(RNetCDF::var.get.nc(nc, variable = "radn", start = start, count = count, unpack = TRUE))
+      #plot(radn, type = 'l', col = 'red')
+      RNetCDF::close.nc(nc)
       # compute clear sky solar for the site of interest, for cloud cover computation below
       cat("running micro_global to get clear sky solar \n")
       micro_clearsky <- micro_global(loc = c(x[1], x[2]), clearsky = 1, timeinterval = 365, solonly = 1)
       clearskyrad <- micro_clearsky$metout[,c(1, 13)]
-      clearsky_mean1 <- aggregate(clearskyrad[,2], by = list(clearskyrad[,1]), FUN = mean)[,2]
+      hourwind1 <- micro_clearsky$metout[, 8]
+      minwind1 <- aggregate(hourwind1, by = list(micro_clearsky$metout[, 1]), FUN = min)[, 2]
+      maxwind1 <- aggregate(hourwind1, by = list(micro_clearsky$metout[, 1]), FUN = max)[, 2]
+      wind1 <- cbind(minwind1, maxwind1)
+      clearsky_sum1 <- aggregate(clearskyrad[,2] / 1e6 * 3600, by = list(clearskyrad[,1]), FUN = sum)[,2]
       leapyears<-seq(1900,2100,4)
       for(j in 1:nyears){
         if(yearlist[j]%in%leapyears){# add day for leap year if needed
-          clearsky_mean<-c(clearsky_mean1[1:59],clearsky_mean1[59],clearsky_mean1[60:365])
+          clearsky_sum<-c(clearsky_sum1[1:59],clearsky_sum1[59],clearsky_sum1[60:365])
+          wind <- rbind(wind1[1:59, ],wind1[59, ],wind1[60:365, ])
         }else{
-          clearsky_mean <- clearsky_mean1
+          clearsky_sum <- clearsky_sum1
+          wind <- wind1
         }
         if(j == 1){
-          allclearsky <- clearsky_mean
+          allclearsky <- clearsky_sum
+          allwind <- wind
         }else{
-          allclearsky <- c(allclearsky, clearsky_mean)
+          allclearsky <- c(allclearsky, clearsky_sum)
+          allwind <- rbind(allwind, wind)
         }
       }
-      if(opendap == 1 & save != 2){ # truncating if less than whole years requested via opendap
-        cut <- as.numeric(days[1] - as.POSIXct(paste0('01/01/', ystart), format = "%d/%m/%Y") + 1)
-        allclearsky <- allclearsky[cut:(cut+countday-1)]
-      }
-      cloud <- (1 - solar / allclearsky) * 100
+      WNMINN <- allwind[, 1]
+      WNMAXX <- allwind[, 2]
+      days <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900"), by = 'days')
+      alldays <- seq(as.POSIXct("01/01/1900", format = "%d/%m/%Y", origin = "01/01/1900"), as.POSIXct(dates[length(dates)]), by = 'days')
+      startday <- which(as.character(format(alldays, "%d/%m/%Y")) == format(as.POSIXct(dstart, format = "%d/%m/%Y", origin = "01/01/1900"), "%d/%m/%Y"))
+      endday <- which(as.character(format(alldays, "%d/%m/%Y")) == format(as.POSIXct(dfinish, format = "%d/%m/%Y", origin = "01/01/1900"), "%d/%m/%Y"))
+      countday <- endday-startday+1
+      cut <- as.numeric(days[1] - as.POSIXct(paste0('01/01/', ystart), format = "%d/%m/%Y") + 1)
+      allclearsky <- allclearsky[cut:(cut+countday-1)]
+      WNMINN <- WNMINN[cut:(cut+countday-1)]
+      WNMAXX <- WNMAXX[cut:(cut+countday-1)]
+      #delta.radiation <- radiation - allclearsky
+      #delta.radiation2 <- cbind(allclearsky, delta.radiation)
+      #delta.radiation2 <- delta.radiation2[delta.radiation2[, 2] > 0, ]
+      #rad.correct <- 1# + median(delta.radiation2[, 2] / delta.radiation2[, 1])
+      #plot(allclearsky * rad.correct, type = 'l')
+      #points(radn, type = 'h', col = 2)
+      cloud <- (1 - radn / allclearsky) * 100
       cloud[cloud<0]<-0
       cloud[cloud>100]<-100
       if(clearsky == 1){
         cloud <- cloud * 0
       }
+      #plot(cloud, type = 'l')
       CCMAXX<-as.numeric(cloud)
       CCMINN<-CCMAXX
       CCMINN<-CCMINN*0.5
       CCMAXX<-CCMAXX*2
       CCMINN[CCMINN>100]<-100
       CCMAXX[CCMAXX>100]<-100
-      Wind[Wind==0]<-0.1
+
+      es <- WETAIR(db = tmax, rh = 100)$esat
+      RHMINN <- (vapr * 100 / es) * 100
+      RHMINN[RHMINN > 100] <- 100
+      RHMINN[RHMINN < 0] <- 0.01
+      es <- WETAIR(db = tmin, rh = 100)$esat
+      RHMAXX <- (vapr * 100 / es) * 100
+      RHMAXX[RHMAXX > 100] <- 100
+      RHMAXX[RHMAXX < 0] <- 0.01
+
       if(save == 1){
         cat("saving met data for later \n")
         save(CCMAXX, file = 'CCMAXX.Rda')
         save(CCMINN, file = 'CCMINN.Rda')
-        save(Wind, file = 'Wind.Rda')
+        save(WNMINN, file = 'WNMINN.Rda')
+        save(WNMAXX, file = 'WNMAXX.Rda')
         save(Tmax, file = 'Tmax.Rda')
         save(Tmin, file = 'Tmin.Rda')
         save(rhmax, file = 'rhmax.Rda')
@@ -948,7 +835,8 @@ micro_usa <- function(
       cat("loading met data from previous run \n")
       load('CCMAXX.Rda')
       load('CCMINN.Rda')
-      load('Wind.Rda')
+      load('WNMAXX.Rda')
+      load('WNMINN.Rda')
       load('Tmax.Rda')
       load('Tmin.Rda')
       load('rhmax.Rda')
@@ -976,9 +864,8 @@ micro_usa <- function(
         doy <- c(doy, seq(1, dinyear))
       }
     }
-    if(opendap == 1 & save != 2){ # could be less than whole years
       doy <- doy[cut:(cut+countday-1)]
-    }
+
     ida <- ndays
     idayst <- 1
 
@@ -1033,12 +920,12 @@ micro_usa <- function(
 
       # correct for potential change in RH with elevation-corrected Tair
       es <- WETAIR(db = TMAXX, rh = 100)$esat
-      e <- WETAIR(db = Tmax, rh = rhmin)$e
+      e <- WETAIR(db = Tmax, rh = RHMINN)$e
       RHMINN <- (e / es) * 100
       RHMINN[RHMINN>100]<-100
       RHMINN[RHMINN<0]<-0.01
       es <- WETAIR(db = TMINN, rh = 100)$esat
-      e <- WETAIR(db = Tmin, rh = rhmax)$e
+      e <- WETAIR(db = Tmin, rh = RHMAXX)$e
       RHMAXX <- (e / es) * 100
       RHMAXX[RHMAXX>100]<-100
       RHMAXX[RHMAXX<0]<-0.01
@@ -1046,9 +933,6 @@ micro_usa <- function(
       ALLMINTEMPS<-TMINN
       ALLMAXTEMPS<-TMAXX
       ALLTEMPS <- cbind(ALLMAXTEMPS,ALLMINTEMPS)
-
-      WNMAXX <- Wind * windfac
-      WNMINN <- Wind * windfac
 
       REFLS <- rep(REFL, ndays)
       PCTWET <- rep(PCTWET, ndays)
@@ -1129,10 +1013,11 @@ micro_usa <- function(
         jd <- julday(as.numeric(format(tt, "%Y")), as.numeric(format(tt, "%m")), as.numeric(format(tt, "%d")))
         dem <- microclima::get_dem(r = NA, lat = lat, long = long, resolution = 100, zmin = -20)
         require(terra)
+        dem_terra <- terra::rast(dem)
         xy = data.frame(lon = loc[1], lat = loc[2]) |>
           sf::st_as_sf(coords = c("lon", "lat"))
         xy <- sf::st_set_crs(xy, "EPSG:4326")
-        xy <- sf::st_transform(xy, sf::st_crs(dem))
+        xy <- sf::st_transform(xy, sf::st_crs(dem_terra))
         #xy <- data.frame(x = long, y = lat)
         #coordinates(xy) = ~x + y
         #proj4string(xy) = "+init=epsg:4326"
@@ -1229,24 +1114,6 @@ micro_usa <- function(
       }else{
         diffuse_frac <- NA
       }
-
-      # correct for fact that wind is measured at 10 m height
-      # wind shear equation v / vo = (h / ho)^a
-      #where
-      #v = the velocity at height h (m/s)
-      #vo = the velocity at height ho (m/s)
-      #a = the wind shear exponent
-      #Terrain   Wind Shear Exponent
-      #- a -
-      #  Open water   0.1
-      #Smooth, level, grass-covered   0.15
-      #Row crops 	0.2
-      #Low bushes with a few trees 	0.2
-      #Heavy trees 	0.25
-      #Several buildings 	0.25
-      #Hilly, mountainous terrain 	0.25
-      WNMAXX<-WNMAXX*(2/10)^0.15
-      WNMINN<-WNMINN*(2/10)^0.15
 
       SLES<-matrix(nrow = ndays, data = 0)
       SLES<-SLES+SLE
@@ -1438,4 +1305,4 @@ micro_usa <- function(
       }
     } # end of check for na sites
   } # end error trapping
-} # end of micro_usa function
+} # end of micro_access_s2 function

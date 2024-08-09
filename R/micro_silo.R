@@ -55,7 +55,7 @@
 #' \code{windfac}{ = 1, factor to multiply wind speed by e.g. to simulate forest}\cr\cr
 #' \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
 #' \code{warm}{ = 0, warming offset vector, °C (negative values mean cooling). Can supply a single value or a vector the length of the number of days to be simulated.}\cr\cr
-#' \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
+#' \code{SILO.file}{ = NA, choose location of SILO data (goes to web if NA)}\cr\cr
 #' \code{email}{ = "your email", email to use when querying SILO}\cr\cr
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
@@ -158,6 +158,7 @@
 #' \code{maxshade}{ - maximum shade for each day of simulation (\%)}\cr\cr
 #' \code{DEP}{ - vector of depths used (cm)}\cr\cr
 #' \code{diffuse_frac}{ - vector of hourly values of the fraction of total solar radiation that is diffuse (-), computed by microclima if microclima > 0}\cr\cr
+#' \code{SILO.data}{ - SILO data extracted from web or read in from file}\cr\cr
 #'
 #' metout/shadmet variables:
 #' \itemize{
@@ -255,7 +256,7 @@
 #' library(NicheMapR)
 #' dstart <- "01/01/2016"
 #' dfinish <- "31/12/2017"
-#' micro<-micro_silo() # run the model at the default location (Madison, Wisconsin) for 2016 to 2017 using opendap
+#' micro<-micro_silo(dstart = dstart, dfinish = dfinish) # run the model at the default location
 #'
 #' metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
 #' soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
@@ -341,7 +342,7 @@ micro_silo <- function(
   windfac = 1,
   adiab_cor = 1,
   warm = 0,
-  spatial = "P:",
+  SILO.file = NA,
   ERR = 1.5,
   RUF = 0.004,
   ZH = 0,
@@ -661,7 +662,7 @@ micro_silo <- function(
       load('dem.Rda')
     }
 
-    ALTITUDES <- NA# as.numeric(terra::extract(rast(paste0(spatial,"/terr50.tif")), x)) # to do
+    ALTITUDES <- NA
     if(is.na(elev) == FALSE){ALTITUDES <- elev} # check if user-specified elevation
     if(save != 2){
       if(soilgrids == 1){
@@ -723,12 +724,17 @@ micro_silo <- function(
     finish.date <- paste0(yfinish, monfinish, dayfinish)
 
     if(save != 2){
+      if(is.na(SILO.file)){
       cat("extracting weather data from SILO \n")
       baseurl <- 'https://www.longpaddock.qld.gov.au/cgi-bin/silo/DataDrillDataset.php?'
       url <- paste0(baseurl, 'lat=', longlat[2], '&lon=', longlat[1], "&start=", start.date, "&finish=", finish.date, "&format=csv&comment=XN&username=", email, "&dataset=Official&comment=rxnvjhgm")
       response <- GET(url)
       csv_content  <- content(response, "text")
       SILO.data <- read.csv(text = csv_content, stringsAsFactors = FALSE)
+      }else{
+        cat(paste0("reading weather data from ", SILO.file, " \n"))
+        SILO.data <- read.csv(SILO.file)
+      }
       Tmin <- SILO.data$min_temp
       Tmax <- SILO.data$max_temp
       rhmax <- SILO.data$rh_tmin
@@ -736,10 +742,7 @@ micro_silo <- function(
       rain <- SILO.data$daily_rain
       radiation <- SILO.data$radiation
       SILO.elev <- as.numeric(sub(".*?([-+]?[0-9]*\\.?[0-9]+).*", "\\1", SILO.data$metadata[1]))
-      #}else{
-      #  cat("extracting weather data \n")
-      #
-      #}
+
 
       # setting up for temperature correction using lapse rate given difference between 9sec DEM value and 0.05 deg value
       delta_elev <- SILO.elev - ALTITUDES

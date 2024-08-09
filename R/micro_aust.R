@@ -422,12 +422,11 @@ micro_aust <- function(
       require(terra)
       cat('downloading DEM via package elevatr \n')
       dem <- microclima::get_dem(lat = loc[2], long = loc[1]) # mercator equal area projection
-      dem_terra <- terra::rast(dem)
       xy = data.frame(lon = loc[1], lat = loc[2]) |>
         sf::st_as_sf(coords = c("lon", "lat"))
       xy <- sf::st_set_crs(xy, "EPSG:4326")
-      xy <- sf::st_transform(xy, sf::st_crs(dem_terra))
-      elev <- as.numeric(terra::extract(dem_terra, xy)[,2])
+      xy <- sf::st_transform(xy, sf::st_crs(dem))
+      elev <- as.numeric(terra::extract(dem, xy)[,2])
       #xy <- data.frame(x = loc[1], y = loc[2])
       #coordinates(xy) = ~x + y
       #proj4string(xy) = "+init=epsg:4326"
@@ -1572,11 +1571,10 @@ micro_aust <- function(
           jd <- julday(as.numeric(format(tt, "%Y")), as.numeric(format(tt, "%m")), as.numeric(format(tt, "%d")))
           dem <- microclima::get_dem(r = NA, lat = lat, long = long, resolution = 100, zmin = -20)
           require(terra)
-          dem_terra <- terra::rast(dem)
           xy = data.frame(lon = loc[1], lat = loc[2]) |>
             sf::st_as_sf(coords = c("lon", "lat"))
           xy <- sf::st_set_crs(xy, "EPSG:4326")
-          xy <- sf::st_transform(xy, sf::st_crs(dem_terra))
+          xy <- sf::st_transform(xy, sf::st_crs(dem))
           #xy <- data.frame(x = long, y = lat)
           #coordinates(xy) = ~x + y
           #proj4string(xy) = "+init=epsg:4326"

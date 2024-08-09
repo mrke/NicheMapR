@@ -55,6 +55,7 @@ third raise core temperature, fourth pant and fifth sweat.
 \code{CONV_ENHANCE}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 10.1016/S0006-3495(76)85711-6}\cr\cr
 \code{WRITE_INPUT}{ = 0, write input to csv (1 = yes)}\cr\cr
 \code{TREGMODE}{ = 1, 1 = raise core then pant then sweat, 2 = raise core and pant simultaneously, then sweat}\cr\cr
+\code{TORPOR}{ = 0, 1 = go into torpor (decrease TC to TC_MIN) if possible}\cr\cr
 
 \strong{ Environment:}\cr\cr
 \code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr
@@ -131,7 +132,7 @@ third raise core temperature, fourth pant and fifth sweat.
 \code{RQ}{ = 0.80, # respiratory quotient (fractional, 0-1)}\cr\cr
 \code{EXTREF}{ = 20, # O2 extraction efficiency (\%)}\cr\cr
 \code{Q10}{ = 2, # Q10 factor for adjusting BMR for TC}\cr\cr
-\code{TC_MIN}{ = 19, # minimum core temperature during torpor (TREGMODE = 0)}\cr\cr
+\code{TC_MIN}{ = 19, # minimum core temperature during torpor (TORPOR = 1)}\cr\cr
 
 \strong{ Initial conditions:}\cr\cr
 \code{TS}{ = TC - 3, # initial skin temperature (°C)}\cr\cr

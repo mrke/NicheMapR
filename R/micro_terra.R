@@ -989,17 +989,16 @@ micro_terra <- function(
       require(terra)
       cat('downloading DEM via package elevatr \n')
       dem <- microclima::get_dem(lat = loc[2], long = loc[1]) # mercator equal area projection
-      dem_terra <- terra::rast(dem)
       xy = data.frame(lon = loc[1], lat = loc[2]) |>
         sf::st_as_sf(coords = c("lon", "lat"))
       xy <- sf::st_set_crs(xy, "EPSG:4326")
-      xy <- sf::st_transform(xy, sf::st_crs(dem_terra))
-      elev <- as.numeric(terra::extract(dem_terra, xy)[,2])
+      xy <- sf::st_transform(xy, sf::st_crs(dem))
+      elev <- as.numeric(terra::extract(dem, xy)[,2])
       if(terrain == 1){
         cat('computing slope, aspect and horizon angles \n')
-        slope <- terra::terrain(dem_terra, v = "slope", unit = "degrees")
+        slope <- terra::terrain(dem, v = "slope", unit = "degrees")
         slope <- as.numeric(terra::extract(slope, xy)[,2])
-        aspect <- terra::terrain(dem_terra, v = "aspect", unit = "degrees")
+        aspect <- terra::terrain(dem, v = "aspect", unit = "degrees")
         aspect <- as.numeric(terra::extract(aspect, xy)[,2])
         ha24 <- 0
         for (i in 0:23) {
@@ -1330,11 +1329,10 @@ micro_terra <- function(
         dem <- microclima::get_dem(r = NA, lat = lat, long = long, resolution = 100, zmin = -20)
       }
       require(terra)
-      dem_terra <- terra::rast(dem)
       xy = data.frame(lon = loc[1], lat = loc[2]) |>
         sf::st_as_sf(coords = c("lon", "lat"))
       xy <- sf::st_set_crs(xy, "EPSG:4326")
-      xy <- sf::st_transform(xy, sf::st_crs(dem_terra))
+      xy <- sf::st_transform(xy, sf::st_crs(dem))
       #xy <- data.frame(x = long, y = lat)
       #coordinates(xy) = ~x + y
       #proj4string(xy) = "+init=epsg:4326"
