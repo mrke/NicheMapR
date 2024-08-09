@@ -410,6 +410,17 @@ micro_silo <- function(
   grasshade = 0,
   maxsurf = 95) { # end function parameters
 
+
+  if(length(loc) == 1){
+    baseurl <- 'https://www.longpaddock.qld.gov.au/cgi-bin/silo/PatchedPointDataset.php?'
+    cat(paste0("looking up weather station ", loc, " from SILO \n"))
+    url <- paste0(baseurl, 'format=id&station=', loc)
+    response <- GET(url)
+    station.data <- strsplit(as.character(response), split="\\|")[[1]]
+    station.data <- trimws(station.data)
+    loc <- c(as.numeric(station.data[4]), as.numeric(station.data[3]))
+    cat(paste0("weather station is ", station.data[2], " at latitude ", station.data[3], " and longitude ",station.data[4], " \n"))
+  }
   ystart <- as.numeric(substr(dstart, 7, 10))
   yfinish <- as.numeric(substr(dfinish, 7, 10))
   yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
@@ -712,7 +723,6 @@ micro_silo <- function(
     finish.date <- paste0(yfinish, monfinish, dayfinish)
 
     if(save != 2){
-      #if(opendap == 1){
       cat("extracting weather data from SILO \n")
       baseurl <- 'https://www.longpaddock.qld.gov.au/cgi-bin/silo/DataDrillDataset.php?'
       url <- paste0(baseurl, 'lat=', longlat[2], '&lon=', longlat[1], "&start=", start.date, "&finish=", finish.date, "&format=csv&comment=XN&username=", email, "&dataset=Official&comment=rxnvjhgm")
