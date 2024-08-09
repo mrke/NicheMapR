@@ -421,9 +421,6 @@ micro_access_s2 <- function(
   grasshade = 0,
   maxsurf = 95) { # end function parameters
 
-  ystart <- as.numeric(substr(dstart, 7, 10))
-  yfinish <- as.numeric(substr(dfinish, 7, 10))
-  yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
   if(DEP[2]-DEP[1]>3 | DEP[3]-DEP[2]>3){
@@ -1304,8 +1301,8 @@ micro_access_s2 <- function(
         cat("ERROR: the model crashed - try a different error tolerance (ERR) or a different spacing in DEP", '\n')
       }
       tz <- tz_lookup_coords(longlat[2], longlat[1], method = "fast")
-      dates <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", tz = tz), as.POSIXct(dfinish, format = "%d/%m/%Y", tz = tz)+23*3600, by = 'hours')[1:(length(TMAXX) * 24)]
-      dates2 <- seq(as.POSIXct(dstart, format = "%d/%m/%Y", tz = tz), as.POSIXct(dfinish, format = "%d/%m/%Y", tz = tz), by = 'days')[1:(length(TMAXX))]
+      dates <- seq.POSIXt(as.POSIXct(paste0(dstart, "00:00"), format = "%d/%m/%Y %H:%M", tz = tz), as.POSIXct(paste(dfinish, "23:00"), format = "%d/%m/%Y", tz = tz)+23*3600*2, by = 'hours')[1:(length(TMAXX) * 24)] # careful about daylight savings!
+      dates2 <- round(as.POSIXct(seq(as.Date(dstart, format = "%d/%m/%Y", tz = tz), as.Date(dfinish, format = "%d/%m/%Y", tz = tz) + 24*3600, by = 'days')[1:(length(TMAXX))], tz = tz), "days")
       if(lamb == 1){
         drlam<-as.data.frame(microut$drlam) # retrieve direct solar irradiance
         drrlam<-as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
