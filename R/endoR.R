@@ -428,7 +428,7 @@ endoR <- function(
     TVEG <- TA
     NESTYP <- 0 # not yet used
     RoNEST <- 0 # not yet used
-    if(TORPOR == 0){
+    if(TORPOR == 1 | TREGMODE == 0){
       # must to this for torpor
       QGEN <- QBASREF + 1
       Q10mult <- Q10^((TC - TC_REF)/10)
