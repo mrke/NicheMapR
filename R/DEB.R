@@ -339,7 +339,7 @@ DEB<-function(
   vT <- v * Tcorr * s_M
   p_AmT <- p_MT * z / kap * s_M
   p_XmT <- p_Xm * Tcorr * s_M
-  h_aT <- h_a * Tcorr
+  h_aT <- h_a * Tcorr ^ 2
   E_m <- p_AmT / vT
   g <- E_G / (kap * E_m) # energy investment ratio
   e <- E_pres / E_m # scaled reserve density

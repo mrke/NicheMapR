@@ -431,7 +431,7 @@ DEB_var<-function(
         }
 
         # ageing (equation 6.2 in Kooijman 2010 (DEB3)
-        dq <- (q * (V / V_m) * s_G + h_a * Tcorr) * e * (((v * Tcorr * s_M) / L) - r) - r * q # ageing acceleration
+        dq <- (q * (V / V_m) * s_G + h_a * Tcorr ^ 2) * e * (((v * Tcorr * s_M) / L) - r) - r * q # ageing acceleration
         dhs <- q - r * hs * Tcorr # hazard
 
         # reproduction
@@ -650,7 +650,7 @@ DEB_var<-function(
       dES <- p_X - f * (p_Am / kap_X) * V # J/TIME, CHANGE IN STOMACH ENERGY
       r <- 0
       # ageing (equation 6.2 in Kooijman 2010 (DEB3)
-      dq <- (q * (V / L_m ^ 3) * s_G + h_a * Tcorr) * e * (((v * Tcorr * s_M) / L) - r) - r * q # ageing acceleration
+      dq <- (q * (V / L_m ^ 3) * s_G + h_a * Tcorr ^ 2) * e * (((v * Tcorr * s_M) / L) - r) - r * q # ageing acceleration
       dhs <- q - r * hs # hazard
 
       y <- list(c(dE, dER, dEB, dES, dq, dhs))
