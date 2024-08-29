@@ -18,11 +18,6 @@
 #' @param minshade Minimum shade level to use (can be a single value or a vector of daily values) (\%)
 #' @param maxshade Maximum shade level to use (can be a single value or a vector of daily values) (\%)
 #' @param Usrhyt Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest
-#' @param coastal Compute coastal effects with microclima? T (TRUE) or F (FALSE) (can take a while and may have high memory requirements depending on DEM size)
-#' @param hourlydata user input of the hourlydata matrix
-#' @param dailyprecip user input of daily rainfall
-#' @param weather.elev optional value indicating the elevation of values in `hourlydata`. Either a numeric value, corresponding to the elevation in (m) of the location from which `hourlydata` were obtained, or `era5` (default, derived from Copernicus ERA5 climate reanalysis).
-#' @param cad.effects optional logical indicating whether to calculate cold air drainage effects (TRUE = Yes, slower. FALSE =  No, quicker)
 #' @param ... Additional arguments, see Details
 #' @return metout The above ground micrometeorological conditions under the minimum specified shade
 #' @return shadmet The above ground micrometeorological conditions under the maximum specified shade
@@ -38,10 +33,19 @@
 #' @return shadplant Hourly predictions of plant transpiration, leaf water potential and root water potential under the maximum specified shade
 #' @return sunsnow Hourly predictions of snow temperature under the minimum specified shade
 #' @return shadsnow Hourly predictions snow temperature under the maximum specified shade
-#' @usage micro_openmeteo(loc = c(-91.415669, -0.287145), dstart = format(Sys.time(), "%d/%m/%Y"), dfinish = format(Sys.time()+3600*24*13, "%d/%m/%Y"),
-#' REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
-#' Usrhyt = 0.01, ...)
-#' @export
+#' @usage micro_openmeteo(
+#'   loc = c(-91.415669, -0.287145),
+#'   dstart = format(Sys.time(), "%d/%m/%Y"),
+#'   dfinish = format(Sys.time() + 1123200, "%d/%m/%Y"),
+#'   REFL = 0.15,
+#'   slope = 0,
+#'   aspect = 0,
+#'   DEP = c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200),
+#'   minshade = 0,
+#'   maxshade = 90,
+#'   Usrhyt = 0.01,
+#'   ...
+#' )#' @export
 #' @details
 #' \strong{ Parameters controlling how the model runs:}\cr\cr
 #' \code{runshade}{ = 1, Run the microclimate model twice, once for each shade level (1) or just once for the minimum shade (0)?}\cr\cr
@@ -61,7 +65,6 @@
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
-#' \code{spatial}{ = 'c:/era5_data/era5', specify folder and file prefix with local ERA5 data extracted via the mcera5 package (no trailing forward slash)}\cr\cr
 #' \code{save}{ = 0, don't save forcing data (0), save the forcing data (1) or read previously saved data (2)}\cr\cr
 #'
 #' \strong{ General additional parameters:}\cr\cr
@@ -120,8 +123,6 @@
 #' \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
 #' \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
 #' \code{LAI}{ = 0.1, leaf area index (can be a single value or a vector of daily values), used to partition traspiration/evaporation from PET in soil moisture model}\cr\cr
-#' \code{microclima.LAI}{ = 0, leaf area index, used by package microclima for radiation calcs}\cr\cr
-#' \code{LOR}{ = 1, leaf orientation for package microclima radiation calcs}\cr\cr
 #'
 #' \strong{ Snow mode parameters:}
 #'
@@ -365,8 +366,6 @@ micro_openmeteo <- function(
     IM = 1e-06,
     MAXCOUNT = 500,
     LAI = 0.1,
-    microclima.LAI = 0,
-    LOR = 1,
     snowmodel = 1,
     snowtemp = 1.5,
     snowdens = 0.375,
@@ -386,17 +385,12 @@ micro_openmeteo <- function(
     IR = 0,
     message = 0,
     fail = nyears * 24 * 365,
-    #spatial = 'c:/era5_data/era5',
     save = 0,
     snowcond = 0,
     intercept = max(maxshade) / 100 * 0.3,
     grasshade = 0,
     scenario = 0,
     terra_source = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data",
-    coastal = F,
-    #hourlydata = NA,
-    #dailyprecip = NA,
-    #weather.elev = 'era5',
     cad.effects = TRUE,
     dewrain = 0,
     moiststep = 360,

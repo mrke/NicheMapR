@@ -5,9 +5,19 @@
 \alias{micro_openmeteo}
 \title{openmeteo implementation of the microclimate model, using package microclima downscaling for local topography.}
 \usage{
-micro_openmeteo(loc = c(-91.415669, -0.287145), dstart = format(Sys.time(), "%d/%m/%Y"), dfinish = format(Sys.time()+3600*24*13, "%d/%m/%Y"),
-REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
-Usrhyt = 0.01, ...)
+micro_openmeteo(
+  loc = c(-91.415669, -0.287145),
+  dstart = format(Sys.time(), "%d/%m/%Y"),
+  dfinish = format(Sys.time() + 1123200, "%d/%m/%Y"),
+  REFL = 0.15,
+  slope = 0,
+  aspect = 0,
+  DEP = c(0, 2.5, 5, 10, 15, 20, 30, 50, 100, 200),
+  minshade = 0,
+  maxshade = 90,
+  Usrhyt = 0.01,
+  ...
+)#' @export
 }
 \arguments{
 \item{loc}{Longitude and latitude (decimal degrees) or string for place name search via openmeteo::geocode()}
@@ -41,16 +51,6 @@ Usrhyt = 0.01, ...)
 \item{maxshade}{Maximum shade level to use (can be a single value or a vector of daily values) (\%)}
 
 \item{Usrhyt}{Local height (m) at which air temperature, wind speed and humidity are to be computed for organism of interest}
-
-\item{coastal}{Compute coastal effects with microclima? T (TRUE) or F (FALSE) (can take a while and may have high memory requirements depending on DEM size)}
-
-\item{cad.effects}{optional logical indicating whether to calculate cold air drainage effects (TRUE = Yes, slower. FALSE =  No, quicker)}
-
-\item{hourlydata}{user input of the hourlydata matrix}
-
-\item{dailyprecip}{user input of daily rainfall}
-
-\item{weather.elev}{optional value indicating the elevation of values in `hourlydata`. Either a numeric value, corresponding to the elevation in (m) of the location from which `hourlydata` were obtained, or `era5` (default, derived from Copernicus ERA5 climate reanalysis).}
 
 \item{...}{Additional arguments, see Details}
 }
@@ -105,7 +105,6 @@ An implementation of the NicheMapR microclimate model that integrates the openme
 \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
-\code{spatial}{ = 'c:/era5_data/era5', specify folder and file prefix with local ERA5 data extracted via the mcera5 package (no trailing forward slash)}\cr\cr
 \code{save}{ = 0, don't save forcing data (0), save the forcing data (1) or read previously saved data (2)}\cr\cr
 
 \strong{ General additional parameters:}\cr\cr
@@ -164,8 +163,6 @@ An implementation of the NicheMapR microclimate model that integrates the openme
 \code{IM}{ = 1e-06, maximum allowable mass balance error, kg}\cr\cr
 \code{MAXCOUNT}{ = 500, maximum iterations for mass balance, -}\cr\cr
 \code{LAI}{ = 0.1, leaf area index (can be a single value or a vector of daily values), used to partition traspiration/evaporation from PET in soil moisture model}\cr\cr
-\code{microclima.LAI}{ = 0, leaf area index, used by package microclima for radiation calcs}\cr\cr
-\code{LOR}{ = 1, leaf orientation for package microclima radiation calcs}\cr\cr
 
 \strong{ Snow mode parameters:}
 
