@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_profile.R
 \name{get_profile}
 \alias{get_profile}
-\title{micro subroutine from microclimate model to compute wind speed and air temperature profiles}
+\title{micro subroutine from microclimate model to compute wind speed, air temperature and relative humidity profiles}
 \usage{
 get_profile(ZH = 0.004, D0 = 0.012)
 }
@@ -19,6 +19,8 @@ get_profile(ZH = 0.004, D0 = 0.012)
 
 \item{VREF}{= 2.75, wind speed (m/s) at reference height}
 
+\item{RH}{= 49.0415, relative humidity (%) at reference height}
+
 \item{D0cm}{= 48.6, soil surface temperature (deg C)}
 
 \item{maxsurf}{= 95, maximum allowed soil surface temperature - this is the default value in all micro_* functions}
@@ -28,12 +30,20 @@ get_profile(ZH = 0.004, D0 = 0.012)
 \item{heights}{= c(0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1), vector of heights (m) for which the profile is desired (make them between zero and the reference height, don't include the reference height, and make the minimum greater than the roughness height}
 }
 \value{
-m Egg mass (kg)
+heights Heights (m) at which results are reported, with 0 and Refhyt added on
 
-psi_e Egg water potential (J/kg)
+VELs Wind speeds (m/s) with increasing height
+
+TAs Air temperatures (deg C) with increasing height
+
+RHs Relative humidity (%) with increasing height
+
+QCONV Convective heat loss (W/m2) from surface
+
+USTAR Friction velocity (m/s)
 }
 \description{
-Function for computing wind speed and air temperature profiles at a range of heights
+Function for computing wind speed, air temperature and humidity profiles at a range of heights
 beyond what comes out of the microclimate model, using the same functions that
 the microclimate model uses in the micro.f subroutine. It is useful for situations where
 the organism grows through time and thus the local height needs to change, or when simulating

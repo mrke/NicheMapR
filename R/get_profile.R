@@ -1,6 +1,6 @@
-#' micro subroutine from microclimate model to compute wind speed and air temperature profiles
+#' micro subroutine from microclimate model to compute wind speed, air temperature and relative humidity profiles
 #'
-#' Function for computing wind speed and air temperature profiles at a range of heights
+#' Function for computing wind speed, air temperature and humidity profiles at a range of heights
 #' beyond what comes out of the microclimate model, using the same functions that
 #' the microclimate model uses in the micro.f subroutine. It is useful for situations where
 #' the organism grows through time and thus the local height needs to change, or when simulating
@@ -11,12 +11,17 @@
 #' @param D0 = 0, zero plane displacement correction factor (m) for Campbell and Norman air temperature/wind speed profile (0.6 * canopy height in m if unknown)
 #' @param TAREF = 27.8, air temperature (deg C) at reference height
 #' @param VREF = 2.75, wind speed (m/s) at reference height
+#' @param RH = 49.0415, relative humidity (%) at reference height
 #' @param D0cm = 48.6, soil surface temperature (deg C)
 #' @param maxsurf = 95, maximum allowed soil surface temperature - this is the default value in all micro_* functions
 #' @param ZEN = 21.5, zenith angle (degrees) of sun - used in determining if free convection conditions or not
 #' @param heights = c(0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1), vector of heights (m) for which the profile is desired (make them between zero and the reference height, don't include the reference height, and make the minimum greater than the roughness height
-#' @return m Egg mass (kg)
-#' @return psi_e Egg water potential (J/kg)
+#' @return heights Heights (m) at which results are reported, with 0 and Refhyt added on
+#' @return VELs Wind speeds (m/s) with increasing height
+#' @return TAs Air temperatures (deg C) with increasing height
+#' @return RHs Relative humidity (%) with increasing height
+#' @return QCONV Convective heat loss (W/m2) from surface
+#' @return USTAR Friction velocity (m/s)
 #' @usage get_profile(ZH = 0.004, D0 = 0.012)
 #' @examples
 #' library(NicheMapR)
@@ -49,6 +54,7 @@ get_profile <- function(Refhyt = 1.2,
                         D0 = 0, #0.06
                         TAREF = 27.77818,
                         VREF = 2.749575,
+                        RH = 49.0415,
                         D0cm = 48.58942,
                         maxsurf = 95,
                         ZEN = 21.50564,
@@ -145,6 +151,7 @@ get_profile <- function(Refhyt = 1.2,
   NAIR <- length(AIRDP)
   VV <- rep(0, NAIR) # output wind speeds
   T <- VV # output temperatures
+  RHs <- VV # output relative humidities
   VV[1] <- V
   T[1] <- T1
 
@@ -225,9 +232,15 @@ get_profile <- function(Refhyt = 1.2,
   heights <- c(0, heights, Refhyt)
   VV <- c(0, rev(VV))
   T <- c(T3, rev(T))
+  e <- WETAIR(db = T1, rh = RH)$e
+  es <- WETAIR(db = T)$esat
+  RHs <- (e / es) * 100
+  RHs[RHs > 100] <- 100
+  RHs[RHs < 0] <- 0
   return(list(heights = heights,
               VELs = VV / 6000, # m/s
               TAs = T, # deg C
+              RHs = RHs, # humidity, %
               QCONV = QC * 4.185 * 10000 / 60, # W
               USTAR = USTAR / 6000 # m/s
   )
