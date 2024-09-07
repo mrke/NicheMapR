@@ -63,6 +63,7 @@ profile.out <- lapply(1:length(metout$TALOC),
                                              heights = newheights,
                                              TAREF = metout$TAREF[x],
                                              VREF = metout$VREF[x],
+                                             RH = metout$RH[x],
                                              D0cm = soil$D0cm[x],
                                              ZEN = metout$ZEN[x])}) # run get_profile across all times at new height
 profile.out1 <- do.call("rbind", lapply(profile.out, data.frame)) # turn results into data frame
@@ -73,4 +74,7 @@ points(dates, profile.out1$TAs[profile.out1$heights == newheights[2]], type = 'l
 plot(dates, metout$VLOC, ylab = 'wind speed, m/s', type = 'l', ylim = c(0, 3))
 points(dates, profile.out1$VELs[profile.out1$heights == newheights[1]], type = 'l', lty = 2)
 points(dates, profile.out1$VELs[profile.out1$heights == newheights[2]], type = 'l', lty = 3)
+plot(dates, metout$RHLOC, ylab = 'relative humidity, \%', type = 'l', ylim = c(0, 100))
+points(dates, profile.out1$RHs[profile.out1$heights == newheights[1]], type = 'l', lty = 2)
+points(dates, profile.out1$RHs[profile.out1$heights == newheights[2]], type = 'l', lty = 3)
 }
