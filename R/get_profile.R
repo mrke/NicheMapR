@@ -15,6 +15,7 @@
 #' @param D0cm = 48.6, soil surface temperature (deg C)
 #' @param maxsurf = 95, maximum allowed soil surface temperature - this is the default value in all micro_* functions
 #' @param ZEN = 21.5, zenith angle (degrees) of sun - used in determining if free convection conditions or not
+#' @param a = 0.15, wind shear exponent for extending above reference height (open water 0.1, Smooth, level, grass-covered 0.15 (or more commonly 1/7), row crops 0.2, low bushes with a few trees 0.2, heavy trees or several buildings or mountainous terrain 0.25, (source http://www.engineeringtoolbox.com/wind-shear-d_1215.html)
 #' @param heights = c(0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1), vector of heights (m) for which the profile is desired (make them between zero and the reference height, don't include the reference height, and make the minimum greater than the roughness height
 #' @return heights Heights (m) at which results are reported, with 0 and Refhyt added on
 #' @return VELs Wind speeds (m/s) with increasing height
@@ -62,6 +63,7 @@ get_profile <- function(Refhyt = 1.2,
                         D0cm = 48.58942,
                         maxsurf = 95,
                         ZEN = 21.50564,
+                        a = 0.15,
                         heights = c(0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1)){
   errors <- 0
   if(min(heights) < RUF){
@@ -71,8 +73,10 @@ get_profile <- function(Refhyt = 1.2,
   }
   if(max(heights) >= Refhyt){
     message("warning: there are heights greater than or equal to the reference height, 'Refhyt'.
-        Removing these values.", '\n')
-    heights <- heights[heights < Refhyt]
+        Assuming constant air temperature above the reference height and adjusting wind speed according to shear parameter.", '\n')
+    heights_orig <- heights
+    heights <- heights_orig[heights_orig < Refhyt]
+    heights_extra <- heights_orig[heights_orig > Refhyt]
   }
   if(errors == 0){ # continue
     # 1 SEGMENT VELOCITY PROFILE - W. PORTER
@@ -241,6 +245,16 @@ get_profile <- function(Refhyt = 1.2,
     RHs <- (e / es) * 100
     RHs[RHs > 100] <- 100
     RHs[RHs < 0] <- 0
+    # add heights above reference height if any
+    if(exists("heights_extra")){
+      VV_extra <- V * (heights_extra / Refhyt) ^ a
+      T_extra <- VV_extra * 0 + TAREF
+      RH_extra <- VV_extra * 0 + RH
+      heights <- c(heights, heights_extra)
+      VV <- c(VV, VV_extra)
+      T <- c(T, T_extra)
+      RHs <- c(RHs, RH_extra)
+    }
     return(list(heights = heights,
                 VELs = VV / 6000, # m/s
                 TAs = T, # deg C
