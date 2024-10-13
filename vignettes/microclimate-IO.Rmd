@@ -33,6 +33,10 @@ lamb <- 0 # Return wavelength-specific solar radiation output?
 IUV <- 0 # Use gamma function for scattered solar radiation? 
 message <- 0 #allow the Fortran integrator to output warnings? (1) or not (0)
 fail <- 1*24*365 # how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)
+spinup <- 1 # repeat each day three times to get steady period solution? 0 is no, 1 is yes. Set to 1 for daily runs where the initial soil temps are the previous day's final temps.
+maxsurf <- 95 # deg C, maximum allowable surface temperature for stability purposes
+dewrain <- 0 # feed dew into soil as rain? (0 is no, 1 is yes)
+moiststep <- 360 # how many seconds is each time step when simulating soil moisture (3600 would result in the integrator being hourly)
 ```
 
 ### Time and location parameters
@@ -183,7 +187,7 @@ PC <-  -1500 # critical leaf water potential for stomatal closure, J kg-1
 SP <- 10 # stability parameter for stomatal closure equation, -
 IM <- 1e-06 # maximum allowable mass balance error, kg
 MAXCOUNT <- 500 # maximum iterations for mass balance, -
-LAI <- 0.1 # leaf area index, used to partition traspiration/evaporation from PET
+LAI <- rep(0.1, ndays) # leaf area index, used to partition traspiration/evaporation from PET
 rainmult <- 1 # rainfall multiplier to impose catchment
 maxpool <- 10 # max depth for water pooling on the surface, mm (to account for runoff)
 rainhourly <- 0 # Is hourly rain input being supplied (1 = yes, 0 = no)?
@@ -216,10 +220,11 @@ tides <- matrix(data = 0, nrow = 24*ndays, ncol = 3) # matrix for tides
 ### Collating all input parameters
 ```
 # input parameter vector
-microinput <- c(ndays, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept, grasshade, solonly, ZH, D0)
+microinput <- c(ndays, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept, grasshade, solonly, ZH, D0, TIMAXS, TIMINS, spinup, dewrain, moiststep, maxsurf)
+
 
 # Final input list - all these variables are expected by the input argument of the Fortran microclimate subroutine
-micro <- list(microinput = microinput, tides = tides, doy = doy, SLES = SLES, DEP = DEP, Nodes = Nodes, MAXSHADES = MAXSHADES, MINSHADES = MINSHADES, TIMAXS = TIMAXS, TIMINS = TIMINS, TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN, CCMAXX = CCMAXX, CCMINN = CCMINN, WNMAXX = WNMAXX, WNMINN = WNMINN, TAIRhr = TAIRhr, RHhr = RHhr, WNhr = WNhr, CLDhr = CLDhr, SOLRhr = SOLRhr, RAINhr = RAINhr, ZENhr = ZENhr, IRDhr = IRDhr, REFLS = REFLS, PCTWET = PCTWET, soilinit = soilinit, hori = hori, TAI = TAI, soilprops = soilprops, moists = moists, RAINFALL = RAINFALL, tannulrun = tannulrun, PE = PE, KS = KS, BB = BB, BD = BD, DD = DD, L = L, LAI = LAI)
+micro <- list(microinput = microinput, tides = tides, doy = doy, SLES = SLES, DEP = DEP, Nodes = Nodes, MAXSHADES = MAXSHADES, MINSHADES = MINSHADES, TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN, CCMAXX = CCMAXX, CCMINN = CCMINN, WNMAXX = WNMAXX, WNMINN = WNMINN, TAIRhr = TAIRhr, RHhr = RHhr, WNhr = WNhr, CLDhr = CLDhr, SOLRhr = SOLRhr, RAINhr = RAINhr, ZENhr = ZENhr, IRDhr = IRDhr, REFLS = REFLS, PCTWET = PCTWET, soilinit = soilinit, hori = hori, TAI = TAI, soilprops = soilprops, moists = moists, RAINFALL = RAINFALL, tannulrun = tannulrun, PE = PE, KS = KS, BB = BB, BD = BD, DD = DD, L = L, LAI = LAI)
 ```
 
 ### Executing the microclimate model
