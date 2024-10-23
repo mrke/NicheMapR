@@ -322,7 +322,7 @@ with(metout, {plot(RHLOC ~ micro$dates3, xlab = "Date and Time", ylab = "Relativ
 , type = "l",ylim = c(0, 100),main = paste("humidity, ",minshade, "\% shade",sep=""))})
 with(metout, {points(RH ~ micro$dates3, xlab = "Date and Time", ylab = "Relative Humidity (\%)"
 , type = "l",col = 'blue',lty = 2, ylim = c(0, 100))})
-with(metout, {plot(TSKYC ~ micro$date3s, xlab = "Date and Time", ylab = "Sky Temperature (°C)"
+with(metout, {plot(TSKYC ~ micro$dates3, xlab = "Date and Time", ylab = "Sky Temperature (°C)"
 ,  type = "l", main = paste("sky temperature, ", minshade, "\% shade", sep=""))})
 with(metout, {plot(VREF ~ micro$dates3, xlab = "Date and Time",  ylab = "Wind Speed (m/s)"
 ,  type = "l", main = "wind speed", col = 'blue',ylim = c(0, 15))})
