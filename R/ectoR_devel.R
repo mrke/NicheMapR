@@ -8,9 +8,11 @@
 #' @param Ww_g = 40, Wet weight of animal (g), note this model is 'steady state' so no lags in heating/cooling due to mass
 #' @param shape = 3, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)
 #' @param alpha = 0.85, Solar absorptivity, 0-1
-#' @param M_1 = 0.013, Metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb), in ml O2 / h, default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231
+#' @param M_1 = 0.013, Metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb)*10^M_4, in ml O2 / h, default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231
 #' @param M_2 = 0.800, Metabolic rate parameter 2
 #' @param M_3 = 0.038, Metabolic rate parameter 3
+#' @param M_4 = 0, Metabolic rate parameter 4 (0.14 for 'standard' or zero for 'resting')
+#' @param Q_act = 0, Metabolic offset (W) for locomotion or some other activity additional to resting costs
 #' @param pct_wet = 0.1, \% of surface area acting as a free-water exchanger, for computing cutaneous water loss
 #' @param pct_eyes = 0, \% of surface area taken up by open eyes, for computing ocular water loss (only when active)
 #' @param pct_mouth = 0, \% of surface area taken up by open mouth, for computing panting water loss
@@ -207,6 +209,8 @@ ectoR_devel <- function(
     M_1 = 0.013,
     M_2 = 0.8,
     M_3 = 0.038,
+    M_4 = 0,
+    Q_act = 0,
     pct_wet = 0.1,
     pct_eyes = 0,
     pct_mouth = 0,
@@ -478,6 +482,8 @@ ectoR_devel <- function(
                                        M_1 = M_1,
                                        M_2 = M_2,
                                        M_3 = M_3,
+                                       M_4 = M_4,
+                                       Q_ACT = Q_act,
                                        EXTREF = EXTREF,
                                        PANT = PANT,
                                        RQ = RQ,
@@ -511,7 +517,7 @@ ectoR_devel <- function(
                                        CO2GAS = CO2GAS,
                                        N2GAS = N2GAS,
                                        x,
-                                       CONV_ENHANCE = conv_enhance), lower = -50, upper = 100)$root
+                                       CONV_ENHANCE = conv_enhance), lower = TA-10, upper = TA+40)$root
 
     # recalculate everything with known TC, to get all outputs (run FUN_ecto again)
 
@@ -520,8 +526,9 @@ ectoR_devel <- function(
                         XTRY = TC,
                         M_1 = M_1,
                         M_2 = M_2,
-                        M_3 = M_3)
-    QMETAB <-  max(0.0001, MET.out)
+                        M_3 = M_3,
+                        M_4 = M_4)
+    QMETAB <-  max(0.0001, MET.out) + Q_act
 
     # respiration
     RESP.out <- RESP_ecto(XTRY = TC,

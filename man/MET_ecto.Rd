@@ -5,18 +5,28 @@
 \alias{MET_ecto}
 \title{MET_ecto}
 \usage{
-MET_ecto(AMASS = 0.04, XTRY = 25, M_1 = 0.013, M_2 = 0.8, M_3 = 0.038)
+MET_ecto(
+  AMASS = 0.04,
+  XTRY = 25,
+  M_1 = 0.013,
+  M_2 = 0.8,
+  M_3 = 0.038,
+  M_4 = 0,
+  Q_ACT = 0
+)
 }
 \arguments{
 \item{AMASS}{body mass, kg}
 
 \item{XTRY}{current guess of core body temperature (°C)}
 
-\item{M_1}{metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb), in ml O2 / h, default parameters for lizards}
+\item{M_1}{metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb)*10^M_4, in ml O2 / h, default parameters for lizards}
 
 \item{M_2}{metabolic rate parameter 2}
 
 \item{M_3}{metabolic rate parameter 3}
+
+\item{M_4}{metabolic rate parameter 4}
 }
 \description{
 R version of Fortran MET.f (ectotherm model) for computing metabolic heat production using an allometric function.

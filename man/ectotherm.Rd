@@ -50,11 +50,13 @@ ectotherm(Ww_g, shape, alpha_max, alpha_min, T_F_min, T_F_max, T_B_min, T_RB_min
 
 \item{maxdepth}{= 10, Maximum depth (soil node #) to which animal can retreat if burrowing}
 
-\item{M_1}{= 0.013, Metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb), in ml O2 / h, default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231}
+\item{M_1}{= 0.013, Metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb)*10^M_4, in ml O2 / h, default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231}
 
 \item{M_2}{= 0.800, Metabolic rate parameter 2}
 
 \item{M_3}{= 0.038, Metabolic rate parameter 3}
+
+\item{M_4}{= 0.000, Metabolic rate parameter 4}
 
 \item{pct_wet}{= 0.1, \% of surface area acting as a free-water exchanger (hourly vector or single value), for computing cutaneous water loss}
 
@@ -198,7 +200,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 }
 \strong{ Dynamic Energy Budget (DEB) model parameters:}
 \itemize{
-\item{\code{DEB}{ = 0, Run the DEB model (1) or just heat balance (0). Latter uses allometrically predicted respiration base on \code{M_1}, \code{M_2} and \code{M_3}}\cr}
+\item{\code{DEB}{ = 0, Run the DEB model (1) or just heat balance (0). Latter uses allometrically predicted respiration base on \code{M_1}, \code{M_2}, \code{M_3} and \code{M_4}}\cr}
 \item{\code{intmethod}{ = 1, Use Euler (0) or DOPRI (1) method for integrating non-insect DEB model. Latter will be more accurate but slower}\cr}
 \item{\code{metab_mode}{ = 0, Run insect model? 0 = no, 1 = hemimetabolus model (abp DEB model), 2 = holometabolous model (hex DEB model)}\cr}
 \item{\code{z_mult}{ = 1, Scaling factor for DEB body-size covariation relationships - use it to make a metabolically scaled larger or smaller version of your animal}\cr}
@@ -318,8 +320,8 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{photofinish}{ = 1, Photoperiod terminating ovulation, none (0), summer solstice (1), autumnal equinox (2), winter solstice (3), vernal equinox (4), specified daylength thresholds (5 - uses \code{daylengthstart} and \code{daylengthfinish})}\cr}
 \item{\code{daylengthstart}{ = 12.5, Threshold daylength (h) for initiating breeding}\cr}
 \item{\code{daylengthfinish}{ = 13, Threshold daylength (h) for terminating breeding}\cr}
-\item{\code{photodirs }{ =  1, Is the start daylength trigger during a decrease (0) or increase (1) in day length?}\cr}
-\item{\code{photodirf }{ =  0, Is the finish daylength trigger during a decrease (0) or increase (1) in day length?}\cr}
+\item{\code{photodirs}{ =  1, Is the start daylength trigger during a decrease (0) or increase (1) in day length?}\cr}
+\item{\code{photodirf}{ =  0, Is the finish daylength trigger during a decrease (0) or increase (1) in day length?}\cr}
 \item{\code{amphibreed}{ = 0, Amphibious animal breeding mode: 0 is off, 1 is exotrophic aquatic (eggs start when water present in container and within breeding season), 2 is exotrophic terrestrial/aquatic (eggs start at specified soil node within breeding season, diapause at birth threshold, start larval phase if water present in container), 3 endotrophic terrestrial (eggs start at specified soil node within breeding season and continue to metamorphosis on land), 4 turtle mode (eggs start at specified soil node within breeding season, hatch and animals enter water and stay there for the rest of their life, but leave the water if no water is present)}\cr}
 \item{\code{amphistage}{ = 0, Life cycle control for amphibious animal: 0 is whole life cycle, 1 is just to metamorphosis (then reset and start again)}\cr}
 \item{\code{reset}{ = 0, Life cycle reset options, 0=quit simulation upon death, 1=restart at emergence, 2=restart at first egg laid, 3=restart at end of breeding season, 4=reset at death}\cr}
@@ -364,7 +366,7 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{arrhenius}{ = matrix(data = matrix(data = c(rep(T_A, stages), rep(T_AL, stages), rep(T_AH, stages), rep(T_L, stages), rep(T_H, stages)),  nrow = stages,  ncol = 5),  nrow = stages,  ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A, T_AL, T_AH, T_L, T_H)}\cr}
 \item{\code{arrhenius2}{ = matrix(data = matrix(data = c(rep(T_A2, stages), rep(T_AL2, stages), rep(T_AH2, stages), rep(T_L2, stages), rep(T_H2, stages)),  nrow = stages,  ncol = 5),  nrow = stages,  ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A, T_AL, T_AH, T_L, T_H) for maturity maintenance (causes 'Temperature Size Rule' effect)}\cr}
 }
-\strong{ Butterfly model parameters (not yet tested):}
+\strong{ Butterfly and flight model parameters (not yet tested):}
 \itemize{
 \item{\code{wings}{ = 0, Turn wing model on? 1=yes, 0=no}\cr}
 \item{\code{rho1_3}{ = 0.2, Wing reflectance (0-1)}\cr}
@@ -376,8 +378,9 @@ compute metabolic rate. \cr\cr NOTE: The microclimate model, e.g. \code{\link{mi
 \item{\code{phimax}{ =  phi, Maximum wing angle (degrees) (90 = vertical relative to body)}\cr}
 \item{\code{phimin}{ =  phi, Minimum wing angle (degrees) (90 = vertical relative to body)}\cr}
 \item{\code{flyer}{ = 0, Does the animal fly? 1=yes, 0=no}\cr}
-\item{\code{flyspeed}{ = 5, Flying speed (m/s)}\cr}
-\item{\code{flymetab}{ = 0.1035, Flight metabolic excess (W/g)}\cr}
+\item{\code{flymetab}{ = 0, metabolic cost of flight, W}\cr}
+\item{\code{flyhigh}{ = 0, Does the animal fly at ref height? 1=yes, 0=noW}\cr}
+\item{\code{flyspeed}{ = 5, flight speed (m/s)}\cr}
 }
 \strong{Outputs:}
 
@@ -422,12 +425,13 @@ enbal variables:
 \item 5 QSOL - Solar radiation absorbed (W)
 \item 6 QIRIN - Infrared radiation absorbed (W)
 \item 7 QMET - Metabolic heat production (W)
-\item 8 QEVAP - Evaporative heat loss (W)
-\item 9 QIROUT - Infrared radiation lost (W)
-\item 10 QCONV - Heat lost by convection (W)
-\item 11 QCOND - Heat lost by conduction (W)
-\item 12 ENB - Energy balance (W)
-\item 13 NTRY - Iterations that were required for solution to heat balance equation
+\item 8 QRESP - Respiratory heat loss (W)
+\item 9 QEVAP - Evaporative heat loss (W)
+\item 10 QIROUT - Infrared radiation lost (W)
+\item 11 QCONV - Heat lost by convection (W)
+\item 12 QCOND - Heat lost by conduction (W)
+\item 13 ENB - Energy balance (W)
+\item 14 NTRY - Iterations that were required for solution to heat balance equation
 }
 masbal variables:
 \itemize{

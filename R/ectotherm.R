@@ -29,9 +29,10 @@
 #' @param mindepth = 2, Minimum depth (soil node #) to which animal can retreat if burrowing
 #' @param maxdepth = 10, Maximum depth (soil node #) to which animal can retreat if burrowing
 #' @param aestdepth = 10, Depth (soil node #) to which animal retreats if burrowing and aestivating due to desiccation
-#' @param M_1 = 0.013, Metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb), in ml O2 / h, default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231
+#' @param M_1 = 0.013, Metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb)*10^M_4, in ml O2 / h, default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231
 #' @param M_2 = 0.800, Metabolic rate parameter 2
 #' @param M_3 = 0.038, Metabolic rate parameter 3
+#' @param M_4 = 0.000, Metabolic rate parameter 4
 #' @param pct_wet = 0.1, \% of surface area acting as a free-water exchanger (hourly vector or single value), for computing cutaneous water loss
 #' @param pct_eyes = 0.03, \% of surface area taken up by open eyes, for computing ocular water loss (only when active)
 #' @param pct_mouth = 5, \% of surface area taken up by open mouth, for computing panting water loss
@@ -159,7 +160,7 @@
 #' }
 #' \strong{ Dynamic Energy Budget (DEB) model parameters:}
 #' \itemize{
-#' \item{\code{DEB}{ = 0, Run the DEB model (1) or just heat balance (0). Latter uses allometrically predicted respiration base on \code{M_1}, \code{M_2} and \code{M_3}}\cr}
+#' \item{\code{DEB}{ = 0, Run the DEB model (1) or just heat balance (0). Latter uses allometrically predicted respiration base on \code{M_1}, \code{M_2}, \code{M_3} and \code{M_4}}\cr}
 #' \item{\code{intmethod}{ = 1, Use Euler (0) or DOPRI (1) method for integrating non-insect DEB model. Latter will be more accurate but slower}\cr}
 #' \item{\code{metab_mode}{ = 0, Run insect model? 0 = no, 1 = hemimetabolus model (abp DEB model), 2 = holometabolous model (hex DEB model)}\cr}
 #' \item{\code{z_mult}{ = 1, Scaling factor for DEB body-size covariation relationships - use it to make a metabolically scaled larger or smaller version of your animal}\cr}
@@ -325,7 +326,7 @@
 #' \item{\code{arrhenius}{ = matrix(data = matrix(data = c(rep(T_A, stages), rep(T_AL, stages), rep(T_AH, stages), rep(T_L, stages), rep(T_H, stages)),  nrow = stages,  ncol = 5),  nrow = stages,  ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A, T_AL, T_AH, T_L, T_H)}\cr}
 #' \item{\code{arrhenius2}{ = matrix(data = matrix(data = c(rep(T_A2, stages), rep(T_AL2, stages), rep(T_AH2, stages), rep(T_L2, stages), rep(T_H2, stages)),  nrow = stages,  ncol = 5),  nrow = stages,  ncol = 5), Stage-specific 5-parameter Arrhenius thermal response for DEB model (T_A, T_AL, T_AH, T_L, T_H) for maturity maintenance (causes 'Temperature Size Rule' effect)}\cr}
 #'}
-#' \strong{ Butterfly model parameters (not yet tested):}
+#' \strong{ Butterfly and flight model parameters (not yet tested):}
 #' \itemize{
 #' \item{\code{wings}{ = 0, Turn wing model on? 1=yes, 0=no}\cr}
 #' \item{\code{rho1_3}{ = 0.2, Wing reflectance (0-1)}\cr}
@@ -337,8 +338,9 @@
 #' \item{\code{phimax}{ =  phi, Maximum wing angle (degrees) (90 = vertical relative to body)}\cr}
 #' \item{\code{phimin}{ =  phi, Minimum wing angle (degrees) (90 = vertical relative to body)}\cr}
 #' \item{\code{flyer}{ = 0, Does the animal fly? 1=yes, 0=no}\cr}
-#' \item{\code{flyspeed}{ = 5, Flying speed (m/s)}\cr}
-#' \item{\code{flymetab}{ = 0.1035, Flight metabolic excess (W/g)}\cr}
+#' \item{\code{flymetab}{ = 0, metabolic cost of flight, W}\cr}
+#' \item{\code{flyhigh}{ = 0, Does the animal fly at ref height? 1=yes, 0=noW}\cr}
+#' \item{\code{flyspeed}{ = 5, flight speed (m/s)}\cr}
 #'}
 #' \strong{Outputs:}
 #'
@@ -383,12 +385,13 @@
 #' \item 5 QSOL - Solar radiation absorbed (W)
 #' \item 6 QIRIN - Infrared radiation absorbed (W)
 #' \item 7 QMET - Metabolic heat production (W)
-#' \item 8 QEVAP - Evaporative heat loss (W)
-#' \item 9 QIROUT - Infrared radiation lost (W)
-#' \item 10 QCONV - Heat lost by convection (W)
-#' \item 11 QCOND - Heat lost by conduction (W)
-#' \item 12 ENB - Energy balance (W)
-#' \item 13 NTRY - Iterations that were required for solution to heat balance equation
+#' \item 8 QRESP - Respiratory heat loss (W)
+#' \item 9 QEVAP - Evaporative heat loss (W)
+#' \item 10 QIROUT - Infrared radiation lost (W)
+#' \item 11 QCONV - Heat lost by convection (W)
+#' \item 12 QCOND - Heat lost by conduction (W)
+#' \item 13 ENB - Energy balance (W)
+#' \item 14 NTRY - Iterations that were required for solution to heat balance equation
 #'}
 #' masbal variables:
 #' \itemize{
@@ -590,6 +593,7 @@ ectotherm <- function(
   M_1 = 0.013,
   M_2 = 0.8,
   M_3 = 0.038,
+  M_4 = 0,
   pct_wet = 0.1,
   pct_eyes = 0.03,
   pct_mouth = 5,
@@ -827,7 +831,8 @@ ectotherm <- function(
   phimin = phi,
   flyer = 0,
   flyspeed = 5,
-  flymetab = 0.1035,
+  flymetab = 0,
+  flyhigh = 1,
   pct_H_death = 35,
   write_csv = 0,
   aestdepth = 7){ # end function parameters
@@ -1444,13 +1449,14 @@ ectotherm <- function(
     if(leaf == 0){ # zero stomatal conductances so that SKINW is not changed to stomatal openness in ectotherm models
       g_vs_ab <- g_vs_ab * 0
       g_vs_ad <- g_vs_ab
-      g_vs_ad_max <- g_vs_ab
-      g_vs_ab_max <- g_vs_ab
+      g_vs_ad_max <- g_vs_ab[1]
+      g_vs_ab_max <- g_vs_ab[1]
     }
     # collate parameters
     gas <- c(O2gas, CO2gas, N2gas) # gas vector
     behav <- c(diurn, nocturn, crepus, rainact, burrow, shade_seek, climb, fossorial, orient) # behaviour vector
-    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF[1], EMISSK, EMISSB, ABSSB, K_skin, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, leaf, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, starvemode, tannul, nodnum, postur, psi_body, spec_hyd_body, CT_max, CT_min, behav, H2Obal_init, actrainthresh, viviparous, pregnant, conth, contw, contlast, arrhen_mode, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, liq_init, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, pct_cond_egg, K_egg, psi_egg, spec_hyd_egg, b, KS, PE, foodmode, conv_enhance, g_vs_ab_max, g_vs_ad_max, cond_clutch))
+    spare <- 0
+    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF[1], EMISSK, EMISSB, ABSSB, K_skin, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, leaf, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, starvemode, tannul, nodnum, postur, psi_body, spec_hyd_body, CT_max, CT_min, behav, H2Obal_init, actrainthresh, viviparous, pregnant, conth, contw, contlast, arrhen_mode, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, liq_init, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, pct_cond_egg, K_egg, psi_egg, spec_hyd_egg, b, KS, PE, foodmode, conv_enhance, g_vs_ab_max, g_vs_ad_max, cond_clutch, M_4, flyhigh, spare))
     debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, E_Ho, f, s_G, K, X[1], metab_mode, stages, kap_V, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He, k_Ee, k_EV, mu_N, h_O, h_M[4], maxclutch)
     deblast <- c(iyear, countday, V_init, E_init, E_S_init, E_R_init, q_init, hs_init, E_B_init, V_baby_init, E_baby_init, E_H_init, stage, p_surv_init, E_H_baby_init)
 

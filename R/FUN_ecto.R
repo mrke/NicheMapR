@@ -17,9 +17,11 @@
 #' @param BSEMINR length of semi-minor radius 1 for ellipsoid (m)
 #' @param CSEMINR length of semi-minor radius 2 for ellipsoid (m)
 #' @param CONV_ENHANCE convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 https://doi.org/10.1016/S0006-3495(76)85711-6
-#' @param M_1 metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb), in ml O2 / h, default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231
+#' @param M_1 metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb)*10^M_4, in ml O2 / h, default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231
 #' @param M_2 metabolic rate parameter 2
 #' @param M_3 metabolic rate parameter 3
+#' @param M_4 metabolic rate parameter 4
+#' @param Q_ACT Metabolic offset (W) for locomotion or some other activity additional to basal
 #' @param EXTREF oxygen extraction efficiency (\%)
 #' @param PANT multiplier on breathing rate, for respiratory water loss via panting
 #' @param RQ respiratory quotient (fractional, 0-1)
@@ -70,6 +72,8 @@ FUN_ecto <- function(AMASS = AMASS,
                      M_1 = M_1,
                      M_2 = M_2,
                      M_3 = M_3,
+                     M_4 = M_4,
+                     Q_ACT = Q_ACT,
                      EXTREF = EXTREF,
                      PANT = PANT,
                      RQ = RQ,
@@ -147,14 +151,15 @@ FUN_ecto <- function(AMASS = AMASS,
                         XTRY = XTRY,
                         M_1 = M_1,
                         M_2 = M_2,
-                        M_3 = M_3)
+                        M_3 = M_3,
+                        M_4 = M_4,
+                        Q_ACT = Q_ACT)
     QMETAB <- MET.out
   }else{
     #C       TOO COLD, SUPER LOW METABOLISM
     QMETAB <- 0.0001
     TC <- X
   }
-
   #C     GET THE RESPIRATORY WATER LOSS
   #C     CHECKING FOR FLUID TYPE
   if(FLTYPE == 0){

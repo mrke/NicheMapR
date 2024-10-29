@@ -19,13 +19,15 @@ get_profile(ZH = 0.004, D0 = 0.012)
 
 \item{VREF}{= 2.75, wind speed (m/s) at reference height}
 
-\item{RH}{= 49.0415, relative humidity (%) at reference height}
+\item{RH}{= 49.0415, relative humidity (pct) at reference height}
 
 \item{D0cm}{= 48.6, soil surface temperature (deg C)}
 
 \item{maxsurf}{= 95, maximum allowed soil surface temperature - this is the default value in all micro_* functions}
 
 \item{ZEN}{= 21.5, zenith angle (degrees) of sun - used in determining if free convection conditions or not}
+
+\item{a}{= 0.15, wind shear exponent for extending above reference height (open water 0.1, Smooth, level, grass-covered 0.15 (or more commonly 1/7), row crops 0.2, low bushes with a few trees 0.2, heavy trees or several buildings or mountainous terrain 0.25, (source http://www.engineeringtoolbox.com/wind-shear-d_1215.html)}
 
 \item{heights}{= c(0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1), vector of heights (m) for which the profile is desired (make them between zero and the reference height, don't include the reference height, and make the minimum greater than the roughness height}
 }
@@ -36,7 +38,7 @@ VELs Wind speeds (m/s) with increasing height
 
 TAs Air temperatures (deg C) with increasing height
 
-RHs Relative humidity (%) with increasing height
+RHs Relative humidity (pct) with increasing height
 
 QCONV Convective heat loss (W/m2) from surface
 
@@ -74,7 +76,7 @@ points(dates, profile.out1$TAs[profile.out1$heights == newheights[2]], type = 'l
 plot(dates, metout$VLOC, ylab = 'wind speed, m/s', type = 'l', ylim = c(0, 3))
 points(dates, profile.out1$VELs[profile.out1$heights == newheights[1]], type = 'l', lty = 2)
 points(dates, profile.out1$VELs[profile.out1$heights == newheights[2]], type = 'l', lty = 3)
-plot(dates, metout$RHLOC, ylab = 'relative humidity, \%', type = 'l', ylim = c(0, 100))
+plot(dates, metout$RHLOC, ylab = 'relative humidity, pct', type = 'l', ylim = c(0, 100))
 points(dates, profile.out1$RHs[profile.out1$heights == newheights[1]], type = 'l', lty = 2)
 points(dates, profile.out1$RHs[profile.out1$heights == newheights[2]], type = 'l', lty = 3)
 }

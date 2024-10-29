@@ -11,7 +11,7 @@
 #' @param D0 = 0, zero plane displacement correction factor (m) for Campbell and Norman air temperature/wind speed profile (0.6 * canopy height in m if unknown)
 #' @param TAREF = 27.8, air temperature (deg C) at reference height
 #' @param VREF = 2.75, wind speed (m/s) at reference height
-#' @param RH = 49.0415, relative humidity (%) at reference height
+#' @param RH = 49.0415, relative humidity (pct) at reference height
 #' @param D0cm = 48.6, soil surface temperature (deg C)
 #' @param maxsurf = 95, maximum allowed soil surface temperature - this is the default value in all micro_* functions
 #' @param ZEN = 21.5, zenith angle (degrees) of sun - used in determining if free convection conditions or not
@@ -20,7 +20,7 @@
 #' @return heights Heights (m) at which results are reported, with 0 and Refhyt added on
 #' @return VELs Wind speeds (m/s) with increasing height
 #' @return TAs Air temperatures (deg C) with increasing height
-#' @return RHs Relative humidity (%) with increasing height
+#' @return RHs Relative humidity (pct) with increasing height
 #' @return QCONV Convective heat loss (W/m2) from surface
 #' @return USTAR Friction velocity (m/s)
 #' @usage get_profile(ZH = 0.004, D0 = 0.012)
@@ -49,7 +49,7 @@
 #' plot(dates, metout$VLOC, ylab = 'wind speed, m/s', type = 'l', ylim = c(0, 3))
 #' points(dates, profile.out1$VELs[profile.out1$heights == newheights[1]], type = 'l', lty = 2)
 #' points(dates, profile.out1$VELs[profile.out1$heights == newheights[2]], type = 'l', lty = 3)
-#' plot(dates, metout$RHLOC, ylab = 'relative humidity, %', type = 'l', ylim = c(0, 100))
+#' plot(dates, metout$RHLOC, ylab = 'relative humidity, pct', type = 'l', ylim = c(0, 100))
 #' points(dates, profile.out1$RHs[profile.out1$heights == newheights[1]], type = 'l', lty = 2)
 #' points(dates, profile.out1$RHs[profile.out1$heights == newheights[2]], type = 'l', lty = 3)
 #'@export
@@ -258,7 +258,7 @@ get_profile <- function(Refhyt = 1.2,
     return(list(heights = heights,
                 VELs = VV / 6000, # m/s
                 TAs = T, # deg C
-                RHs = RHs, # humidity, %
+                RHs = RHs, # humidity, pct
                 QCONV = QC * 4.185 * 10000 / 60, # W
                 USTAR = USTAR / 6000 # m/s
     )

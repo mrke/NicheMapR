@@ -479,7 +479,7 @@ micro_era5 <- function(
         Please enter a smaller value.", '\n')
     errors<-1
   }
-  if(D0 > 0 & D0 < Usrhyt){
+  if(D0 > 0 & Usrhyt < D0){
     cat("ERROR: The zero plane displacement height (D0) must be lower than the local height (Usrhyt).
         Please enter a smaller value.", '\n')
     errors<-1

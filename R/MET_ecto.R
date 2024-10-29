@@ -5,16 +5,19 @@
 #' @encoding UTF-8
 #' @param AMASS body mass, kg
 #' @param XTRY current guess of core body temperature (°C)
-#' @param M_1 metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb), in ml O2 / h, default parameters for lizards
+#' @param M_1 metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb)*10^M_4, in ml O2 / h, default parameters for lizards
 #' @param M_2 metabolic rate parameter 2
 #' @param M_3 metabolic rate parameter 3
+#' @param M_4 metabolic rate parameter 4
 #' @export
 MET_ecto <- function(
     AMASS = 0.04,
     XTRY = 25,
     M_1 = 0.013,
     M_2 = 0.8,
-    M_3 = 0.038){
+    M_3 = 0.038,
+    M_4 = 0,
+    Q_ACT = 0){
 
   # C     NICHEMAPR: SOFTWARE FOR BIOPHYSICAL MECHANISTIC NICHE MODELLING
   #
@@ -40,16 +43,17 @@ MET_ecto <- function(
 
   #C      USE REGRESSION
   #C      LIZARD REGRESSION
-  if(TC > 50){
-    #C       CAP METABOLIC RATE EQUATION WITH MAX OF TC = 50
-    QMETAB <- 0.0056 * 10 ^ (M_3 * 50)  * M_1 * GMASS ^ M_2
-  }
-
   if(TC >= 1){
-    #C        ACCEPTABLE TEMPERATURE RANGE
-    QMETAB <- 0.0056 * 10 ^ (M_3 * TC) * M_1 * GMASS ^ M_2
+    if(TC > 50){
+      #C       CAP METABOLIC RATE EQUATION WITH MAX OF TC = 50
+      QMETAB <- 0.0056 * 10 ^ (M_3 * 50) * M_1 * GMASS ^ M_2 * 10 ^ M_4 + Q_ACT
+    }else{
+      #C        ACCEPTABLE TEMPERATURE RANGE
+      QMETAB <- 0.0056 * 10 ^ (M_3 * TC) * M_1 * GMASS ^ M_2 * 10 ^ M_4 + Q_ACT
+    }
   }else{
     QMETAB <- 0.01
   }
+
   return(QMETAB)
 }

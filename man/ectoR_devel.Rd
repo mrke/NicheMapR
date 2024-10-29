@@ -14,11 +14,15 @@ ectoR_devel(Ww_g = 40, shape = 3, alpha = 0.85, postur = 0, TA = 20, TGRD = 40, 
 
 \item{shape}{= 3, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)}
 
-\item{M_1}{= 0.013, Metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb), in ml O2 / h, default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231}
+\item{M_1}{= 0.013, Metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb)*10^M_4, in ml O2 / h, default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231}
 
 \item{M_2}{= 0.800, Metabolic rate parameter 2}
 
 \item{M_3}{= 0.038, Metabolic rate parameter 3}
+
+\item{M_4}{= 0, Metabolic rate parameter 4 (0.14 for 'standard' or zero for 'resting')}
+
+\item{Q_act}{= 0, Metabolic offset (W) for locomotion or some other activity additional to resting costs}
 
 \item{pct_wet}{= 0.1, \% of surface area acting as a free-water exchanger, for computing cutaneous water loss}
 
