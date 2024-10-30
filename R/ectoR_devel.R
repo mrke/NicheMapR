@@ -11,7 +11,7 @@
 #' @param M_1 = 0.013, Metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb)*10^M_4, in ml O2 / h, default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231
 #' @param M_2 = 0.800, Metabolic rate parameter 2
 #' @param M_3 = 0.038, Metabolic rate parameter 3
-#' @param M_4 = 0, Metabolic rate parameter 4 (0.14 for 'standard' or zero for 'resting')
+#' @param M_4 = 0, Metabolic rate parameter 4 (zero for 'standard' or 0.14 for 'resting')
 #' @param Q_act = 0, Metabolic offset (W) for locomotion or some other activity additional to resting costs
 #' @param pct_wet = 0.1, \% of surface area acting as a free-water exchanger, for computing cutaneous water loss
 #' @param pct_eyes = 0, \% of surface area taken up by open eyes, for computing ocular water loss (only when active)

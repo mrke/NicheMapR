@@ -339,7 +339,7 @@
 #' \item{\code{phimin}{ =  phi, Minimum wing angle (degrees) (90 = vertical relative to body)}\cr}
 #' \item{\code{flyer}{ = 0, Does the animal fly? 1=yes, 0=no}\cr}
 #' \item{\code{flymetab}{ = 0, metabolic cost of flight, W}\cr}
-#' \item{\code{flyhigh}{ = 0, Does the animal fly at ref height? 1=yes, 0=noW}\cr}
+#' \item{\code{flyhigh}{ = 0, Does the animal fly at ref height? 1=yes, 0=no}\cr}
 #' \item{\code{flyspeed}{ = 5, flight speed (m/s)}\cr}
 #'}
 #' \strong{Outputs:}

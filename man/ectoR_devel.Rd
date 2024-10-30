@@ -20,7 +20,7 @@ ectoR_devel(Ww_g = 40, shape = 3, alpha = 0.85, postur = 0, TA = 20, TGRD = 40, 
 
 \item{M_3}{= 0.038, Metabolic rate parameter 3}
 
-\item{M_4}{= 0, Metabolic rate parameter 4 (0.14 for 'standard' or zero for 'resting')}
+\item{M_4}{= 0, Metabolic rate parameter 4 (zero for 'standard' or 0.14 for 'resting')}
 
 \item{Q_act}{= 0, Metabolic offset (W) for locomotion or some other activity additional to resting costs}
 
