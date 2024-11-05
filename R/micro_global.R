@@ -606,24 +606,24 @@ micro_global <- function(
       }
     }
 
-    if(timeinterval<365){
+    if(timeinterval < 365){
       microdaily <- 0 # run microclimate model as normal, where each day is iterated 3 times starting with the initial condition of uniform soil temp at mean monthly temperature
     }else{
       microdaily <- 1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
     }
 
     # now check if doing something other than middle day of each month, and create appropriate vector of Day of Year
-    daystart <- as.integer(ceiling(365/timeinterval/2))
+    daystart <- as.integer(ceiling(365 / timeinterval / 2))
     if(timeinterval!=12){
-      doys <- seq(daystart,365,as.integer(floor(365/timeinterval)))
+      doys <- seq(daystart, 365, as.integer(floor(365 / timeinterval)))
     }else{
       doys <- doysn
     }
-    doynum <- timeinterval*nyears # total days to do
-    doy <- subset(doys, doys!=0) # final vector of Day of Year
-    doy <- rep(doy,nyears)
+    doynum <- timeinterval * nyears # total days to do
+    doy <- subset(doys, doys != 0) # final vector of Day of Year
+    doy <- rep(doy, nyears)
     idayst  <-  1 # start day
-    ida <- timeinterval*nyears # end day
+    ida <- timeinterval * nyears # end day
 
     ################## location and terrain #################################
 
