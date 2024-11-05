@@ -31,6 +31,13 @@ Modelling the joint effects of body size and microclimate on heat budgets and fo
 Methods in Ecology and Evolution, 12(13), 458–467. 
 https://doi.org/10.1111/2041-210X.13528
 
+Kearney, M. R., and Enriquez-Urzelai, U. (2023). A general framework for jointly modelling thermal and hydric constraints on developing eggs. Methods in Ecology and Evolution, 14(2), 583–595.
+https://doi.org/10.1111/2041-210X.14018
+
+Kearney, M. R., and Leigh, A. (2024). 
+Fast, accurate and accessible calculations of leaf temperature and its physiological consequences with NicheMapR. Methods in Ecology and Evolution, 15(9), 1516-1531.
+https://doi.org/10.1111/2041-210X.14373
+
 This program is free software: you can redistribute it and/or modify it 
 under the terms of the GNU General Public License as published by the 
 Free Software Foundation, either version 3 of the License, or (at your
