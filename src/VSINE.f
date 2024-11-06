@@ -53,9 +53,9 @@ C     TIMSS - TIME OF SUNSET (FROM SOLRAD)
 C     TIMIN - TIME OF MINIMUM.  USUALLY ABOUT SUNRISE
 C     TIMAX - TIME OF MAXIMUM.  USUALLY 1300 HOURS    
 C     IF IN THE SAME TIME ZONE AS THE REFERENCE MERIDIAN
-      vinit=0
+      vinit=0.
 C     TIMSR,TIMSS,TIMAX PROVIDED BY SOLRAD 
-      VAVE=(VMAX+VMIN)/2   
+      VAVE=(VMAX+VMIN)/2.
       if((microdaily.eq.1).and.(iday.gt.1))then
        IF (IVAR .EQ. 1) THEN
         vinit=irelhum

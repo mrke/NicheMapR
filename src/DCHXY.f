@@ -95,8 +95,8 @@ C     COMPUTE MU,PSI(MU) AND WEIGHTS OF SIMPSON QUADRATURE...
   110 IF ( PERA .GT. 0.5D0 ) GO TO 105  
       DO 120 I = 1,101  
        AMU(I) = (I-1) * 0.01D0   
-       TEMA = AMU(I)**2  
-       PSI(I) = CFA(1) + CFA(2)*TEMA + CFA(3)*(TEMA**2)  
+       TEMA = AMU(I)**2. 
+       PSI(I) = CFA(1) + CFA(2)*TEMA + CFA(3)*(TEMA**2.)  
        IF ( PSI(I) .GT. -1.0D-15 ) GO TO 120     
        WRITE(6,5)PSI(I),I
        WRITE(6,20)(CFA(J),J=1,3)     
@@ -140,8 +140,8 @@ C     COMPUTE ROOTS OF THE CHARACTERISTIC EQUATION...
       ACAP(4) = 0.26926671930999636D+00 
       ACAP(5) = 0.29552422471475287D+00 
   220 DO 225 I = 1,KMX  
-       TEMX(I) = UMA(I)**2   
-       TEMY(I) = CFA(1) + CFA(2)*TEMX(I) + CFA(3)*TEMX(I)**2 
+       TEMX(I) = UMA(I)**2.   
+       TEMY(I) = CFA(1) + CFA(2)*TEMX(I) + CFA(3)*TEMX(I)**2.
        TEMY(I) = 2.0D0 * ACAP(I) * TEMY(I)   
   225 CONTINUE  
       IF ( NCASE .EQ. 0 ) GO TO 235 
@@ -152,23 +152,23 @@ C     COMPUTE ROOTS OF THE CHARACTERISTIC EQUATION...
   238 DO 244 I = IST,KMX
        RTK(I) = (1.0D0 - TEMY(I))/TEMX(I)
        IF ( I .NE. 1 ) GO TO 242     
-       TEMA = 1.0D0/UMA(1)**2
+       TEMA = 1.0D0/UMA(1)**2.
        IF ( RTK(1) .LT. TEMA ) GO TO 244 
        RTK(1) = 0.5D0 * TEMA 
        GO TO 244 
-  242  TEMA = 1.0D0/UMA(I-1)**2  
-       TEMB = 1.0D0/UMA(I)**2
+  242  TEMA = 1.0D0/UMA(I-1)**2. 
+       TEMB = 1.0D0/UMA(I)**2.
        IF ( RTK(I) .GT. TEMA .AND. RTK(I) .LT. TEMB ) GO TO 244  
        RTK(I) = 0.5D0 * ( TEMA + TEMB )  
   244 CONTINUE  
       J = IST   
   245 IF ( J .NE. 1 ) GO TO 246     
       TEMA = 0.0D0  
-      TEMB = 1.0D0/UMA(1)**2
+      TEMB = 1.0D0/UMA(1)**2.
       N1 = 0
       GO TO 250 
-  246 TEMA = 1.0D0/UMA(J-1)**2  
-      TEMB = 1.0D0/UMA(J)**2
+  246 TEMA = 1.0D0/UMA(J-1)**2.  
+      TEMB = 1.0D0/UMA(J)**2.
       N1 = 0
   250 TEMC = 1.0D0  
       DO 260 I = 1,KMX  
@@ -229,7 +229,7 @@ C     COMPUTE FUNCTIONS LAMDA, P AND W....
        DO  419 J = 1,KMX 
         FNPP(I) = FNPP(I)*( AMU(I)/UMA(J)-1.0D0)  
         FNPN(I) = FNPN(I)*(-AMU(I)/UMA(J)-1.0D0)  
-        FNW(I) = FNW(I) * ( 1.0D0 - RTK(J)**2 * AMU(I)**2)    
+        FNW(I) = FNW(I)*(1.0D0-RTK(J)**2.*AMU(I)**2.)    
   419  CONTINUE  
   420 CONTINUE  
 C     COMPUTE C SUB 0 AND C SUB 1 ......
@@ -335,8 +335,8 @@ C     COMPUTE C SUB 0 AND C SUB 1 ......
       WRITE(6,52)TAU1   
       WRITE(6,75)   
       DO 620 I = 1,101  
-       TEMD = FNC0(I) * FMC0(I) - FNC1(I) * FMC1(I) - (FNC0(1)**2 -  
-     1  FNC1(1)**2) * FNW(I)  
+       TEMD = FNC0(I) * FMC0(I) - FNC1(I) * FMC1(I) - (FNC0(1)**2.-  
+     1  FNC1(1)**2.) * FNW(I)  
        WRITE(6,80)AMU(I),FNPP(I),FNPN(I),FNW(I),FNC0(I),FMC0(I), 
      1 FNC1(I),FMC1(I),TEMD  
   620 CONTINUE  
@@ -420,7 +420,7 @@ C     CORRECTION TO THE APPROXIMATION...
        CHY(I) = CHYA(I) + TEMD   
   920 CONTINUE  
       IF ( NPRT .EQ. 0 ) GO TO 925  
-      TEMC = TEMA**2 - 2.0D0*TEMA - TEMB**2 + 2.0D0*PERA    
+      TEMC = TEMA**2. - 2.0D0*TEMA - TEMB**2. + 2.0D0*PERA    
       WRITE (6,95 ) NOMITR,TEMA,TEMB,TEMC   
   925 IF ( NOMITR .EQ. 1 ) GO TO 950
 C      CHECK FOR CONVERGENCE...     
@@ -452,7 +452,7 @@ C      CHECK FOR CONVERGENCE...
        TEMA = TEMA + CHX(I) * TEMC   
        TEMB = TEMB + CHY(I) * TEMC   
   970 CONTINUE  
-      TEMC = TEMA**2 -2.0D0*TEMA -TEMB**2 + 2.0D0 *PERA     
+      TEMC = TEMA**2. -2.0D0*TEMA -TEMB**2. + 2.0D0 *PERA     
       WRITE(6,95) NOMITR,TEMA,TEMB,TEMC 
       IF ( NOMITR .GT. 15 ) STOP    
       CONTINUE  

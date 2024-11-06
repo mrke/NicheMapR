@@ -77,13 +77,13 @@ C     ZH2=30.    13.                  60.          25
 
       RHOCP(TAVE) = 0.08472/TAVE ! note this is a function, internally defined
       PHI(Z)=(1.-GAM*Z/AMOL)**.25
-      PSI1(X)=2.*dLOG((1.+X)/2.)+dLOG((1.+X*X)/2.)-2.*ATAN(X)+3.14159/2
+      PSI1(X)=2.*dLOG((1.+X)/2.)+dLOG((1.+X*X)/2.)-2.*ATAN(X)+3.14159/2.
       PSI2(X)=2.*dLOG((1.+X*X)/2.)
       GAM=16.
       RCPTKG=6.003D-8 !RHO*CP*T/(K*G) = 6.003D-8 IN CAL-MIN-CM-C UNITS
 
 C     COMPUTING VEL. PROFILE PARAMETERS FROM 200 CM REFERENCE VELOCITY
-      ZRATIO = Z/Z0 + 1 ! ratio of reference to roughness height
+      ZRATIO = Z/Z0 + 1. ! ratio of reference to roughness height
       DUM=dLOG(ZRATIO)
       VEL = V ! wind speed at reference height
       USTAR = 0.4*V/DUM ! friction velocity
@@ -116,7 +116,7 @@ C     BULK STANTON NO.
 C
       QC=RCP*DIFFT*USTAR*STO
 C
-      AMOLN=RCPTKG*USTAR**3/QC
+      AMOLN=RCPTKG*USTAR**3./QC
       DEL=ABS((AMOLN-AMOL)/AMOL)
       IF (DEL .LT. 1.0D-02) THEN
        GO TO 2
@@ -151,10 +151,10 @@ C     CALC'S BELOW WHEN NO FREE CONV. ENHANCEMENT OF VEL,TEMP PROFILES
       IF(NAIR.LE.0) RETURN
       DO 4 I=1,NAIR
 C      FILL OUT VEL. AND TEMP. PROFILES
-       VV(I)=2.5*USTAR*dLOG(ZZ(I)/Z0+1)
+       VV(I)=2.5*USTAR*dLOG(ZZ(I)/Z0+1.)
 C      COMPUTING FICTITIOUS TEMP. AT TOP OF SUBLAYER
        TZO=(T1*STB+T3*STS)/(STB+STS)
-       T(I+20)=TZO+(T1-TZO)*dLOG(ZZ(I)/Z0+1)/DUM
+       T(I+20)=TZO+(T1-TZO)*dLOG(ZZ(I)/Z0+1.)/DUM
     4 CONTINUE
       RETURN
     
@@ -162,20 +162,20 @@ C      COMPUTING FICTITIOUS TEMP. AT TOP OF SUBLAYER
       STS=.62/(Z0*USTAR/12.)**.45 !SUBLAYER STANTON NO.
       STB=.64/DUM ! BULK STANTON NO.
 
-      QC=RCP*DIFFT*USTAR*STB/(1+STB/STS) ! convective heat transfer at the surface
+      QC=RCP*DIFFT*USTAR*STB/(1.+STB/STS) ! convective heat transfer at the surface
 C     Use vertical temperature profile from Campbell and Norman 1998
       IF(NAIR.LE.0) RETURN
       DO 5 I=1,NAIR
 C      FILL OUT VEL. AND TEMP. PROFILES
        IF((T1.GE.T3).or.(T3.LE.MAXSURF).or.(ZEN .GE. 90.))THEN
-        VV(I)=2.5*USTAR*dLOG(ZZ(I)/Z0+1)
+        VV(I)=2.5*USTAR*dLOG(ZZ(I)/Z0+1.)
        ELSE
         X1=PHI(ZZ(I))
         Y1=PSI1(X1)
         ADUM=ZZ(I)/Z0-Y1
         VV(I)=2.5*USTAR*dLOG(ADUM)
        ENDIF
-       A=(T1-T3)/(1-dLOG((Z-D0)/ZH))
+       A=(T1-T3)/(1.-dLOG((Z-D0)/ZH))
        T0=T1+A*dLOG((Z-D0)/ZH)
        T(I+20)=T0-A*dLOG((ZZ(I)-D0)/ZH)
     5 CONTINUE

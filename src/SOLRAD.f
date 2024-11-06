@@ -831,7 +831,7 @@ c     mutliplier to correct hourly solar data for horizon angle
       if(altdeg.lt.ahoriz)then
 c	   diffuse only - cut down to diffuse fraction      
       TDD(111+IT)=TDD(111+IT)* (0.12 + 0.83 * ((CCMINN(IDAY) + 
-     &  CCMAXX(IDAY))/ 2 / 100)) ! from Butt et al. 2010 Agricultural and Forest Meteorology 150 (2010) 361–368
+     &  CCMAXX(IDAY))/ 2. / 100.)) ! from Butt et al. 2010 Agricultural and Forest Meteorology 150 (2010) 361–368
       endif
 
       DO 301 N=1,NMAX
@@ -1018,9 +1018,9 @@ C     REPINT(N)    RECIPROCAL OF EPINT
       DRRLAMBDA(methour,2)=TD
       SRLAMBDA(methour,1)=JULDAY(IDAY)
       SRLAMBDA(methour,2)=TD
-      DRLAMBDA(methour,3:113)=DRLAM(1:111)*10 ! CONVERTING FROM mW/cm2-nm to W/m2-nm
-      DRRLAMBDA(methour,3:113)=DRRLAM(1:111)*10 ! CONVERTING FROM mW/cm2-nm to W/m2-nm
-      SRLAMBDA(methour,3:113)=SRLAM(1:111)*10 ! CONVERTING FROM mW/cm2-nm to W/m2-nm
+      DRLAMBDA(methour,3:113)=DRLAM(1:111)*10. ! CONVERTING FROM mW/cm2-nm to W/m2-nm
+      DRRLAMBDA(methour,3:113)=DRRLAM(1:111)*10. ! CONVERTING FROM mW/cm2-nm to W/m2-nm
+      SRLAMBDA(methour,3:113)=SRLAM(1:111)*10. ! CONVERTING FROM mW/cm2-nm to W/m2-nm
 
       IF(IPINT .EQ. 0) GO TO 350
 C     WRITING PLOT FILE

@@ -114,6 +114,53 @@ C     Densitys = substrate densities, e.g. snow, soil type(s)
 C     Spheats = substrate specific heats, e.g. snow, soil type(s)
 C     Nodes = Deepest node for the each substrate type number for each time interval (duration) of vertical arrangement of substrates
 C     Nodes(max node depth,subst type) are real numbers. The number to the left of the decimal point is the deepest node for the substrate type, which is to the right of the decimal point.
+C     INITIALISE
+      AMOL=0.
+      BP=101325.
+      CLEAR=0.
+      CLOD=0.
+      CP=0.
+      CZ=0.
+      CZSL=0.
+      DENAIR=0.
+      DP=0.
+      E=0.
+      ESAT=0.
+      HC=0.
+      HD=0.
+      HRAD=0.
+      INRAD=0.
+      IRDOWN=0.
+      PATMOS=BP
+      PI=3.14159
+      PSTD=BP
+      QCONV=0.
+      QCOND=0.
+      QEVAP=0.
+      QRAD=0.
+      QRADGR=0.
+      QRADHL=0.
+      QRADSK=0.
+      QRADVG=0.
+      QSOLAR=0.
+      REFRAD=0.
+      RH=0.
+      RW=0.
+      snowalbedo=0.
+      SRAD=0.
+      TAIR=0.
+      TDS=0.
+      TIDE=0.
+      TTEST=0.
+      TVINC=0.
+      TVIR=0.
+      VD=0.
+      VELR=0.
+      WB=0.
+      WTRPOT=0.
+      ZENR=0.
+      ZSLR=0.
+      
       j=1
       if(runsnow.eq.1)then
        if(cursnow.lt.minsnow)then
@@ -145,7 +192,7 @@ C     CHECK FOR UNSTABLE CONDITIONS OF GROUND SURFACE TEMPERATURE, T(1)
         T(i) = MAXSURF
        ELSE
         IF(T(i).LT.-81)THEN
-         T(i) = -81
+         T(i) = -81.
         ENDIF
        ENDIF
 101   continue
@@ -211,15 +258,15 @@ C     SURFACE REFLECTIVITY FOR SOLRAD CALCULATIONS
          snowalbedo=(-9.8740*dlog(daysincesnow) + 78.3434)/100.
          SABNEW = 1-snowalbedo
 C        SETTING THIS MONTH'S PERCENT OF SURFACE WITH FREE WATER/SNOW ON IT
-         PTWET = 100
+         PTWET = 100.
         endif
        endif
       endif
       if(condep.gt.10.)then ! use Fresnel's reflection law, p. 212 Gates 1980
         inrad = TAB('ZEN',TIME)*pi/180.
         refrad=asin(sin(inrad)/1.33)
-        SABNEW = 1.-0.5*((sin(inrad-refrad)**2/(sin(inrad+refrad)**2))+
-     &   (tan(inrad-refrad)**2/(tan(inrad+refrad)**2)))
+        SABNEW = 1.-0.5*((sin(inrad-refrad)**2./(sin(inrad+refrad)**2.))
+     &   +(tan(inrad-refrad)**2/(tan(inrad+refrad)**2.)))
       endif
 C**** get VALUES OF C, WC
 c     DENSITY (RHO) TIMES HEAT CAPACITY = RCSP. Assuming unit area of ground surface
@@ -299,7 +346,7 @@ c     End of soil properties
 C     Modification by M. Kearney for effect of cloud cover on direct solar radiation, using the
 C     Angstrom formula (formula 5.33 on P. 177 of "Climate Data and Resources" by Edward Linacre 1992
       IF ((CLOUD .GT. 0.).and.(HOURLY.eq.0)) THEN ! allowing for hourly cloud to be used for longwave calcs if longwave not provided
-         SOLR = SOLR*(0.36+0.64*(1.-(CLOUD/100)))
+         SOLR = SOLR*(0.36+0.64*(1.-(CLOUD/100.)))
       ENDIF
 C     SOLAR RADIATION ON LEVEL GROUND. SURFACE ABSORPTIVITY, SAB, NOW CHANGING EACH MONTH/TIME INTERVAL, SABNEW
       if((int(grasshade).eq.1).and.(runsnow.eq.1))then
@@ -338,12 +385,12 @@ C     CONVERTING PERCENT CLOUDS TO FRACTION OF SKY CLEAR
 
       if(IRDOWN.gt.0)THEN ! hourly IRdown provided
 C      NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
-       SRAD=SIGP*SLE*(T(1)+273.)**4
-       HRAD=SIGP*SLEP*(TAIR+273.)**4
+       SRAD=SIGP*SLE*(T(1)+273.)**4.
+       HRAD=SIGP*SLEP*(TAIR+273.)**4.
        QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*HRAD
        QRAD = IRDOWN - QRADGR
 c      TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
-       TSKY=(IRDOWN/SIGP)**(1./4.)-273
+       TSKY=(IRDOWN/SIGP)**(1./4.)-273.
       else
 C      CLEAR SKY RADIANT TEMPERATURE
        if(IRmode.eq.0)then
@@ -362,20 +409,20 @@ C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
         CALL WETAIR (TAIR,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,
      &      CP,WTRPOT)
       ARAD=1.72*((E/1000.)/(TAIR+273.16))**(1./7.)*0.0000000567*
-     &(TAIR+273.16)**4*60./(4.185*10000.)
+     &(TAIR+273.16)**4.*60./(4.185*10000.)
 c     Below is the Gates formula (7.1)
 c        ARAD=(1.22*0.00000005673*(TAIR+273.)**4-171)
        else
 c       Swinbank, Eq. 10.11 in Campbell and Norman 1998
-        ARAD=(0.0000092*(TAIR+273.16)**2)*0.0000000567*(TAIR+273.16)**4
-     &  *60./(4.185*10000.)
+        ARAD=(0.0000092*(TAIR+273.16)**2.)*0.0000000567*
+     &  (TAIR+273.16)**4.*60./(4.185*10000.)
        endif
 C      APPROXIMATING CLOUD RADIANT TEMPERATURE AS REFERENCE SHADE TEMPERATURE - 2 degrees
-       CRAD=SIGP*SLEP*(TAIR+271.)**4
+       CRAD=SIGP*SLEP*(TAIR+271.)**4.
 c      Hillshade radiant temperature (approximating as air temperature)
-       HRAD=SIGP*SLEP*(TAIR+273.)**4
+       HRAD=SIGP*SLEP*(TAIR+273.)**4.
 C      GROUND SURFACE RADIATION TEMPERATURE
-       SRAD=SIGP*SLE*(T(1)+273.)**4
+       SRAD=SIGP*SLE*(T(1)+273.)**4.
 C      TOTAL SKY IR AVAILABLE/UNIT AREA
        CLEAR = ARAD*CLR
        CLOD = CRAD*(CLOUD/100.)
@@ -415,10 +462,10 @@ c       QRADGR=SIGP*SLEP*SRAD MK commented this out and replaced with below
 c      TOTAL HILLSHADE RADIATION
        QRADHL=HRAD
 C      NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
-       QRAD = (QRADSK + QRADVG)*VIEWF + QRADHL*(1-VIEWF) - QRADGR
+       QRAD = (QRADSK + QRADVG)*VIEWF + QRADHL*(1.-VIEWF) - QRADGR
 c      TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
-       TSKY=(((QRADSK + QRADVG)*VIEWF + QRADHL*(1-VIEWF))/(SIGP))**
-     & (1./4.)-273
+       TSKY=(((QRADSK + QRADVG)*VIEWF + QRADHL*(1.-VIEWF))/(SIGP))**
+     & (1./4.)-273.
 c      TSKY=((QRADSK + QRADVG)/(SIGP))**(1./4.)-273
       endif
 
@@ -454,7 +501,7 @@ c     to substrate based on water temp
       if(tide.gt.0)then
           TAIR=tides(methour,2)
           TSKY=TAIR
-          VELR=50000
+          VELR=50000.
       endif
 C     COMPUTE VELOCITY AND TEMPERATURE PROFILES
       IF((ZH1.LE.0.000).AND.(ZH2.LE.0.000))THEN
@@ -513,7 +560,7 @@ C       CHECKING FOR DIVIDE BY ZERO
          IF(T(1).EQ.TAIR)THEN
            T(1)= T(1)+0.1
          ENDIF
-         HC = max(ABS((QCONV*4.184/60.*10000)/(T(1)-TAIR)),0.5D+0)
+         HC = max(ABS((QCONV*4.184/60.*10000.D0)/(T(1)-TAIR)),0.5D+0)
          HD = (HC/(CP*DENAIR))*(0.71/0.60)**0.666
          CALL EVAP(T(1),TAIR,RH,100.0D0,HD,QEVAP,SAT)
          if(runsnow.eq.1)then

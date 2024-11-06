@@ -261,6 +261,7 @@ C    INITIALIZING MONTH OF YEAR COUNTER
 c    INITIALIZING DATAKY COUNTER
       CNT=1      
       minsnow=2.
+      cursnow=0.
       QFREZE=0.D0
       xtrain=0.D0
       M=0
@@ -359,7 +360,7 @@ c901    continue
       soilprop=soilprop1
       SLE=SLES(1)
       ERR=microinput1(3)
-      Usrhyt=microinput1(4)*100
+      Usrhyt=microinput1(4)*100.
       rain=rain1
       tannulrun=tannulrun1
       do 9191 i=1,25*nn2
@@ -370,7 +371,7 @@ c901    continue
       surflux=0.
       do 919 i=1,24
       hori(i)=hori1(i)
-      azi(i)=i*15
+      azi(i)=i*15.
 919   continue
       do 918 i=1,111
       tai(i)=tai1(i)
@@ -967,10 +968,10 @@ C        MAX. SHADE BOUNDING CONDITION
           MAXSHD = MAXSHADES(DOY)
           maxsnode1=0.D0 ! reset snow settings
           do 2202 i=1,8
-           snode(i)=0
+           snode(i)=0.
 2202      continue
           lastday=1
-          daysincesnow=0
+          daysincesnow=0.
 c         reset reflectivity and pct wet that might have been changed by snow
           do 9008 i=1,IDA
            REFLS(i)=REFLS1(i)

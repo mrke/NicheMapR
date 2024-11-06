@@ -110,25 +110,26 @@ c     don't make it volumetric, but rather mass-specific, so don't multiply by k
 c     constants from Campbell and Norman 1998, Table 8.2
        if(runmoist.eq.1)then
         if(runsnow.eq.1)then
-         Density(i)=moistt(i-8)*1000+drydensity(j)/dens(j)*dens(j)*1000
+         Density(i)=moistt(i-8)*1000.+drydensity(j)/dens(j)*dens(j)
+     &    *1000.
         else
-         Density(i)=moistt(i)*1000+drydensity(j)/dens(j)*dens(j)*1000
+         Density(i)=moistt(i)*1000.+drydensity(j)/dens(j)*dens(j)*1000.
         endif
        else
-        Density(i)=bar(j)*moistt(j)*1000+drydensity(j)/dens(j)*
-     &    dens(j)*1000
+        Density(i)=bar(j)*moistt(j)*1000.+drydensity(j)/dens(j)*
+     &    dens(j)*1000.
        endif
 c    # standard sea level air pressure, Pa
-       p_a0=101325
+       p_a0=101325.
        PATMOS=p_a0*((1.-(0.0065*ALTT/288.))**(1./0.190284))
        BP = PATMOS
 
 c    # deg K
        T_K=TSOI(i)+273.15
 c    # W/mC thermal conductivity of dry air (equation 9 in Campbell et al. 1994)
-       k_a=0.024+7.73D-5*TSOI(i)-2.6D-8*TSOI(i)**2
+       k_a=0.024+7.73D-5*TSOI(i)-2.6D-8*TSOI(i)**2.
 c    # W/mC thermal conductivity of water (equation 8 in Campbell et al. 1994)
-       k_w=0.554+2.24D-3*TSOI(i)-9.87D-6*TSOI(i)**2
+       k_w=0.554+2.24D-3*TSOI(i)-9.87D-6*TSOI(i)**2.
 c    # W/mC thermal conductivity of minerals (value of 2.5 suggested from Campbell and Norman 1998, Table 8.2)
 c      k_m= 2.5
 
@@ -146,7 +147,7 @@ c    # temperature/pressure-corrected vapour diffusivity in air (m2/s) (p. 309 i
 c    # temperature/pressure-corrected molar density of air (mol/m3) (p. 309 in Campbell et al. 1994)
        rho_hat=rho_hat0*(p_a/p_a0)*(273.15/T_K)
 c    # J/mol latent heat of vaporization (Cambell et al. 1994, p. 309)
-       lambda=45144-48*TSOI(i)
+       lambda=45144.-48.*TSOI(i)
 c      # vapour pressure at three temps, from which slope of vapour pressure function is calculated, assuming near 100% RH
 
        RH = 99.
@@ -156,16 +157,16 @@ c      # vapour pressure at three temps, from which slope of vapour pressure fun
        CALL WETAIR (TSOI(i),WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,
      &      CP,WTRPOT)
        e_a=E
-       CALL WETAIR (TSOI(i)-1,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR
-     &      ,CP,WTRPOT)
+       CALL WETAIR (TSOI(i)-1.,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC
+     &      ,DENAIR,CP,WTRPOT)
 
        e_a1=E
-       CALL WETAIR (TSOI(i)+1,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR
-     &      ,CP,WTRPOT)
+       CALL WETAIR (TSOI(i)+1.,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC
+     &      ,DENAIR,CP,WTRPOT)
       e_a2=E
 
 c    # slope of the vapour pressure function centred at focal temperature
-       deltax=(e_a2-e_a1)/2
+       deltax=(e_a2-e_a1)/2.
 
 c     # these could vary with soil texture but the relationship isn't strong
 c     # power for liquid recirculation, mean in Table 2 of Campell et al. 1994, excluding peat moss value
@@ -192,12 +193,12 @@ c    # volume fraction of water
 c     # # volume fraction of gas
        phi_g=1-theta-phi_m
        if(phi_g.lt.0)then
-        phi_g=0
+        phi_g=0.
        endif
 c     # eq 8.17 Campbell and Norman 1988
-       f_w=1/(1+(theta/theta_0)**(-4.))
+       f_w=1./(1.+(theta/theta_0)**(-4.))
 c     # eq 8.17 Campbell and Norman 1988, using temperature-specific q
-       f_w=1/(1+(theta/theta_0)**(-1.*q))
+       f_w=1./(1.+(theta/theta_0)**(-1.*q))
 c    # eq 8.18 Campbell and Norman 1988
        k_g=k_a+lambda*deltax*hr*f_w*rho_hat*D_v/(p_a-e_a)
 c     # eq 8.19 Campbell and Norman 1988
@@ -205,14 +206,16 @@ c     # eq 8.19 Campbell and Norman 1988
 c    # 0.1 for mineral soils, 0.33 for organic, p 125, Campbell and Norman 1988
        g_a=0.1
 c     # p 125, Campbell and Norman
-       g_c=1-2*g_a
+       g_c=1.-2.*g_a
 c     # equation 8.20 in Campbell and Norman 1988
-       epsilon_g=2/(3*(1+g_a*(k_g/k_f-1)))+1/(3*(1+g_c*(k_g/k_f-1)))
+       epsilon_g=2./(3.*(1.+g_a*(k_g/k_f-1.)))+1./
+     & (3.*(1.+g_c*(k_g/k_f-1.)))  
 c    # equation 8.20 in Campbell and Norman 1988
-       epsilon_w=2/(3*(1+g_a*(k_w/k_f-1)))+1/(3*(1+g_c*(k_w/k_f-1)))
+       epsilon_w=2./(3.*(1.+g_a*(k_w/k_f-1.)))+1./
+     & (3.*(1.+g_c*(k_w/k_f-1.)))  
 c    # equation 8.20 in Campbell and Norman 1988
-       epsilon_m=2/(3*(1+g_a*(k_m(j)/k_f-1)))+
-     &1/(3*(1+g_c*(k_m(j)/k_f-1)))
+       epsilon_m=2./(3.*(1.+g_a*(k_m(j)/k_f-1.)))+
+     &1/(3.*(1.+g_c*(k_m(j)/k_f-1.)))
 c    # equation 8.13 in Campbell and Norman 1988
        Thconduct(i)=(theta*epsilon_w*k_w+phi_m*epsilon_m*k_m(j)+phi_g*
      &epsilon_g*k_g)/(theta*epsilon_w+phi_m*epsilon_m+phi_g*epsilon_g)
@@ -228,9 +231,9 @@ C     1 kg/m3 * 1000g/1 kg * 1 m3/1000000.
 
       if(runsnow.eq.1)then
        if(densfun(1).gt.0)then ! compute snowdens from linear or exponential function
-         if(densfun(2).gt.0)then ! exponential function
-           snowdens=(densfun(1)-densfun(2))*(1-EXP(-1*densfun(3)*cursnow
-     &      -densfun(4)*snowage))+densfun(2)
+         if(densfun(3).gt.0)then ! exponential function
+           snowdens=(densfun(1)-densfun(2))*(1.-EXP(-1.*densfun(3)*
+     &      cursnow-densfun(4)*snowage))+densfun(2)
          else ! linear function
           snowdens=min(0.9167D+0,densfun(1)*snowage+densfun(2))
          endif
@@ -238,11 +241,11 @@ C     1 kg/m3 * 1000g/1 kg * 1 m3/1000000.
        if(cursnow.ge.minsnow)then ! snow is present
         call WETAIR(0.D+0,WB,100.D+0,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,
      &  DENAIR,CP,WTRPOT) ! get specific heat and mixing ratio of humid air at zero C
-        cpsnow = (2100*snowdens+(1.005+1.82*(RW/1.+RW))*1000* ! based on https://en.wiktionary.org/wiki/humid_heat
+        cpsnow = (2100.*snowdens+(1.005+1.82*(RW/1.+RW))*1000.* ! based on https://en.wiktionary.org/wiki/humid_heat
      &   (1-snowdens)) ! compute weighted specific heat accounting for ice vs airm SI units
-        snowcond2 = (0.00395+0.00084*(snowdens*1000)-0.0000017756* ! snow thermal conductivity as a function of density (from Aggarwal, R. 2009. Defence Science Journal 59:126–130.)
-     &  (snowdens*1000)**2+0.00000000380635*(snowdens*1000)**3)
-     & /418.6*60
+        snowcond2 = (0.00395+0.00084*(snowdens*1000.)-0.0000017756* ! snow thermal conductivity as a function of density (from Aggarwal, R. 2009. Defence Science Journal 59:126–130.)
+     &  (snowdens*1000.)**2.+0.00000000380635*(snowdens*1000.)**3.)
+     & /418.6*60.
         do 4 i=1,8 ! from top node down - top only has snow if pack has built up to higher than snow node 7 (2m)
          ! first give all nodes the conductivity and spheat of snow
          if(snowcond.gt.0)then ! check if using user-defined thermal conductivity for snow

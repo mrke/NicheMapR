@@ -73,7 +73,7 @@ c     zeroing terms for catching slippage of integrator
        temp(i)=0.D0
 33    continue
 C     SAVE THE STARTING VALUES
-    2 XN=0
+    2 XN=0.
       X0=X
       DO 4 I=1,N
        G(I)=0.D0
@@ -93,7 +93,7 @@ C     INITIALIZE
       if(solonly.eq.1)then ! option for only running solar calcs
       do 51 J=1,25
       CALL OSUB(X,Y)
-      X = X + 60
+      X = X + 60.
       if(x.gt.xmax)then
           goto 700
       endif

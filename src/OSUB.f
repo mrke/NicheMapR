@@ -167,6 +167,77 @@ C     INTITIALISE
       snowout=0.D0
       snowpres=0.D0
       methour=0
+      BP=101325.
+      amol=0.
+      CE=0.
+      CLEAR=0.
+      CLOD=0.
+      CP=0.
+      CPSNOW=0.
+      DELTA_Q=0.
+      DENAIR=0.
+      DENSRAT=0.
+      DEW=0.
+      DP=0.
+      E=0.
+      ESAT=0.
+      FROST=0.
+      G=0.
+      GAMMA=0.
+      GWSURF=0.
+      HC=0.
+      HCAP=0.
+      HD=0.
+      HRAD=0.
+      HTOVPR=0.
+      INRAD=0.
+      IRDOWN=0.
+      LAMBDA_E_D=0.
+      MELTHEAT=0.
+      NETSNOW=0.
+      oldcondep=0.
+      patmos=BP
+      prevsnow=0.
+      PSTD=BP
+      Q_AIR=0.
+      Q_STAR_AIR=0.
+      Q_STAR_SURF=0.
+      QCONV=0.
+      QEVAP=0.
+      QRAD=0.
+      QRADGR=0.
+      QRADHL=0.
+      QRADSK=0.
+      QRADVG=0.
+      R_N=0.
+      RAINFALLB=0.
+      REFRAD=0.
+      RH=0.
+      RW=0.
+      S=0.
+      SNOWALBEDO=0.
+      SNOWFALL=0.
+      SNOWTEST=0.
+      SRAD=0.
+      LEAFPOT=0.
+      SUMLAYER=0.
+      TAIR=0.
+      TIDE=0.
+      TRANS2=0.
+      TVINC=0.
+      TTEST=0.
+      TVIR=0.
+      VD=0.
+      VEL2M=0.
+      VELR=0.
+      WATER=0.
+      WB=0.
+      WCC=0.
+      WCCFINAL=0.
+      WTRPOT=0.
+      ZENR=0.
+      ZP=0.
+      
       if(runsnow.eq.0)then
        maxsnode1=0.D0
        maxsnode2=0
@@ -205,9 +276,12 @@ C     NEEDED TO ESTABLISH SOIL STEADY PERIODICS
       qphase(:)=0.D0
       qphase2(:)=0.D0
       curhumid(:)=0.D0
+      curhumid2(:)=0.D0
       curmoist(:)=0.D0
       curpot(:)=0.D0
+      curpot2(:)=0.D0
       curroot(:)=0.D0
+      curroot2(:)=0.D0
       denday2(:)=0.D0
       meant(:)=0.D0
       meantpast(:)=0.D0
@@ -341,10 +415,10 @@ c     phase change for freezing moist soil
         endif
         if((meanTpast(j).gt.0).and.(meanT(j).le.0))then ! phase change, freezing
          if(j.lt.js+9)then
-          layermass(j-js+1)=(dep(j-js+1+4)-dep(j-js+4))*10000*
+          layermass(j-js+1)=(dep(j-js+1+4)-dep(j-js+4))*10000.*
      &     moist(j-js+1)
          else
-          layermass(j-js+1)=(dep(j-js+4)+100-dep(j-js+4))*10000*
+          layermass(j-js+1)=(dep(j-js+4)+100-dep(j-js+4))*10000.*
      &     moist(j-js+1)! deep soil
          endif
          qphase2(j-js+1)=(meanTpast(j)-meanT(j))*layermass(j-js+1)*4.186
@@ -373,13 +447,13 @@ c     phase change for freezing moist soil
 C     Modification by M. Kearney for effect of cloud cover on direct solar radiation, using the
 C     Angstrom formula (formula 5.33 on P. 177 of "Climate Data and Resources" by Edward Linacre 1992
       IF ((CLOUD .GT. 0.).and.(HOURLY.eq.0)) THEN ! allowing for hourly cloud to be used for longwave calcs if longwave not provided
-       SOLR = SOLR*(0.36+0.64*(1.-(CLOUD/100)))
+       SOLR = SOLR*(0.36+0.64*(1.-(CLOUD/100.)))
       ENDIF
 
       if(IRDOWN.gt.0)THEN ! hourly IRdown provided
 C      NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
-       SRAD=SIGP*SLE*(T(1)+273.)**4
-       HRAD=SIGP*SLEP*(TAIR+273.)**4
+       SRAD=SIGP*SLE*(T(1)+273.)**4.
+       HRAD=SIGP*SLEP*(TAIR+273.)**4.
        QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*HRAD
        QRAD = IRDOWN - QRADGR
 c      TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
@@ -400,11 +474,11 @@ C       BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
 C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
         PSTD=101325.
         PATMOS=PSTD*((1.-(0.0065*ALTT/288.))**(1./0.190284))
-        BP = PATMOS
+        BP=PATMOS
         CALL WETAIR (TAIR,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,
      &      CP,WTRPOT)
         ARAD=1.72*((E/1000.)/(TAIR+273.16))**(1./7.)*0.0000000567*
-     &  (TAIR+273.16)**4*60./(4.185*10000.)
+     &  (TAIR+273.16)**4.*60./(4.185*10000.)
 c       Below is the Gates formula (7.1)
 c       ARAD=(1.22*0.00000005673*(TAIR+273.)**4-171)
        else
@@ -414,14 +488,14 @@ c       Swinbank, Eq. 10.11 in Campbell and Norman 1998
        endif
 
 C      APPROXIMATING CLOUD RADIANT TEMPERATURE AS REFERENCE SHADE TEMPERATURE - 2 degrees
-       CRAD=SIGP*SLEP*(TAIR+271.)**4
+       CRAD=SIGP*SLEP*(TAIR+271.)**4.
 c      Hillshade radiant temperature (approximating as air temperature)
-       HRAD=SIGP*SLEP*(TAIR+273.)**4
+       HRAD=SIGP*SLEP*(TAIR+273.)**4.
 C      GROUND SURFACE RADIATION TEMPERATURE
-       SRAD=SIGP*SLE*(TT(1)+273.)**4
+       SRAD=SIGP*SLE*(TT(1)+273.)**4.
 C      TOTAL SKY IR AVAILABLE/UNIT AREA
-       CLEAR =  ARAD*CLR
-       CLOD =  CRAD*(CLOUD/100.)
+       CLEAR=ARAD*CLR
+       CLOD= CRAD*(CLOUD/100.)
 c      previously SIGP*SLEP*(CLEAR + CLOUD)*((100.- SHAYD)/100.) but changed by MK to
 c      allow the formula in Gates to be used
        if((int(grasshade).eq.1).and.(runsnow.eq.1))then
@@ -462,7 +536,7 @@ C      NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING F
        QRAD = (QRADSK + QRADVG)*VIEWF + QRADHL*(1-VIEWF) - QRADGR
 c      TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
        TSKY=(((QRADSK + QRADVG)*VIEWF + QRADHL*(1-VIEWF))/(SIGP))**(1./
-     & 4.)-273
+     & 4.)-273.
       ENDIF
 
 c     TSKY=((QRADSK + QRADVG)/(SIGP))**(1./4.)-273
@@ -499,8 +573,8 @@ c     convert to W/m2
       if(runsnow.eq.1)then
        methour=(int(SIOUT(1)/60)+1)+24*(DOY-1)
       if(densfun(1).gt.0)then
-        if(densfun(2).gt.0)then ! exponential function
-         snowdens=(densfun(1)-densfun(2))*(1-EXP(-1*densfun(3)*
+        if(densfun(3).gt.0)then ! exponential function
+         snowdens=(densfun(1)-densfun(2))*(1.-EXP(-1.*densfun(3)*
      &   cursnow-densfun(4)*snowage))+densfun(2)
         else ! linear function
          snowdens=min(0.9167D+0,densfun(1)*snowage+densfun(2))
@@ -516,7 +590,7 @@ c       compute snow fall using conversion from daily rain to daily snow (disagg
 c        account for undercatch
          snowfall=((rainfall*rainmult*undercatch*0.1)/snowdens)! snowfall in cm/m2
          if(SHAYD.gt.0)then
-           snowfall=snowfall*(1-intercept)! including interception
+           snowfall=snowfall*(1.-intercept)! including interception
          endif
          daysincesnow=0.3 !resets daysincesnow and ensures that the equation for snow albedo gives 90% reflectance immediately upon snowfall
         else
@@ -534,20 +608,20 @@ c        account for undercatch
        snowfall=0.D0
       endif
       if(out(4).gt.0)then
-       HTOVPR=2500.8-2.36*out(4)+0.0016*out(4)**2-0.00006*out(4)**3
+       HTOVPR=2500.8-2.36*out(4)+0.0016*out(4)**2.-0.00006*out(4)**3.
       else
-       HTOVPR=2834.1-0.29*out(4)-0.004*out(4)**2
+       HTOVPR=2834.1-0.29*out(4)-0.004*out(4)**2.
       endif
-      HTOVPR=HTOVPR*1000 !convert from J/g to J/kg
+      HTOVPR=HTOVPR*1000. !convert from J/g to J/kg
       WATER = QEVAP/HTOVPR ! kg/s/m2
 C     kg/s/m2 TO g/h/m2
       GWSURF  = WATER * 1000. * 3600.
       if(gwsurf.lt.0)then
-      gwsurf=0
+      gwsurf=0.
       endif
 c     don't lose water if heat is just going into melting snow
       if((gwsurf.lt.0).or.(out(4).le.0))then
-      gwsurf=0
+      gwsurf=0.
       endif
       methour=0
       methour=(int(SIOUT(1)/60)+1)+24*(DOY-1)
@@ -570,7 +644,7 @@ c      get cm snow lost due to rainfall - from Anderson model
        endif
        netsnow=snowfall-gwsurf*0.0001/snowdens ! convert gwsurf from g/h/m2 (cm3/h/m2) to cm/m2 of evap, and then to snow depth equivalent (1mm/m2 rain/evap = 1000 cm3/m2)
        if(netsnow.lt.0)then
-        netsnow=0
+        netsnow=0.
        endif
        netsnow = netsnow + xtrain/snowdens ! add any extra snow carried over by xtrain
        xtrain=0.D0 !reset xtrain
@@ -691,14 +765,14 @@ C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
        melted=melt*0.0001 ! convert from g/m2 of ice to cm snow
        if(DOY.gt.1)then
         melted=melted*snowmelt
-        QFREZE=melted*(1-snowmelt)*79.7/60./10000.D0 ! convert from g snow melted to cal/min/cm2, latent heat of fusion being 79.7 calories per gram, only affecting surface layer!
+        QFREZE=melted*(1.-snowmelt)*79.7/60./10000.D0 ! convert from g snow melted to cal/min/cm2, latent heat of fusion being 79.7 calories per gram, only affecting surface layer!
         if(snowmelt.gt.1)then
          QFREZE=0.D0
         endif
        endif
        cummelted=melted+cummelted
        if((methour.eq.1).and.(DOY.eq.1))then
-        melted=0
+        melted=0.D0
        endif
        if(methour.gt.1)then
         cursnow=snowhr(methour-1)+netsnow-rainmelt-melted
@@ -776,7 +850,7 @@ c      ensure that recently fallen snow is frozen
        if(methour.gt.1)then
         if(snowhr(methour-1).gt.0.D0)then
          snowalbedo=(-9.8740*dlog(daysincesnow) + 78.3434)/100.
-         SABNEW = 1-snowalbedo
+         SABNEW = 1.-snowalbedo
 C        SETTING THIS MONTH'S PERCENT OF SURFACE WITH FREE WATER/SNOW ON IT
          PTWET = 100.
          SLE = 0.98
@@ -830,7 +904,11 @@ C       SETTING THIS MONTH'S PERCENT OF SURFACE WITH FREE WATER/SNOW ON IT
         snowage=0.D0
        endif
       endif
-      prevden=snowdens
+      if((methour.eq.1).and.(DOY.eq.1))then
+       prevden=1.
+      else
+       prevden=snowdens
+      endif
 ********************* end main code for snow model *******************************
 
 
@@ -923,10 +1001,10 @@ C       CHECK FOR OUTSIZE T(1)
         sat=2 ! setting for evap to simulate wet surface and return SI units
         CALL EVAP(soiltemp(1),TAIR,RH,100.0D0,HD,QEVAP,SAT)
         if(soiltemp(1).gt.0)then
-         HTOVPR=2500.8-2.36*soiltemp(1)+0.0016*soiltemp(1)**2-0.00006
-     &*soiltemp(1)**3
+         HTOVPR=2500.8-2.36*soiltemp(1)+0.0016*soiltemp(1)**2.-0.00006
+     &*soiltemp(1)**3.
         else
-         HTOVPR=2834.1-0.29*soiltemp(1)-0.004*soiltemp(1)**2
+         HTOVPR=2834.1-0.29*soiltemp(1)-0.004*soiltemp(1)**2.
         endif
         HTOVPR=HTOVPR*1000.D0
 c       evaporation potential, mm/s (kg/s)
@@ -990,7 +1068,7 @@ c       evaporation potential, mm/s (kg/s)
          condep=0.D0
         endif
         if(condep.gt.0.D0)then
-         curmoist(1)=1-BD(1)/DD(1)
+         curmoist(1)=1.-BD(1)/DD(1)
          curmoist2(1)=curmoist(1)
         endif
 222    continue
@@ -1017,8 +1095,9 @@ c      curmoist(1)=condep/((depp(2)*10)*(1-BD(1)/DD(1)))
          if(condep.gt.10.)then ! use Fresnel's reflection law, p. 212 Gates 1980
           inrad = TAB('ZEN',TIME)*pi/180.
           refrad=asin(sin(inrad)/1.33)
-          SABNEW = 1.-0.5*((sin(inrad-refrad)**2/(sin(inrad+refrad)**2))
-     &    +(tan(inrad-refrad)**2/(tan(inrad+refrad)**2)))
+          SABNEW = 1.-0.5*((sin(inrad-refrad)**2./
+     &    (sin(inrad+refrad)**2.))+(tan(inrad-refrad)**2./
+     &    (tan(inrad+refrad)**2.)))
          endif
         else
          SABNEW = 1.0 - REFLS(DOY)
@@ -1211,7 +1290,7 @@ c     end check for previous slippage
          metout(methour,6)=SIOUT(3)
          metout(methour,7)=SIOUT(4)
          metout(methour,8)=VEL2M
-         metout(methour,9)=melted/1000.
+         metout(methour,9)=melted/1000D0
          metout(methour,10)=condep
          metout(methour,11)=ptwet
          metout(methour,12)=SIOUT(8)
@@ -1252,7 +1331,7 @@ c     end check for previous slippage
           soilpot(methour,3:12)=curpot(1:10)
           plant(methour,1)=JULDAY(DOY)
           plant(methour,2)=SIOUT(1)
-          plant(methour,3)=trans2 * 1000.D0 * 3600.D0 !g/m2/h
+          plant(methour,3)=trans2*1000D0*3600D0 !g/m2/h
           plant(methour,4)=leafpot
           plant(methour,5:14)=curroot(1:10)
           tcond(methour,1)=JULDAY(DOY)
@@ -1480,7 +1559,7 @@ c     end check for previous slippage
          shadmet(methour,6)=SIOUT(3)
          shadmet(methour,7)=SIOUT(4)
          shadmet(methour,8)=VEL2M
-         shadmet(methour,9)=melt/1000.
+         shadmet(methour,9)=melt/1000D0
          shadmet(methour,10)=condep
          shadmet(methour,11)=ptwet
          shadmet(methour,12)=SIOUT(8)
@@ -1521,7 +1600,7 @@ c     end check for previous slippage
           shadpot(methour,3:12)=curpot(1:10)
           shadplant(methour,1)=JULDAY(DOY)
           shadplant(methour,2)=SIOUT(1)
-          shadplant(methour,3)=trans2 * 1000D0 * 3600D0 !g/m2/h
+          shadplant(methour,3)=trans2*1000D0*3600D0 !g/m2/h
           shadplant(methour,4)=leafpot
           shadplant(methour,5:14)=curroot(1:10)
           shadtcond(methour,1)=JULDAY(DOY)
@@ -1614,7 +1693,7 @@ c     check if duplicate time due to integrator slipping
         temp(6)=SIOUT(3)
         temp(7)=SIOUT(4)
         temp(8)=VEL2M
-        temp(9)=melt/1000.
+        temp(9)=melt/1000D0
         temp(10)=condep
         temp(11)=ptwet
         temp(12:14)=SIOUT(8:10)
@@ -1634,7 +1713,7 @@ c     check if duplicate time due to integrator slipping
          temp(32:41)=curmoist(1:10)
          temp(42:51)=curhumid(1:10)
          temp(52:61)=curpot(1:10)
-         temp(71)=trans2 * 1000 * 3600 !g/m2/h
+         temp(71)=trans2*1000D0*3600D0 !g/m2/h
          temp(72)=leafpot
          temp(73:82)=curroot(1:10)
         endif
