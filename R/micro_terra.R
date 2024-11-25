@@ -977,7 +977,7 @@ micro_terra <- function(
       library(geodata)
       elevation <- geodata::worldclim_global(var = 'elev', res = 2.5, path=tempdir())
     }
-    ALTT <- as.numeric(terra::extract(elevation, x))
+    ALTT <- as.numeric(terra::extract(elevation, x)[, 2])
     if(is.na(ALTT)){
       ALTT <- 0
     }
@@ -1003,7 +1003,7 @@ micro_terra <- function(
         ha24 <- 0
         for (i in 0:23) {
           har <- horizonangle(dem, i * 10, res(dem)[1])
-          ha24[i + 1] <- atan(as.numeric(terra::extract(har, xy))) * (180/pi)
+          ha24[i + 1] <- atan(as.numeric(terra::extract(har, xy)[, 2])) * (180/pi)
         }
         hori <- ha24
       }
@@ -1339,17 +1339,17 @@ micro_terra <- function(
       #xy <- as.data.frame(spTransform(xy, crs(dem)))
       if (class(slope) == "logical") {
         slope <- terra::terrain(dem, v = "slope", unit = "degrees")
-        slope <- as.numeric(terra::extract(slope, xy))
+        slope <- as.numeric(terra::extract(slope, xy)[, 2])
       }
       if (class(aspect) == "logical") {
         aspect <- terrain(dem, v = "aspect", unit = "degrees")
-        aspect <- as.numeric(terra::extract(aspect, xy))
+        aspect <- as.numeric(terra::extract(aspect, xy)[, 2])
       }
       ha <- 0
       ha36 <- 0
       for (i in 0:35) {
         har <- horizonangle(dem, i * 10, res(dem)[1])
-        ha36[i + 1] <- atan(as.numeric(terra::extract(har, xy))) * (180/pi)
+        ha36[i + 1] <- atan(as.numeric(terra::extract(har, xy)[, 2])) * (180/pi)
       }
       for (i in 1:length(hour.microclima)) {
         saz <- solazi(hour.microclima[i], lat, long, jd[i], merid = long)

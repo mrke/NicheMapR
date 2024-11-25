@@ -764,22 +764,22 @@ micro_aust <- function(
       r1 <- terra::rast(f1)
       r2 <- terra::rast(f2)
       r3 <- terra::rast(f3)
-      dbrow <- as.numeric(terra::extract(r1, x))
-      AUSDEM <- as.numeric(terra::extract(r2, x))
-      AGG <- as.numeric(terra::extract(r3, x))
+      dbrow <- as.numeric(terra::extract(r1, x)[, 2])
+      AUSDEM <- as.numeric(terra::extract(r2, x)[, 2])
+      AGG <- as.numeric(terra::extract(r3, x)[, 2])
     }else{
       if(opendap == 0){
         r1 <- terra::rast(f1)
         r2 <- terra::rast(f2)
         r3 <- terra::rast(f3)
         r4 <- terra::rast(f4)
-        dbrow <- as.numeric(terra::extract(r1, x))
-        AUSDEM <- as.numeric(terra::extract(r2, x))
-        AGG <- as.numeric(terra::extract(r3, x))
+        dbrow <- as.numeric(terra::extract(r1, x)[, 2])
+        AUSDEM <- as.numeric(terra::extract(r2, x)[, 2])
+        AGG <- as.numeric(terra::extract(r3, x)[, 2])
         if(is.na(elev) == FALSE){ # check if user-specified elevation
           ALTITUDES <- elev # use user-specified elevation
         }else{
-          ALTITUDES <- as.numeric(terra::extract(r4, x)) # get elevation from fine res DEM
+          ALTITUDES <- as.numeric(terra::extract(r4, x)[, 2]) # get elevation from fine res DEM
         }
       }
       HORIZONS <- hori
@@ -869,11 +869,11 @@ micro_aust <- function(
           NArem <- grid[[1]]
           NArem <- Which(!is.na(NArem), cells = TRUE)
           dist <- distanceFromPoints(maxTst05[[1]], x)
-          distNA <- as.numeric(terra::extract(dist, NArem))
+          distNA <- as.numeric(terra::extract(dist, NArem)[, 2])
           cellsR <- cbind(distNA, NArem)
           distmin <- which.min(distNA)
           cellrep <- cellsR[distmin, 2]
-          diffs <- as.numeric(terra::extract(maxTst05, cellrep))
+          diffs <- as.numeric(terra::extract(maxTst05, cellrep)[, 2])
           diff1 <- (unlist(diffs[1]) + unlist(diffs[12])) / 2
         }
         diffs3 <- rep(c(diff1, diffs, diff1), nyears)
@@ -892,22 +892,22 @@ micro_aust <- function(
       # Max and Min Air Temps
       ccdir <- "/vlsci/VR0212/mrke"
       load(file = paste0(ccdir, "/Australia Climate Change/", scenario, "/", "maxTst05_", scenario, "_", year, ".Rda")) #maxTst05
-      diffs <- as.numeric(terra::extract(maxTst05,  x))
+      diffs <- as.numeric(terra::extract(maxTst05,  x)[, 2])
       TMAXX_diff <- getdiff(diffs, maxTst05)
       load(file = paste0(ccdir, "/Australia Climate Change/", scenario, "/", "minTst05_", scenario, "_", year, ".Rda")) #minTst05
-      diffs <- as.numeric(terra::extract(minTst05, x))
+      diffs <- as.numeric(terra::extract(minTst05, x)[, 2])
       TMINN_diff <- getdiff(diffs, minTst05)
       # RH
       load(file = paste0(ccdir,  "/Australia Climate Change/", scenario, "/", "RHst05_", scenario, "_", year, ".Rda")) #maxTst05
-      diffs <- as.numeric(terra::extract(RHst05, x))
+      diffs <- as.numeric(terra::extract(RHst05, x)[, 2])
       RH_diff <- getdiff(diffs, RHst05)
       # wind
       load(file = paste0(ccdir, "/Australia Climate Change/", scenario, "/", "PT_VELst05_", scenario, "_", year, ".Rda"))
-      diffs <- as.numeric(terra::extract(PT_VELst05, x))
+      diffs <- as.numeric(terra::extract(PT_VELst05, x)[, 2])
       WIND_diff <- getdiff(diffs, PT_VELst05)
       # SOLAR/CLOUD COVER
       load(file = paste0("c:/Spatial_Data/Australia Climate Change/", scenario, "/", "SOLCst05_", scenario, "_", year, ".Rda"))
-      diffs <- as.numeric(terra::extract(SOLCst05, x))
+      diffs <- as.numeric(terra::extract(SOLCst05, x)[, 2])
       SOLAR_diff <- getdiff(diffs, SOLCst05)
     }
 
@@ -1214,7 +1214,7 @@ micro_aust <- function(
           RAINFALL_sum <- RAINFALL_sum[order(as.Date(paste0("01-",RAINFALL_sum$Group.1), "%m-%Y")), 2]
 
           load(file = paste0("c:/Spatial_Data/Australia Climate Change/", scenario, "/", "RAINst05_", scenario, "_", year, ".Rda"))
-          diffs <- rep(as.numeric(terra::extract(RAINst05, x)), nyears)
+          diffs <- rep(as.numeric(terra::extract(RAINst05, x)[, 2]), nyears)
 
           if(is.na(diffs[1]) == TRUE){
             print("no data")
@@ -1222,7 +1222,7 @@ micro_aust <- function(
             NArem <-RAINst05[[1]] # don't need to re-do this within bioregion loop
             NArem <- Which(!is.na(NArem), cells = TRUE)
             dist <- distanceFromPoints(RAINst05[[1]], y)
-            distNA <- as.numeric(terra::extract(dist, NArem))
+            distNA <- as.numeric(terra::extract(dist, NArem)[, 2])
             cellsR <- cbind(distNA, NArem)
             distmin <- which.min(distNA)
             cellrep <- cellsR[distmin, 2]
@@ -1581,18 +1581,18 @@ micro_aust <- function(
           #xy <- as.data.frame(spTransform(xy, crs(dem)))
           if (class(slope) == "logical") {
             slope <- terra::terrain(dem, v = "slope", unit = "degrees")
-            slope <- as.numeric(terra::extract(slope, xy))
+            slope <- as.numeric(terra::extract(slope, xy)[, 2])
           }
           if (class(aspect) == "logical") {
             aspect <- terrain(dem, v = "aspect", unit = "degrees")
-            aspect <- as.numeric(terra::extract(aspect, xy))
+            aspect <- as.numeric(terra::extract(aspect, xy)[, 2])
           }
           ha <- 0
           if(is.na(hori[1]) == "TRUE"){
             ha36 <- 0
             for (i in 0:35) {
               har <- horizonangle(dem, i * 10, res(dem)[1])
-              ha36[i + 1] <- atan(as.numeric(terra::extract(har, xy))) * (180/pi)
+              ha36[i + 1] <- atan(as.numeric(terra::extract(har, xy)[, 2])) * (180/pi)
             }
           }else{
             ha36 <- spline(x = hori, n = 36, method =  'periodic')$y

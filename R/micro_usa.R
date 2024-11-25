@@ -668,7 +668,7 @@ micro_usa <- function(
           start = start, count = count, unpack = TRUE)))
         RNetCDF::close.nc(nc)
       }else{
-        USADEM <- as.numeric(terra::extract(terra::rast(paste0(spatial,"/metdata_elevationdata.nc")), x)) # metres above sea level
+        USADEM <- as.numeric(terra::extract(terra::rast(paste0(spatial,"/metdata_elevationdata.nc")), x)[, 2]) # metres above sea level
       }
       if(save == 1){
         cat("saving DEM data for later \n")
@@ -1139,18 +1139,18 @@ micro_usa <- function(
         #xy <- as.data.frame(spTransform(xy, crs(dem)))
         if (class(slope) == "logical") {
           slope <- terra::terrain(dem, v = "slope", unit = "degrees")
-          slope <- as.numeric(terra::extract(slope, xy))
+          slope <- as.numeric(terra::extract(slope, xy)[, 2])
         }
         if (class(aspect) == "logical") {
           aspect <- terrain(dem, v = "aspect", unit = "degrees")
-          aspect <- as.numeric(terra::extract(aspect, xy))
+          aspect <- as.numeric(terra::extract(aspect, xy)[, 2])
         }
         ha <- 0
         if(is.na(hori[1]) == "TRUE"){
           ha36 <- 0
           for (i in 0:35) {
             har <- horizonangle(dem, i * 10, res(dem)[1])
-            ha36[i + 1] <- atan(as.numeric(terra::extract(har, xy))) * (180/pi)
+            ha36[i + 1] <- atan(as.numeric(terra::extract(har, xy)[, 2])) * (180/pi)
           }
         }else{
           ha36 <- spline(x = hori, n = 36, method =  'periodic')$y

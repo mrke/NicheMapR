@@ -691,7 +691,7 @@ micro_nz <- function(
     soilprop<-cbind(0,0)
 
     r1<-terra::rast(paste(spatial,'/nz_geo3_km.asc',sep=""))
-    NZDEM<-as.numeric(terra::extract(r1,x))*1000
+    NZDEM<-as.numeric(terra::extract(r1,x)[, 2])*1000
 
     if(is.na(elev) == FALSE){ # check if user-specified elevation
       ALTITUDES <- elev
@@ -801,7 +801,7 @@ micro_nz <- function(
           NArem<-grid[[1]]
           NArem<-Which(!is.na(NArem), cells=TRUE)
           dist<-distanceFromPoints(maxTst05[[1]],x)
-          distNA<-as.numeric(terra::extract(dist,NArem))
+          distNA<-as.numeric(terra::extract(dist,NArem)[, 2])
           cellsR<-cbind(distNA,NArem)
           distmin<-which.min(distNA)
           cellrep<-cellsR[distmin,2]
