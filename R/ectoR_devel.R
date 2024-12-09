@@ -8,7 +8,7 @@
 #' @param Ww_g = 40, Wet weight of animal (g), note this model is 'steady state' so no lags in heating/cooling due to mass
 #' @param shape = 3, Organism shape, 0-5, Determines whether standard or custom shapes/surface area/volume relationships are used: 0=plate, 1=cyl, 2=ellips, 3=lizard (desert iguana), 4=frog (leopard frog), 5=custom (see details)
 #' @param alpha = 0.85, Solar absorptivity, 0-1
-#' @param M_1 = 0.013, Metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb)*10^M_4, in ml O2 / h, default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231
+#' @param M_1 = 0.013, Metabolic rate parameter 1 V_O2=M_1*M^M_2*10^(M_3*Tb)*10^(0.14*M_4), in ml O2 / h, default parameters for lizards based on Eq. 2 from Andrews & Pough 1985. Physiol. Zool. 58:214-231
 #' @param M_2 = 0.800, Metabolic rate parameter 2
 #' @param M_3 = 0.038, Metabolic rate parameter 3
 #' @param M_4 = 0, Metabolic rate parameter 4 (zero for 'standard' or 0.14 for 'resting')
@@ -684,7 +684,7 @@ ectoR_devel <- function(
     # outputs
     enbal <- t(matrix(c(QSOLAR, QIRIN, QMETAB, QRESP, QSEVAP, QIROUT, QCONV, QCOND, ENB)))
     colnames(enbal) <- c("QSOL", "QIRIN", "QMET", "QRESP", "QEVAP", "QIROUT", "QCONV", "QCOND", "ENB")
-    O2_ml <- 10 ^ (M_3 * TC) * M_1 * Ww_g ^ M_2 # ml/h
+    O2_ml <- M_1 * Ww_g ^ M_2 * 10 ^ (M_3 * TC) * 10 ^ (0.14 * M_4) + Q_act # ml/h
     H2OResp_g <- SEVAP.out$WRESP * 3600 # g/h
     H2OCut_g <- SEVAP.out$WCUT * 3600 # g/h
     H2OEyes_g <- SEVAP.out$WEYES * 3600 # g/h
