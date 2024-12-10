@@ -46,10 +46,10 @@ MET_ecto <- function(
   if(TC >= 1){
     if(TC > 50){
       #C       CAP METABOLIC RATE EQUATION WITH MAX OF TC = 50
-      QMETAB <- 0.0056 * 10 ^ (M_3 * 50) * M_1 * GMASS ^ M_2 * 10 ^ (0.14 * M_4) + Q_ACT
+      QMETAB <- 0.0056 * 10 ^ (M_3 * 50) * M_1 * GMASS ^ M_2 * 10 ^ M_4 + Q_ACT
     }else{
       #C        ACCEPTABLE TEMPERATURE RANGE
-      QMETAB <- 0.0056 * 10 ^ (M_3 * TC) * M_1 * GMASS ^ M_2 * 10 ^ (0.14 * M_4) + Q_ACT
+      QMETAB <- 0.0056 * 10 ^ (M_3 * TC) * M_1 * GMASS ^ M_2 * 10 ^ M_4 + Q_ACT
     }
   }else{
     QMETAB <- 0.01
