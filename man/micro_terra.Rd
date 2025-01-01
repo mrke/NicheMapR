@@ -86,7 +86,7 @@ Scientific Data, 5(1), 170191. https://doi.org/10.1038/sdata.2017.191"
 This dataset includes climate change scenarios for +2 and +4 deg C warming (via parameter 'scenario')
 Aerosol attenuation can also be computed based on the Global Aerosol Data Set (GADS)
 Koepke, P., M. Hess, I. Schult, and E. P. Shettle. 1997. Global Aerosol Data Set. Max-Planck-Institut for Meteorologie, Hamburg
-by choosing the option 'run.gads<-1' (Fortran version, quicker but may crash on some systems) or 'run.gads<-2' (R version)
+by choosing the option 'run.gads <- 1' (Fortran version, quicker but may crash on some systems) or 'run.gads <- 2' (R version)
 }
 \details{
 \itemize{
@@ -174,7 +174,7 @@ by choosing the option 'run.gads<-1' (Fortran version, quicker but may crash on 
 
 \code{snowmodel}{ = 1, run the snow model 1=yes, 0=no (note that this may cause slower runs)}\cr\cr
 \code{snowtemp}{ = 1.5, Temperature (°C) at which precipitation falls as snow}\cr\cr
-\code{snowdens}{ = 0.375, snow density (mg/m3), overridden by densfun}\cr\cr
+\code{snowdens}{ = 0.375, snow density (Mg/m3), overridden by densfun}\cr\cr
 \code{densfun}{ = c(0.5979, 0.2178, 0.001, 0.0038), slope and intercept of model of snow density as a linear function of snowpack age if first two values are nonzero, and following the exponential function of Sturm et al. 2010 J. of Hydromet. 11:1380-1394 if all values are non-zero; if it is c(0,0,0,0) then fixed density used}\cr\cr
 \code{snowmelt}{ = 1, proportion of calculated snowmelt that doesn't refreeze}\cr\cr
 \code{undercatch}{ = 1, undercatch multipier for converting rainfall to snow}\cr\cr

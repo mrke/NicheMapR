@@ -145,8 +145,8 @@
 #' \item 7 LENGTH - length (m)
 #' \item 8 WIDTH - width (m)
 #' \item 9 HEIGHT - height (m)
-#' \item 10 DIAM_FLESH - diameter, core to skin (m)
-#' \item 11 DIAM_FUR - diameter, core to fur (m)
+#' \item 10 R_FLESH - radius, core to skin (m)
+#' \item 11 R_FUR - radius, core to fur (m)
 #' \item 12 AREA_SIL - silhouette area (m2)
 #' \item 13 AREA_SILN - silhouette area normal to sun's rays (m2)
 #' \item 14 AREA_ASILP - silhouette area parallel to sun's rays (m2)
@@ -805,7 +805,7 @@ endoR_devel <- function(
   enbal <- matrix(data = enbal1, nrow = 1, ncol = 10)
 
   treg.names <- c("TC", "TLUNG", "TSKIN_D", "TSKIN_V", "TFA_D", "TFA_V", "SHAPE_B", "PANT", "PCTWET", "K_FLESH", "K_FUR", "K_FUR_D", "K_FUR_V", "K_COMPFUR", "Q10")
-  morph.names <- c("AREA", "VOLUME", "CHAR_DIM", "MASS_FAT", "FAT_THICK", "FLESH_VOL", "LENGTH", "WIDTH", "HEIGHT", "DIAM_FLESH", "DIAM_FUR", "AREA_SIL", "AREA_SILN", "AREA_ASILP", "AREA_SKIN", "AREA_SKIN_EVAP", "AREA_CONV", "AREA_COND", "F_SKY", "F_GROUND")
+  morph.names <- c("AREA", "VOLUME", "CHAR_DIM", "MASS_FAT", "FAT_THICK", "FLESH_VOL", "LENGTH", "WIDTH", "HEIGHT", "R_FLESH", "R_FUR", "AREA_SIL", "AREA_SILN", "AREA_ASILP", "AREA_SKIN", "AREA_SKIN_EVAP", "AREA_CONV", "AREA_COND", "F_SKY", "F_GROUND")
   enbal.names <- c("QSOL", "QIRIN", "QGEN", "QEVAP", "QIROUT", "QCONV", "QCOND", "ENB", "NTRY", "SUCCESS")
   masbal.names <- c("AIR_L", "O2_L", "H2OResp_g", "H2OCut_g", "O2_mol_in", "O2_mol_out", "N2_mol_in", "N2_mol_out", "AIR_mol_in", "AIR_mol_out")
   colnames(treg) <- treg.names
