@@ -78,7 +78,7 @@ C     CYLINDER
 C      FUR-AIR AREA = END CIRCLE AREA + CIRCLE PERIMETER * LENGTH (LENGTH = 2*D2)
        AREASKIN=2.*PI*R1**2.+2.*PI*R1*ALENTH
        ATOT=2.*PI*R2**2.+2.*PI*R2*ALENTH
-       AWIDTH=2.*R2
+       AWIDTH=2.*R1
        AHEIT=AWIDTH
        AREA=ATOT
        IF((INT(SUBQFAT).EQ.1).AND.(MASFAT.GT.0.00))THEN
@@ -138,9 +138,9 @@ C      SKIN SURFACE AREA
        ASIL = PI * R2**2.
        ASILN = ASIL
        ASILP = ASIL
-       ALENTH=R2*2.
-       AHEIT=R2*2.
-       AWIDTH=R2*2.
+       ALENTH=R1*2.
+       AHEIT=R1*2.
+       AWIDTH=R1*2.
        GO TO 999
       ENDIF
 

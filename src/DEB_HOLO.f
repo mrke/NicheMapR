@@ -733,7 +733,7 @@ C      ENDIF
        P_B=0.
        R=VTDOTJ*(E_SCALED/VPUP_PRES**(1./3.)-1.D+00/L_M)/(E_SCALED+G)    ! 1/TIME, SPECIFIC GROWTH RATE
        P_C=E_TOT*(VTDOTJ/VPUP_PRES**(1./3.)-R)                        ! J/TIME, MOBILISATION RATE       
-       P_M=P_MV*VPUP_PRES
+       P_M=P_MV*V(HOUR)
        P_A=0.
        P_G=KAP*P_C-P_MV*VPUP_PRES
        P_J=KT_J*E_H_PRES

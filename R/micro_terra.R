@@ -977,7 +977,7 @@ micro_terra <- function(
       library(geodata)
       elevation <- geodata::worldclim_global(var = 'elev', res = 2.5, path=tempdir())
     }
-    ALTT <- as.numeric(terra::extract(elevation, x)[, 2])
+    ALTT <- as.numeric(terra::extract(elevation, x))
     if(is.na(ALTT)){
       ALTT <- 0
     }
