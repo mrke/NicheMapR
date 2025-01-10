@@ -6,11 +6,12 @@
 \title{GET_SHAPES}
 \usage{
 GET_SHAPES(
-  MASSs = c(5.0987, 33.567, 3.283, 10.854),
+  MASSs = c(5.326861, 35.048544, 3.453074, 11.359223),
+  HEIGHT = 170,
   AREA = 1.947321,
-  SHAPE_Bs = c(1.58, 2.08, 7.69, 8),
-  SHAPE_Bs.min = c(1.1, 2.3, 7.5, 6.5),
-  SHAPE_Bs.max = c(1.7, 3.5, 10, 10),
+  SHAPE_Bs = c(1.75, 1.87, 6.65, 6.7),
+  SHAPE_Bs.min = c(1.3, 2.3, 7.5, 6.5),
+  SHAPE_Bs.max = c(1.7, 4, 21, 20),
   AREAFRACs = c(0.08291887, 0.3269846, 0.11025155, 0.18479669),
   DENSITYs = c(1050, 1050, 1050, 1050),
   FATPCTs = c(5, 36, 10, 23),
@@ -27,6 +28,8 @@ GET_SHAPES(
 \arguments{
 \item{MASSs}{mass per body part (head, trunk, arm, leg), kg}
 
+\item{HEIGHT}{target height, m}
+
 \item{AREA}{body surface area, m2}
 
 \item{SHAPE_Bs}{shape factors per body part, -}
@@ -39,7 +42,7 @@ GET_SHAPES(
 
 \item{DENSITYs}{density per body part, kg/m3}
 
-\item{FATPCTs}{fat percentage per body part, /%}
+\item{FATPCTs}{fat percentage per body part, \%}
 
 \item{SHAPEs}{shape type per body part, -}
 

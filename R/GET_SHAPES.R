@@ -11,7 +11,7 @@
 #' @param SUBQFAT subcutaneous fat presence, -
 #' @param AREAFRACs area fraction per body part, -
 #' @param DENSITYs density per body part, kg/m3
-#' @param FATPCTs fat percentage per body part, /%
+#' @param FATPCTs fat percentage per body part, \%
 #' @param SHAPEs shape type per body part, -
 #' @param SUBQFATs presence of subcutaneous fat per body part, -
 #' @param DHAIRDs dorsal hair diameters, m
@@ -21,7 +21,7 @@
 #' @param tol tolerance, -
 #' @param maxiter maximum iterations,
 #' @export
-GET_SHAPES <- function(MASSs = c(5.0987, 33.5670,  3.2830, 10.8540),
+GET_SHAPES <- function(MASSs = c(5.326861, 35.048544, 3.453074, 11.359223),
                        HEIGHT = 170,
                        AREA = 1.947321,
                        SHAPE_Bs = c(1.75, 1.87, 6.65, 6.7),
