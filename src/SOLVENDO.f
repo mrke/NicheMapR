@@ -802,7 +802,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
             if((TREGMODE.EQ.2).AND.(PANT.lt.PANT_MAX))THEN
              PANT = PANT + PANT_INC
              PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
-             QBASAL = QBASREF * Q10mult + PANT_COST
+             QBASAL = (QBASREF + PANT_COST)*Q10mult
             endif
            else
             TC = TC_MAX
@@ -810,11 +810,11 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
             if(PANT.lt.PANT_MAX)THEN
              PANT = PANT + PANT_INC
              PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
-             QBASAL = QBASREF * Q10mult + PANT_COST
+             QBASAL = (QBASREF + PANT_COST)*Q10mult
             else
              PANT = PANT_MAX
              PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
-             QBASAL = QBASREF * Q10mult + PANT_COST
+             QBASAL = (QBASREF + PANT_COST)*Q10mult
              PCTWET = PCTWET + PCTWET_INC
              if((PCTWET.GT.PCTWET_MAX).OR.(PCTWET_INC.LE.0.))THEN
               PCTWET = PCTWET_MAX
@@ -883,28 +883,23 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
       AIRML2=ZBRENTout(14) ! air out (mol/s)
       AIRVOL=ZBRENTout(15) ! air out at STP (L/s)
 
-      HTOVPR = 2.5012E+06 - 2.3787E+03 * TA
-      SWEATGS = (SIMULSOLout(1,6) + SIMULSOLout(2,6)) * 0.5
-     &  / HTOVPR * 1000.
-      EVAPGS = ZBRENTout(3) + SWEATGS
-
-      HTOVPR=2.5012E+06 - 2.3787E+03 * TA ! latent heat of vapourisation, W/kg/C
-      SWEATGS=(QSEVAPD + QSEVAPV) * 0.5 / HTOVPR * 1000. ! water lost from skin, g/s
-      EVAPGS=GEVAP + SWEATGS ! total evaporative water loss, g/s
+      HTOVPR=2.5012E+06-2.3787E+03*TA ! latent heat of vapourisation, W/kg/C
+      SWEATGS=(QSEVAPD+QSEVAPV)*0.5/HTOVPR*1000. ! water lost from skin, g/s
+      EVAPGS=GEVAP+SWEATGS ! total evaporative water loss, g/s
       sigma=5.6697E-8
-      QIR=QIRIN - QIROUT
-      QIROUTD=sigma * EMISAN * AREASKIN * (TSKCALCAVD + 273.15)**4.
-      QIRIND=QRADD * (-1.) + QIROUTD
-      QIROUTV=sigma * EMISAN * AREASKIN * (TSKCALCAVV + 273.15)**4.
-      QIRINV=QRADV * (-1.) + QIROUTV
+      QIR=QIRIN-QIROUT
+      QIROUTD=sigma*EMISAN*AREASKIN*(TSKCALCAVD+273.15)**4.
+      QIRIND=QRADD*(-1.)+QIROUTD
+      QIROUTV=sigma*EMISAN*AREASKIN*(TSKCALCAVV+273.15)**4.
+      QIRINV=QRADV*(-1.)+QIROUTV
 
-      QSOL=QSLRD * DMULT + QSLRV * VMULT ! solar, W
-      QIRIN=QIRIND * DMULT + QIRINV * VMULT ! infrared in, W
-      QEVAP=QSEVAPD * DMULT + QSEVAPV * VMULT + QFSEVAPD * DMULT +
-     & QFSEVAPV * VMULT + QRESP ! evaporation, W
-      QIROUT=QIROUTD * DMULT + QIROUTV * VMULT ! infrared out, W
-      QCONV=QCONVD * DMULT + QCONVV * VMULT ! convection, W
-      QCOND=QCONDD * DMULT + QCONDV * VMULT ! conduction, W
+      QSOL=QSLRD*DMULT+QSLRV*VMULT ! solar, W
+      QIRIN=QIRIND*DMULT+QIRINV*VMULT ! infrared in, W
+      QEVAP=QSEVAPD*DMULT+QSEVAPV*VMULT+QFSEVAPD*DMULT+
+     & QFSEVAPV*VMULT+QRESP ! evaporation, W
+      QIROUT=QIROUTD*DMULT+QIROUTV*VMULT ! infrared out, W
+      QCONV=QCONVD*DMULT+QCONVV*VMULT ! convection, W
+      QCOND=QCONDD*DMULT+QCONDV*VMULT ! conduction, W
 
       TREG=(/TC_LAST, TLUNG, TSKCALCAVD, TSKCALCAVV, TFAD, TFAV,
      & SHAPEB_LAST, PANT_LAST, PCTWET_LAST, AK1_LAST, KEFARA(1),
