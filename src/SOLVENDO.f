@@ -325,30 +325,30 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         !# Resetting config factors and solar depending on whether the dorsal side (S=1) or ventral side (S=2) is being estimated.
         IF(QSOLAR.GT.0.0)THEN
          if(S==1)THEN
-          FASKY = FASKYREF/(FASKYREF+FAVEGREF) ! proportion of upward view that is sky
-          FAVEG = FAVEGREF/(FASKYREF+FAVEGREF) ! proportion of upward view that is vegetation (shade)
+          FASKY = FASKYREF*2.!/(FASKYREF+FAVEGREF) ! proportion of upward view that is sky
+          FAVEG = FAVEGREF*2.!/(FASKYREF+FAVEGREF) ! proportion of upward view that is vegetation (shade)
           FAGRD = 0.0
           FABUSH = 0.0
           QSLR = 2.*QSDIR+((QSSKY/FASKYREF)*FASKY) ! direct x 2 because assuming sun in both directions, and unadjusting QSSKY for config factor imposed in SOLAR_ENDO and back to new larger one in both directions
          else
           FASKY = 0.0
           FAVEG = 0.0
-          FAGRD = FAGRDREF/(FAGRDREF+FABUSHREF)
-          FABUSH = FABUSHREF/(FAGRDREF+FABUSHREF)
+          FAGRD = FAGRDREF*2.!/(FAGRDREF+FABUSHREF)
+          FABUSH = FABUSHREF*2.!(FAGRDREF+FABUSHREF)
           QSLR = (QVENTR/(1. - FASKYREF - FAVEGREF))*(1.-(2.*PCOND)) ! unadjust by config factor imposed in SOLAR_ENDO to have it coming in both directions, but also cutting down according to fractional area conducting to ground (in both directions)
         ENDIF
         else
          QSLR = 0.0
          if(S==1)then
-          FASKY = FASKYREF/(FASKYREF+FAVEGREF)
-          FAVEG = FAVEGREF/(FASKYREF+FAVEGREF)
+          FASKY = FASKYREF*2.!/(FASKYREF+FAVEGREF)
+          FAVEG = FAVEGREF*2.!/(FASKYREF+FAVEGREF)
           FAGRD = 0.0
           FABUSH = 0.0
          else
           FASKY = 0.0
           FAVEG = 0.0
-          FAGRD = FAGRDREF/(FAGRDREF+FABUSHREF)
-          FABUSH = FABUSHREF/(FAGRDREF+FABUSHREF)
+          FAGRD = FAGRDREF*2.!/(FAGRDREF+FABUSHREF)
+          FABUSH = FABUSHREF!/(FAGRDREF+FABUSHREF)
          ENDIF
         ENDIF
 
@@ -625,30 +625,30 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         !# Resetting config factors and solar depending on whether the dorsal side (S=1) or ventral side (S=2) is being estimated.
         IF(QSOLAR.GT.0.0)THEN
          if(S==1)THEN
-          FASKY = FASKYREF/(FASKYREF+FAVEGREF) ! proportion of upward view that is sky
-          FAVEG = FAVEGREF/(FASKYREF+FAVEGREF) ! proportion of upward view that is vegetation (shade)
+          FASKY = FASKYREF*2.!/(FASKYREF+FAVEGREF) ! proportion of upward view that is sky
+          FAVEG = FAVEGREF*2.!/(FASKYREF+FAVEGREF) ! proportion of upward view that is vegetation (shade)
           FAGRD = 0.0
           FABUSH = 0.0
           QSLR = 2.*QSDIR+((QSSKY/FASKYREF)*FASKY) ! direct x 2 because assuming sun in both directions, and unadjusting QSSKY for config factor imposed in SOLAR_ENDO and back to new larger one in both directions
          else
           FASKY = 0.0
           FAVEG = 0.0
-          FAGRD = FAGRDREF/(FAGRDREF+FABUSHREF)
-          FABUSH = FABUSHREF/(FAGRDREF+FABUSHREF)
+          FAGRD = FAGRDREF*2.!/(FAGRDREF+FABUSHREF)
+          FABUSH = FABUSHREF*2.!/(FAGRDREF+FABUSHREF)
           QSLR = (QVENTR/(1. - FASKYREF - FAVEGREF))*(1.-(2.*PCOND)) ! unadjust by config factor imposed in SOLAR_ENDO to have it coming in both directions, but also cutting down according to fractional area conducting to ground (in both directions)
         ENDIF
         else
          QSLR = 0.0
          if(S==1)then
-          FASKY = FASKYREF/(FASKYREF+FAVEGREF)
-          FAVEG = FAVEGREF/(FASKYREF+FAVEGREF)
+          FASKY = FASKYREF*2.!/(FASKYREF+FAVEGREF)
+          FAVEG = FAVEGREF*2.!/(FASKYREF+FAVEGREF)
           FAGRD = 0.0
           FABUSH = 0.0
          else
           FASKY = 0.0
           FAVEG = 0.0
-          FAGRD = FAGRDREF/(FAGRDREF+FABUSHREF)
-          FABUSH = FABUSHREF/(FAGRDREF+FABUSHREF)
+          FAGRD = FAGRDREF*2.!/(FAGRDREF+FABUSHREF)
+          FABUSH = FABUSHREF*2.!/(FAGRDREF+FABUSHREF)
          ENDIF
         ENDIF
 
