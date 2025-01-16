@@ -51,6 +51,7 @@
 #' \code{CO2GAS}{ = 0.0412, carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
 #' \code{R_PCO2}{ = CO2GAS / 100, reference atmospheric dioxide concentration (proportion) of air, to allow for anthropogenic change (\%)}\cr\cr
 #' \code{PDIF}{ = 0.15, proportion of solar radiation that is diffuse (fractional, 0-1)}\cr\cr
+#' \code{GRAV}{ = 9.80665, acceleration due to gravity, m/s^2}\cr\cr
 #'
 #' \strong{ Behaviour:}\cr\cr
 #' \code{SHADE}{ = 0, shade level (\%)}\cr\cr
@@ -285,6 +286,7 @@ endoR_devel <- function(
   CO2GAS = 0.0412, # carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}
   R_PCO2 = CO2GAS / 100, # reference atmospheric dioxide concentration of air (proportion), to allow for anthropogenic change (\%)
   PDIF = 0.15, # proportion of solar radiation that is diffuse (fractional, 0-1)
+  GRAV = 9.80665, # acceleration due to gravity, m/s^2
 
   # BEHAVIOUR
 
@@ -501,7 +503,7 @@ endoR_devel <- function(
     TENV <- TA # fluid temperature (°C)
 
     # run subroutine
-    CONV.out <- CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV, CONV_ENHANCE)
+    CONV.out <- CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV, CONV_ENHANCE, GRAV)
 
     QCONV <- CONV.out[1] # convective heat loss (W)
     HC <- CONV.out[2] # combined convection coefficient
@@ -615,7 +617,7 @@ endoR_devel <- function(
       # package up inputs
       FURVARS <- c(LEN,ZFUR,FURTHRMK,KEFF,BETARA,FURTST,ZL,LHAR[S+1],DHAR[S+1],RHOAR[S+1],REFLFR[S+1],KHAIR,S)
       GEOMVARS <- c(SHAPE,SUBQFAT,CONVAR,VOL,D,CONVAR,CONVSK,RFUR,RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD,PCOND,RFURCMP,BLCMP,KFURCMPRS,CONV_ENHANCE)
-      ENVVARS <- c(FLTYPE,TA,TS,TBUSH,TVEG,TLOWER,TSKY,TCONDSB,RH,VEL,BP,ELEV,FASKY,FABUSH,FAVEG,FAGRD,QSLR)
+      ENVVARS <- c(FLTYPE,TA,TS,TBUSH,TVEG,TLOWER,TSKY,TCONDSB,RH,VEL,BP,ELEV,FASKY,FABUSH,FAVEG,FAGRD,QSLR,GRAV)
       TRAITS <- c(TC,AK1,AK2,EMISAN,FATTHK,FLYHR,FURWET,PCTBAREVAP,PCTEYES)
 
       # set IPT, the geometry assumed in SIMULSOL: 1 = cylinder, 2 = sphere, 3 = ellipsoid

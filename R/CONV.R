@@ -15,8 +15,9 @@
 #' @param ZFUR fur depth, mean (m) (from IRPROP)
 #' @param BP barometric pressure (Pa), negative means altitude is used
 #' @param ELEV elevation (m)
+#' @param GRAV acceleration due to gravity, (m/s^2)
 #' @export
-CONV_ENDO <- function(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV, CONV_ENHANCE){
+CONV_ENDO <- function(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV, CONV_ENHANCE, GRAV){
   a <- .Fortran("CONV_ENDO",
     as.double(TS),
     as.double(TENV),
@@ -31,6 +32,7 @@ CONV_ENDO <- function(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR
     as.double(BP),
     as.double(ELEV),
     as.double(CONV_ENHANCE),
+    as.double(GRAV),
     results=matrix(data = 0, nrow = 1, ncol = 14),
     PACKAGE = "NicheMapR")
 

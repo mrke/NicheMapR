@@ -48,6 +48,7 @@
 #' \code{CO2GAS}{ = 0.0412, carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
 #' \code{R_PCO2}{ = CO2GAS / 100, reference atmospheric dioxide concentration (proportion) of air, to allow for anthropogenic change (\%)}\cr\cr
 #' \code{PDIF}{ = 0.15, proportion of solar radiation that is diffuse (fractional, 0-1)}\cr\cr
+#' \code{GRAV}{ = 9.80665, acceleration due to gravity, m/s^2}\cr\cr
 #'
 #' \strong{ Behaviour:}\cr\cr
 #' \code{SHADE}{ = 0, shade level (\%)}\cr\cr
@@ -288,6 +289,7 @@ endoR <- function(
   CO2GAS = 0.0412, # carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)
   R_PCO2 = CO2GAS / 100, # reference atmospheric dioxide concentration of air (proportion), to allow for anthropogenic change (\%)
   PDIF = 0.15, # proportion of solar radiation that is diffuse (fractional, 0-1)
+  GRAV = 9.80665, # acceleration due to gravity, m/s^2
 
   # BEHAVIOUR
 
@@ -434,7 +436,7 @@ endoR <- function(
       Q10mult <- Q10^((TC - TC_REF)/10)
       QBASAL <- QBASREF * Q10mult
     }
-    SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, RESPIRE, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, PVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, PCTWET, TSKY, TVEG, TAREF, DELTAR, RQ, TREGMODE, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AK1_MAX, AK1_INC, TC_MAX, TC_INC, TC_REF, Q10, QBASREF, PANT_MAX, PCTWET_MAX, PCTWET_INC, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, PZFUR, ZFURCOMP, PANT_INC, ORIENT, SHAPE_C, XR, PANT_MULT, KSUB, THERMOREG, ZFURD_MAX, ZFURV_MAX, TC_MIN, CONV_ENHANCE, TORPOR)
+    SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, RESPIRE, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, PVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, PCTWET, TSKY, TVEG, TAREF, DELTAR, RQ, TREGMODE, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AK1_MAX, AK1_INC, TC_MAX, TC_INC, TC_REF, Q10, QBASREF, PANT_MAX, PCTWET_MAX, PCTWET_INC, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, PZFUR, ZFURCOMP, PANT_INC, ORIENT, SHAPE_C, XR, PANT_MULT, KSUB, THERMOREG, ZFURD_MAX, ZFURV_MAX, TC_MIN, CONV_ENHANCE, TORPOR, GRAV)
     if(WRITE_INPUT == 1){
       write.csv(SOLVENDO.input, file = "SOLVENDO.input.csv")
     }

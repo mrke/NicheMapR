@@ -71,6 +71,7 @@ third raise core temperature, fourth pant and fifth sweat.
 \code{CO2GAS}{ = 0.0412, carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
 \code{R_PCO2}{ = CO2GAS / 100, reference atmospheric dioxide concentration (proportion) of air, to allow for anthropogenic change (\%)}\cr\cr
 \code{PDIF}{ = 0.15, proportion of solar radiation that is diffuse (fractional, 0-1)}\cr\cr
+\code{GRAV}{ = 9.80665, acceleration due to gravity, m/s^2}\cr\cr
 
 \strong{ Behaviour:}\cr\cr
 \code{SHADE}{ = 0, shade level (\%)}\cr\cr

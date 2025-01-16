@@ -18,7 +18,8 @@ CONV_ENDO(
   ZFUR,
   BP,
   ELEV,
-  CONV_ENHANCE
+  CONV_ENHANCE,
+  GRAV
 )
 }
 \arguments{
@@ -47,6 +48,8 @@ CONV_ENDO(
 \item{ELEV}{elevation (m)}
 
 \item{CONV_ENHANCE}{convective enhancement factor (-)}
+
+\item{GRAV}{acceleration due to gravity, (m/s^2)}
 }
 \description{
 R wrapper for Fortran binary of CONV_ENDO (endotherm model)

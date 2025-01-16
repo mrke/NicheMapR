@@ -242,9 +242,10 @@ FURTST <- FURTST # test of fur presence (-) from IRPROP
 VEL <- 1 # wind speed (m/s)
 ELEV <- 0 # elevation (m)
 BP <- -1 # barometric pressure (Pa), negative means altitude is used
+GRAV <- 9.80665 # acceleration due to gravity, m/s^2
 
 # run subroutine
-CONV.out <- CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV, CONV_ENHANCE)
+CONV.out <- CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV, GRAV, CONV_ENHANCE)
 
 QCONV <- CONV.out[1] # convective heat loss (W)
 HC <- CONV.out[2] # combined convection coefficient (W/m2 C)
