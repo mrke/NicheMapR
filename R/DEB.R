@@ -6,13 +6,13 @@
 #' may be preferable in some cases, though accuracy of the latter will depend
 #' on the step size chosen)
 #' Michael Kearney Dec 2015, updated to include ODE solver Feb 2019
-#' @param step = 1/24, step size (days)
+#' @param step = 1/24, Step size (days)
 #' @param z = 7.997, Zoom factor (cm)
 #' @param del_M =  0.242, Shape coefficient (-)
 #' @param p_Xm = 13290*step, Surface area-specific maximum feeding rate J/cm2/h
 #' @param kap_X = 0.85, Digestive efficiency (decimal \%)
 #' @param v = 0.065*step, Energy conductance (cm/h)
-#' @param kap = 0.886, fraction of mobilised reserve allocated to soma
+#' @param kap = 0.886, Fraction of mobilised reserve allocated to soma
 #' @param p_M = 32*step, Volume-specific somatic maintenance (J/cm3/h)
 #' @param p_T = 0, (Structural-)Surface-area-specific heating cost (J/cm2/h)
 #' @param E_G = 7767, Cost of structure (J/cm3)
@@ -50,18 +50,18 @@
 #' @param mu_P = 480000, Molar Gibbs energy (chemical potential) of faeces (J/mol)
 #' @param mu_N = 244e3/5, Molar Gibbs energy (chemical potential) of nitrogenous waste (J/mol), synthesis from NH3, Withers page 119
 #' @param kap_X_P = 0.1, Faecation efficiency of food to faeces (-)
-#' @param n_X = c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in food
-#' @param n_E = c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in reserve
-#' @param n_V = c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in structure
-#' @param n_P = c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in faeces
+#' @param n_X = c(1,1.8,0.5,.15), Chemical indices of C, O, H and N in food
+#' @param n_E = c(1,1.8,0.5,.15), Chemical indices of C, O, H and N in reserve
+#' @param n_V = c(1,1.8,0.5,.15), Chemical indices of C, O, H and N in structure
+#' @param n_P = c(1,1.8,0.5,.15), Chemical indices of C, O, H and N in faeces
 #' @param fdry = 0.3, Dry mass fraction of food
-#' @param n_M_nitro = c(1,4/5,3/5,4/5), Chem. indices of C, O, H and N in nitrogenous waste
-#' @param h_N = 384238, molar enthalpy of nitrogenous waste (combustion frame of reference) (J/mol), overridden if n_M_nitro specified as urea, uric acid or ammonia
-#' @param stages = 3, how many life stages?
+#' @param n_M_nitro = c(1,4/5,3/5,4/5), Chemical indices of C, O, H and N in nitrogenous waste
+#' @param h_N = 384238, Molar enthalpy of nitrogenous waste (combustion frame of reference) (J/mol), overridden if n_M_nitro specified as urea, uric acid or ammonia
+#' @param stages = 3, How many life stages?
 #' @param stage = 0, Initial stage (0=embryo, for STD 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction, for ABP 1-(stages-1) = instars, stages = adult)
-#' @param S_instar = rep(1.6, stages), stress at instar n: L_n^2/ L_n-1^2 (-)
+#' @param S_instar = rep(1.6, stages), Stress at instar n: L_n^2/ L_n-1^2 (-)
 #' @param clutchsize = 2, Clutch size (#), overridden by \code{clutch_ab}
-#' @param clutch_ab = c(0,0), paramters for relationship between length (cm) and clutch size: clutch size = a*L_w-b, make a and b zero if fixed clutch size
+#' @param clutch_ab = c(0,0), Parameters for relationship between length (cm) and clutch size: clutch size = a*L_w-b, make a and b zero if fixed clutch size
 #' @param minclutch = 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate
 #' @param batch = 1, Invoke Pequerie et al.'s batch laying model?
 #' @param lambda = 1/2
@@ -299,7 +299,7 @@ DEB<-function(
   CHON <- c(12, 1, 16, 14)
   wO <- CHON %*% n_O
   w_V <- wO[2] # molar mass of structure
-  M_V <- d_V / w_V # cmoles structure per volume structure
+  M_V <- d_V / w_V # C-moles structure per volume structure
   y_EX <- kap_X * mu_X / mu_E # yield of reserve on food
   y_XE <- 1 / y_EX # yield of food on reserve
   y_VE <- mu_E * M_V / E_G  # yield of structure on reserve
@@ -370,7 +370,7 @@ DEB<-function(
                  X = X, K = K, E_Hp = E_Hp, E_Hb = E_Hb, E_Hj = E_Hj, s_G = s_G, h_a = h_aT,
                  batch = batch, kap_R = kap_R, lambda = lambda,
                  breeding = breeding, kap_X = kap_X, f = f, E_sm = E_sm, s_M = s_M,
-                 L_j = L_j, metab_mode = metab_mode, starve_mode=starve_mode)
+                 L_j = L_j, metab_mode = metab_mode, starve_mode = starve_mode)
 
   # function for solver (running for one time step)
   dget_DEB <- function(t, y, indata){

@@ -96,7 +96,7 @@ DEB(
 )
 }
 \arguments{
-\item{step}{= 1/24, step size (days)}
+\item{step}{= 1/24, Step size (days)}
 
 \item{z}{= 7.997, Zoom factor (cm)}
 
@@ -108,7 +108,7 @@ DEB(
 
 \item{v}{= 0.065*step, Energy conductance (cm/h)}
 
-\item{kap}{= 0.886, fraction of mobilised reserve allocated to soma}
+\item{kap}{= 0.886, Fraction of mobilised reserve allocated to soma}
 
 \item{p_M}{= 32*step, Volume-specific somatic maintenance (J/cm3/h)}
 
@@ -182,21 +182,21 @@ DEB(
 
 \item{kap_X_P}{= 0.1, Faecation efficiency of food to faeces (-)}
 
-\item{n_X}{= c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in food}
+\item{n_X}{= c(1,1.8,0.5,.15), Chemical indices of C, O, H and N in food}
 
-\item{n_E}{= c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in reserve}
+\item{n_E}{= c(1,1.8,0.5,.15), Chemical indices of C, O, H and N in reserve}
 
-\item{n_V}{= c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in structure}
+\item{n_V}{= c(1,1.8,0.5,.15), Chemical indices of C, O, H and N in structure}
 
-\item{n_P}{= c(1,1.8,0.5,.15), Chem. indices of C, O, H and N in faeces}
+\item{n_P}{= c(1,1.8,0.5,.15), Chemical indices of C, O, H and N in faeces}
 
-\item{n_M_nitro}{= c(1,4/5,3/5,4/5), Chem. indices of C, O, H and N in nitrogenous waste}
+\item{n_M_nitro}{= c(1,4/5,3/5,4/5), Chemical indices of C, O, H and N in nitrogenous waste}
 
-\item{h_N}{= 384238, molar enthalpy of nitrogenous waste (combustion frame of reference) (J/mol), overridden if n_M_nitro specified as urea, uric acid or ammonia}
+\item{h_N}{= 384238, Molar enthalpy of nitrogenous waste (combustion frame of reference) (J/mol), overridden if n_M_nitro specified as urea, uric acid or ammonia}
 
 \item{clutchsize}{= 2, Clutch size (#), overridden by \code{clutch_ab}}
 
-\item{clutch_ab}{= c(0,0), paramters for relationship between length (cm) and clutch size: clutch size = a*L_w-b, make a and b zero if fixed clutch size}
+\item{clutch_ab}{= c(0,0), Parameters for relationship between length (cm) and clutch size: clutch size = a*L_w-b, make a and b zero if fixed clutch size}
 
 \item{minclutch}{= 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate}
 
@@ -232,7 +232,7 @@ DEB(
 
 \item{E_B}{= 0}
 
-\item{stages}{= 3, how many life stages?}
+\item{stages}{= 3, How many life stages?}
 
 \item{stage}{= 0}
 
@@ -244,7 +244,7 @@ DEB(
 
 \item{fdry}{= 0.3, Dry mass fraction of food}
 
-\item{S_instar}{= rep(1.6, stages), stress at instar n: L_n^2/ L_n-1^2 (-)}
+\item{S_instar}{= rep(1.6, stages), Stress at instar n: L_n^2/ L_n-1^2 (-)}
 
 \item{p_surv}{= 1}
 }
