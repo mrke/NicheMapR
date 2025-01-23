@@ -17,6 +17,7 @@
 #' @param ZEN = 21.5, zenith angle (degrees) of sun - used in determining if free convection conditions or not
 #' @param a = 0.15, wind shear exponent for extending above reference height (open water 0.1, Smooth, level, grass-covered 0.15 (or more commonly 1/7), row crops 0.2, low bushes with a few trees 0.2, heavy trees or several buildings or mountainous terrain 0.25, (source http://www.engineeringtoolbox.com/wind-shear-d_1215.html)
 #' @param heights = c(0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1), vector of heights (m) for which the profile is desired (make them between zero and the reference height, don't include the reference height, and make the minimum greater than the roughness height
+#' @param warn = TRUE, show warning messages?
 #' @return heights Heights (m) at which results are reported, with 0 and Refhyt added on
 #' @return VELs Wind speeds (m/s) with increasing height
 #' @return TAs Air temperatures (deg C) with increasing height
@@ -64,16 +65,24 @@ get_profile <- function(Refhyt = 1.2,
                         maxsurf = 95,
                         ZEN = 21.50564,
                         a = 0.15,
-                        heights = c(0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1)){
+                        heights = c(0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1),
+                        warn = FALSE){
   errors <- 0
+  addheight <- FALSE
   if(min(heights) < RUF){
     message("ERROR: the minimum height is not greater than the roughness height, 'RUF'.
         Please enter a correct value.", '\n')
     errors <- 1
   }
+  if(min(heights) > Refhyt){
+    addheight <- TRUE
+    heights <- c(0.01, heights)
+  }
   if(max(heights) >= Refhyt){
-    message("warning: there are heights greater than or equal to the reference height, 'Refhyt'.
+    if(warn){
+      message("warning: there are heights greater than or equal to the reference height, 'Refhyt'.
         Assuming constant air temperature above the reference height and adjusting wind speed according to shear parameter.", '\n')
+    }
     heights_orig <- heights
     heights <- heights_orig[heights_orig < Refhyt]
     heights_extra <- heights_orig[heights_orig > Refhyt]
@@ -251,6 +260,12 @@ get_profile <- function(Refhyt = 1.2,
       VV <- c(VV, VV_extra)
       T <- c(T, T_extra)
       RHs <- c(RHs, RH_extra)
+    }
+    if(addheight){
+      VV <- VV[-2]
+      T <- T[-2]
+      RHs <- RHs[-2]
+      heights <- heights[-2]
     }
     return(list(heights = heights,
                 VELs = VV / 6000, # m/s
