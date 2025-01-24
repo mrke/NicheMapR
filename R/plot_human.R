@@ -38,7 +38,7 @@ plot_human <- function(
     INSDENDs = rep(3e+08, 4),
     INSDENVs = c(3e+05, rep(3e+08, 3)),
     PJOINs = c(0.02591961, 0.07879298, 0.01850589, 0.03333333)
-    ){
+){
 
   if (!require("plotrix", quietly = TRUE)) {
     stop("package 'plotrix' is needed. Please install it.",
@@ -128,7 +128,12 @@ plot_human <- function(
                c(top.of.head,
                  top.of.head),
                col = "pink", b = head.ASEMAJ - head.FATTHK, a = head.BSEMIN - head.FATTHK, lty = 0)
-
+  if(INSDEPVs[1] > 1e-9){
+    draw.ellipse(c(0, 0), c(top.of.head, top.of.head),
+                 b = head.ASEMAJ + INSDEPVs[1],
+                 a = head.BSEMIN + INSDEPVs[1], col = "brown",
+                 border = NA, segment = c(180, 360), deg = TRUE)
+  }
   # left leg
   xleft.leg.fur <- trunk.left - trunk.AWIDTH / 10 - INSDEPDs[4]
   xleft.leg.naked <- trunk.left - trunk.AWIDTH / 10
@@ -226,6 +231,10 @@ plot_human <- function(
                b = head.ASEMAJ + INSDEPDs[1],
                a = head.CSEMIN + INSDEPDs[1], col = "brown",
                border = NA, segment = c(0, 180), deg = TRUE)
+  draw.ellipse(c(0, 0) - 1, c(top.of.head, top.of.head),
+               b = head.ASEMAJ + INSDEPVs[1],
+               a = head.CSEMIN + INSDEPVs[1], col = "brown",
+               border = NA, segment = c(180, 360), deg = TRUE)
   #head naked
   draw.ellipse(c(0, 0) - 1,
                c(top.of.head,

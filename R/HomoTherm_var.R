@@ -465,7 +465,8 @@ HomoTherm_var <- function(MASS = 70,
                                  VREF = VREFs[j],
                                  RH = RHREFs[j],
                                  D0cm = TGRDs[j],
-                                 ZEN = Zs[j])
+                                 ZEN = Zs[j],
+                                 warn = FALSE)
       TA <- profile.out$TAs[2:(length(NPARTs) + 1)] # first output is at ground level
       VEL <- profile.out$VELs[2:(length(NPARTs) + 1)] # first output is at ground level
       RH <- profile.out$RHs[2:(length(NPARTs) + 1)] # first output is at ground level
