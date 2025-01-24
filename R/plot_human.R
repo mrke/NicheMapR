@@ -400,4 +400,5 @@ plot_human <- function(
   height <- GEOM.heads$ALENTH + GEOM.trunks$ALENTH + GEOM.legs$ALENTH # m
   abline(h = height + INSDEPDs[4], lty = 2)
   abline(h = HEIGHT / 100 + INSDEPDs[4], col = 'red', lty = 2)
+  return(height)
 }

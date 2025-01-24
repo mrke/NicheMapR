@@ -191,7 +191,7 @@ RH <- 50 # humidity, \%
 INSDEPDs <- c(1e-02, rep(6.15e-03, 3)) # 'dorsal' clothing depth, m
 INSDEPVs <- c(1e-09, rep(6.15e-03, 3)) # 'ventral' clothing depth, m
 KCLOs <- rep(0.04, 4) # clothing thermal conductivity, W/m·K
-FATPCTs <- c(5, 36, 10, 23) * 0.5 # body fat \%s
+FATPCTs <- c(5, 36, 10, 23) # body fat \%
 HomoTherm.out <- HomoTherm(INSDEPDs = INSDEPDs * 0,
                                INSDEPVs = INSDEPVs * 0,
                                KCLOs = KCLOs,

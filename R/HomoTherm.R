@@ -170,7 +170,7 @@
 #' INSDEPDs <- c(1e-02, rep(6.15e-03, 3)) # 'dorsal' clothing depth, m
 #' INSDEPVs <- c(1e-09, rep(6.15e-03, 3)) # 'ventral' clothing depth, m
 #' KCLOs <- rep(0.04, 4) # clothing thermal conductivity, W/m·K
-#' FATPCTs <- c(5, 36, 10, 23) * 0.5 # body fat %s
+#' FATPCTs <- c(5, 36, 10, 23) # body fat %
 # simulate
 #' HomoTherm.out <- HomoTherm(INSDEPDs = INSDEPDs * 0,
 #'                                INSDEPVs = INSDEPVs * 0,
@@ -200,7 +200,7 @@ HomoTherm <- function(MASS = 70,
                       SHAPE_Bs = c(1.6, 1.9, 11, 7.0),
                       PJOINs = c(0.02753623, 0.08239728, 0.02173913, 0.03333333),
                       SUBQFATs =  rep(1, 4),
-                      FATPCTs =  c(5, 36, 10, 23) * 0.5,
+                      FATPCTs =  c(5, 36, 10, 23),
                       KFLESHs = c(0.9, 0.9, 0.5, 0.5),
                       KFLESH_MAXs = rep(5, 4),
                       KFLESH_INCs = rep(0.05, 4), #rep(0.2, 4),
