@@ -440,7 +440,7 @@ endoR_devel <- function(
     ZFUR <- ZZFUR[1] # fur depth, mean (m) (from IRPROP)
 
     # call the subroutine
-    GEOM.out <- GEOM_ENDO(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT, Z)
+    GEOM.out <- GEOM_ENDO(AMASS, ANDENS, FATDEN, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT, Z)
 
     # output
     VOL <- GEOM.out[1] # volume, m3

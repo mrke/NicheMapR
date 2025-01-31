@@ -68,7 +68,7 @@ environmental scenario (use HomoTherm_var for a sequence of environments).
 \code{AREAFRACs}{ = c(0.0829, 0.327, 0.110, 0.185), fraction of total surface area (-)}\cr\cr
 \code{PJOINs}{ = c(0.0275, 0.0824, 0.02174, 0.0333), fraction of part joined with rest of body (-)}\cr\cr
 \code{SUBQFATs}{ = rep(1, 4), is subcutaneous fat present? (0 is no, 1 is yes)}\cr\cr
-\code{FATPCT}{ = c(5, 36, 10, 23) * 0.5, \% body fat}\cr\cr
+\code{FATPCT}{ = c(5, 36, 10, 23), \% body fat}\cr\cr
 \code{SHAPE_Bs}{ = c(1.6, 1.9, 11, 7.0), ratio between long and short axis (-)}\cr\cr
 \code{FSKREFs}{ = c(0.50, 0.42, 0.35, 0.35), configuration factor to sky}\cr\cr
 \code{FGDREFs}{ = c(0.38, 0.42, 0.35, 0.35), reference configuration factor to ground}\cr\cr

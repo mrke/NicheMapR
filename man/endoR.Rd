@@ -90,6 +90,7 @@ third raise core temperature, fourth pant and fifth sweat.
 
 \strong{ General morphology:}\cr\cr
 \code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr
+\code{FATDEN}{ = 901, fat density (kg/m3)}\cr\cr
 \code{SUBQFAT}{ = 0, is subcutaneous fat present? (0 is no, 1 is yes)}\cr\cr
 \code{FATPCT}{ = 20, \% body fat}\cr\cr
 \code{SHAPE_B_MAX}{ = 5, max possible ratio between long and short axis (-)}\cr\cr

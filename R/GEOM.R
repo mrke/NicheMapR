@@ -4,6 +4,7 @@
 #' @encoding UTF-8
 #' @param AMASS mass, kg
 #' @param ANDENS volume, kg/m3
+#' @param FATDEN fat density, kg/m3
 #' @param FATPCT fat percentage, \%
 #' @param SHAPE shape, -
 #' @param ZFUR fur depth, m
@@ -17,10 +18,11 @@
 #' @param ORIENT orientation to solar, -
 #' @param ZEN zenith angle, degrees
 #' @export
-GEOM_ENDO <- function(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT, ZEN){
+GEOM_ENDO <- function(AMASS, ANDENS, FATDEN, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT, ZEN){
   a <- .Fortran("GEOM_ENDO",
     as.double(AMASS),
     as.double(ANDENS),
+    as.double(FATDEN),
     as.double(FATPCT),
     as.double(SHAPE),
     as.double(ZFUR),

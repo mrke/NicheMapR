@@ -8,6 +8,7 @@
 GEOM_ENDO(
   AMASS,
   ANDENS,
+  FATDEN,
   FATPCT,
   SHAPE,
   ZFUR,
@@ -26,6 +27,8 @@ GEOM_ENDO(
 \item{AMASS}{mass, kg}
 
 \item{ANDENS}{volume, kg/m3}
+
+\item{FATDEN}{fat density, kg/m3}
 
 \item{FATPCT}{fat percentage, \%}
 
