@@ -65,7 +65,7 @@ C     these joining surface areas from any forms of heat exchange
       end do
       DATA part_order/3,4,1,2/ ! arm, leg, head, torso
       stepcount = 0.0
-C     call GEOM_ENDO(MASSs(1),DENSITYs(1),FATPCTs(1),SHAPEs(1),
+C     call GEOM_ENDO(MASSs(1),DENSITYs(1),DENSITYs(1),FATPCTs(1),SHAPEs(1),
 C    &       0D1, SUBQFATs(1),SHAPE_Bs(1),SHAPE_Bs(1),
 C    &       (DHAIRDs(1)+DHAIRVs(1))/2D1,(INSDENDs(1)+INSDENVs(1))
 C    &       /2D1,PJOINs(1),0D1,0D1,0D1,GEOM_out)
@@ -119,8 +119,8 @@ C     end if
       do i = 1, num_parts
           ii = part_order(i) 
 
-          call GEOM_ENDO(MASSs(ii),DENSITYs(ii),FATPCTs(ii),SHAPEs(ii),
-     &       0D1, SUBQFATs(ii),SHAPE_Bs(ii),SHAPE_Bs(ii),
+          call GEOM_ENDO(MASSs(ii),DENSITYs(ii),DENSITYs(ii),FATPCTs(ii)
+     &       ,SHAPEs(ii),0D1, SUBQFATs(ii),SHAPE_Bs(ii),SHAPE_Bs(ii),
      &       (DHAIRDs(ii)+DHAIRVs(ii))/2D1,(INSDENDs(ii)+INSDENVs(ii))
      &       /2D1,PJOINs(ii),0D1,0D1,0D1,GEOM_out)
 
@@ -148,7 +148,7 @@ C     end if
 
       ! Update current surface areas
       do i = 1,num_parts
-          call GEOM_ENDO(MASSs(i),DENSITYs(i),FATPCTs(i),
+          call GEOM_ENDO(MASSs(i),DENSITYs(i),DENSITYs(i),FATPCTs(i),
      &     SHAPEs(i),0D1,SUBQFATs(i),SHAPE_Bs(i),SHAPE_Bs(i),
      &     (DHAIRDs(ii)+DHAIRVs(i))/2D1,(INSDENDs(i)+INSDENVs(i))/
      &     2D1,PJOINs(i),0D1,0D1,0D1,GEOM_out)
