@@ -338,10 +338,10 @@ HomoTherm_var <- function(MASS = 70,
       SHAPEs <- c(4, 1, 1, 1)
       ORIENTs <- rep(3, 4)
       for(j in 1:length(ZENs)){
-        GEOM.head <- c(ZENs[j], GEOM_ENDO(MASSs[1], DENSITYs[1], FATPCTs[1], SHAPEs[1], INSDEPDs[1], SUBQFATs[1], SHAPE_Bs[1], SHAPE_Bs[1], 0, 0, PJOINs[1], 0, ORIENTs[1], ZEN = ZENs[j]))
-        GEOM.trunk <- c(ZENs[j], GEOM_ENDO(MASSs[2], DENSITYs[2], FATPCTs[2], SHAPEs[2], INSDEPDs[2], SUBQFATs[2], SHAPE_Bs[2], SHAPE_Bs[2], 0, 0, PJOINs[2], 0, ORIENTs[2], ZEN = ZENs[j]))
-        GEOM.arm <- c(ZENs[j], GEOM_ENDO(MASSs[3], DENSITYs[3], FATPCTs[3], SHAPEs[3], INSDEPDs[3], SUBQFATs[3], SHAPE_Bs[3], SHAPE_Bs[3], 0, 0, PJOINs[3], 0, ORIENTs[3], ZEN = ZENs[j]))
-        GEOM.leg <- c(ZENs[j], GEOM_ENDO(MASSs[4], DENSITYs[4], FATPCTs[4], SHAPEs[4], INSDEPDs[4], SUBQFATs[4], SHAPE_Bs[4], SHAPE_Bs[4], 0, 0, PJOINs[4], 0, ORIENTs[4], ZEN = ZENs[j]))
+        GEOM.head <- c(ZENs[j], GEOM_ENDO(MASSs[1], DENSITYs[1], DENSITYs[1], FATPCTs[1], SHAPEs[1], INSDEPDs[1], SUBQFATs[1], SHAPE_Bs[1], SHAPE_Bs[1], 0, 0, PJOINs[1], 0, ORIENTs[1], ZEN = ZENs[j]))
+        GEOM.trunk <- c(ZENs[j], GEOM_ENDO(MASSs[2], DENSITYs[2], DENSITYs[2], FATPCTs[2], SHAPEs[2], INSDEPDs[2], SUBQFATs[2], SHAPE_Bs[2], SHAPE_Bs[2], 0, 0, PJOINs[2], 0, ORIENTs[2], ZEN = ZENs[j]))
+        GEOM.arm <- c(ZENs[j], GEOM_ENDO(MASSs[3], DENSITYs[3], DENSITYs[3], FATPCTs[3], SHAPEs[3], INSDEPDs[3], SUBQFATs[3], SHAPE_Bs[3], SHAPE_Bs[3], 0, 0, PJOINs[3], 0, ORIENTs[3], ZEN = ZENs[j]))
+        GEOM.leg <- c(ZENs[j], GEOM_ENDO(MASSs[4], DENSITYs[4], DENSITYs[4], FATPCTs[4], SHAPEs[4], INSDEPDs[4], SUBQFATs[4], SHAPE_Bs[4], SHAPE_Bs[4], 0, 0, PJOINs[4], 0, ORIENTs[4], ZEN = ZENs[j]))
         if(j == 1){
           GEOM.heads <- GEOM.head
           GEOM.trunks <- GEOM.trunk
