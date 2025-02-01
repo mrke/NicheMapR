@@ -113,7 +113,8 @@ This subroutine computes aspects of the animal's geometry. Note that GEOM_ENDO r
 ```{r}
 # input
 AMASS <- 10 # animal mass (kg)
-ANDENS <- 1000 # animal density (kg/m3)
+ANDENS <- 1000 # flesh density (kg/m3)
+FATDEN <- 901 # fat density (kg/m3)
 SUBQFAT <- 1 # is subcutaneous fat present? (0 is no, 1 is yes)
 FATPCT <- 20 # body fat (%)
 SHAPE <- 4 # shape, 1 is cylinder, 2 is sphere, 3 is plate, 4 is ellipsoid
@@ -131,7 +132,7 @@ Z <- 20 # zenith angle of the sun
 ZEN <- pi/180*Z # convert degrees to radians
 
 # call the subroutine
-GEOM.out <- GEOM_ENDO(AMASS, ANDENS, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT, ZEN)
+GEOM.out <- GEOM_ENDO(AMASS, ANDENS, FATDEN, FATPCT, SHAPE, ZFUR, SUBQFAT, SHAPE_B, SHAPE_C, DHARA, RHOARA, PCOND, SAMODE, ORIENT, ZEN)
 
 # output
 VOL <- GEOM.out[1] # volume (m3)
