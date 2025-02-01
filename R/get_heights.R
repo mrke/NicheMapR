@@ -18,10 +18,10 @@ get_heights <- function(MASSs = c(5.32, 35.07, 3.43, 11.34),
   SAMODE <- 0
   SHAPEs <- c(4, 1, 1, 1)
   FATPCTs <- c(5, 36, 10, 23) * 0.5 # 22.6%, typical human
-  GEOM.head <- GEOM_ENDO(MASSs[1], DENSITYs[1], FATPCTs[1], SHAPEs[1], 0, 0, SHAPE_Bs[1], SHAPE_Bs[1], 0, 0, 0, 0, 0, 0)
-  GEOM.trunk <- GEOM_ENDO(MASSs[2], DENSITYs[2], FATPCTs[2], SHAPEs[2], 0, 0, SHAPE_Bs[2], SHAPE_Bs[2], 0, 0, 0, 0, 0, 0)
-  GEOM.arm <- GEOM_ENDO(MASSs[3], DENSITYs[3], FATPCTs[3], SHAPEs[3], 0, 0, SHAPE_Bs[3], SHAPE_Bs[3], 0, 0, 0, 0, 0, 0)
-  GEOM.leg <- GEOM_ENDO(MASSs[4], DENSITYs[4], FATPCTs[4], SHAPEs[4], 0, 0, SHAPE_Bs[4], SHAPE_Bs[4], 0, 0, 0, 0, 0, 0)
+  GEOM.head <- GEOM_ENDO(MASSs[1], DENSITYs[1], DENSITYs[1], FATPCTs[1], SHAPEs[1], 0, 0, SHAPE_Bs[1], SHAPE_Bs[1], 0, 0, 0, 0, 0, 0)
+  GEOM.trunk <- GEOM_ENDO(MASSs[2], DENSITYs[2], DENSITYs[2], FATPCTs[2], SHAPEs[2], 0, 0, SHAPE_Bs[2], SHAPE_Bs[2], 0, 0, 0, 0, 0, 0)
+  GEOM.arm <- GEOM_ENDO(MASSs[3], DENSITYs[3], DENSITYs[3], FATPCTs[3], SHAPEs[3], 0, 0, SHAPE_Bs[3], SHAPE_Bs[3], 0, 0, 0, 0, 0, 0)
+  GEOM.leg <- GEOM_ENDO(MASSs[4], DENSITYs[4], DENSITYs[4], FATPCTs[4], SHAPEs[4], 0, 0, SHAPE_Bs[4], SHAPE_Bs[4], 0, 0, 0, 0, 0, 0)
 
   GEOM.heads <- as.data.frame(GEOM.head)
   GEOM.trunks <- as.data.frame(GEOM.trunk)
