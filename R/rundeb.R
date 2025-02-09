@@ -6,7 +6,7 @@
 #' 'allStat.mat' file to have been converted to 'allStat.Rda' via the R.matlab
 #' package (i.e. allStat <- readMat('allStat.mat' then
 #' save(allStat, file = 'allstat.Rda'))).
-#' @param allstat = allstat, the allstat data set
+#' @param allstat = allstat, the allstat data set or a path to where the 'results_species.mat' and 'stat_species.mat' files are
 #' @param species = 'Daphnia.magna', a species in the allstat file
 #' @param Euler = 0, use Euler integration? (faster, but less accurate), 0 or 1
 #' @param start.stage = 0, stage at which simulation starts, 0=embryo, 1=birth, 2=puberty
@@ -55,7 +55,7 @@
 #' mass.unit <- 'g'
 #' length.unit <- 'mm'
 #'
-#' deb <- rundeb(species = species, ndays = ndays, div = div, starve_mode = starve.mode, Tbs = Tbs,
+#' deb <- rundeb(species = species, ndays = ndays, div = div, starve_mode = starve_mode, Tbs = Tbs,
 #'               clutchsize = clutchsize, kap.mult = kap.mult, v.mult = v.mult,
 #'               p.M.mult = p.M.mult, Xs = Xs, z.mult = z.mult, E.0.mult = E.0.mult,
 #'               mass.unit = mass.unit, length.unit = length.unit, start.stage = start.stage,
@@ -65,47 +65,62 @@
 #' parameters <- deb$pars # retrieve the extracted parameters
 #' @export
 rundeb <- function(
-  allstat = allstat,
-  species = 'Daphnia.magna',
-  Euler = 0,
-  start.stage = 0,
-  stages = 6,
-  S_instar = rep(1.618, stages),
-  ndays = 50,
-  div = 24,
-  starve_mode = 1,
-  Tbs = rep(20, ndays*div),
-  Xs = rep(100, ndays*div),
-  E_sm = 350,
-  fdry = 0.3,
-  clutchsize = 5,
-  kap.mult = 1,
-  z.mult = 1,
-  v.mult = 1,
-  p.M.mult = 1,
-  E.0.mult = 1,
-  plot = 1,
-  mass.unit = 'g',
-  length.unit = 'cm',
-  ageing = 1){ # end function parameters
+    allstat = allstat,
+    species = 'Daphnia.magna',
+    Euler = 0,
+    start.stage = 0,
+    stages = 6,
+    S_instar = rep(1.618, stages),
+    ndays = 50,
+    div = 24,
+    starve_mode = 1,
+    Tbs = rep(20, ndays*div),
+    Xs = rep(100, ndays*div),
+    E_sm = 350,
+    fdry = 0.3,
+    clutchsize = 5,
+    kap.mult = 1,
+    z.mult = 1,
+    v.mult = 1,
+    p.M.mult = 1,
+    E.0.mult = 1,
+    plot = 1,
+    mass.unit = 'g',
+    length.unit = 'cm',
+    ageing = 1){ # end function parameters
 
   n <- div * ndays # time steps
   step<-1/div # step size (hours)
 
-  allDEB.species <- unlist(labels(allStat$allStat))
-  if(exists("E.Hj") == TRUE){rm(E.Hj)} # remove previous value from memory if present from prior run
-  if(exists("L.j") == TRUE){rm(L.j)} # remove previous value from memory if present from prior run
-  species.slot <- which(allDEB.species == species) # find the slot with the species of interest
-  par.names <- unlist(labels(allStat$allStat[[species.slot]])) # get parameter names
-  for(i in 1:length(par.names)){ # pull parameters into memory
-    assign(par.names[i], unlist(allStat$allStat[[species.slot]][i]))
+  if(tools::file_ext(allstat) == "Rda"){
+    allDEB.species <- unlist(labels(allStat$allStat))
+    if(exists("E.Hj") == TRUE){rm(E.Hj)} # remove previous value from memory if present from prior run
+    if(exists("L.j") == TRUE){rm(L.j)} # remove previous value from memory if present from prior run
+    species.slot <- which(allDEB.species == species) # find the slot with the species of interest
+    par.names <- unlist(labels(allStat$allStat[[species.slot]])) # get parameter names
+    for(i in 1:length(par.names)){ # pull parameters into memory
+      assign(par.names[i], unlist(allStat$allStat[[species.slot]][i]))
+    }
+  }else{
+    pars <- readMat(paste0(allstat,'results_',species, '.mat'))
+    par.names <- unlist(labels(pars$par))
+    for(i in 1:length(par.names)){
+      assign(par.names[i], unlist(pars$par[i]))
+    }
+    pars <- readMat(paste0(allstat,'stat_',species, '.mat'))
+    par.names <- unlist(labels(pars$stat))
+    for(i in 1:length(par.names)){
+      assign(par.names[i], unlist(pars$stat[i]))
+    }
   }
+
   if(exists("E.Hj")==FALSE){E.Hj <- E.Hb} # if no acceleration, give E.Hj the value at birth
   if(exists("L.j")==FALSE){L.j <- L.b} # if no acceleration, give L.j the value at birth
   if(exists("del.M")==FALSE){ # if no del.M, assume 0.2 and warn
     del.M <- 0.2
     cat("NOTE: No length data in parameter estimation, assuming del.M of 0.2, predictions of physical lengths are suspect.", '\n')
   }
+
   metab_mode <- 0 # default (standard model or abj)
   if(abs(E.Hj - E.Hp) < .001){ # check if abp mode
     metab_mode <- 1
