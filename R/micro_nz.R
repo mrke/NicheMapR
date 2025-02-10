@@ -824,7 +824,7 @@ micro_nz <- function(
 
       ########### Max and Min Air Temps ################
 
-      TMEAN<-stack(paste(spatial,"/CC/TMEAN_",year,"_",scenario,".nc",sep="")) # air temperature shift
+      TMEAN<-rast(paste(spatial,"/CC/TMEAN_",year,"_",scenario,".nc",sep="")) # air temperature shift
 
       diffs<-as.numeric(terra::extract(TMEAN,x))
       TMAXX_diff <- getdiff(diffs,TMEAN)
@@ -837,7 +837,7 @@ micro_nz <- function(
       # to monthly (making sure we slide the days back by 30 days for the interpolation
       # because the values are centred within each season). Then we get the
 
-      AH<-stack(paste0(spatial,"/CC/AHCC_SUM.nc"),paste0(spatial,"/CC/AHCC_AUT.nc"),paste0(spatial,"/CC/AHCC_WIN.nc"),paste0(spatial,"/CC/AHCC_SPR.nc"))
+      AH<-rast(paste0(spatial,"/CC/AHCC_SUM.nc"),paste0(spatial,"/CC/AHCC_AUT.nc"),paste0(spatial,"/CC/AHCC_WIN.nc"),paste0(spatial,"/CC/AHCC_SPR.nc"))
 
       diffs<-as.numeric(terra::extract(AH,x)) # extract seasonal values
       diff1<-(diffs[1]+diffs[4])/2 # get mean of first and last
@@ -1014,7 +1014,7 @@ micro_nz <- function(
         dates2<-RAINFALL_sum$Group.1
         RAINFALL_sum<-RAINFALL_sum[order(as.Date(paste("01-",RAINFALL_sum$Group.1,sep=""),"%m-%Y")),2]
 
-        RAIN<-stack(paste(spatial,"/CC/RAIN_",year,"_",scenario,".nc",sep="")) # rainfall shift
+        RAIN<-rast(paste(spatial,"/CC/RAIN_",year,"_",scenario,".nc",sep="")) # rainfall shift
         diffs<-rep(as.numeric(terra::extract(RAIN,x)),nyears)
 
         rainfall_new<-(RAINFALL_sum+RAINFALL_sum*(diffs/100))
