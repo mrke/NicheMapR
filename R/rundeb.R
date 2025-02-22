@@ -6,7 +6,7 @@
 #' 'allStat.mat' file to have been converted to 'allStat.Rda' via the R.matlab
 #' package (i.e. allStat <- readMat('allStat.mat' then
 #' save(allStat, file = 'allstat.Rda'))).
-#' @param allstat = allstat, the allstat data set or a path to where the 'results_species.mat' and 'stat_species.mat' files are
+#' @param allstat = allStat, the allstat data set or a path to where the 'results_species.mat' and 'stat_species.mat' files are
 #' @param species = 'Daphnia.magna', a species in the allstat file
 #' @param Euler = 0, use Euler integration? (faster, but less accurate), 0 or 1
 #' @param start.stage = 0, stage at which simulation starts, 0=embryo, 1=birth, 2=puberty
@@ -65,7 +65,7 @@
 #' parameters <- deb$pars # retrieve the extracted parameters
 #' @export
 rundeb <- function(
-    allstat = allstat,
+    allstat = allStat,
     species = 'Daphnia.magna',
     Euler = 0,
     start.stage = 0,
@@ -92,7 +92,7 @@ rundeb <- function(
   n <- div * ndays # time steps
   step<-1/div # step size (hours)
 
-  if(tools::file_ext(allstat) == "Rda"){
+  if(class(allstat) == "list"){
     allDEB.species <- unlist(labels(allStat$allStat))
     if(exists("E.Hj") == TRUE){rm(E.Hj)} # remove previous value from memory if present from prior run
     if(exists("L.j") == TRUE){rm(L.j)} # remove previous value from memory if present from prior run
