@@ -37,7 +37,7 @@
 #' \code{CONV_ENHANCE}{ = 1, convective enhancement factor (> 1 for turbulent outdoor conditions) (-)}\cr\cr
 #'
 #' \strong{ Whole body parameters:}\cr\cr
-#' \code{MAXSWEAT}{ = 1500, maximum sweating rate (g/h)}\cr\cr
+#' \code{MAXSWEAT}{ = 0.75, maximum sweating rate (L/h/m^2)}\cr\cr
 #' \code{Q10}{ = 2, Q10 factor for adjusting BMR for TC}\cr\cr
 #' \code{RQ}{ = 0.80, respiratory quotient (fractional, 0-1)}\cr\cr
 #' \code{EXTREF}{ = 20, O2 extraction efficiency (\%)}\cr\cr
@@ -52,7 +52,7 @@
 #' \code{SHAPE_Bs}{ = c(1.6, 1.9, 11, 7.0), ratio between long and short axis (-)}\cr\cr
 #' \code{FSKREFs}{ = c(0.50, 0.42, 0.35, 0.35), configuration factor to sky}\cr\cr
 #' \code{FGDREFs}{ = c(0.38, 0.42, 0.35, 0.35), reference configuration factor to ground}\cr\cr
-#' \code{EMISANs}{ = rep(0.95, 4), emissivity each body part (-)}\cr\cr
+#' \code{EMISANs}{ = rep(0.98, 4), emissivity each body part (-)}\cr\cr
 #' \code{REFLD}{ = rep(0.3, 4), solar reflectivity dorsal (fractional, 0-1)}\cr\cr
 #' \code{REFLV}{ = rep(0.3, 4), solar reflectivity ventral (fractional, 0-1)}\cr\cr
 #'
@@ -223,7 +223,7 @@ HomoTherm <- function(MASS = 70,
                       PCTWET_INCs = rep(0.5, 4),
                       PCTWET_MAXs = rep(100, 4),
                       PCTBAREVAPs = c(60, 0, 0, 0),
-                      MAXSWEATs = rep(1500, 4),
+                      MAXSWEAT = 0.75,
                       CLOWETs = rep(0, 4),
                       CONV_ENHANCE = 1,
                       TA = 21,
@@ -278,6 +278,11 @@ HomoTherm <- function(MASS = 70,
   parts2do <- length(SHAPEs)
   parts <- vector(mode = "list", length = parts2do)
   counter <- 0
+  counter2 <- 0
+  SWEAT <- 0
+  HEIGHT_GUESS <- 100 * (MASS / 23.5) ^ 0.5 # BMI equation, assuming 23.5 BMI (this gets update after first iteration)
+  AREA <- 0.00718 * MASS ^ 0.425 * HEIGHT_GUESS ^ 0.725 # DuBois area, m2
+
   while(QGEN < QMETAB_MIN){
 
     for(i in 1:parts2do){  # cycle through each body part
@@ -317,7 +322,6 @@ HomoTherm <- function(MASS = 70,
       PCTWET_MAX <- PCTWET_MAXs[i]
       FURWET <- CLOWETs[i]
       PCTBAREVAP <- PCTBAREVAPs[i]
-      MAXSWEAT <- MAXSWEATs[i]
       AMASS <- MASSFRAC * MASS
       QBASPART <- QMETAB_MIN * MASSFRAC
       TREGMODE <- 2 # irrelevant because THERMOREG = 0
@@ -384,6 +388,21 @@ HomoTherm <- function(MASS = 70,
                           ORIENT = ORIENT,
                           CONV_ENHANCE = CONV_ENHANCE,
                           Q10 = Q10)
+    }
+
+    # if first iteration, get surface area
+    if(counter2 == 0){
+      mass.parts <- MASSFRACs * MASS
+      head.morph <- c(mass.parts[1], parts[[1]][2]$morph[c(1:12, 15:20)])
+      trunk.morph <- c(mass.parts[2], parts[[2]][2]$morph[c(1:12, 15:20)])
+      arm.morph <- c(mass.parts[3], parts[[3]][2]$morph[c(1:12, 15:20)])
+      leg.morph <- c(mass.parts[4], parts[[4]][2]$morph[c(1:12, 15:20)])
+      names(head.morph) <- c("MASS", "AREA", "VOLUME", "CHAR_DIMENSION", "MASS_FAT", "FAT_THICK", "FLESH_VOL", "LENGTH", "WIDTH", "HEIGHT", "R_SKIN", "R_INS", "AREA_SILHOUETTE", "AREA_SKIN", "AREA_SKIN_EVAP", "AREA_CONV", "AREA_JOIN", "F_SKY", "F_GROUND")
+      names(trunk.morph) <- names(head.morph)
+      names(arm.morph) <- names(head.morph)
+      names(leg.morph) <- names(head.morph)
+      AREA <- head.morph[2] - head.morph[17] + trunk.morph[2] - trunk.morph[17] + (arm.morph[2] - arm.morph[17]) * 2 + (leg.morph[2] - leg.morph[17]) * 2
+      AREA_RAD <- (head.morph[2] - head.morph[17]) * (FSKREFs[1] + FGDREFs[1]) + (trunk.morph[2] - trunk.morph[17]) * (FSKREFs[2] + FGDREFs[2]) + (arm.morph[2] - arm.morph[17]) * (FSKREFs[3] + FGDREFs[3]) * 2 + (leg.morph[2] - leg.morph[17]) * (FSKREFs[4] + FGDREFs[4]) * 2
     }
 
     # weighted (by surface area) mean skin and fur temperature
@@ -458,8 +477,8 @@ HomoTherm <- function(MASS = 70,
     SWEAT <- EVAP_CUT_L / r # L/h
 
     # cap sweating at maximum rate
-    if(SWEAT > MAXSWEAT){
-     PCTWET_MAXs <- PCTWETs
+    if(SWEAT > MAXSWEAT * AREA){
+      PCTWET_MAXs <- PCTWETs
     }
     if(QGEN < QMETAB_MIN){
       for(i in 1:4){
@@ -506,6 +525,7 @@ HomoTherm <- function(MASS = 70,
        break # dead
       }
     }
+    counter2 <- counter2 + 1
   }
 
   ZBRENT.out <- as.data.frame(ZBRENT.out)
@@ -550,7 +570,7 @@ HomoTherm <- function(MASS = 70,
   names(leg.morph) <- names(head.morph)
   AREA <- head.morph[2] - head.morph[17] + trunk.morph[2] - trunk.morph[17] + (arm.morph[2] - arm.morph[17]) * 2 + (leg.morph[2] - leg.morph[17]) * 2
   AREA_RAD <- (head.morph[2] - head.morph[17]) * (FSKREFs[1] + FGDREFs[1]) + (trunk.morph[2] - trunk.morph[17]) * (FSKREFs[2] + FGDREFs[2]) + (arm.morph[2] - arm.morph[17]) * (FSKREFs[3] + FGDREFs[3]) * 2 + (leg.morph[2] - leg.morph[17]) * (FSKREFs[4] + FGDREFs[4]) * 2
-  CP <- WETAIR(db = TAEXIT ,rh = RH[1], bp = BP)$cp # heat capacity of air (J/KG/K)
+  CP <- WETAIR(db = TAEXIT, rh = RH[1], bp = BP)$cp # heat capacity of air (J/KG/K)
   QCONV_RESP <- CP * AIRML1 * 0.0289647 * (TA[1] - TLUNG) # HEAT CAPCITY (J/KG/K) * MOLES AIR (MOL / S) * MOLAR MASS OF AIR (KG/MOL) * DELTA TEMPERATURE
   QEVAP_RESP <- QRESP + QCONV_RESP
   balance <- c(TCORE, TLUNG, TSKIN, TFA, PCTWET, AK1, EVAP_CUT_L, EVAP_RESP_L, SWEAT, QGEN, QSLR, QRAD_IN, QRAD_OUT, QCONV_RESP, QEVAP_RESP * -1, QEVAP * -1, QCONV * -1, AREA, AREA_RAD)

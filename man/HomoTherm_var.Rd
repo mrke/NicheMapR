@@ -61,7 +61,7 @@ the HomoTherm function across a sequence of environments.
 \code{CONV_ENHANCE}{ = 1, convective enhancement factor (> 1 for turbulent outdoor conditions) (-)}\cr\cr
 
 \strong{ Whole body parameters:}\cr\cr
-\code{MAXSWEAT}{ = 1500, maximum sweating rate (g/h)}\cr\cr
+\code{MAXSWEAT}{ = 0.75, maximum sweating rate (L/h/m^2)}\cr\cr
 \code{Q10}{ = 2, Q10 factor for adjusting BMR for TC}\cr\cr
 \code{RQ}{ = 0.80, respiratory quotient (fractional, 0-1)}\cr\cr
 \code{EXTREF}{ = 20, O2 extraction efficiency (\%)}\cr\cr
@@ -76,7 +76,7 @@ the HomoTherm function across a sequence of environments.
 \code{SHAPE_Bs}{ = c(1.6, 1.9, 11, 7.0), ratio between long and short axis (-)}\cr\cr
 \code{FSKREFs}{ = c(0.50, 0.42, 0.35, 0.35), configuration factor to sky}\cr\cr
 \code{FGDREFs}{ = c(0.38, 0.42, 0.35, 0.35), reference configuration factor to ground}\cr\cr
-\code{EMISANs}{ = rep(0.95, 4), emissivity each body part (-)}\cr\cr
+\code{EMISANs}{ = rep(0.98, 4), emissivity each body part (-)}\cr\cr
 \code{REFLD}{ = rep(0.3, 4), solar reflectivity dorsal (fractional, 0-1)}\cr\cr
 \code{REFLV}{ = rep(0.3, 4), solar reflectivity ventral (fractional, 0-1)}\cr\cr
 \code{heights}{ = rep(NA, 4), height of mid-point of each body part (m), can be calculated with the 'get_heights' function}\cr\cr

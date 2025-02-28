@@ -5,7 +5,7 @@
 \title{rundeb}
 \usage{
 rundeb(
-  allstat = allstat,
+  allstat = allStat,
   species = "Daphnia.magna",
   Euler = 0,
   start.stage = 0,
@@ -31,7 +31,7 @@ rundeb(
 )
 }
 \arguments{
-\item{allstat}{= allstat, the allstat data set}
+\item{allstat}{= allStat, the allstat data set or a path to where the 'results_species.mat' and 'stat_species.mat' files are}
 
 \item{species}{= 'Daphnia.magna', a species in the allstat file}
 
@@ -110,7 +110,7 @@ plot <- 1 # plot results?
 mass.unit <- 'g'
 length.unit <- 'mm'
 
-deb <- rundeb(species = species, ndays = ndays, div = div, starve_mode = starve.mode, Tbs = Tbs,
+deb <- rundeb(species = species, ndays = ndays, div = div, starve_mode = starve_mode, Tbs = Tbs,
               clutchsize = clutchsize, kap.mult = kap.mult, v.mult = v.mult,
               p.M.mult = p.M.mult, Xs = Xs, z.mult = z.mult, E.0.mult = E.0.mult,
               mass.unit = mass.unit, length.unit = length.unit, start.stage = start.stage,
