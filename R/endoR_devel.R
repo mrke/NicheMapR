@@ -779,9 +779,9 @@ endoR_devel <- function(
   SWEAT.G.S <- (QSEVAP.D + QSEVAP.V) * 0.5 / HTOVPR * 1000 # water lost from skin, g/s
   EVAP.G.S <- GEVAP + SWEAT.G.S # total evaporative water loss, g/s
   sigma <- 5.6697E-8
-  QIROUT.D <- sigma * EMISAN * AREASKIN * (TSKCALCAV.D + 273.15) ^ 4
+  QIROUT.D <- 2 * FASKY * sigma * EMISAN * AREASKIN * (TSKCALCAV.D + 273.15) ^ 4
   QIRIN.D <- QRAD.D * -1 + QIROUT.D
-  QIROUT.V <- sigma * EMISAN * AREASKIN * (TSKCALCAV.V + 273.15) ^ 4
+  QIROUT.V <- 2 * FAGRD * sigma * EMISAN * AREASKIN * (TSKCALCAV.V + 273.15) ^ 4
   QIRIN.V <- QRAD.V * -1 + QIROUT.V
 
   QSOL <- QSLR.D * DMULT + QSLR.V * VMULT # solar, W
