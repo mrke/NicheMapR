@@ -559,6 +559,19 @@ HomoTherm_var <- function(MASS = 70,
   balance <- as.data.frame(balance)
   colnames(balance) <- c("T_CORE", "T_LUNG", "T_SKIN", "T_CLO", "PCTWET", "K_FLESH", "EVAP_CUT_L", "EVAP_RESP_L", "SWEAT_L", "QMETAB", "QSLR", "QRAD_IN", "QRAD_OUT", "QCONV_RESP", "QEVAP_RESP", "QEVAP_CUT", "QCONV", "AREA", "AREA_RAD")
   colnames(respire) <- c("AIR_L", "O2_L", "O2_mol_in", "O2_mol_out", "AIR_mol_in", "AIR_mol_out")
+  colnames(head.treg) <- c("T_CORE","TSKIN_D", "TSKIN_V", "TCLO_D", "TCLO_V", "PCTWET", "K_FLESH", "K_CLO_D", "K_CLO_V", "Q10")
+  colnames(trunk.treg) <- colnames(head.treg)
+  colnames(arm.treg) <- colnames(head.treg)
+  colnames(leg.treg) <- colnames(head.treg)
+  names(head.morph) <- c("MASS", "AREA", "VOLUME", "CHAR_DIMENSION", "MASS_FAT", "FAT_THICK", "FLESH_VOL", "LENGTH", "WIDTH", "HEIGHT", "R_SKIN", "R_INS", "AREA_SILHOUETTE", "AREA_SKIN", "AREA_SKIN_EVAP", "AREA_CONV", "AREA_JOIN", "F_SKY", "F_GROUND")
+  colnames(trunk.morph) <- colnames(head.morph)
+  colnames(arm.morph) <- colnames(head.morph)
+  colnames(leg.morph) <- colnames(head.morph)
+  colnames(head.enbal) <- c("QMETAB", "QSLR", "QRAD_IN", "QRAD_OUT", "QEVAP", "QCONV", "ENB", "NTRY", "SUCCESS")
+  colnames(trunk.enbal) <- colnames(head.enbal)
+  colnames(arm.enbal) <- colnames(head.enbal)
+  colnames(leg.enbal) <- colnames(head.enbal)
+
   return(list(balance = balance,
               respire = as.data.frame(respire),
               head.treg = as.data.frame(head.treg),
