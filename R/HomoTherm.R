@@ -253,6 +253,9 @@ HomoTherm <- function(MASS = 70,
   ORIENTs = rep(0, 4) # don't orient perp or parallel to sun
   AK1_SUBQFAT <- 0.51 # flesh conductivity value at which subcutaneous fat influence declines
   SUBQFAT_REDUCE <- 0.9 # factor by which subcutaneous fat influence is reduced
+  INSDEPDs[INSDEPDs <= 0] <- 1e-9 # don't allow zero - can cause numerical problems
+  INSDEPVs[INSDEPVs <= 0] <- 1e-9 # don't allow zero - can cause numerical problems
+
   if(length(TA == 1)){
     TA <- rep(TA, 4)
   }
