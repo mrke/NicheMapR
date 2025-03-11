@@ -192,19 +192,16 @@ library(NicheMapR)
 TAs <- seq(-5, 50) # sequence of air temperatures, °C
 VELs <- rep(0.1, length(TAs)) # keep wind speeds constant, m/s
 RHs <- rep(50, length(TAs)) # keep humidity constant, \%
-# set insulation depth, flesh conductivity and fat
+# set insulation depth and clothing conductivity
 INSDEPDs <- c(1e-02, rep(6.15e-03, 3)) # 'dorsal' clothing depth, m
 INSDEPVs <- c(1e-09, rep(6.15e-03, 3)) # 'ventral' clothing depth, m
 KCLOs <- rep(0.04, 4) # clothing thermal conductivity, W/m·K
-FATPCTs <- c(5, 36, 10, 23) # body fat \%
-HomoTherm.out <- HomoTherm_var(INSDEPDs = INSDEPDs * 0,
-                               INSDEPVs = INSDEPVs * 0,
+HomoTherm.out <- HomoTherm_var(INSDEPDs = INSDEPDs,
+                               INSDEPVs = INSDEPVs,
                                KCLOs = KCLOs,
-                               FATPCTs = FATPCTs,
                                TAs = TAs,
                                VELs = VELs,
-                               RHs = RHs,
-                               EXCEED.TCMAX = TRUE)
+                               RHs = RHs)
 balance <- HomoTherm.out$balance
 LCT <- TAs[which(balance$K_FLESH > balance$K_FLESH[1])[1]-1]
 UCT <- TAs[balance$T_SKIN > 34][1]

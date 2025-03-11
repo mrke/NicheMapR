@@ -171,20 +171,17 @@
 #' TAs <- seq(-5, 50) # sequence of air temperatures, °C
 #' VELs <- rep(0.1, length(TAs)) # keep wind speeds constant, m/s
 #' RHs <- rep(50, length(TAs)) # keep humidity constant, %
-#' # set insulation depth, flesh conductivity and fat
+#' # set insulation depth and clothing conductivity
 #' INSDEPDs <- c(1e-02, rep(6.15e-03, 3)) # 'dorsal' clothing depth, m
 #' INSDEPVs <- c(1e-09, rep(6.15e-03, 3)) # 'ventral' clothing depth, m
 #' KCLOs <- rep(0.04, 4) # clothing thermal conductivity, W/m·K
-#' FATPCTs <- c(5, 36, 10, 23) # body fat %
 # simulate across the air temperatures
-#' HomoTherm.out <- HomoTherm_var(INSDEPDs = INSDEPDs * 0,
-#'                                INSDEPVs = INSDEPVs * 0,
+#' HomoTherm.out <- HomoTherm_var(INSDEPDs = INSDEPDs,
+#'                                INSDEPVs = INSDEPVs,
 #'                                KCLOs = KCLOs,
-#'                                FATPCTs = FATPCTs,
 #'                                TAs = TAs,
 #'                                VELs = VELs,
-#'                                RHs = RHs,
-#'                                EXCEED.TCMAX = TRUE)
+#'                                RHs = RHs)
 #'balance <- HomoTherm.out$balance
 #'LCT <- TAs[which(balance$K_FLESH > balance$K_FLESH[1])[1]-1]
 #'UCT <- TAs[balance$T_SKIN > 34][1]
@@ -213,8 +210,8 @@ HomoTherm_var <- function(MASS = 70,
                           heights = rep(NA, 4),
                           PJOINs = c(0.02753623, 0.08239728, 0.02173913, 0.03333333),
                           SUBQFATs = rep(1, 4),
-                          FATPCTs = c(5, 36, 10, 23),
-                          KFLESHs = c(0.9, 0.9, 0.5, 0.5),
+                          FATPCTs =  c(5 * 0.1, 36 * 0.2, 10, 23),
+                          KFLESHs = c(1.1, 0.9, 0.5, 0.5),
                           KFLESH_MAXs = rep(5, 4),
                           KFLESH_INCs = rep(0.05, 4), # rep(0.2, 4),
                           KFATs = rep(0.23, 4),
@@ -331,7 +328,7 @@ HomoTherm_var <- function(MASS = 70,
                                INSDEPDs = c(1e-02, rep(6e-03, 3)),
                                SHAPE_Bs = c(1.75, 1.87, 6.65, 6.70),
                                SUBQFATs = rep(1, 4),
-                               FATPCTs = c(5, 36, 10, 23),
+                               FATPCTs = c(5 * 0.1, 36 * 0.2, 10, 23),
                                PJOINs = c(0.0348, 0.0965, 0.0345, 0.0347),
                                plot.sil = TRUE){
 
