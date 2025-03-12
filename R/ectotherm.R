@@ -47,7 +47,7 @@
 #' @details
 #' \strong{ Parameters controling how the model runs:}
 #' \itemize{
-#' \item{\code{nyears}{ = micro$nyears, Number of years the simulation runs for - must be consistent with dimensions of environmental input data}\cr}
+#' \item{\code{nyears}{ = micro$nyears, Number of years the simulation runs for - must be consistent with dimensions of environmental input data. Note that leap years are not currently handled in the way the ectotherm model counts years}\cr}
 #' \item{\code{enberr}{ = 0.01, Factor by which the mass is multiplied to obtain a tolerance level for the heat budget solution}\cr}
 #' \item{\code{live}{ = 1, 0 (no behavior or metabolism), 1 (full behaviour) or 2 (full behaviour other than orienting to the sun)?}\cr}
 #' \item{\code{leaf}{ = 0, Simulate leaf using given stomatal conductance (1), regulating stomatal openness (to g_vs_xx_max) to avoid overheating (2), or don't simulate leaf (0)?}\cr}
@@ -346,8 +346,8 @@
 #'
 #' environ variables:
 #' \itemize{
-#' \item 1 DOY - Day of year
-#' \item 2 YEAR - Year of simulation
+#' \item 1 DOY - Day of year (warning - doesn't account for leap years!)
+#' \item 2 YEAR - Year of simulation (warning - doesn't account for leap years!)
 #' \item 3 DAY - Day of simulation
 #' \item 4 TIME - Time of day (hours)
 #' \item 5 TC - Body temperature (°C)
@@ -378,8 +378,8 @@
 #' }
 #' enbal variables:
 #' \itemize{
-#' \item 1 DOY - Day of year
-#' \item 2 YEAR - Year of simulation
+#' \item 1 DOY - Day of year (warning - doesn't account for leap years!)
+#' \item 2 YEAR - Year of simulation (warning - doesn't account for leap years!)
 #' \item 3 DAY - Day of simulation
 #' \item 4 TIME - Time of day (hours)
 #' \item 5 QSOL - Solar radiation absorbed (W)
@@ -395,8 +395,8 @@
 #'}
 #' masbal variables:
 #' \itemize{
-#' \item 1 DOY - Day of year
-#' \item 2 YEAR - Year of simulation
+#' \item 1 DOY - Day of year (warning - doesn't account for leap years!)
+#' \item 2 YEAR - Year of simulation (warning - doesn't account for leap years!)
 #' \item 3 DAY - Day of simulation
 #' \item 4 TIME - Time of day (hours)
 #' \item 5 O2_ml - Oxygen consumption rate (ml/h)
@@ -419,8 +419,8 @@
 #'}
 #' debout variables:
 #' \itemize{
-#' \item 1 DOY - Day of year
-#' \item 2 YEAR - Year of simulation
+#' \item 1 DOY - Day of year (warning - doesn't account for leap years!)
+#' \item 2 YEAR - Year of simulation (warning - doesn't account for leap years!)
 #' \item 3 DAY - Day of simulation
 #' \item 4 TIME - Time of day (hours)
 #' \item 5 Stage - Life cycle stage (0=embryo, 1=juvenile, 2=mature but not yet reproducing, 3=beyond first reproduction)
@@ -475,7 +475,7 @@
 #'
 #' yearsout variables:
 #' \itemize{
-#' \item 1 YEAR - Year of simulation
+#' \item 1 YEAR - Year of simulation (warning - doesn't account for leap years!)
 #' \item 2 MaxStg - Maximum stage reached in the year
 #' \item 3 MaxWgt - Maximum weight reached in the year (g)
 #' \item 4 MaxLen - Maximum length in the year (mm)
