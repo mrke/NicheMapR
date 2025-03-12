@@ -61,7 +61,7 @@
 #' \code{TC_ACTIVEs}{ = rep(37.5, 4), active core temperature (°C)}\cr\cr
 #' \code{TC_INCs}{ = rep(0.04, 4), core temperature increment (°C)}\cr\cr
 #' \code{TC_MAXs}{ = rep(38, 4), maximum tolerated core temperature (°C)}\cr\cr
-#' \code{PCTWETs}{ = rep(4, 4), skin wettedness (\%)}\cr\cr
+#' \code{PCTWETs}{ = rep(1, 4), skin wettedness (\%)}\cr\cr
 #' \code{PCTWET_INCs}{ = rep(0.5, 4), skin wettedness increment (\%)}\cr\cr
 #' \code{PCTWET_MAXs}{ = rep(100, 4), maximum skin surface area that can be wet (\%)}\cr\cr
 #' \code{CLOWETs}{ = rep(0, 4), insulation wettedness (\%)}\cr\cr
@@ -216,7 +216,7 @@ HomoTherm <- function(MASS = 70,
                       EMISANs = rep(0.98, 4),
                       FSKREFs = c(0.50, 0.42, 0.35, 0.35),
                       FGDREFs = c(0.38, 0.42, 0.35, 0.35),
-                      PCTWETs = rep(4, 4),
+                      PCTWETs = rep(1, 4),
                       PCTWET_INCs = rep(0.5, 4),
                       PCTWET_MAXs = rep(100, 4),
                       PCTBAREVAPs = c(60, 0, 0, 0),

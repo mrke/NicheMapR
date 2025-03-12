@@ -81,7 +81,7 @@ environmental scenario (use HomoTherm_var for a sequence of environments).
 \code{TC_ACTIVEs}{ = rep(37.5, 4), active core temperature (°C)}\cr\cr
 \code{TC_INCs}{ = rep(0.04, 4), core temperature increment (°C)}\cr\cr
 \code{TC_MAXs}{ = rep(38, 4), maximum tolerated core temperature (°C)}\cr\cr
-\code{PCTWETs}{ = rep(4, 4), skin wettedness (\%)}\cr\cr
+\code{PCTWETs}{ = rep(1, 4), skin wettedness (\%)}\cr\cr
 \code{PCTWET_INCs}{ = rep(0.5, 4), skin wettedness increment (\%)}\cr\cr
 \code{PCTWET_MAXs}{ = rep(100, 4), maximum skin surface area that can be wet (\%)}\cr\cr
 \code{CLOWETs}{ = rep(0, 4), insulation wettedness (\%)}\cr\cr
