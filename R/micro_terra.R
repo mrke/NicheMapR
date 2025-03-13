@@ -1449,6 +1449,8 @@ micro_terra <- function(
       dates3 <- dates_all[which(format(dates_all, "%Y-%m-%d") %in% as.character(mon))]
       SOLRhr <- SOLRhr_all[which(dates_all %in% dates3)]
       diffuse_frac <- diffuse_frac_all[which(dates_all %in% dates3)]
+    }else{
+      diffuse_frac <- diffuse_frac_all
     }
 
     ndays<-length(RAINFALL)
