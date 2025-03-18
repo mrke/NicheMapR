@@ -66,7 +66,7 @@
 #' \code{PANT_INC}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
 #' \code{PANT_MULT}{ = 1.05, multiplier on basal metabolic rate at maximum panting level (-)}\cr\cr
 #' \code{PANT_MAX}{ = 10, maximum breathing rate multiplier to simulate panting (-)}\cr\cr
-#' \code{AIRVOL_MAX}{ = -1, maximum absolute breathing rate when panting (overrides PANT_MAX if not positive) (L/s)}\cr\cr
+#' \code{AIRVOL_MAX}{ = 1e12, maximum absolute breathing rate when panting (can override PANT_MAX) (L/s)}\cr\cr
 #'
 #' \strong{ General morphology:}\cr\cr
 #' \code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr
@@ -364,7 +364,7 @@ endoR_devel <- function(
   RQ = 0.80, # respiratory quotient (fractional, 0-1)
   EXTREF = 20, # O2 extraction efficiency (%)
   PANT_MAX = 5, # maximum breathing rate multiplier to simulate panting (-)
-  AIRVOL_MAX = -1, # maximum absolute breathing rate to simulate panting (L/s), overrides PANT_MAX if not negative
+  AIRVOL_MAX = 1e12, # maximum absolute breathing rate to simulate panting (L/s), can override PANT_MAX
   Q10 = 2, # Q10 factor for adjusting BMR for TC
 
   # initial conditions
@@ -417,17 +417,6 @@ endoR_devel <- function(
   QBASREF <- QBASAL
   failed <- FALSE
 
-  if(AIRVOL_MAX < 0){
-    # compute max air volume when at PANTMAX relative to basal
-    TAEXIT <- min(TA + DELTAR, TC)
-    ZBRENT.in <- c(TA, O2GAS, N2GAS, CO2GAS, BP, QBASAL, RQ, TC, AMASS * 1000, EXTREF, RH,
-                   RELXIT, 1.0, TAEXIT, QBASAL, 1, R_PCO2)
-    # call ZBRENT subroutine which calls RESPFUN
-    TOL <- AMASS * 0.01
-    ZBRENT.out <- ZBRENT_ENDO(QBASAL, QBASAL, TOL, ZBRENT.in)
-    colnames(ZBRENT.out) <- c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")
-    AIRVOL_MAX <- ZBRENT.out[15] * PANT_MAX # L/s max air volume through the lungs
-  }
   while(QGEN < QBASAL){
 
     ### IRPROP, infrared radiation properties of fur
@@ -689,14 +678,13 @@ endoR_devel <- function(
       ZBRENT.in <- c(TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG, GMASS, EXTREF, RH,
                      RELXIT, 1.0, TAEXIT, QSUM, PANT, R_PCO2)
       # call ZBRENT subroutine which calls RESPFUN
+      ZBRENT.out <- matrix(data = 0, nrow = 1, ncol = 15)
       ZBRENT.out <- ZBRENT_ENDO(QM1, QM2, TOL, ZBRENT.in)
       colnames(ZBRENT.out) <- c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")
       QGEN <- ZBRENT.out[7] # Q_GEN,NET
       AIRVOL <- ZBRENT.out[15] # L/s air through lungs
     }else{
       QGEN <- QSUM
-      ZBRENT.out <- matrix(data = 0, nrow = 1, ncol = 15)
-      colnames(ZBRENT.out) <- c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")
     }
     SHAPE_B_LAST <- SHAPE_B
     AK1_LAST <- AK1
@@ -719,12 +707,13 @@ endoR_devel <- function(
           }else{
             TC <- TC_MAX
             Q10mult <- Q10^((TC - TC_REF)/10)
-            if(AIRVOL < AIRVOL_MAX){
+            if(PANT < PANT_MAX){
               PANT <- PANT + PANT_INC
               PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * (PANT_MULT - 1) * QBASREF)
               QBASAL <- (QBASREF + PANT_COST) * Q10mult
             }else{
               PANT <- PANT_MAX
+              #AIRVOL <- AIRVOL_MAX
               PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * (PANT_MULT - 1) * QBASREF)
               QBASAL <- (QBASREF + PANT_COST) * Q10mult
               PCTWET <- PCTWET + PCTWET_INC

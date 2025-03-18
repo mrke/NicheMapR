@@ -477,7 +477,6 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         CALL ZBRENT_ENDO(QM1, QM2, TOL, ZBRENTin, ZBRENTout)
         !colnames(ZBRENTout) = c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")
         QGEN = ZBRENTout(7) ! Q_GEN,NET
-        AIRVOL = ZBRENTout(15) ! L/s AIR VOLUME THROUGH LUNGS
        ELSE
         QGEN = QSUM
        ENDIF
@@ -501,15 +500,19 @@ c     &  (TC.LE.(TC_MIN+TC_INC)))THEN
       ENDIF
       ! NON TOPROR MODE
 222   CONTINUE
-        IF(AIRVOL_MAX.LT.0.)THEN
-         !# compute max air volume when at PANTMAX relative to basal
-          ZBRENTin = (/TA, O2GAS, N2GAS, CO2GAS, BP, QBASAL, RQ, TC,
-     &   GMASS, EXTREF, RH, RELXIT, 1.D0, TAEXIT, QBASAL, PANT, RP_CO2/)
-        !# call ZBRENT subroutine which calls RESPFUN
-        TOL = AMASS * 0.01
-        CALL ZBRENT_ENDO(QBASAL, QBASAL, TOL, ZBRENTin, ZBRENTout)
-        AIRVOL_MAX = ZBRENTout(15)*PANT_MAX ! L/s MAX AIR VOLUME THROUGH LUNGS
-       ENDIF
+        
+      !# compute max air volume when at PANTMAX relative to basal
+      ZBRENTin = (/TA, O2GAS, N2GAS, CO2GAS, BP, QBASAL, RQ, TC,
+     & GMASS, EXTREF, RH, RELXIT, 1.D0, TAEXIT, QBASAL, PANT, RP_CO2/)
+      !# call ZBRENT subroutine which calls RESPFUN
+      TOL = AMASS * 0.01
+      CALL ZBRENT_ENDO(QBASAL, QBASAL, TOL, ZBRENTin, ZBRENTout)
+      IF(AIRVOL_MAX.LT.0.)THEN
+       AIRVOL_MAX = ZBRENTout(15)*PANT_MAX ! L/s MAX AIR VOLUME THROUGH LUNGS
+      ELSE ! AIRVOL_MAX has been predeterimined
+       PANT_MAX=AIRVOL_MAX/ZBRENTout(15)
+      ENDIF
+      
       do while(QGEN < QBASAL)
 
        !### IRPROP, infrared radiation properties of fur
@@ -787,8 +790,10 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         CALL ZBRENT_ENDO(QM1, QM2, TOL, ZBRENTin, ZBRENTout)
         !colnames(ZBRENTout) = c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")
         QGEN = ZBRENTout(7) ! Q_GEN,NET
+        AIRVOL = ZBRENTout(15) ! L/s AIR VOLUME THROUGH LUNGS
        ELSE
         QGEN = QSUM
+        AIRVOL = AIRVOL_MAX
        ENDIF
        SHAPEB_LAST = SHAPEB
        AK1_LAST = AK1
@@ -822,7 +827,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
            else
             TC = TC_MAX
             Q10mult = Q10**((TC - TC_REF)/10.)
-            if(PANT.lt.PANT_MAX)THEN
+            if(AIRVOL.lt.AIRVOL_MAX)THEN
              PANT = PANT + PANT_INC
              PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
              QBASAL = (QBASREF + PANT_COST)*Q10mult
