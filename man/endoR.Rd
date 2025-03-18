@@ -86,6 +86,7 @@ third raise core temperature, fourth pant and fifth sweat.
 \code{PANT_INC}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
 \code{PANT_MULT}{ = 1.05, multiplier on basal metabolic rate at maximum panting level (-)}\cr\cr
 \code{PANT_MAX}{ = 10, maximum breathing rate multiplier to simulate panting (-)}\cr\cr
+\code{AIRVOL_MAX}{ = -1, maximum absolute breathing rate when panting (overrides PANT_MAX if not negative) (L/s)}\cr\cr
 \code{PZFUR}{ = 1, incremental fractional reduction in ZFUR from piloerect state (-) (a value greater than zero triggers piloerection response)}\cr\cr
 
 \strong{ General morphology:}\cr\cr

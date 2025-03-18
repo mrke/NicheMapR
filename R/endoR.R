@@ -63,6 +63,7 @@
 #' \code{PANT_INC}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
 #' \code{PANT_MULT}{ = 1.05, multiplier on basal metabolic rate at maximum panting level (-)}\cr\cr
 #' \code{PANT_MAX}{ = 10, maximum breathing rate multiplier to simulate panting (-)}\cr\cr
+#' \code{AIRVOL_MAX}{ = -1, maximum absolute breathing rate when panting (overrides PANT_MAX if not negative) (L/s)}\cr\cr
 #' \code{PZFUR}{ = 1, incremental fractional reduction in ZFUR from piloerect state (-) (a value greater than zero triggers piloerection response)}\cr\cr
 #'
 #' \strong{ General morphology:}\cr\cr
@@ -368,6 +369,7 @@ endoR <- function(
   RQ = 0.80, # respiratory quotient (fractional, 0-1)
   EXTREF = 20, # O2 extraction efficiency (%)
   PANT_MAX = 5, # maximum breathing rate multiplier to simulate panting (-)
+  AIRVOL_MAX = -1, # maximum absolute breathing rate to simulate panting (L/s), overrides PANT_MAX if not positive
   PZFUR = 1, # # incremental fractional reduction in ZFUR from piloerect state (-) (a value greater than zero triggers piloerection response)
   Q10 = 2, # Q10 factor for adjusting BMR for TC
   TC_MIN = 19, # minimum core temperature during torpor (TORPOR = 1)
@@ -438,7 +440,7 @@ endoR <- function(
       Q10mult <- Q10^((TC - TC_REF)/10)
       QBASAL <- QBASREF * Q10mult
     }
-    SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, RESPIRE, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, PVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, PCTWET, TSKY, TVEG, TAREF, DELTAR, RQ, TREGMODE, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AK1_MAX, AK1_INC, TC_MAX, TC_INC, TC_REF, Q10, QBASREF, PANT_MAX, PCTWET_MAX, PCTWET_INC, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, PZFUR, ZFURCOMP, PANT_INC, ORIENT, SHAPE_C, XR, PANT_MULT, KSUB, THERMOREG, ZFURD_MAX, ZFURV_MAX, TC_MIN, CONV_ENHANCE, TORPOR, GRAV, FATDEN)
+    SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, RESPIRE, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, PVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, PCTWET, TSKY, TVEG, TAREF, DELTAR, RQ, TREGMODE, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AK1_MAX, AK1_INC, TC_MAX, TC_INC, TC_REF, Q10, QBASREF, PANT_MAX, PCTWET_MAX, PCTWET_INC, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, PZFUR, ZFURCOMP, PANT_INC, ORIENT, SHAPE_C, XR, PANT_MULT, KSUB, THERMOREG, ZFURD_MAX, ZFURV_MAX, TC_MIN, CONV_ENHANCE, TORPOR, GRAV, FATDEN, AIRVOL_MAX)
     if(WRITE_INPUT == 1){
       write.csv(SOLVENDO.input, file = "SOLVENDO.input.csv")
     }

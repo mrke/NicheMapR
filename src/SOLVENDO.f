@@ -8,6 +8,7 @@ C     USING endo_devel.R
       implicit none
 
       DOUBLE PRECISION ABSAND,ABSANV,ABSSB,AHEIT,AIRML1,AIRML2,AIRVOL
+      DOUBLE PRECISION AIRVOL_MAX
       DOUBLE PRECISION AK1,AK1_INC,AK1_LAST,AK1_MAX,AK2,ALENTH,AMASS
       DOUBLE PRECISION ANDENS,ANU,AREACND,AREASKIN,ASEMAJ,ASIL,ASILN
       DOUBLE PRECISION ASILP,ATOT,AWIDTH,BP,BSEMIN,CD,CO2GAS,CONVAR
@@ -55,7 +56,7 @@ C     USING endo_devel.R
       DIMENSION IRPROPout(26),GEOMout(25),CONVOUT(14),
      & SOLARout(7),SIMULSOLout(2,16),SIMULOUT(16),FURVARS(15),
      & GEOMVARS(21),TRAITS(9),ENVVARS(18),ZBRENTin(17),ZBRENTout(15),
-     & INPUT(96),TREG(17),MORPH(20),ENBAL(10),MASBAL(10)
+     & INPUT(97),TREG(17),MORPH(20),ENBAL(10),MASBAL(10)
 
       PI = ACOS(-1.0d0)
       ZBRENTout=0.
@@ -157,6 +158,7 @@ C     USING endo_devel.R
       TORPOR=INT(input(94))
       GRAV=input(95)
       FATDEN=input(96)
+      AIRVOL_MAX=input(97)
 
       TSKINMAX=TC ! initialise
       Q10mult=1. ! initialise
@@ -475,6 +477,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         CALL ZBRENT_ENDO(QM1, QM2, TOL, ZBRENTin, ZBRENTout)
         !colnames(ZBRENTout) = c("RESPFN","QRESP","GEVAP", "PCTO2", "PCTN2", "PCTCO2", "RESPGEN", "O2STP", "O2MOL1", "N2MOL1", "AIRML1", "O2MOL2", "N2MOL2", "AIRML2", "AIRVOL")
         QGEN = ZBRENTout(7) ! Q_GEN,NET
+        AIRVOL = ZBRENTout(15) ! L/s AIR VOLUME THROUGH LUNGS
        ELSE
         QGEN = QSUM
        ENDIF
@@ -498,6 +501,15 @@ c     &  (TC.LE.(TC_MIN+TC_INC)))THEN
       ENDIF
       ! NON TOPROR MODE
 222   CONTINUE
+        IF(AIRVOL_MAX.LT.0.)THEN
+         !# compute max air volume when at PANTMAX relative to basal
+          ZBRENTin = (/TA, O2GAS, N2GAS, CO2GAS, BP, QBASAL, RQ, TC,
+     &   GMASS, EXTREF, RH, RELXIT, 1.D0, TAEXIT, QBASAL, PANT, RP_CO2/)
+        !# call ZBRENT subroutine which calls RESPFUN
+        TOL = AMASS * 0.01
+        CALL ZBRENT_ENDO(QBASAL, QBASAL, TOL, ZBRENTin, ZBRENTout)
+        AIRVOL_MAX = ZBRENTout(15)*PANT_MAX ! L/s MAX AIR VOLUME THROUGH LUNGS
+       ENDIF
       do while(QGEN < QBASAL)
 
        !### IRPROP, infrared radiation properties of fur
@@ -802,7 +814,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
             TC = TC + TC_INC
             Q10mult = Q10**((TC - TC_REF)/10.)
             QBASAL = QBASREF * Q10mult
-            if((TREGMODE.EQ.2).AND.(PANT.lt.PANT_MAX))THEN
+            if((TREGMODE.EQ.2).AND.(AIRVOL.lt.AIRVOL_MAX))THEN
              PANT = PANT + PANT_INC
              PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
              QBASAL = (QBASREF + PANT_COST)*Q10mult
