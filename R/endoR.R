@@ -113,6 +113,7 @@
 #' \code{EXTREF}{ = 20, # O2 extraction efficiency (\%)}\cr\cr
 #' \code{Q10}{ = 2, # Q10 factor for adjusting BMR for TC}\cr\cr
 #' \code{TC_MIN}{ = 19, # minimum core temperature during torpor (TORPOR = 1)}\cr\cr
+#' \code{TORPTOL}{ = 0.05, # allowable tolerance of heat balance as a fraction of torpid metabolic rate}\cr\cr
 #'
 #' \strong{ Initial conditions:}\cr\cr
 #' \code{TS}{ = TC - 3, # initial skin temperature (°C)}\cr\cr
@@ -373,6 +374,7 @@ endoR <- function(
   PZFUR = 1, # # incremental fractional reduction in ZFUR from piloerect state (-) (a value greater than zero triggers piloerection response)
   Q10 = 2, # Q10 factor for adjusting BMR for TC
   TC_MIN = 19, # minimum core temperature during torpor (TORPOR = 1)
+  TORPTOL = 0.05, # allowable tolerance of heat balance as a fraction of torpid metabolic rate
 
   # initial conditions
   TS = TC - 3, # skin temperature (°C)
@@ -440,7 +442,7 @@ endoR <- function(
       Q10mult <- Q10^((TC - TC_REF)/10)
       QBASAL <- QBASREF * Q10mult
     }
-    SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, RESPIRE, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, PVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, PCTWET, TSKY, TVEG, TAREF, DELTAR, RQ, TREGMODE, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AK1_MAX, AK1_INC, TC_MAX, TC_INC, TC_REF, Q10, QBASREF, PANT_MAX, PCTWET_MAX, PCTWET_INC, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, PZFUR, ZFURCOMP, PANT_INC, ORIENT, SHAPE_C, XR, PANT_MULT, KSUB, THERMOREG, ZFURD_MAX, ZFURV_MAX, TC_MIN, CONV_ENHANCE, TORPOR, GRAV, FATDEN, AIRVOL_MAX)
+    SOLVENDO.input <- c(QGEN, QBASAL, TA, SHAPE_B_MAX, RESPIRE, SHAPE_B, DHAIRD, DHAIRV, LHAIRD, LHAIRV, ZFURD, ZFURV, RHOD, RHOV, REFLD, REFLV, PVEN, SHAPE, EMISAN, KHAIR, FSKREF, FGDREF, NESTYP, PDIF, ABSSB, SAMODE, FLTYPE, ELEV, BP, R_PCO2, SHADE, QSOLR, RoNEST, Z, VEL, TS, TFA, FABUSH, FURTHRMK, RH, TCONDSB, TBUSH, TC, PCTBAREVAP, FLYHR, FURWET, AK1, AK2, PCTEYES, DIFTOL, PCTWET, TSKY, TVEG, TAREF, DELTAR, RQ, TREGMODE, O2GAS, N2GAS, CO2GAS, RELXIT, PANT, EXTREF, UNCURL, AK1_MAX, AK1_INC, TC_MAX, TC_INC, TC_REF, Q10, QBASREF, PANT_MAX, PCTWET_MAX, PCTWET_INC, TGRD, AMASS, ANDENS, SUBQFAT, FATPCT, PCOND, PZFUR, ZFURCOMP, PANT_INC, ORIENT, SHAPE_C, XR, PANT_MULT, KSUB, THERMOREG, ZFURD_MAX, ZFURV_MAX, TC_MIN, CONV_ENHANCE, TORPOR, GRAV, FATDEN, AIRVOL_MAX, TORPTOL)
     if(WRITE_INPUT == 1){
       write.csv(SOLVENDO.input, file = "SOLVENDO.input.csv")
     }

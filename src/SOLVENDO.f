@@ -41,7 +41,7 @@ C     USING endo_devel.R
       DOUBLE PRECISION SIMULOUT,SIMULSOLout,SOLARout,SUBQFAT,SUCCESSD
       DOUBLE PRECISION SUCCESSV,SURFAR,SWEATGS,TA,TAEXIT,TAREF,TBUSH,TC
       DOUBLE PRECISION TC_INC,TC_LAST,TC_MAX,TCONDSB,TC_REF,TENV,TFA
-      DOUBLE PRECISION TFAD,TFAV,TGRD,THERMOREG,TLOWER,TLUNG,TOL
+      DOUBLE PRECISION TFAD,TFAV,TGRD,THERMOREG,TLOWER,TLUNG,TOL,TORPTOL
       DOUBLE PRECISION TRAITS,TREG,TS,TSKCALCAVD,TSKCALCAVV,TSKINMAX
       DOUBLE PRECISION TSKY,TVEG,UNCURL,VEL,VMULT,VOL,VOLFAT,X,XR,Z
       DOUBLE PRECISION ZBRENTin,ZBRENTout,ZEN,ZFUR,ZFURCOMP,ZFURD,ZFURV
@@ -56,7 +56,7 @@ C     USING endo_devel.R
       DIMENSION IRPROPout(26),GEOMout(25),CONVOUT(14),
      & SOLARout(7),SIMULSOLout(2,16),SIMULOUT(16),FURVARS(15),
      & GEOMVARS(21),TRAITS(9),ENVVARS(18),ZBRENTin(17),ZBRENTout(15),
-     & INPUT(97),TREG(17),MORPH(20),ENBAL(10),MASBAL(10)
+     & INPUT(98),TREG(17),MORPH(20),ENBAL(10),MASBAL(10)
 
       PI = ACOS(-1.0d0)
       ZBRENTout=0.
@@ -159,7 +159,8 @@ C     USING endo_devel.R
       GRAV=input(95)
       FATDEN=input(96)
       AIRVOL_MAX=input(97)
-
+      TORPTOL=input(98)
+      
       TSKINMAX=TC ! initialise
       Q10mult=1. ! initialise
       PANT_COST = 0.D0 ! initialise
@@ -490,9 +491,11 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         Q10mult = Q10**((TC - TC_REF)/10.)
         QBASAL = QBASREF * Q10mult
        ENDIF
-       IF((ZBRENTout(1)/ZBRENTout(7)).LT.-0.05)THEN!.AND.
+       IF((ZBRENTout(1)/ZBRENTout(7)).LT.(-TORPTOL))THEN!.AND.
 c     &  (TC.LE.(TC_MIN+TC_INC)))THEN
         QGEN=0.
+        TC=TC_LAST
+        Q10mult = Q10**((TC - TC_REF)/10.)
         GO TO 222 ! NEED TO SOLVE FOR METABOLIC RATE
        ENDIF
       END DO
@@ -501,18 +504,6 @@ c     &  (TC.LE.(TC_MIN+TC_INC)))THEN
       ! NON TOPROR MODE
 222   CONTINUE
         
-      !# compute max air volume when at PANTMAX relative to basal
-      ZBRENTin = (/TA, O2GAS, N2GAS, CO2GAS, BP, QBASAL, RQ, TC,
-     & GMASS, EXTREF, RH, RELXIT, 1.D0, TAEXIT, QBASAL, PANT, RP_CO2/)
-      !# call ZBRENT subroutine which calls RESPFUN
-      TOL = AMASS * 0.01
-      CALL ZBRENT_ENDO(QBASAL, QBASAL, TOL, ZBRENTin, ZBRENTout)
-      IF(AIRVOL_MAX.LT.0.)THEN
-       AIRVOL_MAX = ZBRENTout(15)*PANT_MAX ! L/s MAX AIR VOLUME THROUGH LUNGS
-      ELSE ! AIRVOL_MAX has been predeterimined
-       PANT_MAX=AIRVOL_MAX/ZBRENTout(15)
-      ENDIF
-      
       do while(QGEN < QBASAL)
 
        !### IRPROP, infrared radiation properties of fur
@@ -793,7 +784,6 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         AIRVOL = ZBRENTout(15) ! L/s AIR VOLUME THROUGH LUNGS
        ELSE
         QGEN = QSUM
-        AIRVOL = AIRVOL_MAX
        ENDIF
        SHAPEB_LAST = SHAPEB
        AK1_LAST = AK1
@@ -819,7 +809,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
             TC = TC + TC_INC
             Q10mult = Q10**((TC - TC_REF)/10.)
             QBASAL = QBASREF * Q10mult
-            if((TREGMODE.EQ.2).AND.(AIRVOL.lt.AIRVOL_MAX))THEN
+            if((TREGMODE.EQ.2).AND.(PANT.lt.PANT_MAX))THEN
              PANT = PANT + PANT_INC
              PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
              QBASAL = (QBASREF + PANT_COST)*Q10mult
@@ -827,12 +817,13 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
            else
             TC = TC_MAX
             Q10mult = Q10**((TC - TC_REF)/10.)
-            if(AIRVOL.lt.AIRVOL_MAX)THEN
+            if(PANT.lt.PANT_MAX)THEN
              PANT = PANT + PANT_INC
              PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
              QBASAL = (QBASREF + PANT_COST)*Q10mult
             else
              PANT = PANT_MAX
+             !AIRVOL = AIRVOL_MAX
              PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
              QBASAL = (QBASREF + PANT_COST)*Q10mult
              PCTWET = PCTWET + PCTWET_INC
