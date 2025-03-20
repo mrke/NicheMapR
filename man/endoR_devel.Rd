@@ -89,7 +89,7 @@ the FORTRAN code of endoR (SOLVENDO.f) accordingly and compile your own version.
 \code{PANT_INC}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
 \code{PANT_MULT}{ = 1.05, multiplier on basal metabolic rate at maximum panting level (-)}\cr\cr
 \code{PANT_MAX}{ = 10, maximum breathing rate multiplier to simulate panting (-)}\cr\cr
-\code{AIRVOL_MAX}{ = -1, maximum absolute breathing rate when panting (overrides PANT_MAX if not positive) (L/s)}\cr\cr
+\code{AIRVOL_MAX}{ = 1e12, maximum absolute breathing rate when panting (can override PANT_MAX) (L/s)}\cr\cr
 
 \strong{ General morphology:}\cr\cr
 \code{ANDENS}{ = 1000, body density (kg/m3)}\cr\cr

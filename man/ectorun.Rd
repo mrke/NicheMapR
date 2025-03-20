@@ -81,9 +81,9 @@ ectorun(ecto)
 
 \item{nutri_stages}{Stage-specific nutrition related parameters}
 
-\item{minshades}{Minimum shade levels}
+\item{minshades}{Minimum shade levels (hourly)}
 
-\item{maxshades}{Maximum shade levels}
+\item{maxshades}{Maximum shade levels (hourly)}
 
 \item{S_instar}{For the Insect DEB model}
 }

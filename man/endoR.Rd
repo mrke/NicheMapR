@@ -86,7 +86,7 @@ third raise core temperature, fourth pant and fifth sweat.
 \code{PANT_INC}{ = 0.1, increment for multiplier on breathing rate to simulate panting (-)}\cr\cr
 \code{PANT_MULT}{ = 1.05, multiplier on basal metabolic rate at maximum panting level (-)}\cr\cr
 \code{PANT_MAX}{ = 10, maximum breathing rate multiplier to simulate panting (-)}\cr\cr
-\code{AIRVOL_MAX}{ = -1, maximum absolute breathing rate when panting (overrides PANT_MAX if not negative) (L/s)}\cr\cr
+\code{AIRVOL_MAX}{ = 1e12, maximum absolute breathing rate when panting (can override PANT_MAX) (L/s)}\cr\cr
 \code{PZFUR}{ = 1, incremental fractional reduction in ZFUR from piloerect state (-) (a value greater than zero triggers piloerection response)}\cr\cr
 
 \strong{ General morphology:}\cr\cr
@@ -136,6 +136,7 @@ third raise core temperature, fourth pant and fifth sweat.
 \code{EXTREF}{ = 20, # O2 extraction efficiency (\%)}\cr\cr
 \code{Q10}{ = 2, # Q10 factor for adjusting BMR for TC}\cr\cr
 \code{TC_MIN}{ = 19, # minimum core temperature during torpor (TORPOR = 1)}\cr\cr
+\code{TORPTOL}{ = 0.05, # allowable tolerance of heat balance as a fraction of torpid metabolic rate}\cr\cr
 
 \strong{ Initial conditions:}\cr\cr
 \code{TS}{ = TC - 3, # initial skin temperature (°C)}\cr\cr

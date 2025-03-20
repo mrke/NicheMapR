@@ -60,8 +60,8 @@
 #' \strong{ Environmental inputs:}
 #'
 #' \itemize{
-#' \item{\code{minshades}{ = micro$minshade, Vector of daily minimum shade values - can be different to value used in microclimate model (e.g. to simulate sunspot tracking on a forest floor) (\%)}\cr}
-#' \item{\code{maxshades}{ = micro$maxshade, Vector of daily maximum shade values - can be different to value used in microclimate model (e.g. to simulate use of fine-scale shade in a generally unshaded habitat) (\%)}\cr}
+#' \item{\code{minshades}{ = micro$minshade, Vector of hourly minimum shade values - can be different to value used in microclimate model (e.g. to simulate sunspot tracking on a forest floor) (\%)}\cr}
+#' \item{\code{maxshades}{ = micro$maxshade, Vector of hourly maximum shade values - can be different to value used in microclimate model (e.g. to simulate use of fine-scale shade in a generally unshaded habitat) (\%)}\cr}
 #' \item{\code{fluid}{ = 0, Fluid type 0=air, 1=water }\cr}
 #' \item{\code{O2gas}{ = 20.95, oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr}
 #' \item{\code{N2gas}{ = 79.02, nitrogen concetration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr}
@@ -621,8 +621,8 @@ ectotherm <- function(
   transient = 0,
   delta_shade = 3,
   startday = 1,
-  minshades = micro$minshade,
-  maxshades = micro$maxshade,
+  minshades = rep(micro$minshade, each = 24),
+  maxshades = rep(micro$maxshade, each = 24),
   fluid = 0,
   pct_touch = 0,
   O2gas = 20.95,
@@ -977,12 +977,12 @@ ectotherm <- function(
     message("error: maxshades can only be from 0 to 100 \n")
     errors<-1
   }
-  if(length(maxshades) != ndays){
-    message("error: maxshades must be a vector with a length equal to the number of days simulated \n")
+  if(length(maxshades) != ndays * 24){
+    message("error: maxshades must be a vector with a length equal to the number of hours simulated \n")
     errors<-1
   }
-  if(length(minshades) != ndays){
-    message("error: minshades must be a vector with a length equal to the number of days simulated \n")
+  if(length(minshades) != ndays * 24){
+    message("error: minshades must be a vector with a length equal to the number of hours simulated \n")
     errors<-1
   }
   if(!fluid %in% c(0,1)){

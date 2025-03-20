@@ -38,8 +38,8 @@
 #' @param behav_stages Stage-specific behaviour
 #' @param water_stages Stage-specific water related parameters
 #' @param nutri_stages Stage-specific nutrition related parameters
-#' @param minshades Minimum shade levels
-#' @param maxshades Maximum shade levels
+#' @param minshades Minimum shade levels (hourly)
+#' @param maxshades Maximum shade levels (hourly)
 #' @param S_instar For the Insect DEB model
 #' @useDynLib "NicheMapR"
 #' @export
