@@ -41,7 +41,7 @@ the HomoTherm function across a sequence of environments.
 \details{
 \strong{ Parameters controlling how the model runs:}\cr\cr
 \code{EXCEED.TCMAX}{ = TRUE, allow the mode to continue increasing core temperature? (-)}\cr\cr
-\code{MAXITER }{ = 500, maximum iterations beyond TC_MAX allowed when EXCEED.TMAX = TRUE}\cr\cr
+\code{MAXITER}{ = 500, maximum iterations beyond TC_MAX allowed when EXCEED.TMAX = TRUE}\cr\cr
 
 \strong{ Environment:}\cr\cr
 \code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr

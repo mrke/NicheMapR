@@ -499,7 +499,7 @@ HomoTherm <- function(MASS = 70,
       }
     }
     if(max(TSKINDs, TSKINVs) > 33){ # augment current vasoconstriction with sweating and core temperature rise
-      PCTWETs <- PCTWETs + PCTWET_INC / 6
+      PCTWETs <- PCTWETs + PCTWET_INC
       for(i in 1:length(TCs)){
         if(TCs[i] < TC_MAX){
           TCs[i] <- TCs[i] + TC_INC / 1.5
@@ -509,7 +509,7 @@ HomoTherm <- function(MASS = 70,
       }
     }
     if(max(TSKINDs, TSKINVs) > TC - 2){ # augment sweating rate further
-      PCTWETs <- PCTWETs + PCTWET_INC * 2
+     PCTWETs <- PCTWETs + PCTWET_INC
     }
     for(i in 1:4){
       if(PCTWETs[i] > PCTWET_MAXs[i]){
@@ -522,7 +522,7 @@ HomoTherm <- function(MASS = 70,
     if(max(TCs) >= TC_MAX + TC_INC | TC_INC == 0){
       counter <- counter + 1
       if(!EXCEED.TCMAX | counter > MAXITER){
-       break # dead
+        break # dead
       }
     }
     counter2 <- counter2 + 1
