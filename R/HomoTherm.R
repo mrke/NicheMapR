@@ -66,15 +66,15 @@
 #' \code{PCTWET_MAXs}{ = rep(100, 4), maximum skin surface area that can be wet (\%)}\cr\cr
 #' \code{CLOWETs}{ = rep(0, 4), insulation wettedness (\%)}\cr\cr
 #' \code{PCTBAREVAPs}{ = c(60, 0, 0, 0), bare area where free and forced evaporation can occur (\%)}\cr\cr
-#' \code{KFLESHs}{ = c(0.9, 0.9, 0.5, 0.5), flesh thermal conductivity (W/m°C)}\cr\cr
+#' \code{KFLESHs}{ = c(1.1, 0.9, 0.5, 0.5), flesh thermal conductivity (W/m°C)}\cr\cr
 #' \code{KFLESH_INCs}{ = rep(0.05, 4), surface thermal conductivity increment (W/m°C)}\cr\cr
 #' \code{KFLESH_MAXs}{ = rep(5, 4), maximum flesh conductivity (W/m°C)}\cr\cr
 #' \code{KFATs}{ = rep(0.23, 4), fat conductivity (W/m°C)}\cr\cr
 #'
 #' \strong{ Insulation properties:}\cr\cr
 #' \code{KCLOs}{ = rep(0, 4), insulation thermal conductivity manual override values (computed internally if zero) (W/mC)}\cr\cr
-#' \code{DHAIRDs}{ = c(7.5e-5, rep(1E-06, 3)), fibre diameter, dorsal (m)}\cr\cr
-#' \code{DHAIRVs}{ = c(7.5e-5, rep(1E-06, 3)), fibre diameter, ventral (m)}\cr\cr
+#' \code{DHAIRDs}{ = c(7.5e-5, rep(1e-06, 3)), fibre diameter, dorsal (m)}\cr\cr
+#' \code{DHAIRVs}{ = c(7.5e-5, rep(1e-06, 3)), fibre diameter, ventral (m)}\cr\cr
 #' \code{LHAIRDs}{ = c(50e-3, 50e-3, 50e-3, 50e-3), fibre length, dorsal (m)}\cr\cr
 #' \code{LHAIRVs}{ = c(1e-9, 50e-3, 50e-3, 50e-3), fibre length, ventral (m)}\cr\cr
 #' \code{INSDENDs}{ = rep(3e+08, 4), fibre density, dorsal (1/m2)}\cr\cr
@@ -482,27 +482,28 @@ HomoTherm <- function(MASS = 70,
     }
     if(QGEN < QMETAB_MIN){
       for(i in 1:4){
-      if(KFLESHs[i] < KFLESH_MAXs[i]){ # vasodilation
-        KFLESHs[i] <- KFLESHs[i] + KFLESH_INCs[i]
-        if(KFLESHs[i] > AK1_SUBQFAT){
-          FATPCTs[i] <- FATPCTs[i] * SUBQFAT_REDUCE # blood flow bypasses fat layer
-        }
-      }else{
-        if(PCTWETs[i] < PCTWET_MAXs[i]){ # sweating
-          PCTWETs[i] <- PCTWETs[i] + PCTWET_INCs[i]
+        if(KFLESHs[i] < KFLESH_MAXs[i]){ # vasodilation
+          if(mean(c(TSKINDs, TSKINVs)) < 35 & mean(c(TSKINDs, TSKINVs)) > 32){
+            KFLESHmult <- 3 # thermoneutral zone rapid vasodilation rate
+          }else{
+            KFLESHmult <- 0.5 # reduced vasodilation rate keeping skin temp around 35 via evaporation
+          }
+          KFLESHs[i] <- KFLESHs[i] + KFLESH_INCs[i] * KFLESHmult
+          if(KFLESHs[i] > AK1_SUBQFAT){
+            FATPCTs[i] <- FATPCTs[i] * SUBQFAT_REDUCE # blood flow bypasses fat layer
+          }
         }else{
           TCs[i] <- TCs[i] + TC_INCs[i] # let core rise (adjust metabolic rate accordingly)
           Q10mult <- Q10 ^ ((mean(TCs) - TC_REF) / 10)
           QMETAB_MIN <- QMET_REF * Q10mult
         }
       }
-      }
     }
-    if(max(TSKINDs, TSKINVs) > 33){ # augment current vasoconstriction with sweating and core temperature rise
-      PCTWETs <- PCTWETs + PCTWET_INC
+    if(min(c(TSKINDs, TSKINVs)) > 35){ # augment current vasoconstriction with sweating and core temperature rise
+      PCTWETs <- PCTWETs + PCTWET_INC * 2
       for(i in 1:length(TCs)){
         if(TCs[i] < TC_MAX){
-          TCs[i] <- TCs[i] + TC_INC / 1.5
+          TCs[i] <- TCs[i] + TC_INC
           Q10mult <- Q10 ^ ((mean(TCs) - TC_REF) / 10)
           QMETAB_MIN <- QMET_REF * Q10mult
         }
@@ -510,6 +511,17 @@ HomoTherm <- function(MASS = 70,
     }
     if(max(TSKINDs, TSKINVs) > TC - 2){ # augment sweating rate further
      PCTWETs <- PCTWETs + PCTWET_INC
+    }
+    if(TC > TC_REF + 0.5){ # augment vasodilation
+      KFLESHmult <- 3
+      for(i in 1:4){
+        if(KFLESHs[i] < KFLESH_MAXs[i]){
+          KFLESHs[i] <- KFLESHs[i] + KFLESH_INCs[i] * KFLESHmult
+          if(KFLESHs[i] > AK1_SUBQFAT){
+            FATPCTs[i] <- FATPCTs[i] * SUBQFAT_REDUCE # blood flow bypasses fat layer
+          }
+        }
+      }
     }
     for(i in 1:4){
       if(PCTWETs[i] > PCTWET_MAXs[i]){

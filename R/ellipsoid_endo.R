@@ -97,8 +97,20 @@
 #'with(endo,{points(Tcore ~ dates,xlab = "Date and Time",lty=2, type = "l")})
 #'with(endo,{plot(timetodeath ~ dates,xlab = "Date and Time", ylab = "Time to Death (h)"
 #', type = "l",main=paste("Time to Death by Desiccation",sep=""), ylim=c(0,24))})
-ellipsoid <- function(posture = 4.5, mass = 0.5, density = 1000, coreT = 37, furdepth = 5, furcond = 0.04,
-  O2eff = 0.2, stress = 0.6, airT = 20, windspd = 1, rh = 50, Q10 = 3, basal = NA, basmult = 1) {
+ellipsoid <- function(posture = 4.5,
+                      mass = 0.5,
+                      density = 1000,
+                      coreT = 37,
+                      furdepth = 5,
+                      furcond = 0.04,
+                      O2eff = 0.2,
+                      stress = 0.6,
+                      airT = 20,
+                      windspd = 1,
+                      rh = 50,
+                      Q10 = 3,
+                      basal = NA,
+                      basmult = 1) {
   posture[posture==1]<-1.01 # avoid divide by zero
   if(class(basal)=="logical"){ # this checks if basal is set to 'NA'
    mouseelephant <- 10^(-1.462 + 0.675 * log10(mass * 1000)) * basmult

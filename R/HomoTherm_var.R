@@ -71,15 +71,15 @@
 #' \code{PCTWET_MAXs}{ = rep(100, 4), maximum skin surface area that can be wet (\%)}\cr\cr
 #' \code{CLOWETs}{ = rep(0, 4), insulation wettedness (\%)}\cr\cr
 #' \code{PCTBAREVAPs}{ = c(60, 0, 0, 0), bare area where free and forced evaporation can occur (\%)}\cr\cr
-#' \code{KFLESHs}{ = c(0.9, 0.9, 0.5, 0.5), flesh thermal conductivity (W/m°C)}\cr\cr
+#' \code{KFLESHs}{ = c(1.1, 0.9, 0.5, 0.5), flesh thermal conductivity (W/m°C)}\cr\cr
 #' \code{KFLESH_INCs}{ = rep(0.05, 4), surface thermal conductivity increment (W/m°C)}\cr\cr
 #' \code{KFLESH_MAXs}{ = rep(5, 4), maximum flesh conductivity (W/m°C)}\cr\cr
 #' \code{KFATs}{ = rep(0.23, 4), fat conductivity (W/m°C)}\cr\cr
 #'
 #' \strong{ Insulation properties:}\cr\cr
 #' \code{KCLOs}{ = rep(0, 4), insulation thermal conductivity manual override values (computed internally if zero) (W/mC)}\cr\cr
-#' \code{DHAIRDs}{ = c(7.5e-5, rep(1E-06, 3)), fibre diameter, dorsal (m)}\cr\cr
-#' \code{DHAIRVs}{ = c(7.5e-5, rep(1E-06, 3)), fibre diameter, ventral (m)}\cr\cr
+#' \code{DHAIRDs}{ = c(7.5e-5, rep(1e-06, 3)), fibre diameter, dorsal (m)}\cr\cr
+#' \code{DHAIRVs}{ = c(7.5e-5, rep(1e-06, 3)), fibre diameter, ventral (m)}\cr\cr
 #' \code{LHAIRDs}{ = c(50e-3, 50e-3, 50e-3, 50e-3), fibre length, dorsal (m)}\cr\cr
 #' \code{LHAIRVs}{ = c(1e-9, 50e-3, 50e-3, 50e-3), fibre length, ventral (m)}\cr\cr
 #' \code{INSDENDs}{ = rep(3e+08, 4), fibre density, dorsal (1/m2)}\cr\cr

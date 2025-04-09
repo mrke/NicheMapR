@@ -246,7 +246,7 @@
 #' uid <- "$$$$$$"
 #' cds_api_key <- "$$$$$$$$-$$$$-$$$$-$$$$-$$$$$$$$$$$$"
 #'
-#' ecmwfr::wf_set_key(user = uid, key = cds_api_key, service = "cds")
+#' ecmwfr::wf_set_key(user = uid, key = cds_api_key)
 #'
 #' # bounding coordinates (in WGS84 / EPSG:4326)
 #' xmn <- 130
