@@ -1134,8 +1134,8 @@ c     NOTE: difference between this model and Garratt & Segal is that QCONV +VE 
       if(RH.gt.100.)then
        RH= 100.
       endif
-      CALL MICRO(HGTP,RUFP,ZH,D0,TAIR,soiltemp(1),VEL2M,QCONV,AMOL,
-     &NAIR,ZZ,VV,T,ZENR)
+      CALL MICRO(HGTP,RUFP,ZH,D0,TAIR,soiltemp(1),VEL2M*100.*60.,QCONV
+     &,AMOL,NAIR,ZZ,VV,T,ZENR)
       WB = 0.
       DP = 999.
 C     BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
