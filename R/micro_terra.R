@@ -70,7 +70,6 @@
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
-#' \code{Refhyt}{ = 2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
 #' \code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
 #' \code{ZH}{ = 0, heat transfer roughness height (m) for Campbell and Norman air temperature/wind speed profile (invoked if greater than 0, 0.02 * canopy height in m if unknown)}\cr\cr
 #' \code{D0}{ = 0, zero plane displacement correction factor (m) for Campbell and Norman air temperature/wind speed profile (0.6 * canopy height in m if unknown)}\cr\cr
@@ -343,7 +342,6 @@ micro_terra <- function(
   minshade = 0,
   maxshade = 90,
   dem = NA,
-  Refhyt = 2,
   Usrhyt = 0.01,
   Z01 = 0,
   Z02 = 0,
@@ -427,6 +425,7 @@ micro_terra <- function(
 ) {
 
   errors <- 0
+  Refhyt <- 2 # Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   if(ystart < 1958){

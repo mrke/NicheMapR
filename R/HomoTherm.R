@@ -20,6 +20,7 @@
 #' @export
 #' @details
 #' \strong{ Parameters controlling how the model runs:}\cr\cr
+#' \code{SIL.adjust}{ = TRUE, adjust silhouette area based on Underwood and Ward (1966)? (-)}\cr\cr
 #' \code{EXCEED.TCMAX}{ = TRUE, allow the mode to continue increasing core temperature? (-)}\cr\cr
 #' \code{MAXITER }{ = 500, maximum iterations beyond TC_MAX allowed when EXCEED.TMAX = TRUE}\cr\cr
 #'
@@ -240,6 +241,7 @@ HomoTherm <- function(MASS = 70,
                       O2GAS = 20.95,
                       N2GAS = 79.02,
                       CO2GAS = 0.0422,
+                      SIL.adjust = TRUE,
                       MAXITER = 500){
   # check if only one air temp / wind speed / relative humidity specified
   # needs one value for each body part so gradients with height can be
@@ -282,6 +284,115 @@ HomoTherm <- function(MASS = 70,
   SWEAT <- 0
   HEIGHT_GUESS <- 100 * (MASS / 23.5) ^ 0.5 # BMI equation, assuming 23.5 BMI (this gets update after first iteration)
   AREA <- 0.00718 * MASS ^ 0.425 * HEIGHT_GUESS ^ 0.725 # DuBois area, m2
+
+  if(SIL.adjust){
+    # work out silhouette area relation and correction factor
+    get_silhouette <- function(ZENs = seq(0, 90, 1), # degrees, zenith angles
+                               AZIMUTHs = rep(0, length(ZENs)),
+                               MASSs = c(5.32, 35.07, 3.43, 11.34), # kg, masses per part
+                               DENSITYs = rep(1050, 4), # kg/m3, densities per part
+                               INSDEPDs = c(1e-02, rep(6e-03, 3)),
+                               SHAPE_Bs = c(1.75, 1.87, 6.65, 6.70),
+                               SUBQFATs = rep(1, 4),
+                               FATPCTs = c(5 * 0.1, 36 * 0.2, 10, 23),
+                               PJOINs = c(0.0348, 0.0965, 0.0345, 0.0347),
+                               plot.sil = TRUE){
+
+      SHAPEs <- c(4, 1, 1, 1)
+      ORIENTs <- rep(3, 4)
+      for(j in 1:length(ZENs)){
+        GEOM.head <- c(ZENs[j], GEOM_ENDO(MASSs[1], DENSITYs[1], DENSITYs[1], FATPCTs[1], SHAPEs[1], INSDEPDs[1], SUBQFATs[1], SHAPE_Bs[1], SHAPE_Bs[1], 0, 0, PJOINs[1], 0, ORIENTs[1], ZEN = ZENs[j]))
+        GEOM.trunk <- c(ZENs[j], GEOM_ENDO(MASSs[2], DENSITYs[2], DENSITYs[2], FATPCTs[2], SHAPEs[2], INSDEPDs[2], SUBQFATs[2], SHAPE_Bs[2], SHAPE_Bs[2], 0, 0, PJOINs[2], 0, ORIENTs[2], ZEN = ZENs[j]))
+        GEOM.arm <- c(ZENs[j], GEOM_ENDO(MASSs[3], DENSITYs[3], DENSITYs[3], FATPCTs[3], SHAPEs[3], INSDEPDs[3], SUBQFATs[3], SHAPE_Bs[3], SHAPE_Bs[3], 0, 0, PJOINs[3], 0, ORIENTs[3], ZEN = ZENs[j]))
+        GEOM.leg <- c(ZENs[j], GEOM_ENDO(MASSs[4], DENSITYs[4], DENSITYs[4], FATPCTs[4], SHAPEs[4], INSDEPDs[4], SUBQFATs[4], SHAPE_Bs[4], SHAPE_Bs[4], 0, 0, PJOINs[4], 0, ORIENTs[4], ZEN = ZENs[j]))
+        if(j == 1){
+          GEOM.heads <- GEOM.head
+          GEOM.trunks <- GEOM.trunk
+          GEOM.arms <- GEOM.arm
+          GEOM.legs <- GEOM.leg
+        }else{
+          GEOM.heads <- rbind(GEOM.heads, GEOM.head)
+          GEOM.trunks <- rbind(GEOM.trunks, GEOM.trunk)
+          GEOM.arms <- rbind(GEOM.arms, GEOM.arm)
+          GEOM.legs <- rbind(GEOM.legs, GEOM.leg)
+        }
+      }
+      GEOM.heads <- as.data.frame(GEOM.heads)
+      GEOM.trunks <- as.data.frame(GEOM.trunks)
+      GEOM.arms <- as.data.frame(GEOM.arms)
+      GEOM.legs <- as.data.frame(GEOM.legs)
+
+      GEOM.lab <- c("ZEN", "VOL", "D", "MASFAT", "VOLFAT", "ALENTH", "AWIDTH", "AHEIT", "ATOT", "ASIL", "ASILN", "ASILP", "GMASS", "AREASKIN", "FLSHVL", "FATTHK", "ASEMAJ", "BSEMIN", "CSEMIN", "CONVSK", "CONVAR", "R1", "R2")
+
+      colnames(GEOM.heads) <- GEOM.lab
+      colnames(GEOM.trunks) <- GEOM.lab
+      colnames(GEOM.arms) <- GEOM.lab
+      colnames(GEOM.legs) <- GEOM.lab
+      AREA <- max(GEOM.heads$ATOT + GEOM.trunks$ATOT + GEOM.arms$ATOT * 2 + GEOM.legs$ATOT * 2)
+
+      # compare with Underwood and Ward calculation
+      thetas <- (90 - ZENs) * pi / 180
+      psis <- AZIMUTHs * pi / 180
+      sil.underwood <- (0.043 * sin(thetas) + 2.997 * cos(thetas) * (0.02133 * cos(psis) ^ 2 + 0.0091 * sin(psis)^2) ^ 0.5) / 1.81 * AREA
+      sil.endoR <- GEOM.heads$ASIL + GEOM.trunks$ASIL + GEOM.arms$ASIL * 2 + GEOM.legs$ASIL * 2
+      if(plot.sil){
+        par(mfrow = c(2, 1))
+        par(oma = c(2, 1, 2, 2) + 0.1)
+        par(mar = c(3, 3, 1.5, 1) + 0.1)
+        par(mgp = c(2, 1, 0))
+        plot(ZENs, sil.endoR, type = 'l', ylim = c(0, max(sil.endoR)), ylab = 'silhouette area, m2', xlab = 'zenith angle, degrees')
+        points(ZENs, sil.underwood, type = 'l', lty = 2)
+        legend(c(0, max(sil.endoR)), cex = 0.75, legend = c('endoR', 'Underwood & Wang'), lty = c(1, 2), bty = 'n')
+      }
+      # model difference as a function of zenith and adjust diffuse solar fraction
+      delta.calc <- sil.underwood / sil.endoR
+      fit <- lm(delta.calc ~ poly(ZENs, 8))
+      if(plot.sil){
+        plot(ZENs, delta.calc, type = 'l', ylab = 'Underwood/endoR silhouette area', xlab = 'zenith angle, degrees')
+        points(predict(fit), type = 'l', lty = 2)
+        legend(max(ZENs) * 0.5, .7, cex = 0.75, legend = c('observed', 'polynomial fit'), lty = c(1, 2), bty = 'n')
+        par(mfrow = c(1, 1))
+      }
+      return(list(fit = fit,
+                  sil.underwood = sil.underwood,
+                  sil.HomoTherm = sil.endoR,
+                  AREA = AREA))
+    }
+    # adjust solar radiation for silhouette area
+
+    # run get_silhouette function to obtain correction factor
+    # to match empirical relationship in Underwood and Ward (1966)
+    MASSs <- MASS * MASSFRACs
+    sil.out <- get_silhouette(ZENs = seq(0, 90),
+                              MASSs = MASSs,
+                              DENSITYs = DENSITYs,
+                              SHAPE_Bs = SHAPE_Bs,
+                              FATPCTs = FATPCTs,
+                              PJOINs = PJOINs,
+                              plot.sil = FALSE)
+    fit <- sil.out$fit # multiple regression pars for adjusting silhouette area
+    AREA <- sil.out$AREA # area of human based on current pars
+    adjust <- predict(fit, newdata = data.frame(ZENs = Z))
+
+    theta <- (90 - Z) * pi / 180
+    psi <- 0 * pi / 180
+    # Underwood and Wang model prediction
+    sil.underwood <- (0.043 * sin(theta) + 2.997 * cos(theta) * (0.02133 * cos(psi) ^ 2 + 0.0091 * sin(psi)^2) ^ 0.5) / 1.81 * AREA
+    Qnorm <- QSOLR/cos(Z * pi / 180) # solar normal to sun
+    Qnorm[Qnorm > 1367] <- 0
+
+    # correct calculation of direct and diffuse solar
+    F_SKY <- FSKREFs[1] * AREAFRACs[1] + FSKREFs[2] * AREAFRACs[2] + FSKREFs[3] * AREAFRACs[3] * 2 + FSKREFs[4] * AREAFRACs[4] * 2
+    F_GRD <- FGDREFs[1] * AREAFRACs[1] + FGDREFs[2] * AREAFRACs[2] + FGDREFs[3] * FGDREFs[3] * 2 + FGDREFs[4] * AREAFRACs[4] * 2
+    Qdir <- sil.underwood * Qnorm # correct
+    Qdir1 <- (sil.underwood / adjust) * Qnorm # biased
+    Qdif <- F_SKY * AREA * QSOLR * PDIF + F_GRD * AREA * QSOLR * (1 - ABSSB) * PDIF
+    Qsol <- Qdir + Qdif
+    Qsol1 <- Qdir1 + Qdif
+    SOLR_adj <- Qsol/Qsol1
+    SOLR_adj[is.na(SOLR_adj)] <- 1
+    QSOLR <- QSOLR * SOLR_adj
+  }
 
   while(QGEN < QMETAB_MIN){
 
@@ -423,11 +534,8 @@ HomoTherm <- function(MASS = 70,
     R_gen <- R_skin - trunk.morph[6]
     R_lung <- R_gen / 2
     T_fat <- (TSKINDs[2] + TSKINVs[2]) / 2 + ((Q_gen * R_gen ^ 2 ) / (2 * KFATs[2] * V_gen)) * log((R_skin / (R_gen)))
-    #TLUNG <- (TC + TSKIN) / 2 # average of skin and core, but no greater than core, °C
-    #TLUNG <- (TCORE + T_fat) / 2 # average of fat and core, °C
     TLUNG <- T_fat + (Q_gen * (R_gen ^ 2 - R_lung ^ 2)) / (4 * KFLESHs[2] * V_gen)
     #TAEXIT <- min(mean(TA[1], TLUNG), TLUNG) # temperature of exhaled air, no greater than lung, °C
-    #TAEXIT <- min(0.25 * TA[1] + 26, TLUNG) # from Ferrus et al. 1980. Respiratory water loss. Respiration Physiology 39:367–381.
     TAEXIT <- min(0.0837 * TA[1] + 32, TLUNG) # from Ferrus et al. 1980. Respiratory water loss. Respiration Physiology 39:367–381.
     TFA <- sum((unlist(lapply(lapply(parts, `[[`, 1), `[[`, 5)) + unlist(lapply(lapply(parts, `[[`, 1), `[[`, 6))) / 2 * AREAFRACs  * NPARTs)
     PCTWET <- min(100, sum(unlist(lapply(lapply(parts, `[[`, 1), `[[`, 9)) * AREAFRACs  * NPARTs))
@@ -571,7 +679,6 @@ HomoTherm <- function(MASS = 70,
   names(trunk.treg) <- names(head.treg)
   names(arm.treg) <- names(head.treg)
   names(leg.treg) <- names(head.treg)
-  #names(head.enbal) <- c("QSOL", "QIRIN", "QGEN", "QEVAP", "QIROUT", "QCONV", "ENB", "NTRY", "SUCCESS")
   names(head.enbal) <- c("QMETAB", "QSLR", "QRAD_IN", "QRAD_OUT", "QEVAP", "QCONV", "ENB", "NTRY", "SUCCESS")
   names(trunk.enbal) <- names(head.enbal)
   names(arm.enbal) <- names(head.enbal)

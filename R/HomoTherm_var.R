@@ -20,6 +20,7 @@
 #' @export
 #' @details
 #' \strong{ Parameters controlling how the model runs:}\cr\cr
+#' \code{SIL.adjust}{ = TRUE, adjust silhouette area based on Underwood and Ward (1966)? (-)}\cr\cr
 #' \code{EXCEED.TCMAX}{ = TRUE, allow the mode to continue increasing core temperature? (-)}\cr\cr
 #' \code{MAXITER}{ = 500, maximum iterations beyond TC_MAX allowed when EXCEED.TMAX = TRUE}\cr\cr
 #'
@@ -262,7 +263,7 @@ HomoTherm_var <- function(MASS = 70,
                           O2GAS = 20.95,
                           N2GAS = 79.02,
                           CO2GAS = 0.0422,
-                          SIL_adjust = TRUE){
+                          SIL.adjust = TRUE){
 
   NPARTs <- c(1, 1, 2, 2) # one head, one trunk two arms and two legs
 
@@ -320,7 +321,7 @@ HomoTherm_var <- function(MASS = 70,
     }
   }
 
-  if(SIL_adjust){
+  if(SIL.adjust){
     # work out silhouette area relation and correction factor
     get_silhouette <- function(ZENs = seq(0, 90, 1), # degrees, zenith angles
                                AZIMUTHs = rep(0, length(ZENs)),
