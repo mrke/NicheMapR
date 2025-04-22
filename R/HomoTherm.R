@@ -590,7 +590,8 @@ HomoTherm <- function(MASS = 70,
     }
     if(QGEN < QMETAB_MIN){
       for(i in 1:4){
-        if(KFLESHs[i] < KFLESH_MAXs[i]){ # vasodilation
+        # vasodilation
+        if(KFLESHs[i] < KFLESH_MAXs[i]){
           if(mean(c(TSKINDs, TSKINVs)) < 35 & mean(c(TSKINDs, TSKINVs)) > 32){
             KFLESHmult <- 3 # thermoneutral zone rapid vasodilation rate
           }else{
@@ -600,6 +601,7 @@ HomoTherm <- function(MASS = 70,
           if(KFLESHs[i] > AK1_SUBQFAT){
             FATPCTs[i] <- FATPCTs[i] * SUBQFAT_REDUCE # blood flow bypasses fat layer
           }
+        # let core rise
         }else{
           TCs[i] <- TCs[i] + TC_INCs[i] # let core rise (adjust metabolic rate accordingly)
           Q10mult <- Q10 ^ ((mean(TCs) - TC_REF) / 10)
@@ -607,7 +609,8 @@ HomoTherm <- function(MASS = 70,
         }
       }
     }
-    if(min(c(TSKINDs, TSKINVs)) > 35){ # augment current vasoconstriction with sweating and core temperature rise
+    # augment current vasoconstriction with sweating and core temperature rise
+    if(min(c(TSKINDs, TSKINVs)) > 35){
       PCTWETs <- PCTWETs + PCTWET_INC * 2
       for(i in 1:length(TCs)){
         if(TCs[i] < TC_MAX){
@@ -617,7 +620,8 @@ HomoTherm <- function(MASS = 70,
         }
       }
     }
-    if(max(TSKINDs, TSKINVs) > TC - 2){ # augment sweating rate further
+    # augment sweating rate further
+    if(max(TSKINDs, TSKINVs) > TC - 2){
      PCTWETs <- PCTWETs + PCTWET_INC
     }
     if(TC > TC_REF + 0.5){ # augment vasodilation
@@ -631,6 +635,7 @@ HomoTherm <- function(MASS = 70,
         }
       }
     }
+    # cap sweating and vasodilation at max values
     for(i in 1:4){
       if(PCTWETs[i] > PCTWET_MAXs[i]){
         PCTWETs[i] <- PCTWET_MAXs[i]
@@ -639,6 +644,7 @@ HomoTherm <- function(MASS = 70,
         KFLESHs[i] <- KFLESH_MAXs[i]
       }
     }
+    # see if core temp can continue to rise or quit
     if(max(TCs) >= TC_MAX + TC_INC | TC_INC == 0){
       counter <- counter + 1
       if(!EXCEED.TCMAX | counter > MAXITER){
