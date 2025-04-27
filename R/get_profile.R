@@ -190,7 +190,6 @@ get_profile <- function(Refhyt = 1.2,
     TAVE <- (T3 + T1 + 546) / 2 # ave temp in Kelvin
     RCP <- RHOCP(TAVE)
     AMOL <- -30 # initial Monin-Obukhov length (unstable conditions because negative)
-    ITER <- 0 # initialise counter
 
     # alternative Campbell and Norman 1998 vertical air temperature profile calculation option
     if(ZH > 0){

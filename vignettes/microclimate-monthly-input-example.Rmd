@@ -181,7 +181,7 @@ maxpool <- 10 # max depth for water pooling on the surface, mm (to account for r
 evenrain <- 1 # spread daily rainfall evenly across 24hrs (1) or one event at midnight (2)
 SoilMoist_Init <- rep(0.2, 10) # initial soil water content for each node, m3/m3
 moists <- matrix(nrow = 10, ncol = doynum, data = 0) # set up an empty vector for soil moisture values through time
-moists[1:10, ] <- SoilMoist_Init # insert inital soil moisture
+moists[1:10, ] <- SoilMoist_Init # insert initial soil moisture
 spinup <- 1 # repeat first day 3 times for steady state
 dewrain <- 0 # don't feed dew back into soil as rain
 moiststep <- 360 # how many steps within the hour is soil moisture solved over

@@ -529,10 +529,10 @@ HomoTherm <- function(MASS = 70,
     trunk.morph <- c(0, parts[[2]][2]$morph[c(1:12, 15:20)])
     trunk.enbal <- parts[[2]][3]$enbal[c(1:7, 9:10)][c(3, 1, 2, 5, 4, 6:9)]
     Q_gen <- trunk.enbal[1]
-    V_gen <- trunk.morph[7]
-    R_skin <- trunk.morph[11]
-    R_gen <- R_skin - trunk.morph[6]
-    R_lung <- R_gen / 2
+    V_gen <- trunk.morph[7] # flesh volume
+    R_skin <- trunk.morph[11] # radius to skin
+    R_gen <- R_skin - trunk.morph[6] # subtract fat layer
+    R_lung <- R_gen / 2 # half way across non-fat flesh radius
     T_fat <- (TSKINDs[2] + TSKINVs[2]) / 2 + ((Q_gen * R_gen ^ 2 ) / (2 * KFATs[2] * V_gen)) * log((R_skin / (R_gen)))
     TLUNG <- T_fat + (Q_gen * (R_gen ^ 2 - R_lung ^ 2)) / (4 * KFLESHs[2] * V_gen)
     #TAEXIT <- min(mean(TA[1], TLUNG), TLUNG) # temperature of exhaled air, no greater than lung, °C
