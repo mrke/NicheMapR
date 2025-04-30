@@ -110,6 +110,9 @@
 #' \code{DEP}
 #' { and points half way between)}\cr\cr
 #' \code{maxpool}{ = 10000, Max depth for water pooling on the surface (mm), to account for runoff}\cr\cr
+#' \code{rain}{ = NA, Vector of daily rainfall values - overrides daily SILO rain if not NA}\cr\cr
+#' \code{rainhourly}{ = 0, Is hourly rain input being supplied (1 = yes, 0 = no)?}\cr\cr
+#' \code{rainhour}{ = 0, Vector of hourly rainfall values - overrides daily NCEP rain if rainhourly = 1}\cr\cr
 #' \code{rainmult}{ = 1, Rain multiplier for surface soil moisture (-), used to induce runon}\cr\cr
 #' \code{rainoff}{ = 0, Rain offset (mm), used to induce changes in rainfall from GRIDMET values. Can be a single value or a vector matching the number of days to simulate. If negative values are used, rainfall will be prevented from becomming negative.}\cr\cr
 #' \code{evenrain}{ = 0, Spread daily rainfall evenly across 24hrs (1) or one event at midnight (0)}\cr\cr
@@ -399,6 +402,7 @@ micro_silo <- function(
   scenario = "",
   year = "",
   hourly = 0,
+  rain = NA,
   rainhourly = 0,
   rainhour = 0,
   rainoff = 0,
@@ -760,7 +764,9 @@ micro_silo <- function(
       Tmax <- SILO.data$max_temp
       rhmax <- SILO.data$rh_tmin
       rhmin <- SILO.data$rh_tmax
-      rain <- SILO.data$daily_rain
+      if(is.na(rain[1])){
+       rain <- SILO.data$daily_rain
+      }
       radiation <- SILO.data$radiation
       SILO.elev <- as.numeric(sub(".*?([-+]?[0-9]*\\.?[0-9]+).*", "\\1", SILO.data$metadata[1]))
 
