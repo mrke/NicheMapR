@@ -100,9 +100,9 @@ c     IM=0.000001 ! maximum overall mass balance error allowed, kg
       WD=1000. ! density of water kg/m3
       DV=0.000024 ! binary diffusion coefficient for water vapour, m^2/s
   
-      B1=1/BB
-      N=2+3/BB ! vector per soil layer of exponents in equation to obtain hydraulic conductivity from saturated hydraulic conductivity, saturated water content and soil water content
-      N1=1-N
+      B1=1./BB
+      N=2.+3./BB ! vector per soil layer of exponents in equation to obtain hydraulic conductivity from saturated hydraulic conductivity, saturated water content and soil water content
+      N1=1.-N
 
 c     prep for wetair call      
       WB = 0.
@@ -160,7 +160,8 @@ c     initialize root water uptake variables
       do 98 I=2,M
        if(L(I).gt.0.)then
         RR(I)=RW/(L(I)*(Z(I+1)-Z(I-1))/2.) ! root resistance
-        BZ(I)=(1.-M)*LOG(PI*R1*R1*L(I))/(4.*PI*L(I)*(Z(I+1)-Z(I-1))/2.)
+        BZ(I)=N1(i)*LOG(PI*R1*R1*L(I))/
+     &   (4.*PI*L(I)*(Z(I+1)-Z(I-1))/2.)
        else
         RR(I)=1D+20 ! root resistance
         BZ(I)=0.D0
@@ -216,7 +217,7 @@ c     start of convergence loop ########################################
        K(I)=KS(I)*(PE(I)/P(I))**N(I) ! hydraulic conductivities for each node, EQ6.14
 3     continue
       JV(1)=EP*(H(2)-HA)/(1.D0-HA) ! vapour flux at soil surface, EQ9.14
-      DJ(1)=EP*MW*H(2)/(R*T(I-1)*(1.D0-HA)) ! derivative of vapour flux at soil surface, combination of EQ9.14 and EQ5.14
+      DJ(1)=EP*MW*H(2)/(R*T(1)*(1.D0-HA)) ! derivative of vapour flux at soil surface, combination of EQ9.14 and EQ5.14
       do 4 I=2,M
        DB = T(I)-273.15 ! back to deg C from Kelvin for call to wetair
        CALL WETAIR(DB,WB,RH100,DPP,BP,ECUR,ESAT,VD,RWW,TVIR,
