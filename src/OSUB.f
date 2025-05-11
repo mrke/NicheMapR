@@ -442,8 +442,14 @@ c     phase change for freezing moist soil
         endif
 1131   continue
       endif
-      OUT(4)=T(1)
-      OUT(14:22)=T(2:10)
+      if(runsnow.eq.1)then
+        OUT(4)=T(9)
+        OUT(14:22)=T(10:18)
+       else
+        OUT(4)=T(1)
+        OUT(14:22)=T(2:10)
+      endif
+
 
 C     Modification by M. Kearney for effect of cloud cover on direct solar radiation, using the
 C     Angstrom formula (formula 5.33 on P. 177 of "Climate Data and Resources" by Edward Linacre 1992
@@ -1304,8 +1310,8 @@ c     end check for previous slippage
          metout(methour,19)=snowdens
          soil(methour,1)=JULDAY(DOY)
          soil(methour,2)=SIOUT(1)
-         soil(methour,3)=T(1)!OUT(4)
-         soil(methour,4:12)=T(2:10)!OUT(14:22)
+         soil(methour,3)=OUT(4)
+         soil(methour,4:12)=OUT(14:22)
          if(runsnow.eq.1)then
           sunsnow(methour,1)=JULDAY(DOY)
           sunsnow(methour,2)=SIOUT(1)
@@ -1573,8 +1579,8 @@ c     end check for previous slippage
          shadmet(methour,19)=snowdens
          shadsoil(methour,1)=JULDAY(DOY)
          shadsoil(methour,2)=SIOUT(1)
-         shadsoil(methour,3)=T(1)!OUT(4)
-         shadsoil(methour,4:12)=T(2:10)!OUT(14:22)
+         shadsoil(methour,3)=OUT(4)
+         shadsoil(methour,4:12)=OUT(14:22)
          if(runsnow.eq.1)then
           shdsnow(methour,1)=JULDAY(DOY)
           shdsnow(methour,2)=SIOUT(1)
