@@ -417,7 +417,7 @@ micro_access_s2 <- function(
   snowcond = 0,
   intercept = max(maxshade) / 100 * 0.3,
   grasshade = 0,
-  maxsurf = 95) { # end function parameters
+  maxsurf = 85) { # end function parameters
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0

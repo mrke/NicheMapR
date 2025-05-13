@@ -418,7 +418,7 @@ micro_silo <- function(
   snowcond = 0,
   intercept = max(maxshade) / 100 * 0.3,
   grasshade = 0,
-  maxsurf = 95) { # end function parameters
+  maxsurf = 85) { # end function parameters
 
 
   if(length(loc) == 1){

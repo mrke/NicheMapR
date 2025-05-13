@@ -412,7 +412,7 @@ micro_ncep <- function(
   dailyprecip = NA,
   weather.elev = 'ncep',
   cad.effects = TRUE,
-  maxsurf = 95){ # end function parameters
+  maxsurf = 85){ # end function parameters
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
   Refhyt <- 2 # Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured

@@ -408,7 +408,7 @@ micro_uk <- function(
   intercept = max(maxshade) / 100 * 0.3,
   save = 0,
   grasshade = 0,
-  maxsurf = 95) {
+  maxsurf = 85) {
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0

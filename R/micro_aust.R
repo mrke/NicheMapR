@@ -408,7 +408,7 @@ micro_aust <- function(
   snowcond = 0,
   intercept = max(maxshade) / 100 * 0.3,
   grasshade = 0,
-  maxsurf = 95
+  maxsurf = 85
 ) {
 
   if(opendap == 0){

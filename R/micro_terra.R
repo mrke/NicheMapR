@@ -421,7 +421,7 @@ micro_terra <- function(
   grasshade = 0,
   terra_source = NA,
   scenario = 0,
-  maxsurf = 95
+  maxsurf = 85
 ) {
 
   errors <- 0

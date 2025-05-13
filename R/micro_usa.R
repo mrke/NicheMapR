@@ -406,7 +406,7 @@ micro_usa <- function(
   snowcond = 0,
   intercept = max(maxshade) / 100 * 0.3,
   grasshade = 0,
-  maxsurf = 95) { # end function parameters
+  maxsurf = 85) { # end function parameters
 
   ystart <- as.numeric(substr(dstart, 7, 10))
   yfinish <- as.numeric(substr(dfinish, 7, 10))

@@ -424,7 +424,7 @@ micro_nz <- function(
   snowcond = 0,
   intercept = max(maxshade) / 100 * 0.3,
   grasshade = 0,
-  maxsurf = 95) {
+  maxsurf = 85) {
 
   errors<-0
   Refhyt <- 1.2 # Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured

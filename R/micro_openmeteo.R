@@ -392,7 +392,7 @@ micro_openmeteo <- function(
     cad.effects = TRUE,
     dewrain = 0,
     moiststep = 360,
-    maxsurf = 95){ # end function parameters
+    maxsurf = 85){ # end function parameters
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
   errors<-0
