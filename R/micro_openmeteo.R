@@ -5,6 +5,7 @@
 #' @param loc Longitude and latitude (decimal degrees) or string for place name search via openmeteo::geocode()
 #' @param dstart First day to run, date in format "d/m/Y" e.g. "01/01/2016"
 #' @param dfinish Last day to run, date in format "d/m/Y" e.g. "31/12/2016"
+#' @param fstart First day to leverage archived forecast data, must be after dstart and before dfinish
 #' @param dspinup Number of days to simulate for spin-up
 #' @param dem A digital elevation model used by microclima for micro-topographic effects, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
 #' @param dem2 A digital elevation model used by microclima for meso-climate calculations, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
@@ -303,6 +304,7 @@ micro_openmeteo <- function(
     loc = c(-5.3, 50.13),
     dstart = format(Sys.time(), "%d/%m/%Y"),
     dfinish = format(Sys.time()+3600*24*13, "%d/%m/%Y"),
+    fstart = NA,
     dspinup = 365,
     dem = NA,
     dem2 = dem,
@@ -566,6 +568,9 @@ micro_openmeteo <- function(
     ystart <- as.numeric(substr(dstart2, 7, 10))
     yfinish <- as.numeric(substr(dfinish, 7, 10))
     yearlist <- seq(ystart, (ystart + (nyears - 1)), 1)
+    if(is.na(fstart)) { # If forecast start date not provided, set as 2 days before present
+      fstart <- as.Date(Sys.time(), format = "%d/%m/%Y") - 2
+    }
 
     ################## time related variables #################################
 
@@ -722,7 +727,7 @@ micro_openmeteo <- function(
           openmeteo.end <- as.Date(dfinish, format = "%d/%m/%Y")
           forecast <- FALSE
         }else{
-          openmeteo.end <- as.Date(dstart, format = "%d/%m/%Y") - 3
+          openmeteo.end <- as.Date(fstart, format = "%d/%m/%Y") - 1
         }
        openmeteo.out1 <- weather_history(
           location = c(loc[2], loc[1]),
@@ -754,7 +759,7 @@ micro_openmeteo <- function(
       if(forecast){
         openmeteo.out2 <- weather_forecast(
           location = c(loc[2], loc[1]),
-          start = as.Date(dstart, format = "%d/%m/%Y")-2,
+          start = as.Date(fstart, format = "%d/%m/%Y"),
           end = as.Date(dfinish, format = "%d/%m/%Y"),
           hourly = c("temperature_2m",
                      "relative_humidity_2m",
