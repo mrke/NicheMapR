@@ -781,6 +781,8 @@ micro_openmeteo <- function(
           timezone = "auto"
         )
         openmeteo.out <- rbind(openmeteo.out1[, 1:10], openmeteo.out2[, 1:10])
+      } else {
+        openmeteo.out <- openmeteo.out1[, 1:10]
       }
 
       ALTT <- elev
