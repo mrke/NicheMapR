@@ -7,6 +7,7 @@
 #' @param dfinish Last day to run, date in format "d/m/Y" e.g. "31/12/2016"
 #' @param fstart First day to leverage archived forecast data, must be after dstart and before dfinish
 #' @param dspinup Number of days to simulate for spin-up
+#' @param forecast_model Supply to specify a model for forecasted values (if NA defaults to autoselection of best model). See Open-Meteo API documentation for list of models: https://github.com/open-meteo/open-data
 #' @param dem A digital elevation model used by microclima for micro-topographic effects, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
 #' @param dem2 A digital elevation model used by microclima for meso-climate calculations, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
 #' @param dem.res Requested resolution of the DEM from elevatr, m
@@ -306,6 +307,7 @@ micro_openmeteo <- function(
     dfinish = format(Sys.time()+3600*24*13, "%d/%m/%Y"),
     fstart = NA,
     dspinup = 365,
+    forecast_model = NA,
     dem = NA,
     dem2 = dem,
     dem.res = 30,
@@ -782,7 +784,7 @@ micro_openmeteo <- function(
                      "soil_moisture_27_81cm"),
           daily = NULL,
           response_units = NULL,
-          model = NULL,
+          model = ifelse(is.na(forecast_model), NULL, forecast_model),
           timezone = "auto"
         )
         openmeteo.out <- rbind(openmeteo.out1[, 1:10], openmeteo.out2[, 1:10])
