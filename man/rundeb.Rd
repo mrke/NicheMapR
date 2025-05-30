@@ -81,7 +81,14 @@ an organism using DEB theory, drawing parameters from the 'AmP' parameter
 database at https://github.com/add-my-pet/AmPtool. It requires the
 'allStat.mat' file to have been converted to 'allStat.Rda' via the R.matlab
 package (i.e. allStat <- readMat('allStat.mat' then
-save(allStat, file = 'allstat.Rda'))).
+save(allStat, file = 'allstat.Rda'))). Alternatively, you can run it on the
+output of your estimation for a species directly via DEBtool but you need to
+add the following code to the end of your run file (substituting your species
+name for 'genus_species'):
+load('results_genus_species.mat');
+[stat, txtStat] = statistics_st(metaPar.model, par);
+save('stat_species_genus.mat', 'stat')
+then pass the path to where these files are to the rundeb function via 'allstat'
 }
 \examples{
 #library(R.matlab)
