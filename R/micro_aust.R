@@ -911,67 +911,84 @@ micro_aust <- function(
 
     if(opendap == 1){
 
-      # nc <- RNetCDF::open.nc("https://dapds00.nci.org.au/thredds/dodsC/zv2/agcd/v1/precip/calib/r005/01day/agcd_v1_precip_calib_r005_daily_1900.nc")
-      # lon <- RNetCDF::var.get.nc(nc, "lon", unpack = TRUE)
-      # lat <- RNetCDF::var.get.nc(nc, "lat", unpack = TRUE)
-      # flat <- match(abs(lat-x[2]) < 1 / 40, 1)
-      # latindex <- which(flat %in% 1)[1]
-      # flon <- match(abs(lon-x[1]) < 1 / 40, 1)
-      # lonindex <- which(flon %in% 1)[1]
-      # start <- c(lonindex, latindex, 1)
-      # count <- c(1, 1, NA)
-      #
-      #
-      # var <- 'precip'
-      # nc1 <- RNetCDF::open.nc("https://dapds00.nci.org.au/thredds/dodsC/zv2/agcd/v1/precip/calib/r005/01day/agcd_v1_precip_calib_r005_daily_1990.nc")
-      # data_1 <- as.numeric(RNetCDF::var.get.nc(nc1, variable = var, start = start, count, unpack = TRUE))
-
-
       message("extracting climate data via opendap - note that there is no wind speed data, so the daily range is assumed to be from 0.5 to 2 m/s \n")
-      monstart <- c("0101", "0201", "0301", "0401", "0501", "0601", "0701", "0801", "0901", "1001", "1101", "1201")
-      monfinish <- c("0131.nc","0228.nc","0331.nc","0430.nc","0531.nc","0630.nc","0731.nc","0831.nc","0930.nc","1031.nc","1130.nc","1231.nc")
-      monfinish2 <- c("0131.nc","0229.nc","0331.nc","0430.nc","0531.nc","0630.nc","0731.nc","0831.nc","0930.nc","1031.nc","1130.nc","1231.nc")
-      message("extracting climate data", '\n')
-      baseurl<- "http://rs-data1-mel.csiro.au/thredds/dodsC/bawap/"
-      get_AWAP <- function(year, var){
-        for(i in 1:length(years)){
-          year <- years[i]
-          cat(paste0("reading weather input for variable ", var," for year ", year, " \n"))
-          for(mm in 1:12){
-            mstart <- monstart[mm]
-            if(year %in% leapyears){
-              mfinish <- monfinish2[mm]
-            }else{
-              mfinish <- monfinish[mm]
-            }
-            nc <- RNetCDF::open.nc(paste0(baseurl, var, "/day/", year, "/bom-", var, "_day-", year, mstart, "-", year, mfinish))
-            lon <- RNetCDF::var.get.nc(nc, "longitude", unpack = TRUE)
-            lat <- RNetCDF::var.get.nc(nc, "latitude", unpack = TRUE)
-            flat <- match(abs(lat-x[2]) < 1 / 40, 1)
-            latindex <- which(flat %in% 1)[1]
-            flon <- match(abs(lon-x[1]) < 1 / 40, 1)
-            lonindex <- which(flon %in% 1)[1]
-            start <- c(lonindex, latindex, 1)
-            count <- c(1, 1, NA)
-            data_1 <- as.numeric(RNetCDF::var.get.nc(nc, variable = paste0(var, "_day"),
-                                                     start = start, count, unpack = TRUE))
-            if(mm == 1 & i == 1){
-              data <- data_1
-            }else{
-              data <- c(data, data_1)
-            }
-            RNetCDF::close.nc(nc)
+      baseurl<- "http://opendap.bom.gov.au:8080/thredds/dodsC/agcd/"
+      get_AGCD <- function(dstart, dfinish, var, x, baseurl = "http://opendap.bom.gov.au:8080/thredds/dodsC/agcd/") {
+        # Convert date strings to Date objects
+        tstart <- as.Date(dstart, format = "%d/%m/%Y")
+        tfinish <- as.Date(dfinish, format = "%d/%m/%Y")
+
+        # Generate sequence of dates
+        dates <- seq(tstart, tfinish, by = "1 day")
+
+        # Precompute file paths
+        if(var == 'solar'){
+          filepaths <- paste0(
+            baseurl, var, "_2018/total/r005/01day/",
+            format(dates, "%Y"), "/",
+            sprintf("%s_dailyExposure.nc", format(dates, "%Y%m%d"))
+          )
+          var2 <- "dailyExposure"
+        }else{
+          if(var == 'precip'){
+            filepaths <- paste0(
+              baseurl, var, "/total/r005/01day/",
+              format(dates, "%Y"), "/",
+              sprintf("%s_total_r005_%s_%s.nc", var,
+                      format(dates, "%Y%m%d"), format(dates, "%Y%m%d"))
+            )
+            var2 <- "precip"
+          }else{
+            filepaths <- paste0(
+              baseurl, var, "/mean/r005/01day/",
+              format(dates, "%Y"), "/",
+              sprintf("%s_mean_r005_%s_%s.nc", var,
+                      format(dates, "%Y%m%d"), format(dates, "%Y%m%d"))
+            )
+            var2 <- var
           }
         }
+        if(var == 'vapourpres_h09' | var == 'vapourpres_h15'){
+          var2 <- "vapourpres"
+        }
+        cat(paste0("Reading weather input for variable: ", var, "\n"))
+
+        # Helper function to extract the value from one file
+        extract_value <- function(ncfile) {
+          nc <- RNetCDF::open.nc(ncfile)
+          if(length(grep("dailyExposure", ncfile)) != 0){
+            lon <- RNetCDF::var.get.nc(nc, "longitude", unpack = TRUE)
+            lat <- RNetCDF::var.get.nc(nc, "latitude", unpack = TRUE)
+          }else{
+            lon <- RNetCDF::var.get.nc(nc, "lon", unpack = TRUE)
+            lat <- RNetCDF::var.get.nc(nc, "lat", unpack = TRUE)
+          }
+          # Find nearest index (efficient)
+          latindex <- which.min(abs(lat - x[2]))
+          lonindex <- which.min(abs(lon - x[1]))
+
+          start <- c(lonindex, latindex, 1)
+          count <- c(1, 1, NA)
+          value <- as.numeric(RNetCDF::var.get.nc(nc, variable = var2,
+                                                  start = start, count = count,
+                                                  unpack = TRUE))
+          RNetCDF::close.nc(nc)
+          return(value)
+        }
+
+        # Read all data efficiently (can also try parallel later)
+        data <- vapply(filepaths, extract_value, numeric(1))
+
         return(data)
       }
-      years <- yearlist
-      sol <- zoo::na.approx(get_AWAP(yearlist, "rad"))
-      tmax <- get_AWAP(yearlist, "tmax")
-      tmin <- get_AWAP(yearlist, "tmin")
-      vph09 <- get_AWAP(yearlist, "vph09")
-      vph15 <- get_AWAP(yearlist, "vph15")
-      Rain <- get_AWAP(yearlist, "rain")
+      dstart <- paste0('01/01/', ystart)
+      dfinish <- paste0('31/12/', yfinish)
+      sol <- zoo::na.approx(get_AGCD(dstart, dfinish, "solar", x))
+      tmax <- get_AGCD(dstart, dfinish, "tmax", x)
+      tmin <- get_AGCD(dstart, dfinish, "tmin", x)
+      vph09 <- get_AGCD(dstart, dfinish, "vapourpres_h09", x)
+      vph15 <- get_AGCD(dstart, dfinish, "vapourpres_h15", x)
+      Rain <- get_AGCD(dstart, dfinish, "precip", x)
 
       allclearsky <- leapfix(clearskysum, yearlist)
       allclearsky <- allclearsky[1:ndays]
