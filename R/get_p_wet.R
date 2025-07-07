@@ -197,7 +197,7 @@ get_p_wet <- function(cut.known = 0,
   # forced convection
   PR_forc <-	0.72 # Prandlt number for forced convection, -
   SC_forc <-	0.6 # Schmidt number for forced convection, -)
-  NU_forc <- 0.35 * RE ^ 0.6	# Nusslet number for forced convection, -
+  NU_forc <- 0.35 * RE ^ 0.6	# Nusselt number for forced convection, -
   HC_forc <- NU_forc * k_air / D # Heat transfer coeff for forced convection, W/(m2 K)
   SH_forc <- NU_forc * (SC_forc / PR_forc) ^ (1 / 3) # Sherwood number, -
   HD_forc <-	SH_forc * D_H2O / D	# mass transfer coeff, m/s
@@ -206,11 +206,13 @@ get_p_wet <- function(cut.known = 0,
   # combined heat and mass transfer coefficients
   NU_tot <- (NU_free ^ 3 + NU_forc ^ 3) ^ (1 / 3)
   HC <- NU_tot * k_air / D # Final heat transfer coeff, W/(m2 K)
-  if(GR / RE ^ 2 > 1){
-   HD <- HD_free # Final mass transfer coefficient, m/s
-  }else{
-   HD <- HD_forc # Final mass transfer coefficient, m/s
-  }
+  SH_tot <- (SH_free ^ 3 + SH_forc ^ 3) ^ (1 / 3)
+  HD <- SH_tot * D_H2O / D # Final mass transfer coeff, W/(m2 K)
+  # if(GR / RE ^ 2 > 1){
+  #  HD <- HD_free # Final mass transfer coefficient, m/s
+  # }else{
+  #  HD <- HD_forc # Final mass transfer coefficient, m/s
+  # }
   #Q_conv <- Q_conv_free + Q_conv_forc	# Total convective heat loss at skin, W
 
   # ocular water loss

@@ -111,7 +111,7 @@ by choosing the option 'run.gads <- 1' (Fortran version, quicker but may crash o
 \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
 
 \strong{ General additional parameters:}\cr\cr
-\code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
+\code{ERR}{ = 1, Integrator error tolerance for soil temperature calculations}\cr\cr
 \code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
 \code{ZH}{ = 0, heat transfer roughness height (m) for Campbell and Norman air temperature/wind speed profile (invoked if greater than 0, 0.02 * canopy height in m if unknown)}\cr\cr
 \code{D0}{ = 0, zero plane displacement correction factor (m) for Campbell and Norman air temperature/wind speed profile (0.6 * canopy height in m if unknown)}\cr\cr

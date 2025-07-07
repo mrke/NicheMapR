@@ -633,7 +633,7 @@ ectotherm <- function(
   DEP = micro$DEP,
   KS = micro$KS[seq(1, 19, 2)],
   b = micro$BB[seq(1, 19, 2)],
-  PE = micro$PE[seq(1, 19, 2)],
+  PE = abs(micro$PE[seq(1, 19, 2)])*-1,
   metout = micro$metout,
   shadmet = micro$shadmet,
   soil = micro$soil,

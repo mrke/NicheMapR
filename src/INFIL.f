@@ -160,7 +160,7 @@ c     initialize root water uptake variables
       do 98 I=2,M
        if(L(I).gt.0.)then
         RR(I)=RW/(L(I)*(Z(I+1)-Z(I-1))/2.) ! root resistance
-        BZ(I)=N1(i)*LOG(PI*R1*R1*L(I))/
+        BZ(I)=N1(I)*LOG(PI*R1*R1*L(I))/
      &   (4.*PI*L(I)*(Z(I+1)-Z(I-1))/2.)
        else
         RR(I)=1D+20 ! root resistance
@@ -249,14 +249,14 @@ c     # Thomas algorithm (Gauss elimination)
        B(I+1)=B(I+1)-A(I+1)*C(I)
        F(I+1)=F(I+1)-A(I+1)*F(I)
 5     continue
-      DP(M)=F(M)/B(M) ! change in potential in an iteration step, J/kg/s
+      DP(M)=F(M)/B(M) ! change in potential in an iteration step, J/kg
       P(M)=P(M)-DP(M) ! matric potential J/kg
       if(P(M).gt.PE(M))then
        P(M)=PE(M)
       endif
 
       do 6 I=(M-1),2,-1 
-       DP(I)=F(I)-C(I)*DP(I+1) ! change in potential in an iteration step, J/kg/s
+       DP(I)=F(I)-C(I)*DP(I+1) ! change in potential in an iteration step, J/kg
        P(I)=P(I)-DP(I) ! matric potential J/kg
 c     # check that water potential doesn't become too large
        if(P(I).gt.PE(I))then

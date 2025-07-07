@@ -684,7 +684,7 @@ ectoR_devel <- function(
     # outputs
     enbal <- t(matrix(c(QSOLAR, QIRIN, QMETAB, QRESP, QSEVAP, QIROUT, QCONV, QCOND, ENB)))
     colnames(enbal) <- c("QSOL", "QIRIN", "QMET", "QRESP", "QEVAP", "QIROUT", "QCONV", "QCOND", "ENB")
-    O2_ml <- M_1 * Ww_g ^ M_2 * 10 ^ (M_3 * TC) * 10 ^ M_4 + Q_act # ml/h
+    O2_ml <- M_1 * Ww_g ^ M_2 * 10 ^ (M_3 * TC) * 10 ^ M_4 + Q_act / 0.0056 # ml/h
     H2OResp_g <- SEVAP.out$WRESP * 3600 # g/h
     H2OCut_g <- SEVAP.out$WCUT * 3600 # g/h
     H2OEyes_g <- SEVAP.out$WEYES * 3600 # g/h
