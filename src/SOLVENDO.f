@@ -24,11 +24,11 @@ C     USING endo_devel.R
       DOUBLE PRECISION MASFAT,MORPH,N2GAS,N2MOL1,N2MOL2,NESTYP,NTRYD
       DOUBLE PRECISION NTRYV,O2GAS,O2MOL1,O2MOL2,O2STP,ORIENT,PANT
       DOUBLE PRECISION PANT_COST,PANT_INC,PANT_LAST,PANT_MAX,PANT_MULT
-      DOUBLE PRECISION PCOND,PCTBAREVAP,PCTCO2,PCTDIF,PCTEYES,PCTN2
-      DOUBLE PRECISION PCTO2,PCTWET,BLCMP,PCTWET_INC,PCTWET_LAST
-      DOUBLE PRECISION PCTWET_MAX,PI,PR,PVEN,Q10,Q10mult,QBASAL,QBASREF
-      DOUBLE PRECISION QCOND,QCONDD,QCONDV,QCONV,QCONVD,QCONVV,QDORSL
-      DOUBLE PRECISION QEVAP,QFSEVAPD,QFSEVAPV,QGEN
+      DOUBLE PRECISION PANT_REF,PCOND,PCTBAREVAP,PCTCO2,PCTDIF,PCTEYES
+      DOUBLE PRECISION PCTN2,PCTO2,PCTWET,BLCMP,PCTWET_INC,PCTWET_LAST
+      DOUBLE PRECISION PCTWET_MAX,PCTWET_REF,PI,PR,PVEN,Q10,Q10mult
+      DOUBLE PRECISION QBASAL,QCOND,QCONDD,QCONDV,QCONV,QCONVD,QCONVV
+      DOUBLE PRECISION QDORSL,QEVAP,QFSEVAPD,QFSEVAPV,QGEN,QBASAL_REF
       DOUBLE PRECISION QGENNETD,QGENNETV,QIRIN,QIRIND,QIRINV,QIROUT
       DOUBLE PRECISION QIROUTD,QIROUTV,QM1,QM2,QMIN,QNORM,QRADD
       DOUBLE PRECISION QRADV,QRBSHD,QRBSHV,QRESP,QRGRDD,QRGRDV,QRSKYD
@@ -132,7 +132,7 @@ C     USING endo_devel.R
       TC_INC=input(68)
       TC_REF=input(69)
       Q10=input(70)
-      QBASREF=input(71)
+      QBASAL_REF=input(71)
       PANT_MAX=input(72)
       PCTWET_MAX=input(73)
       PCTWET_INC=input(74)
@@ -160,7 +160,7 @@ C     USING endo_devel.R
       FATDEN=input(96)
       AIRVOL_MAX=input(97)
       TORPTOL=input(98)
-      
+
       TSKINMAX=TC ! initialise
       Q10mult=1. ! initialise
       PANT_COST = 0.D0 ! initialise
@@ -460,13 +460,13 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
 
        IF(INT(RESPIRE).EQ.1)THEN
         !# now guess for metabolic rate that balances the heat budget while allowing metabolic rate
-        !# to remain at or above QBASAL, via 'shooting method' ZBRENT
+        !# to remain at or above QBASAL, via root finder ZBRENT
         QMIN = QBASAL
         IF((TA.LT.TC).AND.(TSKINMAX.LT.TC))THEN
          QM1 = QBASAL * 2.* (-1.)
-         QM2 = QBASAL * 50.
+         QM2 = QBASAL * 20.
         ELSE
-         QM1 = QBASAL * 50.* (-1.)
+         QM1 = QBASAL * 2.* (-1.)
          QM2 = QBASAL * 2.
         ENDIF
 
@@ -489,7 +489,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
        IF(TC > TC_MIN)THEN
         TC = TC - TC_INC
         Q10mult = Q10**((TC - TC_REF)/10.)
-        QBASAL = QBASREF * Q10mult
+        QBASAL = QBASAL_REF * Q10mult
        ENDIF
        IF((ZBRENTout(1)/ZBRENTout(7)).LT.(-TORPTOL))THEN!.AND.
 c     &  (TC.LE.(TC_MIN+TC_INC)))THEN
@@ -503,8 +503,10 @@ c     &  (TC.LE.(TC_MIN+TC_INC)))THEN
       ENDIF
       ! NON TOPROR MODE
 222   CONTINUE
-        
-      do while(QGEN < QBASAL)
+      PCTWET_REF = PCTWET
+      PANT_REF = PANT
+      do while((QGEN.LT.QBASAL).OR.((QGEN.GT.QBASAL*1.05).AND.
+     & (PANT.GT.PANT_REF.OR.TC.GT.TC_REF.OR.PCTWET.GT.PCTWET_REF))) ! second condition to catch overshoot
 
        !### IRPROP, infrared radiation properties of fur
 
@@ -763,17 +765,17 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
 
        IF(INT(RESPIRE).EQ.1)THEN
         !# now guess for metabolic rate that balances the heat budget while allowing metabolic rate
-        !# to remain at or above QBASAL, via 'shooting method' ZBRENT
+        !# to remain at or above QBASAL, via root-finder ZBRENT
         QMIN = QBASAL
         IF((TA.LT.TC).AND.(TSKINMAX.LT.TC))THEN
          QM1 = QBASAL * 2.* (-1.)
-         QM2 = QBASAL * 50.
+         QM2 = QBASAL * 20.
         ELSE
-         QM1 = QBASAL * 50.* (-1.)
+         QM1 = QBASAL * 2.* (-1.)
          QM2 = QBASAL * 2.
         ENDIF
 
-        TOL = AMASS * 0.01
+        TOL = QBASAL * 0.01
         ZBRENTin = (/TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG,
      &   GMASS, EXTREF, RH, RELXIT, 1.D0, TAEXIT, QSUM, PANT, RP_CO2/)
 
@@ -808,24 +810,27 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
            if(TC.lt.TC_MAX)THEN
             TC = TC + TC_INC
             Q10mult = Q10**((TC - TC_REF)/10.)
-            QBASAL = QBASREF * Q10mult
+            QBASAL = QBASAL_REF * Q10mult
             if((TREGMODE.EQ.2).AND.(PANT.lt.PANT_MAX))THEN
              PANT = PANT + PANT_INC
-             PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
-             QBASAL = (QBASREF + PANT_COST)*Q10mult
+             PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)
+     &        *QBASAL_REF)
+             QBASAL = (QBASAL_REF + PANT_COST)*Q10mult
             endif
            else
             TC = TC_MAX
             Q10mult = Q10**((TC - TC_REF)/10.)
             if(PANT.lt.PANT_MAX)THEN
              PANT = PANT + PANT_INC
-             PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
-             QBASAL = (QBASREF + PANT_COST)*Q10mult
+             PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)
+     &        *QBASAL_REF)
+             QBASAL = (QBASAL_REF + PANT_COST)*Q10mult
             else
              PANT = PANT_MAX
              !AIRVOL = AIRVOL_MAX
-             PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)*QBASREF)
-             QBASAL = (QBASREF + PANT_COST)*Q10mult
+             PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)
+     &        *QBASAL_REF)
+             QBASAL = (QBASAL_REF + PANT_COST)*Q10mult
              PCTWET = PCTWET + PCTWET_INC
              if((PCTWET.GT.PCTWET_MAX).OR.(PCTWET_INC.LE.0.))THEN
               PCTWET = PCTWET_MAX

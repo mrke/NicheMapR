@@ -414,10 +414,12 @@ endoR_devel <- function(
   QGEN <- 0
   QRESP <- 0
   TC_REF <- TC
-  QBASREF <- QBASAL
+  PCTWET_REF <- PCTWET
+  PANT_REF <- PANT
+  QBASAL_REF <- QBASAL
   failed <- FALSE
 
-  while(QGEN < QBASAL){
+  while(QGEN < QBASAL | (QGEN > QBASAL * 1.05 & (PANT > PANT_REF | TC > TC_REF | PCTWET > PCTWET_REF))){
 
     ### IRPROP, infrared radiation properties of fur
 
@@ -664,16 +666,16 @@ endoR_devel <- function(
 
     if(RESPIRE == 1){
       # now guess for metabolic rate that balances the heat budget while allowing metabolic rate
-      # to remain at or above QBASAL, via 'shooting method' ZBRENT
+      # to remain at or above QBASAL, via root-finder ZBRENT
       QMIN <- QBASAL
       if(TA < TC & TSKINMAX < TC){
         QM1 <- QBASAL * 2 * -1
-        QM2 <- QBASAL * 50
+        QM2 <- QBASAL * 20
       }else{
-        QM1 <- QBASAL * 50* -1
+        QM1 <- QBASAL * 2 * -1
         QM2 <- QBASAL * 2
       }
-      TOL <- AMASS * 0.01
+      TOL <- QBASAL * 0.01
 
       ZBRENT.in <- c(TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG, GMASS, EXTREF, RH,
                      RELXIT, 1.0, TAEXIT, QSUM, PANT, R_PCO2)
@@ -703,19 +705,19 @@ endoR_devel <- function(
           if(TC < TC_MAX){
             TC <- TC + TC_INC
             Q10mult <- Q10^((TC - TC_REF)/10)
-            QBASAL <- QBASREF * Q10mult
+            QBASAL <- QBASAL_REF * Q10mult
           }else{
             TC <- TC_MAX
             Q10mult <- Q10^((TC - TC_REF)/10)
             if(PANT < PANT_MAX){
               PANT <- PANT + PANT_INC
-              PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * (PANT_MULT - 1) * QBASREF)
-              QBASAL <- (QBASREF + PANT_COST) * Q10mult
+              PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * (PANT_MULT - 1) * QBASAL_REF)
+              QBASAL <- (QBASAL_REF + PANT_COST) * Q10mult
             }else{
               PANT <- PANT_MAX
               #AIRVOL <- AIRVOL_MAX
-              PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * (PANT_MULT - 1) * QBASREF)
-              QBASAL <- (QBASREF + PANT_COST) * Q10mult
+              PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * (PANT_MULT - 1) * QBASAL_REF)
+              QBASAL <- (QBASAL_REF + PANT_COST) * Q10mult
               PCTWET <- PCTWET + PCTWET_INC
               if(PCTWET > PCTWET_MAX | PCTWET_INC == 0){
                 PCTWET <- PCTWET_MAX
