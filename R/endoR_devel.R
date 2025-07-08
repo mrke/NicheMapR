@@ -683,7 +683,7 @@ endoR_devel <- function(
         QM1 <- QBASAL * 50 * -1
         QM2 <- QBASAL * 2
       }
-      TOL <- QBASAL * 0.01
+      TOL <- AMASS * 0.01
       ZBRENT.in <- c(TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG, GMASS, EXTREF, RH,
                      RELXIT, 1.0, TAEXIT, QSUM, PANT, R_PCO2)
       # call ZBRENT subroutine which calls RESPFUN
