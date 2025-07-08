@@ -505,8 +505,9 @@ c     &  (TC.LE.(TC_MIN+TC_INC)))THEN
 222   CONTINUE
       PCTWET_REF = PCTWET
       PANT_REF = PANT
-      do while((QGEN.LT.QBASAL).OR.((QGEN.GT.QBASAL*1.05).AND.
-     & (PANT.GT.PANT_REF.OR.TC.GT.TC_REF.OR.PCTWET.GT.PCTWET_REF))) ! second condition to catch overshoot
+      do while(QGEN.LT.QBASAL)
+c      do while((QGEN.LT.QBASAL)!.OR.((QGEN.GT.QBASAL*1.05).AND.
+c     & (PANT.GT.PANT_REF.OR.TC.GT.TC_REF.OR.PCTWET.GT.PCTWET_REF))) ! second condition to catch overshoot
 
        !### IRPROP, infrared radiation properties of fur
 
@@ -767,15 +768,25 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         !# now guess for metabolic rate that balances the heat budget while allowing metabolic rate
         !# to remain at or above QBASAL, via root-finder ZBRENT
         QMIN = QBASAL
+C       IF((TA.LT.TC).AND.(TSKINMAX.LT.TC))THEN
+C        QM1 = QBASAL * 2.* (-1.)
+C        QM2 = QBASAL * 20.
+C       ELSE
+C        QM1 = QBASAL * 2.* (-1.)
+C        QM2 = QBASAL * 2.
+C       ENDIF
+C
+C       TOL = QBASAL * 0.01
+        
         IF((TA.LT.TC).AND.(TSKINMAX.LT.TC))THEN
          QM1 = QBASAL * 2.* (-1.)
-         QM2 = QBASAL * 20.
+         QM2 = QBASAL * 50.
         ELSE
-         QM1 = QBASAL * 2.* (-1.)
+         QM1 = QBASAL * 50.* (-1.)
          QM2 = QBASAL * 2.
         ENDIF
 
-        TOL = QBASAL * 0.01
+        TOL = AMASS * 0.01
         ZBRENTin = (/TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG,
      &   GMASS, EXTREF, RH, RELXIT, 1.D0, TAEXIT, QSUM, PANT, RP_CO2/)
 

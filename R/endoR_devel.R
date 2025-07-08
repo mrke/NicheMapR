@@ -419,7 +419,7 @@ endoR_devel <- function(
   QBASAL_REF <- QBASAL
   failed <- FALSE
 
-  while(QGEN < QBASAL | (QGEN > QBASAL * 1.05 & (PANT > PANT_REF | TC > TC_REF | PCTWET > PCTWET_REF))){
+  while(QGEN < QBASAL){# | (QGEN > QBASAL * 1.05 & (PANT > PANT_REF | TC > TC_REF | PCTWET > PCTWET_REF))){
 
     ### IRPROP, infrared radiation properties of fur
 
@@ -668,15 +668,22 @@ endoR_devel <- function(
       # now guess for metabolic rate that balances the heat budget while allowing metabolic rate
       # to remain at or above QBASAL, via root-finder ZBRENT
       QMIN <- QBASAL
+      # if(TA < TC & TSKINMAX < TC){
+      #   QM1 <- QBASAL * 2 * -1
+      #   QM2 <- QBASAL * 20
+      # }else{
+      #   QM1 <- QBASAL * 2 * -1
+      #   QM2 <- QBASAL * 2
+      # }
+      # TOL <- QBASAL * 0.01
       if(TA < TC & TSKINMAX < TC){
         QM1 <- QBASAL * 2 * -1
-        QM2 <- QBASAL * 20
+        QM2 <- QBASAL * 50
       }else{
-        QM1 <- QBASAL * 2 * -1
+        QM1 <- QBASAL * 50 * -1
         QM2 <- QBASAL * 2
       }
       TOL <- QBASAL * 0.01
-
       ZBRENT.in <- c(TA, O2GAS, N2GAS, CO2GAS, BP, QMIN, RQ, TLUNG, GMASS, EXTREF, RH,
                      RELXIT, 1.0, TAEXIT, QSUM, PANT, R_PCO2)
       # call ZBRENT subroutine which calls RESPFUN
