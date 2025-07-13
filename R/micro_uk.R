@@ -51,6 +51,7 @@
 #' \code{solonly}{ = 0, Only run SOLRAD to get solar radiation? 1=yes, 0=no}\cr\cr
 #' \code{lamb}{ = 0, Return wavelength-specific solar radiation output?}\cr\cr
 #' \code{IUV}{ = 0, Use gamma function for scattered solar radiation? (computationally intensive)}\cr\cr
+#' \code{ndmax}{ = 3, iterations of first day to get a steady periodic}\cr\cr
 #' \code{Soil_Init}{ = NA, initial soil temperature at each soil node, °C (if NA, will use the mean air temperature to initialise)}\cr\cr
 #' \code{write_input}{ = 0, Write csv files of final input to folder 'csv input' in working directory? 1=yes, 0=no}\cr\cr
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
@@ -399,6 +400,7 @@ micro_uk <- function(
   rainoff = 0,
   lamb = 0,
   IUV = 0,
+  ndmax = 3,
   opendap = 0,
   soilgrids = 0,
   IR = 0,
@@ -594,7 +596,7 @@ micro_uk <- function(
 
     doys12<-c(15, 46, 74, 105, 135, 166, 196, 227, 258, 288, 319, 349) # middle day of each month
 
-    microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial 3 day burn in
+    microdaily<-1 # run microclimate model where one iteration of each day occurs and last day gives initial conditions for present day with an initial ndmax day burn in
 
     daystart<-as.integer(ceiling(365/timeinterval/2))
     idayst <- 1 # start day
@@ -1164,7 +1166,7 @@ micro_uk <- function(
       ALAT<-as.numeric(ALAT)
 
       # microclimate input parameters list
-      microinput<-c(ndays,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade,solonly,ZH,D0,TIMAXS,TIMINS,spinup,0, 360, maxsurf)
+      microinput<-c(ndays,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade,solonly,ZH,D0,TIMAXS,TIMINS,spinup,0, 360, maxsurf, ndmax)
 
       # hourly option set to 0, so make empty vectors
       if(hourly==0){

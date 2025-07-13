@@ -368,7 +368,7 @@ C     SET UP OUTPUT FOR C, WC
        J=IABS(IOUT(I))
        OUT2(I)=OUT(J)
    50 CONTINUE
-
+      
       IF (TIME .LT. 1440.) GO TO 150
       IFINAL=0
 
@@ -405,7 +405,8 @@ c     phase change for freezing moist soil
        else
         js=1
        endif
-       do 1131 j=js,js+9 ! loop through soil nodes
+       do 1131 j=js,js+9 ! loop through soil nodes  
+        if(moist(j-js+1).GT.0.0)then ! check if there is any moisture
         if(j.lt.js+9)then
          meanT(j)=(tt(j)+tt(j+1))/2. ! current temp
          meanTpast(j)=(tt_past(j)+tt_past(j+1))/2. ! last hour's temp
@@ -440,14 +441,15 @@ c     phase change for freezing moist soil
           y(j+1)=0.1
          endif
         endif
+        endif ! end check if any moisture
 1131   continue
       endif
       if(runsnow.eq.1)then
-        OUT(4)=T(9)
-        OUT(14:22)=T(10:18)
+        OUT(4)=TT(9)
+        OUT(14:22)=TT(10:18)
        else
-        OUT(4)=T(1)
-        OUT(14:22)=T(2:10)
+        OUT(4)=TT(1)
+        OUT(14:22)=TT(2:10)
       endif
 
 

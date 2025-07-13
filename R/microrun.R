@@ -27,7 +27,7 @@
 microclimate <- function(micro) {
   doynum<-micro$microinput[1]
   errors <- 0
-  if(length(micro$microinput) != 74){
+  if(length(micro$microinput) != 75){
     message("ERROR: microinput has the wrong number of inputs \n")
     errors <- 1
   }

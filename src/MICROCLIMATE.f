@@ -128,7 +128,7 @@ c     OSUB outputs the microclimate calculations.
       CHARACTER(12) FNAME
 
       DIMENSION snownode(10),snode(10),qphase(10)
-      DIMENSION microinput1(74)
+      DIMENSION microinput1(75)
       DIMENSION soilprop(10,5),soilprop1(10,5),moist(10)
       DIMENSION DEPS(21),curmoist2(18)
       DIMENSION TIMINS(4),TIMAXS(4)
@@ -366,8 +366,8 @@ c901    continue
       do 9191 i=1,25*nn2
        snowhr(i)=0.D0
 9191  continue
-      moists=max(moists1,0.01D+0)
-      moist(1:10)=max(moists1(1:10,1),0.01D+0)
+      moists=max(moists1,0.0D+0)
+      moist(1:10)=max(moists1(1:10,1),0.0D+0)
       surflux=0.
       do 919 i=1,24
       hori(i)=hori1(i)
@@ -480,6 +480,7 @@ c    WRITE(I2,*)i,' ',j,' ',Thconds(i,j),' ',Thconds1(i,j)
       dewrain=int(microinput1(72))
       timestep=int(microinput1(73))
       maxsurf=microinput1(74)
+      ndmax=int(microinput1(75))
       do 908 i=1,IDA
       julday(i)=julday1(i)
       LAIs(i)=LAI1(i)
@@ -741,18 +742,18 @@ C    ******* END MICRO READ - WRITE SETUP *************
 
 c     Defining maximum number of iteration days for the integrator
 c     (REPEATS OF A DAY TO GET a STEADY PERIODIC OF THE DAY).
-      NDMAX=10
+c      NDMAX=10
 
 C    DEFINING THE NUMBER OF DAYS TO REPEAT TO GET A STEADY PERIODIC
 c    Kearney changed this for daily simulations
       if(microdaily.eq.1)then
           if((doy.eq.1).and.(spinup.eq.1))then
-           ND = 3
+           ND = NDMAX
            else
            ND = 1
           endif
       else
-           ND = 3
+           ND = NDMAX
       endif
 
       par(6) = RUF
