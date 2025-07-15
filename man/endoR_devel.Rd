@@ -59,6 +59,7 @@ the FORTRAN code of endoR (SOLVENDO.f) accordingly and compile your own version.
 \code{BRENTOL}{ = 1e-5, error tolerance (fraction of QBASAL) for ZBRENT (-)}\cr\cr
 \code{THERMOREG}{ = 1, thermoregulate? (1 = yes, 0 = no)}\cr\cr
 \code{RESPIRE}{ = 1, respiration? (1 = yes, 0 = no)}\cr\cr
+\code{TREGMODE}{ = 1, 1 = raise core then pant then sweat, 2 = raise core and pant simultaneously, then sweat}\cr\cr
 \code{CONV_ENHANCE}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 10.1016/S0006-3495(76)85711-6}\cr\cr
 
 \strong{ Environment:}\cr\cr

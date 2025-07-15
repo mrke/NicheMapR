@@ -36,6 +36,7 @@
 #' \code{BRENTOL}{ = 1e-5, error tolerance (fraction of QBASAL) for ZBRENT (-)}\cr\cr
 #' \code{THERMOREG}{ = 1, thermoregulate? (1 = yes, 0 = no)}\cr\cr
 #' \code{RESPIRE}{ = 1, respiration? (1 = yes, 0 = no)}\cr\cr
+#' \code{TREGMODE}{ = 1, 1 = raise core then pant then sweat, 2 = raise core and pant simultaneously, then sweat}\cr\cr
 #' \code{CONV_ENHANCE}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 10.1016/S0006-3495(76)85711-6}\cr\cr
 #'
 #' \strong{ Environment:}\cr\cr
@@ -377,7 +378,8 @@ endoR_devel <- function(
   DIFTOL = 0.001, # tolerance for SIMULSOL
   BRENTOL = 1e-5, # tolerance for ZBRENT
   THERMOREG = 1, # invoke thermoregulatory response
-  RESPIRE = 1 # compute respiration and associated heat loss
+  RESPIRE = 1, # compute respiration and associated heat loss
+  TREGMODE = 1 # 1 = raise core then pant then sweat, 2 = raise core and pant simultaneously, then sweat
 ){
   # check shape for problems
   if(SHAPE_B <= 1 & SHAPE == 4){
@@ -668,7 +670,7 @@ endoR_devel <- function(
       # now guess for metabolic rate that balances the heat budget while allowing metabolic rate
       # to remain at or above QBASAL, via root-finder ZBRENT
       QMIN <- QBASAL
-      if(TSKINMAX+0.5 < TC){
+      if(TSKINMAX < TC){
         QM1 <- QBASAL*1.01
         QM2 <- QBASAL * 50
       }else{
@@ -704,7 +706,11 @@ endoR_devel <- function(
           if(TC < TC_MAX){
             TC <- TC + TC_INC
             Q10mult <- Q10^((TC - TC_REF)/10)
-            QBASAL <- QBASAL_REF * Q10mult
+            if(TREGMODE == 2 & PANT < PANT_MAX){
+              PANT <- PANT + PANT_INC
+              PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * (PANT_MULT - 1) * QBASAL_REF)
+            }
+            QBASAL <- (QBASAL_REF + PANT_COST) * Q10mult
           }else{
             TC <- TC_MAX
             Q10mult <- Q10^((TC - TC_REF)/10)

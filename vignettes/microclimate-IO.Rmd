@@ -28,10 +28,11 @@ IR <- 0 # Clear-sky longwave radiation computed using Campbell and Norman (1998)
 runmoist <- 1 # run soil moisture model (0=no, 1=yes)?
 snowmodel <- 1 # run the snow model (0=no, 1=yes)? - note that this runs slower
 hourly <- 0 # use hourly input data?
-solonly <- 0 # Only run SOLRAD to get solar radiation? 1=yes, 0=no
-lamb <- 0 # Return wavelength-specific solar radiation output?
-IUV <- 0 # Use gamma function for scattered solar radiation? 
-message <- 0 #allow the Fortran integrator to output warnings? (1) or not (0)
+solonly <- 0 # only run SOLRAD to get solar radiation? 1=yes, 0=no
+lamb <- 0 # return wavelength-specific solar radiation output?
+IUV <- 0 # use gamma function for scattered solar radiation? 
+ndmax <- 3 # iterations of first day to get a steady periodic
+message <- 0 # allow the Fortran integrator to output warnings? (1) or not (0)
 fail <- 1*24*365 # how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)
 spinup <- 1 # repeat each day three times to get steady period solution? 0 is no, 1 is yes. Set to 1 for daily runs where the initial soil temps are the previous day's final temps.
 maxsurf <- 95 # deg C, maximum allowable surface temperature for stability purposes
@@ -220,7 +221,7 @@ tides <- matrix(data = 0, nrow = 24*ndays, ncol = 3) # matrix for tides
 ### Collating all input parameters
 ```
 # input parameter vector
-microinput <- c(ndays, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept, grasshade, solonly, ZH, D0, TIMAXS, TIMINS, spinup, dewrain, moiststep, maxsurf)
+microinput <- c(ndays, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept, grasshade, solonly, ZH, D0, TIMAXS, TIMINS, spinup, dewrain, moiststep, maxsurf, ndmax)
 
 
 # Final input list - all these variables are expected by the input argument of the Fortran microclimate subroutine
