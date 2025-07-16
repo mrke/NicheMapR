@@ -770,7 +770,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
          QM1 = QBASAL * 1.01
          QM2 = QBASAL * 50.
         ELSE
-         QM1 = 1.0
+         QM1 = 0.0
          QM2 = QBASAL * 1.01
         ENDIF
         TOL = QBASAL * BRENTOL
