@@ -123,7 +123,7 @@ water_metabolism <- function(mrate = mrate,
     gurine <- gurea / p_urea
     H2OUrine_g <- (gurine - gurea) / 1.0474
   }else{
-    H2OUrine_g <- 0
+    H2OUrine_g <- 0 * gurea
   }
 
   DryFaeces_g <- DryFood_g * (1 - kap_X)
