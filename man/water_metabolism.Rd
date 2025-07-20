@@ -5,35 +5,38 @@
 \title{Estimate Metabolic Energy and Water Flux from Diet Composition}
 \usage{
 water_metabolism(
-  p_prot = 0.44,
-  p_fat = 0.48,
-  p_carb = 0.08 * 0.8,
-  p_dry = 0.3,
-  kap_X = 0.8,
   mrate = mrate,
   p_X = mrate * 2,
-  p_urea = 0.1,
-  p_fecalH2O = 0.8
+  pct_prot = 0.44,
+  pct_fat = 0.48,
+  pct_carb = 0.08 * 0.8,
+  kap_X = 0.8,
+  pct_H_X = 82,
+  pct_H_P = 73,
+  pct_H_N = 0,
+  pct_urea = 10
 )
 }
 \arguments{
-\item{p_prot}{Proportion of protein in dry food (default = 0.44).}
-
-\item{p_fat}{Proportion of fat in dry food (default = 0.48).}
-
-\item{p_carb}{Proportion of carbohydrate in dry food (default = 0.08 * 0.8).}
-
-\item{p_dry}{Proportion of dry matter in wet food (default = 0.3).}
-
-\item{kap_X}{Digestive efficiency (default = 0.8).}
-
 \item{mrate}{Metabolic rate in J/time.}
 
 \item{p_X}{Feeding rate in J/time (default = `mrate * 2`).}
 
-\item{p_urea}{Proportion of urea in nitrogenous waste (default = 0.1).}
+\item{pct_prot}{Percentage of protein in dry food (default = 44).}
 
-\item{p_fecalH2O}{Proportion of water in faeces (default = 0.8).}
+\item{pct_fat}{Percentage of fat in dry food (default = 48).}
+
+\item{pct_carb}{Percentage of carbohydrate in dry food (default = 0.08 * 80).}
+
+\item{kap_X}{Digestive efficiency (default = 0.8).}
+
+\item{pct_H_X}{Percentage of water in food (default = 82).}
+
+\item{pct_H_P}{Percentage of water in faeces (default = 73).}
+
+\item{pct_H_N}{Percentage of water excreted in nitrogenous waste (default = 0, i.e. all uric acid).}
+
+\item{pct_urea}{Percentage of urea in nitrogenous waste (default = 10).}
 }
 \value{
 A list containing:
@@ -57,6 +60,48 @@ based on dietary composition and metabolic rate.
 Macronutrient metabolism produces metabolic water and contributes to energy
 gain. This function estimates energy available after subtracting metabolic
 requirements and calculates water gained from food and lost through excretion.
+Assumptions of energy content and metabolic water based on the following
+(taken from original ectotherm model code)
+
+PROTEINS
+Approximate gram molecular weight of amino acids is 137 g/mole
+Based on info from Handbook of Chemistry & Physics
+Alanine = 89.1 g/mole (with water - 18 g/mole)
+Arginine = 174.2 "          "
+Aspargine =132.1 "          "
+Aspartic acid = 133.1       "
+Cystine = 121.2            etc.
+Glutamic acid = 147.1
+Glutamine = 146.1
+Glycine = 75.1
+Histidine = 155.2
+Isoleucine = 131.2
+Leucine = 131.2
+Lysine = 146.2
+Methionine = 149.2
+Phenylalanine = 165.2
+Proline = 115.1
+Serine = 105.1
+Threonine = 119.1
+Tryptophan = 204.2
+Tyrosine = 181.2
+Valine = 117.1        Average = 137 g/mole
+4300 calories/g, calories/ml O2 = 4.5 Hainsworth, F.R. 1981
+0.40 g WATER/g protein oxidized: Hainsworth, F.R. 1981.
+Animal Physiology.Addison-Wesley Publ. Co., Reading, MA. 669 p.
+
+LIPIDS
+Data from Guyton, A.C. 1991.  Textbook of Medical Physiology.
+8th ed.  W.B. Saunders, Philadelphia.  1014 p.
+Triglycerides used for energy.  They are stearic acid (880 g/mol),
+oleic acid (879 g/mol) and palmitic acid (754 g/mol).
+Assume as an average 850 g/mol.
+calories/ml O2 = 4.7; 9400 calories/g fat  (Kleiber, 1961)
+1.07 g WATER/g lipid oxidized: Hainsworth, F.R. 1981.
+
+CARBOHYDRATES
+Glucose (180 g/mol); 5.0 cal/ml O2; 4200 calories/g  (Kleiber, 1961)
+0.56 g WATER/g carbohydrate oxidized: Hainsworth, F.R. 1981.
 }
 \examples{
 water_metabolism(mrate = 5000)
