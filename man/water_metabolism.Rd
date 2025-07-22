@@ -7,10 +7,11 @@
 water_metabolism(
   mrate = mrate,
   p_X = mrate * 2,
-  pct_prot = 0.44,
-  pct_fat = 0.48,
-  pct_carb = 0.08 * 0.8,
-  kap_X = 0.8,
+  pct_prot = 56,
+  pct_fat = 21.8,
+  pct_carb = 12.46,
+  pct_fibre = 8.28,
+  kap_carb = 0.9,
   pct_H_X = 82,
   pct_H_P = 73,
   pct_H_N = 0,
@@ -28,7 +29,7 @@ water_metabolism(
 
 \item{pct_carb}{Percentage of carbohydrate in dry food (default = 0.08 * 80).}
 
-\item{kap_X}{Digestive efficiency (default = 0.8).}
+\item{kap_carb}{Digestive efficiency of protein (default = 0.9).}
 
 \item{pct_H_X}{Percentage of water in food (default = 82).}
 

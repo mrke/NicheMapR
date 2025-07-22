@@ -8,7 +8,7 @@
 #' @param pct_prot Percentage of protein in dry food (default = 44).
 #' @param pct_fat Percentage of fat in dry food (default = 48).
 #' @param pct_carb Percentage of carbohydrate in dry food (default = 0.08 * 80).
-#' @param kap_X Digestive efficiency (default = 0.8).
+#' @param kap_carb Digestive efficiency of protein (default = 0.9).
 #' @param pct_H_X Percentage of water in food (default = 82).
 #' @param pct_H_P Percentage of water in faeces (default = 73).
 #' @param pct_H_N Percentage of water excreted in nitrogenous waste (default = 0, i.e. all uric acid).
@@ -79,10 +79,11 @@
 #' @export
 water_metabolism <- function(mrate = mrate,
                              p_X = mrate * 2,
-                             pct_prot = 0.44,
-                             pct_fat = 0.48,
-                             pct_carb = 0.08 * 0.8,
-                             kap_X = 0.8,
+                             pct_prot = 56,
+                             pct_fat = 21.8,
+                             pct_carb = 12.46,
+                             pct_fibre = 8.28,
+                             kap_carb = 0.9,
                              pct_H_X = 82,
                              pct_H_P = 73,
                              pct_H_N = 0,
@@ -91,22 +92,42 @@ water_metabolism <- function(mrate = mrate,
   gfatpg <- pct_fat / 100
   gprotpg <- pct_prot / 100
   gcarbpg <- pct_carb / 100
+  gfibrepg <- pct_fibre / 100
   p_dry <- 1 - (pct_H_X / 100)
   p_fecalH2O <- pct_H_P / 100
   p_urea <- pct_urea / 100
   p_H_N <- pct_H_N / 100
 
-  gsum <- gfatpg + gprotpg + gcarbpg
-  gundig <- 1.00 - gsum
-  totcarb <- gcarbpg + gundig
+  # Energy densities (J/g) (see notes in function details
+  # converted from kcal/g using 4.185 J/cal
+  e_prot <- 4300 * 4.185
+  e_fat  <- 9400 * 4.185
+  e_carb <- 4200 * 4.185
 
-  fatjpg <- gfatpg * (9400 * 4.185)
-  protjpg <- gprotpg * (4300 * 4.185)
-  carbjpg <- totcarb * (4200 * 4.185)
+  # Energy per gram of whole food (raw and digestible)
+  E_prot <- gprotpg * e_prot  # fully digestible
+  E_fat  <- gfatpg * e_fat    # fully digestible
+  E_carb <- gcarbpg * e_carb  # only partially digestible
+  E_fibre <- gfibrepg * e_carb  # not digestible
 
-  jabspgr <- fatjpg + protjpg + kap_X * carbjpg
+  # Total energy per gram of food (assuming full digestibility)
+  E_total <- E_prot + E_fat + E_carb + E_fibre
+
+  # Digestible energy per gram of food (carb adjusted)
+  E_digested <- E_prot + E_fat + E_carb * kap_carb
+
+  # kap_X is the fraction of total energy per gram that is digestible
+  kap_X <- E_digested / E_total
+
+  totcarb <- gcarbpg + gfibrepg
+
+  fatjpg <- gfatpg * e_fat
+  protjpg <- gprotpg * e_prot
+  carbjpg <- totcarb * e_carb
+
+  jabspgr <- fatjpg + protjpg + kap_carb * carbjpg
   dryabs <- p_X / jabspgr
-  DryFood_g <- dryabs / (1 - gundig)
+  DryFood_g <- dryabs / kap_X
   WetFood_g <- DryFood_g / p_dry
   Q_avail <- jabspgr * dryabs - mrate
 
@@ -127,8 +148,8 @@ water_metabolism <- function(mrate = mrate,
   }
 
   DryFaeces_g <- DryFood_g * (1 - kap_X)
-  WetFaeces_G <- DryFaeces_g / (1 - p_fecalH2O)
-  H2OFaeces_g <- WetFaeces_G * p_fecalH2O - (WetFood_g - gtot / p_dry) * (1 - p_dry)
+  WetFaeces_g <- DryFaeces_g / (1 - p_fecalH2O)
+  H2OFaeces_g <- WetFaeces_g - DryFaeces_g
 
   H2O_avail <- H2OFree_g + H2OMet_g - H2OUrine_g - H2OFaeces_g
 
@@ -136,9 +157,10 @@ water_metabolism <- function(mrate = mrate,
               H2O_avail = H2O_avail,
               H2OMet_g = H2OMet_g,
               H2OFaeces_g = H2OFaeces_g,
-              WetFaeces_G = WetFaeces_G,
+              WetFaeces_g = WetFaeces_g,
               H2OUrine_g = H2OUrine_g,
               H2OFree_g = H2OFree_g,
               WetFood_g = WetFood_g,
-              DryFood_g = DryFood_g))
+              DryFood_g = DryFood_g,
+              kap_X = kap_X))
 }
