@@ -670,11 +670,9 @@ endoR_devel <- function(
       # now guess for metabolic rate that balances the heat budget while allowing metabolic rate
       # to remain at or above QBASAL, via root-finder ZBRENT
       QMIN <- QBASAL
-      if(TSKINMAX < TC){
-        QM1 <- QBASAL*1.01
-        QM2 <- QBASAL * 50
-      }else{
-        QM1 <- 0
+      QM1 <- -QBASAL * 2
+      QM2 <- QBASAL * 10
+      if(TSKINMAX >= TC){
         QM2 <- QBASAL*1.01
       }
       TOL <- QBASAL * BRENTOL

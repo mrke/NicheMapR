@@ -766,11 +766,9 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         !# now guess for metabolic rate that balances the heat budget while allowing metabolic rate
         !# to remain at or above QBASAL, via root-finder ZBRENT
         QMIN = QBASAL
-        IF(TSKINMAX.LT.TC)THEN
-         QM1 = QBASAL * 1.01
-         QM2 = QBASAL * 50.
-        ELSE
-         QM1 = 0.0
+        QM1 = -QBASAL * 2.
+        QM2 = QBASAL * 10.
+        IF(TSKINMAX.GE.TC)THEN
          QM2 = QBASAL * 1.01
         ENDIF
         TOL = QBASAL * BRENTOL

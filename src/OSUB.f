@@ -156,7 +156,7 @@ C     PERCENT GROUND SHADE & ELEVATION (M) TO METOUT
      4,'TA8','TA9','TA10','VA1','VA2','VA3','VA4','VA5','VAL','VA7'
      5,'VA8','VA9','VA10','T/60  ','M-E','T*60'/
       DATA IFINAL/0/
-      PI=3.14159
+      PI=3.1415926535897932
       if((time.gt.0.D0).and.(int(time).eq.int(lastime)))then
           trouble=trouble+1
       endif

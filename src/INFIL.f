@@ -61,7 +61,7 @@ c     SP=10. ! stability parameter, -
 c     R1=0.001 ! root radius, m
 c     IM=0.000001 ! maximum overall mass balance error allowed, kg
 
-      PI=3.14159
+      PI=3.1415926535897932
       MW=0.01801528 ! molar mass of water, kg/mol
       R=8.3143 ! gas constant, J/mol/K
       GR=9.81 !gravitational constant m/s/s

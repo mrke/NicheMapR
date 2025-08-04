@@ -75,7 +75,8 @@ C     ZH2=30.    13.                  60.          25
 
       RHOCP(TAVE) = 0.08472/TAVE ! note this is a function, internally defined
       PHI(Z)=(1.-GAM*Z/AMOL)**.25
-      PSI1(X)=2.*DLOG((1.+X)/2.)+DLOG((1.+X*X)/2.)-2.*ATAN(X)+3.14159/2.
+      PSI1(X)=2.*DLOG((1.+X)/2.)+DLOG((1.+X*X)/2.)-2.*ATAN(X)+
+     &3.1415926535897932/2.
       PSI2(X)=2.*DLOG((1.+X*X)/2.)
       GAM=16.
       RCPTKG=6.003D-8 !RHO*CP*T/(K*G) = 6.003D-8 IN CAL-MIN-CM-C UNITS

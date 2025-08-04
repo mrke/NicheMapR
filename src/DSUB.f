@@ -132,7 +132,7 @@ C     INITIALISE
       INRAD=0.
       IRDOWN=0.
       PATMOS=BP
-      PI=3.14159
+      PI=3.1415926535897932
       PSTD=BP
       QCONV=0.
       QCOND=0.
@@ -185,7 +185,7 @@ C     INITIALISE
        hour=1
       endif
       N=N1
-      PI=3.14159
+      PI=3.1415926535897932
 C     CHECK FOR UNSTABLE CONDITIONS OF GROUND SURFACE TEMPERATURE, T(1)
       do 101 i=1,N
        IF(T(i).GE. MAXSURF)THEN
