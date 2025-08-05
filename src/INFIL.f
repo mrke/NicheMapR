@@ -129,7 +129,7 @@ c     prep for wetair call
        endif
 120   continue
 
-      T=T+273 ! temperature from deg C to Kelvin
+      T=T+273.15 ! temperature from deg C to Kelvin
 
       Z(2)=0
       Z(1)=0

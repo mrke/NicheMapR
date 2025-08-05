@@ -385,12 +385,12 @@ C     CONVERTING PERCENT CLOUDS TO FRACTION OF SKY CLEAR
 
       if(IRDOWN.gt.0)THEN ! hourly IRdown provided
 C      NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
-       SRAD=SIGP*SLE*(T(1)+273.)**4.
-       HRAD=SIGP*SLEP*(TAIR+273.)**4.
+       SRAD=SIGP*SLE*(T(1)+273.15)**4.
+       HRAD=SIGP*SLEP*(TAIR+273.15)**4.
        QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*HRAD
        QRAD = IRDOWN - QRADGR
 c      TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
-       TSKY=(IRDOWN/SIGP)**(1./4.)-273.
+       TSKY=(IRDOWN/SIGP)**(1./4.)-273.15
       else
 C      CLEAR SKY RADIANT TEMPERATURE
        if(IRmode.eq.0)then
@@ -418,11 +418,11 @@ c       Swinbank, Eq. 10.11 in Campbell and Norman 1998
      &  (TAIR+273.16)**4.*60./(4.185*10000.)
        endif
 C      APPROXIMATING CLOUD RADIANT TEMPERATURE AS REFERENCE SHADE TEMPERATURE - 2 degrees
-       CRAD=SIGP*SLEP*(TAIR+271.)**4.
+       CRAD=SIGP*SLEP*(TAIR+271.15)**4.
 c      Hillshade radiant temperature (approximating as air temperature)
-       HRAD=SIGP*SLEP*(TAIR+273.)**4.
+       HRAD=SIGP*SLEP*(TAIR+273.15)**4.
 C      GROUND SURFACE RADIATION TEMPERATURE
-       SRAD=SIGP*SLE*(T(1)+273.)**4.
+       SRAD=SIGP*SLE*(T(1)+273.15)**4.
 C      TOTAL SKY IR AVAILABLE/UNIT AREA
        CLEAR = ARAD*CLR
        CLOD = CRAD*(CLOUD/100.)
@@ -463,10 +463,10 @@ c      TOTAL HILLSHADE RADIATION
        QRADHL=HRAD
 C      NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
        QRAD = (QRADSK + QRADVG)*VIEWF + QRADHL*(1.-VIEWF) - QRADGR
-c      TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
+c      TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273.15
        TSKY=(((QRADSK + QRADVG)*VIEWF + QRADHL*(1.-VIEWF))/(SIGP))**
-     & (1./4.)-273.
-c      TSKY=((QRADSK + QRADVG)/(SIGP))**(1./4.)-273
+     & (1./4.)-273.15
+c      TSKY=((QRADSK + QRADVG)/(SIGP))**(1./4.)-273.15
       endif
 
       if(runsnow.eq.1)then

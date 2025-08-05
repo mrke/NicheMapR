@@ -461,12 +461,12 @@ C     Angstrom formula (formula 5.33 on P. 177 of "Climate Data and Resources" b
 
       if(IRDOWN.gt.0)THEN ! hourly IRdown provided
 C      NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING FROM GROUND
-       SRAD=SIGP*SLE*(T(1)+273.)**4.
-       HRAD=SIGP*SLEP*(TAIR+273.)**4.
+       SRAD=SIGP*SLE*(T(1)+273.15)**4.
+       HRAD=SIGP*SLEP*(TAIR+273.15)**4.
        QRADGR=((100.-SHAYD)/100.)*SRAD+(SHAYD/100.)*HRAD
        QRAD = IRDOWN - QRADGR
-c      TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
-       TSKY=(IRDOWN/SIGP)**(1./4.)-273
+c      TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273.15
+       TSKY=(IRDOWN/SIGP)**(1./4.)-273.15
       else
 C      CLEAR SKY RADIANT TEMPERATURE
        CLR=1.- (CLOUD/100.)
@@ -497,11 +497,11 @@ c       Swinbank, Eq. 10.11 in Campbell and Norman 1998
        endif
 
 C      APPROXIMATING CLOUD RADIANT TEMPERATURE AS REFERENCE SHADE TEMPERATURE - 2 degrees
-       CRAD=SIGP*SLEP*(TAIR+271.)**4.
+       CRAD=SIGP*SLEP*(TAIR+271.15)**4.
 c      Hillshade radiant temperature (approximating as air temperature)
-       HRAD=SIGP*SLEP*(TAIR+273.)**4.
+       HRAD=SIGP*SLEP*(TAIR+273.15)**4.
 C      GROUND SURFACE RADIATION TEMPERATURE
-       SRAD=SIGP*SLE*(TT(1)+273.)**4.
+       SRAD=SIGP*SLE*(TT(1)+273.15)**4.
 C      TOTAL SKY IR AVAILABLE/UNIT AREA
        CLEAR=ARAD*CLR
        CLOD= CRAD*(CLOUD/100.)
@@ -545,10 +545,10 @@ C      NET IR RADIATION: INCOMING FROM SKY + VEGETATION + HILLSHADE - OUTGOING F
        QRAD = (QRADSK + QRADVG)*VIEWF + QRADHL*(1-VIEWF) - QRADGR
 c      TSKY=((QRAD+QRADGR)/(SIGP))**(1./4.)-273
        TSKY=(((QRADSK + QRADVG)*VIEWF + QRADHL*(1-VIEWF))/(SIGP))**(1./
-     & 4.)-273.
+     & 4.)-273.15
       ENDIF
 
-c     TSKY=((QRADSK + QRADVG)/(SIGP))**(1./4.)-273
+c     TSKY=((QRADSK + QRADVG)/(SIGP))**(1./4.)-273.15
       SIOUT(1) = TIME
 C     AIR TEMPERATURE AT ANIMAL HEIGHT (1ST NODE BELOW REFERENCE HEIGHT, 200 CM)
       SIOUT(2) = OUT(34)
