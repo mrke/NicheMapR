@@ -738,7 +738,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         SIMULSOLout(S,:) = SIMULOUT
 11      CONTINUE
 
-       TSKINMAX=min(SIMULSOLout(1,2), SIMULSOLout(2,2))
+       TSKINMAX=max(SIMULSOLout(1,2), SIMULSOLout(2,2))
 
        !### ZBRENT and RESPFUN
 
@@ -766,7 +766,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         !# now guess for metabolic rate that balances the heat budget while allowing metabolic rate
         !# to remain at or above QBASAL, via root-finder ZBRENT
         QMIN = QBASAL
-        QM1 = -QBASAL * 2.
+        QM1 = QBASAL * -2.
         QM2 = QBASAL * 10.
         IF(TSKINMAX.GE.TC)THEN
          QM2 = QBASAL * 1.01

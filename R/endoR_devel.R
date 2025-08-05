@@ -692,7 +692,7 @@ endoR_devel <- function(
     TC_LAST <- TC
     PANT_LAST <- PANT
     PCTWET_LAST <- PCTWET
-    if(THERMOREG != 0){
+    if(THERMOREG == 1){
       if(SHAPE_B < SHAPE_B_MAX){
         SHAPE_B <- SHAPE_B + UNCURL
       }else{
