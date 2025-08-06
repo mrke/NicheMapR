@@ -47,7 +47,7 @@ c     which is available as a vignette in the NicheMapR package
       tvir = tk * ((1.0 + rw / (18.016 / 28.966)) / (1.0 + rw))
       tvinc = tvir - tk
       denair = 0.0034838 * bp / (0.999 * tvir)
-      cp = (1004.84 + (rw * 1846.40)) / (1.0 + rw)
+      cp = (1004.84 + (rw * 1864.40)) / (1.0 + rw)
       if (rh .le. 0.0) go to 500
       wtrpot = 4.615D+5 * tk * dlog(rh / 100.0)
       go to 600

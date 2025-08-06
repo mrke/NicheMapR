@@ -53,7 +53,7 @@ WETAIR <- function(db=db, wb=db, rh=0, dp=999, bp=101325){
   tvir = tk * ((1.0 + rw / (18.016 / 28.966)) / (1.0 + rw))
   tvinc = tvir - tk
   denair = 0.0034838 * bp / (0.999 * tvir)
-  cp = (1004.84 + (rw * 1846.40)) / (1.0 + rw)
+  cp = (1004.84 + (rw * 1864.40)) / (1.0 + rw)
   if (min(rh)<=0.0){
     wtrpot = -999
   }else{
