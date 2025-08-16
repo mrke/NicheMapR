@@ -348,8 +348,7 @@ C     endif
         ND=1
        endif
       endif
-
-
+     
 C     NO OUTPUT IF REPEATED DAY,IFINAL, NOT THE FINAL ITERATION
       IF (IFINAL .LT. ND) GO TO 200
 
@@ -393,7 +392,12 @@ C     SETTING UP THE 'OUTPUT'
       T(N)=TAB('TDS',TIME)
       VEL2M=TAB('VEL',TIME)/(100.*60.)
       IRDOWN=TAB('IRD',TIME)
-
+      if(microdaily.eq.0)then
+       if(time.le.0.0)then
+        tt_past=TT
+        TT=T
+       endif
+      endif
 c     phase change for freezing moist soil
       methour=int((TIME/60+1)+24*(DOY-1))
       if((methour.eq.1).and.(DOY.eq.1))then
@@ -414,36 +418,44 @@ c     phase change for freezing moist soil
          meanT(j)=tt(j) ! current temp
          meanTpast(j)=tt_past(j) ! last hour's temp
         endif
-        if((meanTpast(j).gt.0).and.(meanT(j).le.0))then ! phase change, freezing
+        if((meanTpast(j).gt.0.0).and.(meanT(j).le.0.0))then ! phase change, freezing
          if(j.lt.js+9)then
-          layermass(j-js+1)=(dep(j-js+1+4)-dep(j-js+4))*10000.*
+          layermass(j-js+1)=(dep(j-js+1+4)-dep(j-js+4))*10000.0*
      &     moist(j-js+1)
          else
-          layermass(j-js+1)=(dep(j-js+4)+100-dep(j-js+4))*10000.*
+          layermass(j-js+1)=(dep(j-js+4)+100.0-dep(j-js+4))*10000.0*
      &     moist(j-js+1)! deep soil
          endif
          qphase2(j-js+1)=(meanTpast(j)-meanT(j))*layermass(j-js+1)*4.186
          sumphase2(j-js+1)=qphase2(j-js+1)+sumphase2(j-js+1)
          if(sumphase2(j-js+1).gt.(HTOFN*layermass(j-js+1)))then
-          t(j)=-0.1
-          t(j+1)=-0.1
+          !t(j)=-0.1
           tt(j)=-0.1
+          !y(j)=-0.1
+          if(j.lt.js+9)then
+          !t(j+1)=-0.1
           tt(j+1)=-0.1
-          y(j)=-0.1
-          y(j+1)=-0.1
+          !y(j+1)=-0.1
+          endif
           sumphase2(j-js+1)=0.
          else
-          t(j)=0.1
-          t(j+1)=0.1
+          !t(j)=0.1
           tt(j)=0.1
+          !y(j)=0.1
+          if(j.lt.js+9)then
+          !t(j+1)=0.1
           tt(j+1)=0.1
-          y(j)=0.1
-          y(j+1)=0.1
+          !y(j+1)=0.1
+          endif
          endif
         endif
         endif ! end check if any moisture
 1131   continue
       endif
+      !T(N)=TAB('TDS',TIME)
+      TT(N)=TAB('TDS',TIME) 
+      !Y(N)=TAB('TDS',TIME) 
+
       if(runsnow.eq.1)then
         OUT(4)=TT(9)
         OUT(14:22)=TT(10:18)
@@ -451,8 +463,7 @@ c     phase change for freezing moist soil
         OUT(4)=TT(1)
         OUT(14:22)=TT(2:10)
       endif
-
-
+      
 C     Modification by M. Kearney for effect of cloud cover on direct solar radiation, using the
 C     Angstrom formula (formula 5.33 on P. 177 of "Climate Data and Resources" by Edward Linacre 1992
       IF ((CLOUD .GT. 0.).and.(HOURLY.eq.0)) THEN ! allowing for hourly cloud to be used for longwave calcs if longwave not provided
@@ -922,6 +933,11 @@ C       SETTING THIS MONTH'S PERCENT OF SURFACE WITH FREE WATER/SNOW ON IT
 
       tt_past=tt
       t=tt
+C     if((microdaily.eq.0).and.(TIME.eq.1440).and.(IFINAL.eq.ND))then 
+C       T(1:(js+9))=TINS(1:(js+9),doy+1)! reset initial temps
+C       TT(1:(js+9))=TINS(1:(js+9),doy+1)! reset initial temps
+C       Y(1:(js+9))=TINS(1:(js+9),doy+1)! reset initial temps
+C     endif
 *************** soil moisture model ***********************
       if(runmoist.eq.1)then
        rainfallb=rainfall

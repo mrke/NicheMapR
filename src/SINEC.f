@@ -75,16 +75,16 @@ C     THIS LOOP COMPUTES TEMPERATURE EACH HOUR OF THE DAY
          IF (TIME-TIMSR) 20,21,11   
 c          sunrise
    21      T=TMIN 
-           T=T-273.   
+           T=T-273.15  
            GO TO 10   
    11    IF (TIME-TIMSS) 15,15,13 
    20       TI=(2400.-TIMSS)+TIME
          if((microdaily.eq.1).and.(iday.gt.1))then
-          T=((TMIN-273.-ITAIR)/TIMSR)*TIME+ITAIR
+          T=((TMIN-273.15-ITAIR)/TIMSR)*TIME+ITAIR
          else
           E=TI*TAU   
           T=(TSS-TSR)/EXP(E)+TSR     
-          T=T-273.
+          T=T-273.15
          endif       
          GO TO 10   
 c        after sunset
@@ -95,14 +95,14 @@ c        after sunset
            else
             T=(TSS-TSR)/EXP(E)+TSR  
            endif 
-           T=T-273.   
+           T=T-273.15   
            GO TO 10   
 c        before or at sunset
    15    X=360.*(TIME-TREF)/(2.*(TIMTMX-TIMSR)) 
          Y=X/57.29577   
          Z=SIN(Y)   
          T=A*Z+TMIN+A   
-         T=T-273.   
+         T=T-273.15   
 C         CONVERTING FROM MILITARY TIME TO BIOME TIME   
    10    ITIME=int(TIME)/100
          FRMIN=(TIME/100.)-ITIME     
