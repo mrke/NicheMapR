@@ -392,7 +392,7 @@ C     SETTING UP THE 'OUTPUT'
       T(N)=TAB('TDS',TIME)
       VEL2M=TAB('VEL',TIME)/(100.*60.)
       IRDOWN=TAB('IRD',TIME)
-      if(microdaily.eq.0)then
+      if((microdaily.eq.0).or.((microdaily.eq.1).and.(DOY.eq.1)))then
        if(time.le.0.0)then
         tt_past=TT
         TT=T

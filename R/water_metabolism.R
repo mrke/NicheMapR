@@ -11,7 +11,6 @@
 #' @param kap_carb Digestive efficiency of protein (default = 0.9).
 #' @param pct_H_X Percentage of water in food (default = 82).
 #' @param pct_H_P Percentage of water in faeces (default = 73).
-#' @param pct_H_N Percentage of water excreted in nitrogenous waste (default = 0, i.e. all uric acid).
 #' @param pct_urea Percentage of urea in nitrogenous waste (default = 10).
 #'
 #' @return A list containing:
@@ -86,7 +85,6 @@ water_metabolism <- function(mrate = mrate,
                              kap_carb = 0.9,
                              pct_H_X = 82,
                              pct_H_P = 73,
-                             pct_H_N = 0,
                              pct_urea = 10) {
 
   gfatpg <- pct_fat / 100
@@ -96,7 +94,6 @@ water_metabolism <- function(mrate = mrate,
   p_dry <- 1 - (pct_H_X / 100)
   p_fecalH2O <- pct_H_P / 100
   p_urea <- pct_urea / 100
-  p_H_N <- pct_H_N / 100
 
   # Energy densities (J/g) (see notes in function details
   # converted from kcal/g using 4.185 J/cal

@@ -14,7 +14,6 @@ water_metabolism(
   kap_carb = 0.9,
   pct_H_X = 82,
   pct_H_P = 73,
-  pct_H_N = 0,
   pct_urea = 10
 )
 }
@@ -34,8 +33,6 @@ water_metabolism(
 \item{pct_H_X}{Percentage of water in food (default = 82).}
 
 \item{pct_H_P}{Percentage of water in faeces (default = 73).}
-
-\item{pct_H_N}{Percentage of water excreted in nitrogenous waste (default = 0, i.e. all uric acid).}
 
 \item{pct_urea}{Percentage of urea in nitrogenous waste (default = 10).}
 }
