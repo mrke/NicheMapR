@@ -673,7 +673,7 @@ micro_global <- function(
         aspect <- as.numeric(terra::extract(aspect, xy)[, 2])
         ha24 <- 0
         for (i in 0:23) {
-          har <- microclima::horizonangle(dem, i * 10, terra::res(dem)[1])
+          har <- microclima::horizonangle(dem, i * 15, terra::res(dem)[1])
           ha24[i + 1] <- atan(as.numeric(terra::extract(har, xy)[, 2])) * (180/pi)
         }
         hori <- ha24
