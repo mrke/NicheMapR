@@ -63,6 +63,9 @@
 #' \code{writecsv}{ = 0, Make Fortran code write output as csv files? 1=yes, 0=no}\cr\cr
 #' \code{elevatr}{ = 0, Use elevatr package to get high resolution elevation for location? 1 = yes, 0 = no}\cr\cr
 #' \code{terrain}{ = 0, Use elevatr package to adjust horizon angles, slope and aspect? 1 = yes, 0 = no}\cr\cr
+#' \code{dem.res}{ = 30, Requested resolution of the DEM from elevatr, m}\cr\cr
+#' \code{zmin minimum}{ = -20, elevation of DEM for terrain calculations, m (may need to be made negative if below sea level)}\cr\cr
+#' \code{pixels}{ = 100, Number of pixels along one edge of square requested of DEM requested from elevatr}\cr\cr
 #' \code{microclima}{ = 0, Use microclima and elevatr package to compute diffuse fraction of solar radiation (1) and adjust solar radiation for terrain (2)? 0 = no}\cr\cr
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
@@ -333,6 +336,9 @@ micro_global <- function(
   minshade = 0,
   maxshade = 90,
   dem = NA,
+  dem.res = 30,
+  zmin = -20,
+  pixels = 100,
   Usrhyt = 0.01,
   Z01 = 0,
   Z02 = 0,
@@ -658,19 +664,18 @@ micro_global <- function(
       require(microclima)
       require(terra)
       cat('downloading DEM via package elevatr \n')
-      dem <- microclima::get_dem(lat = loc[2], long = loc[1]) # mercator equal area projection
-      dem_terra <- terra::rast(dem)
+      dem <- microclima::get_dem(r = NA, lat = loc[2], long = loc[1], resolution = dem.res, zmin = zmin, xdims = pixels, ydims = pixels)
       xy = data.frame(lon = loc[1], lat = loc[2]) |>
         sf::st_as_sf(coords = c("lon", "lat"))
       xy <- sf::st_set_crs(xy, "EPSG:4326")
-      xy <- sf::st_transform(xy, sf::st_crs(dem_terra))
-      elev <- as.numeric(terra::extract(dem_terra, xy)[, 2])
+      xy <- sf::st_transform(xy, sf::st_crs(dem))
+      elev <- as.numeric(terra::extract(dem, xy)[,2])
       if(terrain == 1){
         cat('computing slope, aspect and horizon angles \n')
-        slope <- terra::terrain(dem_terra, v = "slope", unit = "degrees")
-        slope <- as.numeric(terra::extract(slope, xy)[, 2])
-        aspect <- terra::terrain(dem_terra, v = "aspect", unit = "degrees")
-        aspect <- as.numeric(terra::extract(aspect, xy)[, 2])
+        slope <- terra::terrain(dem, v = "slope", unit = "degrees")
+        slope <- as.numeric(terra::extract(slope, xy)[,2])
+        aspect <- terra::terrain(dem, v = "aspect", unit = "degrees")
+        aspect <- as.numeric(terra::extract(aspect, xy)[,2])
         ha24 <- 0
         for (i in 0:23) {
           har <- microclima::horizonangle(dem, i * 15, terra::res(dem)[1])
