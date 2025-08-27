@@ -36,7 +36,7 @@
 #' \code{BRENTOL}{ = 1e-5, error tolerance (fraction of QBASAL) for ZBRENT (-)}\cr\cr
 #' \code{THERMOREG}{ = 1, thermoregulate? (1 = yes, 0 = no)}\cr\cr
 #' \code{RESPIRE}{ = 1, respiration? (1 = yes, 0 = no)}\cr\cr
-#' \code{TREGMODE}{ = 1, 1 = raise core then pant then sweat, 2 = raise core and pant simultaneously, then sweat}\cr\cr
+#' \code{TREGMODE}{ = 1, 1 = raise core then pant then sweat, 2 = raise core and pant simultaneously, then 'sweat', 3 = raise core, pant and 'sweat' simultaenosuly}\cr\cr
 #' \code{CONV_ENHANCE}{ = 1, convective enhancement factor, accounting for enhanced turbulent convection in outdoor conditions compared to what is measured in wind tunnles, see Kolowski & Mitchell 1976 10.1115/1.3450614 and Mitchell 1976 10.1016/S0006-3495(76)85711-6}\cr\cr
 #'
 #' \strong{ Environment:}\cr\cr
@@ -704,9 +704,15 @@ endoR_devel <- function(
           if(TC < TC_MAX){
             TC <- TC + TC_INC
             Q10mult <- Q10^((TC - TC_REF)/10)
-            if(TREGMODE == 2 & PANT < PANT_MAX){
+            if(TREGMODE >= 2 & PANT < PANT_MAX){
               PANT <- PANT + PANT_INC
-              PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * (PANT_MULT - 1) * QBASAL_REF)
+              PANT_COST <- ((PANT - 1) / (PANT_MAX + 1e-6 - 1) * (PANT_MULT - 1) * QBASAL_REF)
+              if(TREGMODE == 3){
+                PCTWET <- PCTWET + PCTWET_INC
+                if(PCTWET > PCTWET_MAX){
+                  PCTWET <- PCTWET_MAX
+                }
+              }
             }
             QBASAL <- (QBASAL_REF + PANT_COST) * Q10mult
           }else{
@@ -714,12 +720,17 @@ endoR_devel <- function(
             Q10mult <- Q10^((TC - TC_REF)/10)
             if(PANT < PANT_MAX){
               PANT <- PANT + PANT_INC
-              PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * (PANT_MULT - 1) * QBASAL_REF)
+              PANT_COST <- ((PANT - 1) / (PANT_MAX + 1e-6 - 1) * (PANT_MULT - 1) * QBASAL_REF)
               QBASAL <- (QBASAL_REF + PANT_COST) * Q10mult
+              if(TREGMODE == 3){
+                PCTWET <- PCTWET + PCTWET_INC
+                if(PCTWET > PCTWET_MAX){
+                  PCTWET <- PCTWET_MAX
+                }
+              }
             }else{
               PANT <- PANT_MAX
-              #AIRVOL <- AIRVOL_MAX
-              PANT_COST <- ((PANT - 1) / (PANT_MAX - 1) * (PANT_MULT - 1) * QBASAL_REF)
+              PANT_COST <- ((PANT - 1) / (PANT_MAX + 1e-6 - 1) * (PANT_MULT - 1) * QBASAL_REF)
               QBASAL <- (QBASAL_REF + PANT_COST) * Q10mult
               PCTWET <- PCTWET + PCTWET_INC
               if(PCTWET > PCTWET_MAX | PCTWET_INC == 0){

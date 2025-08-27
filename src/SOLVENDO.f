@@ -806,10 +806,16 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
            if(TC.lt.TC_MAX)THEN
             TC = TC + TC_INC
             Q10mult = Q10**((TC - TC_REF)/10.)
-            if((TREGMODE.EQ.2).AND.(PANT.lt.PANT_MAX))THEN
+            if((TREGMODE.GE.2).AND.(PANT.lt.PANT_MAX))THEN
              PANT = PANT + PANT_INC
-             PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)
+             PANT_COST=((PANT-1.)/(PANT_MAX+1e-6-1.)*(PANT_MULT-1.)
      &        *QBASAL_REF)
+            if(TREGMODE.EQ.3)then
+             PCTWET = PCTWET + PCTWET_INC
+             if(PCTWET.GT.PCTWET_MAX)then
+              PCTWET = PCTWET_MAX
+             endif 
+            endif
             endif
              QBASAL = (QBASAL_REF + PANT_COST)*Q10mult
            else
@@ -817,13 +823,19 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
             Q10mult = Q10**((TC - TC_REF)/10.)
             if(PANT.lt.PANT_MAX)THEN
              PANT = PANT + PANT_INC
-             PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)
+             PANT_COST=((PANT-1.)/(PANT_MAX+1e-6-1.)*(PANT_MULT-1.)
      &        *QBASAL_REF)
              QBASAL = (QBASAL_REF + PANT_COST)*Q10mult
+             if(TREGMODE.EQ.3)then
+              PCTWET = PCTWET + PCTWET_INC
+              if(PCTWET.GT.PCTWET_MAX)then
+               PCTWET = PCTWET_MAX
+              endif 
+             endif
             else
              PANT = PANT_MAX
              !AIRVOL = AIRVOL_MAX
-             PANT_COST=((PANT-1.)/(PANT_MAX-1.)*(PANT_MULT-1.)
+             PANT_COST=((PANT-1.)/(PANT_MAX+1e-6-1.)*(PANT_MULT-1.)
      &        *QBASAL_REF)
              QBASAL = (QBASAL_REF + PANT_COST)*Q10mult
              PCTWET = PCTWET + PCTWET_INC
