@@ -69,6 +69,7 @@
 #' \code{scenario}{ = 0, climate change scenario from terraclimate (0 is historical, 2 is plus 2 deg C, 4 is plus 4 deg C }\cr\cr
 #' \code{terra_source}{ = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data", specify location of terraclimate data, goes to the web by default}\cr\cr
 #' \code{save}{ = 0, don't save forcing data (0), save the forcing data (1) or read previously saved data (2)}\cr\cr
+#' \code{runmicro}{ = 1, call the microclimate model (1) or not (0), if you just want the downscaled input weather data}\cr\cr
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #' \code{ERR}{ = 1, Integrator error tolerance for soil temperature calculations}\cr\cr
@@ -406,6 +407,7 @@ micro_ncep <- function(
   scenario = 0,
   terra_source = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data",
   save = 0,
+  runmicro = 1,
   snowcond = 0,
   intercept = max(maxshade) / 100 * 0.3,
   grasshade = 0,
@@ -1451,7 +1453,8 @@ micro_ncep <- function(
     }else{
       location <- loc
     }
-    cat(paste('running microclimate model for ', ndays, ' days from ', tt[1], ' to ', tt[length(tt)], ' at site ', location, '\n'))
+    if(runmicro){
+      cat(paste('running microclimate model for ', ndays, ' days from ', tt[1], ' to ', tt[length(tt)], ' at site ', location, '\n'))
     cat('Note: the output column `SOLR` in metout and shadmet is for unshaded solar radiation adjusted for slope, aspect and horizon angle \n')
     ptm <- proc.time() # Start timing
     microut<-microclimate(micro)
@@ -1517,5 +1520,8 @@ micro_ncep <- function(
         return(list(soil = soil, shadsoil = shadsoil, metout = metout, shadmet = shadmet, soilmoist = soilmoist, shadmoist = shadmoist, humid = humid, shadhumid = shadhumid, soilpot = soilpot, shadpot = shadpot, plant = plant, shadplant = shadplant, tcond = tcond, shadtcond = shadtcond, specheat = specheat, shadspecheat = shadspecheat, densit = densit, shaddensit = shaddensit, RAINFALL = RAINFALL, ndays = ndays, elev = ALTT, REFL = REFL[1], longlat = longlat, nyears = nyears, minshade = MINSHADES, maxshade = MAXSHADES, DEP = DEP, SLOPE = SLOPE, ASPECT = ASPECT, HORIZON = HORIZON, dates = tt, dem = dem, dates2 = dates2, microclima.out = microclima.out,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS))
       }
     }
+  }else{
+    return(list(RAINFALL = RAINFALL, TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN, WNMAXX = WNMAXX, WNMINN = WNMINN, CCMAXX = CCMAXX, CCMINN = CCMINN, PRESS = PRESS, CLDhr = CLDhr, WNhr = WNhr, TAIRhr = TAIRhr, RHhr = RHhr, RAINhr = RAINhr, SOLRhr = SOLRhr, ZENhr = ZENhr, IRDhr = IRDhr, microclima.out = microclima.out, dates = tt, dates2 = dates2, PE=PE,BD=BD,DD=DD,BB=BB,KS=KS))
+  }
   } # end error trapping
 } # end of micro_ncep function

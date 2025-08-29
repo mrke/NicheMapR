@@ -117,6 +117,7 @@ An implementation of the NicheMapR microclimate model that integrates the RNCEP 
 \code{scenario}{ = 0, climate change scenario from terraclimate (0 is historical, 2 is plus 2 deg C, 4 is plus 4 deg C }\cr\cr
 \code{terra_source}{ = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data", specify location of terraclimate data, goes to the web by default}\cr\cr
 \code{save}{ = 0, don't save forcing data (0), save the forcing data (1) or read previously saved data (2)}\cr\cr
+\code{runmicro}{ = 1, call the microclimate model (1) or not (0), if you just want the downscaled input weather data}\cr\cr
 
 \strong{ General additional parameters:}\cr\cr
 \code{ERR}{ = 1, Integrator error tolerance for soil temperature calculations}\cr\cr

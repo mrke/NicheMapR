@@ -103,6 +103,7 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
+\code{runmicro}{ = 1, call the microclimate model (1) or not (0), if you just want the downscaled input weather data}\cr\cr
 
 \strong{ General additional parameters:}\cr\cr
 \code{ERR}{ = 1, Integrator error tolerance for soil temperature calculations}\cr\cr

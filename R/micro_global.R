@@ -70,6 +70,7 @@
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
+#' \code{runmicro}{ = 1, call the microclimate model (1) or not (0), if you just want the downscaled input weather data}\cr\cr
 #'
 #' \strong{ General additional parameters:}\cr\cr
 #' \code{ERR}{ = 1, Integrator error tolerance for soil temperature calculations}\cr\cr
@@ -409,6 +410,7 @@ micro_global <- function(
   IR = 0,
   message = 0,
   fail = nyears * 24 * 365,
+  runmicro = 1,
   TAI = 0,
   warm = 0,
   windfac = 1,
@@ -1275,6 +1277,7 @@ micro_global <- function(
     }else{
       location<-loc
     }
+    if(runmicro){
     message(paste('running microclimate model for',timeinterval,'days by',nyears,'years at site',location,'\n'))
     message('Note: the output column `SOLR` in metout and shadmet is for unshaded horizontal plane solar radiation \n')
     ptm <- proc.time() # Start timing
@@ -1348,5 +1351,8 @@ micro_global <- function(
         return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,dem=dem, diffuse_frac = diffuse_frac))
       }
     }
+  }else{
+    return(list(RAINFALL = RAINFALL, TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN, WNMAXX = WNMAXX, WNMINN = WNMINN, CCMAXX = CCMAXX, CCMINN = CCMINN, PRESS = PRESS, CLDhr = CLDhr, WNhr = WNhr, TAIRhr = TAIRhr, RHhr = RHhr, RAINhr = RAINhr, SOLRhr = SOLRhr, ZENhr = ZENhr, IRDhr = IRDhr, microclima.out = microclima.out, dates = dates, dates2 = dates2, PE=PE,BD=BD,DD=DD,BB=BB,KS=KS))
+  }
   } # end error trapping
 } # end of micro_global function
