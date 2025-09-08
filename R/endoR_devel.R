@@ -421,7 +421,7 @@ endoR_devel <- function(
   QBASAL_REF <- QBASAL
   failed <- FALSE
 
-  while(QGEN < QBASAL){
+  while(QGEN < QBASAL * 0.995){
 
     ### IRPROP, infrared radiation properties of fur
 

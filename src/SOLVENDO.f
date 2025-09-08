@@ -505,7 +505,7 @@ c     &  (TC.LE.(TC_MIN+TC_INC)))THEN
       ! NON TOPROR MODE
 222   CONTINUE
 
-      do while(QGEN.LT.QBASAL)
+      do while(QGEN.LT.QBASAL*0.995)
 
        !### IRPROP, infrared radiation properties of fur
 
@@ -814,7 +814,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
              PCTWET = PCTWET + PCTWET_INC
              if(PCTWET.GT.PCTWET_MAX)then
               PCTWET = PCTWET_MAX
-             endif 
+             endif
             endif
             endif
              QBASAL = (QBASAL_REF + PANT_COST)*Q10mult
@@ -830,7 +830,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
               PCTWET = PCTWET + PCTWET_INC
               if(PCTWET.GT.PCTWET_MAX)then
                PCTWET = PCTWET_MAX
-              endif 
+              endif
              endif
             else
              PANT = PANT_MAX
