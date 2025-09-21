@@ -37,7 +37,7 @@ DRYAIR <- function(db=db, bp=0, alt=0){
   thcond=0.02425+(7.038E-5*db)
   htovpr=2.5012E6-2.3787E3*db
   tcoeff=1./(db+tstd)
-  ggroup=0.0980616*tcoeff/(viskin*viskin)
+  ggroup=9.80616*tcoeff/(viskin*viskin)
   bbemit=5.670367E-8*((db+tstd)^4)
   emtmax=2.897E-3/(db+tstd)
   return(list(patmos=patmos, densty=densty, visdyn=visdyn, viskin=viskin, difvpr=difvpr,
