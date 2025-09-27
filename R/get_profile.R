@@ -225,7 +225,7 @@ get_profile <- function(Refhyt = 1.2,
         T[i] <- T0 - A * log((ZZ[i] - D0_cm) / ZH_cm)
       }
     }
-    if (T1 >= T3 | T3 <= maxsurf | ZEN >= 90) {
+    if (T1 >= T3 | ZEN >= 90) {
       STS <- 0.62 / (Z0 * USTAR / 12)^0.45 #SUBLAYER STANTON NO.
       STB <- 0.64 / DUM # BULK STANTON NO.
       QC <- RCP * DIFFT * USTAR * STB / (1 + STB / STS) # convective heat transfer at the surface

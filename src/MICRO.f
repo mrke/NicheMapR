@@ -98,7 +98,7 @@ C     COMPUTING VEL. PROFILE PARAMETERS FROM 200 CM REFERENCE VELOCITY
       QC=RCP*DIFFT*USTAR*STB/(1+STB/STS) ! convective heat transfer at the surface
       
 C     Paul edit 9/12/19: adding alternative Campbell and Norman 1998 vertical air temperature profile calculation option
-      IF(ZH.GT.0)THEN
+      IF(ZH.GT.0.D-8)THEN
 C     Use vertical temperature profile from Campbell and Norman 1998
        IF(NAIR.LE.0) RETURN
        DO 5 I=1,NAIR
@@ -110,7 +110,7 @@ C     Use vertical temperature profile from Campbell and Norman 1998
       
 C     CHECK FOR FREE CONVECTION (LAPSE) CONDITIONS
       IF(T1.GE.T3)GO TO 1000
-      IF(T3.LE.MAXSURF)GO TO 1000
+C      IF(T3.LE.MAXSURF)GO TO 1000
       IF(ZEN .GE.90.)GO TO 1000
 
 C     NEGLECTING FREE CONV. CORRECTION (4%)FOR SEGMENTED PROFILES.
