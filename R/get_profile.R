@@ -56,8 +56,8 @@
 #'@export
 get_profile <- function(Refhyt = 1.2,
                         RUF = 0.004,
-                        ZH = 0, #0.002
-                        D0 = 0, #0.06
+                        ZH = 0,
+                        D0 = 0,
                         TAREF = 27.77818,
                         VREF = 2.749575,
                         RH = 49.0415,
@@ -66,28 +66,35 @@ get_profile <- function(Refhyt = 1.2,
                         ZEN = 21.50564,
                         a = 0.15,
                         heights = c(0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1),
-                        warn = FALSE){
+                        warn = FALSE) {
   errors <- 0
   addheight <- FALSE
-  if(min(heights) < RUF){
-    message("ERROR: the minimum height is not greater than the roughness height, 'RUF'.
-        Please enter a correct value.", '\n')
+  if (min(heights) < RUF) {
+    message(
+      "ERROR: the minimum height is not greater than the roughness height, 'RUF'.
+        Please enter a correct value.",
+      '\n'
+    )
     errors <- 1
   }
-  if(min(heights) > Refhyt){
+  if (min(heights) > Refhyt) {
     addheight <- TRUE
     heights <- c(0.01, heights)
   }
-  if(max(heights) >= Refhyt){
-    if(warn){
-      message("warning: there are heights greater than or equal to the reference height, 'Refhyt'.
-        Assuming constant air temperature above the reference height and adjusting wind speed according to shear parameter.", '\n')
+  if (max(heights) >= Refhyt) {
+    if (warn) {
+      message(
+        "warning: there are heights greater than or equal to the reference height, 'Refhyt'.
+        Assuming constant air temperature above the reference height and adjusting wind speed according to shear parameter.",
+        '\n'
+      )
     }
     heights_orig <- heights
     heights <- heights_orig[heights_orig < Refhyt]
     heights_extra <- heights_orig[heights_orig > Refhyt]
   }
-  if(errors == 0){ # continue
+  if (errors == 0) {
+    # continue
     # 1 SEGMENT VELOCITY PROFILE - W. PORTER
     # VELOCITY PROFILE - Businger, J. A., Wyngaard, J. C., Izumi, Y., & Bradley, E. F. (1971). Flux-Profile Relationships in the Atmospheric Surface Layer. Journal of the Atmospheric Sciences, 28(2), 181–189. doi:10.1175/1520-0469(1971)028<0181:FPRITA>2.0.CO;2
     # SUBLAYER MODEL - Garratt, J. R., & Hicks, B. B. (1973). Momentum, heat and water vapour transfer to and from natural and artificial surfaces. Quarterly Journal of the Royal Meteorological Society, 99(422), 680–687. doi:10.1002/qj.49709942209
@@ -107,7 +114,7 @@ get_profile <- function(Refhyt = 1.2,
     # THE SURFACE DUE TO VEGETATION SPACED OVER THE SURFACE.
     # TEMP. PROFILE REMAINS LOGARITHMIC. VEL. PROFILE LOGARITHMIC IN SEGMENTS
 
-    get_Obukhov <- function(TA, TS, VEL, z, z0){
+    get_Obukhov <- function(TA, TS, VEL, z, z0) {
       AMOL <- -30 #! initial Monin-Obukhov length cm
       GAM <- 16
       kappa <- 0.4 # Kármán constant
@@ -116,42 +123,49 @@ get_profile <- function(Refhyt = 1.2,
       Z0 <- z0 * 100
       ZRATIO <- Z / Z0 + 1 # ratio of reference to roughness height
       DUM <- log(ZRATIO)
-      PHI <- function(Z, GAM, AMOL){
-        (1-min(1, GAM * Z / AMOL)) ^ 0.25
+      PHI <- function(Z, GAM, AMOL) {
+        (1 - min(1, GAM * Z / AMOL))^0.25
       }
-      PSI1 <- function(X){
-        2 * log((1 + X) / 2) + log((1 + X ^ 2) / 2) - 2 * atan(X) + pi / 2
+      PSI1 <- function(X) {
+        2 * log((1 + X) / 2) + log((1 + X^2) / 2) - 2 * atan(X) + pi / 2
       }
-      PSI2 <- function(X){
-        2 * log((1 + X ^ 2) / 2)
+      PSI2 <- function(X) {
+        2 * log((1 + X^2) / 2)
       }
       DIFFT <- TA - TS # temp at reference height minus ground temp
       TAVE <- (TA + TS + 546.3) / 2 # ave temp in Kelvin
       RCP <- 0.08472 / TAVE
       count <- 0
       DEL <- 1
-      while(DEL > 1e-2 & count < 500 & !is.na(AMOL)){
+      while (DEL > 1e-2 & count < 500 & !is.na(AMOL)) {
         count <- count + 1
         # ITERATING TO FIND THE MONIN-OBUKHOV LENGTH (AMOL)
         X <- PHI(Z, GAM, AMOL)
         Y <- PSI1(X)
         YY <- PSI2(X)
         USTAR <- kappa * (VEL * 100 * 60) / (log(Z / Z0) - Y)
-        if(AMOL > 0){
-          STS <- 0.62 / (Z0 * USTAR / 12) ^ 0.45 # SUBLAYER STANTON NO.
+        if (AMOL > 0) {
+          STS <- 0.62 / (Z0 * USTAR / 12)^0.45 # SUBLAYER STANTON NO.
           STB <- 0.64 / DUM # BULK STANTON NO.
           QC <- RCP * DIFFT * USTAR * STB / (1 + STB / STS) # convective heat transfer at the surface
-        }else{
-          STS <- 0.62 / (Z0 * USTAR / 12) ^ 0.45
-          STB <- (0.64 / DUM) * (1- 0.1 * Z / AMOL) # BULK STANTON NO.
+        } else{
+          STS <- 0.62 / (Z0 * USTAR / 12)^0.45
+          STB <- (0.64 / DUM) * (1 - 0.1 * Z / AMOL) # BULK STANTON NO.
           STO <- STB / (1 + STB / STS)
-          QC <- RCP * DIFFT * USTAR  *STO
+          QC <- RCP * DIFFT * USTAR  * STO
         }
-        AMOLN <- RCPTKG * USTAR ^ 3/ QC
+        AMOLN <- RCPTKG * USTAR^3 / QC
         DEL <- abs((AMOLN - AMOL) / AMOL)
         AMOL <- AMOLN
       }
-      return(list(AMOL = AMOL/100, STS = STS, STO = STO, STB = STB, USTAR = USTAR, QC = QC)) # convert back to m
+      return(list(
+        AMOL = AMOL / 100,
+        STS = STS,
+        STO = STO,
+        STB = STB,
+        USTAR = USTAR,
+        QC = QC
+      )) # convert back to m
     }
 
     T1 <- TAREF
@@ -173,10 +187,18 @@ get_profile <- function(Refhyt = 1.2,
     T[1] <- T1
 
     # some necessary functions
-    RHOCP <- function(TAVE){0.08472 / TAVE}
-    PHI <- function(Z){(1 - GAM * Z / AMOL) ^ 0.25}
-    PSI1 <- function(X){2 * log((1 + X) / 2) + log((1 + X * X) / 2) - 2 * atan(X) + pi / 2}
-    PSI2 <- function(X){2 * log((1 +X * X) / 2)}
+    RHOCP <- function(TAVE) {
+      0.08472 / TAVE
+    }
+    PHI <- function(Z) {
+      (1 - GAM * Z / AMOL)^0.25
+    }
+    PSI1 <- function(X) {
+      2 * log((1 + X) / 2) + log((1 + X * X) / 2) - 2 * atan(X) + pi / 2
+    }
+    PSI2 <- function(X) {
+      2 * log((1 + X * X) / 2)
+    }
 
     GAM <- 16
     RCPTKG <- 6.003e-8 # RHO * CP * T / (K * G) = 6.003D-8 IN CAL-MIN-CM-C UNITS
@@ -191,56 +213,52 @@ get_profile <- function(Refhyt = 1.2,
     RCP <- RHOCP(TAVE)
     AMOL <- -30 # initial Monin-Obukhov length (unstable conditions because negative)
 
+    STS <- 0.62 / (Z0 * USTAR / 12)^0.45 #SUBLAYER STANTON NO.
+    STB <- 0.64 / DUM # BULK STANTON NO.
+    QC <- RCP * DIFFT * USTAR * STB / (1 + STB / STS) # convective heat transfer at the surface
+
     # alternative Campbell and Norman 1998 vertical air temperature profile calculation option
-    if(ZH > 0){
-      STS <- 0.62 / (Z0 * USTAR / 12) ^ 0.45 #SUBLAYER STANTON NO.
-      STB <- 0.64 / DUM # BULK STANTON NO.
-      QC <- RCP * DIFFT * USTAR * STB / (1 + STB / STS) # convective heat transfer at the surface
-      # Use vertical temperature profile from Campbell and Norman 1998
-      for(i in 2:NAIR) {
-        # FILL OUT VEL. AND TEMP. PROFILES
-        if(T1 >= T3 | T3 <= maxsurf | ZEN >= 90){
-          VV[i] <- (USTAR / kappa) * log(ZZ[i] / Z0 + 1)
-        }else{
-          X1 <- PHI(ZZ[i])
-          Y1 <- PSI1(X1)
-          ADUM <- ZZ[i] / Z0 - Y1
-          VV[i] <- (USTAR / kappa) * log(ADUM)
-        }
-        A <- (T1 - T3)/(1 - log((Z - D0_cm) / ZH_cm))
+    if (ZH > 0) {
+      for (i in 2:NAIR) {
+        A <- (T1 - T3) / (1 - log((Z - D0_cm) / ZH_cm))
         T0 <- T1 + A * log((Z - D0_cm) / ZH_cm)
         T[i] <- T0 - A * log((ZZ[i] - D0_cm) / ZH_cm)
       }
-    }else{
-      if(T1 >= T3 | T3 <= maxsurf | ZEN >= 90){
-        STS <- 0.62 / (Z0 * USTAR / 12) ^ 0.45 #SUBLAYER STANTON NO.
-        STB <- 0.64 / DUM # BULK STANTON NO.
-        QC <- RCP * DIFFT * USTAR * STB / (1 + STB / STS) # convective heat transfer at the surface
-        for(i in 2:NAIR) {
-          # FILL OUT VEL. AND TEMP. PROFILES
-          VV[i] <- (USTAR / kappa) * log(ZZ[i] / Z0 + 1)
-          # COMPUTING FICTITIOUS TEMP. AT TOP OF SUBLAYER
+    }
+    if (T1 >= T3 | T3 <= maxsurf | ZEN >= 90) {
+      STS <- 0.62 / (Z0 * USTAR / 12)^0.45 #SUBLAYER STANTON NO.
+      STB <- 0.64 / DUM # BULK STANTON NO.
+      QC <- RCP * DIFFT * USTAR * STB / (1 + STB / STS) # convective heat transfer at the surface
+      for (i in 2:NAIR) {
+        # FILL OUT VEL. AND TEMP. PROFILES
+        VV[i] <- (USTAR / kappa) * log(ZZ[i] / Z0 + 1)
+        # COMPUTING FICTITIOUS TEMP. AT TOP OF SUBLAYER
+        if (ZH == 0) {
           TZO <- (T1 * STB + T3 * STS) / (STB + STS)
           T[i] <- TZO + (T1 - TZO) * log(ZZ[i] / Z0 + 1) / DUM
         }
-        # CHECK FOR FREE CONVECTION (LAPSE) CONDITIONS
-      }else{
-        for(i in 2:NAIR) {
-          X1 <- PHI(ZZ[i])
-          Y1 <- PSI1(X1)
-          YY2 <- PSI2(X1)
-          X <- PHI(Z)
-          Y <- PSI1(X)
-          YY <- PSI2(X)
-          # FILL OUT VELOCITY AND TEMP. PROFILES
-          ADUM <- ZZ[i]/Z0-Y1
-          VV[i] <- (USTAR / kappa)*log(ADUM)
-          Obukhov.out <- get_Obukhov(T1, T3, V / 100 / 60, ZZ[i] / 100, Z0 / 100)
+      }
+      # CHECK FOR FREE CONVECTION (LAPSE) CONDITIONS
+    } else{
+      for (i in 2:NAIR) {
+        X1 <- PHI(ZZ[i])
+        Y1 <- PSI1(X1)
+        YY2 <- PSI2(X1)
+        X <- PHI(Z)
+        Y <- PSI1(X)
+        YY <- PSI2(X)
+        # FILL OUT VELOCITY AND TEMP. PROFILES
+        ADUM <- ZZ[i] / Z0 - Y1
+        VV[i] <- (USTAR / kappa) * log(ADUM)
+        Obukhov.out <- get_Obukhov(T1, T3, V / 100 / 60, ZZ[i] / 100, Z0 / 100)
+        if (ZH == 0) {
           TZO <- (T1 * Obukhov.out$STB + T3 * Obukhov.out$STS) / (Obukhov.out$STB + Obukhov.out$STS)
-          T[i] <- TZO + (T1 - TZO) * log(ZZ[i] / Z0 - YY2) / log(Z / Z0-YY)
+          T[i] <- TZO + (T1 - TZO) * log(ZZ[i] / Z0 - YY2) / log(Z / Z0 -
+                                                                   YY)
         }
       }
     }
+
     # add zero, ref height and reorder
     heights <- c(0, heights, Refhyt)
     VV <- c(0, rev(VV))
@@ -251,8 +269,8 @@ get_profile <- function(Refhyt = 1.2,
     RHs[RHs > 100] <- 100
     RHs[RHs < 0] <- 0
     # add heights above reference height if any
-    if(exists("heights_extra")){
-      VV_extra <- V * (heights_extra / Refhyt) ^ a
+    if (exists("heights_extra")) {
+      VV_extra <- V * (heights_extra / Refhyt)^a
       T_extra <- VV_extra * 0 + TAREF
       RH_extra <- VV_extra * 0 + RH
       heights <- c(heights, heights_extra)
@@ -260,19 +278,25 @@ get_profile <- function(Refhyt = 1.2,
       T <- c(T, T_extra)
       RHs <- c(RHs, RH_extra)
     }
-    if(addheight){
+    if (addheight) {
       VV <- VV[-2]
       T <- T[-2]
       RHs <- RHs[-2]
       heights <- heights[-2]
     }
-    return(list(heights = heights,
-                VELs = VV / 6000, # m/s
-                TAs = T, # deg C
-                RHs = RHs, # humidity, pct
-                QCONV = QC * 4.185 * 10000 / 60, # W
-                USTAR = USTAR / 6000 # m/s
-    )
+    return(
+      list(
+        heights = heights,
+        VELs = VV / 6000,
+        # m/s
+        TAs = T,
+        # deg C
+        RHs = RHs,
+        # humidity, pct
+        QCONV = QC * 4.185 * 10000 / 60,
+        # W
+        USTAR = USTAR / 6000 # m/s
+      )
     )
   }
 }

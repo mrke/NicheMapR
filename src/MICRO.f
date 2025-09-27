@@ -89,15 +89,25 @@ C     COMPUTING VEL. PROFILE PARAMETERS FROM 200 CM REFERENCE VELOCITY
       VEL = V ! wind speed at reference height
       USTAR = 0.4*V/DUM ! friction velocity
       DIFFT=T1-T3 ! temp at reference height minus ground temp
-      TAVE=(T3+T1+546.)/2. ! ave temp in Kelvin
+      TAVE=(T3+T1+546.3)/2. ! ave temp in Kelvin
       RCP=RHOCP(TAVE)
       AMOL=-30.0 ! initial Monin-Obukhov length
       ITER=0 ! initialise counter
-
+      STS=.62/(Z0*USTAR/12.)**.45 !SUBLAYER STANTON NO.
+      STB=.64/DUM ! BULK STANTON NO.
+      QC=RCP*DIFFT*USTAR*STB/(1+STB/STS) ! convective heat transfer at the surface
+      
 C     Paul edit 9/12/19: adding alternative Campbell and Norman 1998 vertical air temperature profile calculation option
-      IF(ZH.GT.0)GO TO 1500
-
-
+      IF(ZH.GT.0)THEN
+C     Use vertical temperature profile from Campbell and Norman 1998
+       IF(NAIR.LE.0) RETURN
+       DO 5 I=1,NAIR
+        A=(T1-T3)/(1.-dLOG((Z-D0)/ZH))
+        T0=T1+A*dLOG((Z-D0)/ZH)
+        T(I+20)=T0-A*dLOG((ZZ(I)-D0)/ZH)
+    5  CONTINUE
+      ENDIF
+      
 C     CHECK FOR FREE CONVECTION (LAPSE) CONDITIONS
       IF(T1.GE.T3)GO TO 1000
       IF(T3.LE.MAXSURF)GO TO 1000
@@ -137,51 +147,29 @@ C     END OF ITERATION LOOP TO FIND MONIN-OBUKHOV LENGTH
 C      FILL OUT VELOCITY AND TEMP. PROFILES
        ADUM=ZZ(I)/Z0-Y1
        VV(I)=2.5*USTAR*dLOG(ADUM)
-       TZO=(T1*STB+T3*STS)/(STB+STS)
-       T(I+20)=TZO+(T1-TZO)*dLOG(ZZ(I)/Z0-YY2)/dLOG(Z/Z0-YY)
+       IF(ZH.EQ.0)THEN
+C       COMPUTING FICTITIOUS TEMP. AT TOP OF SUBLAYER
+        TZO=(T1*STB+T3*STS)/(STB+STS)
+        T(I+20)=TZO+(T1-TZO)*dLOG(ZZ(I)/Z0-YY2)/dLOG(Z/Z0-YY)
+       ENDIF
     3 CONTINUE
       RETURN
 
 C     CALC'S BELOW WHEN NO FREE CONV. ENHANCEMENT OF VEL,TEMP PROFILES
  1000 CONTINUE
-      STS=.62/(Z0*USTAR/12.)**.45 !SUBLAYER STANTON NO.
-      STB=.64/DUM ! BULK STANTON NO.
-
-      QC=RCP*DIFFT*USTAR*STB/(1+STB/STS) ! convective heat transfer at the surface
 
       IF(NAIR.LE.0) RETURN
       DO 4 I=1,NAIR
 C      FILL OUT VEL. AND TEMP. PROFILES
        VV(I)=2.5*USTAR*dLOG(ZZ(I)/Z0+1.)
-C      COMPUTING FICTITIOUS TEMP. AT TOP OF SUBLAYER
-       TZO=(T1*STB+T3*STS)/(STB+STS)
-       T(I+20)=TZO+(T1-TZO)*dLOG(ZZ(I)/Z0+1.)/DUM
+       IF(ZH.EQ.0)THEN
+C       COMPUTING FICTITIOUS TEMP. AT TOP OF SUBLAYER
+        TZO=(T1*STB+T3*STS)/(STB+STS)
+        T(I+20)=TZO+(T1-TZO)*dLOG(ZZ(I)/Z0+1.)/DUM
+       ENDIF
     4 CONTINUE
       RETURN
     
-1500  CONTINUE
-      STS=.62/(Z0*USTAR/12.)**.45 !SUBLAYER STANTON NO.
-      STB=.64/DUM ! BULK STANTON NO.
-
-      QC=RCP*DIFFT*USTAR*STB/(1.+STB/STS) ! convective heat transfer at the surface
-C     Use vertical temperature profile from Campbell and Norman 1998
-      IF(NAIR.LE.0) RETURN
-      DO 5 I=1,NAIR
-C      FILL OUT VEL. AND TEMP. PROFILES
-       IF((T1.GE.T3).or.(T3.LE.MAXSURF).or.(ZEN .GE. 90.))THEN
-        VV(I)=2.5*USTAR*dLOG(ZZ(I)/Z0+1.)
-       ELSE
-        X1=PHI(ZZ(I))
-        Y1=PSI1(X1)
-        ADUM=ZZ(I)/Z0-Y1
-        VV(I)=2.5*USTAR*dLOG(ADUM)
-       ENDIF
-       A=(T1-T3)/(1.-dLOG((Z-D0)/ZH))
-       T0=T1+A*dLOG((Z-D0)/ZH)
-       T(I+20)=T0-A*dLOG((ZZ(I)-D0)/ZH)
-    5 CONTINUE
-      RETURN
-
  2000 continue
       RETURN
       END
