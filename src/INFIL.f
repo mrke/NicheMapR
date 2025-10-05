@@ -108,7 +108,7 @@ c     prep for wetair call
       WB = 0.
       DPP = 999.
       PSTD=101325.
-      BP=PSTD*((1.-(0.0065*ALTT/288.))**(1./0.190284))      
+      BP=PSTD*((1.-(0.0065*ALTT/288.))**(5.255785959124322))      
 
       j=2
       do 121 I=3,18 ! add in extra nodes between the 10 soil depths specified by the user for soil temperature calcs

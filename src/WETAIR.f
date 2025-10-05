@@ -42,11 +42,11 @@ c     which is available as a vignette in the NicheMapR package
 200   e = esat * rh / 100
       go to 400
 300   rh = (e / esat) * 100
-400   rw = ((0.62197 * 1.0053 * e) / (bp - 1.0053 * e))
-      vd = e * 0.018016 / (0.998 * 8.31434 * tk)
-      tvir = tk * ((1.0 + rw / (18.016 / 28.966)) / (1.0 + rw))
+400   rw = ((0.6243881628537143 * 1.0053 * e) / (bp - 1.0053 * e))
+      vd = e * 0.018015 / (0.998 * 8.31446261815324 * tk)
+      tvir = tk * ((1.0 + rw / (0.6243881628537143)) / (1.0 + rw))
       tvinc = tvir - tk
-      denair = 0.0034838 * bp / (0.999 * tvir)
+      denair = 0.0034701274063107753 * bp / (0.999 * tvir)
       cp = (1004.84 + (rw * 1864.40)) / (1.0 + rw)
       if (rh .le. 0.0) go to 500
       wtrpot = 4.615D+5 * tk * dlog(rh / 100.0)

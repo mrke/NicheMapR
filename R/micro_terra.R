@@ -833,7 +833,7 @@ micro_terra <- function(
         var <- 'soil'
         baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
         nc <- retry(nc_open(baseurlagg))
-        SoilMoist <- retry(as.numeric(ncvar_get(nc, varid = var,start = start, count))) / 1000 # this is originally in mm/m
+        SoilMoist <- retry(as.numeric(ncvar_get(nc, varid = var,start = start, count))) / 1000 * (1 - BulkDensity / Density) # this is originally in mm/m
         nc_close(nc)
       }
     }else{

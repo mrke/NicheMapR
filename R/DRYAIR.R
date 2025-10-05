@@ -24,10 +24,10 @@
 DRYAIR <- function(db=db, bp=0, alt=0){
   tstd=273.15
   pstd=101325.
-  patmos=pstd*((1-(0.0065*alt/288))^(1/0.190284))
+  patmos=pstd*((1-(0.0065*alt/288))^(5.255785959124322))
   bp=rep(bp,length(patmos))
   bp[bp<=0]=patmos[bp<=0]
-  densty=bp/(287.04*(db+tstd))
+  densty=bp/(288.1738573002823*(db+tstd))
   visnot=1.8325E-5
   tnot=296.16
   c=120.
@@ -37,7 +37,7 @@ DRYAIR <- function(db=db, bp=0, alt=0){
   thcond=0.02425+(7.038E-5*db)
   htovpr=2.5012E6-2.3787E3*db
   tcoeff=1./(db+tstd)
-  ggroup=9.80616*tcoeff/(viskin*viskin)
+  ggroup=9.80665*tcoeff/(viskin*viskin)
   bbemit=5.670367E-8*((db+tstd)^4)
   emtmax=2.897E-3/(db+tstd)
   return(list(patmos=patmos, densty=densty, visdyn=visdyn, viskin=viskin, difvpr=difvpr,

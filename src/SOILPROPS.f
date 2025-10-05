@@ -98,30 +98,30 @@ c     Predicting the effect of temperature on soil thermal conductivity. Soil Sc
         endif
        endif
 c     don't make it volumetric, but rather mass-specific, so don't multiply by kg/m3 converters (constants from Campbell and Norman 1998, Table 8.2)
-       if(runmoist.eq.1)then
+c       if(runmoist.eq.1)then
         if(runsnow.eq.1)then
          Spheat(i)=drydensity(j)/dens(j)*spht(j)+moistt(i-8)*4184.
         else
          Spheat(i)=drydensity(j)/dens(j)*spht(j)+moistt(i)*4184.
         endif
-       else
-        Spheat(i)=drydensity(j)/dens(j)*spht(j)+bar(j)*moistt(j)*4184.
-       endif
+c       else
+c        Spheat(i)=drydensity(j)/dens(j)*spht(j)+bar(j)*moistt(j)*4184.
+c       endif
 c     constants from Campbell and Norman 1998, Table 8.2
-       if(runmoist.eq.1)then
+c       if(runmoist.eq.1)then
         if(runsnow.eq.1)then
          Density(i)=moistt(i-8)*1000.+drydensity(j)/dens(j)*dens(j)
      &    *1000.
         else
          Density(i)=moistt(i)*1000.+drydensity(j)/dens(j)*dens(j)*1000.
         endif
-       else
-        Density(i)=bar(j)*moistt(j)*1000.+drydensity(j)/dens(j)*
-     &    dens(j)*1000.
-       endif
+c       else
+c        Density(i)=bar(j)*moistt(j)*1000.+drydensity(j)/dens(j)*
+c     &    dens(j)*1000.
+c       endif
 c    # standard sea level air pressure, Pa
        p_a0=101325.
-       PATMOS=p_a0*((1.-(0.0065*ALTT/288.))**(1./0.190284))
+       PATMOS=p_a0*((1.-(0.0065*ALTT/288.))**(5.255785959124322))
        BP = PATMOS
 
 c    # deg K
@@ -181,15 +181,15 @@ c    # mean in Table 2 of Campell et al. 1994, excluding peat moss value
 c    # volume fraction of minerals
        phi_m=drydensity(j)/dens(j)
 c    # volume fraction of water
-       if(runmoist.eq.1)then
+c       if(runmoist.eq.1)then
         if(runsnow.eq.1)then
          theta=moistt(i-8)
         else
          theta=moistt(i)
         endif
-       else
-        theta=moistt(j)*bar(j)
-       endif
+c       else
+c        theta=moistt(j)*bar(j)
+c       endif
 c     # # volume fraction of gas
        phi_g=1-theta-phi_m
        if(phi_g.lt.0)then

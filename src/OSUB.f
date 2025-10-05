@@ -60,7 +60,7 @@ C     VERSION 2 SEPT. 2000
      & cummelted,melted,snowfall,rainmelt,cpsnow,netsnow,hcap,meltheat,
      & layermass,xtrain,QFREZE,grasshade,MAXSURF,LAMBDA_E_D,CE
       double precision Thconduct,Density,Spheat,dew,Q_AIR,Q_STAR_AIR
-      DOUBLE PRECISION Q_STAR_SURF,S,DELTA_Q,G,R_N,GAMMA,ZP
+      DOUBLE PRECISION Q_STAR_SURF,S,DELTA_Q,G,R_N,GAMMA,ZP,maxlatent
 
       integer maxsnode2,maxsnode3,maxcount,js,numrun,rainhourly,hourly
       INTEGER I,IEND,IFINAL,ILOCT,IOUT,IPRINT,ITEST,trouble
@@ -401,57 +401,71 @@ C     SETTING UP THE 'OUTPUT'
 c     phase change for freezing moist soil
       methour=int((TIME/60+1)+24*(DOY-1))
       if((methour.eq.1).and.(DOY.eq.1))then
-        meanT=tt
-        meanTpast=tt_past
+        meanT    = tt
+        meanTpast= tt_past
       else
        if(runsnow.eq.1)then
         js=9
        else
         js=1
        endif
-       do 1131 j=js,js+9 ! loop through soil nodes  
+       do 1131 j=js,js+9 ! loop through soil nodes
         if(moist(j-js+1).GT.0.0)then ! check if there is any moisture
-        if(j.lt.js+9)then
-         meanT(j)=(tt(j)+tt(j+1))/2. ! current temp
-         meanTpast(j)=(tt_past(j)+tt_past(j+1))/2. ! last hour's temp
-        else
-         meanT(j)=tt(j) ! current temp
-         meanTpast(j)=tt_past(j) ! last hour's temp
-        endif
-        if((meanTpast(j).gt.0.0).and.(meanT(j).le.0.0))then ! phase change, freezing
-         if(j.lt.js+9)then
-          layermass(j-js+1)=(dep(j-js+1+4)-dep(j-js+4))*10000.0*
-     &     moist(j-js+1)
-         else
-          layermass(j-js+1)=(dep(j-js+4)+100.0-dep(j-js+4))*10000.0*
-     &     moist(j-js+1)! deep soil
-         endif
-         qphase2(j-js+1)=(meanTpast(j)-meanT(j))*layermass(j-js+1)*4.186
-         sumphase2(j-js+1)=qphase2(j-js+1)+sumphase2(j-js+1)
-         if(sumphase2(j-js+1).gt.(HTOFN*layermass(j-js+1)))then
-          !t(j)=-0.1
-          tt(j)=-0.1
-          !y(j)=-0.1
+
           if(j.lt.js+9)then
-          !t(j+1)=-0.1
-          tt(j+1)=-0.1
-          !y(j+1)=-0.1
+            meanT(j)     = (tt(j)+tt(j+1))/2.0
+            meanTpast(j) = (tt_past(j)+tt_past(j+1))/2.0
+          else
+            meanT(j)     = tt(j)
+            meanTpast(j) = tt_past(j)
           endif
-          sumphase2(j-js+1)=0.
-         else
-          !t(j)=0.1
-          tt(j)=0.1
-          !y(j)=0.1
+
+          ! compute layer water mass (kg/m2)
           if(j.lt.js+9)then
-          !t(j+1)=0.1
-          tt(j+1)=0.1
-          !y(j+1)=0.1
+            layermass(j-js+1)=(dep(j-js+1+4)-dep(j-js+4))*10000.0*
+     &                         moist(j-js+1)
+          else
+            layermass(j-js+1)=(dep(j-js+4)+100.0-dep(j-js+4))*10000.0*
+     &                         moist(j-js+1)
           endif
-         endif
+
+          maxlatent = HTOFN * layermass(j-js+1)
+
+          ! FREEZING: crossing from above 0 to below 0
+          if((meanTpast(j).GT.1e-4).and.(meanT(j).LE.-1e-4))then
+            qphase2(j-js+1) = (meanTpast(j)-meanT(j)) * 
+     &       layermass(j-js+1) * 4.186
+            sumphase2(j-js+1) = sumphase2(j-js+1) + qphase2(j-js+1)
+
+            if(sumphase2(j-js+1).GE.maxlatent)then
+              sumphase2(j-js+1) = maxlatent
+            endif
+
+            tt(j) = 0.0
+            if(j.lt.js+9) tt(j+1)=0.0
+
+          ! THAWING: crossing from below 0 to above 0
+          else if((meanTpast(j).LT.-1e-4).and.(meanT(j).GE.1e-4))then
+            qphase2(j-js+1) = (meanT(j)-meanTpast(j)) * 
+     &       layermass(j-js+1) * 4.186
+            sumphase2(j-js+1) = sumphase2(j-js+1) - qphase2(j-js+1)
+
+            if(sumphase2(j-js+1).LT.0.0)then
+              sumphase2(j-js+1) = 0.0
+            endif
+
+            if(sumphase2(j-js+1).GT.0.0)then
+              tt(j) = 0.0
+              if(j.lt.js+9) tt(j+1)=0.0
+            endif
+          else
+            qphase2(j-js+1) = 0.0
+          endif
+
         endif
-        endif ! end check if any moisture
 1131   continue
       endif
+
       !T(N)=TAB('TDS',TIME)
       TT(N)=TAB('TDS',TIME) 
       !Y(N)=TAB('TDS',TIME) 
@@ -493,18 +507,18 @@ c       Campbell and Norman 1998 eq. 10.10 to get emissivity of sky
 C       BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
 C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
         PSTD=101325.
-        PATMOS=PSTD*((1.-(0.0065*ALTT/288.))**(1./0.190284))
+        PATMOS=PSTD*((1.-(0.0065*ALTT/288.))**(5.255785959124322))
         BP=PATMOS
         CALL WETAIR (TAIR,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,
      &      CP,WTRPOT)
-        ARAD=1.72*((E/1000.)/(TAIR+273.16))**(1./7.)*0.0000000567*
-     &  (TAIR+273.16)**4.*60./(4.185*10000.)
+        ARAD=1.72*((E/1000.)/(TAIR+273.16))**(1./7.)*
+     &  5.6703744191844294e-8*(TAIR+273.16)**4.*60./(4.184*10000.)
 c       Below is the Gates formula (7.1)
 c       ARAD=(1.22*0.00000005673*(TAIR+273.)**4-171)
        else
 c       Swinbank, Eq. 10.11 in Campbell and Norman 1998
-        ARAD=(0.0000092*(TAIR+273.16)**2)*0.0000000567*(TAIR+273.16)**4
-     & *60./(4.185*10000.)
+        ARAD=(0.0000092*(TAIR+273.16)**2)*5.6703744191844294e-8*
+     & (TAIR+273.16)**4*60./(4.184*10000.)
        endif
 
 C      APPROXIMATING CLOUD RADIANT TEMPERATURE AS REFERENCE SHADE TEMPERATURE - 2 degrees
@@ -582,14 +596,14 @@ C     FOR ANIMAL CALCULATIONS, ALTHOUGH SLOPE CORRECTIONS DONE
 C     IN DSUB FOR THE GROUND
       SIOUT(8) = ZENR
 C     CONVERTING FROM CAL/CM2-MIN TO W/M2
-      SIOUT(9) = SOLR * 4.185 * 10000. / 60.
+      SIOUT(9) = SOLR * 4.184 * 10000. / 60.
 C     BLACK BODY EQUIVALENT SKY INFRARED RADIATION (W/M2)
 c     SIOUT(10) = ((QRADSK+QRADVG)/SIGP)**0.25 - 273.15
       SIOUT(10) = TSKY
 C     FROST
 
 c     convert to W/m2
-      QEVAP = OUT(101)*4.185*10000./60.
+      QEVAP = OUT(101)*4.184*10000./60.
       if(runsnow.eq.1)then
        methour=(int(SIOUT(1)/60)+1)+24*(DOY-1)
       if(densfun(1).gt.0)then
@@ -688,7 +702,7 @@ c      get cm snow lost due to rainfall - from Anderson model
 C       BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
 C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
         PSTD=101325.
-        PATMOS=PSTD*((1.-(0.0065*ALTT/288.))**(1./0.190284))
+        PATMOS=PSTD*((1.-(0.0065*ALTT/288.))**(5.255785959124322))
         BP = PATMOS
         call WETAIR(0.D+0,WB,100.D+0,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,
      &  DENAIR,CP,WTRPOT) ! get specific heat and mixing ratio of humid air at zero C
@@ -1000,7 +1014,7 @@ C       GETTING THE RELATIVE HUMIDITY FOR THIS POINT IN TIME
 C       BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
 C       EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
         PSTD=101325.
-        PATMOS=PSTD*((1.-(0.0065*ALTT/288.))**(1./0.190284))
+        PATMOS=PSTD*((1.-(0.0065*ALTT/288.))**(5.255785959124322))
         BP = PATMOS
         CALL WETAIR (TAIR,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,
      &      CP,WTRPOT)
@@ -1166,7 +1180,7 @@ c     NOTE: difference between this model and Garratt & Segal is that QCONV +VE 
 C     BP CALCULATED FROM ALTITUDE USING THE STANDARD ATMOSPHERE
 C     EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
       PSTD=101325.
-      PATMOS=PSTD*((1.-(0.0065*ALTT/288.))**(1./0.190284))
+      PATMOS=PSTD*((1.-(0.0065*ALTT/288.))**(5.255785959124322))
       BP=PATMOS
       CALL WETAIR (TAIR,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,
      &      CP,WTRPOT)
@@ -1188,16 +1202,16 @@ C     EQUATIONS FROM SUBROUTINE DRYAIR    (TRACY ET AL,1972)
       HTOVPR=HTOVPR*1000.D0 ! J / kg, latent heat of vapourisation
       GAMMA=CP/HTOVPR ! kg water / kg air / K, psychometric constant
       DELTA_Q=Q_STAR_AIR-Q_AIR ! kg water / kg air, difference between saturated and actual specific humidity of air
-      R_N=(SOLR+QRAD)*4.185*10000./60. ! W / m2, net radiation (positive means gain, but note that in Monteith's formulation positive is a loss) 
+      R_N=(SOLR+QRAD)*4.184*10000./60. ! W / m2, net radiation (positive means gain, but note that in Monteith's formulation positive is a loss) 
       RH = TAB('REL',TIME)
       CALL EVAP(soiltemp(1),TAIR,RH,curhumid(1)*100.0D0,HD,QEVAP,1)
-      G=(SOLR+QRAD+QCONV-QEVAP)*4.185*10000./60. ! W / m2, soil heat flux (positive means gain, but note that in Monteith's formulation positive is a loss))
+      G=(SOLR+QRAD+QCONV-QEVAP)*4.184*10000./60. ! W / m2, soil heat flux (positive means gain, but note that in Monteith's formulation positive is a loss))
       ZP=(RUFP/100.)/EXP(REAL(2.0)) ! m, 'analogous scaling length for property "p"', ln(z_0/z_p) = 2. in GARRATT ET AL 1988 p. 234
       CE=(0.4**2.)/(LOG((HGTP/100.)/(RUFP/100.))*LOG((HGTP/100.)/ZP)) ! -, bulk transfer coefficient, eq. A10 FROM GARRATT & SEGAL 1988
       LAMBDA_E_D=(S/(S+GAMMA))*(R_N-G)
      & +(GAMMA/(S+GAMMA))*(DENAIR*HTOVPR*DELTA_Q)*CE*VEL2M ! W, EQ. 6B FROM GARRATT & SEGAL 1988
       DEW = -1.*LAMBDA_E_D/HTOVPR * 3600. ! kg / h / m2 = mm / h
-C      DEW = -1.*OUT(101)*4.185*10000./60./HTOVPR * 3600.
+C      DEW = -1.*OUT(101)*4.184*10000./60./HTOVPR * 3600.
       IF((DEW.LT.0.).or.(cursnow.gt.0))THEN
        DEW=0.
       ENDIF

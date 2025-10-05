@@ -24,11 +24,11 @@ WETAIR.rh <- function(db=db, rh=rh, bp=101325){
   tk = db + 273.15
   esat = VAPPRS(db)
   e = esat * rh / 100
-  rw = ((0.62197 * 1.0053 * e) / (bp - 1.0053 * e))
-  vd = e * 0.018016 / (0.998 * 8.31434 * tk)
-  tvir = tk * ((1.0 + rw / (18.016 / 28.966)) / (1.0 + rw))
+  rw = ((0.6243881628537143 * 1.0053 * e) / (bp - 1.0053 * e))
+  vd = e * 0.018015 / (0.998 * 8.31446261815324 * tk)
+  tvir = tk * ((1.0 + rw / (0.6243881628537143)) / (1.0 + rw))
   tvinc = tvir - tk
-  denair = 0.0034838 * bp / (0.999 * tvir)
+  denair = 0.0034701274063107753 * bp / (0.999 * tvir)
   cp = (1004.84 + (rw * 1864.40)) / (1.0 + rw)
   wtrpot = 4.615e+5 * tk * log(rh / 100.0)
   return(list(e=e, esat=esat, vd=vd, rw=rw, tvinc=tvinc, denair=denair, cp=cp, wtrpot=wtrpot, rh=rh))

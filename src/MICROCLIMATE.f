@@ -435,7 +435,7 @@ c    WRITE(I2,*)i,' ',j,' ',Thconds(i,j),' ',Thconds1(i,j)
          ll=ll+1
          rainhr(kk)=rainhr1(ll)
         else
-         rainhr(kk)=rainhr1(ll-1)
+         rainhr(kk)=0.0!rainhr1(ll-1)
         endif
 311    continue
 310   continue
@@ -844,12 +844,12 @@ C    ***********************************************************
        TD(37:60)=RHhr1(DOYS:DOYF)
        TD(62:85)=CLDhr1(DOYS:DOYF)
        TD(87:110)=max(WNhr1(DOYS:DOYF),0.1D+0)*6000.
-       TD(112:135)=SOLRhr1(DOYS:DOYF)/ 4.185 / 10000. * 60.
+       TD(112:135)=SOLRhr1(DOYS:DOYF)/ 4.184 / 10000. * 60.
        TD(36)=TAIRhr1(DOYF)
        TD(61)=RHhr1(DOYF)
        TD(86)=CLDhr1(DOYF)
        TD(111)=max(WNhr1(DOYF),0.1D+0)*6000.
-       TD(136)=SOLRhr1(DOYF)/ 4.185 / 10000. * 60.
+       TD(136)=SOLRhr1(DOYF)/ 4.184 / 10000. * 60.
        if(ZENhr1(1).gt.0)then
         TD(137:160)=ZENhr1(DOYS:DOYF)
         TD(161)=ZENhr1(DOYF)
@@ -857,8 +857,8 @@ C    ***********************************************************
         TD(137:161)=ZENS(DOYS2:DOYF2)
        endif
        if(IRhr1(1).gt.0)then
-        TD(187:210)=IRhr1(DOYS:DOYF)/ 4.185 / 10000. * 60.
-        TD(211)=IRhr1(DOYF)/ 4.185 / 10000. * 60.
+        TD(187:210)=IRhr1(DOYS:DOYF)/ 4.184 / 10000. * 60.
+        TD(211)=IRhr1(DOYF)/ 4.184 / 10000. * 60.
        else
         TD(187:211)=IRhr1(DOYF)
        endif
@@ -881,8 +881,8 @@ C    ***********************************************************
        DOYF=DOY*24
        DOYS2=(DOY)*25-24
        DOYF2=DOY*25
-       TD(112:135)=SOLRhr1(DOYS:DOYF)/ 4.185 / 10000. * 60.
-       TD(136)=SOLRhr1(DOYF)/ 4.185 / 10000. * 60.
+       TD(112:135)=SOLRhr1(DOYS:DOYF)/ 4.184 / 10000. * 60.
+       TD(136)=SOLRhr1(DOYF)/ 4.184 / 10000. * 60.
        if(ZENhr1(1).gt.0)then
         TD(137:160)=ZENhr1(DOYS:DOYF)
         TD(161)=ZENhr1(DOYF)

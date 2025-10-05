@@ -832,7 +832,7 @@ micro_global <- function(
     }
     if(is.na(max(SoilMoist, ALTT, CLIMATE)) == TRUE){
       message("Sorry, there is no environmental data for this location")
-      SoilMoist <- t(as.numeric(terra::extract(soilmoisture, cbind(140, -35)))) / 1000 # this is originally in mm/m
+      SoilMoist <- t(as.numeric(terra::extract(soilmoisture, cbind(140, -35)))) / 1000 * (1 - BulkDensity / Density) # this is originally in mm/m
     }
 
     # correct for fact that wind is measured at 10 m height

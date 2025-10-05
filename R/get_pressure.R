@@ -20,7 +20,7 @@ get_pressure <- function(h,
                          M = 0.0289644){
 
   # constants
-  R <- 8.31432 # universal gas constant, (N m)/(mol K)
+  R <- 8.31446261815324 # universal gas constant, (N m)/(mol K)
   P_a <- P_ref * (1 + (L_ref / T_ref) * h) ^ ((-g_0 * M) / (R * L_ref))
   return(P_a)
 }
