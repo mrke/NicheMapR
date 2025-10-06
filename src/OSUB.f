@@ -69,7 +69,7 @@ C     VERSION 2 SEPT. 2000
       INTEGER I91,I92,I93,I94,I95,I96,runmoist,evenrain,step,timestep
       INTEGER I97,I98,I99,I100,I101,I102,I103,I104,I105,I106,I107
       INTEGER errout,maxerr,errcount
-      INTEGER IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART,DEWRAIN
+      INTEGER IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART,DEWRAIN,IDX
 
       INTEGER methour,IRmode,microdaily,runshade,k,lamb,cnd
 
@@ -399,71 +399,208 @@ C     SETTING UP THE 'OUTPUT'
        endif
       endif
 c     phase change for freezing moist soil
-      methour=int((TIME/60+1)+24*(DOY-1))
-      if((methour.eq.1).and.(DOY.eq.1))then
-        meanT    = tt
-        meanTpast= tt_past
-      else
-       if(runsnow.eq.1)then
-        js=9
-       else
-        js=1
-       endif
-       do 1131 j=js,js+9 ! loop through soil nodes
-        if(moist(j-js+1).GT.0.0)then ! check if there is any moisture
+C     methour=int((TIME/60+1)+24*(DOY-1))
+C     if((methour.eq.1).and.(DOY.eq.1))then 
+C       meanT=tt 
+C       meanTpast=tt_past 
+C     else 
+C      if(runsnow.eq.1)then 
+C       js=9 
+C       else 
+C       js=1 
+C      endif 
+C      do 1131 j=js,js+9 ! loop through soil nodes 
+C      if(moist(j-js+1).GT.0.0)then ! check if there is any moisture 
+C       if(j.lt.js+9)then 
+C        meanT(j)=(tt(j)+tt(j+1))/2. ! current temp 
+C        meanTpast(j)=(tt_past(j)+tt_past(j+1))/2. ! last hour's temp 
+C       else 
+C        meanT(j)=tt(j) ! current temp 
+C        meanTpast(j)=tt_past(j) ! last hour's temp 
+C       endif 
+C       if((meanTpast(j).gt.1e-4).and.(meanT(j).le.-1e-4))then ! phase change, freezing 
+C        if(j.lt.js+9)then 
+C         layermass(j-js+1)=(dep(j-js+1+4)-dep(j-js+4))*10000.0* 
+C    & moist(j-js+1) 
+C         maxlatent = HTOFN * layermass(j-js+1)
+C        else 
+C         layermass(j-js+1)=(dep(j-js+4)+100.0-dep(j-js+4))*10000.0* 
+C    & moist(j-js+1)! deep soil 
+C         maxlatent = HTOFN * layermass(j-js+1)
+C        endif 
+C        qphase2(j-js+1)=(meanTpast(j)-meanT(j))*layermass(j-js+1)*4.186 
+C        sumphase2(j-js+1)=qphase2(j-js+1)+sumphase2(j-js+1) 
+C        if(sumphase2(j-js+1).gt.(HTOFN*layermass(j-js+1)))then 
+C         tt(j)=0.0!-0.01 
+C         if(j.lt.js+9)then 
+C          tt(j+1)=0.0!-0.01 
+C         endif 
+C         sumphase2(j-js+1)=HTOFN*layermass(j-js+1)!0.
+C        else 
+C         tt(j)=0.0!0.01 
+C         if(j.lt.js+9)then 
+C          tt(j+1)=0.0!0.01 
+C         endif 
+C        endif 
+C       endif 
+C      endif ! end check if any moisture 
+C1131  continue 
+C     endif
+C     
+C     if((methour.eq.1).and.(DOY.eq.1))then
+C       meanT    = tt
+C       meanTpast= tt_past
+C       sumphase2 = 0.0
+C       qphase2   = 0.0
+C       layermass = 0.0
+C     else
+C      if(runsnow.eq.1)then
+C       js=9
+C      else
+C       js=1
+C      endif
+C      do 1132 j=js,js+9 ! loop through soil nodes
+C       if(moist(j-js+1).GT.0.0)then ! check if there is any moisture
+C
+C         if(j.lt.js+9)then
+C           meanT(j)     = (tt(j)+tt(j+1))/2.0
+C           meanTpast(j) = (tt_past(j)+tt_past(j+1))/2.0
+C         else
+C           meanT(j)     = tt(j)
+C           meanTpast(j) = tt_past(j)
+C         endif
+C
+C         ! compute layer water mass (kg/m2)
+C         if(j.lt.js+9)then
+C           layermass(j-js+1)=(dep(j-js+1+4)-dep(j-js+4))*10000.0*
+C    &                         moist(j-js+1)
+C         else
+C           layermass(j-js+1)=(dep(j-js+4)+100.0-dep(j-js+4))*10000.0*
+C    &                         moist(j-js+1)
+C         endif
+C
+C         maxlatent = HTOFN * layermass(j-js+1)
+C
+C         ! FREEZING: crossing from above 0 to below 0
+C         if((meanTpast(j).GT.1e-4).and.(meanT(j).LE.-1e-4))then
+C           qphase2(j-js+1) = (meanTpast(j)-meanT(j)) * 
+C    &       layermass(j-js+1) * 4.186
+C           sumphase2(j-js+1) = sumphase2(j-js+1) + qphase2(j-js+1)
+C
+C           if(sumphase2(j-js+1).GE.maxlatent)then
+C             sumphase2(j-js+1) = maxlatent
+C           endif
+C
+C           tt(j) = 0.0
+C           if(j.lt.js+9) tt(j+1)=0.0
+C
+C         ! THAWING: crossing from below 0 to above 0
+C         else if((meanTpast(j).LT.-1e-4).and.(meanT(j).GE.1e-4))then
+C           qphase2(j-js+1) = (meanT(j)-meanTpast(j)) * 
+C    &       layermass(j-js+1) * 4.186
+C           sumphase2(j-js+1) = sumphase2(j-js+1) - qphase2(j-js+1)
+C
+C           if(sumphase2(j-js+1).LT.0.0)then
+C             sumphase2(j-js+1) = 0.0
+C           endif
+C
+C           if(sumphase2(j-js+1).GT.0.0)then
+C             tt(j) = 0.0
+C             if(j.lt.js+9) tt(j+1)=0.0
+C           endif
+C         else
+C           qphase2(j-js+1) = 0.0
+C         endif
+C
+C       endif
+C1132   continue
+C     endif
+      if ((methour.eq.1) .and. (DOY.eq.1)) then
+        meanT     = tt
+        meanTpast = tt_past
+        sumphase2 = 0.0
+        qphase2   = 0.0
+        layermass = 0.0
 
-          if(j.lt.js+9)then
-            meanT(j)     = (tt(j)+tt(j+1))/2.0
-            meanTpast(j) = (tt_past(j)+tt_past(j+1))/2.0
+      else
+        if (runsnow.eq.1) then
+          js = 9
+        else
+          js = 1
+        endif
+
+        do 1132 j = js, js + 9   ! loop through soil nodes
+          idx = j - js + 1
+
+          !--- Always compute mean layer temperatures
+          if (j .lt. js + 9) then
+            meanT(j)     = 0.5 * (tt(j) + tt(j+1))
+            meanTpast(j) = 0.5 * (tt_past(j) + tt_past(j+1))
           else
             meanT(j)     = tt(j)
             meanTpast(j) = tt_past(j)
           endif
 
-          ! compute layer water mass (kg/m2)
-          if(j.lt.js+9)then
-            layermass(j-js+1)=(dep(j-js+1+4)-dep(j-js+4))*10000.0*
-     &                         moist(j-js+1)
+          !--- Compute layer water mass (kg/m2), safely handle dry layers
+          if (moist(idx) .gt. 0.0) then
+            if (j .lt. js + 9) then
+              layermass(idx) = (dep(idx+5) - dep(idx+4)) * 10000.0 * 
+     &         moist(idx)
+            else
+              layermass(idx) = (dep(idx+4) + 100.0 - dep(idx+4)) * 
+     &         10000.0 * moist(idx)
+            endif
           else
-            layermass(j-js+1)=(dep(j-js+4)+100.0-dep(j-js+4))*10000.0*
-     &                         moist(j-js+1)
+            layermass(idx) = 0.0
           endif
 
-          maxlatent = HTOFN * layermass(j-js+1)
+          maxlatent = HTOFN * layermass(idx)
 
-          ! FREEZING: crossing from above 0 to below 0
-          if((meanTpast(j).GT.1e-4).and.(meanT(j).LE.-1e-4))then
-            qphase2(j-js+1) = (meanTpast(j)-meanT(j)) * 
-     &       layermass(j-js+1) * 4.186
-            sumphase2(j-js+1) = sumphase2(j-js+1) + qphase2(j-js+1)
+          !--- If there is no moisture, reset latent heat state and skip
+          if (moist(idx) .le. 0.0 .or. layermass(idx) .le. 0.0) then
+            sumphase2(idx) = 0.0
+            qphase2(idx)   = 0.0
+            goto 1132
+          endif
 
-            if(sumphase2(j-js+1).GE.maxlatent)then
-              sumphase2(j-js+1) = maxlatent
+          !=============================
+          !  PHASE CHANGE CALCULATIONS
+          !=============================
+
+          !--- FREEZING (above ? below 0°C)
+          if ((meanTpast(j) .gt. 1e-4) .and. (meanT(j) .le. -1e-4)) then
+            qphase2(idx) = (meanTpast(j) - meanT(j)) * layermass(idx) 
+     &       * 4.184
+            sumphase2(idx) = sumphase2(idx) + qphase2(idx)
+
+            if (sumphase2(idx) .ge. maxlatent) then
+              sumphase2(idx) = maxlatent
+              qphase2(idx)   = 0.0
             endif
 
             tt(j) = 0.0
-            if(j.lt.js+9) tt(j+1)=0.0
+            if (j .lt. js + 9) tt(j+1) = 0.0
 
-          ! THAWING: crossing from below 0 to above 0
-          else if((meanTpast(j).LT.-1e-4).and.(meanT(j).GE.1e-4))then
-            qphase2(j-js+1) = (meanT(j)-meanTpast(j)) * 
-     &       layermass(j-js+1) * 4.186
-            sumphase2(j-js+1) = sumphase2(j-js+1) - qphase2(j-js+1)
+          !--- THAWING (below ? above 0°C)
+          else if((meanTpast(j).lt.-1e-4).and.(meanT(j).ge.1e-4))then
+            qphase2(idx)=(meanT(j)-meanTpast(j))*layermass(idx)*4.184
+            sumphase2(idx) = sumphase2(idx) - qphase2(idx)
 
-            if(sumphase2(j-js+1).LT.0.0)then
-              sumphase2(j-js+1) = 0.0
+            if (sumphase2(idx) .lt. 0.0) then
+              sumphase2(idx) = 0.0
+              qphase2(idx)   = 0.0
             endif
 
-            if(sumphase2(j-js+1).GT.0.0)then
+            if (sumphase2(idx) .gt. 0.0) then
               tt(j) = 0.0
-              if(j.lt.js+9) tt(j+1)=0.0
+              if (j .lt. js + 9) tt(j+1) = 0.0
             endif
+
           else
-            qphase2(j-js+1) = 0.0
+            qphase2(idx) = 0.0
           endif
 
-        endif
-1131   continue
+1132    continue
       endif
 
       !T(N)=TAB('TDS',TIME)

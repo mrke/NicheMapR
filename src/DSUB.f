@@ -188,13 +188,13 @@ C     INITIALISE
       PI=3.1415926535897932
 C     CHECK FOR UNSTABLE CONDITIONS OF GROUND SURFACE TEMPERATURE, T(1)
       do 101 i=1,N
-       !IF(T(i).GE. MAXSURF)THEN
-       ! T(i) = MAXSURF
-       !ELSE
+       IF(T(i).GE. MAXSURF)THEN
+        T(i) = MAXSURF
+       ELSE
         IF(T(i).LT.-81)THEN
          T(i) = -81.
         ENDIF
-       !ENDIF
+       ENDIF
 101   continue
 
 c     IF(TIME-BEGP) 1,1,100
