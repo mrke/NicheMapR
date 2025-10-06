@@ -266,7 +266,7 @@ C     55       TIME*60.                                          T*60
 C
 C     DAY COUNTER TO DELETE OUTPUT FOR REPLICATE DAYS
 C     NEEDED TO ESTABLISH SOIL STEADY PERIODICS
-      HTOFN=333.500 !J/g
+      HTOFN=333.550 !J/g
       melted=0.D0
       melthresh=0.4
       time2=0.D0
