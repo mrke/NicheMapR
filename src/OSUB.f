@@ -274,7 +274,7 @@ C     NEEDED TO ESTABLISH SOIL STEADY PERIODICS
       melt=0.D0
       layermass(:)=0.D0
       qphase(:)=0.D0
-      qphase2(:)=0.D0
+C      qphase2(:)=0.D0
       curhumid(:)=0.D0
       curhumid2(:)=0.D0
       curmoist(:)=0.D0
@@ -515,13 +515,14 @@ C
 C       endif
 C1132   continue
 C     endif
+      methour=int((TIME/60+1)+24*(DOY-1))
+
       if ((methour.eq.1) .and. (DOY.eq.1)) then
         meanT     = tt
         meanTpast = tt_past
         sumphase2 = 0.0
         qphase2   = 0.0
         layermass = 0.0
-
       else
         if (runsnow.eq.1) then
           js = 9
@@ -541,7 +542,7 @@ C     endif
             meanTpast(j) = tt_past(j)
           endif
 
-          !--- Compute layer water mass (kg/m2), safely handle dry layers
+          !--- Compute layer water mass (g), safely handle dry layers
           if (moist(idx) .gt. 0.0) then
             if (j .lt. js + 9) then
               layermass(idx) = (dep(idx+5) - dep(idx+4)) * 10000.0 * 
