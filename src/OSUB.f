@@ -1287,6 +1287,9 @@ c      curmoist(1)=condep/((depp(2)*10)*(1-BD(1)/DD(1)))
 c*******************************************************************
 c     end check for soil moisture model running
 
+c	  update soil properties for output
+      call soilprops(TT,ALTT,soilprop,moist)
+      
       if(gwsurf.lt.0)then
        gwsurf=0.D0
       endif

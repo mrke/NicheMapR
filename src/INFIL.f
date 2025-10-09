@@ -63,8 +63,8 @@ c     IM=0.000001 ! maximum overall mass balance error allowed, kg
 
       PI=3.1415926535897932
       MW=0.01801528 ! molar mass of water, kg/mol
-      R=8.3143 ! gas constant, J/mol/K
-      GR=9.81 !gravitational constant m/s/s
+      R=8.31446261815324 ! gas constant, J/mol/K
+      GR=9.80665 !gravitational constant m/s/s
      
       A(1:19)=0
       B=A
