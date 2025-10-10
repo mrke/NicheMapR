@@ -111,6 +111,7 @@ ellipsoid <- function(posture = 4.5,
                       Q10 = 3,
                       basal = NA,
                       basmult = 1) {
+
   posture[posture==1]<-1.01 # avoid divide by zero
   if(class(basal)=="logical"){ # this checks if basal is set to 'NA'
    mouseelephant <- 10^(-1.462 + 0.675 * log10(mass * 1000)) * basmult
@@ -166,7 +167,6 @@ ellipsoid <- function(posture = 4.5,
    QgenFinal[QgenFinal<basal]<-basal[QgenFinal<basal]
   }
   mlO2ph <- QgenFinal / 20.1 * 3600
-  esat <- VAPPRS(coreT)
   Qresp_gph <- (mlO2ph / 0.2094 / O2eff) * (WETAIR.rh(db = coreT, rh = 100)$vd - WETAIR.rh(db = airT, rh = rh)$vd) / 1000
   conv_H2O_loss <- 2501200 - 2378.7 * airT
   Qresp_W <- ((Qresp_gph / 3600) * conv_H2O_loss) / 1000

@@ -109,9 +109,9 @@ C     Use vertical temperature profile from Campbell and Norman 1998
       ENDIF
       
 C     CHECK FOR FREE CONVECTION (LAPSE) CONDITIONS
+      IF(ZEN .GE.90.)GO TO 1000
       IF(T1.GE.T3)GO TO 1000
 C      IF(T3.LE.MAXSURF)GO TO 1000
-      IF(ZEN .GE.90.)GO TO 1000
 
 C     NEGLECTING FREE CONV. CORRECTION (4%)FOR SEGMENTED PROFILES.
 
@@ -119,7 +119,11 @@ C     ITERATING TO FIND THE MONIN-OBUKHOV LENGTH (AMOL)
    1  X=PHI(Z)
       Y=PSI1(X)
       YY=PSI2(X)
-      USTAR=0.4*V/(dLOG(Z/Z0)-Y)
+      DUM = DLOG(Z/Z0) - Y
+      IF (DUM .LE. 0.0D0) DUM = 1.0D-6
+      USTAR = 0.4D0 * V / DUM
+      IF (USTAR .LE. 1.0D-6) USTAR = 1.0D-6      
+c      USTAR=0.4*V/(dLOG(Z/Z0)-Y)
       STS=.62/(Z0*USTAR/12.)**.45
 C     BULK STANTON NO.
       STB=(.64/DUM)*(1.-.1*Z/AMOL)
