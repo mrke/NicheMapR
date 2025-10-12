@@ -1135,7 +1135,7 @@ micro_ncep <- function(
       }
       PRESShr <- hourlydata$pressure
       if(scenario != 0){
-        RAINFALL <- RAINFALL * RAIN_diff
+        RAINFALL <- RAINFALL * RAIN_diff[1:length(RAINFALL)]
       }
       RAINFALL[RAINFALL < 0.1] <- 0
       if(rainhourly == 0){ # putting daily rainfall on midnight (account for local solar time)

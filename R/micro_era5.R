@@ -1062,7 +1062,7 @@ micro_era5 <- function(
       }
       PRESShr <- hourlydata$pressure
       if(scenario != 0){
-        RAINFALL <- RAINFALL * RAIN_diff
+        RAINFALL <- RAINFALL * RAIN_diff[1:length(RAINFALL)] # TODO hack to get around issue with leap years - check this
       }
       RAINFALL[RAINFALL < 0.1] <- 0
 
