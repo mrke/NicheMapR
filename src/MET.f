@@ -128,7 +128,8 @@ C        ACCEPTABLE TEMPERATURE RANGE
          QMETAB=0.0056*10.**(MR_3*TC)*MR_1*GMASS**MR_2*10.**MR_4+
      &    FLYMETAB
         ELSE
-         QMETAB = 0.01
+         QMETAB=0.0056*10.**(MR_3*1.0)*MR_1*GMASS**MR_2*10.**MR_4+
+     &    FLYMETAB
         ENDIF
        !ELSE
 C       TOO HOT
