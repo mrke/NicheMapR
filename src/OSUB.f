@@ -428,7 +428,7 @@ C         layermass(j-js+1)=(dep(j-js+4)+100.0-dep(j-js+4))*10000.0*
 C    & moist(j-js+1)! deep soil 
 C         maxlatent = HTOFN * layermass(j-js+1)
 C        endif 
-C        qphase2(j-js+1)=(meanTpast(j)-meanT(j))*layermass(j-js+1)*4.186 
+C        qphase2(j-js+1)=(meanTpast(j)-meanT(j))*layermass(j-js+1)*4.184 
 C        sumphase2(j-js+1)=qphase2(j-js+1)+sumphase2(j-js+1) 
 C        if(sumphase2(j-js+1).gt.(HTOFN*layermass(j-js+1)))then 
 C         tt(j)=0.0!-0.01 
@@ -484,7 +484,7 @@ C
 C         ! FREEZING: crossing from above 0 to below 0
 C         if((meanTpast(j).GT.1e-4).and.(meanT(j).LE.-1e-4))then
 C           qphase2(j-js+1) = (meanTpast(j)-meanT(j)) * 
-C    &       layermass(j-js+1) * 4.186
+C    &       layermass(j-js+1) * 4.184
 C           sumphase2(j-js+1) = sumphase2(j-js+1) + qphase2(j-js+1)
 C
 C           if(sumphase2(j-js+1).GE.maxlatent)then
@@ -497,7 +497,7 @@ C
 C         ! THAWING: crossing from below 0 to above 0
 C         else if((meanTpast(j).LT.-1e-4).and.(meanT(j).GE.1e-4))then
 C           qphase2(j-js+1) = (meanT(j)-meanTpast(j)) * 
-C    &       layermass(j-js+1) * 4.186
+C    &       layermass(j-js+1) * 4.184
 C           sumphase2(j-js+1) = sumphase2(j-js+1) - qphase2(j-js+1)
 C
 C           if(sumphase2(j-js+1).LT.0.0)then
@@ -1371,8 +1371,8 @@ C     END OF OUTPUT SETUP
 c     SET UP LOCAL RELATIVE HUMIDITY
       CALL RELHUMID
 
-      TKDAY2=(TKDAY/60.)*418.6
-      SPDAY2=SPDAY*4185.
+      TKDAY2=(TKDAY/60.)*418.4
+      SPDAY2=SPDAY*4184.
       DENDAY2=DENDAY*1.0D+3
 
       if(slipped.gt.0)then
@@ -1516,10 +1516,10 @@ c     end check for previous slippage
           plant(methour,5:14)=curroot(1:10)
           tcond(methour,1)=JULDAY(DOY)
           tcond(methour,2)=SIOUT(1)
-          tcond(methour,3:12)=(Thconduct(1:10)/60.D0)*418.6D0
+          tcond(methour,3:12)=(Thconduct(1:10)/60.D0)*418.4D0
           specheat(methour,1)=JULDAY(DOY)
           specheat(methour,2)=SIOUT(1)
-          specheat(methour,3:12)=spheat(1:10)*4185.D0
+          specheat(methour,3:12)=spheat(1:10)*4184.D0
           densit(methour,1)=JULDAY(DOY)
           densit(methour,2)=SIOUT(1)
           densit(methour,3:12)=Density(1:10)*1.0D+3            
@@ -1785,10 +1785,10 @@ c     end check for previous slippage
           shadplant(methour,5:14)=curroot(1:10)
           shadtcond(methour,1)=JULDAY(DOY)
           shadtcond(methour,2)=SIOUT(1)
-          shadtcond(methour,3:12)=(Thconduct(1:10)/60.D0)*418.6D0
+          shadtcond(methour,3:12)=(Thconduct(1:10)/60.D0)*418.4D0
           shadspecheat(methour,1)=JULDAY(DOY)
           shadspecheat(methour,2)=SIOUT(1)
-          shadspecheat(methour,3:12)=spheat(1:10)*4185.D0
+          shadspecheat(methour,3:12)=spheat(1:10)*4184.D0
           shaddensit(methour,1)=JULDAY(DOY)
           shaddensit(methour,2)=SIOUT(1)
           shaddensit(methour,3:12)=Density(1:10)*1.0D+3    

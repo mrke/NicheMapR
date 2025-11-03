@@ -73,7 +73,7 @@ c     Predicting the effect of temperature on soil thermal conductivity. Soil Sc
      * AZMUTH,SLOPE,TSNHR,TSRHR,Hemis
       COMMON/WIOCONS2/IPINT,NOSCAT,IUV,IALT,IDAYST,IDA,IEP,ISTART,IEND2
      
-      HTOFN=333500. !J/kg
+      HTOFN=333550. !J/kg
 
       do 3 j=1,numtyps
       drydensity(j)=soilprop(j,1)
@@ -196,7 +196,7 @@ c     # # volume fraction of gas
         phi_g=0.
        endif
 c     # eq 8.17 Campbell and Norman 1988
-       f_w=1./(1.+(theta/theta_0)**(-4.))
+c       f_w=1./(1.+(theta/theta_0)**(-4.))
 c     # eq 8.17 Campbell and Norman 1988, using temperature-specific q
        f_w=1./(1.+(theta/theta_0)**(-1.*q))
 c    # eq 8.18 Campbell and Norman 1988
@@ -221,9 +221,9 @@ c    # equation 8.13 in Campbell and Norman 1988
      &epsilon_g*k_g)/(theta*epsilon_w+phi_m*epsilon_m+phi_g*epsilon_g)
 
 c     Convert thermal conductivities from W/m-K to cal/min-cm-K for DSUB'S Microclimate calculations
-       Thconduct(i)=(Thconduct(i)/418.6)*60.
+       Thconduct(i)=(Thconduct(i)/418.4)*60.
 c     Convert specific heats from J/kg-K to cal/g-K for DSUB'S Microclimate calculations
-       Spheat(i)=Spheat(i)/4186.
+       Spheat(i)=Spheat(i)/4184.
 c     Convert densities from kg/m3 to g/cm3 for DSUB'S Microclimate calculations
 C     1 kg/m3 * 1000g/1 kg * 1 m3/1000000.
        Density(i)=Density(i)/1.0D+3
@@ -245,7 +245,7 @@ C     1 kg/m3 * 1000g/1 kg * 1 m3/1000000.
      &   (1-snowdens)) ! compute weighted specific heat accounting for ice vs airm SI units
         snowcond2 = (0.00395+0.00084*(snowdens*1000.)-0.0000017756* ! snow thermal conductivity as a function of density (from Aggarwal, R. 2009. Defence Science Journal 59:126–130.)
      &  (snowdens*1000.)**2.+0.00000000380635*(snowdens*1000.)**3.)
-     & /418.6*60.
+     & /418.4*60.
         do 4 i=1,8 ! from top node down - top only has snow if pack has built up to higher than snow node 7 (2m)
          ! first give all nodes the conductivity and spheat of snow
          if(snowcond.gt.0)then ! check if using user-defined thermal conductivity for snow
@@ -254,9 +254,9 @@ C     1 kg/m3 * 1000g/1 kg * 1 m3/1000000.
           Thconduct(i)=snowcond2 ! Aggarwal function
          endif
          if((TSOI(i).gt.-0.45).and.(TSOI(i).le.0.4))then 
-          Spheat(i)=(cpsnow+HTOFN)/4186. ! freezing is occuring, add heat of fusion
+          Spheat(i)=(cpsnow+HTOFN)/4184. ! freezing is occuring, add heat of fusion
          else
-          Spheat(i)=cpsnow/4186. ! freezing is not occuring, do not add heat of fusion
+          Spheat(i)=cpsnow/4184. ! freezing is not occuring, do not add heat of fusion
          endif
          ! now only give layers with snow the density of snow, otherwise zero (which means they have no influence)
          if((snode(i).gt.0).or.

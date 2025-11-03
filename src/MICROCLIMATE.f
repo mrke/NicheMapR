@@ -422,7 +422,7 @@ c    WRITE(I2,*)i,' ',j,' ',Thconds(i,j),' ',Thconds1(i,j)
       IRmode=int(microinput1(54))
       errout=int(microinput1(55))
       maxerr=int(microinput1(56))
-      snowcond=microinput1(57)/418.6*60
+      snowcond=microinput1(57)/418.4*60
       intercept=microinput1(58)
       grasshade=microinput1(59)
       if((int(hourly).eq.1).or.(int(rainhourly).eq.1))then

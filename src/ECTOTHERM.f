@@ -2685,15 +2685,15 @@ C       CHECK IF TOO COLD IN RETREAT SO THE ANIMAL NEEDS TO BASK
      &     ((WARMSIG.LT.0D0).AND.((CURSOIL-PREVSOIL).GT.WARMSIG))) ! NO SIGNAL
      &    ))
      &   THEN
-          GOTO 253
-         ELSE
           TC=TC_OLD
           SHADE=REFSHD
           CALL ABOVEGROUND
           CALL RADIN
           DEPSEL(IHOUR)=0.0D+00
           NEWDEP=0.0D+00
-          DEPTH=0.0D+00
+          DEPTH=0.0D+00     
+         ELSE
+          GOTO 253
          ENDIF
         ENDIF
        ENDIF
