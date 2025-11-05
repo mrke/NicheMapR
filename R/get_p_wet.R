@@ -81,7 +81,7 @@ get_p_wet <- function(cut.known = 0,
                       RQ = 0.766,
                       M_1 = 0.013,
                       M_2 = 0.8,
-                      M_3 = 0.0038,
+                      M_3 = 0.038,
                       V_O2_STP = M_1 * mass.g ^ M_2 * 10 ^ (M_3 * T_b) / 3600 / 1000,
                       T_ref_O2 = 30,
                       V_air_STP = V_O2_STP / (0.2094 * E_O2 / 100),
@@ -100,7 +100,7 @@ get_p_wet <- function(cut.known = 0,
   fO2 <- 0.2095	# percent O2, dec%
   fCO2 <- 0.0003 # percent CO2, dec%
   fN2 <- 0.7902	# percent N2, dec%
-  RGC <- 8309.28 # Universal gas constant, (Pa L)/(mol K)
+  RGC <- 8314.462618 # Universal gas constant, (Pa L)/(mol K)
   PO2 <- fO2 * bp # Partial pressure O2, Pa
   PO2_ref <- fO2_ref * 101325 # reference partial pressure O2, Pa
   G <- 9.80665	# acceleration from gravity, m/s
@@ -159,8 +159,8 @@ get_p_wet <- function(cut.known = 0,
     J_H2O_out <- J_air_out*(e_lung/(bp-e_lung)) # water exiting, mol/s
 
     # total respiratory water loss
-    J_H20_resp <- J_H2O_out - J_H2O_in # respiratory evaporative water lost, mol/s
-    E_resp <- J_H20_resp * 18 # respiratory evaporative water, g/s (moles lost * gram molecular weight water)
+    J_H2O_resp <- J_H2O_out - J_H2O_in # respiratory evaporative water lost, mol/s
+    E_resp <- J_H2O_resp * 18 # respiratory evaporative water, g/s (moles lost * gram molecular weight water)
   }
 
   if(cut.known == 0){
