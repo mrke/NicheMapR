@@ -32,15 +32,15 @@
 #' @param M_2 = 0.800, Metabolic rate equation parameter 2
 #' @param M_3 = 0.038, Metabolic rate equation parameter 3
 #' @param V_O2_STP = M_1 * mass.g ^ M_2 * 10 ^ (M_3 * T_b) / 3600 / 1000, Oxygen consumption rate corrected to STP, L O2 / s
-#' @param T_ref_O2 = 25, Reference temperature for oxygen consumption rate correction (°C)
+#' @param T_ref_O2 = T_b, Reference temperature for oxygen consumption rate correction (°C)
 #' @param V_air_STP = V_O2_STP / (0.2094 * E_O2 / 100), Ventilation rate at STP, L/s
-#' @param T_ref_vent = 25, Reference temperature for ventilation rate correction (°C)
+#' @param T_ref_vent = T_b, Reference temperature for ventilation rate correction (°C)
 #' @param rho_flesh = 1000, Density of flesh (kg/m3)
 #' @param T_A = 8817, Arhhenius temperature (K)
 #' @param T_AL = 50000, Arrhenius temperature for decrease below lower boundary of tolerance range T_L (K)
 #' @param T_AH = 90000, Arrhenius temperature for decrease above upper boundary of tolerance range T_H (K)
 #' @param T_L = 279, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response
-#' @param T_H = 306, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response
+#' @param T_H = 316, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response
 #' @param alt = 0.03, Altitude (km)
 #' @param bp	= 101325, Barometric pressure (pascal)
 #' @return E_tot total evaporative water loss, g/s
@@ -83,15 +83,15 @@ get_p_wet <- function(cut.known = 0,
                       M_2 = 0.8,
                       M_3 = 0.038,
                       V_O2_STP = M_1 * mass.g ^ M_2 * 10 ^ (M_3 * T_b) / 3600 / 1000,
-                      T_ref_O2 = 30,
+                      T_ref_O2 = Tb,
                       V_air_STP = V_O2_STP / (0.2094 * E_O2 / 100),
                       rho_flesh = 1000,
-                      T_ref_vent = 30,
+                      T_ref_vent = Tb,
                       T_A = 8817,
                       T_AL = 50000,
                       T_AH = 90000,
                       T_L = 279,
-                      T_H = 306,
+                      T_H = 316,
                       alt = 0,
                       bp = 101325) {
   require(NicheMapR)
