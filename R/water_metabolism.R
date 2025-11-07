@@ -134,14 +134,14 @@ water_metabolism <- function(mrate = mrate,
   gtot <- gprot + gfat + gcarb
 
   H2OFree_g <- gtot / p_dry - gtot
-  H2OMet_g <- gprot * 0.40 + gfat * 1.07 + gcarb * 0.56
+  H2OMet_g <- mrate * (gprotpg * 0.40 / e_prot + gfatpg * 1.07 / e_fat + gcarbpg * 0.56 / e_carb)
 
   gurea <- gprot * 0.343
   if(p_urea > 0){
     gurine <- gurea / p_urea
     H2OUrine_g <- (gurine - gurea) / 1.0474
   }else{
-    H2OUrine_g <- 0 * gurea
+    H2OUrine_g <- 0
   }
 
   DryFaeces_g <- DryFood_g * (1 - kap_X)
