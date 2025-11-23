@@ -95,11 +95,25 @@ water_metabolism <- function(mrate = mrate,
   p_fecalH2O <- pct_H_P / 100
   p_urea <- pct_urea / 100
 
-  # Energy densities (J/g) (see notes in function details
+  # Energy densities (J/g) (see notes in function details)
   # converted from kcal/g using 4.185 J/cal
   e_prot <- 4300 * 4.185
   e_fat  <- 9400 * 4.185
   e_carb <- 4200 * 4.185
+
+  # metabolic water yields (g_H2O/g_foodstuff) (see notes in function details)
+  H2O_per_g_prot <- 0.40
+  H2O_per_g_fat <- 1.07
+  H2O_per_g_carb <- 0.56
+
+  # urea yield
+  # urea CO(NH₂)₂ mol. weight = 60g/mol, 28 g/mol N
+  # thus 60 / 28 = 2.14 g urea per g N
+  # proteins ~ 16% N so 0.16 g_N / g_prot * 2.14 g_urea / g_N = 0.343
+  urea_per_g_prot <- 0.343
+
+  # urine density
+  rho_urine <- 1.0474 # g / ml
 
   # Energy per gram of whole food (raw and digestible)
   E_prot <- gprotpg * e_prot  # fully digestible
@@ -134,12 +148,12 @@ water_metabolism <- function(mrate = mrate,
   gtot <- gprot + gfat + gcarb
 
   H2OFree_g <- gtot / p_dry - gtot
-  H2OMet_g <- mrate * (gprotpg * 0.40 / e_prot + gfatpg * 1.07 / e_fat + gcarbpg * 0.56 / e_carb)
+  H2OMet_g <- mrate * (gprotpg * H2O_per_g_prot / e_prot + gfatpg * H2O_per_g_fat / e_fat + gcarbpg * H2O_per_g_carb / e_carb)
 
-  gurea <- gprot * 0.343
+  gurea <- gprot * urea_per_g_prot
   if(p_urea > 0){
     gurine <- gurea / p_urea
-    H2OUrine_g <- (gurine - gurea) / 1.0474
+    H2OUrine_g <- (gurine - gurea) / rho_urine
   }else{
     H2OUrine_g <- 0
   }

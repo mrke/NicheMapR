@@ -52,7 +52,7 @@ MET_ecto <- function(
       QMETAB <- 0.0056 * 10 ^ (M_3 * TC) * M_1 * GMASS ^ M_2 * 10 ^ M_4 + Q_ACT
     }
   }else{
-    QMETAB <- 0.01
+    QMETAB <- 0.0056 * 10 ^ (M_3 * 1) * M_1 * GMASS ^ M_2 * 10 ^ M_4 + Q_ACT
   }
 
   return(QMETAB)

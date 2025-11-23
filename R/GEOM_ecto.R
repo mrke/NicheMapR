@@ -152,7 +152,7 @@ GEOM_ecto <- function(
   #C     LIZARD
   if(GEOMETRY == 3){
     ATOTAL <- (10.4713 * GMASS ^ 0.688) / 10000.
-    AV <- (0.425 * GMASS ^ 0.85) / 10000.
+    #AV <- (0.425 * GMASS ^ 0.85) / 10000.
     ATOT <- ATOTAL
     VOL <- AMASS / ANDENS
     #C      CONDUCTION - RADIATION, ETC DIMENSION. ASSUME L=2D=4R1;
