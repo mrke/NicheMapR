@@ -20,7 +20,7 @@
 #' @param airT = 20, Air temperature (deg C)
 #' @param windspd = 1, Wind speed (m/s)
 #' @param rh = 50, Relative humidity (\%)
-#' @param basal = NA, user specified basal metabolic rate (W)
+#' @param basal = NA, user specified basal metabolic rate, defaults to Kleiber law (W)
 #' @param basmult = 1, multiplier to adjust mouse-elephant predicted basal metabolic rate
 #' @return
 #' \itemize{
@@ -114,7 +114,7 @@ ellipsoid <- function(posture = 4.5,
 
   posture[posture==1]<-1.01 # avoid divide by zero
   if(class(basal)=="logical"){ # this checks if basal is set to 'NA'
-   mouseelephant <- 10^(-1.462 + 0.675 * log10(mass * 1000)) * basmult
+   mouseelephant <- (70 * mass ^ 0.75) * 4.185 / (24 * 3.6) * basmult # Kleiber
    basal <- mouseelephant * Q10 ^ ((coreT - 37) / 10) # Q10 correction
   }
   a_coef <- 0.6
