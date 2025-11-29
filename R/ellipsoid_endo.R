@@ -112,59 +112,62 @@ ellipsoid <- function(posture = 4.5,
                       basal = NA,
                       basmult = 1) {
 
-  posture[posture==1]<-1.01 # avoid divide by zero
-  if(class(basal)=="logical"){ # this checks if basal is set to 'NA'
-   mouseelephant <- (70 * mass ^ 0.75) * 4.185 / (24 * 3.6) * basmult # Kleiber
-   basal <- mouseelephant * Q10 ^ ((coreT - 37) / 10) # Q10 correction
+  posture[posture == 1] <- 1.01 # avoid divide by zero
+  if (class(basal) == "logical") {
+    # this checks if basal is set to 'NA'
+    mouseelephant <- (70 * mass^0.75) * 4.185 / (24 * 3.6) * basmult # Kleiber
+    basal <- mouseelephant * Q10^((coreT - 37) / 10) # Q10 correction
   }
   a_coef <- 0.6
   b_coef <- 0.5
   sp_heat_air <- 1005.8
   volume <- mass / density
-  b <- ((3 * volume) / (4 * 3.14159 * posture))^0.333
+  b <- ((3 * volume) / (4 * pi * posture))^(1 / 3)
   c <- b
   a <- b * posture
   k_body <- 0.5 + (6.14 * b) + 0.439
-  numerator <- a^2*b^2*c^2
+  numerator <- a^2 * b^2 * c^2
   denominator <- a^2 * b^2 + a^2 * c^2 + b^2 * c^2
-  Fraction <- numerator/denominator
+  Fraction <- numerator / denominator
   Rbody <- Fraction / (2 * k_body * volume)
-  ao <- b*posture + furdepth/1000
-  bo <- b + furdepth/1000
-  co <- c + furdepth/1000
+  ao <- b * posture + furdepth / 1000
+  bo <- b + furdepth / 1000
+  co <- c + furdepth / 1000
   Ecc_outr <- sqrt(ao^2 - co^2) / ao
-  Aouter <- 2 * pi * bo^2 + 2 * pi * ((ao*bo)/Ecc_outr) * asin(Ecc_outr)
-  Rinsul <- (bo - b)/(furcond * Aouter)
-  dryair=DRYAIR(db=airT)
+  Aouter <- 2 * pi * bo^2 + 2 * pi * ((ao * bo) / Ecc_outr) * asin(Ecc_outr)
+  Rinsul <- (bo - b) / (furcond * Aouter)
+  dryair = DRYAIR(db = airT)
   visc_air <- dryair$visdyn
   k_air <- dryair$thcond
   den_air <- dryair$densty
-  volcheck <- (4/3) * 3.14159 * a * b * c
-  CharDimens <- volcheck^0.333
+  volcheck <- (4 / 3) * pi * a * b * c
+  CharDimens <- volcheck^(1 / 3)
   Eccentricity <- sqrt(a^2 - c^2) / a
   area <- 2 * pi * b^2 + 2 * pi * ((a * b) / Eccentricity) * asin(Eccentricity)
-  Re_number <- den_air * windspd * CharDimens/visc_air
+  Re_number <- den_air * windspd * CharDimens / visc_air
   Pr_number <- (visc_air * sp_heat_air) / k_air
-  q3p_num <- 2 * area * k_body * k_air * (2 + a_coef * (Re_number^b_coef)*Pr_number^0.333)*(coreT - airT)
+  q3p_num <- 2 * area * k_body * k_air * (2 + a_coef * (Re_number^b_coef) *
+                                            Pr_number^(1 / 3)) * (coreT - airT)
   q3p_denom <- 2 * k_body * CharDimens * volcheck + area * Fraction * k_air * (2 + (a_coef * Re_number^b_coef) * Pr_number^0.333)
-  g_in_air <- q3p_num/q3p_denom
+  g_in_air <- q3p_num / q3p_denom
   skinT <- coreT - (g_in_air * Fraction) / (2 * k_body)
-  Gr_number <- abs(((den_air^2)*(1/(airT+273.15))*9.80665*(CharDimens^3)*(skinT - airT))/(visc_air^2))
-  Nufree <- 2 + 0.6 * ((Gr_number^0.25) * (Pr_number^0.333))
+  Gr_number <- abs(((den_air^2) * (1 / (airT + 273.15)) * 9.80665 * (CharDimens^3) *
+                      (skinT - airT)) / (visc_air^2))
+  Nufree <- 2 + 0.6 * ((Gr_number^0.25) * (Pr_number^(1 / 3)))
   Nuforced <- 0.37 * Re_number^0.6
-  Nutotal <- (Nufree^3 + Nuforced^3)^(1/3)
-  hc <- Nutotal * k_air/CharDimens
+  Nutotal <- (Nufree^3 + Nuforced^3)^(1 / 3)
+  hc <- Nutotal * k_air / CharDimens
   Rconv <- 1 / (hc * Aouter)
-  Rrad <- 1 / (4 * Aouter * 1 * 0.95 * (5.7 * 10^-8) * (airT + 273.15)^3)
-  Rtotal <- Rbody + Rinsul + (Rconv*Rrad)/(Rconv + Rrad)
-  upcrit <- coreT - (basal*stress*Rtotal)
+  Rrad <- 1 / (4 * Aouter * 1 * 0.95 * (5.6703744191844294 * 10^-8) * (airT + 273.15)^3)
+  Rtotal <- Rbody + Rinsul + (Rconv * Rrad) / (Rconv + Rrad)
+  upcrit <- coreT - (basal * stress * Rtotal)
   lowcrit <- coreT - basal * Rtotal
   Qgen <- (coreT - airT) / Rtotal
   QgenFinal <- Qgen
-  if(length(basal) == 1){
-   QgenFinal[QgenFinal<basal]<-basal
-  }else{
-   QgenFinal[QgenFinal<basal]<-basal[QgenFinal<basal]
+  if (length(basal) == 1) {
+    QgenFinal[QgenFinal < basal] <- basal
+  } else{
+    QgenFinal[QgenFinal < basal] <- basal[QgenFinal < basal]
   }
   mlO2ph <- QgenFinal / 20.1 * 3600
   Qresp_gph <- (mlO2ph / 0.2094 / O2eff) * (WETAIR.rh(db = coreT, rh = 100)$vd - WETAIR.rh(db = airT, rh = rh)$vd) / 1000
@@ -172,35 +175,84 @@ ellipsoid <- function(posture = 4.5,
   Qresp_W <- ((Qresp_gph / 3600) * conv_H2O_loss) / 1000
   Qresp_kjph <- Qresp_W / 1000 * 3600
   PctBasal <- QgenFinal / basal * 100
-  status<-Qgen
-  status[status>basal]<--100000000
-  status[status<stress * basal]<--300000000
-  status[status<100000000*-1]<--200000000
-  status[status==100000000*-1]<-1
-  status[status==300000000*-1]<-3
-  status[status==200000000*-1]<-2
+  status <- Qgen
+  status[status > basal] <- -100000000
+  status[status < stress * basal] <- -300000000
+  status[status < 100000000 * -1] <- -200000000
+  status[status == 100000000 * -1] <- 1
+  status[status == 300000000 * -1] <- 3
+  status[status == 200000000 * -1] <- 2
   H2Oloss_W <- (Qgen * -1) + basal
   H2O_gph <- (((H2Oloss_W) * 1000) / conv_H2O_loss) * 3600
-  H2O_gph[H2O_gph<0]<-0
-  massph_percent<-H2O_gph
-  massph_percent[massph_percent<0]<-0
-  timetodeath<-massph_percent
-  massph_percent[massph_percent!=0]<-((H2O_gph[massph_percent != 0] / 1000) / mass) * 100
-  timetodeath[timetodeath!=0]<-1 / (H2O_gph[timetodeath!=0] / (mass * 0.15 * 1000))
+  H2O_gph[H2O_gph < 0] <- 0
+  massph_percent <- H2O_gph
+  massph_percent[massph_percent < 0] <- 0
+  timetodeath <- massph_percent
+  massph_percent[massph_percent != 0] <- ((H2O_gph[massph_percent != 0] / 1000) / mass) * 100
+  timetodeath[timetodeath != 0] <- 1 / (H2O_gph[timetodeath != 0] / (mass * 0.15 * 1000))
 
   # check if raster output or table
-  if(class(airT)[[1]] == 'RasterLayer'){
-   results <- list(upcrit = upcrit, lowcrit = lowcrit, Qresp_gph = Qresp_gph, Qresp_W = Qresp_W,
-     Qresp_kjph = Qresp_kjph, skinT = skinT, Qgen = Qgen, QgenFinal = QgenFinal, mlO2ph = mlO2ph,
-     PctBasal = PctBasal, status = status, H2Oloss_W = H2Oloss_W, H2O_gph = H2O_gph,
-     massph_percent = massph_percent, timetodeath = timetodeath)
-  }else{
-   results<-cbind(airT, windspd, rh, coreT, upcrit, lowcrit, Qresp_gph, Qresp_W, Qresp_kjph, skinT, Qgen,
-           QgenFinal, mlO2ph, PctBasal, status, H2Oloss_W, H2O_gph,
-           massph_percent, timetodeath)
-  colnames(results)<-c('AirTemp','WindSpeed','RelHum','Tcore','UCT','LCT','Qresp_gph','Qresp_W',
-    'Qresp_kjph','Tskin','Qgen','QgenFinal','mlO2ph','PctBasal','status','H2Oloss_W',
-    'H2O_gph','massph_percent','timetodeath')
+  if (class(airT)[[1]] == 'RasterLayer') {
+    results <- list(
+      upcrit = upcrit,
+      lowcrit = lowcrit,
+      Qresp_gph = Qresp_gph,
+      Qresp_W = Qresp_W,
+      Qresp_kjph = Qresp_kjph,
+      skinT = skinT,
+      Qgen = Qgen,
+      QgenFinal = QgenFinal,
+      mlO2ph = mlO2ph,
+      PctBasal = PctBasal,
+      status = status,
+      H2Oloss_W = H2Oloss_W,
+      H2O_gph = H2O_gph,
+      massph_percent = massph_percent,
+      timetodeath = timetodeath
+    )
+  } else{
+    results <- cbind(
+      airT,
+      windspd,
+      rh,
+      coreT,
+      upcrit,
+      lowcrit,
+      Qresp_gph,
+      Qresp_W,
+      Qresp_kjph,
+      skinT,
+      Qgen,
+      QgenFinal,
+      mlO2ph,
+      PctBasal,
+      status,
+      H2Oloss_W,
+      H2O_gph,
+      massph_percent,
+      timetodeath
+    )
+    colnames(results) <- c(
+      'AirTemp',
+      'WindSpeed',
+      'RelHum',
+      'Tcore',
+      'UCT',
+      'LCT',
+      'Qresp_gph',
+      'Qresp_W',
+      'Qresp_kjph',
+      'Tskin',
+      'Qgen',
+      'QgenFinal',
+      'mlO2ph',
+      'PctBasal',
+      'status',
+      'H2Oloss_W',
+      'H2O_gph',
+      'massph_percent',
+      'timetodeath'
+    )
   }
   return(results)
 }
