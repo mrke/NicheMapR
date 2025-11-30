@@ -596,24 +596,24 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
        SURFAR = CONVAR !# surface area for convection, m2 (from GEOM)
        TENV = TA !# fluid temperature (deg C)
 
-       !# run subroutine
-       CALL CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA,
-     &  VEL, ZFUR, BP, ELEV, CONV_ENHANCE, GRAV, CONVout)
-
-       QCONV = CONVout(1) !# convective heat loss (W)
-       HC = CONVout(2) !# combined convection coefficient
-       HCFREE = CONVout(3) !# free convection coefficient
-       HCFOR = CONVout(4) !# forced convection coefficient
-       HD = CONVout(5) !# mass transfer coefficient
-       HDFREE = CONVout(6) !# free mass transfer coefficient
-       HDFORC = CONVout(7) !# forced mass transfer coefficient
-       ANU = CONVout(8) !# Nusselt number (-)
-       RE = CONVout(9) !# Reynold's number (-)
-       GR = CONVout(10) !# Grasshof number (-)
-       PR = CONVout(11) !# Prandlt number (-)
-       RA = CONVout(12) !# Rayleigh number (-)
-       SC = CONVout(13) !# Schmidt number (-)
-       BP = CONVout(14) !# barometric pressure (Pa)
+C      !# run subroutine
+C      CALL CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA,
+C    &  VEL, ZFUR, BP, ELEV, CONV_ENHANCE, GRAV, CONVout)
+C
+C      QCONV = CONVout(1) !# convective heat loss (W)
+C      HC = CONVout(2) !# combined convection coefficient
+C      HCFREE = CONVout(3) !# free convection coefficient
+C      HCFOR = CONVout(4) !# forced convection coefficient
+C      HD = CONVout(5) !# mass transfer coefficient
+C      HDFREE = CONVout(6) !# free mass transfer coefficient
+C      HDFORC = CONVout(7) !# forced mass transfer coefficient
+C      ANU = CONVout(8) !# Nusselt number (-)
+C      RE = CONVout(9) !# Reynold's number (-)
+C      GR = CONVout(10) !# Grasshof number (-)
+C      PR = CONVout(11) !# Prandlt number (-)
+C      RA = CONVout(12) !# Rayleigh number (-)
+C      SC = CONVout(13) !# Schmidt number (-)
+C      BP = CONVout(14) !# barometric pressure (Pa)
 
        !# reference configuration factors
        FABUSHREF = FABUSH !# nearby bush
@@ -766,7 +766,7 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
         !# now guess for metabolic rate that balances the heat budget while allowing metabolic rate
         !# to remain at or above QBASAL, via root-finder ZBRENT
         QMIN = QBASAL
-        QM1 = QBASAL * -2.
+        QM1 = QBASAL * (-2.)
         QM2 = QBASAL * 10.
         IF(TSKINMAX.GE.TC)THEN
          QM2 = QBASAL * 1.01

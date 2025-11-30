@@ -392,9 +392,9 @@ C      CALCULATIONS OF TFA (E.G. WET FUR FROM RAIN)
         ENDIF
         IF(INT(IPT).EQ.3)THEN ! ELLIPSOID GEOMETRY
           CF1=(3.*KFURCMPRS*VOL*BLCMP*BS)/
-     &        ((((3*SSQG)**0.5)**3.)*(BL-BS))
+     &        ((((3.*SSQG)**0.5)**3.)*(BL-BS))
           DV5=1+((CF1*SSQG)/(2*AK1*VOL))+
-     &    ((CF1*(((3*SSQG)**0.5)**3.))/(3.*AK2*VOL))*((BS-BG)/
+     &    ((CF1*(((3.*SSQG)**0.5)**3.))/(3.*AK2*VOL))*((BS-BG)/
      &    (BS*BG)) 
         ENDIF
           TFACMPT1=(CF1/DV5)*TC+CD*TCONDSB
@@ -628,6 +628,7 @@ C      THESE QR VARIABLES INCORPORATE THE VARIOUS HR VALUES FOR RADIANT EXCHANGE
        QRGRD=QR4*(TSKCALC-TLOWER)
        QRAD = QRSKY+QRBSH+QRVEG+QRGRD
        QCONV = HC*CONVSK*(TSKCALC-TA)
+       QCOND = 0.0 ! should this be calcluated in the naked case?
        QENV = QRAD+QCONV-QSLR
        TSKDIFF = ABS(TSKIN-TSKCALC)
 
