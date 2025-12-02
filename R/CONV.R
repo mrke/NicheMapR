@@ -17,7 +17,7 @@
 #' @param ELEV elevation (m)
 #' @param GRAV acceleration due to gravity, (m/s^2)
 #' @export
-CONV_ENDO <- function(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV, CONV_ENHANCE, GRAV){
+CONV_ENDO <- function(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV, CONV_ENHANCE, GRAV, O2GAS, N2GAS, CO2GAS){
   a <- .Fortran("CONV_ENDO",
     as.double(TS),
     as.double(TENV),
@@ -33,6 +33,9 @@ CONV_ENDO <- function(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR
     as.double(ELEV),
     as.double(CONV_ENHANCE),
     as.double(GRAV),
+    as.double(O2GAS),
+    as.double(N2GAS),
+    as.double(CO2GAS),
     results=matrix(data = 0, nrow = 1, ncol = 14),
     PACKAGE = "NicheMapR")
 

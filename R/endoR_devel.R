@@ -47,7 +47,7 @@
 #' \code{TCONDSB}{ = TGRD, surface temperature for conduction (°C)}\cr\cr
 #' \code{KSUB}{ = 2.79, substrate thermal conductivity (W/m°C)}\cr
 #' \code{TBUSH}{ = TA, bush temperature (°C)}\cr\cr
-#' \code{BP}{ = -1, Pa, negatve means elevation is used}\cr\cr
+#' \code{BP}{ = 101325, Pa}\cr\cr
 #' \code{O2GAS}{ = 20.95, oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
 #' \code{N2GAS}{ = 79.02, nitrogen concetration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
 #' \code{CO2GAS}{ = 0.0412, carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
@@ -284,7 +284,7 @@ endoR_devel <- function(
   TCONDSB = TGRD, # surface temperature for conduction (°C)
   KSUB = 2.79, # substrate thermal conductivity (W/m°C)
   TBUSH = TA, # bush temperature (°C)
-  BP = -1, # Pa, negative means elevation is used
+  BP = 101325, # Pa, negative means elevation is used
   O2GAS = 20.95, # oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)
   N2GAS = 79.02, # nitrogen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)
   CO2GAS = 0.0412, # carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}
@@ -511,7 +511,7 @@ endoR_devel <- function(
     TENV <- TA # fluid temperature (°C)
 
     # run subroutine
-    CONV.out <- CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV, CONV_ENHANCE, GRAV)
+    CONV.out <- CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV, CONV_ENHANCE, GRAV, O2GAS, N2GAS, CO2GAS)
 
     QCONV <- CONV.out[1] # convective heat loss (W)
     HC <- CONV.out[2] # combined convection coefficient
@@ -640,7 +640,7 @@ endoR_devel <- function(
       }
 
       # call SIMULSOL
-      SIMULSOL.out[S,] <- SIMULSOL(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA, PCTWET, TS)
+      SIMULSOL.out[S,] <- SIMULSOL(DIFTOL, IPT, O2GAS, N2GAS, CO2GAS, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA, PCTWET, TS)
     }
     TSKINMAX <- max(SIMULSOL.out[1,2], SIMULSOL.out[2,2])
 

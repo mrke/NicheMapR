@@ -43,7 +43,7 @@
 #' \code{TCONDSB}{ = TGRD, surface temperature for conduction (°C)}\cr\cr
 #' \code{KSUB}{ = 2.79, substrate thermal conductivity (W/m°C)}\cr
 #' \code{TBUSH}{ = TA, bush temperature (°C)}\cr\cr
-#' \code{BP}{ = -1, Pa, negatve means elevation is used}\cr\cr
+#' \code{BP}{ = 101325, Pa}\cr\cr
 #' \code{O2GAS}{ = 20.95, oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
 #' \code{N2GAS}{ = 79.02, nitrogen concetration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
 #' \code{CO2GAS}{ = 0.0412, carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
@@ -287,7 +287,7 @@ endoR <- function(
   TCONDSB = TGRD, # surface temperature for conduction (°C)
   KSUB = 2.79, # substrate thermal conductivity (W/m°C)
   TBUSH = TA, # bush temperature (°C)
-  BP = -1, # Pa, negative means elevation is used
+  BP = 101325, # Pa, negative means elevation is used
   O2GAS = 20.95, # oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)
   N2GAS = 79.02, # nitrogen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)
   CO2GAS = 0.0412, # carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)

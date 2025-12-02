@@ -12,11 +12,14 @@
 #' @param SKINW part of the skin surface that is wet (\%)
 #' @param TSKIN current guess of skin temperature (°C)
 #' @export
-SIMULSOL <- function(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA,
+SIMULSOL <- function(DIFTOL, IPT, O2GAS, N2GAS, CO2GAS, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA,
                      SKINW, TSKIN, results){
   a <- .Fortran("SIMULSOL",
     as.double(DIFTOL),
     as.double(IPT),
+    as.double(O2GAS),
+    as.double(N2GAS),
+    as.double(CO2GAS),
     as.double(FURVARS),
     as.double(GEOMVARS),
     as.double(ENVVARS),
