@@ -176,7 +176,7 @@ C      USING DEB CALCS FOR MET WATER AND O2 CONSUMPTION (CONVERT FROM ML/H TO L/
        ENDIF
       ELSE
        ! 20.16J/ml energy dissipated per ml O2 consumed at STP (enthalpy of combustion)
-       O2STP=QMETAB/20.16/1000
+       O2STP=QMETAB/20.1/1000
       ENDIF
 
 C     CONVERTING STP -> VOL. OF O2 AT ANIMAL TCORE, ATM. PRESS.
