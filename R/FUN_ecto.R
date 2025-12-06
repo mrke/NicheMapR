@@ -157,7 +157,7 @@ FUN_ecto <- function(AMASS = AMASS,
     QMETAB <- MET.out
   }else{
     #C       TOO COLD, SUPER LOW METABOLISM
-    QMETAB <- 0.0001
+    QMETAB <- 1e-9
     TC <- X
   }
   #C     GET THE RESPIRATORY WATER LOSS

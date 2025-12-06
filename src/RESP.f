@@ -175,7 +175,7 @@ C      USING DEB CALCS FOR MET WATER AND O2 CONSUMPTION (CONVERT FROM ML/H TO L/
         O2STP=MLO2(IHOUR-1)/3600./1000.*TCORR
        ENDIF
       ELSE
-       ! 20.16J/ml energy dissipated per ml O2 consumed at STP (enthalpy of combustion)
+       ! 20.1J/ml energy dissipated per ml O2 consumed at STP (enthalpy of combustion)
        O2STP=QMETAB/20.1/1000
       ENDIF
 

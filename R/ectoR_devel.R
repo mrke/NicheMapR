@@ -528,7 +528,7 @@ ectoR_devel <- function(
                         M_2 = M_2,
                         M_3 = M_3,
                         M_4 = M_4)
-    QMETAB <-  max(0.0001, MET.out) + Q_act
+    QMETAB <-  max(1e-9, MET.out) + Q_act
 
     # respiration
     RESP.out <- RESP_ecto(XTRY = TC,
@@ -684,7 +684,7 @@ ectoR_devel <- function(
     # outputs
     enbal <- t(matrix(c(QSOLAR, QIRIN, QMETAB, QRESP, QSEVAP, QIROUT, QCONV, QCOND, ENB)))
     colnames(enbal) <- c("QSOL", "QIRIN", "QMET", "QRESP", "QEVAP", "QIROUT", "QCONV", "QCOND", "ENB")
-    O2_ml <- M_1 * Ww_g ^ M_2 * 10 ^ (M_3 * TC) * 10 ^ M_4 + Q_act / 0.0056 # ml/h
+    O2_ml <- M_1 * Ww_g ^ M_2 * 10 ^ (M_3 * TC) * 10 ^ M_4 + Q_act / (20.1 / 3600) # ml/h
     H2OResp_g <- SEVAP.out$WRESP * 3600 # g/h
     H2OCut_g <- SEVAP.out$WCUT * 3600 # g/h
     H2OEyes_g <- SEVAP.out$WEYES * 3600 # g/h

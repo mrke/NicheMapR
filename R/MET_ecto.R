@@ -41,8 +41,7 @@ MET_ecto <- function(
   GMASS <- AMASS * 1000
   TC <- XTRY
 
-  #C      USE REGRESSION
-  #C      LIZARD REGRESSION
+  #C      USE LIZARD REGRESSION
   if(TC >= 1){
     if(TC > 50){
       #C       CAP METABOLIC RATE EQUATION WITH MAX OF TC = 50
