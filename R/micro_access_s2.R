@@ -61,7 +61,7 @@
 #' \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
 #' \code{warm}{ = 0, warming offset vector, °C (negative values mean cooling). Can supply a single value or a vector the length of the number of days to be simulated.}\cr\cr
 #' \code{spatial}{ = "C:/Users/mrke/OneDrive - The University of Melbourne/Documents/Spatial_Data/ACCESS-S2/20240701_", choose location of ACCESS-S2 data and specify the prefix}\cr\cr
-#' \code{access_sw}{ = "C:/Users/mrke/OneDrive - The University of Melbourne/Documents/Spatial_Data/", choose location of spatial data}\cr\cr
+#' \code{access_s2}{ = "C:/Users/mrke/OneDrive - The University of Melbourne/Documents/Spatial_Data/", choose location of spatial data}\cr\cr
 #' \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 #' \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 #' \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
@@ -351,8 +351,8 @@ micro_access_s2 <- function(
   windfac = 1,
   adiab_cor = 1,
   warm = 0,
-  access_s2 = "C:/Users/mrke/OneDrive - The University of Melbourne/Documents/Spatial_Data/ACCESS-S2/20240701_",
-  spatial = "C:/Users/mrke/OneDrive - The University of Melbourne/Documents/Spatial_Data/",
+  access_s2 = "Z:/ACCESS-S2/20240701_",
+  spatial = "Z:/Spatial_Data/",
   ERR = 1,
   RUF = 0.004,
   ZH = 0,
@@ -673,7 +673,7 @@ micro_access_s2 <- function(
     # from micro_aust
     f2 <- paste0(spatial, "ausdem_shift1.tif")
     r2 <- terra::rast(f2)
-    AUSDEM <- as.numeric(terra::extract(r2, x)[, 2])
+    AUSDEM <- as.numeric(terra::extract(r2, x))
 
     ALTITUDES <- NA
     if(is.na(elev) == FALSE){ALTITUDES <- elev} # check if user-specified elevation
@@ -754,20 +754,20 @@ micro_access_s2 <- function(
       Tmax <- as.numeric(RNetCDF::var.get.nc(nc, variable = "tmax", start = start, count = count, unpack = TRUE))
       #plot(Tmax, type = 'l')
       RNetCDF::close.nc(nc)
-      nc <- RNetCDF::open.nc(paste0(spatial, "/ACCESS-S2/20240701_tmin.nc"))
+      nc <- RNetCDF::open.nc(paste0(access_s2, "tmin.nc"))
       Tmin <- as.numeric(RNetCDF::var.get.nc(nc, variable = "tmin", start = start, count = count, unpack = TRUE))
       #plot(Tmax, type = 'l', col = 'red', ylim = c(-10, 55))
       #points(Tmin, type = 'l', col = 'blue')
       RNetCDF::close.nc(nc)
-      nc <- RNetCDF::open.nc(paste0(spatial, "/ACCESS-S2/20240701_rain.nc"))
+      nc <- RNetCDF::open.nc(paste0(access_s2, "rain.nc"))
       Rain <- as.numeric(RNetCDF::var.get.nc(nc, variable = "rain", start = start, count = count, unpack = TRUE))
       #plot(rain, type = 'h', col = 'blue')
       RNetCDF::close.nc(nc)
-      nc <- RNetCDF::open.nc(paste0(spatial, "/ACCESS-S2/20240701_vapr.nc"))
+      nc <- RNetCDF::open.nc(paste0(access_s2, "vapr.nc"))
       vapr <- as.numeric(RNetCDF::var.get.nc(nc, variable = "vapr", start = start, count = count, unpack = TRUE))
       #plot(vapr, type = 'l', col = 'blue')
       RNetCDF::close.nc(nc)
-      nc <- RNetCDF::open.nc(paste0(spatial, "/ACCESS-S2/20240701_radn.nc"))
+      nc <- RNetCDF::open.nc(paste0(access_s2, "radn.nc"))
       radn <- as.numeric(RNetCDF::var.get.nc(nc, variable = "radn", start = start, count = count, unpack = TRUE))
       #plot(radn, type = 'l', col = 'red')
       RNetCDF::close.nc(nc)
