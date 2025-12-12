@@ -45,7 +45,7 @@ C     USING endo_devel.R
       DOUBLE PRECISION TRADD,TRADV,TRAITS,TREG,TS,TSKCALCAVD,TSKCALCAVV
       DOUBLE PRECISION TSKINMAX,TSKY,TVEG,UNCURL,VEL,VMULT,VOL,VOLFAT,X
       DOUBLE PRECISION XR,Z,ZBRENTin,ZBRENTout,ZEN,ZFUR,ZFURCOMP,ZFURD
-      DOUBLE PRECISION ZFURV,ZL,RFURCMP,KFURD,KFURV,PZFUR,ZFURD_REF
+      DOUBLE PRECISION ZFURV,RFURCMP,KFURD,KFURV,PZFUR,ZFURD_REF
       DOUBLE PRECISION ZFURV_REF,ZFURD_MAX,ZFURV_MAX,TC_MIN,CONV_ENHANCE
 
       DOUBLE PRECISION, DIMENSION(3) :: KEFARA,BETARA,B1ARA,DHAR,LHAR,
@@ -361,24 +361,36 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
 
         !# set fur depth and conductivity
         !# index for KEFARA, the conductivity, is the average (1), front/dorsal (2), back/ventral(3) of the body part
-        if((QSOLR.GT.0).OR.(ZZFUR(2).NE.ZZFUR(3)))THEN
-         if(S == 1)THEN
-          ZL = ZZFUR(2)
-          KEFF = KEFARA(2)
-         else
-          ZL = ZZFUR(3)
-          KEFF = KEFARA(3)
-         ENDIF
-        else
-         ZL = ZZFUR(1)
-         KEFF = KEFARA(1)
-        ENDIF
+        !if((QSOLR.GT.0).OR.(ZZFUR(2).NE.ZZFUR(3)))THEN
+          DHARA = DHAR(S+1) !# fur diameter, mean (m) (from IRPROP)
+          RHOARA = RHOAR(S+1) !# hair density, mean (1/m2) (from IRPROP)
+          ZFUR = ZZFUR(S+1) !# fur depth, mean (m) (from IRPROP)
+          KEFF = KEFARA(S+1)
+        !else
+        !  DHARA = DHAR(1) !# fur diameter, mean (m) (from IRPROP)
+        !  RHOARA = RHOAR(1) !# hair density, mean (1/m2) (from IRPROP)
+        !  ZFUR = ZZFUR(1) !# fur depth, mean (m) (from IRPROP)
+        !  KEFF = KEFARA(1)
+        !ENDIF
 
+        !# call the subroutine
+        CALL GEOM_ENDO(AMASS,ANDENS,FATDEN,FATPCT,SHAPE,ZFUR,SUBQFAT,
+     &   SHAPEB,SHAPEC,DHARA,RHOARA,PCOND,SAMODE,ORIENT,Z,GEOMout)
+
+        !# output
+        ASEMAJ = GEOMout(16) !# semimajor axis length, m
+        BSEMIN = GEOMout(17) !# b semiminor axis length, m
+        CSEMIN = GEOMout(18) !# c semiminor axis length, m (currently only prolate spheroid)
+        CONVSK = GEOMout(19) !# area of skin for evaporation (total skin area - hair area), m2
+        CONVAR = GEOMout(20) !# area for convection (total area minus ventral area, as determined by PCOND), m2
+        R1 = GEOMout(21) !# shape-specific core-skin radius in shortest dimension, m
+        R2 = GEOMout(22) !# shape-specific core-fur/feather interface radius in shortest dimension, m
+       
         RSKIN = R1 !# body radius (including fat), m
         RFLESH = R1 - FATTHK !# body radius flesh only (no fat), m
-        RFUR = R1 + ZL !# body radius including fur, m
+        RFUR = R1 + ZFUR !# body radius including fur, m
         D = 2. * RFUR !# diameter, m
-        RRAD = RSKIN + (XR * ZL) !# effective radiation radius, m
+        RRAD = RSKIN + (XR * ZFUR) !# effective radiation radius, m
         IF(INT(SHAPE).NE.4)THEN ! For cylinder and sphere geometries
           RFURCMP=RSKIN+ZFURCOMP
         ELSE
@@ -407,8 +419,10 @@ C      CORRECT FASKY FOR % VEGETATION SHADE OVERHEAD, ASHADE
          CD = 0.
         ENDIF
 
+       !# input for the current side
+
         !# package up inputs
-        FURVARS = (/LEN,ZFUR,FURTHRMK,KEFF,BETARA(S+1),FURTST,ZL,
+        FURVARS = (/LEN,ZFUR,FURTHRMK,KEFF,BETARA(S+1),FURTST,ZFUR,
      &   LHAR(S+1),DHAR(S+1),RHOAR(S+1),REFLFR(S+1),KHAIR,REAL(S,8)/)
         GEOMVARS = (/SHAPE,SUBQFAT,CONVAR,VOL,D,CONVAR,CONVSK,RFUR,
      &   RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD,PCOND,RFURCMP,
@@ -664,24 +678,36 @@ C      BP = CONVout(14) !# barometric pressure (Pa)
 
         !# set fur depth and conductivity
         !# index for KEFARA, the conductivity, is the average (1), front/dorsal (2), back/ventral(3) of the body part
-        if((QSOLR.GT.0).OR.(ZZFUR(2).NE.ZZFUR(3)))THEN
-         if(S == 1)THEN
-          ZL = ZZFUR(2)
-          KEFF = KEFARA(2)
-         else
-          ZL = ZZFUR(3)
-          KEFF = KEFARA(3)
-         ENDIF
-        else
-         ZL = ZZFUR(1)
-         KEFF = KEFARA(1)
-        ENDIF
+        !if((QSOLR.GT.0).OR.(ZZFUR(2).NE.ZZFUR(3)))THEN
+          DHARA = DHAR(S+1) !# fur diameter, mean (m) (from IRPROP)
+          RHOARA = RHOAR(S+1) !# hair density, mean (1/m2) (from IRPROP)
+          ZFUR = ZZFUR(S+1) !# fur depth, mean (m) (from IRPROP)
+          KEFF = KEFARA(S+1)
+        !else
+        !  DHARA = DHAR(1) !# fur diameter, mean (m) (from IRPROP)
+        !  RHOARA = RHOAR(1) !# hair density, mean (1/m2) (from IRPROP)
+         ! ZFUR = ZZFUR(1) !# fur depth, mean (m) (from IRPROP)
+        !  KEFF = KEFARA(1)
+        !ENDIF
+
+        !# call the subroutine
+        CALL GEOM_ENDO(AMASS,ANDENS,FATDEN,FATPCT,SHAPE,ZFUR,SUBQFAT,
+     &   SHAPEB,SHAPEC,DHARA,RHOARA,PCOND,SAMODE,ORIENT,Z,GEOMout)
+
+        !# output
+        ASEMAJ = GEOMout(16) !# semimajor axis length, m
+        BSEMIN = GEOMout(17) !# b semiminor axis length, m
+        CSEMIN = GEOMout(18) !# c semiminor axis length, m (currently only prolate spheroid)
+        CONVSK = GEOMout(19) !# area of skin for evaporation (total skin area - hair area), m2
+        CONVAR = GEOMout(20) !# area for convection (total area minus ventral area, as determined by PCOND), m2
+        R1 = GEOMout(21) !# shape-specific core-skin radius in shortest dimension, m
+        R2 = GEOMout(22) !# shape-specific core-fur/feather interface radius in shortest dimension, m
 
         RSKIN = R1 !# body radius (including fat), m
         RFLESH = R1 - FATTHK !# body radius flesh only (no fat), m
-        RFUR = R1 + ZL !# body radius including fur, m
+        RFUR = R1 + ZFUR !# body radius including fur, m
         D = 2. * RFUR !# diameter, m
-        RRAD = RSKIN + (XR * ZL) !# effective radiation radius, m
+        RRAD = RSKIN + (XR * ZFUR) !# effective radiation radius, m
         IF(INT(SHAPE).NE.4)THEN ! For cylinder and sphere geometries
           RFURCMP=RSKIN+ZFURCOMP
         ELSE
@@ -709,9 +735,9 @@ C      BP = CONVout(14) !# barometric pressure (Pa)
          AREACND = 0.
          CD = 0.
         ENDIF
-
+        
         !# package up inputs
-        FURVARS = (/LEN,ZFUR,FURTHRMK,KEFF,BETARA(S+1),FURTST,ZL,
+        FURVARS = (/LEN,ZFUR,FURTHRMK,KEFF,BETARA(S+1),FURTST,ZFUR,
      &   LHAR(S+1),DHAR(S+1),RHOAR(S+1),REFLFR(S+1),KHAIR,REAL(S,8)/)
         GEOMVARS = (/SHAPE,SUBQFAT,CONVAR,VOL,D,CONVAR,CONVSK,RFUR,
      &   RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD,PCOND,RFURCMP,
@@ -910,6 +936,41 @@ C      BP = CONVout(14) !# barometric pressure (Pa)
       SWEATGS=(QSEVAPD+QSEVAPV)*0.5/HTOVPR*1000. ! water lost from skin, g/s
       EVAPGS=GEVAP+SWEATGS ! total evaporative water loss, g/s
       sigma=5.6703744191844294E-8
+      
+       !# input
+       DHARA = DHAR(1) !# fur diameter, mean (m) (from IRPROP)
+       RHOARA = RHOAR(1) !# hair density, mean (1/m2) (from IRPROP)
+       ZFUR = ZZFUR(1) !# fur depth, mean (m) (from IRPROP)
+
+       !# call the subroutine
+       CALL GEOM_ENDO(AMASS,ANDENS,FATDEN,FATPCT,SHAPE,ZFUR,SUBQFAT,
+     &  SHAPEB,SHAPEC,DHARA,RHOARA,PCOND,SAMODE,ORIENT,Z,GEOMout)
+
+       !# output
+       VOL = GEOMout(1) !# volume, m3
+       !D = GEOMout(2) !# characteristic dimension for convection, m
+       MASFAT = GEOMout(3) !# mass body fat, kg
+       VOLFAT = GEOMout(4) !# volume body fat, m3
+       ALENTH = GEOMout(5) !# length, m
+       AWIDTH = GEOMout(6) !# width, m
+       AHEIT = GEOMout(7) !# height, m
+       ATOT = GEOMout(8) !# total area, m2
+       ASIL = GEOMout(9) !# silhouette area, m2
+       ASILN = GEOMout(10) !# silhouette area normal to sun, m2
+       ASILP = GEOMout(11) !# silhouette area parallel to sun, m2
+       GMASS = GEOMout(12) !# mass, g
+       AREASKIN = GEOMout(13) !# area of skin, m2
+       FLSHVL = GEOMout(14) !# flesh volume, m3
+       FATTHK = GEOMout(15) !# fat layer thickness, m
+       ASEMAJ = GEOMout(16) !# semimajor axis length, m
+       BSEMIN = GEOMout(17) !# b semiminor axis length, m
+       CSEMIN = GEOMout(18) !# c semiminor axis length, m (currently only prolate spheroid)
+       CONVSK = GEOMout(19) !# area of skin for evaporation (total skin area - hair area), m2
+       CONVAR = GEOMout(20) !# area for convection (total area minus ventral area, as determined by PCOND), m2
+       R1 = GEOMout(21) !# shape-specific core-skin radius in shortest dimension, m
+       R2 = GEOMout(22) !# shape-specific core-fur/feather interface radius in shortest dimension, m
+       D = 2 * (R1 + ZFUR)
+
       IF(FURTST.GT.0.0)THEN
           ARADD = ATOT
           ARADV = ATOT*(1.0-PCOND)
