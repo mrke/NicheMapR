@@ -160,6 +160,7 @@ CONVAR <- GEOM.out[20] # area for convection (total area minus ventral area in c
 #with the substrate, as determined by PCOND), m2
 R1 <- GEOM.out[21] # shape-specific core-skin radius in shortest dimension (m)
 R2 <- GEOM.out[22] # shape-specific core-fur radius in shortest dimension (m)
+ACOND <- ATOT * PCOND
 
 GEOM.lab <- c("VOL", "D", "MASFAT", "VOLFAT", "ALENTH", "AWIDTH", "AHEIT", "ATOT", "ASIL", "ASILN", "ASILP", "GMASS", "AREASKIN", "FLSHVL", "FATTHK", "ASEMAJ", "BSEMIN", "CSEMIN", "CONVSK", "CONVAR", "R1", "R2")
 kable(cbind(GEOM.lab, t(GEOM.out)))
@@ -202,6 +203,7 @@ ASIL <- ASIL # silhouette area to sun, m2 (from GEOM)
 PDIF <- 0.15 # proportion of solar radiation that is diffuse (fractional, 0-1)
 FASKY <- 0.4 # configuration factor to sky (-)
 FAVEG <- 0 # configuration factor to vegetation (-)
+AREACOND <- ACOND # conduction area, m2
 
 # solar radiation normal to sun's rays
 ZEN <- pi / 180 * Z # convert degrees to radians
@@ -212,7 +214,7 @@ if(Z < 90){ # compute solar radiation on a surface normal to the direct rays of 
   QNORM <- QSOLR
 }
 
-SOLAR.out <- SOLAR_ENDO(AREA, ABSAND, ABSANV, ABSSB, ASIL, PDIF, QNORM, SHADE, QSOLR, FASKY, FAVEG)
+SOLAR.out <- SOLAR_ENDO(AREA, AREACOND, ABSAND, ABSANV, ABSSB, ASIL, PDIF, QNORM, SHADE, QSOLR, FASKY, FAVEG)
 
 QSOLAR <- SOLAR.out[1]  # total (global) solar radiation (W)
 QSDIR <- SOLAR.out[2]  # direct solar radiation (W)
@@ -244,9 +246,12 @@ VEL <- 1 # wind speed (m/s)
 ELEV <- 0 # elevation (m)
 BP <- -1 # barometric pressure (Pa), negative means altitude is used
 GRAV <- 9.80665 # acceleration due to gravity, m/s^2
+O2GAS <- 20.95 # oxygen concentration of air (%)
+N2GAS <- 79.02 # nitrogen concentration of air (%)
+CO2GAS <- 0.0412 # carbon dioxide concentration of air (%)
 
 # run subroutine
-CONV.out <- CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV, GRAV, CONV_ENHANCE)
+CONV.out <- CONV_ENDO(TS, TENV, SHAPE, SURFAR, FLTYPE, FURTST, D, TFA, VEL, ZFUR, BP, ELEV, GRAV, O2GAS, N2GAS, CO2GAS, CONV_ENHANCE)
 
 QCONV <- CONV.out[1] # convective heat loss (W)
 HC <- CONV.out[2] # combined convection coefficient (W/m2 C)
@@ -457,7 +462,7 @@ for(S in 1:2){
   
   
   # package up inputs
-  FURVARS <- c(LEN,ZFUR,FURTHRMK,KEFF,BETARA,FURTST,ZL,LHAR[S+1],DHAR[S+1],RHOAR[S+1],REFLFR[S+1],KHAIR,S)
+  FURVARS <- c(LEN,ZFUR,FURTHRMK,KEFF,BETARA[S+1],FURTST,ZL,LHAR[S+1],DHAR[S+1],RHOAR[S+1],REFLFR[S+1],KHAIR,S)
   GEOMVARS <- c(SHAPE,SUBQFAT,CONVAR,VOL,D,CONVAR,CONVSK,RFUR,RFLESH,RSKIN,XR,RRAD,ASEMAJ,BSEMIN,CSEMIN,CD,PCOND,RFURCMP,BLCMP,KFURCMPRS,CONV_ENHANCE)
   ENVVARS <- c(FLTYPE,TA,TS,TBUSH,TVEG,TLOWER,TSKY,TCONDSB,RH,VEL,BP,ELEV,FASKY,FABUSH,FAVEG,FAGRD,QSLR)
   TRAITS <- c(TC,AK1,AK2,EMISAN,FATTHK,FLYHR,FURWET,PCTBAREVAP,PCTEYES)
@@ -474,7 +479,8 @@ for(S in 1:2){
   }
   
   # call SIMULSOL
-  SIMULSOL.out[S,] <- SIMULSOL(DIFTOL, IPT, FURVARS, GEOMVARS, ENVVARS, TRAITS, TFA, PCTWET, TS)
+  SIMULSOL.out[S,] <- SIMULSOL(DIFTOL, IPT, O2GAS, N2GAS, CO2GAS, FURVARS, 
+                               GEOMVARS, ENVVARS, TRAITS, TFA, PCTWET, TS)
 }
 
 SIMULSOL.out <- cbind(c(1,2), SIMULSOL.out)
@@ -492,9 +498,6 @@ Finally, find a value of QRESP (heat lost by respiration) to balance the heat bu
 # define basal metabolic rate
 QBASAL <- (70 * AMASS ^ 0.75) * (4.185 / (24 * 3.6)) # heat generation (W), from Kleiber 1947
 DELTAR <- 0 # offset between air temperature and breath (°C)
-O2GAS <- 20.95 # oxygen concentration of air (%)
-N2GAS <- 79.02 # nitrogen concentration of air (%)
-CO2GAS <- 0.0412 # carbon dioxide concentration of air (%)
 R_PCO2 <- CO2GAS / 100 # reference atmospheric dioxide concentration of air (proportion),
 # to allow for anthropogenic change (%)
 RQ <- 0.80 # respiratory quotient (fractional, typically 0.7 (fats)

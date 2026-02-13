@@ -151,10 +151,10 @@ Table: Table 4. **Parameters required to compute food-density-specific feeding r
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  install.packages('R.matlab')
-#  library(R.matlab)
-#  allStat <- readMat('allStat.mat') # this will take a few minutes
-#  save(allStat, file = 'allstat.Rda') # save it as an R data file for faster future loading
+# install.packages('R.matlab')
+# library(R.matlab)
+# allStat <- readMat('allStat.mat') # this will take a few minutes
+# save(allStat, file = 'allstat.Rda') # save it as an R data file for faster future loading
 
 ## ----warning=FALSE, message=FALSE, eval=TRUE----------------------------------
 library(knitr) # this packages has a function for producing formatted tables.

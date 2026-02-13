@@ -12,7 +12,7 @@
 
 <meta name="author" content="Michael R. Kearney" />
 
-<meta name="date" content="2024-05-25" />
+<meta name="date" content="2026-02-13" />
 
 <title>Microclimate Model Input Data</title>
 
@@ -239,7 +239,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Microclimate Model Input Data</h1>
 <h4 class="author">Michael R. Kearney</h4>
-<h4 class="date">2024-05-25</h4>
+<h4 class="date">2026-02-13</h4>
 
 
 
@@ -505,13 +505,13 @@ data</p>
 <tr class="odd">
 <td>SLES</td>
 <td>-</td>
-<td>0-1</td>
+<td>0 or 1</td>
 <td>substrate longwave IR emissivity<span class="math inline">\(^1\)</span></td>
 </tr>
 <tr class="even">
 <td>REFLS</td>
 <td>-</td>
-<td>0-1</td>
+<td>0 or 1</td>
 <td>substrate solar reflectivity<span class="math inline">\(^1\)</span></td>
 </tr>
 <tr class="odd">
@@ -530,20 +530,26 @@ column</td>
 <tr class="odd">
 <td>solonly</td>
 <td>-</td>
-<td>0-1</td>
+<td>0 or 1</td>
 <td>flag to do only solar calcs</td>
 </tr>
 <tr class="even">
 <td>lamb</td>
 <td>-</td>
-<td>0-1</td>
+<td>0 or 1</td>
 <td>flag to return wavelength-specific solar radiation output</td>
 </tr>
 <tr class="odd">
 <td>IUV</td>
 <td>-</td>
-<td>0-1</td>
+<td>0 or 1</td>
 <td>flag to use gamma function for scattered solar radiation<span class="math inline">\(^{3}\)</span></td>
+</tr>
+<tr class="even">
+<td>ndmax</td>
+<td>-</td>
+<td>&gt;=1</td>
+<td>iterations of first day to get a steady periodic$</td>
 </tr>
 </tbody>
 </table>

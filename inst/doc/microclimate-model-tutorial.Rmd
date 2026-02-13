@@ -24,7 +24,7 @@ The ```NicheMapR``` package includes data and functions for using a global month
 
 ### Basic operation: modelling microclimates for the average day of each month
 
-This first example involves the most basic case of running the model to produce 12 days of output, one for each month of the year, without invoking the soil moisture or snow subroutines. In this mode of operation, the model does three iterations of each day, starting with a uniform soil temperature profile and the first two simuulations acting as 'burn-in' runs prior to the third and final run which is provided as the final output.
+This first example involves the most basic case of running the model to produce 12 days of output, one for each month of the year, without invoking the soil moisture or snow subroutines. In this mode of operation, the model does three iterations of each day, starting with a uniform soil temperature profile and the first two simulations acting as 'burn-in' runs prior to the third and final run which is provided as the final output.
 
 Try running the model for a place of interest to you, as follows:
 ```{r, message=FALSE, warnings=FALSE}
@@ -153,14 +153,14 @@ with(subset(soil,DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15
 
 Another important influence on microclimatic conditions is the substrate type. The substrate solar reflectivity can be changed with the parameter ```REFL`` and the emissivity with the parameter ```SLE``` (both range from 0-1).
 
-Soil thermal properties are also importance. Soil comprises a mixture of minerals, air and water. The density (Mg/m3), thermal conductivity (W/mK) and specific heat capacity (J/kg-K) of the mineral component are specified by the parameters ```Density```, ```Thcond``` and ```SpecHeat```, respectively. The bulk density determines the proportion of the soil volume that is air, parameter ```BulkDensity``` (Mg/m3). The overall soil conductivity, specific heat and density values are then adjusted for bulk density and soil moisture (see below), as well as for soil temperature, using themethods described in Campbell et al. (1994, equations 8, 9) and Campbell and Norman (Campbell & Norman 1998, equations 8.13, 8.17, 8.20 and data in Tables 8.2 and 9.1). All these properties can be specified separately for each soil node in the model. 
+Soil thermal properties are also importance. Soil comprises a mixture of minerals, air and water. The density (Mg/m3), thermal conductivity (W/mK) and specific heat capacity (J/kg-K) of the mineral component are specified by the parameters ```Density```, ```Thcond``` and ```SpecHeat```, respectively. The bulk density determines the proportion of the soil volume that is air, parameter ```BulkDensity``` (Mg/m3). The overall soil conductivity, specific heat and density values are then adjusted for bulk density and soil moisture (see below), as well as for soil temperature, using the methods described in Campbell et al. (1994, equations 8, 9) and Campbell and Norman (Campbell & Norman 1998, equations 8.13, 8.17, 8.20 and data in Tables 8.2 and 9.1). All these properties can be specified separately for each soil node in the model. 
 
 The default values are typical for soil minerals as described in Campbell and Norman (1998) Table 8.2, but  an 'A-horizon' layer for the first node, reflecting properties of organic matter, is also simulated (see Kearney et al. 2014). This can be turned off by specifying `cap = 0`. 
 
 For simulating rock, ```BulkDensity``` should be set the same as ```Density``` and this can be easily set in ```micro_global``` by setting ```soiltype``` to value 0 (which also sets cap = 0):
 
 ```{r, message=FALSE, warnings=FALSE, fig.width=7, fig.height=6}
-micro <- micro_global(runshade = 0, minshade = 0, soiltype = 0)
+micro <- micro_global(loc = longlat, runshade = 0, minshade = 0, soiltype = 0)
 soil <- as.data.frame(micro$soil) # get the soil data
 minshade <- micro$minshade[1] # get the value for minimum shade
 with(subset(soil, DOY==196 | DOY==349), {xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)",  auto.key = list(columns = 5), as.table = TRUE, type = "b", main = paste(minshade, "% shade, rock substrate"))})
@@ -172,7 +172,7 @@ The texture of the soil, i.e. the proportion of silt, sand and clay and associat
 
 ### Soil moisture
 
-The microclimate model has the option of either specifing soil moisture or modelling it from first principles. The ```micro_global``` function by default monthly soil moisture estimates obtained from the Climate Prediction Center(NOAA/OAR/ESRL PSD, Boulder, Colorado, USA, <http://www.esrl.noaa.gov/psd/>).
+The microclimate model has the option of either specifying soil moisture or modelling it from first principles. The ```micro_global``` function by default monthly soil moisture estimates obtained from the Climate Prediction Center(NOAA/OAR/ESRL PSD, Boulder, Colorado, USA, <http://www.esrl.noaa.gov/psd/>).
 
 The model will compute soil moisture when the ```runmoist``` parameter = 1. This invokes an implementation of Campbell’s (1985) Program 11.1 for simulating depth-specific soil moisture, water potential and humidity gradients in the presence of vegetation. It uses matric potential as the dependent variable (rather than matric flux potential) and as a consequence is most computationally efficient when soil is relatively dry (it may significantly extend run times in wet environments). 
 
@@ -221,7 +221,7 @@ for(i in 1:10){
 }
 ```
 
-By default the model uses ```soiltype``` = 4, where Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, based on Campbell and Norman 1990 Table 9.1. One can also manually set the soil properites by setting ```soiltype = 12```, upon which the model will use the user-specified values of ```PE```, ```KS```, ```BB```, ```DD``` and ```DD```.
+By default the model uses ```soiltype``` = 4, where Rock = 0, sand = 1, loamy sand = 2, sandy loam = 3, loam = 4, silt loam = 5, sandy clay loam = 6, clay loam = 7, silt clay loam = 8, sandy clay = 9, silty clay = 10, clay = 11, based on Campbell and Norman 1990 Table 9.1. One can also manually set the soil properties by setting ```soiltype = 12```, upon which the model will use the user-specified values of ```PE```, ```KS```, ```BB```, ```DD``` and ```DD```.
 
 Rerunning with clay as the soil type:
 ```{r, message=FALSE, warnings=FALSE, fig.width=7, fig.height=6}
@@ -312,7 +312,7 @@ for (i in 1:10) {
 
 ### Snow
 
-Snow has a powerful influence on soil temperatures and can be simulated in the NicheMapR microclimate model by setting the parameter ```snowmodel = 1```. This invokes an algorithm that builds up to 8 nodes of snow above the surface as a function of incoming precipitation and losses due to melting. The model incorporates a declining albedo with time since snow and has five user-controlled parameters: ```snowtemp``` - the air temperature (&deg;C) at which rain falls as snow, ```snowdens``` (Mg/m3) - the density of the snow, ```snowmelt``` (-) - the proportion of calculated snow melt that doesn't refreeze into the snowpack,  ```rainmelt``` (-) a parameter in an equation from Anderson's SNOW17 model (<http://www.nws.noaa.gov/oh/hrl/nwsrfs/users_manual/part2/_pdf/22snow17.pdf>) that melts snow with rainfall as a function of air temperature. The snow density can also be made to vary as a linear function of day of year by providing a slope and intercept as the variable ```densfun```, which is only used if non-zero. There is also a parameter ```rainfrac``` which controls the fraction of rain that falls on the first day of the month, with 0 meaning rain falls evenly. This parameter allows something other than an even intensity of rainfall when interpolating the montly rainfall data. This snow model has been tested with favourable results in the Australian Alps and through the USA (Kearney et al. in prep).
+Snow has a powerful influence on soil temperatures and can be simulated in the NicheMapR microclimate model by setting the parameter ```snowmodel = 1```. This invokes an algorithm that builds up to 8 nodes of snow above the surface as a function of incoming precipitation and losses due to melting. The model incorporates a declining albedo with time since snow and has five user-controlled parameters: ```snowtemp``` - the air temperature (&deg;C) at which rain falls as snow, ```snowdens``` (Mg/m3) - the density of the snow, ```snowmelt``` (-) - the proportion of calculated snow melt that doesn't refreeze into the snowpack,  ```rainmelt``` (-) a parameter in an equation from Anderson's SNOW17 model (<http://www.nws.noaa.gov/oh/hrl/nwsrfs/users_manual/part2/_pdf/22snow17.pdf>) that melts snow with rainfall as a function of air temperature. The snow density can also be made to vary as a linear function of day of year by providing a slope and intercept as the variable ```densfun```, which is only used if non-zero. There is also a parameter ```rainfrac``` which controls the fraction of rain that falls on the first day of the month, with 0 meaning rain falls evenly. This parameter allows something other than an even intensity of rainfall when interpolating the monthly rainfall data. This snow model has been tested with favourable results in the Australian Alps and through the USA (Kearney 2020 10.1111/geb.13100).
 
 Here is the consequence of invoking the snow model for soil temperature predictions at Madison, Wisconsin as well as the snow depth and snowfall predictions (running for 2 years to get a steady periodic and plotting only the 2nd year):
 
@@ -354,7 +354,7 @@ timeinterval<-365
   tides<-matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3) # make an empty matrix
   tides[,2]<-5 # set a constant sea water temperature
   tides[,3]<-0 # zero the wave splash column
-  tides[12,3]<-90 # make the 12th value (hour 12 on 1st day) get a spash, resulting in the rock evaporating as if it is 90% wetted
+  tides[12,3]<-90 # make the 12th value (hour 12 on 1st day) get a splash, resulting in the rock evaporating as if it is 90% wetted
   mocktides<-rep(c(rep(0,12),rep(1,13)),timeinterval*nyears) # made a sequence of tides, where 1 means tide is in and 2 means out, and offset it to 24 hour cycle
   mocktides<-mocktides[1:8760] # subset it to a year long of 24 hour tides
   tides[1:(timeinterval*nyears*24),1]<-mocktides # put the mock tides in the tides vector, column 1

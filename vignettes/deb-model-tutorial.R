@@ -1,4 +1,4 @@
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 knitr::opts_chunk$set(
   eval = TRUE
 )
@@ -92,12 +92,12 @@ plot(seq(1, ndays) / div, debout$GFAECES * 1000, type = 'l', xlab = 'Age (days)'
 abline(v = which(debout$E_H > E.Hb)[1] / div, lty = 2, col = 'grey')
 abline(v = which(debout$E_H > E.Hp)[1] / div, lty = 2, col = 'grey')
 
-## ---- echo=FALSE, message=FALSE, warnings=FALSE, results='asis'---------------
+## ----echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----------------
 tabl <- "
 *Parameter*                         |	*Parameter Symbol*    |	*Unit*
 ----------------------------------- | --------------------- | ------------------
 max surface-specific assimilation rate | $\\{\\dot{p}_{Am}\\}$ | $J\\:cm^{-2}\\:d^{-1}$
-energy conductance                  | $\\dot{v}$            | $d^{-1}$
+energy conductance                  | $\\dot{v}$            | $cm\\:d^{-1}$
 allocation fraction to soma         | $\\kappa$             | -
 volume-specific somatic maintenance cost | $[\\dot{p}_{M}]$ | $J\\:cm^{-3}\\:d^{-1}$
 volume-specific cost for structure         | $[E_g]$               | $J\\:cm^{-3}$
@@ -108,7 +108,7 @@ Table: **Table 1. Minimal required core parameters of the standard DEB model.**
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ---- echo=FALSE, message=FALSE, warnings=FALSE, results='asis'---------------
+## ----echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----------------
 tabl <- "
 *Parameter*                         |	*Parameter Symbol*    |	*Unit*
 ----------------------------------- | --------------------- | ------------------
@@ -123,7 +123,7 @@ Table: **Table 2. Parameters required to model aging and the thermal response (o
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ---- echo=FALSE, message=FALSE, warnings=FALSE, results='asis'---------------
+## ----echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----------------
 tabl <- "
 *Parameter*                         |	*Parameter Symbol*    |	*Unit*
 ----------------------------------- | --------------------- | ------------------
@@ -137,7 +137,7 @@ Table: **Table 3. Parameters required to convert structure, reserve and reproduc
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ---- echo=FALSE, message=FALSE, warnings=FALSE, results='asis'---------------
+## ----echo=FALSE, message=FALSE, warnings=FALSE, results='asis'----------------
 tabl <- "
 *Parameter*                         |	*Parameter Symbol*    |	*Unit*
 ----------------------------------- | --------------------- | ------------------
@@ -150,13 +150,13 @@ Table: Table 4. **Parameters required to compute food-density-specific feeding r
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
-## ---- eval=FALSE--------------------------------------------------------------
-#  install.packages('R.matlab')
-#  library(R.matlab)
-#  allStat <- readMat('allStat.mat') # this will take a few minutes
-#  save(allStat, file = 'allstat.Rda') # save it as an R data file for faster future loading
+## ----eval=FALSE---------------------------------------------------------------
+# install.packages('R.matlab')
+# library(R.matlab)
+# allStat <- readMat('allStat.mat') # this will take a few minutes
+# save(allStat, file = 'allstat.Rda') # save it as an R data file for faster future loading
 
-## ---- warning=FALSE, message=FALSE, eval=TRUE---------------------------------
+## ----warning=FALSE, message=FALSE, eval=TRUE----------------------------------
 library(knitr) # this packages has a function for producing formatted tables.
 load('allStat.Rda')
 
@@ -167,7 +167,7 @@ kable(head(allDEB.species))
 Nspecies <- length(allStat$allStat)
 Nspecies
 
-## ---- warning=FALSE, message=FALSE, eval=TRUE---------------------------------
+## ----warning=FALSE, message=FALSE, eval=TRUE----------------------------------
 species <- "Eulamprus.quoyii"
 species.slot <- which(allDEB.species == species)
 par.names <- unlist(labels(allStat$allStat[[species.slot]]))

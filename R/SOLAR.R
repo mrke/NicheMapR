@@ -3,6 +3,7 @@
 #' R wrapper for Fortran binary of SOLAR_ENDO (endotherm model)
 #' @encoding UTF-8
 #' @param AREATOTL surface area for solar exchange, m2
+#' @param AREACOND surface area for conduction, m2
 #' @param ABSAND solar absorptivity of dorsal fur (fractional, 0-1)
 #' @param ABSANV solar absorptivity of ventral fur (fractional, 0-1)
 #' @param ABSSB  solar absorptivity of substrate (fractional, 0-1)
@@ -14,10 +15,11 @@
 #' @param FASKY configuration factor to sky (-)
 #' @param FAVEG configuration factor to vegetation (-)
 #' @export
-SOLAR_ENDO <- function(AREATOTL, ABSAND, ABSANV, ABSSB, ASIL, PCTDIF, QNORM, SHADE,
+SOLAR_ENDO <- function(AREATOTL, AREACOND, ABSAND, ABSANV, ABSSB, ASIL, PCTDIF, QNORM, SHADE,
   QSOLR, FASKY, FAVEG){
   a <- .Fortran("SOLAR_ENDO",
     as.double(AREATOTL),
+    as.double(AREACOND),
     as.double(ABSAND),
     as.double(ABSANV),
     as.double(ABSSB),

@@ -473,6 +473,7 @@ endoR_devel <- function(
     CONVAR <- GEOM.out[20] # area for convection (total area minus ventral area, as determined by PCOND), m2
     R1 <- GEOM.out[21] # shape-specific core-skin radius in shortest dimension, m
     R2 <- GEOM.out[22] # shape-specific core-fur radius in shortest dimension, m
+    ACOND <- ATOT * PCOND
 
     ### SOLAR, solar radiation
 
@@ -493,7 +494,7 @@ endoR_devel <- function(
     FASKY <- FSKREF - FAVEG
     FAGRD <- FGDREF
 
-    SOLAR.out <- SOLAR_ENDO(ATOT, ABSAND, ABSANV, ABSSB, ASIL, PDIF, QNORM, SHADE,
+    SOLAR.out <- SOLAR_ENDO(ATOT, ACOND, ABSAND, ABSANV, ABSSB, ASIL, PDIF, QNORM, SHADE,
                             QSOLR, FASKY, FAVEG)
 
     QSOLAR <- SOLAR.out[1] # total (global) solar radiation (W) QSOLAR,QSDIR,QSSKY,QSRSB,QSDIFF,QDORSL,QVENTR

@@ -40,7 +40,7 @@ minshade <- micro$minshade[1] # get the value for minimum shade
 with(subset(soil,DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)", auto.key = list(columns = 5), as.table = TRUE, type = "b", main=paste(minshade,"% shade, north-south gully"))})
 
 ## ----message=FALSE, warnings=FALSE, fig.width=7, fig.height=6-----------------
-micro <- micro_global(runshade = 0, minshade = 0, soiltype = 0)
+micro <- micro_global(loc = longlat, runshade = 0, minshade = 0, soiltype = 0)
 soil <- as.data.frame(micro$soil) # get the soil data
 minshade <- micro$minshade[1] # get the value for minimum shade
 with(subset(soil, DOY==196 | DOY==349), {xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)",  auto.key = list(columns = 5), as.table = TRUE, type = "b", main = paste(minshade, "% shade, rock substrate"))})
@@ -177,7 +177,7 @@ timeinterval<-365
   tides<-matrix(data = 0., nrow = 24*timeinterval*nyears, ncol = 3) # make an empty matrix
   tides[,2]<-5 # set a constant sea water temperature
   tides[,3]<-0 # zero the wave splash column
-  tides[12,3]<-90 # make the 12th value (hour 12 on 1st day) get a spash, resulting in the rock evaporating as if it is 90% wetted
+  tides[12,3]<-90 # make the 12th value (hour 12 on 1st day) get a splash, resulting in the rock evaporating as if it is 90% wetted
   mocktides<-rep(c(rep(0,12),rep(1,13)),timeinterval*nyears) # made a sequence of tides, where 1 means tide is in and 2 means out, and offset it to 24 hour cycle
   mocktides<-mocktides[1:8760] # subset it to a year long of 24 hour tides
   tides[1:(timeinterval*nyears*24),1]<-mocktides # put the mock tides in the tides vector, column 1

@@ -47,7 +47,7 @@ AMINUT <- 4.383 # minutes latitude
 ALONG <- 89 # degrees longitude
 ALMINT <- 24.074 # minutes latitude
 ALREF <- 89 # reference longitude for time zone
-EC <- 0.0167238 # Eccenricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)
+EC <- 0.0167238 # Eccentricity of the earth's orbit (current value 0.0167238, ranges between 0.0034 to 0.058)
 ```
 
 ### Air and wind vertical profile parameters

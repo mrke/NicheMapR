@@ -40,8 +40,8 @@ climb <- 0        # can it climb to thermoregulate?
 nocturn <- 0      # nocturnal activity
 crepus <- 0       # crepuscular activity
 diurn <- 1        # diurnal activity
-minshades <- rep(0, 12)   # min available shade?
-maxshades <- micro$maxshade # max available shade?
+minshades <- rep(0, 12 * 24)   # min available shade?
+maxshades <- rep(micro$maxshade, each = 24) # max available shade?
 
 ## ----warning=FALSE, message=FALSE---------------------------------------------
 ecto <- ectotherm(Ww_g = Ww_g, alpha_max = alpha_max, alpha_min = alpha_min, shape = shape, pct_wet = pct_wet, T_F_max = T_F_max, T_F_min = T_F_min, T_B_min = T_B_min, T_RB_min = T_RB_min, CT_max = CT_max, CT_min = CT_min, T_pref = T_pref, mindepth = mindepth, maxdepth = maxdepth, shade_seek = shade_seek, burrow = burrow, climb = climb, minshades = minshades, nocturn = nocturn, diurn = diurn, crepus = crepus, maxshades = maxshades)
@@ -97,7 +97,7 @@ with(bask, points(TIME ~ DOY, pch = 15, cex = 2, col = 'light blue')) # basking 
 
 ## ----echo=FALSE, fig.width=7, fig.height=7, fig.show = "hold", message=FALSE, warnings=FALSE, fig.cap="**Body temperature, depth, shade and activity of for the lizard *Eulamprus quoyii* with shade options ranging from 0% to 10%**"----
 micro <- micro_global(loc = longlat, maxshade = 10)
-maxshades <- micro$maxshade
+maxshades <- rep(micro$maxshade, each = 24)
 
 ecto <- ectotherm(Ww_g = Ww_g, alpha_max = alpha_max, alpha_min = alpha_min, pct_wet = pct_wet, T_F_max = T_F_max, T_F_min = T_F_min, T_B_min = T_B_min, T_RB_min = T_RB_min, CT_max = CT_max, CT_min = CT_min, T_pref = T_pref, mindepth = mindepth, maxdepth = maxdepth, shade_seek = shade_seek, burrow = burrow, climb = climb, minshades = minshades, nocturn = nocturn, diurn = diurn, crepus = crepus, maxshades = maxshades)
 

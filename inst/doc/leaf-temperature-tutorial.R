@@ -5,15 +5,15 @@ knitr::opts_chunk$set(
 library(knitr)
 
 ## ----message=FALSE, warning=FALSE, eval=FALSE---------------------------------
-#  library(devtools)
-#  install_github('ropensci/rnoaa') # this package is no longer on CRAN
-#  install_github('ilyamaclean/microclima') # install the microclima package
-#  install_github('mrke/NicheMapR') # install NicheMapR
-#  climate_data_path <- "put your path here" # place where you want to put the global climate dataset
-#  get.global.climate(folder = climate_data_path) # download and unpack the global climate data
-#  install.packages('tealeaves')
-#  install.packages('plantecophys')
-#  install.packages('futile.logger') # needed for micro_usa
+# library(devtools)
+# install_github('ropensci/rnoaa') # this package is no longer on CRAN
+# install_github('ilyamaclean/microclima') # install the microclima package
+# install_github('mrke/NicheMapR') # install NicheMapR
+# climate_data_path <- "put your path here" # place where you want to put the global climate dataset
+# get.global.climate(folder = climate_data_path) # download and unpack the global climate data
+# install.packages('tealeaves')
+# install.packages('plantecophys')
+# install.packages('futile.logger') # needed for micro_usa
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
 library(NicheMapR)
