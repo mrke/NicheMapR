@@ -1442,7 +1442,7 @@ micro_terra <- function(
         hori <- rep(0, 24) # accounted for already in microclima calcs
       }
     }else{
-      diffuse_frac <- NA
+      diffuse_frac_all <- NA
     }
     if(timeinterval == 12 & microclima > 0){
       dates_all <- head(seq(as.POSIXct(paste0("01/01/", ystart), format = "%d/%m/%Y", tz = 'UTC'), as.POSIXct(paste0("01/01/", yfinish + 1), format = "%d/%m/%Y ", tz = 'UTC'), by = 'hours'), -1)
