@@ -1097,6 +1097,7 @@ micro_terra <- function(
     #CCMINN <- CLIMATE[, 86:97] / 10
     if(clearsky == 1){
       CCMINN <- CCMINN * 0
+      CCMAXX <- CCMINN
     }
 
     # correct for fact that wind is measured at 10 m height
