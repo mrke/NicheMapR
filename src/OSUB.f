@@ -87,7 +87,7 @@ C      FILES 6,I2,I3 & I10 ARE CONSOLE, OUTPUT, METOUT & SOIL RESPECTIVELY
       DIMENSION moist(10),soilprop(10,5),layermass(10)
       DIMENSION DENDAY(10),SPDAY(10),TKDAY(10),DENDAY2(10),qphase2(10),
      &    SPDAY2(10),TKDAY2(10),temp(83),oldmoist(10),curpot(18)
-      DIMENSION curmoist2(18),curhumid2(18),curpot2(18),curroot2(18)
+      DIMENSION curmoist2(19),curhumid2(19),curpot2(19),curroot2(19)
       DIMENSION PE(19),KS(19),BD(19),BB(19),L(19),curroot(18),DD(19)
       DIMENSION sumphase2(10)
       DIMENSION Thconduct(30),Density(30),Spheat(30)
@@ -568,7 +568,7 @@ C     endif
           !  PHASE CHANGE CALCULATIONS
           !=============================
 
-          !--- FREEZING (above ? below 0°C)
+          !--- FREEZING (above ? below 0ï¿½C)
           if ((meanTpast(j) .gt. 1e-4) .and. (meanT(j) .le. -1e-4)) then
             qphase2(idx) = (meanTpast(j) - meanT(j)) * layermass(idx) 
      &       * 4.184
@@ -582,7 +582,7 @@ C     endif
             tt(j) = 0.0
             if (j .lt. js + 9) tt(j+1) = 0.0
 
-          !--- THAWING (below ? above 0°C)
+          !--- THAWING (below ? above 0ï¿½C)
           else if((meanTpast(j).lt.-1e-4).and.(meanT(j).ge.1e-4))then
             qphase2(idx)=(meanT(j)-meanTpast(j))*layermass(idx)*4.184
             sumphase2(idx) = sumphase2(idx) - qphase2(idx)
@@ -1096,12 +1096,12 @@ C     endif
        if((DOY.eq.1).and.(methour.eq.1))then
         curmoist=moists(1:10,1)
         j=1
-        do 221 i=1,18
+        do 221 i=1,19
          if(mod(i,2).ne.0)then
           curmoist2(i)=curmoist(j)
           j=j+1
          else
-          curmoist2(i)=curmoist2(i-1)
+          curmoist2(i)=(curmoist2(i-1)+curmoist(j))/2
          endif
 221     continue
        else
@@ -1224,7 +1224,7 @@ c       evaporation potential, mm/s (kg/s)
          surflux=0.D0
         endif
         j=1
-        do 228 k=1,18
+        do 228 k=1,19
          if(mod(k,2).ne.0)then
           curmoist(j)=curmoist2(k)
           curhumid(j)=curhumid2(k)
@@ -1233,9 +1233,6 @@ c       evaporation potential, mm/s (kg/s)
           j=j+1
          endif
 228     continue
-        curmoist(10)=curmoist2(18)
-        curhumid(10)=curhumid2(18)
-        curpot(10)=curpot2(18)
         wccfinal=wccfinal+wcc
         condep=condep-WCC-surflux
         if(snowout.lt.1D-8)then
@@ -1306,7 +1303,7 @@ c      get wave splash value and if greater than zero, override prev pctwet valu
       endif
 
 C	  CALCULATING DEWFALL
-c     caculations based on Garratt, J. R., & Segal, M. (1988). On the contribution of atmospheric moisture to dew formation. Boundary-Layer Meteorology, 45(3), 209–236. https://doi.org/10.1007/BF01066671
+c     caculations based on Garratt, J. R., & Segal, M. (1988). On the contribution of atmospheric moisture to dew formation. Boundary-Layer Meteorology, 45(3), 209ï¿½236. https://doi.org/10.1007/BF01066671
 c     NOTE: difference between this model and Garratt & Segal is that QCONV +VE means gain in this model and loss in Garratt and Segal
       soiltemp(1)=OUT(4)
       VEL2M=TAB('VEL',TIME)/(100.*60.)

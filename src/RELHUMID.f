@@ -59,8 +59,8 @@ c     get the vapor pressure, e, at Ta, 2m
 c     get the saturation vapor pressure, esat, at Tlocal
       RH = 100.
       DB = SIOUT(2)
-       CALL DRYAIR(DB,BP,ALT,PATMOS,20.95D+0,79.02D+0,0.0412D+0,DENSTY,
-     *  VISDYN,VISKIN,DIFVPR,THCOND,HTOVPR,TCOEFF,GGROUP)
+      call WETAIR(DB,WB,RH,DP,BP,E,ESAT,VD,RW,TVIR,TVINC,DENAIR,CP,
+     *  WTRPOT)
 c     Definition of relative humidity using the vapor density at reference height
       RHLOCL = (vapref/esat)* 100.
 

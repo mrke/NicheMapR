@@ -36,11 +36,11 @@ C     Transport Models for Soil-Plant Systems. Elsevier.
       double precision SL,PL,FF,E,XP,TR
       Integer M,I,count,maxcount,j,DT
 
-      DIMENSION A(19),B(19),C(19),F(19),P(19),Z(19),V(19),DP(19),W(19)
-      DIMENSION WN(19),K(19),CP(19),H(19),JV(19),DJ(19),temp(10)
-     &,moistt(18),T(19),depth(10),humid(18),potent(18),PE(19),
-     &KS(19),BB(19),PP(19),B1(19),N(19),N1(19),WS(19),rootpot(18)
-      DIMENSION RR(19),L(19),E(19),RS(19),PR(19),BZ(19),BD(19),DD(19)
+      DIMENSION A(20),B(20),C(20),F(20),P(20),Z(20),V(20),DP(20),W(20)
+      DIMENSION WN(20),K(20),CP(20),H(20),JV(20),DJ(20),temp(10)
+     &,moistt(19),T(20),depth(10),humid(19),potent(19),PE(19),
+     &KS(19),BB(19),PP(19),B1(20),N(20),N1(20),WS(20),rootpot(19)
+      DIMENSION RR(20),L(19),E(20),RS(20),PR(20),BZ(20),BD(19),DD(19)
       common/campbell/PE,KS,BB,BD,L,LAI,DD
       
 c     P matric potential J/kg
@@ -66,7 +66,7 @@ c     IM=0.000001 ! maximum overall mass balance error allowed, kg
       R=8.31446261815324 ! gas constant, J/mol/K
       GR=9.80665 !gravitational constant m/s/s
      
-      A(1:19)=0
+      A(1:20)=0
       B=A
       C=A
       F=A
@@ -90,19 +90,23 @@ c     IM=0.000001 ! maximum overall mass balance error allowed, kg
       PR=A
       BZ=A
       E=A
-      M=18 ! 10 user-specified depths, adding an extra depth between each of these, but not including the boundary condition depth at node 19
+      M=19 ! 10 user-specified depths, adding an extra depth between each of these (including the previously missing midpoint between nodes 1 and 2), but not including the boundary condition depth at node 20
 
       PE=ABS(PE)*(-1.) !air entry potential J/kg
       PP=PE !initial water potential J/kg
       PP=ABS(PP)*(-1.)
-      WS=1-BD/DD !saturation water content m3/m3
+      WS(1:19)=1-BD/DD !saturation water content m3/m3
+      WS(M+1)=WS(M) ! extend boundary node
       Z(M+1)=depth(10)/100. ! depth to lower boundary, m
       WD=1000. ! density of water kg/m3
       DV=0.000024 ! binary diffusion coefficient for water vapour, m^2/s
   
-      B1=1./BB
-      N=2.+3./BB ! vector per soil layer of exponents in equation to obtain hydraulic conductivity from saturated hydraulic conductivity, saturated water content and soil water content
-      N1=1.-N
+      B1(1:19)=1./BB
+      B1(M+1)=B1(M)
+      N(1:19)=2.+3./BB ! vector per soil layer of exponents in equation to obtain hydraulic conductivity from saturated hydraulic conductivity, saturated water content and soil water content
+      N(M+1)=N(M)
+      N1(1:19)=1.-N(1:19)
+      N1(M+1)=N1(M)
 
 c     prep for wetair call      
       WB = 0.
@@ -133,6 +137,12 @@ c     prep for wetair call
 
       Z(2)=0
       Z(1)=0
+c     insert missing 1.25cm midpoint between node 1 (0cm) and node 2 (2.5cm)
+c     shift Z(3:18) up to Z(4:19) to make room
+      do 122 I=19,4,-1
+       Z(I)=Z(I-1)
+122   continue
+      Z(3)=(Z(2)+Z(4))/2. ! 1.25cm midpoint between 0 and 2.5cm
 
 c     # setting initial water content, m3/m3
       do 2 I=2,M
@@ -288,14 +298,14 @@ c     flux into soil, mm/m2/s (kg/m2/s)
 9     continue
       
       FL=(EP*(H(2)-HA)/(1.D0-HA))*DT
-      humid(1:18)=h(2:19)
-      potent(1:18)=P(2:19)
+      humid(1:19)=h(2:20)
+      potent(1:19)=P(2:20)
       
 c     output transpiration rate, leaf and root water potential
       do 10 I=2,M
        PR(I)=-1.D0*(TR*RS(I)-P(I)) ! root water potential, J/kg
 10    continue
-      rootpot(1:18) = PR(2:19)
+      rootpot(1:19) = PR(2:20)
       leafpot = PL
       trans = TR
       
