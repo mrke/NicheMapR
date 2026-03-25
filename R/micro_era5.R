@@ -873,10 +873,10 @@ micro_era5 <- function(
         TAIRhr_orig <- TAIRhr
         yearstodo <- seq(ystart, yfinish)
         nyears <- yfinish - ystart + 1
-        if(yfinish > 2015){
-          ystart_terra <- 2015 - nyears + 1
-          yfinish_terra <- 2015
-          message(paste0("terraclimate climate change scenarios are for 1985 to 2015 - using ", ystart, "-", yfinish), '\n')
+        if(yfinish > 2025){
+          ystart_terra <- 2025 - nyears + 1
+          yfinish_terra <- 2025
+          message(paste0("terraclimate climate change scenarios are for 1950 to 2025 - using ", ystart, "-", yfinish), '\n')
         }else{
           ystart_terra <- ystart
           yfinish_terra <- yfinish

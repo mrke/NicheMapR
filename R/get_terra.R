@@ -84,8 +84,8 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
     message(paste0('ERROR: data only available for years 1958 to ', maxyear, ' \n'))
     errors <- 1
   }
-  if(scenario %in% c(2, 4) & (ystart < 1985 | yfinish > 2015)){
-    message('ERROR: climate change scenarios only available for years 1985 to 2015 \n')
+  if(scenario %in% c(2, 4) & (ystart < 1950 | yfinish > 2025)){
+    message('ERROR: climate change scenarios only available for years 1950 to 2025 \n')
     errors <- 1
   }
   if(errors != 1){
@@ -243,9 +243,9 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
     for(i in 1:length(yearlist)){
 
       if(scenario == 2){
-        base <- paste0(source, '_plus2C/TerraClimate_2c')
+        base <- paste0(source, '_plus2C/TerraClimate_plus2C')
       }else{
-        base <- paste0(source, '_plus4C/TerraClimate_4c')
+        base <- paste0(source, '_plus4C/TerraClimate_plus4C')
       }
 
       var <- "tmax"
@@ -356,7 +356,6 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       }
       nc_close(nc)
       var <- "srad"
-      base <- paste0(source, '_plus2C/TerraClimate_2c')
       if(source == "http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data"){
         ncfile <- paste0(base, "_", var,"_", yearlist[i], ".nc#fillmismatch")
       }else{
@@ -374,8 +373,26 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
         SRAD <- c(SRAD, SRAD1)
       }
       nc_close(nc)
+      var <- "ws"
+      if(source == "http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data"){
+        ncfile <- paste0(base, "_", var,"_", yearlist[i], ".nc#fillmismatch")
+      }else{
+        ncfile <- paste0(base, "_", var,"_", yearlist[i], ".nc")
+      }
+      nc <- retry(nc_open(ncfile))
+      message(paste0('extracting plus ', scenario,' wind speed data from TerraClimate for ', yearlist[i], '\n'))
+      WIND1 <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
+      if(is.na(max(WIND1))){
+        WIND1 <- find.nearest(var, WIND1)
+      }
+      if(i == 1){
+        WIND <- WIND1
+      }else{
+        WIND <- c(WIND, WIND1)
+      }
+      nc_close(nc)
     }
-    output <- cbind(TMINN, TMAXX, RAINFALL, VPD, SRAD, SoilMoist)
+    output <- cbind(TMINN, TMAXX, RAINFALL, VPD, SRAD, SoilMoist, WIND)
   }
   return(output)
   }

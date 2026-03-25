@@ -2,9 +2,9 @@
 #'
 #' An implementation of the NicheMapR microclimate model that uses the global monthly climate database
 #' described in "Abatzoglou, J. T., Dobrowski, S. Z., Parks, S. A., & Hegewisch, K. C. (2018). TerraClimate,
-#' a high-resolution global dataset of monthly climate and climatic water balance from 1958–2015.
+#' a high-resolution global dataset of monthly climate and climatic water balance from 1958–2023.
 #' Scientific Data, 5(1), 170191. https://doi.org/10.1038/sdata.2017.191"
-#' This dataset includes climate change scenarios for +2 and +4 deg C warming (via parameter 'scenario')
+#' This dataset includes climate change scenarios for +2 and +4 deg C warming for 1950-2025 (via parameter 'scenario')
 #' Aerosol attenuation can also be computed based on the Global Aerosol Data Set (GADS)
 #' Koepke, P., M. Hess, I. Schult, and E. P. Shettle. 1997. Global Aerosol Data Set. Max-Planck-Institut for Meteorologie, Hamburg
 #' by choosing the option 'run.gads <- 1' (Fortran version, quicker but may crash on some systems) or 'run.gads <- 2' (R version)
@@ -616,8 +616,8 @@ micro_terra <- function(
     cat("ERROR: Scenario can only be 0, 2, or 4 corresponding to the TerraClimate climate change scenarios", '\n')
     errors <- 1
   }
-  if(scenario > 0 & (yfinish > 2015 | ystart < 1985)){
-    cat("ERROR: TerraClimate climate change scenarios are only for years 1985 to 2015", '\n')
+  if(scenario > 0 & (yfinish > 2025 | ystart < 1950)){
+    cat("ERROR: TerraClimate climate change scenarios are only for years 1950 to 2025", '\n')
     errors <- 1
   }
   # end error trapping
@@ -838,9 +838,9 @@ micro_terra <- function(
       }
     }else{
       if(scenario == 2){
-        base <- '/thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data_plus2C/TerraClimate_2c'
+        base <- '/thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data_plus2C/TerraClimate_plus2C'
       }else{
-        base <- '/thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data_plus4C/TerraClimate_4c'
+        base <- '/thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data_plus4C/TerraClimate_plus4C'
       }
       start <- c(lonindex, latindex, 1)
       count <- c(1, 1, -1)
@@ -886,7 +886,7 @@ micro_terra <- function(
         }
         nc_close(nc)
         var <- "srad"
-        baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data_plus2C/TerraClimate_2c_", var),"_", yearlist[i], ".nc#fillmismatch")
+        baseurlagg <- paste0(paste0("http:/", base, "_", var),"_", yearlist[i], ".nc#fillmismatch")
         nc <- retry(nc_open(baseurlagg))
         message(paste0('extracting plus ', scenario,' solar radiation data from TerraClimate for ', yearlist[i], '\n'))
         if(i == 1){
