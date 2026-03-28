@@ -766,7 +766,7 @@ micro_terra <- function(
     }
     if(is.na(terra_source)){
      var <- "tmax"
-     baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
+     baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1950_CurrentYear_GLOBE.nc#fillmismatch")
 
     nc <- retry(nc_open(baseurlagg))
     lon <- retry(ncvar_get(nc, "lon"))
