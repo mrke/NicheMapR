@@ -432,8 +432,8 @@ micro_terra <- function(
   Refhyt <- 2 # Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured
 
   # error trapping - originally inside the Fortran code, but now checking before executing Fortran
-  if(ystart < 1958){
-    cat("ERROR: TerraClimate climate data is not available prior to 1958", '\n')
+  if(ystart < 1950){
+    cat("ERROR: TerraClimate climate data is not available prior to 1950", '\n')
     errors <- 1
   }
   curdate <- Sys.time() - 60 * 60 * 24
@@ -798,31 +798,31 @@ micro_terra <- function(
       nc_close(nc)
       var <- 'tmin'
       message('extracting minimum air temperature data from TerraClimate \n')
-      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
+      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1950_CurrentYear_GLOBE.nc#fillmismatch")
       nc <- retry(nc_open(baseurlagg))
       TMINN <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       nc_close(nc)
       message('extracting precipitation data from TerraClimate \n')
       var <- 'ppt'
-      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
+      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1950_CurrentYear_GLOBE.nc#fillmismatch")
       nc <- retry(nc_open(baseurlagg))
       RAINFALL <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       nc_close(nc)
       message('extracting wind speed data from TerraClimate \n')
       var <- 'ws'
-      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
+      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1950_CurrentYear_GLOBE.nc#fillmismatch")
       nc <- retry(nc_open(baseurlagg))
       WIND <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       nc_close(nc)
       message('extracting vapour pressure deficit data from TerraClimate \n')
       var <- 'vpd'
-      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
+      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1950_CurrentYear_GLOBE.nc#fillmismatch")
       nc <- retry(nc_open(baseurlagg))
       VPD <- retry(as.numeric(ncvar_get(nc, varid = var,start = start, count)))
       nc_close(nc)
       message('extracting solar radiation data from TerraClimate \n')
       var <- 'srad'
-      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
+      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1950_CurrentYear_GLOBE.nc#fillmismatch")
       nc <- retry(nc_open(baseurlagg))
       SRAD <- retry(as.numeric(ncvar_get(nc, varid = var,start = start, count)))
       if(runmoist == 0){
@@ -831,7 +831,7 @@ micro_terra <- function(
         message("extracting soil moisture data from TerraClimate")
         #SoilMoist <- as.numeric(terra::extract(soilmoisture, x)) / 1000 # this is originally in mm/m
         var <- 'soil'
-        baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
+        baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1950_CurrentYear_GLOBE.nc#fillmismatch")
         nc <- retry(nc_open(baseurlagg))
         SoilMoist <- retry(as.numeric(ncvar_get(nc, varid = var,start = start, count))) / 1000 * (1 - BulkDensity / Density) # this is originally in mm/m
         nc_close(nc)
@@ -913,7 +913,7 @@ micro_terra <- function(
       count <- c(1, 1, length(timeindex))
       message('extracting wind speed data from TerraClimate \n')
       var <- 'ws'
-      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1958_CurrentYear_GLOBE.nc#fillmismatch")
+      baseurlagg <- paste0(paste0("http://thredds.northwestknowledge.net:8080/thredds/dodsC/agg_terraclimate_",var),"_1950_CurrentYear_GLOBE.nc#fillmismatch")
       nc <- retry(nc_open(baseurlagg))
       WIND <- retry(as.numeric(ncvar_get(nc, varid = var, start = start, count)))
       nc_close(nc)
