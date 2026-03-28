@@ -172,14 +172,17 @@ ccccc ----------------------------------------------------------------c
 
       nwel=25
 
-      iwel=1
-      do 9999 iwel=1,nwel
+ccccc -----------------------------------------------------------------c
+c     Open season file, read height profiles, and read microphysical  c
+c     composition for this grid cell — all wavelength-independent,    c
+c     so done once outside the wavelength loop.                       c
+ccccc -----------------------------------------------------------------c
 
        if (ws.eq.'w') then
         open(ntape,file='extdata/glodat/winter.dat')
         read (ntape,'(a1)') dum
         cseas='winter '
-       else 
+       else
         open(ntape,file='extdata/glodat/summer.dat')
         read (ntape,'(a1)') dum
         cseas='summer '
@@ -192,80 +195,61 @@ ccccc ----------------------------------------------------------------c
 
 CCCCC -----------------------------------------------------------------C
 C     READING THE HEIGHT PROFILES from the file TAPE9                  c
-C     						                                           C 
 C     HM    : EFFECTIVE LAYER THICKNESS (HOMOGENEOUS DISTRIBUTION)     C
 C     HFTA  : FREE TROP LAYER THICKNESS. AEROSOLS IN KM                C
 C     HSTRA : LAYER THICKNESS OF THE STRATOSPH. AEROSOLS IN KM         C
 C     NIL   : NUMBER OF LAYERS                                         C
+C     These files are static — read once, not per wavelength.          C
 CCCCC -----------------------------------------------------------------C
 
        call prof
 
 ccccc -----------------------------------------------------------------c
-c      Labeling of the output files                                    c
+c     Labeling of the output files                                     c
 ccccc -----------------------------------------------------------------c
 
-       if(iwel.eq.1)then
-        call head4 !(iwel,ihum)
-       endif
+       call head4
 
 ccccc -----------------------------------------------------------------c
-c      Loop over all required wavelengths and moisture classes         c
+c     Reading the raw microphysical data for this grid cell.           c
+c     Does not depend on wavelength — read once outside the loop.     c
+C     LAT       : LATITUDE                                             C
+C     LON       : LONGITUDE                                            C
+C     NL        : NUMBER OF AEROSOL LAYERS                             C
+C     PRNR      : PROFIL NUMBER                                        C
+C     PAT       : AEROSOL PROFIL TYPE                                  C
+C     NH        : NUMBER OF REL. HUMIDITY CLASS                        C
+C     N         : TOTAL NUMBER CONCENTRATION                           C
+C     NJC       : NUMBER OF AEROSOL COMPONENT                          C
+C     ACNR      : AEROSOL COMPONENT                                    C
+C     ACMR      : MIXING RATIO (PARTIAL/TOTAL NUMBER CONC.)            C
 ccccc -----------------------------------------------------------------c
 
-       !do il=1,niw
-        !do ih=1,njh
-ccccc -----------------------------------------------------------------c
-c     Loop over all required geographic coordinates                    c
-ccccc -----------------------------------------------------------------c
-         !do ilat=lata,late,-lati
-          !do ilmal=1,nlmal
-           !do ilon=lona,lone,loni
        il=1
        ih=1
        ilat=lata
        ilmal=1
        ilon=lona
 
-ccccc -----------------------------------------------------------------c
-c      Reading the raw data from the files TAPE201, TAPE207:	       c
-c     ------------------------------------------------------	       c
-C     LAT       : LATITUDE                                             C
-C     LON       : LONGITUDE                                            C
-C     NL        : NUMBER OF AEROSOL LAYERS                             C
-C                 (=2 FOR MARITIME-MINERAL,=1 FOR MARI.)               C
-C     PRNR      : PROFIL NUMBER                                        C
-C     NT        : NUMBER OF AEROSOL TYPE                               C
-C     PAT       : AEROSOL PROFIL TYPE                                  C
-C     NH        : NUMBER OF REL. HUMIDITY CLASS                        C
-C     N         : TOTAL NUMBER CONCENTRATION                           C
-C     NJC       : NUMBER OF AEROSOL COMPONENT                          C
-C     ACNR      : AEROSOL COMPONENT                                    C
-C     ACMR      : MIXING RATIO                                         C
-C                 (PARTIAL NUMBER CONCENTRATION/TOTAL NUMBER CONC.)    C
-ccccc -----------------------------------------------------------------c
+       call d4raw (ilat,ilon,ntape)
 
-            call d4raw (ilat,ilon,ntape)
+       close (ntape)
 
 ccccc -----------------------------------------------------------------c
-c      Reading of the optical raw data from the files winter.dat and   c
-c      summer.dat                                                      c
+c     Loop over all 25 wavelengths                                     c
+ccccc -----------------------------------------------------------------c
+
+      iwel=1
+      do 9999 iwel=1,nwel
+
+ccccc -----------------------------------------------------------------c
+c      Reading of the optical raw data and computing optical parameters c
 ccccc -----------------------------------------------------------------c
 
             call optcom (iwel,ihum)
 
-ccccc -----------------------------------------------------------------c
-c      Calculation of the optical parameters at the current grid point c
-ccccc -----------------------------------------------------------------c
-
             call optpar(iwel,ihum)
 
-           !end do
-          !end do
-         !end do
-        !end do
-       !end do
-       close (ntape)
 9999  continue
 
       do 9998 i=1,25
