@@ -359,6 +359,8 @@ micro_terra <- function(
   elevatr = 0,
   terrain = 0,
   microclima = 0,
+  microclima.dem.res = 100,
+  microclima.zmin = -20,
   adiab_cor = 1,
   warm = 0,
   ERR = 1,
@@ -461,10 +463,6 @@ micro_terra <- function(
   if (run.gads == 1) {
     message("If program is crashing, try run.gads = 2.")
   }
-  if (run.gads %in% c(0, 1, 2) == FALSE) {
-    message("ERROR: 'run.gads' must be 0, 1 or 2. Please correct.")
-    errors <- 1
-  }
   if (write_input %in% c(0, 1) == FALSE) {
     message("ERROR: 'write_input' must be 0 or 1. Please correct.")
     errors <- 1
@@ -485,7 +483,8 @@ micro_terra <- function(
     TIMAXS = TIMAXS, TIMINS = TIMINS,
     minshade = minshade, maxshade = maxshade,
     Thcond = Thcond, Density = Density, SpecHeat = SpecHeat,
-    BulkDensity = BulkDensity
+    BulkDensity = BulkDensity,
+    run.gads = run.gads
   )
 
   if(errors == 0){ # continue
@@ -561,30 +560,8 @@ micro_terra <- function(
     SoilMoist <- SoilMoist_Init
 
     if(soilgrids == 1){
-      cat('extracting data from SoilGrids \n')
-      if (!requireNamespace("jsonlite", quietly = TRUE)) {
-        stop("package 'json' is needed to extract data from SoilGrids, please install it.",
-             call. = FALSE)
-      }
-      require(jsonlite)
-      #ov <- fromJSON(paste0('https://rest.isric.org/query?lon=',x[1],'&lat=',x[2],',&attributes=BLDFIE,SLTPPT,SNDPPT,CLYPPT'), flatten = TRUE)
-      ov <- jsonlite::fromJSON(paste0('https://rest.isric.org/soilgrids/v2.0/properties/query?lon=',x[1],'&lat=',x[2],'&property=bdod&property=silt&property=clay&property=sand'), flatten = TRUE)
-      if(length(ov) > 3){
-        soilpro <- cbind(c(0, 5, 15, 30, 60, 100), unlist(ov$properties$layers$depths[[1]]$values.mean) / 100, unlist(ov$properties$layers$depths[[2]]$values.mean) / 10, unlist(ov$properties$layers$depths[[4]]$values.mean) / 10, unlist(ov$properties$layers$depths[[3]]$values.mean) / 10)
-        soilpro <- rbind(soilpro, soilpro[6, ])
-        soilpro[7, 1] <- 200
-        #soilpro <- cbind(c(0,5,15,30,60,100,200), unlist(ov$properties$BLDFIE$M)/1000, unlist(ov$properties$CLYPPT$M), unlist(ov$properties$SLTPPT$M), unlist(ov$properties$SNDPPT$M) )
-        colnames(soilpro) <- c('depth', 'blkdens', 'clay', 'silt', 'sand')
-        #Now get hydraulic properties for this soil using Cosby et al. 1984 pedotransfer functions.
-        soil.hydro <- pedotransfer(soilpro = as.data.frame(soilpro), DEP = DEP)
-        PE <- soil.hydro$PE
-        BB <- soil.hydro$BB
-        BD <- soil.hydro$BD
-        KS <- soil.hydro$KS
-        BulkDensity <- BD[seq(1,19,2)] #soil bulk density, Mg/m3
-      }else{
-        cat('no SoilGrids data for this site, using user-input soil properties \n')
-      }
+      sg <- fetch_soilgrids(x, DEP)
+      if (!is.null(sg)) { PE <- sg$PE; KS <- sg$KS; BB <- sg$BB; BD <- sg$BD; BulkDensity <- sg$BulkDensity }
     }
 
     if (!requireNamespace("terra", quietly = TRUE)) {
@@ -840,28 +817,10 @@ micro_terra <- function(
       elevatr <- 1
     }
     if(is.na(elev) & elevatr == 1){
-      require(microclima)
-      require(terra)
-      cat('downloading DEM via package elevatr \n')
-      dem <- microclima::get_dem(lat = loc[2], long = loc[1]) # mercator equal area projection
-      xy = data.frame(lon = loc[1], lat = loc[2]) |>
-        sf::st_as_sf(coords = c("lon", "lat"))
-      xy <- sf::st_set_crs(xy, "EPSG:4326")
-      xy <- sf::st_transform(xy, sf::st_crs(dem))
-      elev <- as.numeric(terra::extract(dem, xy)[,2])
-      if(terrain == 1){
-        cat('computing slope, aspect and horizon angles \n')
-        slope <- terra::terrain(dem, v = "slope", unit = "degrees")
-        slope <- as.numeric(terra::extract(slope, xy)[,2])
-        aspect <- terra::terrain(dem, v = "aspect", unit = "degrees")
-        aspect <- as.numeric(terra::extract(aspect, xy)[,2])
-        ha24 <- 0
-        for (i in 0:23) {
-          har <- horizonangle(dem, i * 10, res(dem)[1])
-          ha24[i + 1] <- atan(as.numeric(terra::extract(har, xy)[, 2])) * (180/pi)
-        }
-        hori <- ha24
-      }
+      dem_result <- fetch_dem(loc[1], loc[2], terrain = terrain, horizon.step = 10)
+      dem <- dem_result$dem
+      elev <- dem_result$elev
+      if (terrain == 1) { slope <- dem_result$slope; aspect <- dem_result$aspect; hori <- dem_result$hori }
     }
     hori<-as.matrix(hori) #horizon angles
     VIEWF <- 1-sum(sin(as.data.frame(hori) * pi / 180)) / length(hori) # convert horizon angles to radians and calc view factor(s)
@@ -1181,32 +1140,14 @@ micro_terra <- function(
       timediff <- x[1] / 15
       hour.microclima <- as.numeric(format(tt, "%H")) + timediff-floor(timediff)
       jd <- julday(as.numeric(format(tt, "%Y")), as.numeric(format(tt, "%m")), as.numeric(format(tt, "%d")))
-      if(!is.raster(dem)){
-        dem <- microclima::get_dem(r = NA, lat = lat, long = long, resolution = 100, zmin = -20)
-      }
-      require(terra)
-      xy = data.frame(lon = loc[1], lat = loc[2]) |>
-        sf::st_as_sf(coords = c("lon", "lat"))
-      xy <- sf::st_set_crs(xy, "EPSG:4326")
-      xy <- sf::st_transform(xy, sf::st_crs(dem))
-      #xy <- data.frame(x = long, y = lat)
-      #coordinates(xy) = ~x + y
-      #proj4string(xy) = "+init=epsg:4326"
-      #xy <- as.data.frame(spTransform(xy, crs(dem)))
-      if (class(slope) == "logical") {
-        slope <- terra::terrain(dem, v = "slope", unit = "degrees")
-        slope <- as.numeric(terra::extract(slope, xy)[, 2])
-      }
-      if (class(aspect) == "logical") {
-        aspect <- terrain(dem, v = "aspect", unit = "degrees")
-        aspect <- as.numeric(terra::extract(aspect, xy)[, 2])
-      }
-      ha <- 0
-      ha36 <- 0
-      for (i in 0:35) {
-        har <- horizonangle(dem, i * 10, res(dem)[1])
-        ha36[i + 1] <- atan(as.numeric(terra::extract(har, xy)[, 2])) * (180/pi)
-      }
+      dem_result <- fetch_dem(loc[1], loc[2],
+                              dem.res = microclima.dem.res, zmin = microclima.zmin,
+                              pixels = NULL,
+                              existing_dem = if (inherits(dem, c("SpatRaster", "RasterLayer"))) dem else NULL,
+                              terrain = 1, horizon.step = 10, nangles = 36,
+                              slope = slope, aspect = aspect)
+      dem <- dem_result$dem; slope <- dem_result$slope; aspect <- dem_result$aspect
+      ha36 <- dem_result$hori
       for (i in 1:length(hour.microclima)) {
         saz <- solazi(hour.microclima[i], lat, long, jd[i], merid = long)
         saz <- round(saz/10, 0) + 1
@@ -1239,57 +1180,10 @@ micro_terra <- function(
       #cloudhr <- leapfix(cloudhr, yearlist, 24)
       dsw2 <- leapfix(clearskyrad, yearlist, 24) *(0.36+0.64*(1-cloudhr/100)) # Angstrom formula (formula 5.33 on P. 177 of "Climate Data and Resources" by Edward Linacre 1992
       # partition total solar into diffuse and direct using code from microclima::hourlyNCEP
-      si <- microclima::siflat(hour.microclima, lat, long, jd, merid = long)
-      am <- microclima::airmasscoef(hour.microclima, lat, long, jd, merid = long)
-      dp <- vector(length = length(jd))
-      for (i in 1:length(jd)) {
-        dp[i] <- microclima:::difprop(dsw2[i], jd[i], hour.microclima[i], lat, long, watts = TRUE, hourly = TRUE, merid = long)
-      }
-      dp[dsw2 == 0] <- NA
-      dnir <- (dsw2 * (1 - dp))/si
-      dnir[si == 0] <- NA
-      difr <- (dsw2 * dp)
-      edni <- dnir/((4.87/0.0036) * (1 - dp))
-      edif <- difr/((4.87/0.0036) * dp)
-      bound <- function(x, mn = 0, mx = 1) {
-        x[x > mx] <- mx
-        x[x < mn] <- mn
-        x
-      }
-      odni <- bound((log(edni)/-am), mn = 0.001, mx = 1.7)
-      odif <- bound((log(edif)/-am), mn = 0.001, mx = 1.7)
-      nd <- length(odni)
-      sel <- which(is.na(am * dp * odni * odif) == F)
-      dp[1] <- dp[min(sel)]
-      odni[1] <- odni[min(sel)]
-      odif[1] <- odif[min(sel)]
-      dp[nd] <- dp[max(sel)]
-      odni[nd] <- odni[max(sel)]
-      odif[nd] <- odif[max(sel)]
-      dp[nd] <- dp[max(sel)]
-      odni[nd] <- odni[max(sel)]
-      odif[nd] <- odif[max(sel)]
-      if (!require("terra", quietly = TRUE)) {
-        stop("package 'terra' is needed. Please install it.",
-             call. = FALSE)
-      }
-      dp <- na.approx(dp, na.rm = F)
-      odni <- na.approx(odni, na.rm = F)
-      odif <- na.approx(odif, na.rm = F)
-      h_dp <- bound(dp)
-      h_oi <- bound(odni, mn = 0.24, mx = 1.7)
-      h_od <- bound(odif, mn = 0.24, mx = 1.7)
-      afi <- exp(-am * h_oi)
-      afd <- exp(-am * h_od)
-      h_dni <- (1 - h_dp) * afi * 4.87/0.0036
-      h_dif <- h_dp * afd * 4.87/0.0036
-      h_dni[si == 0] <- 0
-      h_dif[is.na(h_dif)] <- 0
-      diffuse_frac_all <- h_dif / (h_dni + h_dif) # calculated diffuse fraction
-      diffuse_frac_all[is.na(diffuse_frac_all)] <- 1
-      radwind2 <- .shortwave.ts(h_dni * 0.0036, h_dif * 0.0036, jd, hour.microclima, lat, long, slope, aspect, ha = ha, svv = 1, x = microclima.LOR, l = mean(microclima.LAI), albr = 0, merid = long, dst = 0, difani = FALSE)
-      #microclima.out$hourlyradwind <- radwind2
-      SOLRhr_all <- radwind2$swrad / 0.0036
+      sol <- compute_solar_partition(dsw2, jd, hour.microclima, lat, long,
+                                     slope, aspect, ha, microclima.LOR, microclima.LAI)
+      SOLRhr_all <- sol$SOLRhr_all
+      diffuse_frac_all <- sol$diffuse_frac_all
       if(microclima == 2){ # use hourly solar from microclima
         hourly <- 2
         VIEWF <- 1 # accounted for already in microclima cals
@@ -1311,26 +1205,7 @@ micro_terra <- function(
 
     ndays<-length(RAINFALL)
     if(length(TAI) < 111){ # no user supplied values, compute with GADS
-      if(run.gads > 0){
-        ####### get solar attenuation due to aerosols with program GADS #####################
-        relhum <- 1
-        if(run.gads == 1){ # fortran version
-          optdep.summer <- as.data.frame(rungads(longlat[2], longlat[1], relhum, 0))
-          optdep.winter <- as.data.frame(rungads(longlat[2], longlat[1], relhum, 1))
-        }else{ # r version
-          optdep.summer <- as.data.frame(gads.r(longlat[2], longlat[1], relhum, 0))
-          optdep.winter <- as.data.frame(gads.r(longlat[2], longlat[1], relhum, 1))
-        }
-        optdep <-cbind(optdep.winter[,1],rowMeans(cbind(optdep.summer[,2],optdep.winter[,2])))
-        optdep <-as.data.frame(optdep)
-        colnames(optdep) <- c("LAMBDA", "OPTDEPTH")
-        a <-lm(OPTDEPTH ~ poly(LAMBDA, 6, raw = TRUE), data = optdep)
-        LAMBDA <- c(290, 295, 300, 305, 310, 315, 320, 330, 340, 350, 360, 370, 380, 390, 400, 420, 440, 460, 480, 500, 520, 540, 560, 580, 600, 620, 640, 660, 680, 700, 720, 740, 760, 780, 800, 820, 840, 860, 880, 900, 920, 940, 960, 980, 1000, 1020, 1080, 1100, 1120, 1140, 1160, 1180, 1200, 1220, 1240, 1260, 1280, 1300, 1320, 1380, 1400, 1420, 1440, 1460, 1480, 1500, 1540, 1580, 1600, 1620, 1640, 1660, 1700, 1720, 1780, 1800, 1860, 1900, 1950, 2000, 2020, 2050, 2100, 2120, 2150, 2200, 2260, 2300, 2320, 2350, 2380, 2400, 2420, 2450, 2490, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000)
-        TAI <- predict(a, data.frame(LAMBDA))
-        ################ end GADS ##################################################
-      }else{ # use the original profile from Elterman, L. 1970. Vertical-attenuation model with eight surface meteorological ranges 2 to 13 kilometers. U. S. Airforce Cambridge Research Laboratory, Bedford, Mass.
-        TAI <-c(0.42, 0.415, 0.412, 0.408, 0.404, 0.4, 0.395, 0.388, 0.379, 0.379, 0.379, 0.375, 0.365, 0.345, 0.314, 0.3, 0.288, 0.28, 0.273, 0.264, 0.258, 0.253, 0.248, 0.243, 0.236, 0.232, 0.227, 0.223, 0.217, 0.213, 0.21, 0.208, 0.205, 0.202, 0.201, 0.198, 0.195, 0.193, 0.191, 0.19, 0.188, 0.186, 0.184, 0.183, 0.182, 0.181, 0.178, 0.177, 0.176, 0.175, 0.175, 0.174, 0.173, 0.172, 0.171, 0.17, 0.169, 0.168, 0.167, 0.164, 0.163, 0.163, 0.162, 0.161, 0.161, 0.16, 0.159, 0.157, 0.156, 0.156, 0.155, 0.154, 0.153, 0.152, 0.15, 0.149, 0.146, 0.145, 0.142, 0.14, 0.139, 0.137, 0.135, 0.135, 0.133, 0.132, 0.131, 0.13, 0.13, 0.129, 0.129, 0.128, 0.128, 0.128, 0.127, 0.127, 0.126, 0.125, 0.124, 0.123, 0.121, 0.118, 0.117, 0.115, 0.113, 0.11, 0.108, 0.107, 0.105, 0.103, 0.1)
-      } #end check if running gads
+      TAI <- compute_tai(longlat, run.gads, TAI_ELTERMAN)
     }
     ################ soil properties  ##################################################
     Nodes <- matrix(data = 0, nrow = 10, ncol = ndays) # deepest nodes for each substrate type
