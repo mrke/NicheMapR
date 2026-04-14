@@ -421,187 +421,52 @@ micro_global <- function(
 ) {
 
   SoilMoist <- SoilMoist_Init
-  errors <- 0
-  Refhyt <- 1.2 # Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured
+  # Reference height (m) at which input air temperature, wind speed and
+  # relative humidity are measured
+  Refhyt <- 1.2
 
-  # error trapping - originally inside the Fortran code, but now checking before executing Fortran
-  if(DEP[2]-DEP[1]>3 | DEP[3]-DEP[2]>3){
-    message("warning, nodes might be too far apart near the surface, try a different spacing if the program is crashing \n")
-  }
-  if(DEP[2]-DEP[1]<2){
-    cat("warning, nodes might be too close near the surface, try a different spacing if the program is crashing \n")
-  }
-  if(DEP[10] != 200){
-    cat("warning, last depth in soil should not be changed from 200 without good reason \n")
-  }
-  if(timeinterval<12 | timeinterval > 365){
-    message("ERROR: the variable 'timeinterval' is out of bounds.
-        Please enter a correct value (12 - 365).", '\n')
+  # --- 1. Input validation --------------------------------------------------
+  # File-specific checks first (timeinterval, soiltype, loc bounds, run options)
+  errors <- 0
+  if (timeinterval < 12 | timeinterval > 365) {
+    message("ERROR: 'timeinterval' is out of bounds. Please enter a value between 12 and 365.")
     errors <- 1
   }
-  if(is.numeric(loc[1])){
-    if(loc[1]>180 | loc[2] > 90){
-      message("ERROR: Latitude or longitude (longlat) is out of bounds.
-        Please enter a correct value.", '\n')
+  if (is.numeric(loc[1])) {
+    if (loc[1] > 180 | loc[2] > 90) {
+      message("ERROR: Latitude or longitude (loc) is out of bounds. Please enter correct values.")
       errors <- 1
     }
   }
-  if(timezone%in%c(0,1) == FALSE){
-    message("ERROR: the variable 'timezone' be either 0 or 1.
-      Please correct.", '\n')
+  if (timezone %in% c(0, 1) == FALSE) {
+    message("ERROR: 'timezone' must be either 0 or 1. Please correct.")
     errors <- 1
   }
-  if(run.gads == 1){
-    message("If program is crashing, try run.gads = 2.", '\n')
+  if (run.gads == 1) {
+    message("If program is crashing, try run.gads = 2.")
   }
-  if(run.gads%in%c(0,1,2) == FALSE){
-    message("ERROR: the variable 'run.gads' be either 0, 1 or 2.
-      Please correct.", '\n')
+  if (run.gads %in% c(0, 1, 2) == FALSE) {
+    message("ERROR: 'run.gads' must be 0, 1 or 2. Please correct.")
     errors <- 1
   }
-  if(write_input%in%c(0,1) == FALSE){
-    message("ERROR: the variable 'write_input' be either 0 or 1.
-      Please correct.", '\n')
+  if (write_input %in% c(0, 1) == FALSE) {
+    message("ERROR: 'write_input' must be 0 or 1. Please correct.")
     errors <- 1
   }
-  if(EC<0.0034 | EC > 0.058){
-    message("ERROR: the eccentricity variable (EC) is out of bounds.
-        Please enter a correct value (0.0034 - 0.058).", '\n')
+  if (soiltype < 0 | soiltype > 11) {
+    message("ERROR: soil type must range between 1 and 11. Please correct.")
     errors <- 1
   }
-  if(RUF<0.0001){
-    message("ERROR: The roughness height (RUF) is too small ( < 0.0001).
-        Please enter a larger value.", '\n')
-    errors <- 1
-  }
-  if(RUF>2){
-    message("ERROR: The roughness height (RUF) is too large ( > 2).
-        Please enter a smaller value.", '\n')
-    errors <- 1
-  }
-  if(D0 > 0 & D0 < Usrhyt){
-    cat("ERROR: The zero plane displacement height (D0) must be lower than the local height (Usrhyt).
-        Please enter a smaller value.", '\n')
-    errors <- 1
-  }
-  if(DEP[1]!=0){
-    message("ERROR: First soil node (DEP[1]) must = 0 cm.
-        Please correct", '\n')
-    errors <- 1
-  }
-  if(length(DEP)!=10){
-    message("ERROR: You must enter 10 different soil depths.", '\n')
-    errors <- 1
-  }
-  for(i in 1:9){
-    if(DEP[i+1]<=DEP[i]){
-      message("ERROR: Soil depth (DEP array) is not in ascending size", '\n')
-      errors <- 1
-    }
-  }
-  if(DEP[10]>500){
-    message("ERROR: Deepest soil depth (DEP array) is too large (<=500 cm)", '\n')
-    errors <- 1
-  }
-  if(min(Thcond)<0){
-    cat("ERROR: Thermal variable conductivity (THCOND) is negative.
-        Please input a positive value.", '\n')
-    errors <- 1
-  }
-  if(min(Density)<0){
-    cat("ERROR: Density variable (Density) is negative.
-        Please input a positive value.", '\n')
-    errors <- 1
-  }
-  if(min(SpecHeat)<0){
-    cat("ERROR: Specific heat variable (SpecHeat) is negative.
-        Please input a positive value.", '\n')
-    errors <- 1
-  }
-  if(min(BulkDensity)<0){
-    message("ERROR: Bulk density value (BulkDensity) is negative.
-        Please input a positive value.", '\n')
-    errors <- 1
-  }
-  if(REFL<0 | REFL>1){
-    message("ERROR: Soil reflectivity value (REFL) is out of bounds.
-        Please input a value between 0 and 1.", '\n')
-    errors <- 1
-  }
-  if(slope<0 | slope>90){
-    message("ERROR: Slope value (slope) is out of bounds.
-        Please input a value between 0 and 90.", '\n')
-    errors <- 1
-  }
-  if(aspect<0 | aspect>365){
-    message("ERROR: Aspect value (aspect) is out of bounds.
-        Please input a value between 0 and 365.", '\n')
-    errors <- 1
-  }
-  if(max(hori)>90 | min(hori)<0){
-    message("ERROR: At least one of your horizon angles (hori) is out of bounds.
-        Please input a value between 0 and 90", '\n')
-    errors <- 1
-  }
-  if(length(hori)!=24){
-    message("ERROR: You must enter 24 horizon angle values.", '\n')
-    errors <- 1
-  }
-  if(SLE<0.05 | SLE > 1){
-    message("ERROR: Emissivity (SLE) is out of bounds.
-        Please enter a correct value (0.05 - 1.00).", '\n')
-    errors <- 1
-  }
-  if(ERR<0){
-    message("ERROR: Error bound (ERR) is too small.
-        Please enter a correct value (> 0.00).", '\n')
-    errors <- 1
-  }
-  if(Usrhyt<RUF){
-    message("ERROR: Local height (Usrhyt) smaller than roughness height (RUF).
-        Please use a larger height above the surface.", '\n')
-    errors <- 1
-  }
-  if(Usrhyt>Refhyt){
-    message("ERROR: Reference height is less than local height (Usrhyt) \n")
-    errors <- 1
-  }
-  if(CMH2O<0.5 | CMH2O>2){
-    message("ERROR: Preciptable water in air column (CMH2O) is out of bounds.
-        Please enter a correct value (0.1 - 2).", '\n')
-    errors <- 1
-  }
-  if(max(TIMAXS)>24 | min(TIMAXS)<0){
-    message("ERROR: At least one of your times of weather maxima (TIMAXS) is out of bounds.
-        Please input a value between 0 and 24", '\n')
-    errors <- 1
-  }
-  if(max(TIMINS)>24 | min(TIMINS)<0){
-    message("ERROR: At least one of your times of weather minima (TIMINS) is out of bounds.
-        Please input a value between 0 and 24", '\n')
-    errors <- 1
-  }
-  if(max(minshade-maxshade) >= 0){
-    cat("ERROR: Your value(s) for minimum shade (minshade) is greater than or equal to the maximum shade (maxshade).
-        Please correct this.", '\n')
-    errors <- 1
-  }
-  if(max(minshade)>100 | min(minshade)<0){
-    cat("ERROR: Your value(s) for minimum shade (minshade) is out of bounds.
-        Please input a value between 0 and 100.", '\n')
-    errors <- 1
-  }
-  if(max(maxshade)>100 | min(maxshade)<0){
-    cat("ERROR: Your value(s) for maximum shade (maxshade) is out of bounds.
-        Please input a value between 0 and 100.", '\n')
-    errors <- 1
-  }
-  if(soiltype<0 | soiltype>11){
-    message("ERROR: the soil type must range between 1 and 11.
-      Please correct.", '\n')
-    errors <- 1
-  }
-  # end error trapping
+  # Shared checks common to all micro_*() functions
+  errors <- errors + validate_micro_inputs(
+    DEP = DEP, REFL = REFL, slope = slope, aspect = aspect, hori = hori,
+    SLE = SLE, ERR = ERR, RUF = RUF, D0 = D0, Usrhyt = Usrhyt,
+    Refhyt = Refhyt, EC = EC, CMH2O = CMH2O,
+    TIMAXS = TIMAXS, TIMINS = TIMINS,
+    minshade = minshade, maxshade = maxshade,
+    Thcond = Thcond, Density = Density, SpecHeat = SpecHeat,
+    BulkDensity = BulkDensity
+  )
 
   if(errors == 0){ # continue
 
@@ -642,15 +507,10 @@ micro_global <- function(
     longlat <- loc
     x <- t(as.matrix(as.numeric(c(loc[1],loc[2]))))
 
-    # get the local timezone reference longitude
-    if(timezone == 1){ # this now requires registration
-      if(!require(geonames, quietly = TRUE)){
-        stop('package "geonames" is required to do a specific time zone (timezone=1). Please install it.')
-      }
-      ALREF <- (geonames::GNtimezone(longlat[2],longlat[1])[4])*-15
-    }else{  # just use local solar noon
-      ALREF <- abs(trunc(x[1]))
-    }
+    # Get reference longitude for solar noon correction (ALREF).
+    # timezone = 0: use local apparent solar noon (simple truncation).
+    # timezone = 1: look up civil UTC offset via geonames web service.
+    ALREF <- get_timezone_alref(lon = x[1], lat = x[2], timezone = timezone)
     HEMIS <- ifelse(x[2]<0,2.,1.) # 1 is northern hemisphere
     # break decimal degree lat/lon into deg and min
     ALAT <- abs(trunc(x[2]))
@@ -689,18 +549,11 @@ micro_global <- function(
 
     hori <- as.matrix(hori) #horizon angles
     VIEWF <- 1-sum(sin(as.data.frame(hori) * pi / 180)) / length(hori) # convert horizon angles to radians and calc view factor(s)
-    SLES <- rep(SLE,timeinterval*nyears)
-    # creating the shade array
-    if(length(minshade) != timeinterval * nyears){
-      MINSHADES <- rep(0, (timeinterval * nyears)) + minshade[1] # daily min shade (%)
-    }else{
-      MINSHADES <- rep(0, (timeinterval * nyears)) + minshade # daily min shade (%)
-    }
-    if(length(maxshade) != timeinterval * nyears){
-      MAXSHADES <- rep(0, (timeinterval * nyears)) + maxshade[1] # daily max shade (%)
-    }else{
-      MINSHADES <- rep(0, (timeinterval * nyears)) + minshade # daily min shade (%)
-    }
+    SLES <- rep(SLE, timeinterval * nyears)
+    # Expand scalar or short shade inputs to one value per simulation day
+    shades <- setup_shade_vectors(minshade, maxshade, ndays = timeinterval * nyears)
+    MINSHADES <- shades$MINSHADES
+    MAXSHADES <- shades$MAXSHADES
     if(soiltype == 0){ # simulating rock so turn of soil moisture model and set density equal to bulk density
       BulkDensity <- Density
       cap=0
@@ -906,7 +759,7 @@ micro_global <- function(
       spinup <- 0
     }
     tannul <- mean(unlist(ALLTEMPS))
-    tannulrun <- rep(tannul,doynum)
+    deepsoil <- rep(tannul, doynum)  # deep soil boundary temperature (annual mean)
 
     daymon <- c(31,28,31,30,31,30,31,31,30,31,30,31) # days in each month
 
@@ -1200,159 +1053,154 @@ micro_global <- function(
     }
     #########################################################################################
 
-    # hourly option set to 0, so make empty vectors
-    hourly <- 0
+    # --- 3. Prepare model inputs ----------------------------------------------
+
+    # Hourly input override vectors — unused in micro_global (daily dataset),
+    # so fill with zeros / sentinel values that tell the Fortran to ignore them
+    hourly     <- 0
     rainhourly <- 0
-    TAIRhr <- rep(0,24*ndays)
-    RHhr <- rep(0,24*ndays)
-    WNhr <- rep(0,24*ndays)
-    CLDhr <- rep(0,24*ndays)
-    SOLRhr <- rep(0,24*ndays)
-    RAINhr <- rep(0,24*ndays)
-    ZENhr <- rep(-1,24*ndays)
-    IRDhr <- rep(-1,24*ndays)
-    # microclimate input parameters list
-    microinput <- c(ndays, RUF, ERR, Usrhyt, Refhyt, Numtyps, Z01, Z02, ZH1, ZH2, idayst, ida, HEMIS, ALAT, AMINUT, ALONG, ALMINT, ALREF, slope, azmuth, ALTT, CMH2O, microdaily, tannul, EC, VIEWF, snowtemp, snowdens, snowmelt, undercatch, rainmult, runshade, runmoist, maxpool, evenrain, snowmodel, rainmelt, writecsv, densfun, hourly, rainhourly, lamb, IUV, RW, PC, RL, SP, R1, IM, MAXCOUNT, IR, message, fail, snowcond, intercept, grasshade, solonly, ZH, D0, TIMAXS, TIMINS, spinup, 0, 360, maxsurf, ndmax)
+    TAIRhr <- rep(0,  24 * ndays)
+    RHhr   <- rep(0,  24 * ndays)
+    WNhr   <- rep(0,  24 * ndays)
+    CLDhr  <- rep(0,  24 * ndays)
+    SOLRhr <- rep(0,  24 * ndays)
+    RAINhr <- rep(0,  24 * ndays)
+    ZENhr  <- rep(-1, 24 * ndays)   # -1 = not supplied
+    IRDhr  <- rep(-1, 24 * ndays)   # -1 = not supplied
 
-    if(length(LAI)<ndays){
-      LAI <- rep(LAI[1],ndays)
-    }
-    if(shore == 0){
-      tides <- matrix(data = 0, nrow = 24 * ndays, ncol = 3) # make an empty matrix
-    }
-    # all microclimate data input list - all these variables are expected by the input argument of the fortran micro2014 subroutine
-    micro <- list(tides = tides, microinput = microinput, doy = doy, SLES = SLES, DEP = DEP, Nodes = Nodes, MAXSHADES = MAXSHADES, MINSHADES = MINSHADES, TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN, CCMAXX = CCMAXX, CCMINN = CCMINN, WNMAXX = WNMAXX, WNMINN = WNMINN, TAIRhr = TAIRhr, RHhr = RHhr, WNhr = WNhr, CLDhr = CLDhr, SOLRhr = SOLRhr, RAINhr = RAINhr, ZENhr = ZENhr, IRDhr = IRDhr, REFLS = REFLS, PCTWET = PCTWET, soilinit = soilinit, hori = hori, TAI = TAI, soilprops = soilprops, moists = moists, RAINFALL = RAINFALL, tannulrun = tannulrun, PE = PE, KS = KS, BB = BB, BD = BD, DD = DD, L = L, LAI = LAI)
+    # Build the flat numeric vector consumed by the Fortran microclimate solver
+    microinput <- build_microinput(
+      ndays = ndays, RUF = RUF, ERR = ERR, Usrhyt = Usrhyt, Refhyt = Refhyt,
+      Numtyps = Numtyps, Z01 = Z01, Z02 = Z02, ZH1 = ZH1, ZH2 = ZH2,
+      idayst = idayst, ida = ida, HEMIS = HEMIS, ALAT = ALAT, AMINUT = AMINUT,
+      ALONG = ALONG, ALMINT = ALMINT, ALREF = ALREF, slope = slope,
+      azmuth = azmuth, ALTT = ALTT, CMH2O = CMH2O, microdaily = microdaily,
+      tannul = tannul, EC = EC, VIEWF = VIEWF, snowtemp = snowtemp,
+      snowdens = snowdens, snowmelt = snowmelt, undercatch = undercatch,
+      rainmult = rainmult, runshade = runshade, runmoist = runmoist,
+      maxpool = maxpool, evenrain = evenrain, snowmodel = snowmodel,
+      rainmelt = rainmelt, writecsv = writecsv, densfun = densfun,
+      hourly = hourly, rainhourly = rainhourly, lamb = lamb, IUV = IUV,
+      RW = RW, PC = PC, RL = RL, SP = SP, R1 = R1, IM = IM,
+      MAXCOUNT = MAXCOUNT, IR = IR, message = message, fail = fail,
+      snowcond = snowcond, intercept = intercept, grasshade = grasshade,
+      solonly = solonly, ZH = ZH, D0 = D0, TIMAXS = TIMAXS, TIMINS = TIMINS,
+      spinup = spinup, maxsurf = maxsurf, ndmax = ndmax
+      # dewrain / moiststep left at defaults (0 / 360) for this daily dataset
+    )
 
-    # write all input to csv files in their own folder
-    if(write_input == 1){
-      if(dir.exists("micro csv input") == FALSE){
-        dir.create("micro csv input")
+    if (length(LAI) < ndays) {
+      LAI <- rep(LAI[1], ndays)
+    }
+    if (shore == 0) {
+      tides <- matrix(data = 0, nrow = 24 * ndays, ncol = 3)
+    }
+
+    # Assemble the complete input list for microclimate()
+    micro <- build_micro_list(
+      microinput = microinput, doy = doy, SLES = SLES, DEP = DEP,
+      Nodes = Nodes, MAXSHADES = MAXSHADES, MINSHADES = MINSHADES,
+      TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN,
+      CCMAXX = CCMAXX, CCMINN = CCMINN, WNMAXX = WNMAXX, WNMINN = WNMINN,
+      TAIRhr = TAIRhr, RHhr = RHhr, WNhr = WNhr, CLDhr = CLDhr,
+      SOLRhr = SOLRhr, RAINhr = RAINhr, ZENhr = ZENhr, IRDhr = IRDhr,
+      REFLS = REFLS, PCTWET = PCTWET, soilinit = soilinit, hori = hori,
+      TAI = TAI, soilprops = soilprops, moists = moists, RAINFALL = RAINFALL,
+      deepsoil = deepsoil, PE = PE, KS = KS, BB = BB, BD = BD, DD = DD,
+      L = L, LAI = LAI, tides = tides
+    )
+
+    # Optionally dump all inputs to CSV files for debugging
+    if (write_input == 1) {
+      write_micro_csv(
+        microinput = microinput, doy = doy, SLES = SLES, DEP = DEP,
+        Nodes = Nodes, MAXSHADES = MAXSHADES, MINSHADES = MINSHADES,
+        TIMAXS = TIMAXS, TIMINS = TIMINS,
+        TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN,
+        CCMAXX = CCMAXX, CCMINN = CCMINN, WNMAXX = WNMAXX, WNMINN = WNMINN,
+        REFLS = REFLS, PCTWET = PCTWET, soilinit = soilinit, hori = hori,
+        TAI = TAI, soilprops = soilprops, moists = moists, RAINFALL = RAINFALL,
+        deepsoil = deepsoil, PE = PE, BD = BD, DD = DD, BB = BB, KS = KS,
+        L = L, LAI = LAI, tides = tides,
+        TAIRhr = TAIRhr, RHhr = RHhr, WNhr = WNhr, CLDhr = CLDhr,
+        SOLRhr = SOLRhr, RAINhr = RAINhr, ZENhr = ZENhr, IRDhr = IRDhr
+      )
+    }
+
+    # --- 4. Run the microclimate model ----------------------------------------
+    if (is.numeric(loc[1])) {
+      location <- paste("long", loc[1], "lat", loc[2])
+    } else {
+      location <- loc
+    }
+
+    if (runmicro) {
+      message(paste('running microclimate model for', timeinterval, 'days by',
+                    nyears, 'years at site', location))
+      message('Note: the output column `SOLR` in metout and shadmet is for unshaded horizontal plane solar radiation')
+      ptm <- proc.time()
+      microut <- microclimate(micro)
+      message(paste0('runtime ', (proc.time() - ptm)[3], ' seconds'))
+
+      if (timeinterval == 12) {
+        RAINFALL <- orig.RAINFALL  # restore monthly rainfall for the return value
       }
-      write.table(as.matrix(microinput), file = "micro csv input/microinput.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(doy, file = "micro csv input/doy.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(SLES, file = "micro csv input/SLES.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(DEP, file = "micro csv input/DEP.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(Nodes, file = "micro csv input/Nodes.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(MAXSHADES, file = "micro csv input/Maxshades.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(MINSHADES, file = "micro csv input/Minshades.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(TIMAXS, file = "micro csv input/TIMAXS.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(TIMINS, file = "micro csv input/TIMINS.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(TMAXX, file = "micro csv input/TMAXX.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(TMINN, file = "micro csv input/TMINN.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(RHMAXX, file = "micro csv input/RHMAXX.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(RHMINN, file = "micro csv input/RHMINN.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(CCMAXX, file = "micro csv input/CCMAXX.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(CCMINN, file = "micro csv input/CCMINN.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(WNMAXX, file = "micro csv input/WNMAXX.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(WNMINN, file = "micro csv input/WNMINN.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(REFLS, file = "micro csv input/REFLS.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(PCTWET, file = "micro csv input/PCTWET.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(soilinit, file = "micro csv input/soilinit.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(hori, file = "micro csv input/hori.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(TAI, file = "micro csv input/TAI.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(soilprops, file="micro csv input/soilprop.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(moists,file="micro csv input/moists.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(RAINFALL,file="micro csv input/rain.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(tannulrun,file="micro csv input/tannulrun.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(PE,file="micro csv input/PE.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(BD,file="micro csv input/BD.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(DD,file="micro csv input/DD.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(BB,file="micro csv input/BB.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(KS,file="micro csv input/KS.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(L,file="micro csv input/L.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(LAI,file="micro csv input/LAI.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(tides,file="micro csv input/tides.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(TAIRhr,file="micro csv input/TAIRhr.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(RHhr,file="micro csv input/RHhr.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(WNhr,file="micro csv input/WNhr.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(CLDhr,file="micro csv input/CLDhr.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(SOLRhr,file="micro csv input/SOLRhr.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(RAINhr,file="micro csv input/RAINhr.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(ZENhr,file="micro csv input/ZENhr.csv", sep = ",", col.names = NA, qmethod = "double")
-      write.table(IRDhr,file="micro csv input/IRDhr.csv", sep = ",", col.names = NA, qmethod = "double")
-    }
-
-    if(is.numeric(loc[1])){
-      location<-paste("long",loc[1],"lat",loc[2])
-    }else{
-      location<-loc
-    }
-    if(runmicro){
-    message(paste('running microclimate model for',timeinterval,'days by',nyears,'years at site',location,'\n'))
-    message('Note: the output column `SOLR` in metout and shadmet is for unshaded horizontal plane solar radiation \n')
-    ptm <- proc.time() # Start timing
-    microut<-microclimate(micro)
-    message(paste0('runtime ', (proc.time() - ptm)[3], ' seconds')) # Stop the clock
-
-    metout <- microut$metout # retrieve above ground microclimatic conditions, min shade
-    shadmet <- microut$shadmet # retrieve above ground microclimatic conditions, max shade
-    soil <- microut$soil # retrieve soil temperatures, minimum shade
-    shadsoil <- microut$shadsoil # retrieve soil temperatures, maximum shade
-    tcond <- microut$tcond
-    shadtcond <- microut$shadtcond
-    specheat <- microut$specheat
-    shadspecheat <- microut$shadspecheat
-    densit <- microut$densit
-    shaddensit <- microut$shaddensit
-    if(runmoist == 1){
-      soilmoist <- microut$soilmoist # retrieve soil moisture, minimum shade
-      shadmoist <- microut$shadmoist # retrieve soil moisture, maximum shade
-      humid <- microut$humid # retrieve soil humidity, minimum shade
-      shadhumid <- microut$shadhumid # retrieve soil humidity, maximum shade
-      soilpot <- microut$soilpot # retrieve soil water potential, minimum shade
-      shadpot <- microut$shadpot # retrieve soil water potential, maximum shade
-      plant <- microut$plant # retrieve plant output, minimum shade
-      shadplant <- microut$shadplant # retrieve plant output, maximum shade
-    }else{
-      soilpot <- soil
-      soilmoist <- soil
-      shadpot <- soil
-      shadmoist <- soil
-      humid <- soil
-      shadhumid <- soil
-      plant <- cbind(soil,soil[,3:4])
-      shadplant <- cbind(soil,soil[,3:4])
-      soilpot[,3:12] <- 0
-      soilmoist[,3:12] <- 0.5
-      shadpot[,3:12] <- 0
-      shadmoist[,3:12] <- 0.5
-      humid[,3:12] <- 0.99
-      shadhumid[,3:12] <- 0.99
-      plant[,3:14] <- 0
-      shadplant[,3:14] <- 0
-    }
-    if(snowmodel == 1){
-      sunsnow <- microut$sunsnow
-      shdsnow <- microut$shdsnow
-    }
-    if(timeinterval == 12){
-      RAINFALL <- orig.RAINFALL
-    }
-    if(max(metout[,1] == 0)){
-      cat("ERROR: the model crashed - try a different error tolerance (ERR) or a different spacing in DEP", '\n')
-    }
-    days <- rep(seq(1,timeinterval * nyears), 24)
-    days <- days[order(days)]
-    dates <- days + metout[, 2] / 60 / 24 - 1 # dates for hourly output
-    dates2 <- seq(1, timeinterval * nyears) # dates for daily output
-    if(lamb == 1){
-      drlam <- as.data.frame(microut$drlam) # retrieve direct solar irradiance
-      drrlam <- as.data.frame(microut$drrlam) # retrieve direct Rayleigh component solar irradiance
-      srlam <- as.data.frame(microut$srlam) # retrieve scattered solar irradiance
-      if(snowmodel == 1){
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,dem=dem, diffuse_frac = diffuse_frac))
-      }else{
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,drlam=drlam,drrlam=drrlam,srlam=srlam,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,dem=dem, diffuse_frac = diffuse_frac))
+      if (max(metout[, 1] == 0)) {
+        message("ERROR: the model crashed - try a different error tolerance (ERR) or a different spacing in DEP")
       }
-    }else{
-      if(snowmodel == 1){
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,sunsnow=sunsnow,shdsnow=shdsnow,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,dem=dem, diffuse_frac = diffuse_frac))
-      }else{
-        return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,humid=humid,shadhumid=shadhumid,soilpot=soilpot,shadpot=shadpot,plant=plant,shadplant=shadplant,tcond=tcond,shadtcond=shadtcond,specheat=specheat,shadspecheat=shadspecheat,densit=densit,shaddensit=shaddensit,RAINFALL=RAINFALL,ndays=ndays,elev=ALTT,REFL=REFL[1],longlat=c(x[1],x[2]),nyears=nyears,timeinterval=timeinterval,minshade=MINSHADES,maxshade=MAXSHADES,DEP=DEP,dates=dates,dates2=dates2,PE=PE,BD=BD,DD=DD,BB=BB,KS=KS,dem=dem, diffuse_frac = diffuse_frac))
-      }
+
+      # Compute hourly and daily date sequences for the output
+      day_seq <- rep(seq(1, timeinterval * nyears), 24)
+      day_seq <- day_seq[order(day_seq)]
+      metout  <- microut$metout
+      dates   <- day_seq + metout[, 2] / 60 / 24 - 1  # fractional day index
+      dates2  <- seq(1, timeinterval * nyears)          # integer day index
+
+      # --- 5. Process and return results ------------------------------------
+      out <- process_micro_output(microut,
+                                  runmoist  = runmoist,
+                                  snowmodel = snowmodel,
+                                  lamb      = lamb)
+
+      return(build_micro_return(
+        out          = out,
+        RAINFALL     = RAINFALL,
+        ndays        = ndays,
+        ALTT         = ALTT,
+        REFL         = REFL,
+        longlat      = c(x[1], x[2]),
+        nyears       = nyears,
+        timeinterval = timeinterval,
+        MINSHADES    = MINSHADES,
+        MAXSHADES    = MAXSHADES,
+        DEP          = DEP,
+        dates        = dates,
+        dates2       = dates2,
+        PE           = PE,
+        BD           = BD,
+        DD           = DD,
+        BB           = BB,
+        KS           = KS,
+        dem          = dem,
+        diffuse_frac = diffuse_frac,
+        snowmodel    = snowmodel,
+        lamb         = lamb
+      ))
+
+    } else {
+      # runmicro = FALSE: return only the prepared weather inputs, not model output
+      days_hr <- rep(seq(1, timeinterval * nyears), 24)
+      days_hr <- days_hr[order(days_hr)]
+      dates   <- days_hr
+      dates2  <- seq(1, timeinterval * nyears)
+      return(list(
+        RAINFALL = RAINFALL, TMAXX = TMAXX, TMINN = TMINN,
+        RHMAXX = RHMAXX, RHMINN = RHMINN, WNMAXX = WNMAXX, WNMINN = WNMINN,
+        CCMAXX = CCMAXX, CCMINN = CCMINN, CLDhr = CLDhr, WNhr = WNhr,
+        TAIRhr = TAIRhr, RHhr = RHhr, RAINhr = RAINhr, SOLRhr = SOLRhr,
+        ZENhr = ZENhr, IRDhr = IRDhr, dates = dates, dates2 = dates2,
+        PE = PE, BD = BD, DD = DD, BB = BB, KS = KS
+      ))
     }
-  }else{
-    return(list(RAINFALL = RAINFALL, TMAXX = TMAXX, TMINN = TMINN, RHMAXX = RHMAXX, RHMINN = RHMINN, WNMAXX = WNMAXX, WNMINN = WNMINN, CCMAXX = CCMAXX, CCMINN = CCMINN, PRESS = PRESS, CLDhr = CLDhr, WNhr = WNhr, TAIRhr = TAIRhr, RHhr = RHhr, RAINhr = RAINhr, SOLRhr = SOLRhr, ZENhr = ZENhr, IRDhr = IRDhr, microclima.out = microclima.out, dates = dates, dates2 = dates2, PE=PE,BD=BD,DD=DD,BB=BB,KS=KS))
-  }
-  } # end error trapping
+  } # end if(errors == 0)
 } # end of micro_global function
