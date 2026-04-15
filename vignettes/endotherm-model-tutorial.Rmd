@@ -64,9 +64,9 @@ library(NicheMapR)
 TAs <- seq(0, 50, 1) # air temperature (°C)
 VEL <- 0.1 # wind speed (m/s)
 vd <- WETAIR(rh = 30, db = 40)$vd # Weathers and Schoenbaechler had 16.7 mm Hg 
-# above 40 °C = 30% RH at 40 °C
+# above 40 °C = 30% relative_humidity_reference at 40 °C
 vd_sat <- WETAIR(rh = 100, db = TAs)$vd # Weathers and Schoenbaechler had 16.7 mm Hg 
-# above 40 °C = 30% RH at 40 °C
+# above 40 °C = 30% relative_humidity_reference at 40 °C
 exp_rh <- vd / vd_sat * 100
 exp_rh[exp_rh > 100] <- 100
 exp_rh[TAs < 30] <- 15
@@ -115,7 +115,7 @@ PANT_MAX <- 15 # maximum panting rate - multiplier on air flow through the lungs
 PANT_MULT <- 1 # multiplier on basal metabolic rate at maximum panting level
 
 ptm <- proc.time() # start timing
-endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], VEL = VEL, TC = TC, TC_MAX = TC_MAX, RH = hum[x], AMASS = AMASS, SHAPE = SHAPE, SHAPE_B = SHAPE_B, SHAPE_B_MAX = SHAPE_B_MAX, PCTWET = PCTWET, PCTWET_INC = PCTWET_INC, PCTWET_MAX = PCTWET_MAX, Q10 = Q10s[x], QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, TC_INC = TC_INC, PANT_INC = PANT_INC, PANT_MAX = PANT_MAX, EXTREF = EXTREF, UNCURL = UNCURL, SAMODE = SAMODE, PANT_MULT = PANT_MULT)}) # run endoR across environments
+endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], VEL = VEL, TC = TC, TC_MAX = TC_MAX, relative_humidity_reference = hum[x], AMASS = AMASS, SHAPE = SHAPE, SHAPE_B = SHAPE_B, SHAPE_B_MAX = SHAPE_B_MAX, PCTWET = PCTWET, PCTWET_INC = PCTWET_INC, PCTWET_MAX = PCTWET_MAX, Q10 = Q10s[x], QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, TC_INC = TC_INC, PANT_INC = PANT_INC, PANT_MAX = PANT_MAX, EXTREF = EXTREF, UNCURL = UNCURL, SAMODE = SAMODE, PANT_MULT = PANT_MULT)}) # run endoR across environments
 proc.time() - ptm # stop timing
 
 # extract the output
@@ -180,20 +180,20 @@ Usrhyt <- 0.07
 maxshade <- 100
 micro <- micro_global(loc = loc, Usrhyt = Usrhyt, maxshade = maxshade)
 
-metout <- as.data.frame(micro$metout) # unshaded above-ground conditions
-soil <- as.data.frame(micro$soil) # unshaded below-ground soil temperatures
-shadmet <- as.data.frame(micro$shadmet) # shaded above-ground conditions
-shadsoil <- as.data.frame(micro$shadsoil) # shaded below-ground soil temperatures
+micromet_lowshade <- as.data.frame(micro$micromet_lowshade) # unshaded above-ground conditions
+soil_temperature_lowshade <- as.data.frame(micro$soil_temperature_lowshade) # unshaded below-ground soil temperatures
+micromet_highshade <- as.data.frame(micro$micromet_highshade) # shaded above-ground conditions
+soil_temperature_highshade <- as.data.frame(micro$soil_temperature_highshade) # shaded below-ground soil temperatures
 dates <- micro$dates
 
-TAs <- metout$TALOC # air temperatures at height of animal (°C)
-TAREFs <- metout$TAREF # air temperatures at reference height (°C)
-TSKYs <- metout$TSKYC # sky temperatures (°C)
-TGRDs <- soil$D0cm # surface temperatures (°C)
-VELs <- metout$VLOC # wind speeds at animal height (m/s)
-RHs <- metout$RHLOC # relative humidity at animal height (%)
-QSOLRs <- metout$SOLR # solar radiation (W/m2)
-Zs <- metout$ZEN # zenith angle of the sun (degrees)
+TAs <- micromet_lowshade$air_temperature_local # air temperatures at height of animal (°C)
+TAREFs <- micromet_lowshade$air_temperature_reference # air temperatures at reference height (°C)
+TSKYs <- micromet_lowshade$sky_temperature # sky temperatures (°C)
+TGRDs <- soil_temperature_lowshade[["depth_0cm"]] # surface temperatures (°C)
+VELs <- micromet_lowshade$wind_speed_local # wind speeds at animal height (m/s)
+RHs <- micromet_lowshade$relative_humidity_local # relative humidity at animal height (%)
+QSOLRs <- micromet_lowshade$solar_radiation # solar radiation (W/m2)
+Zs <- micromet_lowshade$zenith_angle # zenith angle of the sun (degrees)
 ELEV <- micro$elev # elevation (m)
 ABSSB <- 1 - micro$REFL # substrate solar absorptivity (%)
 
@@ -238,7 +238,7 @@ PANT_MULT <- 1 # multiplier on basal metabolic rate at maximum panting level
 
 # run the model
 ptm <- proc.time() # start timing
-endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], TAREF = TAREFs[x], TSKY = TSKYs[x], TGRD = TGRDs[x], VEL = VELs[x], RH = RHs[x], QSOLR = QSOLRs[x], Z = Zs[x], ELEV = ELEV, ABSSB = ABSSB, TC = TC, TC_MAX = TC_MAX, AMASS = AMASS, SHAPE = SHAPE, SHAPE_B = SHAPE_B, SHAPE_B_MAX = SHAPE_B_MAX, PCTWET = PCTWET, PCTWET_INC = PCTWET_INC, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, TC_INC = TC_INC, PANT_INC = PANT_INC, PANT_MAX = PANT_MAX, EXTREF = EXTREF, UNCURL = UNCURL, SAMODE = SAMODE, SHADE = 0, PANT_MULT = PANT_MULT)})
+endo.out <- lapply(1:length(TAs), function(x){endoR(TA = TAs[x], air_temperature_reference = TAREFs[x], TSKY = TSKYs[x], TGRD = TGRDs[x], VEL = VELs[x], relative_humidity_reference = RHs[x], QSOLR = QSOLRs[x], Z = Zs[x], ELEV = ELEV, ABSSB = ABSSB, TC = TC, TC_MAX = TC_MAX, AMASS = AMASS, SHAPE = SHAPE, SHAPE_B = SHAPE_B, SHAPE_B_MAX = SHAPE_B_MAX, PCTWET = PCTWET, PCTWET_INC = PCTWET_INC, Q10 = Q10, QBASAL = QBASAL, DELTAR = DELTAR, DHAIRD = DHAIRD, DHAIRV = DHAIRV, LHAIRD = LHAIRD, LHAIRV = LHAIRV, ZFURD = ZFURD, ZFURV = ZFURV, RHOD = RHOD, RHOV = RHOV, REFLD = REFLD, TC_INC = TC_INC, PANT_INC = PANT_INC, PANT_MAX = PANT_MAX, EXTREF = EXTREF, UNCURL = UNCURL, SAMODE = SAMODE, SHADE = 0, PANT_MULT = PANT_MULT)})
 proc.time() - ptm # end timing
 
 # extract the output

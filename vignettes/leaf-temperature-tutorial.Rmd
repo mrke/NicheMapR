@@ -77,15 +77,15 @@ micro <- micro_global(loc = loc,
 
 The results are returned as a list and are put in an object called 'micro'. The 'ectotherm' function by default expects that 'micro' exists and passes items of that list to the microclimate model.
 
-The aboveground microclimatic conditions are in a matrix called 'metout'. The soil temperatures, including surface temperature, are in the 'soil' matrix.  Note that the argument 'microclima' is set to 1, which means it uses code from the microclima package (Maclean et al., 2019) to partition solar radiation into direct and diffuse, and the diffuse fraction is then part of the microclimate model output. Pressure is obtained for the elevation used in the simulation. Some mock dates are also produced (given that this is based long long-term average monthly means and not particular dates).
+The aboveground microclimatic conditions are in a matrix called 'micromet_lowshade'. The soil temperatures, including surface temperature, are in the 'soil' matrix.  Note that the argument 'microclima' is set to 1, which means it uses code from the microclima package (Maclean et al., 2019) to partition solar radiation into direct and diffuse, and the diffuse fraction is then part of the microclimate model output. Pressure is obtained for the elevation used in the simulation. Some mock dates are also produced (given that this is based long long-term average monthly means and not particular dates).
 
 ```{r, message=FALSE, warning=FALSE}
-metout <- as.data.frame(micro$metout) # microclimate aboveground conditions
-soil <- as.data.frame(micro$soil) # microclimate soil conditions
+micromet_lowshade <- as.data.frame(micro$micromet_lowshade) # microclimate aboveground conditions
+soil <- as.data.frame(micro) # microclimate soil conditions
 PDIFs <- micro$diffuse_frac # use variable diffuse fraction
-#PDIFs <- rep(0.15, nrow(metout)) # assume uniform diffuse solar
+#PDIFs <- rep(0.15, nrow(micromet_lowshade)) # assume uniform diffuse solar
 P_a <- get_pressure(micro$elev) # air pressure, Pa
-P_a <- rep(P_a, nrow(metout)) # create hourly vector
+P_a <- rep(P_a, nrow(micromet_lowshade)) # create hourly vector
 dates <- micro$dates # mock dates
 ```
 
@@ -132,8 +132,8 @@ The ectotherm model needs a vector of hourly stomatal conductance values. I.e., 
 
 ```{r, message=FALSE, warning=FALSE}
 # set up vapour conductance vectors and simulate stomatal closure at night
-f_open <- rep(1, nrow(metout))
-f_open[metout$ZEN == 90] <- 0 # close stomata when the sun is set
+f_open <- rep(1, nrow(micromet_lowshade))
+f_open[micromet_lowshade$zenith_angle == 90] <- 0 # close stomata when the sun is set
 g_vs_abs <- g_vs_ab * f_open 
 g_vs_ads <- g_vs_ad * f_open
 ```
@@ -177,8 +177,8 @@ Now plot the results against air temperature at leaf height and at the reference
 ```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE}
 month <- 1 # choose a month to plot
 sub <- which(floor(dates) + 1 == month)
-T_air_1.2m <- metout$TAREF
-T_air_1cm <- metout$TALOC
+T_air_1.2m <- micromet_lowshade$air_temperature_reference
+T_air_1cm <- micromet_lowshade$air_temperature_local
 plot(seq(0, 23), T_air_1cm[sub], type = 'l', col = 'blue', ylab = 'temperature, deg C', xlab = 'hour of day', ylim = c(15, 50))
 points(seq(0, 23), T_air_1.2m[sub], type = 'l', col = 'blue', lty = 2)
 points(seq(0, 23), T_leaf_NMR[sub], type = 'l', ylab = 'T_leaf, deg C')
@@ -186,19 +186,19 @@ points(seq(0, 23), T_leaf_NMR[sub], type = 'l', ylab = 'T_leaf, deg C')
 
 ### Run NicheMapR ectoR_devel model
 
-Next we make the same calculation with the 'ectoR_devel' function, extracting the relevant microclimate variables from the metout and soil output tables and matching the substrate solar absorptivity with that assumed in the microclimate model run. This is done in a loop and is an order of magnitude slower than using the 'ectotherm' function.
+Next we make the same calculation with the 'ectoR_devel' function, extracting the relevant microclimate variables from the micromet_lowshade and soil output tables and matching the substrate solar absorptivity with that assumed in the microclimate model run. This is done in a loop and is an order of magnitude slower than using the 'ectotherm' function.
 
 ```{r, fig.width=7, fig.height=5, fig.show = "hold", message=FALSE, warnings=FALSE}
-TAs <- metout$TALOC
-TGRDs <- soil$D0cm
-TSKYs <- metout$TSKYC
-VELs <- metout$VLOC
-RHs <- metout$RHLOC
-QSOLRs <- metout$SOLR
-Zs <- metout$ZEN
+TAs <- micromet_lowshade$air_temperature_local
+TGRDs <- soil$0cm
+TSKYs <- micromet_lowshade$sky_temperature
+VELs <- micromet_lowshade$wind_speed_local
+RHs <- micromet_lowshade$relative_humidity_local
+QSOLRs <- micromet_lowshade$solar_radiation
+Zs <- micromet_lowshade$zenith_angle
 alpha_sub <- (1 - micro$REFL)
 
-n <- nrow(metout)
+n <- nrow(micromet_lowshade)
 T_leaf_ectoR <- matrix(nrow = n)
 ptm <- proc.time() # Start timing
 for(i in 1:n){
@@ -225,7 +225,7 @@ for(i in 1:n){
                            TGRD = TGRDs[i],
                            TSKY = TSKYs[i],
                            VEL = VELs[i],
-                           RH = RHs[i],
+                           relative_humidity_reference = RHs[i],
                            QSOLR = QSOLRs[i],
                            Z = Zs[i],
                            pres = P_a[i],
@@ -281,7 +281,7 @@ T_leaf_Campbell <- unlist(lapply(1:length(TAs), function(x){leaf_temperature(
   TGRD = TGRDs[x], # ground temperature from microclimate model, deg C
   TSKY = TSKYs[x], # sky temperature from microclimate model, deg C
   VEL = VELs[x], # wind speed from microclimate model, m/s
-  RH = RHs[x], # relative humidity from microclimate model, %
+  relative_humidity_reference = RHs[x], # relative humidity from microclimate model, %
   QSOLR = QSOLRs[x], # total horizontal plane solar radiation from microclimate model, W/m2
   Z = Zs[x], # solar zenith angle from microclimate model, degrees
   PRESS = P_a[x],
@@ -346,7 +346,7 @@ ptm <- proc.time() # Start timing
 for(i in 1:length(TAs)){
   enviro_par <- make_enviropar(
     replace = list(
-      RH = set_units(RHs[i] / 100, "1"),
+      relative_humidity_reference = set_units(RHs[i] / 100, "1"),
       S_sw = set_units(QSOLRs[i], "W/m^2"),
       T_air = set_units(TAs[i] + 273.15, "K"),
       T_sky = set_units(TSKYs[i] + 273.15, "K"),
@@ -630,9 +630,9 @@ dates2 <- micro$dates2
 Now extract the aboveground microclimate, the soil water potential predictions and the plant predictions (from the SPAC model) from the 'micro' object.
 
 ```{r, message=FALSE, warning=FALSE}
-metout <- as.data.frame(micro$metout)
-soilpot <- as.data.frame(micro$soilpot)
-plant <- as.data.frame(micro$plant)
+micromet_lowshade <- as.data.frame(micro$micromet_lowshade)
+soil_water_potential_lowshade <- as.data.frame(micro$soil_water_potential_lowshade)
+plant <- as.data.frame(micro)
 ```
 
 ### Compute stomatal dynamics with Photosyn
@@ -653,10 +653,10 @@ g_vs_ab_max <- 0.4 # leaf vapour conductance, abaxial (bottom of leaf), mol/m2/s
 
 # use Photosyn to get stomatal dynamics
 P_a <- get_pressure(micro$elev) # air pressure, Pa
-P_a <- rep(P_a, nrow(metout)) # create hourly vector
-TAs <- metout$TALOC
-RHs <- metout$RHLOC
-QSOLRs <- metout$SOLR
+P_a <- rep(P_a, nrow(micromet_lowshade)) # create hourly vector
+TAs <- micromet_lowshade$air_temperature_local
+RHs <- micromet_lowshade$relative_humidity_local
+QSOLRs <- micromet_lowshade$solar_radiation
 WETAIR_out <- WETAIR(db = TAs, rh = RHs, bp = P_a)
 VPD_Pa <- WETAIR_out$esat - WETAIR_out$e
 UMOLPERJ <- 4.57 # mu_mol photons / J

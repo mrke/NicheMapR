@@ -38,19 +38,19 @@
 #' loc <- c(141.86, -29.05) # outback Australia
 #' micro <<- micro_global(loc = loc, microclima = 1) # setting microclima = 1 to get partitioned diffuse and direct solar - needs internet connection for the DEM download
 #' dates <- micro$dates # mock dates
-#' metout <- as.data.frame(micro$metout) # microclimate aboveground conditions
+#' micromet_lowshade <- as.data.frame(micro$micromet_lowshade) # microclimate aboveground conditions
 #' soil <- as.data.frame(micro$soil) # soil temperature
 #'
 #' # obtain relevant microclimate conditions
 #' P_a <- get_pressure(micro$elev/288) # hourlydata$pressure
-#' PRESSs <- rep(P_a, nrow(metout)) # atmospheric pressure, Pa
-#' TAs <- metout$TALOC # air temperature at leaf height from microclimate model, deg C
+#' PRESSs <- rep(P_a, nrow(micromet_lowshade)) # atmospheric pressure, Pa
+#' TAs <- micromet_lowshade$TALOC # air temperature at leaf height from microclimate model, deg C
 #' TGRDs <- soil$D0cm # ground temperature from microclimate model, deg C
-#' TSKYs <- metout$TSKY # sky temperature from microclimate model, deg C
-#' VELs <- metout$VLOC # wind speed from microclimate model, m/s
-#' RHs <- metout$RHLOC # relative humidity from microclimate model, %
-#' QSOLRs <- metout$SOLR # total horizontal plane solar radiation from microclimate model, W/m2
-#' Zs <- metout$ZEN # solar zenith angle, degrees
+#' TSKYs <- micromet_lowshade$TSKY # sky temperature from microclimate model, deg C
+#' VELs <- micromet_lowshade$VLOC # wind speed from microclimate model, m/s
+#' RHs <- micromet_lowshade$RHLOC # relative humidity from microclimate model, %
+#' QSOLRs <- micromet_lowshade$SOLR # total horizontal plane solar radiation from microclimate model, W/m2
+#' Zs <- micromet_lowshade$ZEN # solar zenith angle, degrees
 #' PDIFs <- micro$diffuse_frac # use variable diffuse fraction
 #' epsilon_sky <- 1 # emissivity has already been incorporated in calculation of TSKYs
 #' alpha_S <- 1 - micro$REF # substrate solar absorptivity
@@ -72,10 +72,10 @@
 #' pct_cond <- 0 # percent of leaf conducting to the ground (%)
 #'
 #' # set up vapour conductance vectors and simulate stomatal closure at night
-#' g_vs_abs <- rep(g_vs_ab, nrow(metout))
-#' g_vs_ads <- rep(g_vs_ad, nrow(metout))
-#' g_vs_abs[metout$ZEN == 90] <- 0 # close stomata when the sun is set
-#' g_vs_ads[metout$ZEN == 90] <- 0 # close stomata when the sun is set
+#' g_vs_abs <- rep(g_vs_ab, nrow(micromet_lowshade))
+#' g_vs_ads <- rep(g_vs_ad, nrow(micromet_lowshade))
+#' g_vs_abs[micromet_lowshade$ZEN == 90] <- 0 # close stomata when the sun is set
+#' g_vs_ads[micromet_lowshade$ZEN == 90] <- 0 # close stomata when the sun is set
 #' g_vs_abs <- g_vs_abs + g_vs_base / 2
 #' g_vs_ads <- g_vs_ads + g_vs_base / 2
 #'
@@ -111,8 +111,8 @@
 #'
 #' month <- 1 # choose a month to plot
 #' sub <- which(floor(dates) + 1 == month)
-#' T_air_2m <- metout$TAREF
-#' T_air_1cm <- metout$TALOC
+#' T_air_2m <- micromet_lowshade$TAREF
+#' T_air_1cm <- micromet_lowshade$TALOC
 #' plot(T_air_1cm[sub], type = 'l', col = 'blue', ylab = 'temperature, deg C', xlab = 'hour of day', ylim = c(15, 50))
 #' points(T_air_2m[sub], type = 'l', col = 'blue', lty = 2)
 #' points(T_leaf_CN[sub], type = 'l')

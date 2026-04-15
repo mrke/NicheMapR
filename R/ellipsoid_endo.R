@@ -68,22 +68,22 @@
 #'
 #'micro<-micro_global(loc = c(139.5, -25.9)) # run the microclimate model at Birdsville with default settings
 #'
-#'metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
-#'shadmet<-as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
+#'micromet_lowshade<-as.data.frame(micro$micromet_lowshade) # above ground microclimatic conditions, min shade
+#'micromet_highshade<-as.data.frame(micro$micromet_highshade) # above ground microclimatic conditions, max shade
 #'soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
-#'shadsoil<-as.data.frame(micro$shadsoil) # soil temperatures, maximum shade
+#'soil_temperature_highshade<-as.data.frame(micro$soil_temperature_highshade) # soil temperatures, maximum shade
 #'
 #'# append dates
 #'days<-rep(seq(1,12),24)
 #'days<-days[order(days)]
-#'dates<-days+metout$TIME/60/24-1 # dates for hourly output
+#'dates<-days+micromet_lowshade$TIME/60/24-1 # dates for hourly output
 #'dates2<-seq(1,12,1) # dates for daily output
-#'metout<-cbind(dates,metout)
+#'micromet_lowshade<-cbind(dates,micromet_lowshade)
 #'soil<-cbind(dates,soil)
-#'shadmet<-cbind(dates,shadmet)
-#'shadsoil<-cbind(dates,shadsoil)
+#'micromet_highshade<-cbind(dates,micromet_highshade)
+#'soil_temperature_highshade<-cbind(dates,soil_temperature_highshade)
 #'
-#'endo<-cbind(metout[,1:3],ellipsoid(airT = shadmet$TALOC, windspd = shadmet$VLOC, rh = shadmet$RHLOC))
+#'endo<-cbind(micromet_lowshade[,1:3],ellipsoid(airT = micromet_highshade$TALOC, windspd = micromet_highshade$VLOC, rh = micromet_highshade$RHLOC))
 #'
 #'with(endo,{plot(H2O_gph ~ dates,xlab = "Date and Time", ylab = "Water Loss Rate (g/h)"
 #', type = "l",main=paste("Evaporative Water Loss",sep=""))})

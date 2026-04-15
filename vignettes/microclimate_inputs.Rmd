@@ -21,13 +21,13 @@ knitr::opts_chunk$set(
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
-writecsv                  | -                 | 0 (off) or 1 (on) | make Fortran program write output as csv files  
+output_to_csv                  | -                 | 0 (off) or 1 (on) | make Fortran program write output as csv files  
 microdaily                | -                 | 0 (off) or 1 (on) | run in daily mode (initial conditions from previous day)
 runshade                  | -                 | 0 (off) or 1 (on) | run the model twice, once for each shade level
-runmoist                  | -                 | 0 (off) or 1 (on) | run soil moisture model
-snowmodel                 | -                 | 0 (off) or 1 (on) | run the snow model
+soil_moisture_model                  | -                 | 0 (off) or 1 (on) | run soil moisture model
+snow_model                 | -                 | 0 (off) or 1 (on) | run the snow model
 hourly                    | -                 | 0 (off) or 1 (on) | run the model from hourly weather inputs
-IR                        | -                 | 0 or 1            | longwave radiation algorithm
+longwave_radiation_model                        | -                 | 0 or 1            | longwave radiation algorithm
 message                   | -                 | 0 or 1            | integrator messages
 fail                      | -                 | integer            | integrator failure count before quitting
 "
@@ -40,7 +40,7 @@ tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
 doynum                    | days              | positive integer  | number of days to run the model
-doy                       | day-of-year       | 1-365             | vector of days of year (length must equal doynum)
+day_of_year                       | day-of-year       | 1-365             | vector of days of year (length must equal doynum)
 idayst                    | -                 | 1-doynum          | start day (usually 1)
 ida                       | -                 | 1-doynum          | end day (usually value of doynum)
 HEMIS                     | -                 | 1 (N) or 2 (S)    | hemisphere to run
@@ -49,7 +49,7 @@ AMINUT                    | dec. minutes      | 0-60              | latitude (mi
 ALONG                     | degrees           | 0-180             | longitude (degrees)
 ALMINT                    | dec. minutes      | 0-60              | longitude (minutes)
 ALREF                     | degrees           | 0-180             | reference longitude (degrees) for time zone
-EC                        | -                 | 0.0034 to 0.058   | eccenricity of the earth's orbit (presently 0.0167238)
+orbital_eccentricity                        | -                 | 0.0034 to 0.058   | eccenricity of the earth's orbit (presently 0.0167238)
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
@@ -59,15 +59,15 @@ cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
-RUF                       | m                 | 0.01-200          | roughness height
-Refhyt                    | m                 | 0.50-10           | reference height for air temp, wind speed and humidity input data
-Usrhyt                    | m                 | > 0.005, < Refhyt | local height at which to compute air temp, wind speed and humidity 
-ZH                       | m                 | > 0 (or else not used)   | heat transfer roughness height (m)
-D0                       | m                 | > 0                      | zero plane displacement correction factor (m) used with ZH
-Z01                       | m                 | 0 or (> Z02, < ZH2)   | 1st segment, roughness height$^1$
-Z02                       | m                 | 0 or (> RUF, < Z01)   | 2nd segment, roughness height$^1$
-ZH1                       | m                 | 0 or (> ZH2, < Refhyt)| 1st segment, height above surface$^1$
-ZH2                       | m                 | 0 or (> RUF, < ZH1)   | 2nd segment, height above surface$^1$
+roughness_height                       | m                 | 0.01-200          | roughness height
+reference_height                    | m                 | 0.50-10           | reference height for air temp, wind speed and humidity input data
+local_height                    | m                 | > 0.005, < reference_height | local height at which to compute air temp, wind speed and humidity 
+canopy_roughness_height                       | m                 | > 0 (or else not used)   | heat transfer roughness height (m)
+zero_plane_displacement                       | m                 | > 0                      | zero plane displacement correction factor (m) used with canopy_roughness_height
+roughness_height_1                       | m                 | 0 or (> roughness_height_2, < wind_profile_height_2)   | 1st segment, roughness height$^1$
+roughness_height_2                       | m                 | 0 or (> roughness_height, < roughness_height_1)   | 2nd segment, roughness height$^1$
+wind_profile_height_1                       | m                 | 0 or (> wind_profile_height_2, < reference_height)| 1st segment, height above surface$^1$
+wind_profile_height_2                       | m                 | 0 or (> roughness_height, < wind_profile_height_1)   | 2nd segment, height above surface$^1$
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
@@ -79,14 +79,14 @@ $^1$Set to 0 if no experimental data
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
-SLES                      | -                 | 0 or 1               | substrate longwave IR emissivity$^1$ 
-REFLS                      | -                 | 0 or 1               | substrate solar reflectivity$^1$ 
-CMH2O                     | cm                | 0.1-2             | precipitable cm H$_2$O in air column
-TAI                       | -                 | 1-doynum          | aerosol optical extinction coefficients$^{1,2}$ 
-solonly                   | -                | 0 or 1             | flag to do only solar calcs
-lamb                     | -                | 0 or 1             | flag to return wavelength-specific solar radiation output
-IUV                      | -                | 0 or 1             | flag to use gamma function for scattered solar radiation$^{3}$
-ndmax                      | -                | >=1             | iterations of first day to get a steady periodic$
+surface_emissivity                      | -                 | 0 or 1               | substrate longwave longwave_radiation_model emissivity$^1$ 
+albedo                      | -                 | 0 or 1               | substrate solar reflectivity$^1$ 
+precipitable_water                     | cm                | 0.1-2             | precipitable cm H$_2$O in air column
+aerosol_optical_depth                       | -                 | 1-doynum          | aerosol optical extinction coefficients$^{1,2}$ 
+solar_model_only                   | -                | 0 or 1             | flag to do only solar calcs
+radiation_per_wavelength                     | -                | 0 or 1             | flag to return wavelength-specific solar radiation output
+scattered_uv                      | -                | 0 or 1             | flag to use gamma function for scattered solar radiation$^{3}$
+max_iterations_per_day                      | -                | >=1             | iterations of first day to get a steady periodic$
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
@@ -111,10 +111,10 @@ tabl <- "
 ALTT                      | m                 | 0-10,000          | elevation
 slope                     | decimal degrees   | 0-90              | slope
 azmuth                    | decimal degrees   | 0-360             | aspect (0 is north)
-hori                      | decimal degrees   | 0-90              | horizon angles$^1$  
+horizon_angles                      | decimal degrees   | 0-90              | horizon angles$^1$  
 VIEWF                     | -                 | 0-1               | view factor to sky$^2$ 
-MINSHADES                 | %                 | 0-100             | minimum shade$^3$  
-MAXSHADES                 | %                 | 0-100             | maximum shade$^{3,4}$ 
+minimum_shade_daily                 | %                 | 0-100             | minimum shade$^3$  
+maximum_shade_daily                 | %                 | 0-100             | maximum shade$^{3,4}$ 
 PCTWETS                   | %                 | 0-100             | percentage of substrate unit area that is wet$^{3,5}$  
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
@@ -128,15 +128,15 @@ $^{3}$vector of length = doynum
 
 $^{4}$must be greater than minimum shade
 
-$^{5}$drives evaporation - set internally when runmoist==1
+$^{5}$drives evaporation - set internally when soil_moisture_model==1
 
 ## Substrate profile settings
 ```{r table6, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
-DEP                       | cm                | 0-1000            | vector of 10 depths$^1$
-ERR                       | -                 | >0                | integrator error (typically 1.5-2)
+depths                       | cm                | 0-1000            | vector of 10 depths$^1$
+tolerance                       | -                 | >0                | integrator error (typically 1.5-2)
 tannul                    | &deg;C            | -80 - +60         | annual mean temperature
 spinup                    | -                 | 0 or 1            | repeate first day's simulation for steady state?
 soilinit                  | &deg;C            | -80 - +60         | initial substrate temperature profile$^1$
@@ -146,39 +146,39 @@ cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 
 $^{1}$Acting as nodes for substrate heat budget calculations. Must start at 0 and nodes must be closely spaced near the surface. Typical depth profile c(0., 2.5,  5.,  10.,  15,  20,  30,  50,  100,  200)
 
-$^{2}$Vector of length 10, corresponding to depths specified in variable DEP
+$^{2}$Vector of length 10, corresponding to depths specified in variable depths
 
 ## Time varying environmental data
 ```{r table7, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
 *Name*                    | *Units *          |	*Allowed Range*   |	*Description*
 ------------------------- | ----------------- | ----------------- | --------------
-TIMINS                    | h                 | 0-23              | time of minima for air temp, wind, humidity and cloud cover$^1$
-TIMAXS                    | h                 | 0-23              | time of maxima for air temp, wind, humidity and cloud cover$^2$
-TMINN                     | &deg;C            | -80 - +60         | minimum air temperature (at reference height, Refhyt)$^3$
-TMAXX                     | &deg;C            | -80 - +60         | maximum air temperature (at reference height, Refhyt)$^3$
-RHMINN                    | %                 | 0-100             | minimum relative humidity (at reference height, Refhyt)$^3$
-RHMAXX                    | %                 | 0-100             | maximum relative humidity (at reference height, Refhyt)$^3$
-WNMINN                    | m s$^{-1}$        | 0-100             | minimum wind speed (at reference height, Refhyt)$^3$
-WNMAXX                    | m s$^{-1}$        | 0-100             | maximum wind speed (at reference height, Refhyt)$^3$
-CCMINN                    | %                 | 0-100             | minimum cloud cover; vector of length = doynum
-CCMAXX                    | %                 | 0-100             | maximum cloud cover; vector of length = doynum
-RAINFALL                  | mm                | 0-2000            | daily total rainfall; vector of length = doynum
-tannulrun                 | &deg;C            | -80 - +60         | daily deep soil temperature; vector of length = doynum
-moists                    | decimal %         | 0-1               | predefined soil daily moisture profile through time$^4$
-TAIRhr                    | &deg;C            | -80 - +60         | hourly air temperature (at reference height, Refhyt)$^5$
-RHhr                      | %                 | 0-100             | hourly relative humidity (at reference height, Refhyt)$^5$
-WNhr                      | m s$^{-1}$        | 0-100             | hourly wind speed (at reference height, Refhyt)$^5$
-CLDhr                     | %                 | 0-100             | hourly cloud cover$^5$
-SOLRhr                    | W m$^{2}$         | 0-1367            | hourly solar radiation$^5$
-RAINhr                    | mm                | 0-2000            | hourly rainfall$^5$
+minima_times                    | h                 | 0-23              | time of minima for air temp, wind, humidity and cloud cover$^1$
+maxima_times                    | h                 | 0-23              | time of maxima for air temp, wind, humidity and cloud cover$^2$
+reference_temperature_min                     | &deg;C            | -80 - +60         | minimum air temperature (at reference height, reference_height)$^3$
+reference_temperature_max                     | &deg;C            | -80 - +60         | maximum air temperature (at reference height, reference_height)$^3$
+reference_humidity_min                    | %                 | 0-100             | minimum relative humidity (at reference height, reference_height)$^3$
+reference_humidity_max                    | %                 | 0-100             | maximum relative humidity (at reference height, reference_height)$^3$
+reference_wind_min                    | m s$^{-1}$        | 0-100             | minimum wind speed (at reference height, reference_height)$^3$
+reference_wind_max                    | m s$^{-1}$        | 0-100             | maximum wind speed (at reference height, reference_height)$^3$
+cloud_min                    | %                 | 0-100             | minimum cloud cover; vector of length = doynum
+cloud_max                    | %                 | 0-100             | maximum cloud cover; vector of length = doynum
+rainfall                  | mm                | 0-2000            | daily total rainfall; vector of length = doynum
+deep_soil_temperature                 | &deg;C            | -80 - +60         | daily deep soil temperature; vector of length = doynum
+soil_moisture_profile                    | decimal %         | 0-1               | predefined soil daily moisture profile through time$^4$
+reference_temperature                    | &deg;C            | -80 - +60         | hourly air temperature (at reference height, reference_height)$^5$
+reference_humidity                      | %                 | 0-100             | hourly relative humidity (at reference height, reference_height)$^5$
+reference_wind_speed                      | m s$^{-1}$        | 0-100             | hourly wind speed (at reference height, reference_height)$^5$
+cloud_cover                     | %                 | 0-100             | hourly cloud cover$^5$
+global_radiation                    | W m$^{2}$         | 0-1367            | hourly solar radiation$^5$
+rainfall_hourly                    | mm                | 0-2000            | hourly rainfall$^5$
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
 
-$^{1}$Vector of 4 integers, air temp & wind mins relative to sunrise, humidity and cloud cover mins relative to solar noon - typical TIMINS vector c(0, 0, 1, 1).  
+$^{1}$Vector of 4 integers, air temp & wind mins relative to sunrise, humidity and cloud cover mins relative to solar noon - typical minima_times vector c(0, 0, 1, 1).  
 
-$^{2}$Vector of 4 integers, air temp & wind maxs relative to solar noon, humidity and cloud cover maxs relative to sunrise - typical TIMAXS vector c(1, 1, 0, 0).
+$^{2}$Vector of 4 integers, air temp & wind maxs relative to solar noon, humidity and cloud cover maxs relative to sunrise - typical maxima_times vector c(1, 1, 0, 0).
 
 $^{3}$Vector of length = doynum.
 
@@ -193,18 +193,18 @@ tabl <- "
 ------------------------- | -------------------- | ------------------ | --------------
 Numtyps                   | -                    | 1-10               | number of substrate types
 Nodes$^{1,2}$             | -                    | 1-10               | nodes where substrate type transitions occur
-soilprops[,1]$^{3}$       | Mg m$^{-3}$          | >0                 | bulk density (must not exceed mineral density)
-soilprops[,2]$^{3}$       | m$^{3}$ m$^{-3}$     | >0                 | volumetric water content at saturation$^{4}$ 
-soilprops[,3]$^{3}$       | W m$^{-1}$ K$^{-1}$  | >0                 | thermal conductivity
-soilprops[,4]$^{3}$       | J kg$^{-1}$ K$^{-1}$ | >0                 | specific heat capacity
-soilprops[,5]$^{3}$       | Mg m$^{-3}$          | >0                 | mineral density
+soil_properties[,1]$^{3}$       | Mg m$^{-3}$          | >0                 | bulk density (must not exceed mineral density)
+soil_properties[,2]$^{3}$       | m$^{3}$ m$^{-3}$     | >0                 | volumetric water content at saturation$^{4}$ 
+soil_properties[,3]$^{3}$       | W m$^{-1}$ K$^{-1}$  | >0                 | thermal conductivity
+soil_properties[,4]$^{3}$       | J kg$^{-1}$ K$^{-1}$ | >0                 | specific heat capacity
+soil_properties[,5]$^{3}$       | Mg m$^{-3}$          | >0                 | mineral density
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
 
 $^{1}$Matrix of 10 rows (depths) and doynum columns
 
-$^{2}$The number of nodes specified should correspond with the variable numtypes, and in turn with the number of substrate types specified in soilprops in the soil props matrix. E.g. for a uniform profile, the first row of Nodes would be 10 (deepest soil node - the subsequent nodes all being left as 0), Numtyps would be 1, and only one and only the first row of soilprops would be filled, the rest being zero. At the other extreme, if all nodes were to have a different substrate type, values for a given row of each Nodes column would be 1, 2, ..., 10 and a different value would be specified for each row of each soilprops column.  
+$^{2}$The number of nodes specified should correspond with the variable numtypes, and in turn with the number of substrate types specified in soil_properties in the soil props matrix. E.g. for a uniform profile, the first row of Nodes would be 10 (deepest soil node - the subsequent nodes all being left as 0), Numtyps would be 1, and only one and only the first row of soil_properties would be filled, the rest being zero. At the other extreme, if all nodes were to have a different substrate type, values for a given row of each Nodes column would be 1, 2, ..., 10 and a different value would be specified for each row of each soil_properties column.  
 
 $^{3}$Matrix of 10 rows (depths) and 6 columns
 
@@ -215,28 +215,28 @@ $^{4}$at a matric potential of 0.1 bar
 tabl <- "
 *Name*                    | *Units *             |	*Allowed Range*  |	*Description*
 ------------------------- | -------------------- | ----------------- | --------------
-PE                        | J kg$^{-1}$          | 0.7-3.7           | air entry water potential; vector of 19 values$^{1}$
-KS                        | kg s m$^{-3}$        | 1 x $10^{-5}$     | saturated conductivity; vector of 19 values$^{1}$
-BB                        | -                    | 1.7-7.6           | Campbell's 'b' parameter; vector of 19 values$^{1}$
-BD                        | Mg m$^{-3}$          | >0                | bulk density (should be matched to same variable in the soilprops matrix)
-DD                        | Mg m$^{-3}$          | >0                | soil mineral density (should be matched to same variable in the soilprops matrix)
-L                         | m$^{3}$ m$^{-3}$     | 0-90              | root density; vector of 19 values$^{1}$  
-R1                        | m                    | 0-90              | root radius  
-RW                        | m$^{3}$ kg$^{-1}$ s$^{-1}$     | 0-90              | resistance per unit length of root  
-RL                        | m$^{3}$ kg$^{-1}$ s$^{-1}$     | 0-90              | resistance per unit length of leaf  
-PC                        | J kg$^{-1}$          | 0-90              | critical leaf water potential for stomatal closure  
-SP                        | -                    | >0                | stability parameter for stomatal closure equation
-IM                        | kg                   | >0                | maximum allowable mass balance error
-MAXCOUNT                  | -                    | >0                | maximum iterations for mass balance
-LAI                       | -                    | 0-90              | leaf area index, used to partition traspiration/evaporation from PET 
-rainmult                  | -                    | >0                | rainfall multiplier to impose a catchment 
-maxpool                   | mm                   | >0                | max depth for surface water pooling$^{2}$  
+air_entry_water_potential                        | J kg$^{-1}$          | 0.7-3.7           | air entry water potential; vector of 19 values$^{1}$
+saturated_hydraulic_conductivity                        | kg s m$^{-3}$        | 1 x $10^{-5}$     | saturated conductivity; vector of 19 values$^{1}$
+campbell_b_parameter                        | -                    | 1.7-7.6           | Campbell's 'b' parameter; vector of 19 values$^{1}$
+soil_bulk_density                        | Mg m$^{-3}$          | >0                | bulk density (should be matched to same variable in the soil_properties matrix)
+soil_mineral_density                        | Mg m$^{-3}$          | >0                | soil mineral density (should be matched to same variable in the soil_properties matrix)
+root_density                         | m$^{3}$ m$^{-3}$     | 0-90              | root density; vector of 19 values$^{1}$  
+root_radius                        | m                    | 0-90              | root radius  
+root_resistance                        | m$^{3}$ kg$^{-1}$ s$^{-1}$     | 0-90              | resistance per unit length of root  
+leaf_resistance                        | m$^{3}$ kg$^{-1}$ s$^{-1}$     | 0-90              | resistance per unit length of leaf  
+stomatal_closure_potential                        | J kg$^{-1}$          | 0-90              | critical leaf water potential for stomatal closure  
+stomatal_stability_parameter                        | -                    | >0                | stability parameter for stomatal closure equation
+moist_error                        | kg                   | >0                | maximum allowable mass balance error
+moist_count                  | -                    | >0                | maximum iterations for mass balance
+leaf_area_index                       | -                    | 0-90              | leaf area index, used to partition traspiration/evaporation from PET 
+rain_multiplier                  | -                    | >0                | rainfall multiplier to impose a catchment 
+maximum_pooling_depth                   | mm                   | >0                | max depth for surface water pooling$^{2}$  
 evenrain                  | -                    | 1 or 2            | even rainfall over 24hrs (1) or one event at midnight (2)
 "
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
 
-$^{1}$The 19 values represent the 10 depths as specified in the DEP vector, and an extra 9 depths in between. 
+$^{1}$The 19 values represent the 10 depths as specified in the depths vector, and an extra 9 depths in between. 
 
 $^{2}$To account for runoff - can be used to simulate a wetland.
 

@@ -62,7 +62,7 @@ and includes the following variables (among others):
 * **TSKY** - overhead (sky) temperature (&deg;C) at animal location
 * **VEL** - wind speed (m/s) at animal location
 * **RELHUM** - relative humidity (\%) at animal location
-* **ZEN** - zenith angle of sun (degrees, where 90&deg; = below the horizon)
+* **zenith_angle** - zenith angle of sun (degrees, where 90&deg; = below the horizon)
 * **ABSAN** - solar absorptivity (fractional)
 * **PCOND** - proportion of animal's surface in contact with ground (fractional)
 * **POSTURE** - postural orientation (1=perpendicular to sun, 2=parallel, 0=in-between)
@@ -75,7 +75,7 @@ The algorithm choosing the depth at which to put the animal starts at the shallo
 
 Note how the wind speed is set to an arbitrarily low value when then animal is sheltering under ground, and the air, substrate and 'sky' temperatures are equal to the soil temperature at the chosen depth.
 
-When the sun rises (**ZEN** < 90&deg;, at 6 am in in this case) the model tries placing the animal on the surface in the open, as long as the animal's body temperature is above the emergence temperature `T_RB_min` (i.e. retreat to basking transition, which is 17.5 &deg;C by default). If the resulting computed body temperature is above the minimum basking threshold `T_B_min` (also 17.5 &deg;C by default), that becomes the selected environment and the activity state **ACT** is reported as 1. 
+When the sun rises (**zenith_angle** < 90&deg;, at 6 am in in this case) the model tries placing the animal on the surface in the open, as long as the animal's body temperature is above the emergence temperature `T_RB_min` (i.e. retreat to basking transition, which is 17.5 &deg;C by default). If the resulting computed body temperature is above the minimum basking threshold `T_B_min` (also 17.5 &deg;C by default), that becomes the selected environment and the activity state **ACT** is reported as 1. 
 
 If the body temperature is above the minimum foraging temperature `T_F_min`, then activity state is set to 2. If the animal's predicted temperature is above the preferred temperature `T_pref` (30 &deg;C by default), then the animal changes posture to be parallel to the sun's rays and thereby minimise solar heat gain. If this prevents the `T_pref` from being exceeded then the animal is recorded to be in this posture. 
 
@@ -183,16 +183,16 @@ ecto <- ectotherm(Ww_g = Ww_g, alpha_max = alpha_max, alpha_min = alpha_min, sha
 environ <- as.data.frame(ecto$environ) # behaviour, Tb and environment
 enbal <- as.data.frame(ecto$enbal) # heat balance outputs
 masbal <- as.data.frame(ecto$masbal) # mass balance outputs
-metout <- as.data.frame(micro$metout) # above ground microclimate
-environ <- cbind(environ,metout$SOLR) # add solar radiation for activity window plots
+micromet_lowshade <- as.data.frame(micro$micromet_lowshade) # above ground microclimate
+environ <- cbind(environ,micromet_lowshade$solar_radiation) # add solar radiation for activity window plots
 colnames(environ)[ncol(environ)] <- "Solar"
 
 # append dates
 days <- rep(seq(1,12),24)
 days <- days[order(days)]
-dates <- days+metout$TIME/60/24-1 # dates for hourly output
+dates <- days+micromet_lowshade$TIME/60/24-1 # dates for hourly output
 dates2 <- seq(1,12,1) # dates for daily output
-metout <- cbind(dates,metout)
+micromet_lowshade <- cbind(dates,micromet_lowshade)
 environ <- cbind(dates,environ)
 masbal <- cbind(dates,masbal)
 enbal <- cbind(dates,enbal)
@@ -251,16 +251,16 @@ ecto <- ectotherm(Ww_g = Ww_g, alpha_max = alpha_max, alpha_min = alpha_min, pct
 environ <- as.data.frame(ecto$environ) # behaviour, Tb and environment
 enbal <- as.data.frame(ecto$enbal) # heat balance outputs
 masbal <- as.data.frame(ecto$masbal) # mass balance outputs
-metout <- as.data.frame(micro$metout) # above ground microclimate
-environ <- cbind(environ,metout$SOLR) # add solar radiation for activity window plots
+micromet_lowshade <- as.data.frame(micro$micromet_lowshade) # above ground microclimate
+environ <- cbind(environ,micromet_lowshade$solar_radiation) # add solar radiation for activity window plots
 colnames(environ)[ncol(environ)] <- "Solar"
 
 # append dates
 days <- rep(seq(1,12),24)
 days <- days[order(days)]
-dates <- days+metout$TIME/60/24-1 # dates for hourly output
+dates <- days+micromet_lowshade$TIME/60/24-1 # dates for hourly output
 dates2 <- seq(1,12,1) # dates for daily output
-metout <- cbind(dates,metout)
+micromet_lowshade <- cbind(dates,micromet_lowshade)
 environ <- cbind(dates,environ)
 masbal <- cbind(dates,masbal)
 enbal <- cbind(dates,enbal)

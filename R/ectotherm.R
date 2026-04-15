@@ -60,36 +60,36 @@
 #' \strong{ Environmental inputs:}
 #'
 #' \itemize{
-#' \item{\code{minshades}{ = micro$minshade, Vector of hourly minimum shade values - can be different to value used in microclimate model (e.g. to simulate sunspot tracking on a forest floor) (\%)}\cr}
-#' \item{\code{maxshades}{ = micro$maxshade, Vector of hourly maximum shade values - can be different to value used in microclimate model (e.g. to simulate use of fine-scale shade in a generally unshaded habitat) (\%)}\cr}
+#' \item{\code{minshades}{ = micro$minimum_shade, Vector of hourly minimum shade values - can be different to value used in microclimate model (e.g. to simulate sunspot tracking on a forest floor) (\%)}\cr}
+#' \item{\code{maxshades}{ = micro$maximum_shade, Vector of hourly maximum shade values - can be different to value used in microclimate model (e.g. to simulate use of fine-scale shade in a generally unshaded habitat) (\%)}\cr}
 #' \item{\code{fluid}{ = 0, Fluid type 0=air, 1=water }\cr}
 #' \item{\code{O2gas}{ = 20.95, oxygen concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr}
 #' \item{\code{N2gas}{ = 79.02, nitrogen concetration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr}
 #' \item{\code{CO2gas}{ = 0.0412, carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr}
-#' \item{\code{alpha_sub}{ = 1 - micro$REFL, Vector of daily substrate reflectances (0-1)}\cr}
+#' \item{\code{alpha_sub}{ = 1 - micro$surface_reflectivity, Vector of daily substrate reflectances (0-1)}\cr}
 #' \item{\code{epsilon_sub}{ = 1, Emissivity of substrate (0-1)}\cr}
 #' \item{\code{epsilon_sky}{ = 1, Emissivity of sky (0-1)}\cr}
 #' \item{\code{PDIF}{ = 0.1, Fraction of total solar radiation that is diffuse (0-1), will ultimately be made an optionally hourly vector}\cr}
-#' \item{\code{DEP}{ = micro$DEP, Depths available from the microclimate model simulation}\cr}
-#' \item{\code{KS}{ = micro$KS[seq(1, 19, 2)], Depth-specific saturated hydraulic conductivity (kg s/m3) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
-#' \item{\code{b}{ = micro$BB[seq(1, 19, 2)], Depth-specific Campbell's b parameter (-) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
-#' \item{\code{PE}{ = micro$PE[seq(1, 19, 2)], Depth-specific air-entry water potential (J / kg) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
-#' \item{\code{metout}{ = micro$metout, Microclimate model output for above ground, minimum shade conditions}\cr}
-#' \item{\code{shadmet}{ = micro$shadmet, Microclimate model output for above ground, maximum shade conditions}\cr}
+#' \item{\code{DEP}{ = micro$depths, Depths available from the microclimate model simulation}\cr}
+#' \item{\code{KS}{ = micro$saturated_hydraulic_conductivity[seq(1, 19, 2)], Depth-specific saturated hydraulic conductivity (kg s/m3) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
+#' \item{\code{b}{ = micro$campbell_b_parameter[seq(1, 19, 2)], Depth-specific Campbell's b parameter (-) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
+#' \item{\code{PE}{ = micro$air_entry_water_potential[seq(1, 19, 2)], Depth-specific air-entry water potential (J / kg) from the microclimate model simulation, for modelling liquid exchange with substrate}\cr}
+#' \item{\code{micromet_lowshade}{ = micro$micromet_lowshade, Microclimate model output for above ground, minimum shade conditions}\cr}
+#' \item{\code{micromet_highshade}{ = micro$micromet_highshade, Microclimate model output for above ground, maximum shade conditions}\cr}
 #' \item{\code{soil}{ = micro$soil, Microclimate model output for soil temperature, minimum shade conditions}\cr}
-#' \item{\code{shadsoil}{ = micro$shadsoil, Microclimate model output for soil temperature, maximum shade conditions}\cr}
-#' \item{\code{soilmoist}{ = micro$soilmoist, Microclimate model output for soil moisture, minimum shade conditions}\cr}
-#' \item{\code{shadmoist}{ = micro$shadmoist, Microclimate model output for soil moisture, maximum shade conditions}\cr}
+#' \item{\code{soil_temperature_highshade}{ = micro$soil_temperature_highshade, Microclimate model output for soil temperature, maximum shade conditions}\cr}
+#' \item{\code{soil_moisture_lowshade}{ = micro$soil_moisture_lowshade, Microclimate model output for soil moisture, minimum shade conditions}\cr}
+#' \item{\code{soil_moisture_highshade}{ = micro$soil_moisture_highshade, Microclimate model output for soil moisture, maximum shade conditions}\cr}
 #' \item{\code{humid}{ = micro$humid, Microclimate model output for soil humidity, minimum shade conditions}\cr}
-#' \item{\code{shadhumid}{ = micro$shadhumid, Microclimate model output for soil humidity, maximum shade conditions}\cr}
-#' \item{\code{soilpot}{ = micro$soilpot, Microclimate model output for soil water potential, minimum shade conditions}\cr}
-#' \item{\code{shadpot}{ = micro$shadpot, Microclimate model output for soil water potential, maximum shade conditions}\cr}
-#' \item{\code{tcond}{ = micro$tcond, Microclimate model output for soil thermal conductivity, minimum shade conditions}\cr}
-#' \item{\code{shadtcond}{ = micro$shadtcond, Microclimate model output for soil thermal conductivity, maximum shade conditions}\cr}
-#' \item{\code{rainfall}{ = micro$RAINFALL, Vector of daily rainfall (mm)}\cr}
-#' \item{\code{rainhr}{ = rep(-1,nrow(metout)), Vector of hourly rainfall (mm), overwrites rainfall if not negative}\cr}
-#' \item{\code{preshr}{ = rep(101325 * ((1 - (0.0065 * as.numeric(micro$elev) / 288)) ^ (1/0.190284)), nrow(metout)), Vector of hourly atmospheric pressure (Pa), defaulting to elevation-adjusted values}\cr}
-#' \item{\code{elev}{ = as.numeric(micro$elev), Elevation of simulation (m), obtained from microclimate model output by default}\cr}
+#' \item{\code{soil_humidity_highshade}{ = micro$soil_humidity_highshade, Microclimate model output for soil humidity, maximum shade conditions}\cr}
+#' \item{\code{soil_water_potential_lowshade}{ = micro$soil_water_potential_lowshade, Microclimate model output for soil water potential, minimum shade conditions}\cr}
+#' \item{\code{soil_water_potential_highshade}{ = micro$soil_water_potential_highshade, Microclimate model output for soil water potential, maximum shade conditions}\cr}
+#' \item{\code{soil_conductivity_lowshade}{ = micro$soil_conductivity_lowshade, Microclimate model output for soil thermal conductivity, minimum shade conditions}\cr}
+#' \item{\code{soil_conductivity_highshade}{ = micro$soil_conductivity_highshade, Microclimate model output for soil thermal conductivity, maximum shade conditions}\cr}
+#' \item{\code{rainfall}{ = micro$rainfall, Vector of daily rainfall (mm)}\cr}
+#' \item{\code{rainhr}{ = rep(-1,nrow(micromet_lowshade)), Vector of hourly rainfall (mm), overwrites rainfall if not negative}\cr}
+#' \item{\code{preshr}{ = rep(101325 * ((1 - (0.0065 * as.numeric(micro$elevation) / 288)) ^ (1/0.190284)), nrow(micromet_lowshade)), Vector of hourly atmospheric pressure (Pa), defaulting to elevation-adjusted values}\cr}
+#' \item{\code{elevation}{ = as.numeric(micro$elevation), Elevation of simulation (m), obtained from microclimate model output by default}\cr}
 #' \item{\code{longitude}{ = micro$longlat[1], Longitude (decimal degrees), obtained from microclimate model output by default}\cr}
 #' \item{\code{latitude}{ = micro$longlat[2], Latitude (decimal degrees), obtained from microclimate model output by default}\cr}
 #'}
@@ -273,7 +273,7 @@
 #' \item{\code{clutch_ab}{ = c(0,0), # paramters for relationship between length (cm) and clutch size: clutch size = a*SVL+b, make a and b zero if fixed clutch size}\cr}
 #' \item{\code{viviparous}{ = 0, Viviparous reproduction? 0=no, 1=yes (if yes, animal will be held in adult-sided female's body for duration of development, set by E_Ho, and will experience her body temperature}\cr}
 #' \item{\code{minclutch}{ = 0, Minimum clutch size if not enough in reproduction buffer for clutch size predicted by \code{clutch_ab} - if zero, will not operate}\cr}
-#' \item{\code{maxclutch}{ = 0, Maximum clutch size to cap clutch size predicted by \code{clutch_ab} - if zero, will not operate}\cr}
+#' \item{\code{maxclutch}{ = 0, Maximum clutch size to organic_soil_cap clutch size predicted by \code{clutch_ab} - if zero, will not operate}\cr}
 #' \item{\code{cond_clutch}{ = 0, clutch size proportional to (1) or independent (0) of body condition}\cr}
 #' \item{\code{batch}{ = 1, Invoke Pequerie et al.'s batch laying model?}\cr}
 #' \item{\code{photostart}{ = 3, Photoperiod response triggering ovulation, none (0), summer solstice (1), autumnal equinox (2), winter solstice (3), vernal equinox (4), specified daylength thresholds (5 - uses \code{daylengthstart} and \code{daylengthfinish})}\cr}
@@ -303,7 +303,7 @@
 #' \item{\code{conth}{ = 100, Cylindrical container/pond height (mm)}\cr}
 #' \item{\code{contw}{ = 1000, Cylindrical container/pond diameter (mm)}\cr}
 #' \item{\code{contype}{ = 1, Is 'containter' sitting on the surface, like a bucket (0) or sunk into the ground like a pond (1)}\cr}
-#' \item{\code{rainmult}{ = 1, Rainfall multiplier to reflect catchment (don't make this zero unless you want a drought!)}\cr}
+#' \item{\code{rain_multiplier}{ = 1, Rainfall multiplier to reflect catchment (don't make this zero unless you want a drought!)}\cr}
 #' \item{\code{continit}{ = 0, Initial container water level (cm)}\cr}
 #' \item{\code{conthole}{ = 0, Daily (or hourly if rainhr vector filled) loss of height (mm) due to 'hole' in container (e.g. infiltration to soil, drawdown from water tank)}\cr}
 #' \item{\code{contonly}{ = 1, Just run the container model and quit?}\cr}
@@ -360,7 +360,7 @@
 #' \item 12 TSKY - air temperature (&deg;C) at animal location
 #' \item 13 VEL - Wind speed (m/s) at animal location
 #' \item 14 RELHUM - Relative humidity (\%) at animal location
-#' \item 15 ZEN - Zenith angle of sun (degrees - 90 = below the horizon)
+#' \item 15 zenith_angle - Zenith angle of sun (degrees - 90 = below the horizon)
 #' \item 16 CONDEP - Depth of water body (mm) (may not be simulated or supplied)
 #' \item 17 WATERTEMP - Temperature of water body (°C) (may not be simulated or supplied)
 #' \item 18 DAYLENGTH - Day length (hours)
@@ -374,7 +374,7 @@
 #' \item 26 PCOND - proportion of animal's surface in contact with ground (fractional)
 #' \item 27 POSTURE - postural orientation (1=perpendicular to sun, 2=parallel, 0=in-between)
 #' \item 28 PANT - panting level
-#' \item 29 PCTWET - skin wetness or stomatal openness (/%)
+#' \item 29 soil_wetness - skin wetness or stomatal openness (/%)
 #' }
 #' enbal variables:
 #' \itemize{
@@ -510,17 +510,17 @@
 #'micro <- micro_global(loc = c(145.620, -16.821)) #Kuranda, Queensland
 #'
 #'# retrieve output
-#'metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
-#'shadmet <- as.data.frame(micro$shadmet) # above ground microclimatic conditions, max shade
+#'micromet_lowshade <- as.data.frame(micro$micromet_lowshade) # above ground microclimatic conditions, min shade
+#'micromet_highshade <- as.data.frame(micro$micromet_highshade) # above ground microclimatic conditions, max shade
 #'soil <- as.data.frame(micro$soil) # soil temperatures, minimum shade
-#'shadsoil <- as.data.frame(micro$shadsoil) # soil temperatures, maximum shade
+#'soil_temperature_highshade <- as.data.frame(micro$soil_temperature_highshade) # soil temperatures, maximum shade
 #'
 #'# append dates
 #'dates <- micro$dates
-#'metout <- cbind(dates, metout)
+#'micromet_lowshade <- cbind(dates, micromet_lowshade)
 #'soil <- cbind(dates, soil)
-#'shadmet <- cbind(dates, shadmet)
-#'shadsoil <- cbind(dates, shadsoil)
+#'micromet_highshade <- cbind(dates, micromet_highshade)
+#'soil_temperature_highshade <- cbind(dates, soil_temperature_highshade)
 #'
 #'# run the ectotherm model
 #'ecto <- ectotherm(T_F_min = 30, T_F_max = 35, T_pref = 33, T_B_min = 20, T_RB_min = 10)
@@ -560,8 +560,8 @@
 #'# seasonal activity plot (dark blue = night, light blue = basking, orange = foraging)
 #'forage <- subset(environ, ACT == 2)
 #'bask <- subset(environ, ACT == 1)
-#'night <- subset(metout, ZEN == 90)
-#'day <- subset(metout, ZEN != 90)
+#'night <- subset(micromet_lowshade, zenith_angle == 90)
+#'day <- subset(micromet_lowshade, zenith_angle != 90)
 #'with(night, plot(TIME / 60 ~ DOY, ylab = "Hour of Day", xlab = "Day of Year", pch = 15, cex = 2, col = 'dark blue'))
 #' # nighttime hours
 #'with(forage, points(TIME ~ DOY, pch = 15, cex = 2, col = 'orange')) # foraging Tbs
@@ -621,35 +621,35 @@ ectotherm <- function(
   transient = 0,
   delta_shade = 3,
   startday = 1,
-  minshades = rep(micro$minshade, each = 24),
-  maxshades = rep(micro$maxshade, each = 24),
+  minshades = rep(micro$minimum_shade, each = 24),
+  maxshades = rep(micro$maximum_shade, each = 24),
   fluid = 0,
   pct_touch = 0,
   O2gas = 20.95,
   CO2gas = 0.03,
   N2gas = 79.02,
-  alpha_sub = (1 - micro$REFL),
+  alpha_sub = (1 - micro$surface_reflectivity),
   PDIF = 0.1,
-  DEP = micro$DEP,
-  KS = micro$KS[seq(1, 19, 2)],
-  b = micro$BB[seq(1, 19, 2)],
-  PE = abs(micro$PE[seq(1, 19, 2)])*-1,
-  metout = micro$metout,
-  shadmet = micro$shadmet,
-  soil = micro$soil,
-  shadsoil = micro$shadsoil,
-  soilmoist = micro$soilmoist,
-  shadmoist = micro$shadmoist,
-  humid = micro$humid,
-  shadhumid = micro$shadhumid,
-  soilpot = micro$soilpot,
-  shadpot = micro$shadpot,
-  tcond = micro$tcond,
-  shadtcond = micro$shadtcond,
-  rainfall = micro$RAINFALL,
-  rainhr = rep(-1,nrow(metout)),
-  preshr = rep(101325 * ((1 - (0.0065 * as.numeric(micro$elev) / 288)) ^ (1/0.190284)), nrow(metout)),
-  elev = as.numeric(micro$elev),
+  DEP = micro$depths,
+  KS = micro$saturated_hydraulic_conductivity[seq(1, 19, 2)],
+  b = micro$campbell_b_parameter[seq(1, 19, 2)],
+  PE = abs(micro$air_entry_water_potential[seq(1, 19, 2)])*-1,
+  micromet_lowshade = micro$micromet_lowshade,
+  micromet_highshade = micro$micromet_highshade,
+  soil_temperature_lowshade = micro$soil_temperature_lowshade,
+  soil_temperature_highshade = micro$soil_temperature_highshade,
+  soil_moisture_lowshade = micro$soil_moisture_lowshade,
+  soil_moisture_highshade = micro$soil_moisture_highshade,
+  soil_humidity_lowshade = micro$soil_humidity_lowshade,
+  soil_humidity_highshade = micro$soil_humidity_highshade,
+  soil_water_potential_lowshade = micro$soil_water_potential_lowshade,
+  soil_water_potential_highshade = micro$soil_water_potential_highshade,
+  soil_conductivity_lowshade = micro$soil_conductivity_lowshade,
+  soil_conductivity_highshade = micro$soil_conductivity_highshade,
+  rainfall = micro$rainfall,
+  rainhr = rep(-1,nrow(micromet_lowshade)),
+  preshr = rep(101325 * ((1 - (0.0065 * as.numeric(micro$elevation) / 288)) ^ (1/0.190284)), nrow(micromet_lowshade)),
+  elevation = as.numeric(micro$elevation),
   longitude = as.numeric(micro$longlat[1]),
   latitude = as.numeric(micro$longlat[2]),
   custom_shape = c(10.4713, 0.688, 0.425, 0.85, 3.798, 0.683, 0.694, 0.743),
@@ -796,7 +796,7 @@ ectotherm <- function(
   conth = 100,
   contw = 1000,
   contype = 1,
-  rainmult = 1,
+  rain_multiplier = 1,
   continit = 0,
   conthole = 0,
   contonly = 1,
@@ -841,7 +841,7 @@ ectotherm <- function(
   ndays <- length(rainfall) # get number of days of simulation
 
   # error trapping
-  if(metout[1,2] != 0){
+  if(micromet_lowshade[1,2] != 0){
     message("error: microclimate input must start at midnight (TIME = 0) - check your microclimate input \n")
     errors<-1
   }
@@ -997,52 +997,52 @@ ectotherm <- function(
     message("error: DEP must be a vector of length 10 \n")
     errors<-1
   }
-  if(ncol(metout) < 19){
-    message("error: metout must have 19 columns \n")
+  if(ncol(micromet_lowshade) < 19){
+    message("error: micromet_lowshade must have 19 columns \n")
     errors<-1
   }
-  if(ncol(shadmet) < 19){
-    message("error: shadmet must have 19 columns \n")
+  if(ncol(micromet_highshade) < 19){
+    message("error: micromet_highshade must have 19 columns \n")
     errors<-1
   }
-  if(ncol(soil) < 12){
-    message("error: soil must have 12 columns \n")
+  if(ncol(soil_temperature_lowshade) < 12){
+    message("error: soil_temperature_lowshade must have 12 columns \n")
     errors<-1
   }
-  if(ncol(shadsoil) < 12){
-    message("error: shadsoil must have 12 columns \n")
+  if(ncol(soil_temperature_highshade) < 12){
+    message("error: soil_temperature_highshade must have 12 columns \n")
     errors<-1
   }
-  if(ncol(soilmoist) < 12){
-    message("error: soilmoist must have 12 columns \n")
+  if(ncol(soil_moisture_lowshade) < 12){
+    message("error: soil_moisture_lowshade must have 12 columns \n")
     errors<-1
   }
-  if(ncol(shadmoist) < 12){
-    message("error: shadmoist must have 12 columns \n")
+  if(ncol(soil_moisture_highshade) < 12){
+    message("error: soil_moisture_highshade must have 12 columns \n")
     errors<-1
   }
-  if(ncol(humid) < 12){
-    message("error: humid must have 12 columns \n")
+  if(ncol(soil_humidity_lowshade) < 12){
+    message("error: soil_humidity_lowshade must have 12 columns \n")
     errors<-1
   }
-  if(ncol(shadhumid) < 12){
-    message("error: shadhumid must have 12 columns \n")
+  if(ncol(soil_humidity_highshade) < 12){
+    message("error: soil_humidity_highshade must have 12 columns \n")
     errors<-1
   }
-  if(ncol(soilpot) < 12){
-    message("error: soilpot must have 12 columns \n")
+  if(ncol(soil_water_potential_lowshade) < 12){
+    message("error: soil_water_potential_lowshade must have 12 columns \n")
     errors<-1
   }
-  if(ncol(shadpot) < 12){
-    message("error: shadpot must have 12 columns \n")
+  if(ncol(soil_water_potential_highshade) < 12){
+    message("error: soil_water_potential_highshade must have 12 columns \n")
     errors<-1
   }
-  if(ncol(tcond) < 12){
-    message("error: tcond must have 12 columns \n")
+  if(ncol(soil_conductivity_lowshade) < 12){
+    message("error: soil_conductivity_lowshade must have 12 columns \n")
     errors<-1
   }
-  if(ncol(shadtcond) < 12){
-    message("error: shadtcond must have 12 columns \n")
+  if(ncol(soil_conductivity_highshade) < 12){
+    message("error: soil_conductivity_highshade must have 12 columns \n")
     errors<-1
   }
   if(min(rainfall) < 0){
@@ -1241,8 +1241,8 @@ ectotherm <- function(
     message("error: contonly must be 0 or 1 \n")
     errors<-1
   }
-  if(rainmult < 1){
-    message("warning: rainfall is being reduced from original values because rainmult < 1")
+  if(rain_multiplier < 1){
+    message("warning: rainfall is being reduced from original values because rain_multiplier < 1")
   }
   if(contwet < 0 | contwet > 100){
     message("error: contwet can only be from 0 to 100 \n")
@@ -1308,7 +1308,7 @@ ectotherm <- function(
 
     #initializing
 
-    DOYstart <- metout[1, 2] # starting day of year
+    DOYstart <- micromet_lowshade[1, 2] # starting day of year
     DOY <- 1 # day of year at start
     iyear <- 0 # initializing year counter
     countday <- 1 # initializing day counter
@@ -1316,15 +1316,15 @@ ectotherm <- function(
     contlast <- 0 # last container depth, cm
     templast <- 7 # last container temperature, deg C
 
-    tannul <- as.numeric(mean(soil[, 12])) # annual mean temperature, deg C
-    tcinit <- metout[1, "TALOC"] # initial temperature for transient heat budget
+    mean_annual_temperature <- as.numeric(mean(soil_temperature_lowshade[, 12])) # annual mean temperature, deg C
+    tcinit <- micromet_lowshade[1, "air_temperature_local"] # initial temperature for transient heat budget
 
     # parameter name translations
 
     lat <- latitude # latitude
 
     # habitat
-    ALT <- elev # altitude (m)
+    ALT <- elevation # altitude (m)
     EMISSK <- epsilon_sky # emissivity of the sky (0-1)
     EMISSB <- epsilon_sub # emissivity of the substrate (0-1)
     ABSSB <- alpha_sub # solar absorbtivity of the substrate (0-1)
@@ -1429,12 +1429,12 @@ ectotherm <- function(
 
     # food and food water levels
     if(length(X) == 1){ # no day-specific food levels given
-      foodlevels <- rep(X, nrow(metout))
+      foodlevels <- rep(X, nrow(micromet_lowshade))
     }else{
       foodlevels <- X
     }
     if(length(p_H_X) == 1){ # no day-specific food water levels given
-      foodwaters <- rep(p_H_X, nrow(metout))
+      foodwaters <- rep(p_H_X, nrow(micromet_lowshade))
     }else{
       foodwaters <- p_H_X
     }
@@ -1442,9 +1442,9 @@ ectotherm <- function(
     # unused /spare parameters
     tester <- 0 # unused
     nodnum <- 10 # depth at which foraging occurs in fossorial species, probably not working properly, may not need it
-    OBJDIS <- 1.0 # currently unused - distance (m) from nearby object of different temp to sky and ground (e.g. warm rock, fire)
-    OBJL <- 0.0001 # currently unused - diameter (m) of nearby object of different temp to sky and ground (e.g. warm rock, fire)
-    FATOBJ <- 0 # configuration factor to nearby object of different temp to sky and ground (e.g. warm rock, fire)
+    OBJDIS <- 1.0 # currently unused - distance (m) from nearby object of different temp to sky and ground (e.g. air_temperature_offset rock, fire)
+    OBJL <- 0.0001 # currently unused - diameter (m) of nearby object of different temp to sky and ground (e.g. air_temperature_offset rock, fire)
+    FATOBJ <- 0 # configuration factor to nearby object of different temp to sky and ground (e.g. air_temperature_offset rock, fire)
     #SPARE3 <- 0 # spare input
     if(leaf == 0){ # zero stomatal conductances so that SKINW is not changed to stomatal openness in ectotherm models
       g_vs_ab <- g_vs_ab * 0
@@ -1456,7 +1456,7 @@ ectotherm <- function(
     gas <- c(O2gas, CO2gas, N2gas) # gas vector
     behav <- c(diurn, nocturn, crepus, rainact, burrow, shade_seek, climb, fossorial, orient) # behaviour vector
     spare <- 0
-    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF[1], EMISSK, EMISSB, ABSSB, K_skin, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, leaf, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, starvemode, tannul, nodnum, postur, psi_body, spec_hyd_body, CT_max, CT_min, behav, H2Obal_init, actrainthresh, viviparous, pregnant, conth, contw, contlast, arrhen_mode, tcinit, nyears, lat, rainmult, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, liq_init, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, pct_cond_egg, K_egg, psi_egg, spec_hyd_egg, b, KS, PE, foodmode, conv_enhance, g_vs_ab_max, g_vs_ad_max, cond_clutch, M_4, flyhigh, spare))
+    ectoinput <- as.matrix(c(ALT, fluid, OBJDIS, OBJL, PDIF[1], EMISSK, EMISSB, ABSSB, K_skin, enberr, Ww_kg, epsilon, absan, RQ, rinsul, shape, live, pantmax, k_flesh, c_body, rho_body, alpha_max, alpha_min, fatosk, fatosb, FATOBJ, T_F_max, T_F_min, delta_air, leaf, pct_eyes, pct_mouth, F_O2, T_pref, pct_cond, skint, gas, transient, soilnode, o2max, starvemode, mean_annual_temperature, nodnum, postur, psi_body, spec_hyd_body, CT_max, CT_min, behav, H2Obal_init, actrainthresh, viviparous, pregnant, conth, contw, contlast, arrhen_mode, tcinit, nyears, lat, rain_multiplier, DOYstart, delta_shade, custom_shape, M_1, M_2, M_3, DEB, tester, rho1_3, trans1, aref, bref, cref, phi, wings, phimax, phimin, shape_a, shape_b, shape_c, pct_H_R, liq_init, container, flyer, flyspeed, ndays, maxdepth, CT_minthresh, CT_kill, gutfill, mindepth, T_B_min, T_RB_min, p_Xm, eggmult, flymetab, continit, wetmod, contonly, conthole, contype, shdburrow, Tb_breed, Tb_breed_hrs, contwet, warmsig, aquabask, pct_H_death, write_csv, aestdepth, eggshade, pO2thresh, intmethod, eggshape_a, eggshape_b, eggshape_c, pct_cond_egg, K_egg, psi_egg, spec_hyd_egg, b, KS, PE, foodmode, conv_enhance, g_vs_ab_max, g_vs_ad_max, cond_clutch, M_4, flyhigh, spare))
     debmod <- c(clutchsize, rho_body_deb, d_V, d_Egg, mu_X, mu_E, mu_V, mu_P, T_REF - 273.15, z, kap, kap_X, p_M, v, E_G, kap_R, E_sm, del_M, h_a, V_init_baby, E_init_baby, k_J, E_Hb, E_Hj, E_Hp, clutch_ab[2], batch, rain_breed, photostart, photofinish, daylengthstart, daylengthfinish, photodirs, photodirf, clutch_ab[1], amphibreed, amphistage, eta_O, JM_JO, E_0, kap_X_P, PTUREA1, PFEWAT1, wO, w_N, E_Ho, f, s_G, K, X[1], metab_mode, stages, kap_V, s_j, startday, raindrink, reset, m_a, m_i, m_h, aestivate, depress, minclutch, L_b, E_He, k_Ee, k_EV, mu_N, h_O, h_M[4], maxclutch)
     deblast <- c(iyear, countday, V_init, E_init, E_S_init, E_R_init, q_init, hs_init, E_B_init, V_baby_init, E_baby_init, E_H_init, stage, p_surv_init, E_H_baby_init)
 
@@ -1521,21 +1521,21 @@ ectotherm <- function(
       write.csv(g_vs_ad, file = "ecto csv input/g_vs_ads.csv")
       write.csv(PDIF, file = "ecto csv input/pdifs.csv")
       write.csv(S_instar, file = "ecto csv input/S_instar.csv")
-      write.table(metout[(seq(1, ndays * 24)), ], file = "ecto csv input/metout.csv", sep = ",", row.names = FALSE)
-      write.table(shadmet[(seq(1, ndays * 24)), ], file = "ecto csv input/shadmet.csv", sep = ",", row.names = FALSE)
-      write.table(soil[(seq(1, ndays * 24)), ], file = "ecto csv input/soil.csv", sep = ",", row.names = FALSE)
-      write.table(shadsoil[(seq(1, ndays * 24)), ], file = "ecto csv input/shadsoil.csv", sep = ",", row.names = FALSE)
-      write.table(soilmoist[(seq(1, ndays * 24)), ], file = "ecto csv input/soilmoist.csv", sep = ",", row.names = FALSE)
-      write.table(shadmoist[(seq(1, ndays * 24)), ], file = "ecto csv input/shadmoist.csv", sep = ",", row.names = FALSE)
-      write.table(soilpot[(seq(1, ndays * 24)), ], file = "ecto csv input/soilpot.csv", sep = ",", row.names = FALSE)
-      write.table(shadpot[(seq(1, ndays * 24)), ], file = "ecto csv input/shadpot.csv", sep = ",", row.names = FALSE)
-      write.table(humid[(seq(1, ndays * 24)), ], file = "ecto csv input/humid.csv", sep = ",", row.names = FALSE)
-      write.table(shadhumid[(seq(1, ndays * 24)), ], file = "ecto csv input/shadhumid.csv", sep = ",", row.names = FALSE)
-      write.table(tcond[(seq(1, ndays * 24)), ], file = "ecto csv input/tcond.csv", sep = ",", row.names = FALSE)
-      write.table(shadtcond[(seq(1, ndays * 24)), ], file = "ecto csv input/shadtcond.csv", sep = ",", row.names = FALSE)
+      write.table(micromet_lowshade[(seq(1, ndays * 24)), ], file = "ecto csv input/micromet_lowshade.csv", sep = ",", row.names = FALSE)
+      write.table(micromet_highshade[(seq(1, ndays * 24)), ], file = "ecto csv input/micromet_highshade.csv", sep = ",", row.names = FALSE)
+      write.table(soil_temperature_lowshade[(seq(1, ndays * 24)), ], file = "ecto csv input/soil.csv", sep = ",", row.names = FALSE)
+      write.table(soil_temperature_highshade[(seq(1, ndays * 24)), ], file = "ecto csv input/soil_temperature_highshade.csv", sep = ",", row.names = FALSE)
+      write.table(soil_moisture_lowshade[(seq(1, ndays * 24)), ], file = "ecto csv input/soil_moisture_lowshade.csv", sep = ",", row.names = FALSE)
+      write.table(soil_moisture_highshade[(seq(1, ndays * 24)), ], file = "ecto csv input/soil_moisture_highshade.csv", sep = ",", row.names = FALSE)
+      write.table(soil_water_potential_lowshade[(seq(1, ndays * 24)), ], file = "ecto csv input/soil_water_potential_lowshade.csv", sep = ",", row.names = FALSE)
+      write.table(soil_water_potential_highshade[(seq(1, ndays * 24)), ], file = "ecto csv input/soil_water_potential_highshade.csv", sep = ",", row.names = FALSE)
+      write.table(soil_humidity_lowshade[(seq(1, ndays * 24)), ], file = "ecto csv input/soil_humidity_lowshade.csv", sep = ",", row.names = FALSE)
+      write.table(soil_humidity_highshade[(seq(1, ndays * 24)), ], file = "ecto csv input/soil_humidity_highshade.csv", sep = ",", row.names = FALSE)
+      write.table(soil_conductivity_lowshade[(seq(1, ndays * 24)), ], file = "ecto csv input/soil_conductivity_lowshade.csv", sep = ",", row.names = FALSE)
+      write.table(soil_conductivity_highshade[(seq(1, ndays * 24)), ], file = "ecto csv input/soil_conductivity_highshade.csv", sep = ",", row.names = FALSE)
     }
     # final input list
-    ecto <- list(ndays = ndays, nstages = stages, ectoinput = ectoinput, metout = metout[, 1:18], shadmet = shadmet[, 1:18], soil = soil, shadsoil = shadsoil, soilmoist = soilmoist, shadmoist = shadmoist, soilpot = soilpot, shadpot = shadpot, humid = humid, shadhumid = shadhumid, tcond = tcond, shadtcond = shadtcond, DEP = DEP, rainfall = rainfall, rainhr = rainhr, preshr = preshr, iyear = iyear, countday = countday, debmod = debmod, deblast = deblast, foodwaters = foodwaters, foodlevels = foodlevels, wetlandTemps = wetlandTemps, wetlandDepths = wetlandDepths, GLMtemps = GLMtemps, GLMO2s = GLMO2s, GLMsalts = GLMsalts, GLMpHs = GLMpHs, GLMfoods = GLMfoods, arrhenius = arrhenius, arrhenius2 = arrhenius2, thermal_stages = thermal_stages, behav_stages = behav_stages, water_stages = water_stages, nutri_stages = nutri_stages, minshades = minshades, maxshades = maxshades, SKINW = SKINW, g_vs_ab = g_vs_ab, g_vs_ad = g_vs_ad, PDIF = PDIF, S_instar = S_instar)
+    ecto <- list(ndays = ndays, nstages = stages, ectoinput = ectoinput, micromet_lowshade = micromet_lowshade[, 1:18], micromet_highshade = micromet_highshade[, 1:18], soil_temperature_lowshade = soil_temperature_lowshade, soil_temperature_highshade = soil_temperature_highshade, soil_moisture_lowshade = soil_moisture_lowshade, soil_moisture_highshade = soil_moisture_highshade, soil_water_potential_lowshade = soil_water_potential_lowshade, soil_water_potential_highshade = soil_water_potential_highshade, soil_humidity_lowshade = soil_humidity_lowshade, soil_humidity_highshade = soil_humidity_highshade, soil_conductivity_lowshade = soil_conductivity_lowshade, soil_conductivity_highshade = soil_conductivity_highshade, DEP = DEP, rainfall = rainfall, rainhr = rainhr, preshr = preshr, iyear = iyear, countday = countday, debmod = debmod, deblast = deblast, foodwaters = foodwaters, foodlevels = foodlevels, wetlandTemps = wetlandTemps, wetlandDepths = wetlandDepths, GLMtemps = GLMtemps, GLMO2s = GLMO2s, GLMsalts = GLMsalts, GLMpHs = GLMpHs, GLMfoods = GLMfoods, arrhenius = arrhenius, arrhenius2 = arrhenius2, thermal_stages = thermal_stages, behav_stages = behav_stages, water_stages = water_stages, nutri_stages = nutri_stages, minshades = minshades, maxshades = maxshades, SKINW = SKINW, g_vs_ab = g_vs_ab, g_vs_ad = g_vs_ad, PDIF = PDIF, S_instar = S_instar)
 
     message('running ectotherm model ... \n')
 
@@ -1551,9 +1551,9 @@ ectotherm <- function(
     yearsout <- ectout$yearsout
 
     if(DEB==0){
-      return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,tcond=tcond,shadtcond=shadtcond,rainfall=rainfall,rainhr=rainhr,enbal=enbal,environ=environ,masbal=masbal,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
+      return(list(soil_temperature_lowshade=soil_temperature_lowshade,soil_temperature_highshade=soil_temperature_highshade,micromet_lowshade=micromet_lowshade,micromet_highshade=micromet_highshade,soil_moisture_lowshade=soil_moisture_lowshade,soil_moisture_highshade=soil_moisture_highshade,soil_water_potential_lowshade=soil_water_potential_lowshade,soil_water_potential_highshade=soil_water_potential_highshade,soil_humidity_lowshade=soil_humidity_lowshade,soil_humidity_highshade=soil_humidity_highshade,soil_conductivity_lowshade=soil_conductivity_lowshade,soil_conductivity_highshade=soil_conductivity_highshade,rainfall=rainfall,rainhr=rainhr,enbal=enbal,environ=environ,masbal=masbal,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
     }else{
-      return(list(soil=soil,shadsoil=shadsoil,metout=metout,shadmet=shadmet,soilmoist=soilmoist,shadmoist=shadmoist,soilpot=soilpot,shadpot=shadpot,humid=humid,shadhumid=shadhumid,tcond=tcond,shadtcond=shadtcond,rainfall=rainfall,rainhr=rainhr,enbal=enbal,masbal=masbal,environ=environ,debout=debout,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
+      return(list(soil_temperature_lowshade=soil_temperature_lowshade,soil_temperature_highshade=soil_temperature_highshade,micromet_lowshade=micromet_lowshade,micromet_highshade=micromet_highshade,soil_moisture_lowshade=soil_moisture_lowshade,soil_moisture_highshade=soil_moisture_highshade,soil_water_potential_lowshade=soil_water_potential_lowshade,soil_water_potential_highshade=soil_water_potential_highshade,soil_humidity_lowshade=soil_humidity_lowshade,soil_humidity_highshade=soil_humidity_highshade,soil_conductivity_lowshade=soil_conductivity_lowshade,soil_conductivity_highshade=soil_conductivity_highshade,rainfall=rainfall,rainhr=rainhr,enbal=enbal,masbal=masbal,environ=environ,debout=debout,yearout=yearout,yearsout=yearsout,foodwaters=foodwaters,foodlevels=foodlevels,T_F_min=T_F_min,T_F_max=T_F_max,CT_max=CT_max,CT_min=CT_min,T_B_min=T_B_min,T_RB_min=T_RB_min))
     }
   } # end error check
 }

@@ -2,18 +2,18 @@
 #'
 #' R wrapper for Fortran binary of Niche Mapper microclimate model
 #' @param ecto A vector of input variables for the microclimate model
-#' @param metout The above ground micrometeorological conditions under the minimum specified shade
-#' @param shadmet The above ground micrometeorological conditions under the maximum specified shade
+#' @param micromet_lowshade The above ground micrometeorological conditions under the minimum specified shade
+#' @param micromet_highshade The above ground micrometeorological conditions under the maximum specified shade
 #' @param soil Hourly predictions of the soil temperatures under the minimum specified shade
-#' @param shadsoil Hourly predictions of the soil temperatures under the maximum specified shade
-#' @param soilmoist Hourly predictions of the soil moisture under the minimum specified shade
-#' @param shadmoist Hourly predictions of the soil moisture under the maximum specified shade
-#' @param soilpot Hourly predictions of the soil water potential under the minimum specified shade
-#' @param shadpot Hourly predictions of the soil water potential under the maximum specified shade
+#' @param soil_temperature_highshade Hourly predictions of the soil temperatures under the maximum specified shade
+#' @param soil_moisture_lowshade Hourly predictions of the soil moisture under the minimum specified shade
+#' @param soil_moisture_highshade Hourly predictions of the soil moisture under the maximum specified shade
+#' @param soil_water_potential_lowshade Hourly predictions of the soil water potential under the minimum specified shade
+#' @param soil_water_potential_highshade Hourly predictions of the soil water potential under the maximum specified shade
 #' @param humid Hourly predictions of the soil humidity under the minimum specified shade
-#' @param shadhumid Hourly predictions of the soil humidity under the maximum specified shade
-#' @param tcond Hourly predictions of the soil thermal conductivity under the minimum specified shade
-#' @param shadtcond Hourly predictions of the soil humidity under the maximum specified shade
+#' @param soil_humidity_highshade Hourly predictions of the soil humidity under the maximum specified shade
+#' @param soil_conductivity_lowshade Hourly predictions of the soil thermal conductivity under the minimum specified shade
+#' @param soil_conductivity_highshade Hourly predictions of the soil humidity under the maximum specified shade
 #' @param DEP Depths used for the microclimate model
 #' @param rainfall Daily rainfall
 #' @param rainhr Hourly rainfall (overwrites rainfall if non-negative
@@ -49,18 +49,18 @@ ectorun <- function(ecto) {
                 as.integer(ecto$ndays),
                 as.integer(ecto$nstages),
                 as.double(ecto$ectoinput),
-                as.double(ecto$metout),
-                as.double(ecto$shadmet),
-                as.double(ecto$soil),
-                as.double(ecto$shadsoil),
-                as.double(ecto$soilmoist),
-                as.double(ecto$shadmoist),
-                as.double(ecto$soilpot),
-                as.double(ecto$shadpot),
-                as.double(ecto$humid),
-                as.double(ecto$shadhumid),
-                as.double(ecto$tcond),
-                as.double(ecto$shadtcond),
+                as.double(ecto$micromet_lowshade),
+                as.double(ecto$micromet_highshade),
+                as.double(ecto$soil_temperature_lowshade),
+                as.double(ecto$soil_temperature_highshade),
+                as.double(ecto$soil_moisture_lowshade),
+                as.double(ecto$soil_moisture_highshade),
+                as.double(ecto$soil_water_potential_lowshade),
+                as.double(ecto$soil_water_potential_highshade),
+                as.double(ecto$soil_humidity_lowshade),
+                as.double(ecto$soil_humidity_highshade),
+                as.double(ecto$soil_conductivity_lowshade),
+                as.double(ecto$soil_conductivity_highshade),
                 as.double(ecto$DEP),
                 as.double(ecto$rainfall),
                 as.double(ecto$rainhr),

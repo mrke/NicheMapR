@@ -16,10 +16,10 @@
 #' @param soilpro Matrix of n x 5 matrix of soil composition with the following columns 1. depth (cm), 2. bulk density (Mg/m3), 3. clay (\%), 4. silt (\%), 5. sand (\%)
 #' @param model Choice of equation to compute soil hydraulic parameters (see details)
 #' @param DEP sequence of depths at which results are required, within the range provided by column 1 of input table 'soilpro'
-#' @return PE air entry water potential (J/kg), Campbell (1985) eq. 5.12, p. 46 or Cosby et al. (1984) Table 5
-#' @return BB Campbell's b parameter, Campbell (1985) eq. 5.11, p. 45 or Cosby et al. (1984) Table 5
-#' @return BD bulk density, Mg/m3
-#' @return KS saturated hydraulic conductivity (kg s / m3), Campbell (1985) eq. 6.12, p. 54 or Cosby et al. (1984) Table 5
+#' @return air_entry_water_potential air entry water potential (J/kg), Campbell (1985) eq. 5.12, p. 46 or Cosby et al. (1984) Table 5
+#' @return campbell_b_parameter Campbell's b parameter, Campbell (1985) eq. 5.11, p. 45 or Cosby et al. (1984) Table 5
+#' @return soil_bulk_density bulk density, Mg/m3
+#' @return saturated_hydraulic_conductivity saturated hydraulic conductivity (kg s / m3), Campbell (1985) eq. 6.12, p. 54 or Cosby et al. (1984) Table 5
 #' @return FC Field capacity (m3/m3, \%) Based on model 6 in Table 6 of Rab, M. A., S. Chandra, P. D. Fisher, N. J. Robinson, M. Kitching, C. D. Aumann, and M. Imhof. 2011. Modelling and prediction of soil water contents at field capacity and permanent wilting point of dryland cropping soils. Soil Research 49:389-407.
 #' @return PWP Permanent Wilting Point (m3/m3, \%) Based on model 2 in Table 7 of Rab et al. 2011 (cited above)
 #' @usage pedotransfer(soilpro, 1, DEP)
@@ -54,8 +54,8 @@ pedotransfer <- function(soilpro = as.data.frame(soilpro), model = 1, DEP = soil
     BD_spline <- spline(soil_depths,soilpro[, 2], n = 201, xmin = 0, xmax = 200, method = 'natural')
     BD_spline <- as.data.frame(cbind(BD_spline$x,BD_spline$y))
     colnames(BD_spline) <- c('DEPTH', 'VALUE')
-    BD <- merge(DEP2, BD_spline)
-    BD <- c(BD[1, 2], BD[, 2])
+    soil_bulk_density <- merge(DEP2, BD_spline)
+    soil_bulk_density <- c(soil_bulk_density[1, 2], soil_bulk_density[, 2])
 
     sand_spline <-spline(soil_depths,soilpro[, 5], n = 201, xmin = 0, xmax = 200, method = 'natural')
     sand_spline <- as.data.frame(cbind(sand_spline$x,sand_spline$y))
@@ -81,7 +81,7 @@ pedotransfer <- function(soilpro = as.data.frame(soilpro), model = 1, DEP = soil
     clay[clay < 0] <- 0
     clay[clay > 100] <- 100
   }else{
-    BD <- soilpro[, 2]
+    soil_bulk_density <- soilpro[, 2]
     sand <- soilpro[, 5]
     silt <- soilpro[, 4]
     clay <- soilpro[, 3]
@@ -96,32 +96,32 @@ pedotransfer <- function(soilpro = as.data.frame(soilpro), model = 1, DEP = soil
   if(model == 0){ # use Cosby et al. (1984) equations, from Table 5
 
     # Campbell's b parameter
-    BB <- clay * Cosby1984Tbl5$slope[1] + Cosby1984Tbl5$intercept[1]
-    BB <- log10(10^(BB) / 10.2) # un-log, convert to J/kg, relog
+    campbell_b_parameter <- clay * Cosby1984Tbl5$slope[1] + Cosby1984Tbl5$intercept[1]
+    campbell_b_parameter <- log10(10^(campbell_b_parameter) / 10.2) # un-log, convert to J/kg, relog
 
 
     # air entry water potential (J/kg)
-    PE <- sand * Cosby1984Tbl5$slope[2] + Cosby1984Tbl5$intercept[2]
-    PE <- 10 ^ (PE) / 10.2 * -1 # un-log, convert to J/kg
+    air_entry_water_potential <- sand * Cosby1984Tbl5$slope[2] + Cosby1984Tbl5$intercept[2]
+    air_entry_water_potential <- 10 ^ (air_entry_water_potential) / 10.2 * -1 # un-log, convert to J/kg
 
     # saturated hydraulic conductivity (kg s / m3), Campbell (1985) eq. 6.12, p. 54
-    KS <- sand * Cosby1984Tbl5$slope[3] + Cosby1984Tbl5$intercept[3]
-    KS <- 10 ^ (KS) * 0.0007196666 # un-log, convert to kg s m-3
+    saturated_hydraulic_conductivity <- sand * Cosby1984Tbl5$slope[3] + Cosby1984Tbl5$intercept[3]
+    saturated_hydraulic_conductivity <- 10 ^ (saturated_hydraulic_conductivity) * 0.0007196666 # un-log, convert to kg s m-3
   }
 
   if(model == 1){ # use Cosby et al. (1984) equations, from Table 4
 
     # Campbell's b parameter
-    BB <- clay * Cosby1984Tbl4$slope[1] + sand * Cosby1984Tbl4$slope[2] + Cosby1984Tbl4$intercept[1]
-    BB <- log10(10 ^ (BB) / 10.2) # un-log, convert to J/kg, relog
+    campbell_b_parameter <- clay * Cosby1984Tbl4$slope[1] + sand * Cosby1984Tbl4$slope[2] + Cosby1984Tbl4$intercept[1]
+    campbell_b_parameter <- log10(10 ^ (campbell_b_parameter) / 10.2) # un-log, convert to J/kg, relog
 
     # air entry water potential (J/kg)
-    PE <- sand * Cosby1984Tbl4$slope[3] + silt * Cosby1984Tbl4$slope[4] + Cosby1984Tbl4$intercept[3]
-    PE <- 10 ^ (PE) / 10.2 * -1 # un-log, convert to J/kg
+    air_entry_water_potential <- sand * Cosby1984Tbl4$slope[3] + silt * Cosby1984Tbl4$slope[4] + Cosby1984Tbl4$intercept[3]
+    air_entry_water_potential <- 10 ^ (air_entry_water_potential) / 10.2 * -1 # un-log, convert to J/kg
 
     # saturated hydraulic conductivity (kg s / m3), Campbell (1985) eq. 6.12, p. 54
-    KS <- sand * Cosby1984Tbl4$slope[5] + clay * Cosby1984Tbl4$slope[6] + Cosby1984Tbl4$intercept[5]
-    KS <- 10 ^ (KS) * 0.0007196666 # un-log, convert to kg s m-3
+    saturated_hydraulic_conductivity <- sand * Cosby1984Tbl4$slope[5] + clay * Cosby1984Tbl4$slope[6] + Cosby1984Tbl4$intercept[5]
+    saturated_hydraulic_conductivity <- 10 ^ (saturated_hydraulic_conductivity) * 0.0007196666 # un-log, convert to kg s m-3
   }
   if(model == 2){ # use Campbell (1985) equations
 
@@ -146,13 +146,13 @@ pedotransfer <- function(soilpro = as.data.frame(soilpro), model = 1, DEP = soil
     PES <- (0.5 * dg ^ (-1 / 2)) * -1 # air entry water potential reference value at bulk density of 1.3 Mg/m3
 
     # Campbell's b parameter, Campbell (1985) eq. 5.11, p. 45
-    BB <- -2 * PES + 0.2 * sigma_g # slope of ln of water potential against ln of volumetric water content
+    campbell_b_parameter <- -2 * PES + 0.2 * sigma_g # slope of ln of water potential against ln of volumetric water content
 
     # air entry water potential (J/kg), Campbell (1985) eq. 5.12, p. 46
-    PE <- PES * (BD / 1.3) ^ (0.67 * BB) #
+    air_entry_water_potential <- PES * (soil_bulk_density / 1.3) ^ (0.67 * campbell_b_parameter) #
 
     # saturated hydraulic conductivity (kg s / m3), Campbell (1985) eq. 6.12, p. 54
-    KS <- 0.004 * (1.3 / BD) ^ (1.3 * BB) * exp(-6.9 * clay / 100 - 3.7 * silt / 100)
+    saturated_hydraulic_conductivity <- 0.004 * (1.3 / soil_bulk_density) ^ (1.3 * campbell_b_parameter) * exp(-6.9 * clay / 100 - 3.7 * silt / 100)
   }
-  return(list(BD = BD, BB = BB, KS = KS, PE = PE, FC = FC, PWP = PWP))
+  return(list(soil_bulk_density = soil_bulk_density, campbell_b_parameter = campbell_b_parameter, saturated_hydraulic_conductivity = saturated_hydraulic_conductivity, air_entry_water_potential = air_entry_water_potential, FC = FC, PWP = PWP))
 }

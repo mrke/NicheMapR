@@ -129,17 +129,17 @@
 #' micro <- micro_global()
 #'
 #' # extract full sun conditions
-#' metout <- as.data.frame(micro$metout)
+#' micromet_lowshade <- as.data.frame(micro$micromet_lowshade)
 #' soil <- as.data.frame(micro$soil)
 #'
 #' # get required inputs
-#' TAs <- metout$TALOC
+#' TAs <- micromet_lowshade$TALOC
 #' TGRDs <- soil$D0cm
-#' TSKYs <- metout$TSKYC
-#' VELs <- metout$VLOC
-#' RHs <- metout$RHLOC
-#' QSOLRs <- metout$SOLR
-#' Zs <- metout$ZEN
+#' TSKYs <- micromet_lowshade$TSKYC
+#' VELs <- micromet_lowshade$VLOC
+#' RHs <- micromet_lowshade$RHLOC
+#' QSOLRs <- micromet_lowshade$SOLR
+#' Zs <- micromet_lowshade$ZEN
 #'
 #' # use ectoR_devel to compute body temperature in open without respiratory heat loss,
 #' # conduction, or metabolic heat gain

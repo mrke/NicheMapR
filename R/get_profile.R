@@ -5,93 +5,93 @@
 #' the microclimate model uses in the micro.f subroutine. It is useful for situations where
 #' the organism grows through time and thus the local height needs to change, or when simulating
 #' a multi-part organism where the parts are at different heights (e.g., leg vs. head of a human)
-#' @param Refhyt = 1.2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured (must match the micro_* function you are using, e.g. 1.2 for micro_global, 2 for micro_era5)
-#' @param RUF = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m. (match to the value used in the original microclimate simulation)
-#' @param ZH = 0, heat transfer roughness height (m) for Campbell and Norman air temperature/wind speed profile (invoked if greater than 0, 0.02 * canopy height in m if unknown
-#' @param D0 = 0, zero plane displacement correction factor (m) for Campbell and Norman air temperature/wind speed profile (0.6 * canopy height in m if unknown)
-#' @param TAREF = 27.8, air temperature (deg C) at reference height
-#' @param VREF = 2.75, wind speed (m/s) at reference height
-#' @param RH = 49.0415, relative humidity (pct) at reference height
-#' @param D0cm = 48.6, soil surface temperature (deg C)
-#' @param maxsurf = 95, maximum allowed soil surface temperature - this is the default value in all micro_* functions
-#' @param ZEN = 21.5, zenith angle (degrees) of sun - used in determining if free convection conditions or not
-#' @param a = 0.15, wind shear exponent for extending above reference height (open water 0.1, Smooth, level, grass-covered 0.15 (or more commonly 1/7), row crops 0.2, low bushes with a few trees 0.2, heavy trees or several buildings or mountainous terrain 0.25, (source http://www.engineeringtoolbox.com/wind-shear-d_1215.html)
+#' @param reference_height = 1.2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured (must match the micro_* function you are using, e.g. 1.2 for micro_global, 2 for micro_era5)
+#' @param roughness_height = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m. (match to the value used in the original microclimate simulation)
+#' @param canopy_roughness_height = 0, heat transfer roughness height (m) for Campbell and Norman air temperature/wind speed profile (invoked if greater than 0, 0.02 * canopy height in m if unknown
+#' @param zero_plane_displacement = 0, zero plane displacement correction factor (m) for Campbell and Norman air temperature/wind speed profile (0.6 * canopy height in m if unknown)
+#' @param air_temperature_reference = 27.8, air temperature (deg C) at reference height
+#' @param wind_speed_reference = 2.75, wind speed (m/s) at reference height
+#' @param relative_humidity_reference = 49.0415, relative humidity (pct) at reference height
+#' @param surface_temperature = 48.6, soil surface temperature (deg C)
+#' @param maximum_surface_temperature = 95, maximum allowed soil surface temperature - this is the default value in all micro_* functions
+#' @param zenith_angle = 21.5, zenith angle (degrees) of sun - used in determining if free convection conditions or not
+#' @param wind_shear_exponent = 0.15, wind shear exponent for extending above reference height (open water 0.1, Smooth, level, grass-covered 0.15 (or more commonly 1/7), row crops 0.2, low bushes with a few trees 0.2, heavy trees or several buildings or mountainous terrain 0.25, (source http://www.engineeringtoolbox.com/wind-shear-d_1215.html)
 #' @param heights = c(0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1), vector of heights (m) for which the profile is desired (make them between zero and the reference height, don't include the reference height, and make the minimum greater than the roughness height
 #' @param warn = TRUE, show warning messages?
-#' @return heights Heights (m) at which results are reported, with 0 and Refhyt added on
+#' @return heights Heights (m) at which results are reported, with 0 and reference_height added on
 #' @return VELs Wind speeds (m/s) with increasing height
 #' @return TAs Air temperatures (deg C) with increasing height
 #' @return RHs Relative humidity (pct) with increasing height
 #' @return QCONV Convective heat loss (W/m2) from surface
 #' @return USTAR Friction velocity (m/s)
-#' @usage get_profile(ZH = 0.004, D0 = 0.012)
+#' @usage get_profile(canopy_roughness_height = 0.004, zero_plane_displacement = 0.012)
 #' @examples
 #' library(NicheMapR)
-#' RUF <- 0.004 # choose a roughness height
-#' micro <- micro_global(RUF = RUF) # run with defaults other than roughness height (Madison, Wisconsin)
+#' roughness_height <- 0.004 # choose a roughness height
+#' micro <- micro_global(roughness_height = roughness_height) # run with defaults other than roughness height (Madison, Wisconsin)
 #' dates <- micro$dates # extract mock dates (units of months)
-#' metout <- as.data.frame(micro$metout) # above ground min shade conditions
-#' soil <- as.data.frame(micro$soil) # below ground min shade conditions
+#' micromet_lowshade <- as.data.frame(micro$micromet_lowshade) # above ground min shade conditions
+#' soil_temperature_lowshade <- as.data.frame(micro$soil_temperature_lowshade) # below ground min shade conditions
 #' newheights <- c(0.1, 0.4) # m, new height needed (can be a single value or a vector of heights)
-#' profile.out <- lapply(1:length(metout$TALOC),
-#'                      function(x){get_profile(Refhyt = 1.2, # needs to be what micro_global uses as Refhyt
-#'                                              RUF = RUF,
+#' profile.out <- lapply(1:length(micromet_lowshade$air_temperature_local),
+#'                      function(x){get_profile(reference_height = 1.2, # needs to be what micro_global uses as reference_height
+#'                                              roughness_height = roughness_height,
 #'                                              heights = newheights,
-#'                                              TAREF = metout$TAREF[x],
-#'                                              VREF = metout$VREF[x],
-#'                                              RH = metout$RH[x],
-#'                                              D0cm = soil$D0cm[x],
-#'                                              ZEN = metout$ZEN[x])}) # run get_profile across all times at new height
+#'                                              air_temperature_reference = micromet_lowshade$air_temperature_reference[x],
+#'                                              wind_speed_reference = micromet_lowshade$wind_speed_reference[x],
+#'                                              relative_humidity_reference = micromet_lowshade$relative_humidity_reference[x],
+#'                                              surface_temperature = soil_temperature_lowshade$depth_0cm[x],
+#'                                              zenith_angle = micromet_lowshade$zenith_angle[x])}) # run get_profile across all times at new height
 #' profile.out1 <- do.call("rbind", lapply(profile.out, data.frame)) # turn results into data frame
 #' newheight.out <- subset(profile.out1, heights == newheights[2])
-#' plot(dates, metout$TALOC, ylab = 'air temperature, deg C', type = 'l')
+#' plot(dates, micromet_lowshade$air_temperature_local, ylab = 'air temperature, deg C', type = 'l')
 #' points(dates, profile.out1$TAs[profile.out1$heights == newheights[1]], type = 'l', lty = 2)
 #' points(dates, profile.out1$TAs[profile.out1$heights == newheights[2]], type = 'l', lty = 3)
-#' plot(dates, metout$VLOC, ylab = 'wind speed, m/s', type = 'l', ylim = c(0, 3))
+#' plot(dates, micromet_lowshade$wind_speed_local, ylab = 'wind speed, m/s', type = 'l', ylim = c(0, 3))
 #' points(dates, profile.out1$VELs[profile.out1$heights == newheights[1]], type = 'l', lty = 2)
 #' points(dates, profile.out1$VELs[profile.out1$heights == newheights[2]], type = 'l', lty = 3)
-#' plot(dates, metout$RHLOC, ylab = 'relative humidity, pct', type = 'l', ylim = c(0, 100))
+#' plot(dates, micromet_lowshade$relative_humidity_local, ylab = 'relative humidity, pct', type = 'l', ylim = c(0, 100))
 #' points(dates, profile.out1$RHs[profile.out1$heights == newheights[1]], type = 'l', lty = 2)
 #' points(dates, profile.out1$RHs[profile.out1$heights == newheights[2]], type = 'l', lty = 3)
 #'@export
-get_profile <- function(Refhyt = 1.2,
-                        RUF = 0.004,
-                        ZH = 0,
-                        D0 = 0,
-                        TAREF = 27.77818,
-                        VREF = 2.749575,
-                        RH = 49.0415,
-                        D0cm = 48.58942,
-                        maxsurf = 95,
-                        ZEN = 21.50564,
-                        a = 0.15,
+get_profile <- function(reference_height = 1.2,
+                        roughness_height = 0.004,
+                        canopy_roughness_height = 0,
+                        zero_plane_displacement = 0,
+                        air_temperature_reference = 27.77818,
+                        wind_speed_reference = 2.749575,
+                        relative_humidity_reference = 49.0415,
+                        surface_temperature = 48.58942,
+                        maximum_surface_temperature = 95,
+                        zenith_angle = 21.50564,
+                        wind_shear_exponent = 0.15,
                         heights = c(0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1),
                         warn = FALSE) {
   errors <- 0
   addheight <- FALSE
-  if (min(heights) < RUF) {
+  if (min(heights) < roughness_height) {
     message(
-      "ERROR: the minimum height is not greater than the roughness height, 'RUF'.
+      "ERROR: the minimum height is not greater than the roughness height, 'roughness_height'.
         Please enter a correct value.",
       '\n'
     )
     errors <- 1
   }
-  if (min(heights) > Refhyt) {
+  if (min(heights) > reference_height) {
     addheight <- TRUE
     heights <- c(0.01, heights)
   }
-  if (max(heights) >= Refhyt) {
+  if (max(heights) >= reference_height) {
     if (warn) {
       message(
-        "warning: there are heights greater than or equal to the reference height, 'Refhyt'.
+        "warning: there are heights greater than or equal to the reference height, 'reference_height'.
         Assuming constant air temperature above the reference height and adjusting wind speed according to shear parameter.",
         '\n'
       )
     }
     heights_orig <- heights
-    heights <- heights_orig[heights_orig < Refhyt]
-    heights_extra <- heights_orig[heights_orig > Refhyt]
+    heights <- heights_orig[heights_orig < reference_height]
+    heights_extra <- heights_orig[heights_orig > reference_height]
   }
   if (errors == 0) {
     # continue
@@ -168,14 +168,14 @@ get_profile <- function(Refhyt = 1.2,
       )) # convert back to m
     }
 
-    T1 <- TAREF
-    T3 <- D0cm
+    T1 <- air_temperature_reference
+    T3 <- surface_temperature
     # unit conversions
-    Z <- Refhyt * 100 # m to cm
-    Z0 <- RUF * 100 # m to cm
-    ZH_cm <- ZH * 100 # m to cm
-    D0_cm <- D0 * 100 # m to cm
-    V <- VREF * 100 * 60 # m/s to cm/min
+    Z <- reference_height * 100 # m to cm
+    Z0 <- roughness_height * 100 # m to cm
+    ZH_cm <- canopy_roughness_height * 100 # m to cm
+    D0_cm <- zero_plane_displacement * 100 # m to cm
+    V <- wind_speed_reference * 100 * 60 # m/s to cm/min
     # DEFINE AIR HEIGHTS (cm)
     AIRDP <- c(Z, rev(heights) * 100)
     ZZ <- AIRDP
@@ -218,14 +218,14 @@ get_profile <- function(Refhyt = 1.2,
     QC <- RCP * DIFFT * USTAR * STB / (1 + STB / STS) # convective heat transfer at the surface
 
     # alternative Campbell and Norman 1998 vertical air temperature profile calculation option
-    if (ZH > 0) {
+    if (canopy_roughness_height > 0) {
       for (i in 2:NAIR) {
         A <- (T1 - T3) / (1 - log((Z - D0_cm) / ZH_cm))
         T0 <- T1 + A * log((Z - D0_cm) / ZH_cm)
         T[i] <- T0 - A * log((ZZ[i] - D0_cm) / ZH_cm)
       }
     }
-    if (T1 >= T3 | ZEN >= 90) {
+    if (T1 >= T3 | zenith_angle >= 90) {
       STS <- 0.62 / (Z0 * USTAR / 12)^0.45 #SUBLAYER STANTON NO.
       STB <- 0.64 / DUM # BULK STANTON NO.
       QC <- RCP * DIFFT * USTAR * STB / (1 + STB / STS) # convective heat transfer at the surface
@@ -233,7 +233,7 @@ get_profile <- function(Refhyt = 1.2,
         # FILL OUT VEL. AND TEMP. PROFILES
         VV[i] <- (USTAR / kappa) * log(ZZ[i] / Z0 + 1)
         # COMPUTING FICTITIOUS TEMP. AT TOP OF SUBLAYER
-        if (ZH == 0) {
+        if (canopy_roughness_height == 0) {
           TZO <- (T1 * STB + T3 * STS) / (STB + STS)
           T[i] <- TZO + (T1 - TZO) * log(ZZ[i] / Z0 + 1) / DUM
         }
@@ -251,7 +251,7 @@ get_profile <- function(Refhyt = 1.2,
         ADUM <- ZZ[i] / Z0 - Y1
         VV[i] <- (USTAR / kappa) * log(ADUM)
         Obukhov.out <- get_Obukhov(T1, T3, V / 100 / 60, ZZ[i] / 100, Z0 / 100)
-        if (ZH == 0) {
+        if (canopy_roughness_height == 0) {
           TZO <- (T1 * Obukhov.out$STB + T3 * Obukhov.out$STS) / (Obukhov.out$STB + Obukhov.out$STS)
           T[i] <- TZO + (T1 - TZO) * log(ZZ[i] / Z0 - YY2) / log(Z / Z0 -
                                                                    YY)
@@ -260,19 +260,19 @@ get_profile <- function(Refhyt = 1.2,
     }
 
     # add zero, ref height and reorder
-    heights <- c(0, heights, Refhyt)
+    heights <- c(0, heights, reference_height)
     VV <- c(0, rev(VV))
     T <- c(T3, rev(T))
-    e <- WETAIR(db = T1, rh = RH)$e
+    e <- WETAIR(db = T1, rh = relative_humidity_reference)$e
     es <- WETAIR(db = T)$esat
     RHs <- (e / es) * 100
     RHs[RHs > 100] <- 100
     RHs[RHs < 0] <- 0
     # add heights above reference height if any
     if (exists("heights_extra")) {
-      VV_extra <- V * (heights_extra / Refhyt)^a
-      T_extra <- VV_extra * 0 + TAREF
-      RH_extra <- VV_extra * 0 + RH
+      VV_extra <- V * (heights_extra / reference_height)^wind_shear_exponent
+      T_extra <- VV_extra * 0 + air_temperature_reference
+      RH_extra <- VV_extra * 0 + relative_humidity_reference
       heights <- c(heights, heights_extra)
       VV <- c(VV, VV_extra)
       T <- c(T, T_extra)

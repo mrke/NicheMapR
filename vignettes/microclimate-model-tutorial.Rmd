@@ -37,8 +37,8 @@ The results are stored as a list in the variable ```micro```. The main ones to f
 
 * ```metout``` The above ground micrometeorological conditions under the minimum specified shade
 * ```shadmet``` The above ground micrometeorological conditions under the maximum specified shade
-* ```soil``` Hourly predictions of the soil temperatures under the minimum specified shade
-* ```shadsoil``` Hourly predictions of the soil temperatures under the maximum specified shade
+* ```soil_temperature_lowshade``` Hourly predictions of the soil temperatures under the minimum specified shade
+* ```soil_temperature_highshade``` Hourly predictions of the soil temperatures under the maximum specified shade
 
 The first two rows of the output tables ```metout``` and ```shadmet``` look like this
 
@@ -81,25 +81,25 @@ head(shadmet,24) # show the first 24 rows, i.e. the first day
 
 Because the snow model wasn't flagged to run, there will be zeros in all the snow-related columns.
 
-The first two rows of the output tables ```soil``` and ```shadsoil``` look like this 
+The first two rows of the output tables ```soil_temperature_lowshade``` and ```soil_temperature_highshade``` look like this 
 
 ```{r, echo=FALSE, results='asis', message=FALSE, warnings=FALSE}
-knitr::kable(head(micro$soil[, 1:12], 2), digits = 2)
+knitr::kable(head(micro[, 1:12], 2), digits = 2)
 ```
 
 and show, for each day of the year and for each hour of the day, the soil temperatures as follows:
 
 1. DOY - day of year
 1. TIME - time of day (mins)
-1. Columns 3-12 D0cm ... - soil temperatures at each of the 10 specified depths
+1. Columns 3-12 "0cm" ... - soil temperatures at each of the 10 specified depths
 
 Have a look at yours:
 ```
-soil<-micro$soil # put the soil result into a variable 'soil'
-head(soil,24) # show the first 24 rows, i.e. the first day
+soil_temperature_lowshade <- as.data.frame(micro$soil_temperature_lowshade) # put the soil_temperature_lowshade result into a variable 'soil_temperature_lowshade'
+head(soil_temperature_lowshade,24) # show the first 24 rows, i.e. the first day
 
-shadsoil<-micro$shadsoil # put the metout result into a variable 'shadsoil'
-head(shadsoil,24) # show the first 24 rows, i.e. the first day
+soil_temperature_highshade<-micro$soil_temperature_highshade # put the metout result into a variable 'soil_temperature_highshade'
+head(soil_temperature_highshade,24) # show the first 24 rows, i.e. the first day
 ```
 The 10 different depths used by the model are specified with ```DEP``` and by default are `DEP=c(0., 2.5,  5.,  10.,  15.,  20.,  30.,  50.,  100.,  200.)`.
 
@@ -107,9 +107,9 @@ There are some example plots of all the variables in the help for the ```micro_g
 
 ```{r, message=FALSE, warnings=FALSE, fig.width=7, fig.height=6}
 require(lattice, quietly = TRUE)
-soil <- as.data.frame(micro$soil) # get the soil data
+soil_temperature_lowshade <- as.data.frame(micro$soil_temperature_lowshade) # get the soil_temperature_lowshade data
 minshade <- micro$minshade[1] # get the value for minimum shade
-with(subset(soil, DOY==196 | DOY==349), {xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)", auto.key = list(columns = 5), as.table = TRUE, type = "b", main = paste(minshade,"% shade"))})
+with(subset(soil_temperature_lowshade, day_of_year==196 | day_of_year==349), {xyplot(depth_0cm + depth_2.5cm + depth_5cm + depth_10cm + depth_15cm + depth_20cm + depth_30cm + depth_50cm + depth_100cm + depth_200cm ~ time | as.factor(day_of_year), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)", auto.key = list(columns = 5), as.table = TRUE, type = "b", main = paste(minshade,"% shade"))})
 ```
 
 Notice how the deeper one goes into the soil, the lower the amplitude of the fluctuations but also that the maximum temperature is reached later in the day. The daily fluctuations have largely disappeared by 50cm and at 200cm the temperature is stable year round. In fact the model assumes the deep soil temperature is the annual mean of the air temperatures, and this is a 'boundary condition' in the solution of the soil heat budget.
@@ -120,9 +120,9 @@ By default the model runs twice, for two different levels of shading by vegetati
 
 ```{r, message=FALSE, warnings=FALSE, fig.width=7, fig.height=6}
 micro <- micro_global(loc = longlat, runshade = 0, minshade = 50)
-soil <- as.data.frame(micro$soil) # get the soil data
+soil_temperature_lowshade <- as.data.frame(micro$soil_temperature_lowshade) # get the soil_temperature_lowshade data
 minshade<-micro$minshade[1] # get the value for minimum shade
-with(subset(soil, DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type = "b", main = paste(minshade, "% shade"))})
+with(subset(soil_temperature_lowshade, day_of_year==196 | day_of_year==349),{xyplot(depth_0cm + depth_2.5cm + depth_5cm + depth_10cm + depth_15cm + depth_20cm + depth_30cm + depth_50cm + depth_100cm + depth_200cm ~ time | as.factor(day_of_year), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type = "b", main = paste(minshade, "% shade"))})
 ```
 
 Notice how, the effect of shade is to not only reduce the daytime soil temperatures, but also to increase the nighttime temperatures. This is due to the increased levels of infrared radiation reaching the ground surface because the shading vegetation is assumed to be at the reference height air temperature while the 'sky temperature' is typically much colder, depending on the level of cloud cover (have a look at the variable ```Tsky``` in the ```metout``` and ```shadmet``` outputs).
@@ -133,9 +133,9 @@ Slope and aspect have strong effects on microclimates through the effects of dir
 
 ```{r, message=FALSE, warnings=FALSE, fig.width=7, fig.height=6}
 micro <- micro_global(loc = longlat, runshade = 0, minshade = 0, slope = 45, aspect = 180)
-soil <- as.data.frame(micro$soil) # get the soil data
+soil_temperature_lowshade <- as.data.frame(micro$soil_temperature_lowshade) # get the soil_temperature_lowshade data
 minshade <- micro$minshade[1] # get the value for minimum shade
-with(subset(soil, DOY==196 | DOY==349), {xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type = "b", main = paste(minshade, "% shade, 45 degree slope, 180 degrees aspect"))})
+with(subset(soil_temperature_lowshade, day_of_year==196 | day_of_year==349), {xyplot(depth_0cm + depth_2.5cm + depth_5cm + depth_10cm + depth_15cm + depth_20cm + depth_30cm + depth_50cm + depth_100cm + depth_200cm ~ time | as.factor(day_of_year), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)", auto.key=list(columns = 5), as.table = TRUE, type = "b", main = paste(minshade, "% shade, 45 degree slope, 180 degrees aspect"))})
 ```
 
 The strongest effect is on the December soil temperatures.
@@ -144,9 +144,9 @@ Hillshade also has a strong effect on microclimates. Gullies and gorges receive 
 
 ```{r, message=FALSE, warnings=FALSE, fig.width=7, fig.height=6}
 micro <- micro_global(loc = longlat, runshade = 0, minshade = 0, hori = c(0, 0, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 0, 0, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65))
-soil <- as.data.frame(micro$soil) # get the soil data
+soil_temperature_lowshade <- as.data.frame(micro$soil_temperature_lowshade) # get the soil_temperature_lowshade data
 minshade <- micro$minshade[1] # get the value for minimum shade
-with(subset(soil,DOY==196 | DOY==349),{xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)", auto.key = list(columns = 5), as.table = TRUE, type = "b", main=paste(minshade,"% shade, north-south gully"))})
+with(subset(soil_temperature_lowshade,day_of_year==196 | day_of_year==349),{xyplot(depth_0cm + depth_2.5cm + depth_5cm + depth_10cm + depth_15cm + depth_20cm + depth_30cm + depth_50cm + depth_100cm + depth_200cm ~ time | as.factor(day_of_year), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)", auto.key = list(columns = 5), as.table = TRUE, type = "b", main=paste(minshade,"% shade, north-south gully"))})
 ```
 
 ### Changing the soil properties
@@ -161,9 +161,9 @@ For simulating rock, ```BulkDensity``` should be set the same as ```Density``` a
 
 ```{r, message=FALSE, warnings=FALSE, fig.width=7, fig.height=6}
 micro <- micro_global(loc = longlat, runshade = 0, minshade = 0, soiltype = 0)
-soil <- as.data.frame(micro$soil) # get the soil data
+soil_temperature_lowshade <- as.data.frame(micro$soil_temperature_lowshade) # get the soil_temperature_lowshade data
 minshade <- micro$minshade[1] # get the value for minimum shade
-with(subset(soil, DOY==196 | DOY==349), {xyplot(D0cm + D2.5cm + D5cm + D10cm + D15cm + D20cm + D30cm + D50cm + D100cm + D200cm ~ TIME | as.factor(DOY), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)",  auto.key = list(columns = 5), as.table = TRUE, type = "b", main = paste(minshade, "% shade, rock substrate"))})
+with(subset(soil_temperature_lowshade, day_of_year==196 | day_of_year==349), {xyplot(depth_0cm + depth_2.5cm + depth_5cm + depth_10cm + depth_15cm + depth_20cm + depth_30cm + depth_50cm + depth_100cm + depth_200cm ~ time | as.factor(day_of_year), ylim = c(-20, 70), xlab = "Time of Day (min)", ylab = "Soil Temperature (deg C)",  auto.key = list(columns = 5), as.table = TRUE, type = "b", main = paste(minshade, "% shade, rock substrate"))})
 ```
 
 Notice how the heat penetrates more deeply into the rock, producing a gentler temperature gradient with depth, cooler near-surface temperatures during the day and warmer near-surface temperatures at night. 
@@ -183,9 +183,9 @@ Try running the model for your site with the soil moisture model turned on:
 micro <- micro_global(loc = longlat, runmoist = 1)
 ```
 
-The output tables ```soilmoist``` and ```shadmoist```, which previously were zero, will now have soil moisture values (m3/m3) in them: 
+The output tables ```soil_moisture_lowshade``` and ```shadmoist```, which previously were zero, will now have soil moisture values (m3/m3) in them: 
 ```{r, message=FALSE, warnings=FALSE, echo=FALSE, results='asis'}
-knitr::kable(head(micro$soilmoist[, 1:9], 2))
+knitr::kable(head(micro$soil_moisture_lowshade[, 1:9], 2))
 knitr::kable(head(micro$shadmoist[, 10:12], 2))
 ```
 
@@ -197,7 +197,7 @@ knitr::kable(head(micro$shadpot[, 10:12], 2))
 
 Finally, the soil humidity is also computed (outputs ```humid``` and ```shadhumid```):
 ```{r, message=FALSE, warnings=FALSE, echo=FALSE, results='asis'}
-knitr::kable(head(micro$humid[, 1:9], 2))
+knitr::kable(head(micro$soil_humidity_lowshade[, 1:9], 2))
 knitr::kable(head(micro$shadhumid[, 10:12], 2))
 ```
 
@@ -205,18 +205,18 @@ Note that soil humidity is typically close to saturation, even in 'dry' soils. T
 
 Plotting the results for soil moisture through time across the year:
 ```{r, message=FALSE, warnings=FALSE, fig.width=7, fig.height=6}
-soilmoist <- as.data.frame(micro$soilmoist) # get the minimum shade soil moisture output
+soil_moisture_lowshade <- as.data.frame(micro$soil_moisture_lowshade) # get the minimum shade soil moisture output
 minshade <- micro$minshade[1] # get the value for minimum shade
 # append dates
 days <- rep(seq(1, 12), 24)
 days <- days[order(days)]
-dates <- days + soilmoist$TIME / 60 / 24 - 1 # dates for hourly output
-soilmoist<-cbind(dates, soilmoist)
+dates <- days + soil_moisture_lowshade$time / 60 / 24 - 1 # dates for hourly output
+soil_moisture_lowshade<-cbind(dates, soil_moisture_lowshade)
 for(i in 1:10){
   if(i == 1){
-    plot(soilmoist[, i + 3] ~ soilmoist[, 1], ylim = c(0, 0.5), xlab = "Month",  ylab = "Soil Moisture (% vol)", col = i, type = "l", main = paste("soil moisture, ", minshade, "% shade"))
+    plot(soil_moisture_lowshade[, i + 3] ~ soil_moisture_lowshade[, 1], ylim = c(0, 0.5), xlab = "Month",  ylab = "Soil Moisture (% vol)", col = i, type = "l", main = paste("soil moisture, ", minshade, "% shade"))
   }else{
-    points(soilmoist[, i + 3] ~ soilmoist[, 1], col = i, type = "l")
+    points(soil_moisture_lowshade[, i + 3] ~ soil_moisture_lowshade[, 1], col = i, type = "l")
   }
 }
 ```
@@ -226,19 +226,19 @@ By default the model uses ```soiltype``` = 4, where Rock = 0, sand = 1, loamy sa
 Rerunning with clay as the soil type:
 ```{r, message=FALSE, warnings=FALSE, fig.width=7, fig.height=6}
 micro<-micro_global(loc = longlat, runmoist = 1, soiltype = 11)
-soilmoist<-as.data.frame(micro$soilmoist) # get the minimum shade soil moisture output
+soil_moisture_lowshade<-as.data.frame(micro$soil_moisture_lowshade) # get the minimum shade soil moisture output
 minshade<-micro$minshade[1] # get the value for minimum shade
 # append dates
 days<-rep(seq(1,12),24)
 days<-days[order(days)]
-dates<-days+soilmoist$TIME/60/24-1 # dates for hourly output
-soilmoist<-cbind(dates,soilmoist)
+dates<-days+soil_moisture_lowshade$time/60/24-1 # dates for hourly output
+soil_moisture_lowshade<-cbind(dates,soil_moisture_lowshade)
 for(i in 1:10){
   if(i==1){
-    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Month", ylab = "Soil Moisture (%
+    plot(soil_moisture_lowshade[,i+3]~soil_moisture_lowshade[,1], ylim=c(0,0.5),xlab = "Month", ylab = "Soil Moisture (%
       vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
   }else{
-    points(soilmoist[,i+3]~soilmoist[,1] ,col=i,type = "l")
+    points(soil_moisture_lowshade[,i+3]~soil_moisture_lowshade[,1] ,col=i,type = "l")
   }
 }
 ```
@@ -252,19 +252,19 @@ It is  possible to run the model for multiple years by changing the ```nyears```
 ```{r, message=FALSE, warnings=FALSE, fig.width=7, fig.height=6}
 nyears<-5
 micro<-micro_global(loc = longlat, runmoist = 1, soiltype = 11, nyears = nyears)
-soilmoist<-as.data.frame(micro$soilmoist) # get the minimum shade soil moisture output
+soil_moisture_lowshade<-as.data.frame(micro$soil_moisture_lowshade) # get the minimum shade soil moisture output
 minshade<-micro$minshade[1] # get the value for minimum shade
 # append dates
 days<-rep(seq(1,12*nyears)/12,24)
 days<-days[order(days)]
-dates<-days+soilmoist$TIME/60/24/(12) # dates for hourly output
-soilmoist<-cbind(dates,soilmoist)
+dates<-days+soil_moisture_lowshade$time/60/24/(12) # dates for hourly output
+soil_moisture_lowshade<-cbind(dates,soil_moisture_lowshade)
 for(i in 1:10){
   if(i==1){
-    plot(soilmoist[,i+3]~soilmoist[,1], ylim=c(0,0.5),xlab = "Year", ylab = "Soil Moisture (%
+    plot(soil_moisture_lowshade[,i+3]~soil_moisture_lowshade[,1], ylim=c(0,0.5),xlab = "Year", ylab = "Soil Moisture (%
       vol)",col=i,type = "l",main=paste("soil moisture, ",minshade,"% shade"))
   }else{
-    points(soilmoist[,i+3]~soilmoist[,1],col=i,type = "l")
+    points(soil_moisture_lowshade[,i+3]~soil_moisture_lowshade[,1],col=i,type = "l")
   }
 }
 ```
@@ -275,36 +275,36 @@ Here is an example running the model for 365 days and plotting soil moisture:
 ```{r, message=FALSE, warnings=FALSE, fig.width=7, fig.height=6}
 timeinterval <- 365
 micro <- micro_global(loc = longlat, runmoist = 1, soiltype = 11, timeinterval = timeinterval)
-soilmoist <- as.data.frame(micro$soilmoist)  # get the minimum shade soil moisture output
+soil_moisture_lowshade <- as.data.frame(micro$soil_moisture_lowshade)  # get the minimum shade soil moisture output
 minshade <- micro$minshade[1]  # get the value for minimum shade
 # append dates
 days <- rep(seq(1, timeinterval), 24)
 days <- days[order(days)]
-dates <- days + soilmoist$TIME/60/24 - 1  # dates for hourly output
-soilmoist <- cbind(dates, soilmoist)
+dates <- days + soil_moisture_lowshade$time/60/24 - 1  # dates for hourly output
+soil_moisture_lowshade <- cbind(dates, soil_moisture_lowshade)
 for (i in 1:10) {
     if (i == 1) {
-        plot(soilmoist[, i + 3] ~ soilmoist[, 1], ylim = c(0, 0.5), xlab = "Day of Year", ylab = "Soil Moisture (% vol)", col = i, type = "l", main = paste("soil moisture, ", minshade, "% shade"))
+        plot(soil_moisture_lowshade[, i + 3] ~ soil_moisture_lowshade[, 1], ylim = c(0, 0.5), xlab = "Day of Year", ylab = "Soil Moisture (% vol)", col = i, type = "l", main = paste("soil moisture, ", minshade, "% shade"))
     } else {
-        points(soilmoist[, i + 3] ~ soilmoist[, 1], col = i, type = "l")
+        points(soil_moisture_lowshade[, i + 3] ~ soil_moisture_lowshade[, 1], col = i, type = "l")
     }
 }
 ```
 
 Here are the associated soil temperatures:
 ```{r, message=FALSE, warnings=FALSE, fig.width=7, fig.height=6}
-soil <- as.data.frame(micro$soil)  # get the minimum shade soil temperature output
+soil_temperature_lowshade <- as.data.frame(micro$soil_temperature_lowshade)  # get the minimum shade soil temperature output
 minshade <- micro$minshade[1]  # get the value for minimum shade
 # append dates
 days <- rep(seq(1, timeinterval), 24)
 days <- days[order(days)]
-dates <- days + soil$TIME/60/24 - 1  # dates for hourly output
-soil <- cbind(dates, soil)
+dates <- days + soil_temperature_lowshade$time/60/24 - 1  # dates for hourly output
+soil_temperature_lowshade <- cbind(dates, soil_temperature_lowshade)
 for (i in 1:10) {
     if (i == 1) {
-        plot(soil[, i + 3] ~ soil[, 1], ylim = c(-20, 70), xlab = "Day of Year", ylab = "Soil Temperature (deg C)", col = i, type = "l", main = paste("soil temperature, ", minshade, "% shade"))
+        plot(soil_temperature_lowshade[, i + 3] ~ soil_temperature_lowshade[, 1], ylim = c(-20, 70), xlab = "Day of Year", ylab = "Soil Temperature (deg C)", col = i, type = "l", main = paste("soil temperature, ", minshade, "% shade"))
     } else {
-        points(soil[, i + 3] ~ soil[, 1], col = i, type = "l")
+        points(soil_temperature_lowshade[, i + 3] ~ soil_temperature_lowshade[, 1], col = i, type = "l")
     }
 }
 ```
@@ -320,20 +320,20 @@ Here is the consequence of invoking the snow model for soil temperature predicti
 timeinterval <- 365
 nyears <- 2  # running two years, first one acting as a 'burn in' year and discarded
 micro <- micro_global(loc = longlat, runmoist = 1, snowmodel = 1, timeinterval = timeinterval, nyears = 2)
-soil <- as.data.frame(micro$soil)[(365 * 24 + 1):(365 * 24 * nyears), ]  # get the minimum shade soil temperature output, discarding the first year
+soil_temperature_lowshade <- as.data.frame(micro$soil_temperature_lowshade)[(365 * 24 + 1):(365 * 24 * nyears), ]  # get the minimum shade soil temperature output, discarding the first year
 metout <- as.data.frame(micro$metout)[(365 * 24 + 1):(365 * 24 * nyears), ]  # get the minimum shade above ground conditions, discarding the first year
 minshade <- micro$minshade[1]  # get the value for minimum shade
 # append dates
 days <- rep(seq(366, timeinterval * nyears), 24)
 days <- days[order(days)]
-dates <- days + soil$TIME / 60 / 24 - 1  # dates for hourly output
-soil <- cbind(dates, soil)
+dates <- days + soil_temperature_lowshade$time / 60 / 24 - 1  # dates for hourly output
+soil_temperature_lowshade <- cbind(dates, soil_temperature_lowshade)
 metout <- cbind(dates, metout)
 for (i in 1:10) {
     if (i == 1) {
-        plot(soil[, i + 3] ~ soil[, 1], ylim = c(-20, 70), xlab = "Day of Year", ylab = "Soil Temperature (deg C)", col = i, type = "l", main = paste("soil  temperature, ", minshade, "% shade"))
+        plot(soil_temperature_lowshade[, i + 3] ~ soil_temperature_lowshade[, 1], ylim = c(-20, 70), xlab = "Day of Year", ylab = "Soil Temperature (deg C)", col = i, type = "l", main = paste("soil_temperature_lowshade  temperature, ", minshade, "% shade"))
     } else {
-        points(soil[, i + 3] ~ soil[, 1], col = i, type = "l")
+        points(soil_temperature_lowshade[, i + 3] ~ soil_temperature_lowshade[, 1], col = i, type = "l")
     }
 }
 plot(metout$SNOWDEP ~ metout$dates, xlab = "Time of Day (min)", ylab = "snow depth, cm / snow fall, mm", type = "h", main = paste("snow depth (cm) and snow fall (mm) ", minshade, "% shade", sep = ""), col = "light blue")
@@ -359,19 +359,19 @@ timeinterval<-365
   mocktides<-mocktides[1:8760] # subset it to a year long of 24 hour tides
   tides[1:(timeinterval*nyears*24),1]<-mocktides # put the mock tides in the tides vector, column 1
 micro<-micro_global(loc=longlat, shore = 1, soiltype = 0, timeinterval = timeinterval, nyears = nyears, tides = tides)
-soil<-as.data.frame(micro$soil) # get the minimum shade soil temperature output first year
+soil_temperature_lowshade<-as.data.frame(micro) # get the minimum shade soil temperature output first year
 minshade<-micro$minshade[1] # get the value for minimum shade
 # append dates
 days<-rep(seq(1,timeinterval),24)
 days<-days[order(days)]
-dates<-days+soil$TIME/60/24-1 # dates for hourly output
-soil<-cbind(dates,soil)
+dates<-days+soil_temperature_lowshade$time/60/24-1 # dates for hourly output
+soil_temperature_lowshade<-cbind(dates,soil_temperature_lowshade)
 for(i in 1:10){
   if(i==1){
-    plot(soil[,i+3]~soil[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg
+    plot(soil_temperature_lowshade[,i+3]~soil_temperature_lowshade[,1], ylim=c(-20,70),xlab = "Day of Year", ylab = "Soil Temperature (deg
       C)",col=i,type = "l",main=paste("soil temperature, ",minshade,"% shade"))
   }else{
-    points(soil[,i+3]~soil[,1], col=i,type = "l")
+    points(soil_temperature_lowshade[,i+3]~soil_temperature_lowshade[,1], col=i,type = "l")
   }
 }  
 ```
@@ -386,10 +386,10 @@ In the help for the ```micro_global``` function you'll find information on a num
 
 Campbell, G. S. 1985. Soil Physics with Basic: Transport Models for Soil-Plant Systems. Elsevier, Amsterdam.
 
-Campbell, G. S., J. D. J. Jungbauer, W. R. Bidlake, and R. D. Hungerford. 1994. Predicting the effect of temperature on soil thermal conductivity. Soil Science 158:307-313.
+Campbell, G. S., J. D. J. Jungbauer, W. R. Bidlake, and R. D. Hungerford. 1994. Predicting the effect of temperature on soil_temperature_lowshade thermal conductivity. Soil Science 158:307-313.
 
 Campbell, G. S., and J. M. Norman. 1998. Environmental Biophysics. Springer, New York.
 
-Kearney, M. R., A. Shamakhy, R. Tingley, D. J. Karoly, A. A. Hoffmann, P. R. Briggs, and W. P. Porter. 2014. Microclimate modelling at macro scales: a test of a general microclimate model integrated with gridded continental-scale soil and weather data. Methods in Ecology and Evolution 5:273-286.
+Kearney, M. R., A. Shamakhy, R. Tingley, D. J. Karoly, A. A. Hoffmann, P. R. Briggs, and W. P. Porter. 2014. Microclimate modelling at macro scales: a test of a general microclimate model integrated with gridded continental-scale soil_temperature_lowshade and weather data. Methods in Ecology and Evolution 5:273-286.
 
 Schmidt-Nielsen, B., and K. Schmidt-Nielsen. 1950. Evaporative Water Loss in Desert Rodents in Their Natural Habitat. Ecology 31:75-85.
