@@ -47,7 +47,8 @@ C     VERSION 2 SEPT. 2000
       DOUBLE PRECISION condep,rainmult,soilprop,moist,wccfinal,HTOFN
       DOUBLE PRECISION Z01,Z02,ZH1,ZH2,qconv,ttest,hc,hd,VELR,AMOL,wcc
       DOUBLE PRECISION curmoist2,curhumid2,curpot2,tt,tt_past,snowalbedo
-      DOUBLE PRECISION DRLAM,DRRLAM,SRLAM,trans2,leafpot,curroot
+      DOUBLE PRECISION DRLAM,DRRLAM,SRLAM,trans2,leafpot,curroot,satval
+      DOUBLE PRECISION refill
 
       DOUBLE PRECISION PE,KS,BB,BD,maxpool,L,LAI,tide,minsnow,DD
       DOUBLE PRECISION snownode,maxsnode1,snode,daysincesnow,lastday,
@@ -1194,10 +1195,13 @@ c       evaporation potential, mm/s (kg/s)
        else
         EP=0.0000001
        endif ! end check for snow cover - no evap if there is
-       if((condep.gt.0.D0).or.((snowout.gt.0.D0).and.(soiltemp(1).gt.
-     &  0.D0)))then
-        curmoist(1)=1.-BD(1)/DD(1)
-        curmoist2(1)=curmoist(1)
+       if(condep.gt.0.D0)then
+         satval=1.-BD(1)/DD(1)
+         refill=max(0.D0,(satval-curmoist(1))*(dep(2)-dep(1))/2.D0
+     &    *10.D0)
+         condep=max(0.D0,condep-refill)
+         curmoist(1)=satval
+         curmoist2(1)=curmoist(1)
        endif
 
        CALL RELHUMID
@@ -1242,7 +1246,11 @@ c       evaporation potential, mm/s (kg/s)
          condep=0.D0
         endif
         if(condep.gt.0.D0)then
-         curmoist(1)=1.-BD(1)/DD(1)
+         satval=1.-BD(1)/DD(1)
+         refill=max(0.D0,(satval-curmoist(1))*(dep(2)-dep(1))/2.D0
+     &    *10.D0)
+         condep=max(0.D0,condep-refill)
+         curmoist(1)=satval
          curmoist2(1)=curmoist(1)
         endif
 222    continue
