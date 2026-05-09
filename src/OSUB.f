@@ -1077,11 +1077,7 @@ C       SETTING THIS MONTH'S PERCENT OF SURFACE WITH FREE WATER/SNOW ON IT
         snowage=0.D0
        endif
       endif
-      if((methour.eq.1).and.(DOY.eq.1))then
-       prevden=1.
-      else
-       prevden=snowdens
-      endif
+      prevden=snowdens
 ********************* end main code for snow model *******************************
 
       tt_past=tt
