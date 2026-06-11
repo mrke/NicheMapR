@@ -37,8 +37,8 @@ C    This subroutine computes a single unsegmented velocity and temperature prof
 
 C
 C**** 1 SEGMENT VELOCITY PROFILE - W. PORTER
-C**** VELOCITY PROFILE - Businger, J. A., Wyngaard, J. C., Izumi, Y., & Bradley, E. F. (1971). Flux-Profile Relationships in the Atmospheric Surface Layer. Journal of the Atmospheric Sciences, 28(2), 181–189. doi:10.1175/1520-0469(1971)028<0181:FPRITA>2.0.CO;2
-C**** SUBLAYER MODEL - Garratt, J. R., & Hicks, B. B. (1973). Momentum, heat and water vapour transfer to and from natural and artificial surfaces. Quarterly Journal of the Royal Meteorological Society, 99(422), 680–687. doi:10.1002/qj.49709942209
+C**** VELOCITY PROFILE - Businger, J. A., Wyngaard, J. C., Izumi, Y., & Bradley, E. F. (1971). Flux-Profile Relationships in the Atmospheric Surface Layer. Journal of the Atmospheric Sciences, 28(2), 181ï¿½189. doi:10.1175/1520-0469(1971)028<0181:FPRITA>2.0.CO;2
+C**** SUBLAYER MODEL - Garratt, J. R., & Hicks, B. B. (1973). Momentum, heat and water vapour transfer to and from natural and artificial surfaces. Quarterly Journal of the Royal Meteorological Society, 99(422), 680ï¿½687. doi:10.1002/qj.49709942209
 C     Z=REFERENCE HEIGHT
 C     Z0=ROUGHNESS HEIGHT
 C     T1=TEMPERATURE AT REFERENCE HEIGHT
@@ -149,12 +149,12 @@ C     END OF ITERATION LOOP TO FIND MONIN-OBUKHOV LENGTH
        Y1=PSI1(X1)
        YY2=PSI2(X1)
 C      FILL OUT VELOCITY AND TEMP. PROFILES
-       ADUM=ZZ(I)/Z0-Y1
-       VV(I)=2.5*USTAR*dLOG(ADUM)
+       ADUM=dLOG(ZZ(I)/Z0)-Y1
+       VV(I)=2.5*USTAR*ADUM
        IF(ZH.EQ.0)THEN
 C       COMPUTING FICTITIOUS TEMP. AT TOP OF SUBLAYER
         TZO=(T1*STB+T3*STS)/(STB+STS)
-        T(I+20)=TZO+(T1-TZO)*dLOG(ZZ(I)/Z0-YY2)/dLOG(Z/Z0-YY)
+        T(I+20)=TZO+(T1-TZO)*(dLOG(ZZ(I)/Z0)-YY2)/(dLOG(Z/Z0)-YY)
        ENDIF
     3 CONTINUE
       RETURN
