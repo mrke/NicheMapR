@@ -84,7 +84,7 @@ C     ZH2=30.    13.                  60.          25
       RCPTKG=6.003D-8 !RHO*CP*T/(K*G) = 6.003D-8 IN CAL-MIN-CM-C UNITS
 
 C     COMPUTING VEL. PROFILE PARAMETERS FROM 200 CM REFERENCE VELOCITY
-      ZRATIO = Z/Z0 + 1. ! ratio of reference to roughness height
+      ZRATIO = Z/Z0 ! ratio of reference to roughness height
       DUM=dLOG(ZRATIO)
       VEL = V ! wind speed at reference height
       USTAR = 0.4*V/DUM ! friction velocity
@@ -165,11 +165,11 @@ C     CALC'S BELOW WHEN NO FREE CONV. ENHANCEMENT OF VEL,TEMP PROFILES
       IF(NAIR.LE.0) RETURN
       DO 4 I=1,NAIR
 C      FILL OUT VEL. AND TEMP. PROFILES
-       VV(I)=2.5*USTAR*dLOG(ZZ(I)/Z0+1.)
+       VV(I)=2.5*USTAR*dLOG(ZZ(I)/Z0)
        IF(ZH.EQ.0)THEN
 C       COMPUTING FICTITIOUS TEMP. AT TOP OF SUBLAYER
         TZO=(T1*STB+T3*STS)/(STB+STS)
-        T(I+20)=TZO+(T1-TZO)*dLOG(ZZ(I)/Z0+1.)/DUM
+        T(I+20)=TZO+(T1-TZO)*dLOG(ZZ(I)/Z0)/DUM
        ENDIF
     4 CONTINUE
       RETURN
