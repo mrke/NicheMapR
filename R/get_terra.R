@@ -243,9 +243,9 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
     for(i in 1:length(yearlist)){
 
       if(scenario == 2){
-        base <- paste0(source, '_plus2C/TerraClimate_plus2C')
+        base <- paste0(source, '/plus2c/TerraClimate_plus2C')
       }else{
-        base <- paste0(source, '_plus4C/TerraClimate_plus4C')
+        base <- paste0(source, '/plus4c/TerraClimate_plus4C')
       }
 
       var <- "tmax"
