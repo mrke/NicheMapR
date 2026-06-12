@@ -98,7 +98,7 @@ get_terra <- function(scenario = 0, x = c(-5.3, 50.13), ystart = 1985, yfinish =
       if(source == "http://thredds.northwestknowledge.net:8080/thredds/dodsC/TERRACLIMATE_ALL/data"){
        ncfile <- paste0(source, "/TerraClimate_", var,"_", yearlist[i], ".nc#fillmismatch")
       }else{
-       ncfile <- paste0(source, "/TerraClimate_", var,"_", yearlist[i], ".nc")
+       ncfile <- paste0(source, "/historical/TerraClimate_", var,"_", yearlist[i], ".nc")
       }
       nc <- retry(nc_open(ncfile))
       if(i == 1){
