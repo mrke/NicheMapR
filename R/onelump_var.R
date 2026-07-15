@@ -117,250 +117,256 @@
 #' }
 #' @export
 onelump_var <- function(t, y, indata) {
-  with(as.list(c(indata, y)), {
-    sigma <- 5.67e-8 # Stefan-Boltzman, W/(m.K)
-    Tair <- Tairf(t) # interpolate air temp to current time step
-    vel <- max(0,velf(t)) # interpolate wind speed to current time step
-    Qsol <- max(0,Qsolf(t)) # interpolate solar to current time step
-    Trad <- Tradf(t) # interpolate radiant temp to current time step
-    Zen <- min(max(0,Zenf(t)),90) # interpolate zenith angle to current time step
-    Zenith <- Zen * pi / 180 # zenith angle in radians
-    Tc <- y
-    Tskin <- Tc + 0.01
-    vel[vel < 0.01] <- 0.01 # don't let wind speed go too low - always some free convection
-    S2 <- 0.0001 # shape factor, arbitrary initialization, because not defined except for ellipsoid
-    if(fluid == 0){
-      DENSTY <- press / (287.04 * (Tair + 273.15)) # air density, kg/m3
-      THCOND <- 0.02425 + (7.038 * 10 ^ -5 * Tair) # air thermal conductivity, W/(m.K)
-      VISDYN <- (1.8325 * 10 ^ -5 * ((296.16 + 120) / ((Tair + 273.15) + 120))) * (((Tair + 273.15) / 296.16) ^ 1.5) # dynamic viscosity of air, kg/(m.s)
-      DIFVPR <- 2.26e-05 * (((Tair + 273.15) / 273.15) ^ 1.81) * (1e+05 / press)
-    }else{
-      WATERPROP.out <- WATERPROP(Tair)
-      DENSTY <- WATERPROP.out$DENSTY
-      THCOND <- WATERPROP.out$THCOND
-      VISDYN <- WATERPROP.out$VISDYN
-      DIFVPR <- 0
-    }
-    VISKIN <- VISDYN / DENSTY
-    # geometry section ############################################################
-    m <- Ww_g / 1000 # convert weight to kg
-    C <- m * c_body # thermal capacitance, J/K
-    V <- m / rho_body # volume, m3
-    if(dyn_q == 1){
-      Q_gen <- qf(Tc) * V # total metabolic heat, J
-    }else{
-      Q_gen <- q * V
-    }
-    L <- V ^ (1 / 3) # characteristic dimension, m
+  alpha <- indata$alpha; emis <- indata$emis; alpha_sub <- indata$alpha_sub; press <- indata$press
+  Ww_g <- indata$Ww_g; c_body <- indata$c_body; rho_body <- indata$rho_body; q <- indata$q
+  k_flesh <- indata$k_flesh; geom <- indata$geom; posture <- indata$posture; orient <- indata$orient
+  shape_b <- indata$shape_b; shape_c <- indata$shape_c; shape_coefs <- indata$shape_coefs
+  pdif <- indata$pdif; fatosk <- indata$fatosk; fatosb <- indata$fatosb; fluid <- indata$fluid
+  dyn_q <- indata$dyn_q
+  Tairf <- indata$Tairf; velf <- indata$velf; Qsolf <- indata$Qsolf; Tradf <- indata$Tradf; Zenf <- indata$Zenf
 
-    # FLAT PLATE geometry
-    if (geom == 0) {
-      AHEIT <- (V / (shape_b * shape_c)) ^ (1 / 3) # length, m
-      AWIDTH <- AHEIT * shape_b # width, m
-      ALENTH <- AHEIT * shape_c # height, m
-      ATOT <- ALENTH * AWIDTH * 2 + ALENTH * AHEIT * 2 + AWIDTH * AHEIT * 2 # total area, m2
-      ASILN <- ALENTH * AWIDTH # max silhouette area, m2
-      ASILP <- AWIDTH * AHEIT # min silhouette area, m2
-      L <- AHEIT # characteristic dimension, m
-      if (AWIDTH <= ALENTH) {
-        L <- AWIDTH
+  sigma <- 5.67e-8 # Stefan-Boltzman, W/(m.K)
+  Tair <- Tairf(t) # interpolate air temp to current time step
+  vel <- max(0,velf(t)) # interpolate wind speed to current time step
+  Qsol <- max(0,Qsolf(t)) # interpolate solar to current time step
+  Trad <- Tradf(t) # interpolate radiant temp to current time step
+  Zen <- min(max(0,Zenf(t)),90) # interpolate zenith angle to current time step
+  Zenith <- Zen * pi / 180 # zenith angle in radians
+  Tc <- y
+  Tskin <- Tc + 0.01
+  vel[vel < 0.01] <- 0.01 # don't let wind speed go too low - always some free convection
+  S2 <- 0.0001 # shape factor, arbitrary initialization, because not defined except for ellipsoid
+  if(fluid == 0){
+    DENSTY <- press / (287.04 * (Tair + 273.15)) # air density, kg/m3
+    THCOND <- 0.02425 + (7.038 * 10 ^ -5 * Tair) # air thermal conductivity, W/(m.K)
+    VISDYN <- (1.8325 * 10 ^ -5 * ((296.16 + 120) / ((Tair + 273.15) + 120))) * (((Tair + 273.15) / 296.16) ^ 1.5) # dynamic viscosity of air, kg/(m.s)
+    DIFVPR <- 2.26e-05 * (((Tair + 273.15) / 273.15) ^ 1.81) * (1e+05 / press)
+  }else{
+    WATERPROP.out <- WATERPROP(Tair)
+    DENSTY <- WATERPROP.out$DENSTY
+    THCOND <- WATERPROP.out$THCOND
+    VISDYN <- WATERPROP.out$VISDYN
+    DIFVPR <- 0
+  }
+  VISKIN <- VISDYN / DENSTY
+  # geometry section ############################################################
+  m <- Ww_g / 1000 # convert weight to kg
+  C <- m * c_body # thermal capacitance, J/K
+  V <- m / rho_body # volume, m3
+  if(dyn_q == 1){
+    Q_gen <- qf(Tc) * V # total metabolic heat, J
+  }else{
+    Q_gen <- q * V
+  }
+  L <- V ^ (1 / 3) # characteristic dimension, m
+
+  # FLAT PLATE geometry
+  if (geom == 0) {
+    AHEIT <- (V / (shape_b * shape_c)) ^ (1 / 3) # length, m
+    AWIDTH <- AHEIT * shape_b # width, m
+    ALENTH <- AHEIT * shape_c # height, m
+    ATOT <- ALENTH * AWIDTH * 2 + ALENTH * AHEIT * 2 + AWIDTH * AHEIT * 2 # total area, m2
+    ASILN <- ALENTH * AWIDTH # max silhouette area, m2
+    ASILP <- AWIDTH * AHEIT # min silhouette area, m2
+    L <- AHEIT # characteristic dimension, m
+    if (AWIDTH <= ALENTH) {
+      L <- AWIDTH
+    } else{
+      L <- ALENTH
+    }
+    R <- ALENTH / 2 # 'radius', m
+  }
+
+  # CYLINDER geometry
+  if (geom == 1) {
+    R1 <- (V / (pi * shape_b * 2)) ^ (1 / 3) # radius, m
+    ALENTH <- 2 * R1 * shape_b # length, m
+    ATOT <- 2 * pi * R1 ^ 2 + 2 * pi * R1 * ALENTH # total surface area, m2
+    AWIDTH <- 2 * R1 # width, m
+    ASILN <- AWIDTH * ALENTH # max silhouette area, m2
+    ASILP <- pi * R1 ^ 2 # min silhouette area, m2
+    L <- ALENTH # characteristic dimension, m
+    R2 <- L / 2
+    if (R1 > R2) {
+      # choose shortest dimension as R
+      R <- R2
+    } else{
+      R <- R1
+    }
+  }
+
+  # Ellipsoid geometry
+  if (geom == 2) {
+    A1 <- ((3 / 4) * V / (pi * shape_b * shape_c)) ^ 0.333 # axis A, m
+    B1 <- A1 * shape_b # axis B, m
+    C1 <- A1 * shape_c # axis C, m
+    P1 <- 1.6075 # a constant
+    ATOT <- (4 * pi * (((A1 ^ P1 * B1 ^ P1 + A1 ^ P1 * C1 ^ P1 + B1 ^ P1 * C1 ^ P1)) / 3) ^ (1 / P1)) # total surface area, m2
+    ASILN <- max(pi * A1 * C1, pi * B1 * C1) # max silhouette area, m2
+    ASILP <- min(pi * A1 * C1, pi * B1 * C1) # min silhouette area, m2
+    S2 <- (A1 ^ 2 * B1 ^ 2 * C1 ^ 2) / (A1 ^ 2 * B1 ^ 2 + A1 ^ 2 * C1 ^ 2 + B1 ^ 2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
+    #k_flesh <- 0.5 + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
+  }
+
+  # Lizard geometry - DESERT IGUANA (PORTER ET AL. 1973 OECOLOGIA)
+  if (geom == 3) {
+    ATOT <- (10.4713 * Ww_g ^ .688) / 10000. # total surface area, m2
+    AV <- (0.425 * Ww_g ^ .85) / 10000. # ventral surface area, m2
+    # NORMAL AND POINTING @ SUN SILHOUETTE AREA: PORTER & TRACY 1984
+    ASILN <- (3.798 * Ww_g ^ .683) / 10000. # Max. silhouette area (normal to the sun), m2
+    ASILP <- (0.694 * Ww_g ^ .743) / 10000. # Min. silhouette area (pointing toward the sun), m2
+    R <- L
+  }
+
+  # Frog geometry - LEOPARD FROG (C.R. TRACY 1976 ECOL. MONOG.)
+  if (geom == 4) {
+    ATOT <- (12.79 * Ww_g ^ 0.606) / 10000. # total surface area, m2
+    AV <- (0.425 * Ww_g ^ 0.85) / 10000. # ventral surface area, m2
+    # NORMAL AND POINTING @ SUN SILHOUETTE AREA: EQ'N 11 TRACY 1976
+    ZEN <- 0
+    PCTN <- 1.38171E-06 * ZEN ^ 4 - 1.93335E-04 * ZEN ^ 3 + 4.75761E-03 * ZEN ^ 2 - 0.167912 * ZEN + 45.8228
+    ASILN <- PCTN * ATOT / 100 # Max. silhouette area (normal to the sun), m2
+    ZEN <- 90
+    PCTP <- 1.38171E-06 * ZEN ^ 4 - 1.93335E-04 * ZEN ^ 3 + 4.75761E-03 * ZEN ^ 2 - 0.167912 * ZEN + 45.8228
+    ASILP <- PCTP * ATOT / 100 # Min. silhouette area (pointing toward the sun), m2
+    R <- L
+  }
+
+  # user defined geometry
+  if (geom == 5) {
+    ATOT <- (shape_coefs[1] * Ww_g ^ shape_coefs[2]) / 10000. # total surface area, m2
+    AV <- (shape_coefs[3] * Ww_g ^ shape_coefs[4]) / 10000 # ventral surface area, m2
+    # NORMAL AND POINTING @ SUN SILHOUETTE AREA: PORTER & TRACY 1984
+    # User must define Max. silhouette area (normal to the sun)
+    ASILN <- (shape_coefs[5] * Ww_g ^ shape_coefs[6]) / 10000 # Max. silhouette area (normal to the sun), m2
+    # User must define Min. silhouette area (pointing toward the sun)
+    ASILP <- (shape_coefs[7] * Ww_g ^ shape_coefs[8]) / 10000 # Min. silhouette area (pointing toward the sun), m2
+    R <- L
+  }
+  # end geometry section ############################################################
+
+  if (max(Zen) >= 90) {
+    Q_norm <- 0
+  }else{
+    if(orient == 1){
+      Q_norm <- (Qsol / cos(Zenith))
+    }else{
+      Q_norm <- Qsol
+    }
+  }
+  if (Q_norm > 1367) {
+    Q_norm <- 1367 #making sure that low sun angles don't lead to solar values greater than the solar constant
+  }
+  if (posture == 'p') {
+    Qabs <- (Q_norm * (1 - pdif) * ASILP + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
+  }
+  if (posture == 'n') {
+    Qabs <- (Q_norm * (1 - pdif) * ASILN + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
+  }
+  if (posture == 'a') {
+    Qabs <- (Q_norm * (1 - pdif) * (ASILN + ASILP) / 2 + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
+  }
+
+  Re <- DENSTY * vel * L / VISDYN # Reynolds number
+  PR <- 1005.7 * VISDYN / THCOND # Prandlt number
+  if(fluid == 0){
+    SC <- VISDYN / (DENSTY * DIFVPR) # Schmidt number
+  }else{
+    SC <- 1
+  }
+
+  if (geom == 0) {
+    NUfor <- 0.102 * Re ^ 0.675 * PR ^ (1. / 3.)
+  }
+  if (geom == 3 | geom == 5) {
+    NUfor <- 0.35 * Re ^ 0.6
+  }
+  if (geom == 1) {
+    #       FORCED CONVECTION OF A CYLINDER
+    #       ADJUSTING NU - RE CORRELATION FOR RE NUMBER (P. 260 MCADAMS,1954)
+    if (Re < 4) {
+      NUfor = 0.891 * Re ^ 0.33
+    } else{
+      if (Re < 40) {
+        NUfor = 0.821 * Re ^ 0.385
       } else{
-        L <- ALENTH
-      }
-      R <- ALENTH / 2 # 'radius', m
-    }
-
-    # CYLINDER geometry
-    if (geom == 1) {
-      R1 <- (V / (pi * shape_b * 2)) ^ (1 / 3) # radius, m
-      ALENTH <- 2 * R1 * shape_b # length, m
-      ATOT <- 2 * pi * R1 ^ 2 + 2 * pi * R1 * ALENTH # total surface area, m2
-      AWIDTH <- 2 * R1 # width, m
-      ASILN <- AWIDTH * ALENTH # max silhouette area, m2
-      ASILP <- pi * R1 ^ 2 # min silhouette area, m2
-      L <- ALENTH # characteristic dimension, m
-      R2 <- L / 2
-      if (R1 > R2) {
-        # choose shortest dimension as R
-        R <- R2
-      } else{
-        R <- R1
-      }
-    }
-
-    # Ellipsoid geometry
-    if (geom == 2) {
-      A1 <- ((3 / 4) * V / (pi * shape_b * shape_c)) ^ 0.333 # axis A, m
-      B1 <- A1 * shape_b # axis B, m
-      C1 <- A1 * shape_c # axis C, m
-      P1 <- 1.6075 # a constant
-      ATOT <- (4 * pi * (((A1 ^ P1 * B1 ^ P1 + A1 ^ P1 * C1 ^ P1 + B1 ^ P1 * C1 ^ P1)) / 3) ^ (1 / P1)) # total surface area, m2
-      ASILN <- max(pi * A1 * C1, pi * B1 * C1) # max silhouette area, m2
-      ASILP <- min(pi * A1 * C1, pi * B1 * C1) # min silhouette area, m2
-      S2 <- (A1 ^ 2 * B1 ^ 2 * C1 ^ 2) / (A1 ^ 2 * B1 ^ 2 + A1 ^ 2 * C1 ^ 2 + B1 ^ 2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
-      #k_flesh <- 0.5 + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
-    }
-
-    # Lizard geometry - DESERT IGUANA (PORTER ET AL. 1973 OECOLOGIA)
-    if (geom == 3) {
-      ATOT <- (10.4713 * Ww_g ^ .688) / 10000. # total surface area, m2
-      AV <- (0.425 * Ww_g ^ .85) / 10000. # ventral surface area, m2
-      # NORMAL AND POINTING @ SUN SILHOUETTE AREA: PORTER & TRACY 1984
-      ASILN <- (3.798 * Ww_g ^ .683) / 10000. # Max. silhouette area (normal to the sun), m2
-      ASILP <- (0.694 * Ww_g ^ .743) / 10000. # Min. silhouette area (pointing toward the sun), m2
-      R <- L
-    }
-
-    # Frog geometry - LEOPARD FROG (C.R. TRACY 1976 ECOL. MONOG.)
-    if (geom == 4) {
-      ATOT <- (12.79 * Ww_g ^ 0.606) / 10000. # total surface area, m2
-      AV <- (0.425 * Ww_g ^ 0.85) / 10000. # ventral surface area, m2
-      # NORMAL AND POINTING @ SUN SILHOUETTE AREA: EQ'N 11 TRACY 1976
-      ZEN <- 0
-      PCTN <- 1.38171E-06 * ZEN ^ 4 - 1.93335E-04 * ZEN ^ 3 + 4.75761E-03 * ZEN ^ 2 - 0.167912 * ZEN + 45.8228
-      ASILN <- PCTN * ATOT / 100 # Max. silhouette area (normal to the sun), m2
-      ZEN <- 90
-      PCTP <- 1.38171E-06 * ZEN ^ 4 - 1.93335E-04 * ZEN ^ 3 + 4.75761E-03 * ZEN ^ 2 - 0.167912 * ZEN + 45.8228
-      ASILP <- PCTP * ATOT / 100 # Min. silhouette area (pointing toward the sun), m2
-      R <- L
-    }
-
-    # user defined geometry
-    if (geom == 5) {
-      ATOT <- (shape_coefs[1] * Ww_g ^ shape_coefs[2]) / 10000. # total surface area, m2
-      AV <- (shape_coefs[3] * Ww_g ^ shape_coefs[4]) / 10000 # ventral surface area, m2
-      # NORMAL AND POINTING @ SUN SILHOUETTE AREA: PORTER & TRACY 1984
-      # User must define Max. silhouette area (normal to the sun)
-      ASILN <- (shape_coefs[5] * Ww_g ^ shape_coefs[6]) / 10000 # Max. silhouette area (normal to the sun), m2
-      # User must define Min. silhouette area (pointing toward the sun)
-      ASILP <- (shape_coefs[7] * Ww_g ^ shape_coefs[8]) / 10000 # Min. silhouette area (pointing toward the sun), m2
-      R <- L
-    }
-    # end geometry section ############################################################
-
-    if (max(Zen) >= 90) {
-      Q_norm <- 0
-    }else{
-      if(orient == 1){
-        Q_norm <- (Qsol / cos(Zenith))
-      }else{
-        Q_norm <- Qsol
-      }
-    }
-    if (Q_norm > 1367) {
-      Q_norm <- 1367 #making sure that low sun angles don't lead to solar values greater than the solar constant
-    }
-    if (posture == 'p') {
-      Qabs <- (Q_norm * (1 - pdif) * ASILP + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
-    }
-    if (posture == 'n') {
-      Qabs <- (Q_norm * (1 - pdif) * ASILN + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
-    }
-    if (posture == 'a') {
-      Qabs <- (Q_norm * (1 - pdif) * (ASILN + ASILP) / 2 + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
-    }
-
-    Re <- DENSTY * vel * L / VISDYN # Reynolds number
-    PR <- 1005.7 * VISDYN / THCOND # Prandlt number
-    if(fluid == 0){
-      SC <- VISDYN / (DENSTY * DIFVPR) # Schmidt number
-    }else{
-      SC <- 1
-    }
-
-    if (geom == 0) {
-      NUfor <- 0.102 * Re ^ 0.675 * PR ^ (1. / 3.)
-    }
-    if (geom == 3 | geom == 5) {
-      NUfor <- 0.35 * Re ^ 0.6
-    }
-    if (geom == 1) {
-      #       FORCED CONVECTION OF A CYLINDER
-      #       ADJUSTING NU - RE CORRELATION FOR RE NUMBER (P. 260 MCADAMS,1954)
-      if (Re < 4) {
-        NUfor = 0.891 * Re ^ 0.33
-      } else{
-        if (Re < 40) {
-          NUfor = 0.821 * Re ^ 0.385
+        if (Re < 4000) {
+          NUfor = 0.615 * Re ^ 0.466
         } else{
-          if (Re < 4000) {
-            NUfor = 0.615 * Re ^ 0.466
+          if (Re < 40000) {
+            NUfor = 0.174 * Re ^ 0.618
           } else{
-            if (Re < 40000) {
-              NUfor = 0.174 * Re ^ 0.618
+            if (Re < 400000) {
+              NUfor = 0.0239 * Re ^ 0.805
             } else{
-              if (Re < 400000) {
-                NUfor = 0.0239 * Re ^ 0.805
-              } else{
-                NUfor = 0.0239 * Re ^ 0.805
-              }
+              NUfor = 0.0239 * Re ^ 0.805
             }
           }
         }
       }
     }
-    if (geom == 2 | geom == 4) {
-      NUfor <- 0.35 * Re ^ (0.6) # Nusselt number, forced convection
-    }
-    h_conv_forced <- NUfor * THCOND / L # convection coefficent, forced
+  }
+  if (geom == 2 | geom == 4) {
+    NUfor <- 0.35 * Re ^ (0.6) # Nusselt number, forced convection
+  }
+  h_conv_forced <- NUfor * THCOND / L # convection coefficent, forced
 
-    GR <- abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Tskin - Tair) / VISDYN ^ 2) # Grashof number
-    Raylei <- GR * PR # Rayleigh number
+  GR <- abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Tskin - Tair) / VISDYN ^ 2) # Grashof number
+  Raylei <- GR * PR # Rayleigh number
 
-    # get Nusselt for Free Convect
-    if (geom == 0) {
-      NUfre = 0.55 * Raylei ^ 0.25
-    }
-    if (geom == 1 | geom == 3 | geom == 5) {
-      if (Raylei < 1.0e-05) {
-        NUfre = 0.4
+  # get Nusselt for Free Convect
+  if (geom == 0) {
+    NUfre = 0.55 * Raylei ^ 0.25
+  }
+  if (geom == 1 | geom == 3 | geom == 5) {
+    if (Raylei < 1.0e-05) {
+      NUfre = 0.4
+    } else{
+      if (Raylei < 0.1) {
+        NUfre = 0.976 * Raylei ^ 0.0784
       } else{
-        if (Raylei < 0.1) {
-          NUfre = 0.976 * Raylei ^ 0.0784
+        if (Raylei < 100) {
+          NUfre = 1.1173 * Raylei ^ 0.1344
         } else{
-          if (Raylei < 100) {
-            NUfre = 1.1173 * Raylei ^ 0.1344
+          if (Raylei < 10000.) {
+            NUfre = 0.7455 * Raylei ^ 0.2167
           } else{
-            if (Raylei < 10000.) {
-              NUfre = 0.7455 * Raylei ^ 0.2167
+            if (Raylei < 1.0e+09) {
+              NUfre = 0.5168 * Raylei ^ 0.2501
             } else{
-              if (Raylei < 1.0e+09) {
+              if (Raylei < 1.0e+12) {
                 NUfre = 0.5168 * Raylei ^ 0.2501
               } else{
-                if (Raylei < 1.0e+12) {
-                  NUfre = 0.5168 * Raylei ^ 0.2501
-                } else{
-                  NUfre = 0.5168 * Raylei ^ 0.2501
-                }
+                NUfre = 0.5168 * Raylei ^ 0.2501
               }
             }
           }
         }
       }
     }
+  }
 
-    if (geom == 2 | geom == 4) {
-      Raylei = (GR ^ 0.25) * (PR ^ 0.333)
-      NUfre = 2 + 0.60 * Raylei
-    }
-    Nutotal <- (NUfre^3 + NUfor^3)^(1./3.)
-    sh <- Nutotal * (SC / PR) ^ (1 / 3)
-    h_conv <- Nutotal*(THCOND/L) # combined convection coefficient
-    #R_conv <- 1 / (h_conv * ATOT) # convective resistance, eq. 3 of Kearney, Huey and Porter in prep. Appendix 1
-    h_rad <- 4 * emis * sigma * ((Tc + Trad) / 2 + 273.15) ^ 3 # radiation heat transfer coefficient, eq. 46 of Transient Equations Derivation vignette
+  if (geom == 2 | geom == 4) {
+    Raylei = (GR ^ 0.25) * (PR ^ 0.333)
+    NUfre = 2 + 0.60 * Raylei
+  }
+  Nutotal <- (NUfre^3 + NUfor^3)^(1./3.)
+  sh <- Nutotal * (SC / PR) ^ (1 / 3)
+  h_conv <- Nutotal*(THCOND/L) # combined convection coefficient
+  #R_conv <- 1 / (h_conv * ATOT) # convective resistance, eq. 3 of Kearney, Huey and Porter in prep. Appendix 1
+  h_rad <- 4 * emis * sigma * ((Tc + Trad) / 2 + 273.15) ^ 3 # radiation heat transfer coefficient, eq. 46 of Transient Equations Derivation vignette
 
-    if(geom == 2){ # ellipsoid
-      j <- (Qabs + Q_gen + h_conv * ATOT * ((q * S2) / (2 * k_flesh) + Tair) + h_rad * ATOT * ((q * S2) / (2 * k_flesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter in prep. Appendix 1
-    }else{ # assume cylinder
-      j <- (Qabs + Q_gen + h_conv * ATOT * ((q * R ^ 2) / (4 * k_flesh) + Tair) + h_rad * ATOT * ((q * R ^ 2) / (2 * k_flesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter in prep. Appendix 1
-    }
-    theta_Tc <- ATOT * (Tc * h_conv + Tc * h_rad) / C #based on eq. 48 of Transient Equations Derivation vignette
-    theta <- ATOT * (h_conv + h_rad) / C #based on eq. 48 of Transient Equations Derivation vignette
-    Tcf <- j / theta # final Tc = j/theta, based on eq. 23 of Transient Equations Derivation vignette
-    Tci <- Tc # initial temperature
-    Tc <- (Tci - Tcf) * exp(-1 * theta * t) + Tcf # Tc at time t, based on eq. 33 of Transient Equations Derivation vignette
-    tau <- 1 / theta # time constant
-    dTc <- j - theta_Tc # rate of temperature change (°C/sec)
-    list(y = dTc, x = Tcf, z = tau, zz = dTc)
-  })
+  if(geom == 2){ # ellipsoid
+    j <- (Qabs + Q_gen + h_conv * ATOT * ((q * S2) / (2 * k_flesh) + Tair) + h_rad * ATOT * ((q * S2) / (2 * k_flesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter in prep. Appendix 1
+  }else{ # assume cylinder
+    j <- (Qabs + Q_gen + h_conv * ATOT * ((q * R ^ 2) / (4 * k_flesh) + Tair) + h_rad * ATOT * ((q * R ^ 2) / (2 * k_flesh) + Trad)) / C #based on eq. 52 of Kearney, Huey and Porter in prep. Appendix 1
+  }
+  theta_Tc <- ATOT * (Tc * h_conv + Tc * h_rad) / C #based on eq. 48 of Transient Equations Derivation vignette
+  theta <- ATOT * (h_conv + h_rad) / C #based on eq. 48 of Transient Equations Derivation vignette
+  Tcf <- j / theta # final Tc = j/theta, based on eq. 23 of Transient Equations Derivation vignette
+  Tci <- Tc # initial temperature
+  Tc <- (Tci - Tcf) * exp(-1 * theta * t) + Tcf # Tc at time t, based on eq. 33 of Transient Equations Derivation vignette
+  tau <- 1 / theta # time constant
+  dTc <- j - theta_Tc # rate of temperature change (°C/sec)
+  list(y = dTc, x = Tcf, z = tau, zz = dTc)
 }

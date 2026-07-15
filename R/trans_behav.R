@@ -250,10 +250,7 @@ trans_behav <- function(Tc_init = rep(20, 60),
                         shadsoil = shadsoil,
                         press = 101325) {
 
-  if (exists("day_results"))
-  {
-    rm(day_results)
-  }  # clear the results, if any already in the memory
+  day_results_list <- list()  # bout results, combined once at the end
 
   # single site transient analysis using user-input microclimate
 
@@ -415,7 +412,7 @@ trans_behav <- function(Tc_init = rep(20, 60),
   }
   if (lump == 2) {
     indata <- list(Ww_g = Ww_g, x_shell = x_shell, geom = geom, k_inner = k_inner, k_outer = k_outer, q = q,
-                   c_body_inner = c_body_inner, c_body_outer = c_body_outer, emis = emis, rho_body_body = rho_body_body, alpha = alpha, shape_coefs = shape_coefs,
+                   c_body_inner = c_body_inner, c_body_outer = c_body_outer, emis = emis, rho_body = rho_body, alpha = alpha, shape_coefs = shape_coefs,
                    shape_b = shape_b, shape_c = shape_c, posture = posture, orient = orient, fatosk = fatosk, fatosb = fatosb, fluid = fluid, dyn_q = dyn_q,
                    alpha_sub = alpha_sub, pdif = pdif, press = press)
     indata$c_body_inner = 0.1  #specific heat of flesh, J/(kg.C)
@@ -482,11 +479,7 @@ trans_behav <- function(Tc_init = rep(20, 60),
       Tbs$posture <- 0
       Tbs$active <- 0
       Tbs$state <- 0
-      if (exists("day_results")) {
-        day_results <- rbind(day_results, Tbs)
-      } else {
-        day_results <- Tbs
-      }
+      day_results_list[[length(day_results_list) + 1]] <- Tbs
       Tc_init <- Tbs[nrow(Tbs), 2]  # get initial temp for next behavioural phase
       if (lump == 2) {
         Ts_init <- Tbs[nrow(Tbs), 3]
@@ -507,11 +500,7 @@ trans_behav <- function(Tc_init = rep(20, 60),
         Tbs$posture <- 1
         Tbs$active <- 0
         Tbs$state <- 1
-        if (exists("day_results")) {
-          day_results <- rbind(day_results, Tbs)
-        } else {
-          day_results <- Tbs
-        }
+        day_results_list[[length(day_results_list) + 1]] <- Tbs
         Tc_init <- Tbs[nrow(Tbs), 2]
         if (lump == 2) {
           Ts_init <- Tbs[nrow(Tbs), 3]
@@ -531,11 +520,7 @@ trans_behav <- function(Tc_init = rep(20, 60),
       Tbs$posture <- 0
       Tbs$active <- 1
       Tbs$state <- 2
-      if (exists("day_results")) {
-        day_results <- rbind(day_results, Tbs)
-      } else {
-        day_results <- Tbs
-      }
+      day_results_list[[length(day_results_list) + 1]] <- Tbs
       Tc_init <- Tbs[nrow(Tbs), 2]
       if (lump == 2) {
         Ts_init <- Tbs[nrow(Tbs), 3]
@@ -562,11 +547,7 @@ trans_behav <- function(Tc_init = rep(20, 60),
     Tbs$posture <- 0
     Tbs$active <- 0
     Tbs$state <- 3
-    if (exists("day_results")) {
-      day_results <- rbind(day_results, Tbs)
-    } else {
-      day_results <- Tbs
-    }
+    day_results_list[[length(day_results_list) + 1]] <- Tbs
     Tc_init <- Tbs[nrow(Tbs), 2]
     if (lump == 2) {
       Ts_init <- Tbs[nrow(Tbs), 3]
@@ -584,11 +565,7 @@ trans_behav <- function(Tc_init = rep(20, 60),
     Tbs$posture <- 0
     Tbs$active <- 1
     Tbs$state <- 2
-    if (exists("day_results")) {
-      day_results <- rbind(day_results, Tbs)
-    } else {
-      day_results <- Tbs
-    }
+    day_results_list[[length(day_results_list) + 1]] <- Tbs
     Tc_init <- Tbs[nrow(Tbs), 2]
     if (lump == 2) {
       Ts_init <- Tbs[nrow(Tbs), 3]
@@ -620,11 +597,7 @@ trans_behav <- function(Tc_init = rep(20, 60),
       Tbs$posture <- 1
       Tbs$active <- 0
       Tbs$state <- 1
-      if (exists("day_results")) {
-        day_results <- rbind(day_results, Tbs)
-      } else {
-        day_results <- Tbs
-      }
+      day_results_list[[length(day_results_list) + 1]] <- Tbs
       Tc_init <- Tbs[nrow(Tbs), 2]
       if (lump == 2) {
         Ts_init <- Tbs[nrow(Tbs), 3]
@@ -658,11 +631,7 @@ trans_behav <- function(Tc_init = rep(20, 60),
       Tbs$posture <- 0
       Tbs$active <- 0
       Tbs$state <- 0
-      if (exists("day_results")) {
-        day_results <- rbind(day_results, Tbs)
-      } else {
-        day_results <- Tbs
-      }
+      day_results_list[[length(day_results_list) + 1]] <- Tbs
       Tc_init <- Tbs[nrow(Tbs), 2]
       if (lump == 2) {
         Ts_init <- Tbs[nrow(Tbs), 3]
@@ -694,13 +663,10 @@ trans_behav <- function(Tc_init = rep(20, 60),
     Tbs$posture <- 0
     Tbs$active <- 0
     Tbs$state <- 0
-    if (exists("day_results")) {
-      day_results <- rbind(day_results, Tbs)
-    } else {
-      day_results <- Tbs
-    }
+    day_results_list[[length(day_results_list) + 1]] <- Tbs
   }
 
+  day_results <- do.call(rbind, day_results_list)
   day_results <- subset(day_results, day_results$time %in% times_orig)
   day_results$Te <- Te[1:nrow(day_results)]
   day_results$Tb_open <- Tb_open[1:nrow(day_results)]

@@ -127,224 +127,231 @@
 #' }
 #' @export
 twolump<-function(t,y,indata){
-  with(as.list(c(indata, y)), {
-    sigma <- 5.67e-8 #Stefan-Boltzman, W/(m.K)
-    Tair <- Tairf(t) # interpolate air temp to current time step
-    vel <- max(0,velf(t)) # interpolate wind speed to current time step
-    Qsol <- max(0,Qsolf(t)) # interpolate solar to current time step
-    Trad <- Tradf(t) # interpolate radiant temp to current time step
-    Zen <- min(max(0,Zenf(t)),90) # interpolate zenith angle to current time step
-    Zenith <- Zen * pi / 180 # zenith angle in radians
-    Tc <- as.numeric(y[1]) # core temperature, °C
-    Tsk <- as.numeric(y[2]) # surface temperature
-    Ts <- as.numeric(y[3]) # skin temperature
-    vel[vel < 0.01] <- 0.01 # don't let wind speed go too low
-    S2 <- 0.0001 # shape factor, arbitrary initialization, because not defined except for ellipsoid
-    if(fluid == 0){
-      DENSTY <- press / (287.04 * (Tair + 273.15)) # air density, kg/m3
-      THCOND <- 0.02425 + (7.038 * 10 ^ -5 * Tair) # air thermal conductivity, W/(m.K)
-      VISDYN <- (1.8325 * 10 ^ -5 * ((296.16 + 120) / ((Tair + 273.15) + 120))) * (((Tair + 273.15) / 296.16) ^ 1.5) # dynamic viscosity of air, kg/(m.s)
-      DIFVPR <- 2.26e-05 * (((Tair + 273.15) / 273.15) ^ 1.81) * (1e+05 / press)
-    }else{
-      WATERPROP.out <- WATERPROP(Tair)
-      DENSTY <- WATERPROP.out$DENSTY
-      THCOND <- WATERPROP.out$THCOND
-      VISDYN <- WATERPROP.out$VISDYN
-      DIFVPR <- 0
-    }
-    VISKIN <- VISDYN / DENSTY
+  Ww_g <- indata$Ww_g; x_shell <- indata$x_shell; geom <- indata$geom
+  k_inner <- indata$k_inner; k_outer <- indata$k_outer; q <- indata$q
+  c_body_inner <- indata$c_body_inner; c_body_outer <- indata$c_body_outer
+  emis <- indata$emis; rho_body <- indata$rho_body; alpha <- indata$alpha
+  shape_b <- indata$shape_b; shape_c <- indata$shape_c; posture <- indata$posture; orient <- indata$orient
+  fatosk <- indata$fatosk; fatosb <- indata$fatosb; alpha_sub <- indata$alpha_sub
+  pdif <- indata$pdif; press <- indata$press; fluid <- indata$fluid; dyn_q <- indata$dyn_q
+  Tairf <- indata$Tairf; velf <- indata$velf; Qsolf <- indata$Qsolf; Tradf <- indata$Tradf; Zenf <- indata$Zenf
 
-    # geometry section ############################################################
-    m <- Ww_g / 1000 # convert weight to kg  C<-m*c_body # thermal capacitance, J/K
-    C <- m * c_body_inner # thermal capacitance, J/K
-    V <- m / rho_body # volume, m3
-    if(dyn_q == 1){
-     Q_gen <- qf(Tc) * V # total metabolic heat, J
-    }else{
-     Q_gen <- q * V
-    }
-    L <- V ^ (1 / 3) # characteristic dimension, m
-    V_inner <- (L - x_shell) ^ 3
+  sigma <- 5.67e-8 #Stefan-Boltzman, W/(m.K)
+  Tair <- Tairf(t) # interpolate air temp to current time step
+  vel <- max(0,velf(t)) # interpolate wind speed to current time step
+  Qsol <- max(0,Qsolf(t)) # interpolate solar to current time step
+  Trad <- Tradf(t) # interpolate radiant temp to current time step
+  Zen <- min(max(0,Zenf(t)),90) # interpolate zenith angle to current time step
+  Zenith <- Zen * pi / 180 # zenith angle in radians
+  Tc <- as.numeric(y[1]) # core temperature, °C
+  Tsk <- as.numeric(y[2]) # surface temperature
+  Ts <- as.numeric(y[3]) # skin temperature
+  vel[vel < 0.01] <- 0.01 # don't let wind speed go too low
+  S2 <- 0.0001 # shape factor, arbitrary initialization, because not defined except for ellipsoid
+  if(fluid == 0){
+    DENSTY <- press / (287.04 * (Tair + 273.15)) # air density, kg/m3
+    THCOND <- 0.02425 + (7.038 * 10 ^ -5 * Tair) # air thermal conductivity, W/(m.K)
+    VISDYN <- (1.8325 * 10 ^ -5 * ((296.16 + 120) / ((Tair + 273.15) + 120))) * (((Tair + 273.15) / 296.16) ^ 1.5) # dynamic viscosity of air, kg/(m.s)
+    DIFVPR <- 2.26e-05 * (((Tair + 273.15) / 273.15) ^ 1.81) * (1e+05 / press)
+  }else{
+    WATERPROP.out <- WATERPROP(Tair)
+    DENSTY <- WATERPROP.out$DENSTY
+    THCOND <- WATERPROP.out$THCOND
+    VISDYN <- WATERPROP.out$VISDYN
+    DIFVPR <- 0
+  }
+  VISKIN <- VISDYN / DENSTY
+
+  # geometry section ############################################################
+  m <- Ww_g / 1000 # convert weight to kg  C<-m*c_body # thermal capacitance, J/K
+  C <- m * c_body_inner # thermal capacitance, J/K
+  V <- m / rho_body # volume, m3
+  if(dyn_q == 1){
+   Q_gen <- qf(Tc) * V # total metabolic heat, J
+  }else{
+   Q_gen <- q * V
+  }
+  L <- V ^ (1 / 3) # characteristic dimension, m
+  V_inner <- (L - x_shell) ^ 3
+  V_shell <- V - V_inner
+  C_sk <- V_shell * rho_body * c_body_outer
+  C_c <- V_inner * rho_body * c_body_inner
+
+  # CYLINDER geometry
+  if(geom == 1){
+    R1 <- (V / (pi * shape_b * 2)) ^ (1 / 3) # radius, m
+    ALENTH <- 2 * R1 * shape_b # length, m
+    V_inner <- pi * (R1 - x_shell) ^ 2 * (ALENTH - x_shell)
     V_shell <- V - V_inner
     C_sk <- V_shell * rho_body * c_body_outer
     C_c <- V_inner * rho_body * c_body_inner
-
-    # CYLINDER geometry
-    if(geom == 1){
-      R1 <- (V / (pi * shape_b * 2)) ^ (1 / 3) # radius, m
-      ALENTH <- 2 * R1 * shape_b # length, m
-      V_inner <- pi * (R1 - x_shell) ^ 2 * (ALENTH - x_shell)
-      V_shell <- V - V_inner
-      C_sk <- V_shell * rho_body * c_body_outer
-      C_c <- V_inner * rho_body * c_body_inner
-      ATOT<- 2 * pi * R1 ^ 2 + 2 * pi * R1 * ALENTH # total surface area, m2
-      ATOT_inner <- 2 * pi * (R1 - x_shell) ^ 2 + 2 * pi * (R1 - x_shell) * (ALENTH - x_shell)#(ATOT / V) * V_shell
-      AWIDTH <- 2 * R1 # width, m
-      ASILN <- AWIDTH * ALENTH # max silhouette area, m2
-      ASILP <- pi * R1 ^ 2 # min silhouette area, m2
-      L <- ALENTH # characteristic dimension, m
-      R2 <- L / 2
-      if(R1 > R2){ # choose shortest dimension as R
-        R <- R2
-      }else{
-        R <- R1
-      }
-    }
-
-    # Ellipsoid geometry
-    if(geom == 2){
-      A1 <- ((3 /4 ) * V / (pi * shape_b * shape_c)) ^ (1 / 3) # axis A, m
-      B1 <- A1 * shape_b # axis B, m
-      C1 <- A1 * shape_c # axis C, m
-      A2 <- A1 - x_shell
-      B2 <- B1 - x_shell
-      C2 <- C1 - x_shell
-      V_inner <- (4 / 3) * pi * (A1 - x_shell) * (B1 - x_shell) * (C1 - x_shell)
-      V_shell <- V - V_inner
-      C_sk <- V_shell * rho_body * c_body_outer
-      C_c <- V_inner * rho_body * c_body_inner
-      P1 <- 1.6075 # a constant
-      ATOT <- (4 * pi * (((A1 ^ P1 * B1 ^ P1 + A1 ^ P1 * C1 ^ P1 + B1 ^ P1 * C1 ^ P1)) / 3) ^ (1 / P1)) # total surface area, m2
-      ATOT_inner <- (4 * pi * (((A2 ^ P1 * B2 ^ P1 + A2 ^ P1 * C2 ^ P1 + B2 ^ P1 * C2 ^ P1)) / 3) ^ (1 / P1)) # total surface area, m2
-      ASILN <- max(pi * A1 * C1, pi * B1 * C1) # max silhouette area, m2
-      ASILP <- min(pi * A1 * C1, pi * B1 * C1) # min silhouette area, m2
-      S2 <- (A1 ^ 2 * B1 ^ 2 * C1 ^ 2) / (A1 ^ 2 * B1 ^ 2 + A1 ^ 2 * C1 ^ 2 + B1 ^ 2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
-      #k_flesh <- 0.5 # + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
-    }
-
-    # end geometry section ############################################################
-
-    if (max(Zen) >= 89) {
-      Q_norm <- 0
-    } else{
-      if(orient == 1){
-        Q_norm <- (Qsol / cos(Zenith))
-      }else{
-        Q_norm <- Qsol
-      }
-    }
-    if (Q_norm > 1367) {
-      Q_norm <- 1367 #making sure that low sun angles don't lead to solar values greater than the solar constant
-    }
-    if (posture == 'p') {
-      Qabs <- (Q_norm * (1 - pdif) * ASILP + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
-    }
-    if (posture == 'n') {
-      Qabs <- (Q_norm * (1 - pdif) * ASILN + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
-    }
-    if (posture == 'a') {
-      Qabs <- (Q_norm * (1 - pdif) * (ASILN + ASILP) / 2 + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
-    }
-
-    Re <- DENSTY * vel * L / VISDYN # Reynolds number
-    PR <- 1005.7 * VISDYN / THCOND # Prandlt number
-    if(fluid == 0){
-      SC <- VISDYN / (DENSTY * DIFVPR) # Schmidt number
+    ATOT<- 2 * pi * R1 ^ 2 + 2 * pi * R1 * ALENTH # total surface area, m2
+    ATOT_inner <- 2 * pi * (R1 - x_shell) ^ 2 + 2 * pi * (R1 - x_shell) * (ALENTH - x_shell)#(ATOT / V) * V_shell
+    AWIDTH <- 2 * R1 # width, m
+    ASILN <- AWIDTH * ALENTH # max silhouette area, m2
+    ASILP <- pi * R1 ^ 2 # min silhouette area, m2
+    L <- ALENTH # characteristic dimension, m
+    R2 <- L / 2
+    if(R1 > R2){ # choose shortest dimension as R
+      R <- R2
     }else{
-      SC <- 1
+      R <- R1
     }
+  }
 
-    if (geom == 1) {
-      #       FORCED CONVECTION OF A CYLINDER
-      #       ADJUSTING NU - RE CORRELATION FOR RE NUMBER (P. 260 MCADAMS,1954)
-      if (Re < 4) {
-        NUfor = 0.891 * Re ^ 0.33
+  # Ellipsoid geometry
+  if(geom == 2){
+    A1 <- ((3 /4 ) * V / (pi * shape_b * shape_c)) ^ (1 / 3) # axis A, m
+    B1 <- A1 * shape_b # axis B, m
+    C1 <- A1 * shape_c # axis C, m
+    A2 <- A1 - x_shell
+    B2 <- B1 - x_shell
+    C2 <- C1 - x_shell
+    V_inner <- (4 / 3) * pi * (A1 - x_shell) * (B1 - x_shell) * (C1 - x_shell)
+    V_shell <- V - V_inner
+    C_sk <- V_shell * rho_body * c_body_outer
+    C_c <- V_inner * rho_body * c_body_inner
+    P1 <- 1.6075 # a constant
+    ATOT <- (4 * pi * (((A1 ^ P1 * B1 ^ P1 + A1 ^ P1 * C1 ^ P1 + B1 ^ P1 * C1 ^ P1)) / 3) ^ (1 / P1)) # total surface area, m2
+    ATOT_inner <- (4 * pi * (((A2 ^ P1 * B2 ^ P1 + A2 ^ P1 * C2 ^ P1 + B2 ^ P1 * C2 ^ P1)) / 3) ^ (1 / P1)) # total surface area, m2
+    ASILN <- max(pi * A1 * C1, pi * B1 * C1) # max silhouette area, m2
+    ASILP <- min(pi * A1 * C1, pi * B1 * C1) # min silhouette area, m2
+    S2 <- (A1 ^ 2 * B1 ^ 2 * C1 ^ 2) / (A1 ^ 2 * B1 ^ 2 + A1 ^ 2 * C1 ^ 2 + B1 ^ 2 * C1 ^ 2) # fraction of semi-major and minor axes, see Porter and Kearney 2009 supp1
+    #k_flesh <- 0.5 # + 6.14 * B1 + 0.439 # thermal conductivity of flesh as a function of radius, see Porter and Kearney 2009
+  }
+
+  # end geometry section ############################################################
+
+  if (max(Zen) >= 89) {
+    Q_norm <- 0
+  } else{
+    if(orient == 1){
+      Q_norm <- (Qsol / cos(Zenith))
+    }else{
+      Q_norm <- Qsol
+    }
+  }
+  if (Q_norm > 1367) {
+    Q_norm <- 1367 #making sure that low sun angles don't lead to solar values greater than the solar constant
+  }
+  if (posture == 'p') {
+    Qabs <- (Q_norm * (1 - pdif) * ASILP + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
+  }
+  if (posture == 'n') {
+    Qabs <- (Q_norm * (1 - pdif) * ASILN + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
+  }
+  if (posture == 'a') {
+    Qabs <- (Q_norm * (1 - pdif) * (ASILN + ASILP) / 2 + Qsol * pdif * fatosk * ATOT + Qsol * (1 - alpha_sub) * fatosb * ATOT) * alpha
+  }
+
+  Re <- DENSTY * vel * L / VISDYN # Reynolds number
+  PR <- 1005.7 * VISDYN / THCOND # Prandlt number
+  if(fluid == 0){
+    SC <- VISDYN / (DENSTY * DIFVPR) # Schmidt number
+  }else{
+    SC <- 1
+  }
+
+  if (geom == 1) {
+    #       FORCED CONVECTION OF A CYLINDER
+    #       ADJUSTING NU - RE CORRELATION FOR RE NUMBER (P. 260 MCADAMS,1954)
+    if (Re < 4) {
+      NUfor = 0.891 * Re ^ 0.33
+    } else{
+      if (Re < 40) {
+        NUfor = 0.821 * Re ^ 0.385
       } else{
-        if (Re < 40) {
-          NUfor = 0.821 * Re ^ 0.385
+        if (Re < 4000) {
+          NUfor = 0.615 * Re ^ 0.466
         } else{
-          if (Re < 4000) {
-            NUfor = 0.615 * Re ^ 0.466
+          if (Re < 40000) {
+            NUfor = 0.174 * Re ^ 0.618
           } else{
-            if (Re < 40000) {
-              NUfor = 0.174 * Re ^ 0.618
+            if (Re < 400000) {
+              NUfor = 0.0239 * Re ^ 0.805
             } else{
-              if (Re < 400000) {
-                NUfor = 0.0239 * Re ^ 0.805
-              } else{
-                NUfor = 0.0239 * Re ^ 0.805
-              }
+              NUfor = 0.0239 * Re ^ 0.805
             }
           }
         }
       }
     }
-    if (geom == 2) {
-      NUfor <- 0.35 * Re ^ (0.6) # Nusselt number, forced convection
-    }
-    h_conv_forced <- NUfor * THCOND / L # convection coefficent, forced
+  }
+  if (geom == 2) {
+    NUfor <- 0.35 * Re ^ (0.6) # Nusselt number, forced convection
+  }
+  h_conv_forced <- NUfor * THCOND / L # convection coefficent, forced
 
-    GR <- abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Ts - Tair) / VISDYN ^ 2) # Grashof number
-    Raylei <- GR * PR # Rayleigh number
+  GR <- abs(DENSTY ^ 2 * (1 / (Tair + 273.15)) * 9.80665 * L ^ 3 * (Ts - Tair) / VISDYN ^ 2) # Grashof number
+  Raylei <- GR * PR # Rayleigh number
 
-    # get Nusselt for Free Convect
-    if (geom == 1) {
-      if (Raylei < 1.0e-05) {
-        NUfre = 0.4
+  # get Nusselt for Free Convect
+  if (geom == 1) {
+    if (Raylei < 1.0e-05) {
+      NUfre = 0.4
+    } else{
+      if (Raylei < 0.1) {
+        NUfre = 0.976 * Raylei ^ 0.0784
       } else{
-        if (Raylei < 0.1) {
-          NUfre = 0.976 * Raylei ^ 0.0784
+        if (Raylei < 100) {
+          NUfre = 1.1173 * Raylei ^ 0.1344
         } else{
-          if (Raylei < 100) {
-            NUfre = 1.1173 * Raylei ^ 0.1344
+          if (Raylei < 10000.) {
+            NUfre = 0.7455 * Raylei ^ 0.2167
           } else{
-            if (Raylei < 10000.) {
-              NUfre = 0.7455 * Raylei ^ 0.2167
+            if (Raylei < 1.0e+09) {
+              NUfre = 0.5168 * Raylei ^ 0.2501
             } else{
-              if (Raylei < 1.0e+09) {
+              if (Raylei < 1.0e+12) {
                 NUfre = 0.5168 * Raylei ^ 0.2501
               } else{
-                if (Raylei < 1.0e+12) {
-                  NUfre = 0.5168 * Raylei ^ 0.2501
-                } else{
-                  NUfre = 0.5168 * Raylei ^ 0.2501
-                }
+                NUfre = 0.5168 * Raylei ^ 0.2501
               }
             }
           }
         }
       }
     }
+  }
 
-    if (geom == 2) {
-      Raylei = (GR ^ 0.25) * (PR ^ 0.333)
-      NUfre = 2 + 0.60 * Raylei
-    }
-    Nutotal <- (NUfre^3 + NUfor^3)^(1./3.)
-    sh <- Nutotal * (SC / PR) ^ (1 / 3)
-    h_conv <- Nutotal*(THCOND/L) # combined convection coefficient
-    R_conv <- 1 / (h_conv * ATOT) # convective resistance, eq. 3 of Transient Equations Derivation vignette
-    #R_rad <- (Ts-Trad)/(emis * 0.8 * sigma * ATOT * (Ts^4-Trad^4)) # radiative resistance, eq. 4 of Transient Equations Derivation vignette
-    h_rad <- 4 * emis * sigma * ((Ts + Trad) / 2 + 273.15) ^ 3 # radiation heat transfer coefficient, eq. 46 of Transient Equations Derivation vignette
-    R_rad <- 1 / (h_rad * ATOT) # radiative resistance
-    Q_resp <- 0 # respiratory heat loss
-    #m_dot_bl <- 3.5 * (Ww_g / 100) / 1000 / 60 # blood flow g/(min-100g) to kg/s for lizard of weight Ww_g
-    #R_bl <- 1 / (m_dot_bl * c_body_inner) # blood resistance
-    R_sk <- (x_shell / 2) / (k_outer * ATOT) # resistance of skin
-    R_b <- (V_inner ^ (1 / 3)) / (k_inner * ATOT_inner)
-    if(geom == 1){
-      R_b <- (R - x_shell) / (k_inner * ATOT_inner)
-    }
-    if(geom == 2){
-      R_b <- min(A2, B2, C2) / (k_inner * ATOT_inner)
-    }
-    F <- 1 / (C_c * R_b) # from eq 70 and 71 of Transient Equations Derivation vignette
-    H <- (Q_gen - Q_resp) / C_c # from eq 70 and 71 of Transient Equations Derivation vignette
-    A <- (1 / C_sk) * (1 / R_b + 2 / R_sk - (2 / R_sk) / (R_sk / (2 * R_rad) + R_sk / (2 * R_conv) + 1)) # from eq 67 of Transient Equations Derivation vignette
-    B <- 1 / (R_b * C_sk) # from eq 68 of Transient Equations Derivation vignette
-    D <- (Qabs + Trad / R_rad + Tair / R_conv) / ((R_sk / (2 * R_rad) + R_sk / (2 * R_conv) + 1) * C_sk) # from eq 69 of Transient Equations Derivation vignette
-    P1 <- (-1 * (F + A) + ((F + A) ^ 2 - 4 * F * A + 4 * F * B) ^ (1 / 2)) / 2 # from eq 85 of Transient Equations Derivation vignette
-    P2 <- (-1 * (F + A) - ((F + A) ^ 2 - 4 * F * A + 4 * F * B) ^ (1 / 2)) / 2 # from eq 85 of Transient Equations Derivation vignette
-    alpha <- (Tc + (A + D) / (B - A)) # from eq 91 of Transient Equations Derivation vignette
-    beta <- F * Ts + (H * B - F * D) / (B - A) # from eq 92 of Transient Equations Derivation vignette
-    C1 <- (alpha * (P2 + F) - beta) / (P2 - P1) # from eq 93 of Transient Equations Derivation vignette
-    C2 <- (beta - alpha * (P1 + F)) / (P2 - P1) # from eq 94 of Transient Equations Derivation vignette
-    Tcf <- -1 * (F * D + A * H) / (F * (B - A)) # from eq 77 of Transient Equations Derivation vignette
-    #Tc <- C1 * exp(P1 * t) + C2 * exp(P2 * t) + Tcf # from eq 86 of Transient Equations Derivation vignette
-    dTc <- (Q_gen - Q_resp - (Tc - Tsk) / R_b) / C_c # from eq 61 of Transient Equations Derivation vignette
-    dTsk <- ((Tc - Tsk) / R_b - (Tsk - Ts) / (R_sk/2)) / C_sk # from eq 62 of Transient Equations Derivation vignette
-    Ts <- (Qabs + Trad / R_rad + Tair / R_conv + 2 * Tsk / R_sk) / (1 / R_rad + 1 / R_conv + 2 / R_sk) # from eq 64 of Transient Equations Derivation vignette
-    dTs <- Ts - y[3]
-    list(y = c(dTc[1], dTsk[1], dTs[1]), x = Tcf[1])
-  })
+  if (geom == 2) {
+    Raylei = (GR ^ 0.25) * (PR ^ 0.333)
+    NUfre = 2 + 0.60 * Raylei
+  }
+  Nutotal <- (NUfre^3 + NUfor^3)^(1./3.)
+  sh <- Nutotal * (SC / PR) ^ (1 / 3)
+  h_conv <- Nutotal*(THCOND/L) # combined convection coefficient
+  R_conv <- 1 / (h_conv * ATOT) # convective resistance, eq. 3 of Transient Equations Derivation vignette
+  #R_rad <- (Ts-Trad)/(emis * 0.8 * sigma * ATOT * (Ts^4-Trad^4)) # radiative resistance, eq. 4 of Transient Equations Derivation vignette
+  h_rad <- 4 * emis * sigma * ((Ts + Trad) / 2 + 273.15) ^ 3 # radiation heat transfer coefficient, eq. 46 of Transient Equations Derivation vignette
+  R_rad <- 1 / (h_rad * ATOT) # radiative resistance
+  Q_resp <- 0 # respiratory heat loss
+  #m_dot_bl <- 3.5 * (Ww_g / 100) / 1000 / 60 # blood flow g/(min-100g) to kg/s for lizard of weight Ww_g
+  #R_bl <- 1 / (m_dot_bl * c_body_inner) # blood resistance
+  R_sk <- (x_shell / 2) / (k_outer * ATOT) # resistance of skin
+  R_b <- (V_inner ^ (1 / 3)) / (k_inner * ATOT_inner)
+  if(geom == 1){
+    R_b <- (R - x_shell) / (k_inner * ATOT_inner)
+  }
+  if(geom == 2){
+    R_b <- min(A2, B2, C2) / (k_inner * ATOT_inner)
+  }
+  F <- 1 / (C_c * R_b) # from eq 70 and 71 of Transient Equations Derivation vignette
+  H <- (Q_gen - Q_resp) / C_c # from eq 70 and 71 of Transient Equations Derivation vignette
+  A <- (1 / C_sk) * (1 / R_b + 2 / R_sk - (2 / R_sk) / (R_sk / (2 * R_rad) + R_sk / (2 * R_conv) + 1)) # from eq 67 of Transient Equations Derivation vignette
+  B <- 1 / (R_b * C_sk) # from eq 68 of Transient Equations Derivation vignette
+  D <- (Qabs + Trad / R_rad + Tair / R_conv) / ((R_sk / (2 * R_rad) + R_sk / (2 * R_conv) + 1) * C_sk) # from eq 69 of Transient Equations Derivation vignette
+  P1 <- (-1 * (F + A) + ((F + A) ^ 2 - 4 * F * A + 4 * F * B) ^ (1 / 2)) / 2 # from eq 85 of Transient Equations Derivation vignette
+  P2 <- (-1 * (F + A) - ((F + A) ^ 2 - 4 * F * A + 4 * F * B) ^ (1 / 2)) / 2 # from eq 85 of Transient Equations Derivation vignette
+  alpha <- (Tc + (A + D) / (B - A)) # from eq 91 of Transient Equations Derivation vignette
+  beta <- F * Ts + (H * B - F * D) / (B - A) # from eq 92 of Transient Equations Derivation vignette
+  C1 <- (alpha * (P2 + F) - beta) / (P2 - P1) # from eq 93 of Transient Equations Derivation vignette
+  C2 <- (beta - alpha * (P1 + F)) / (P2 - P1) # from eq 94 of Transient Equations Derivation vignette
+  Tcf <- -1 * (F * D + A * H) / (F * (B - A)) # from eq 77 of Transient Equations Derivation vignette
+  #Tc <- C1 * exp(P1 * t) + C2 * exp(P2 * t) + Tcf # from eq 86 of Transient Equations Derivation vignette
+  dTc <- (Q_gen - Q_resp - (Tc - Tsk) / R_b) / C_c # from eq 61 of Transient Equations Derivation vignette
+  dTsk <- ((Tc - Tsk) / R_b - (Tsk - Ts) / (R_sk/2)) / C_sk # from eq 62 of Transient Equations Derivation vignette
+  Ts <- (Qabs + Trad / R_rad + Tair / R_conv + 2 * Tsk / R_sk) / (1 / R_rad + 1 / R_conv + 2 / R_sk) # from eq 64 of Transient Equations Derivation vignette
+  dTs <- Ts - y[3]
+  list(y = c(dTc[1], dTsk[1], dTs[1]), x = Tcf[1])
 }
