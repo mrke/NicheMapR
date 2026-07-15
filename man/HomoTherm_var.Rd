@@ -42,6 +42,7 @@ the HomoTherm function across a sequence of environments.
 \strong{ Parameters controlling how the model runs:}\cr\cr
 \code{SIL.adjust}{ = TRUE, adjust silhouette area based on Underwood and Ward (1966)? (-)}\cr\cr
 \code{EXCEED.TCMAX}{ = TRUE, allow the mode to continue increasing core temperature? (-)}\cr\cr
+\code{DIFTOL}{ = 0.001, error tolerance for SIMULSOL (°C)}\cr\cr
 \code{MAXITER}{ = 500, maximum iterations beyond TC_MAX allowed when EXCEED.TMAX = TRUE}\cr\cr
 
 \strong{ Environment:}\cr\cr
@@ -55,10 +56,8 @@ the HomoTherm function across a sequence of environments.
 \code{CO2GAS}{ = 0.0412, carbon dioxide concentration of air, to account for non-atmospheric concentrations e.g. in burrows (\%)}\cr\cr
 \code{PDIF}{ = 0.15, proportion of solar radiation that is diffuse (fractional, 0-1)}\cr\cr
 \code{GRAV}{ = 9.80665, acceleration due to gravity, (m/s^2)}\cr\cr
-\code{Refhyt}{ = 2, height of weather observations (m)}\cr\cr
+\code{REFHYT}{ = 2, height of weather observations (m)}\cr\cr
 \code{RUF}{ = 0.004, roughness height for calculating air/wind/humidity profile with get_profile (m)}\cr\cr
-\code{ZH}{ = 1, heat transfer roughness height for calculating air/wind/humidity profile with get_profile (m) (-)}\cr\cr
-\code{D0}{ = 1, zero plane displacement correction factor for calculating air/wind/humidity profile with get_profile (m)}\cr\cr
 \code{CONV_ENHANCE}{ = 1, convective enhancement factor (> 1 for turbulent outdoor conditions) (-)}\cr\cr
 
 \strong{ Whole body parameters:}\cr\cr
@@ -71,10 +70,10 @@ the HomoTherm function across a sequence of environments.
 \code{DENSITYs}{ = rep(1050, 4), body density (kg/m^3)}\cr\cr
 \code{MASSFRACs}{ = c(0.0761, 0.501, 0.049, 0.162), fraction of total mass (-)}\cr\cr
 \code{AREAFRACs}{ = c(0.0829, 0.327, 0.110, 0.185), fraction of total surface area (-)}\cr\cr
-\code{PJOINs}{ = c(0.0275, 0.0824, 0.02174, 0.0333), fraction of part joined with rest of body (-)}\cr\cr
+\code{PJOINs}{ = c(0.02666667, 0.08088128, 0.02000000, 0.03333333) fraction of part joined with rest of body (-)}\cr\cr
 \code{SUBQFATs}{ = rep(1, 4), is subcutaneous fat present? (0 is no, 1 is yes)}\cr\cr
-\code{FATPCT}{ = c(5, 36, 10, 23), \% body fat}\cr\cr
-\code{SHAPE_Bs}{ = c(1.6, 1.9, 11, 7.0), ratio between long and short axis (-)}\cr\cr
+\code{FATPCTs}{ = c(5, 36, 10, 23) * 0.7, \% body fat}\cr\cr
+\code{SHAPE_Bs}{ = c(1.6, 1.9, 12, 7.0), ratio between long and short axis (-)}\cr\cr
 \code{FSKREFs}{ = c(0.50, 0.42, 0.35, 0.35), configuration factor to sky}\cr\cr
 \code{FGDREFs}{ = c(0.38, 0.42, 0.35, 0.35), reference configuration factor to ground}\cr\cr
 \code{EMISANs}{ = rep(0.98, 4), emissivity each body part (-)}\cr\cr
@@ -83,12 +82,12 @@ the HomoTherm function across a sequence of environments.
 \code{heights}{ = rep(NA, 4), height of mid-point of each body part (m), can be calculated with the 'get_heights' function}\cr\cr
 
 \strong{ Part-specific physiological parameters (head, torso, arms, legs):}\cr\cr
-\code{TC_RESTs}{ = rep(36.8, 4), resting core temperature (°C)}\cr\cr
+\code{TC_RESTs}{ = c(36.8, 36.8, 36.5, 36.7), resting core temperature (°C)}\cr\cr
 \code{TC_ACTIVEs}{ = rep(37.5, 4), active core temperature (°C)}\cr\cr
-\code{TC_INCs}{ = rep(0.04, 4), core temperature increment (°C)}\cr\cr
+\code{TC_INCs}{ = rep(0.05, 4), core temperature increment (°C)}\cr\cr
 \code{TC_MAXs}{ = rep(38, 4), maximum tolerated core temperature (°C)}\cr\cr
 \code{PCTWETs}{ = rep(1, 4), skin wettedness (\%)}\cr\cr
-\code{PCTWET_INCs}{ = rep(0.5, 4), skin wettedness increment (\%)}\cr\cr
+\code{PCTWET_INCs}{ = rep(1, 4), skin wettedness increment (\%)}\cr\cr
 \code{PCTWET_MAXs}{ = rep(100, 4), maximum skin surface area that can be wet (\%)}\cr\cr
 \code{CLOWETs}{ = rep(0, 4), insulation wettedness (\%)}\cr\cr
 \code{PCTBAREVAPs}{ = c(60, 0, 0, 0), bare area where free and forced evaporation can occur (\%)}\cr\cr

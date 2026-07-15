@@ -81,9 +81,9 @@ shaddensit Hourly predictions of the soil density under the maximum specified sh
 \description{
 An implementation of the NicheMapR microclimate model that uses the global monthly climate database
 described in "Abatzoglou, J. T., Dobrowski, S. Z., Parks, S. A., & Hegewisch, K. C. (2018). TerraClimate,
-a high-resolution global dataset of monthly climate and climatic water balance from 1958–2015.
+a high-resolution global dataset of monthly climate and climatic water balance from 1958–2023.
 Scientific Data, 5(1), 170191. https://doi.org/10.1038/sdata.2017.191"
-This dataset includes climate change scenarios for +2 and +4 deg C warming (via parameter 'scenario')
+This dataset includes climate change scenarios for +2 and +4 deg C warming for 1950-2025 (via parameter 'scenario')
 Aerosol attenuation can also be computed based on the Global Aerosol Data Set (GADS)
 Koepke, P., M. Hess, I. Schult, and E. P. Shettle. 1997. Global Aerosol Data Set. Max-Planck-Institut for Meteorologie, Hamburg
 by choosing the option 'run.gads <- 1' (Fortran version, quicker but may crash on some systems) or 'run.gads <- 2' (R version)

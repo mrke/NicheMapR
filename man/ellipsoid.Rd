@@ -44,7 +44,7 @@ ellipsoid(
 
 \item{rh}{= 50, Relative humidity (\%)}
 
-\item{basal}{= NA, user specified basal metabolic rate (W)}
+\item{basal}{= NA, user specified basal metabolic rate, defaults to Kleiber law (W)}
 
 \item{basmult}{= 1, multiplier to adjust mouse-elephant predicted basal metabolic rate}
 }

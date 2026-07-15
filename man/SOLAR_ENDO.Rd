@@ -7,6 +7,7 @@
 \usage{
 SOLAR_ENDO(
   AREATOTL,
+  AREACOND,
   ABSAND,
   ABSANV,
   ABSSB,
@@ -21,6 +22,8 @@ SOLAR_ENDO(
 }
 \arguments{
 \item{AREATOTL}{surface area for solar exchange, m2}
+
+\item{AREACOND}{surface area for conduction, m2}
 
 \item{ABSAND}{solar absorptivity of dorsal fur (fractional, 0-1)}
 

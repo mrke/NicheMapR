@@ -26,7 +26,11 @@ micro_openmeteo(
 
 \item{dfinish}{Last day to run, date in format "d/m/Y" e.g. "31/12/2016"}
 
+\item{fstart}{First day to leverage archived forecast data, must be after dstart and before dfinish}
+
 \item{dspinup}{Number of days to simulate for spin-up}
+
+\item{forecast_model}{Supply to specify a model for forecasted values (if NA defaults to autoselection of best model). See Open-Meteo API documentation for list of models: https://github.com/open-meteo/open-data}
 
 \item{dem}{A digital elevation model used by microclima for micro-topographic effects, produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)}
 

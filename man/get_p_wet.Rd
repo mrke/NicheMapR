@@ -61,13 +61,13 @@ get_p_wet(cut.known = 1, E_tot = 0.344 / 60 / 1000, E_cut = 0.108 / 60 / 1000, T
 
 \item{V_O2_STP}{= M_1 * mass.g ^ M_2 * 10 ^ (M_3 * T_b) / 3600 / 1000, Oxygen consumption rate corrected to STP, L O2 / s}
 
-\item{T_ref_O2}{= 25, Reference temperature for oxygen consumption rate correction (°C)}
+\item{T_ref_O2}{= T_b, Reference temperature for oxygen consumption rate correction (°C)}
 
 \item{V_air_STP}{= V_O2_STP / (0.2094 * E_O2 / 100), Ventilation rate at STP, L/s}
 
 \item{rho_flesh}{= 1000, Density of flesh (kg/m3)}
 
-\item{T_ref_vent}{= 25, Reference temperature for ventilation rate correction (°C)}
+\item{T_ref_vent}{= T_b, Reference temperature for ventilation rate correction (°C)}
 
 \item{T_A}{= 8817, Arhhenius temperature (K)}
 
@@ -77,7 +77,7 @@ get_p_wet(cut.known = 1, E_tot = 0.344 / 60 / 1000, E_cut = 0.108 / 60 / 1000, T
 
 \item{T_L}{= 279, Lower boundary (K) of temperature tolerance range for Arrhenius thermal response}
 
-\item{T_H}{= 306, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response}
+\item{T_H}{= 316, Upper boundary (K) of temperature tolerance range for Arrhenius thermal response}
 
 \item{alt}{= 0.03, Altitude (km)}
 

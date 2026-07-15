@@ -10,7 +10,6 @@ Depends:
     R (>= 3.5.0)
 License: gpl-3.0
 LazyData: true
-RoxygenNote: 7.3.3
 Remotes: ilyamaclean/microclima
 Suggests:
     devtools,
@@ -46,3 +45,4 @@ Vignettes: properties-of-air,ectotherm-model-tutorial,microclimate-model-
 Encoding: UTF-8
 URL: https://github.com/mrke/NicheMapR
 BugReports: https://github.com/mrke/NicheMapR/issues
+Config/roxygen2/version: 8.0.0

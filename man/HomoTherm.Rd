@@ -42,7 +42,8 @@ environmental scenario (use HomoTherm_var for a sequence of environments).
 \strong{ Parameters controlling how the model runs:}\cr\cr
 \code{SIL.adjust}{ = TRUE, adjust silhouette area based on Underwood and Ward (1966)? (-)}\cr\cr
 \code{EXCEED.TCMAX}{ = TRUE, allow the mode to continue increasing core temperature? (-)}\cr\cr
-\code{MAXITER }{ = 500, maximum iterations beyond TC_MAX allowed when EXCEED.TMAX = TRUE}\cr\cr
+\code{DIFTOL}{ = 0.001, error tolerance for SIMULSOL (°C)}\cr\cr
+\code{MAXITER}{ = 500, maximum iterations beyond TC_MAX allowed when EXCEED.TMAX = TRUE}\cr\cr
 
 \strong{ Environment:}\cr\cr
 \code{TAREF}{ = TA, air temperature at reference height (°C)}\cr\cr
@@ -67,10 +68,10 @@ environmental scenario (use HomoTherm_var for a sequence of environments).
 \code{DENSITYs}{ = rep(1050, 4), body density (kg/m^3)}\cr\cr
 \code{MASSFRACs}{ = c(0.0761, 0.501, 0.049, 0.162), fraction of total mass (-)}\cr\cr
 \code{AREAFRACs}{ = c(0.0829, 0.327, 0.110, 0.185), fraction of total surface area (-)}\cr\cr
-\code{PJOINs}{ = c(0.0275, 0.0824, 0.02174, 0.0333), fraction of part joined with rest of body (-)}\cr\cr
+\code{PJOINs}{ = c(0.02666667, 0.08088128, 0.02000000, 0.03333333), fraction of part joined with rest of body (-)}\cr\cr
 \code{SUBQFATs}{ = rep(1, 4), is subcutaneous fat present? (0 is no, 1 is yes)}\cr\cr
-\code{FATPCT}{ = c(5, 36, 10, 23), \% body fat}\cr\cr
-\code{SHAPE_Bs}{ = c(1.6, 1.9, 11, 7.0), ratio between long and short axis (-)}\cr\cr
+\code{FATPCTs}{ = c(5, 36, 10, 23) * 0.7, \% body fat}\cr\cr
+\code{SHAPE_Bs}{ = c(1.6, 1.9, 12, 7.0), ratio between long and short axis (-)}\cr\cr
 \code{FSKREFs}{ = c(0.50, 0.42, 0.35, 0.35), configuration factor to sky}\cr\cr
 \code{FGDREFs}{ = c(0.38, 0.42, 0.35, 0.35), reference configuration factor to ground}\cr\cr
 \code{EMISANs}{ = rep(0.98, 4), emissivity each body part (-)}\cr\cr
@@ -78,12 +79,12 @@ environmental scenario (use HomoTherm_var for a sequence of environments).
 \code{REFLV}{ = rep(0.3, 4), solar reflectivity ventral (fractional, 0-1)}\cr\cr
 
 \strong{ Part-specific physiological parameters (head, torso, arms, legs):}\cr\cr
-\code{TC_RESTs}{ = rep(36.8, 4), resting core temperature (°C)}\cr\cr
+\code{TC_RESTs}{ = c(36.8, 36.8, 36.5, 36.7), resting core temperature (°C)}\cr\cr
 \code{TC_ACTIVEs}{ = rep(37.5, 4), active core temperature (°C)}\cr\cr
-\code{TC_INCs}{ = rep(0.04, 4), core temperature increment (°C)}\cr\cr
+\code{TC_INCs}{ = rep(0.05, 4), core temperature increment (°C)}\cr\cr
 \code{TC_MAXs}{ = rep(38, 4), maximum tolerated core temperature (°C)}\cr\cr
 \code{PCTWETs}{ = rep(1, 4), skin wettedness (\%)}\cr\cr
-\code{PCTWET_INCs}{ = rep(0.5, 4), skin wettedness increment (\%)}\cr\cr
+\code{PCTWET_INCs}{ = rep(1, 4), skin wettedness increment (\%)}\cr\cr
 \code{PCTWET_MAXs}{ = rep(100, 4), maximum skin surface area that can be wet (\%)}\cr\cr
 \code{CLOWETs}{ = rep(0, 4), insulation wettedness (\%)}\cr\cr
 \code{PCTBAREVAPs}{ = c(60, 0, 0, 0), bare area where free and forced evaporation can occur (\%)}\cr\cr

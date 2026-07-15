@@ -19,7 +19,10 @@ CONV_ENDO(
   BP,
   ELEV,
   CONV_ENHANCE,
-  GRAV
+  GRAV,
+  O2GAS,
+  N2GAS,
+  CO2GAS
 )
 }
 \arguments{

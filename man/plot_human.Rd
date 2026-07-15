@@ -5,14 +5,14 @@
 \alias{plot_human}
 \title{plot_human - auxiliary function for HomoTherm}
 \usage{
-plot_person(MASS = 70, HEIGHT = 170, INSDEPDs = c(1e-02, rep(6e-03, 3)), INSDEPVs = c(1e-09, rep(6e-03, 3)), FATPCTs = c(5, 36, 10, 23), SHAPE_Bs = c(1.6, 1.9, 11, 7.0))
+plot_person(MASS = 70, HEIGHT = 170, INSDEPDs = c(1e-02, rep(6e-03, 3)), INSDEPVs = c(1e-09, rep(6e-03, 3)), FATPCTs = c(5, 36, 10, 23), SHAPE_Bs = c(1.6, 1.85, 12.5, 6.5))
 }
 \arguments{
 \item{MASS}{= 70}
 
 \item{HEIGHT}{= 170}
 
-\item{MASSFRACs}{= c(0.07609801, 0.50069348, 0.04932963, 0.16227462)}
+\item{MASSFRACs}{= c(0.0761, 0.501, 0.049, 0.162)}
 
 \item{DENSITYs}{= rep(1050, 4)}
 
@@ -22,9 +22,9 @@ plot_person(MASS = 70, HEIGHT = 170, INSDEPDs = c(1e-02, rep(6e-03, 3)), INSDEPV
 
 \item{SUBQFATs}{= rep(1, 4)}
 
-\item{FATPCTs}{= c(5, 36, 10, 23)}
+\item{FATPCTs}{= c(5, 36, 10, 23) * 0.7}
 
-\item{SHAPE_Bs}{= c(1.6, 1.9, 11, 7.0)}
+\item{SHAPE_Bs}{= c(1.6, 1.9, 12, 7.0)}
 
 \item{DHAIRDs}{= c(7.5e-5, rep(1E-06, 3))}
 
@@ -38,7 +38,7 @@ plot_person(MASS = 70, HEIGHT = 170, INSDEPDs = c(1e-02, rep(6e-03, 3)), INSDEPV
 
 \item{INSDENVs}{= c(3e+05, rep(3e+08, 3))}
 
-\item{PJOINs}{= c(0.02591961, 0.07879298, 0.01850589, 0.03333333)}
+\item{PJOINs}{= c(0.02666667, 0.08088128, 0.02000000, 0.03333333)}
 }
 \description{
 This function plots the human body and insulation.

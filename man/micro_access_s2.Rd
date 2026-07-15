@@ -105,7 +105,7 @@ An implementation of the NicheMapR microclimate model that uses the ACCESS-S2 da
 \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
 \code{warm}{ = 0, warming offset vector, °C (negative values mean cooling). Can supply a single value or a vector the length of the number of days to be simulated.}\cr\cr
 \code{spatial}{ = "C:/Users/mrke/OneDrive - The University of Melbourne/Documents/Spatial_Data/ACCESS-S2/20240701_", choose location of ACCESS-S2 data and specify the prefix}\cr\cr
-\code{access_sw}{ = "C:/Users/mrke/OneDrive - The University of Melbourne/Documents/Spatial_Data/", choose location of spatial data}\cr\cr
+\code{access_s2}{ = "C:/Users/mrke/OneDrive - The University of Melbourne/Documents/Spatial_Data/", choose location of spatial data}\cr\cr
 \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
 \code{fail}{ = nyears x 24 x 365, how many restarts of the integrator before the Fortran program quits (avoids endless loops when solutions can't be found)}\cr\cr
