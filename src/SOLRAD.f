@@ -831,7 +831,7 @@ c     mutliplier to correct hourly solar data for horizon angle
       if(altdeg.lt.ahoriz)then
 c	   diffuse only - cut down to diffuse fraction      
       TDD(111+IT)=TDD(111+IT)* (0.12 + 0.83 * ((CCMINN(IDAY) + 
-     &  CCMAXX(IDAY))/ 2. / 100.)) ! from Butt et al. 2010 Agricultural and Forest Meteorology 150 (2010) 361–368
+     &  CCMAXX(IDAY))/ 2. / 100.)) ! from Butt et al. 2010 Agricultural and Forest Meteorology 150 (2010) 361ï¿½368
       endif
 
       DO 301 N=1,NMAX
@@ -846,11 +846,8 @@ C      TLAM TOO LARGE
         TLAM = 80.
        ENDIF
        part1 = SLAM(N)*AR2*CZ
-       if(tlam.gt.0.00000000000000000)then
-        part2 = EXP(-1.*TLAM)
-       else
-        part2 = 0.000000000000000
-       endif
+C      ZERO OPTICAL DEPTH TRANSMITS THE FULL BEAM (EXP(0) = 1)
+       part2 = EXP(-1.*TLAM)
        if(part2.lt.1.0e-24)then
         drlam(n) = 0.00000000000000000000000000000000
        else
