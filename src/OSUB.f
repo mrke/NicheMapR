@@ -48,7 +48,7 @@ C     VERSION 2 SEPT. 2000
       DOUBLE PRECISION Z01,Z02,ZH1,ZH2,qconv,ttest,hc,hd,VELR,AMOL,wcc
       DOUBLE PRECISION curmoist2,curhumid2,curpot2,tt,tt_past,snowalbedo
       DOUBLE PRECISION DRLAM,DRRLAM,SRLAM,trans2,leafpot,curroot,satval
-      DOUBLE PRECISION refill
+      DOUBLE PRECISION refill,nodecap
 
       DOUBLE PRECISION PE,KS,BB,BD,maxpool,L,LAI,tide,minsnow,DD
       DOUBLE PRECISION snownode,maxsnode1,snode,daysincesnow,lastday,
@@ -1191,12 +1191,13 @@ c       evaporation potential, mm/s (kg/s)
        else
         EP=0.0000001
        endif ! end check for snow cover - no evap if there is
+c      wet node 1 from the pool in proportion to available water, capped at saturation
        if(condep.gt.0.D0)then
          satval=1.-BD(1)/DD(1)
-         refill=max(0.D0,(satval-curmoist(1))*(dep(2)-dep(1))/2.D0
-     &    *10.D0)
-         condep=max(0.D0,condep-refill)
-         curmoist(1)=satval
+         nodecap=(dep(2)-dep(1))/4.D0*10.D0
+         refill=min(condep,max(0.D0,(satval-curmoist(1))*nodecap))
+         condep=condep-refill
+         curmoist(1)=min(satval,curmoist(1)+refill/nodecap)
          curmoist2(1)=curmoist(1)
        endif
 
@@ -1243,10 +1244,10 @@ c       evaporation potential, mm/s (kg/s)
         endif
         if(condep.gt.0.D0)then
          satval=1.-BD(1)/DD(1)
-         refill=max(0.D0,(satval-curmoist(1))*(dep(2)-dep(1))/2.D0
-     &    *10.D0)
-         condep=max(0.D0,condep-refill)
-         curmoist(1)=satval
+         nodecap=(dep(2)-dep(1))/4.D0*10.D0
+         refill=min(condep,max(0.D0,(satval-curmoist(1))*nodecap))
+         condep=condep-refill
+         curmoist(1)=min(satval,curmoist(1)+refill/nodecap)
          curmoist2(1)=curmoist(1)
         endif
 222    continue
