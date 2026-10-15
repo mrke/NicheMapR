@@ -1192,9 +1192,11 @@ c       evaporation potential, mm/s (kg/s)
         EP=0.0000001
        endif ! end check for snow cover - no evap if there is
 c      wet node 1 from the pool in proportion to available water, capped at saturation
+c      dep(1:3) are air heights, soil depths start at dep(4); node 1 thickness is
+c      a quarter of the first soil layer because infil inserts a midpoint node
        if(condep.gt.0.D0)then
          satval=1.-BD(1)/DD(1)
-         nodecap=(dep(2)-dep(1))/4.D0*10.D0
+         nodecap=(dep(5)-dep(4))/4.D0*10.D0
          refill=min(condep,max(0.D0,(satval-curmoist(1))*nodecap))
          condep=condep-refill
          curmoist(1)=min(satval,curmoist(1)+refill/nodecap)
@@ -1244,7 +1246,7 @@ c      wet node 1 from the pool in proportion to available water, capped at satu
         endif
         if(condep.gt.0.D0)then
          satval=1.-BD(1)/DD(1)
-         nodecap=(dep(2)-dep(1))/4.D0*10.D0
+         nodecap=(dep(5)-dep(4))/4.D0*10.D0
          refill=min(condep,max(0.D0,(satval-curmoist(1))*nodecap))
          condep=condep-refill
          curmoist(1)=min(satval,curmoist(1)+refill/nodecap)
