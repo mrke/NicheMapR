@@ -24,6 +24,7 @@ Suggests:
     jsonlite,
     microclima,
     mcera5,
+    ecmwfr,
     RNCEP,
     jpeg,
     png,
