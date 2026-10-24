@@ -11,7 +11,7 @@
 #'
 #' Data are downloaded with package 'ecmwfr' into 'seas5_path' and reused by later calls, so
 #' all members of one forecast come from the same files. The CDS API key is taken from the
-#' 'ecmwfr' keyring, the 'CDSAPI_KEY' environment variable or ~/.cdsapirc, and the dataset's
+#' 'ecmwfr' keyring (under 'cds_user'), the 'CDSAPI_KEY' environment variable or ~/.cdsapirc, and the dataset's
 #' Terms of Use must be accepted once at
 #' https://cds.climate.copernicus.eu/datasets/seasonal-original-single-levels
 #' @encoding UTF-8
@@ -22,6 +22,7 @@
 #' @param member Ensemble member, 0 (control) to 50 (0 to 24 for 1981-2016 hindcasts)
 #' @param seas5_path Folder for the downloaded SEAS5 NetCDF files
 #' @param cds_time_out Seconds to wait for each CDS request (the CDS queue can take hours)
+#' @param cds_user The 'user' label the CDS API key was stored under with \code{ecmwfr::wf_set_key}
 #' @param cloud_from_solar Daily mean cloud from SEAS5 solar radiation relative to clear sky (1), keeping the 6-hourly cloud cover range, or 6-hourly cloud cover min/max directly (0)
 #' @param dem A digital elevation model produced by microclima function 'get_dem' via R package 'elevatr' (internally generated via same function based on 'loc' if NA)
 #' @param dem.res Requested resolution of the DEM from elevatr, m
@@ -54,6 +55,7 @@ micro_seas5 <- function(
   member = 0,
   seas5_path = "SEAS5/",
   cds_time_out = 6 * 3600,
+  cds_user = "ecmwfr",
   cloud_from_solar = 1,
   dem = NA,
   dem.res = 30,
@@ -330,11 +332,13 @@ micro_seas5 <- function(
   })
   missing <- names(fields)[!file.exists(file.path(seas5_path, files))]
   if(length(missing) > 0){
-    if(nchar(Sys.getenv("ecmwfr_PAT")) == 0 & inherits(try(ecmwfr::wf_get_key(), silent = TRUE), "try-error")){
+    if(nchar(Sys.getenv("ecmwfr_PAT")) == 0 & inherits(try(ecmwfr::wf_get_key(user = cds_user), silent = TRUE), "try-error")){
       key <- Sys.getenv("CDSAPI_KEY")
-      rc <- path.expand("~/.cdsapirc")
-      if(nchar(key) == 0 & file.exists(rc)){
-        line <- grep("^key:", readLines(rc), value = TRUE)
+      # R's "~" is Documents on Windows; .cdsapirc usually sits in the user profile
+      rc <- c(file.path(Sys.getenv("USERPROFILE"), ".cdsapirc"), path.expand("~/.cdsapirc"))
+      rc <- rc[file.exists(rc)]
+      if(nchar(key) == 0 & length(rc) > 0){
+        line <- grep("^key:", readLines(rc[1], warn = FALSE), value = TRUE)
         if(length(line) > 0) key <- trimws(sub("^key:", "", line[1]))
       }
       if(nchar(key) == 0){
@@ -352,7 +356,7 @@ micro_seas5 <- function(
     })
     cat(paste0("requesting ", length(requests), " SEAS5 field(s) for the forecast started ", init_date,
       " from the CDS (queued requests can take minutes to hours) \n"))
-    ecmwfr::wf_request_batch(requests, workers = 4, path = seas5_path, time_out = cds_time_out)
+    ecmwfr::wf_request_batch(requests, workers = 4, user = cds_user, path = seas5_path, time_out = cds_time_out)
   }
 
   # one field for 'member' at the grid cell nearest 'loc', as a vector over lead times
@@ -363,6 +367,7 @@ micro_seas5 <- function(
     dimname <- function(id) RNetCDF::dim.inq.nc(nc, id)$name
     for(v in 0:(nvars - 1)){
       inq <- RNetCDF::var.inq.nc(nc, v)
+      if(all(is.na(inq$dimids))) next # scalar, e.g. valid_time with a single lead
       dims <- sapply(inq$dimids, dimname)
       if(any(dims %in% c("longitude", "lon")) & any(dims %in% c("latitude", "lat"))) break
     }
