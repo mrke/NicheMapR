@@ -116,7 +116,7 @@ RESP_ecto <- function(
   DP <- 999
 
   PO2 <- BP * PCTO2
-  REFPO2 <- 101325 * RPCTO2
+  REFPO2 <- 101325 * PCTO2 # O2 partial pressure at STP, at the actual O2 fraction, so that O2 consumed equals demand
   #C     OXYGEN CONSUMPTION OF LIZARDS (BENNETT & DAWSON, 1976) (M3/S)
   GMASS <- AMASS * 1000
 

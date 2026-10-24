@@ -106,8 +106,7 @@ C       COMPUTE SUBQ FAT THICKNESS
        IF(INT(ORIENT).EQ.3)THEN
         ASIL=2.*R2*ALENTH*sin(ZEN*pi/180.)+pi*R2**2.*cos(ZEN*pi/180.)
        ENDIF
-C       D = VOL**(1./3.)+ZFUR
-       D = min(ALENTH, AWIDTH)
+        D = VOL**(1./3.)+ZFUR
        GO TO 999
       ENDIF
 
